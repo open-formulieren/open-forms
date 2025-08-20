@@ -2,14 +2,16 @@ import {useFormikContext} from 'formik';
 import {FormattedMessage} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
+import Alert from 'components/admin/Alert';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {LOADING_OPTION} from 'components/admin/forms/Select';
+import {WarningIcon} from 'components/admin/icons';
 import {get} from 'utils/fetch';
 
-import AttributeField from './AttributeField';
-import IdentifierRoleField from './IdentifierRoleField';
+import AttributeField from '../default/AttributeField';
+import IdentifierRoleField from '../default/IdentifierRoleField';
 
 // Load the possible prefill attributes
 // XXX: this would benefit from client-side caching
@@ -24,10 +26,10 @@ const getAttributes = async plugin => {
 };
 
 /**
- * Default (legacy) prefill configuration - after selecting the plugin, the user
- * selects which attribute to use to grab the prefill value from.
+ * Copy of the Default prefill plugin fields, with an added Alert message to clarify its
+ * usage.
  */
-const DefaultFields = () => {
+const EidasCompanyFields = () => {
   const {
     values: {plugin = ''},
   } = useFormikContext();
@@ -49,6 +51,14 @@ const DefaultFields = () => {
 
   return (
     <Fieldset>
+      <Alert type="warning">
+        <WarningIcon asLead />
+        <FormattedMessage
+          description="eIDAS company prefill plugin warning message"
+          defaultMessage="The eIDAS for companies prefill plugin only works in conjunction with the eIDAS for companies authentication plugin. Make sure to configure the eIDAS for companies authentication plugin!"
+        />
+      </Alert>
+
       <FormRow>
         <Field
           name="attribute"
@@ -80,6 +90,6 @@ const DefaultFields = () => {
   );
 };
 
-DefaultFields.propTypes = {};
+EidasCompanyFields.propTypes = {};
 
-export default DefaultFields;
+export default EidasCompanyFields;
