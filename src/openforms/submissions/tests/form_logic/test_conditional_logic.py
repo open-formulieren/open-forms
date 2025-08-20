@@ -369,3 +369,50 @@ class ConditionalLogicTests(TestCase):
             },
         )
         self.assertEqual(step.unsaved_data, {})
+
+    def test_component_multiple(self):
+        """
+        Ensure that we perform a membership test instead of a direct comparison
+        between values when a component is configured as multiple.
+        """
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "textfield",
+                    "key": "textfieldVisible",
+                    "label": "Textfield visible",
+                    "multiple": True,
+                    "hidden": False,
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfieldConditionallyHidden",
+                    "label": "Textfield to hide",
+                    "hidden": False,
+                    "conditional": {
+                        "show": False,
+                        "when": "textfieldVisible",
+                        "eq": "a",
+                    },
+                    "clearOnHide": True,
+                },
+            ],
+            submitted_data={
+                "textfieldVisible": ["a", "b", "c"],
+                "textfieldConditionallyHidden": "clear me",
+            },
+        )
+        step = submission.submissionstep_set.first()
+
+        evaluate_form_logic(submission, step, use_new_behaviour=True)
+
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_static_variables=False)
+        self.assertEqual(
+            data,
+            {
+                "textfieldVisible": ["a", "b", "c"],
+                "textfieldConditionallyHidden": "",
+            },
+        )
+        self.assertEqual(step.unsaved_data, {})
