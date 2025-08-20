@@ -435,7 +435,10 @@ def convert_objects_api_group(form_data: dict) -> None:
             continue
 
         if isinstance(objects_api_group, int):
+            identifier = objects_api_pk_to_slug[objects_api_group]
             logger.info(
-                "convert_objects_api_group_pk", objects_api_group=objects_api_group
+                "objects_api_group_reference_converted", 
+                from_pk=object_api_group,
+                to_identifier=identifier,
             )
             options["objects_api_group"] = objects_api_pk_to_slug[objects_api_group]

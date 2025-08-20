@@ -29,11 +29,7 @@ def convert_objects_api_group_pk_to_slug(apps: StateApps, _):
             )
             continue
 
-        options = registration_backend.options
-        options["objects_api_group"] = objects_api_pk_to_slug[
-            options["objects_api_group"]
-        ]
-        registration_backend.options = options
+        registration_backend.options["objects_api_group"] = objects_api_pk_to_slug[api_group_pk]
 
         registration_backends_to_update.append(registration_backend)
 
