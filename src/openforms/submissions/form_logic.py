@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from django.utils.functional import empty
@@ -7,12 +8,21 @@ from django.utils.functional import empty
 import elasticapm
 
 from openforms.formio.service import (
+    FormioConfigurationWrapper,
     FormioData,
     get_dynamic_configuration,
     inject_variables,
 )
-from openforms.formio.typing import FormioConfiguration
-from openforms.formio.utils import get_component_empty_value
+from openforms.formio.typing import (
+    Component,
+    ConditionalCompareValue,
+    FormioConfiguration,
+)
+from openforms.formio.utils import (
+    ComponentLike,
+    get_component_empty_value,
+    iter_components,
+)
 
 from .logic.actions import ActionOperation
 from .logic.rules import get_rules_to_evaluate, iter_evaluate_rules
@@ -27,6 +37,7 @@ def evaluate_form_logic(
     submission: Submission,
     step: SubmissionStep,
     unsaved_data: FormioData | None = None,
+    use_new_behaviour=False,
 ) -> FormioConfiguration:
     """
     Process all the form logic rules and mutate the step configuration if required.
@@ -88,16 +99,23 @@ def evaluate_form_logic(
     # 4. Apply the (dirty) data to the variable state.
     if unsaved_data is not None:
         submission_variables_state.set_values(unsaved_data)
-    initial_data = submission_variables_state.get_data(
-        include_unsaved=True, include_static_variables=True
-    )
     data_for_evaluation = submission_variables_state.get_data(
         include_unsaved=True, include_static_variables=True
     )
 
-    rules = get_rules_to_evaluate(submission, step)
+    # 5. Evaluate conditional logic. We need to do this before evaluating backend logic
+    # to make sure we are not processing with outdated data. The frontend will not send
+    # data for fields that were conditionally hidden, so applying the incoming unsaved
+    # data to the state will not set the values of those fields to empty.
+    if use_new_behaviour:
+        evaluate_conditional_logic(
+            config_wrapper.configuration, data_for_evaluation, config_wrapper
+        )
+    initial_data = deepcopy(data_for_evaluation)
 
     # 5. Evaluate the logic rules in order
+    rules = get_rules_to_evaluate(submission, step)
+
     mutation_operations = []
 
     # 5.1 If the action type is to set a variable, update the data. This happens inside
@@ -136,6 +154,9 @@ def evaluate_form_logic(
     # fix, as the (stale) data has potentially been input for other logic rules.
     # Note that only the dirty data logic check acts on these differences.
     for component in config_wrapper:
+        if use_new_behaviour:
+            break
+
         key = component["key"]
         is_visible = config_wrapper.is_visible_in_frontend(key, data_for_evaluation)
         if is_visible:
@@ -164,7 +185,7 @@ def evaluate_form_logic(
 
     # 7. Form evaluation completed
     # 7.1 All the processing is now complete, so we can update the state.
-    submission_variables_state.set_values(data_diff)
+    submission_variables_state.set_values(data_for_evaluation)
 
     # 7.2 Build a difference in data for the step. It is important that we only keep the
     # changes in the data, so that old values do not overwrite otherwise debounced
@@ -188,6 +209,149 @@ def evaluate_form_logic(
     step._form_logic_evaluated = True
 
     return config_wrapper.configuration
+
+
+def get_conditional(
+    component: Component,
+) -> tuple[bool, str, ConditionalCompareValue] | None:
+    conditional = component.get("conditional")
+    if not conditional:
+        return None
+
+    show = conditional.get("show")
+    when = conditional.get("when")
+    eq = conditional.get("eq")
+
+    if any([show is None, when is None, eq is None]):
+        return None
+
+    return show, when, eq
+
+
+def is_hidden_by_conditional(
+    component: Component, data: FormioData, configuration: FormioConfigurationWrapper
+) -> bool:
+    conditional = get_conditional(component)
+
+    # Note that the previous (and frontend) implementation also checked the "hidden"
+    # property, but we cannot do that in this case, as it might result in values being
+    # cleared that shouldn't. For example, a field that is hidden by default and shown
+    # with a logic rule will have its value always cleared if this is executed before
+    # logic rule evaluation. All of this is assuming we evaluate conditional logic
+    # BEFORE backend logic.
+    if conditional is None:
+        return False
+
+    show, trigger_component_key, compare_value = conditional
+
+    trigger_component_value = data.get(trigger_component_key, None)
+    trigger_component = configuration[trigger_component_key]
+
+    # TODO-5134: other components need special attention?
+    match trigger_component["type"]:
+        case "selectboxes":
+            # Selectboxes need some special attention as we need to check whether the
+            # compare value is set to `True` in the dictionary.
+            # NOTE: the previous implementation defaulted to the direct comparison, but
+            # this is not useful for selectboxes components, because a user can only set
+            # a single compare value, not an object.
+            trigger = trigger_component_value.get(compare_value, False)
+
+        case _:
+            trigger = trigger_component_value == compare_value
+
+    # Note that we return whether the component is hidden, not shown, so we invert the
+    # return value
+    return not show if trigger else show
+
+
+def process_visibility(
+    configuration: ComponentLike,
+    data: FormioData,
+    wrapper: FormioConfigurationWrapper,
+    parent_hidden: bool = False,
+    parent_path: str = "",
+):
+    """Because this is executed inside ``evaluate_form_logic``, we can mutate ``data``
+    directly. The data diff will be built up at the end of evaluating logic.
+    """
+    for component in iter_components(
+        configuration, recursive=False, recurse_into_editgrid=False
+    ):
+        key = component["key"]
+        path = f"{parent_path}.{key}" if parent_path else key
+        clear_on_hide = component.get("clearOnHide", True)
+        hidden = parent_hidden or is_hidden_by_conditional(component, data, wrapper)
+
+        if hidden and clear_on_hide:
+            # Need to perform this check because fieldset, columns, softRequiredErrors,
+            # and content components have no value
+            # TODO-5134: this might mask bugs? Perhaps better to explicitly check for
+            #  these components?
+            if path in data:
+                empty_value = get_component_empty_value(component)
+                data[path] = empty_value
+
+        # TODO-5134: might move to the component plugins and access through the
+        #  registry?
+        match component["type"]:
+            case "fieldset":
+                # We need to process the children
+                process_visibility(component, data, wrapper, hidden, parent_path)
+            case "columns":
+                # Create an artificial flat component list to make processing easier.
+                # The alternative is to pass `recursive` as an argument to
+                # `iter_components`
+                config_new = {
+                    "components": [
+                        child
+                        for column in component["columns"]
+                        for child in column["components"]
+                    ]
+                }
+                process_visibility(config_new, data, wrapper, hidden, parent_path)
+            case "editgrid":
+                # We only need to process children if the value was not already cleared.
+                if not (edit_grid_data := data[path]):
+                    continue
+
+                data_new = []
+                for entry in edit_grid_data:
+                    # For a simple conditional, a reference to a field inside an
+                    # editgrid will be formatted as "editgrid_key.nested_key", so we
+                    # create 'fake' data to ensure we can reason within each editgrid
+                    # entry.
+                    entry_data = FormioData({key: entry})
+
+                    process_visibility(component, entry_data, wrapper, hidden, key)
+                    data_new.append(entry_data[key])
+
+                data[path] = data_new
+
+
+# TODO-5134: probably be good to also update the hidden property of the configuration.
+#  The backend might send an outdated different configration to the frontend if we don't
+def evaluate_conditional_logic(
+    configuration: ComponentLike,
+    data: FormioData,
+    wrapper: FormioConfigurationWrapper,
+):
+    """Evaluate conditional logic.
+
+    Note that this assumes the data converges to a final state, so no cycles can be
+    present in the complete conditional logic tree.
+
+    :param configuration:
+    :param data:
+    :param wrapper:
+    :return:
+    """
+    # TODO-5134: if performance will be a problem, we could search for all components
+    #  that have a (valid) conditional configured, and only process those.
+    initial_data = None
+    while initial_data != data:
+        initial_data = deepcopy(data)
+        process_visibility(configuration, data, wrapper)
 
 
 def check_submission_logic(
