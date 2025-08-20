@@ -32,6 +32,8 @@ from openforms.template import render_from_string, sandbox_backend
 from openforms.typing import JSONObject
 from openforms.utils.glom import _glom_path_to_str
 
+from .metrics import upload_file_size
+
 logger = structlog.stdlib.get_logger(__name__)
 
 DEFAULT_IMAGE_MAX_SIZE = (10000, 10000)
@@ -134,8 +136,11 @@ def attach_uploads_to_submission_step(
 
     result = list()
 
-    variable_state = submission_step.submission.load_submission_value_variables_state()
+    submission: Submission = submission_step.submission
+    execution_state = submission.load_execution_state()
+    variable_state = submission.load_submission_value_variables_state()
     step_variables = variable_state.get_variables_in_submission_step(submission_step)
+    assert submission_step.form_step is not None
 
     for upload_context in iter_step_uploads(submission_step):
         upload, component, key, data_path, configuration_path = (
@@ -207,6 +212,19 @@ def attach_uploads_to_submission_step(
             file_name=file_name,
         )
         result.append((attachment, created))
+
+        # update OTel metric
+        current_step_index = execution_state.submission_steps.index(submission_step)
+        upload_file_size.record(
+            attachment.content.size,
+            attributes={
+                "form.name": submission_step.submission.form.name,
+                "form.uuid": str(submission_step.submission.form.uuid),
+                "step.name": submission_step.form_step.form_definition.name,
+                "step.number": current_step_index + 1,
+                "content_type": attachment.content_type,
+            },
+        )
 
         if created and resize_apply and resize_size:
             # NOTE there is a possible race-condition if user completes a submission before this resize task is done

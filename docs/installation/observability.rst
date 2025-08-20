@@ -274,6 +274,17 @@ Submissions
           )
         )
 
+``attachment.file_size``
+    A histogram of submission attachments, with buckets covering file upload sizes from
+    0 bytes to 1 GiB (Open Forms by default limits uploads to 50 MB). Additional
+    attributes are:
+
+    - ``step.name`` - the name of the step that was saved.
+    - ``step.number`` - the step sequence, starting at 1 for the first step.
+    - ``form.uuid`` - the unique database ID of the form.
+    - ``form.name`` - the name of the form that was submitted.
+    - ``content_type`` - the file type of the attachment.
+
 Tracing
 =======
 

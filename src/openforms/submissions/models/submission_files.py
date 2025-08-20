@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import hashlib
 import os.path
 import uuid
 from collections import defaultdict
 from collections.abc import Mapping
 from datetime import date, timedelta
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, ClassVar, cast
 
 from django.core.files.base import File
 from django.db import models
@@ -86,7 +88,7 @@ class SubmissionFileAttachmentQuerySet(
     def for_submission(self, submission: Submission):
         return self.filter(submission_step__submission=submission)
 
-    def as_form_dict(self) -> Mapping[str, list["SubmissionFileAttachment"]]:
+    def as_form_dict(self) -> Mapping[str, list[SubmissionFileAttachment]]:
         files = defaultdict(list)
         for file in self:
             files[file._component_configuration_path].append(file)
@@ -97,12 +99,12 @@ class SubmissionFileAttachmentManager(models.Manager):
     def get_or_create_from_upload(
         self,
         submission_step: SubmissionStep,
-        submission_variable: "SubmissionValueVariable",
+        submission_variable: SubmissionValueVariable,
         configuration_path: str,
         data_path: str,
         upload: TemporaryFileUpload,
         file_name: str | None = None,
-    ) -> tuple["SubmissionFileAttachment", bool]:
+    ) -> tuple[SubmissionFileAttachment, bool]:
         try:
             return (
                 self.get(
@@ -129,6 +131,13 @@ class SubmissionFileAttachmentManager(models.Manager):
                     _component_data_path=data_path,
                 )
             return (instance, True)
+
+    if TYPE_CHECKING:
+
+        def for_submission(
+            self, submission: Submission
+        ) -> SubmissionFileAttachmentQuerySet: ...
+        def as_form_dict(self) -> Mapping[str, list[SubmissionFileAttachment]]: ...
 
 
 class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
@@ -188,7 +197,9 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
     content_type = models.CharField(_("content type"), max_length=255)
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
 
-    objects = SubmissionFileAttachmentManager.from_queryset(
+    objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
+        SubmissionFileAttachmentManager
+    ] = SubmissionFileAttachmentManager.from_queryset(
         SubmissionFileAttachmentQuerySet
     )()
 
