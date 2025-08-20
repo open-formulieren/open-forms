@@ -74,7 +74,7 @@ class PrefillConfiguration(TypedDict):
     identifierRole: Literal["main", "authorizee"]
 
 
-# TODO-5134: this must be extended to `VariableValue`
+# TODO-5134: eventually this should be replaced with ``VariableValue``
 type ConditionalCompareValue = bool | str | int | float
 
 

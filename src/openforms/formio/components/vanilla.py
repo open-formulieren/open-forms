@@ -6,9 +6,10 @@ adjacent custom.py module.
 """
 
 import re
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
+from copy import deepcopy
 from datetime import time
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, NoReturn
 
 from django.core.files.uploadedfile import UploadedFile
 from django.core.validators import (
@@ -31,6 +32,7 @@ from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
+from openforms.submissions.form_logic import process_visibility
 from openforms.submissions.models import EmailVerification
 from openforms.typing import JSONObject
 from openforms.utils.json_schema import to_multiple
@@ -38,7 +40,7 @@ from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
 
 from ..api.validators import MimeTypeValidator
-from ..datastructures import FormioData
+from ..datastructures import FormioConfigurationWrapper, FormioData
 from ..dynamic_config.dynamic_options import add_options_to_config
 from ..formatters.formio import (
     CheckboxFormatter,
@@ -56,7 +58,7 @@ from ..formatters.formio import (
     TextFieldFormatter,
     TimeFormatter,
 )
-from ..registry import BasePlugin, register
+from ..registry import BasePlugin, register, ComponentT
 from ..serializers import build_serializer
 from ..service import as_json_schema
 from ..typing import (
@@ -68,6 +70,8 @@ from ..typing import (
     SelectBoxesComponent,
     SelectComponent,
     TextFieldComponent,
+    ColumnsComponent,
+    FieldsetComponent,
 )
 from ..typing.base import OpenFormsConfig
 from .translations import translate_options
@@ -757,6 +761,18 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
 
         return base
 
+    @staticmethod
+    def test_conditional(
+        component: SelectComponent, value: dict[str, str], compare_value: str
+    ) -> bool:
+        # Selectboxes need some special attention as we need to check whether the
+        # value corresponding to the key ``compare_value`` is set to ``True`` in the
+        # dictionary.
+        # NOTE: the previous implementation defaulted to the direct comparison, but
+        # this is not useful for selectboxes components, because a user can only set
+        # a single compare value, not an object.
+        return value.get(compare_value, False)
+
 
 @register("select")
 class Select(BasePlugin[SelectComponent]):
@@ -1111,3 +1127,76 @@ class EditGrid(BasePlugin[EditGridComponent]):
             base["maxItems"] = max_length
 
         return base
+
+    @staticmethod
+    def apply_visibility(
+        component: EditGridComponent,
+        data: FormioData,
+        wrapper: FormioConfigurationWrapper,
+        parent_hidden: bool,
+        get_evaluation_data: Callable | None = None,
+    ):
+        key = component["key"]
+        # We only need to process children if the value was not already cleared.
+        if not (edit_grid_data := data[key]):
+            return
+
+        # We might be dealing with nested editgrids
+        outer_get_evaluation_data = (
+            get_evaluation_data if get_evaluation_data else lambda x: x
+        )
+
+        edit_grid_data_new = []
+        for item_data in edit_grid_data:
+            # For evaluation of the conditionals, we only care about the current item,
+            # so we set it to the editgrid data directly
+            def get_evaluation_data(item_data_):
+                inner_evaluation_data = deepcopy(data)
+                inner_evaluation_data[key] = item_data_
+                return outer_get_evaluation_data(inner_evaluation_data)
+
+            process_visibility(
+                component, item_data, wrapper, parent_hidden, get_evaluation_data
+            )
+            edit_grid_data_new.append(item_data)
+
+        data[key] = edit_grid_data_new
+
+
+@register("columns")
+class Columns(BasePlugin[ColumnsComponent]):
+    @staticmethod
+    def apply_visibility(
+        component: ColumnsComponent,
+        data: FormioData,
+        wrapper: FormioConfigurationWrapper,
+        parent_hidden: bool,
+        get_evaluation_data: Callable | None = None,
+    ):
+        # Create an artificial flat component list to make processing easier
+        config_new = {
+            "components": [
+                child
+                for column in component["columns"]
+                for child in column["components"]
+            ]
+        }
+
+        process_visibility(
+            config_new, data, wrapper, parent_hidden, get_evaluation_data
+        )
+
+
+@register("fieldset")
+class Fieldset(BasePlugin[FieldsetComponent]):
+    @staticmethod
+    def apply_visibility(
+        component: FieldsetComponent,
+        data: FormioData,
+        wrapper: FormioConfigurationWrapper,
+        parent_hidden: bool,
+        get_evaluation_data: Callable | None = None,
+    ):
+        # We need to process the children, so we just pass the component as the
+        # configuration.
+        process_visibility(component, data, wrapper, parent_hidden, get_evaluation_data)
