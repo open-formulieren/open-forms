@@ -60,3 +60,18 @@ meter.create_observable_gauge(
     unit="",  # no unit so that the _ratio suffix is not added
     callbacks=[count_submissions],
 )
+
+upload_file_size = meter.create_histogram(
+    name="attachment.file_size",
+    unit="bytes",
+    description="Size of a single uploaded attachment.",
+    explicit_bucket_boundaries_advisory=(
+        0,  # 0 bytes
+        1024,  # 1 KiB
+        100 * 1024,  # 100 KiB
+        1024**2,  # 1 MiB
+        10 * 1024**2,  # 10 MiB
+        100 * 1024**2,  # 100 MiB
+        1024**3,  # 1 GiB
+    ),
+)
