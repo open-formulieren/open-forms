@@ -2071,6 +2071,52 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
         ]["variables_mapping"]["non_field_errors"][0]
         self.assertEqual(error_detail.code, "not_a_list")
 
+    @tag("gh-5384")
+    def test_import_form_with_objects_api_group_pk(self):
+        """
+        test that there is a backward compatibility after objects_api_group attribute
+        was converted from pk to slug
+        """
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
+        )
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form-1",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "objects_api_group": objects_api_group.pk,
+                                "version": 2,
+                                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype_version": 2,
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
+        self.assertEqual(
+            registration_backend.options["objects_api_group"],
+            objects_api_group.identifier,
+        )
+
 
 class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
     """This test case requires the Open Zaak Docker Compose to be running.
