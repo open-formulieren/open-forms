@@ -247,9 +247,9 @@ def is_hidden_by_conditional(
     trigger_component_value = data.get(trigger_component_key, None)
     trigger_component = configuration[trigger_component_key]
 
-    # TODO-5134: other components need special attention?
-    match trigger_component["type"]:
-        case "selectboxes":
+    # TODO-5134: move to registry
+    match trigger_component:
+        case {"type": "selectboxes"}:
             # Selectboxes need some special attention as we need to check whether the
             # compare value is set to `True` in the dictionary.
             # NOTE: the previous implementation defaulted to the direct comparison, but
@@ -258,7 +258,11 @@ def is_hidden_by_conditional(
             trigger = trigger_component_value.get(compare_value, False)
 
         case _:
-            trigger = trigger_component_value == compare_value
+            if trigger_component.get("multiple", False):
+                assert isinstance(trigger_component_value, list)
+                trigger = compare_value in trigger_component_value
+            else:
+                trigger = trigger_component_value == compare_value
 
     # Note that we return whether the component is hidden, not shown, so we invert the
     # return value
