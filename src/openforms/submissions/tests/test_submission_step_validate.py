@@ -640,7 +640,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                     "step_uuid": form_step.uuid,
                 },
             ),
-            {"data": {"columns": [{"fileUpload1": [file], "fileUpload2": [file]}]}},
+            {"data": {"fileUpload1": [file], "fileUpload2": [file]}},
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -682,7 +682,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                     "step_uuid": form_step.uuid,
                 },
             ),
-            {"data": {"fieldset": [{"fileUpload1": [file]}]}},
+            {"data": {"fileUpload1": [file]}},
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
