@@ -13,7 +13,8 @@ the public API better defined and smaller.
 """
 
 import warnings
-from typing import TYPE_CHECKING, Any, Generic, Literal, Protocol, TypeVar
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Generic, Literal, NoReturn, Protocol, TypeVar
 
 from django.utils.translation import gettext as _
 
@@ -22,9 +23,9 @@ from rest_framework.request import Request
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, VariableValue
 
-from .datastructures import FormioData
+from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
 from .utils import is_layout_component
 
@@ -117,6 +118,25 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         implemented in the child class
         """
         raise NotImplementedError()
+
+    @staticmethod
+    def apply_visibility(
+        component: ComponentT,
+        data: FormioData,
+        wrapper: FormioConfigurationWrapper,
+        parent_hidden: bool,
+        get_evaluation_data: Callable | None = None,
+    ) -> NoReturn:
+        """Apply (conditional) visibility of this component. This routine should be
+        implemented in the child class.
+        """
+
+    @staticmethod
+    def test_conditional(
+        component: ComponentT, value: VariableValue, compare_value: VariableValue
+    ):
+        """Perform a component-specific comparison whether a conditional is triggered.
+        """
 
 
 class ComponentRegistry(BaseRegistry[BasePlugin]):

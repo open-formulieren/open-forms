@@ -183,28 +183,47 @@ class ConditionalLogicTests(TestCase):
                     "hidden": False,
                 },
                 {
-                    "type": "fieldset",
-                    "key": "fieldset",
-                    "label": "Fieldset",
+                    "type": "columns",
+                    "key": "columns",
+                    "label": "Columns",
                     "hidden": False,
-                    "components": [
+                    "columns": [
                         {
-                            "type": "textfield",
-                            "key": "nestedTextfield",
-                            "label": "Nested textfield",
-                            "clearOnHide": True,
-                            "conditional": {
-                                "show": False,
-                                "when": "textfieldVisible",
-                                "eq": "hide nested",
-                            },
+                            "size": 6,
+                            "mobileSize": 6,
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "nestedTextfieldConditionallyHidden",
+                                    "label": "Nested textfield",
+                                    "clearOnHide": True,
+                                    "conditional": {
+                                        "show": False,
+                                        "when": "textfieldVisible",
+                                        "eq": "hide nested",
+                                    },
+                                }
+                            ],
+                        },
+                        {
+                            "size": 6,
+                            "mobileSize": 6,
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "nestedTextfield",
+                                    "label": "Nested textfield",
+                                    "clearOnHide": True,
+                                }
+                            ],
                         },
                     ],
                 },
             ],
             submitted_data={
                 "textfieldVisible": "hide nested",
-                "nestedTextfield": "clear me",
+                "nestedTextfieldConditionallyHidden": "clear me",
+                "nestedTextfield": "keep me",
             },
         )
         step = submission.submissionstep_set.first()
@@ -215,7 +234,11 @@ class ConditionalLogicTests(TestCase):
         data = state.get_data(include_static_variables=False)
         self.assertEqual(
             data,
-            {"textfieldVisible": "hide nested", "nestedTextfield": ""},
+            {
+                "textfieldVisible": "hide nested",
+                "nestedTextfieldConditionallyHidden": "",
+                "nestedTextfield": "keep me",
+            },
         )
         self.assertEqual(step.unsaved_data, {})
 
@@ -276,6 +299,85 @@ class ConditionalLogicTests(TestCase):
                 "editgrid": [
                     {"trigger": "show", "follower": "keep me"},
                     {"trigger": "hide", "follower": ""},
+                ]
+            },
+        )
+        self.assertEqual(step.unsaved_data, {})
+
+    def test_nested_editgrid(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "editgrid",
+                    "key": "editgrid",
+                    "label": "Edit grid",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "trigger",
+                            "label": "Trigger",
+                        },
+                        {
+                            "type": "editgrid",
+                            "key": "editgrid2",
+                            "label": "editgrid2",
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "follower",
+                                    "label": "Follower",
+                                    "clearOnHide": True,
+                                    "conditional": {
+                                        "show": False,
+                                        "when": "editgrid.trigger",
+                                        "eq": "hide",
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                }
+            ],
+            submitted_data={
+                "editgrid": [
+                    {
+                        "trigger": "show",
+                        "editgrid2": [
+                            {"follower": "keep me"},
+                            {"follower": "keep me as well"},
+                        ],
+                    },
+                    {
+                        "trigger": "hide",
+                        "editgrid2": [
+                            {"follower": "clear me"},
+                            {"follower": "you better clear me too"},
+                        ],
+                    },
+                ]
+            },
+        )
+        step = submission.submissionstep_set.first()
+
+        evaluate_form_logic(submission, step, use_new_behaviour=True)
+
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_static_variables=False)
+        self.assertEqual(
+            data,
+            {
+                "editgrid": [
+                    {
+                        "trigger": "show",
+                        "editgrid2": [
+                            {"follower": "keep me"},
+                            {"follower": "keep me as well"},
+                        ],
+                    },
+                    {
+                        "trigger": "hide",
+                        "editgrid2": [{"follower": ""}, {"follower": ""}],
+                    },
                 ]
             },
         )
@@ -413,6 +515,70 @@ class ConditionalLogicTests(TestCase):
             {
                 "textfieldVisible": ["a", "b", "c"],
                 "textfieldConditionallyHidden": "",
+            },
+        )
+        self.assertEqual(step.unsaved_data, {})
+
+    def test_selectboxes(self):
+        """
+        Ensure that we check whether the compare value inside a selectboxes dictionary
+        is set to True.
+        """
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "label": "selectboxes visible",
+                    "values": [
+                        {"value": "a", "label": "a"},
+                        {"value": "b", "label": "b"},
+                        {"value": "c", "label": "c"},
+                    ],
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield1",
+                    "label": "Textfield 1",
+                    "hidden": False,
+                    "conditional": {
+                        "show": False,
+                        "when": "selectboxes",
+                        "eq": "a",
+                    },
+                    "clearOnHide": True,
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield2",
+                    "label": "Textfield 2",
+                    "hidden": False,
+                    "conditional": {
+                        "show": False,
+                        "when": "selectboxes",
+                        "eq": "b",
+                    },
+                    "clearOnHide": True,
+                },
+            ],
+            submitted_data={
+                "selectboxes": {"a": False, "b": True, "c": False},
+                "textfield1": "keep me",
+                "textfield2": "clear me",
+            },
+        )
+        step = submission.submissionstep_set.first()
+
+        evaluate_form_logic(submission, step, use_new_behaviour=True)
+
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_static_variables=False)
+        self.assertEqual(
+            data,
+            {
+                "selectboxes": {"a": False, "b": True, "c": False},
+                "textfield1": "keep me",
+                "textfield2": "",
             },
         )
         self.assertEqual(step.unsaved_data, {})
