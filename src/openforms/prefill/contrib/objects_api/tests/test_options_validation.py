@@ -15,7 +15,7 @@ class OptionValidationTests(APITestCase):
     def test_auth_attribute_not_required(self):
         api_group = ObjectsAPIGroupConfigFactory.create()
         data = {
-            "objects_api_group": api_group.pk,
+            "objects_api_group": api_group.identifier,
             "objecttype_uuid": uuid.uuid4(),
             "objecttype_version": 3,
             "skip_ownership_check": True,
@@ -31,7 +31,7 @@ class OptionValidationTests(APITestCase):
     def test_auth_attribute_required(self):
         api_group = ObjectsAPIGroupConfigFactory.create()
         data = {
-            "objects_api_group": api_group.pk,
+            "objects_api_group": api_group.identifier,
             "objecttype_uuid": uuid.uuid4(),
             "objecttype_version": 3,
             "skip_ownership_check": False,

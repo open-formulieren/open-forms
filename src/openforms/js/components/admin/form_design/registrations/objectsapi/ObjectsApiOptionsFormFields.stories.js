@@ -34,8 +34,8 @@ export default {
   render,
   args: {
     apiGroups: [
-      [1, 'Objects API group 1'],
-      [2, 'Objects API group 2'],
+      ['group-1', 'Objects API group 1'],
+      ['group-2', 'Objects API group 2'],
     ],
     formData: {},
   },
@@ -113,7 +113,7 @@ export const SwitchToV2Empty = {
 export const SwitchToV2Existing = {
   args: {
     formData: {
-      objectsApiGroup: 1,
+      objectsApiGroup: 'group-1',
       objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
       objecttypeVersion: 1,
     },
@@ -129,7 +129,7 @@ export const SwitchToV2Existing = {
     expect(await canvas.findByText('Person (open)')).toBeVisible();
     expect(await canvas.findByText('1 (published)')).toBeVisible();
     expect(testForm).toHaveFormValues({
-      objectsApiGroup: '1',
+      objectsApiGroup: 'group-1',
       objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
       objecttypeVersion: '1',
     });
@@ -150,7 +150,7 @@ export const SwitchToV2Existing = {
 
     await waitFor(() => {
       expect(testForm).toHaveFormValues({
-        objectsApiGroup: '1',
+        objectsApiGroup: 'group-1',
         objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
         objecttypeVersion: '1',
       });
@@ -161,7 +161,7 @@ export const SwitchToV2Existing = {
 export const SwitchToV2NonExisting = {
   args: {
     formData: {
-      objectsApiGroup: 1,
+      objectsApiGroup: 'group-1',
       objecttype: 'a-non-existing-uuid',
       objecttypeVersion: 1,
     },
@@ -259,7 +259,7 @@ export const SelectDocumentType = {
   args: {
     formData: {
       version: 2,
-      objectsApiGroup: 1,
+      objectsApiGroup: 'group-1',
     },
   },
 
@@ -299,7 +299,7 @@ export const DisplayPersistedConfiguration = {
   args: {
     formData: {
       version: 2,
-      objectsApiGroup: 1,
+      objectsApiGroup: 'group-1',
       catalogue: {
         rsin: '000000000',
         domain: 'TEST',
@@ -324,7 +324,7 @@ export const DraftDocumentTypesFeatureFlagOn = {
   args: {
     formData: {
       version: 2,
-      objectsApiGroup: 1,
+      objectsApiGroup: 'group-1',
       catalogue: {
         rsin: '111111111',
         domain: 'TEST',

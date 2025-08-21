@@ -51,14 +51,14 @@ ObjectsApiOptionsForm.propTypes = {
   schema: PropTypes.shape({
     properties: PropTypes.shape({
       objectsApiGroup: PropTypes.shape({
-        enum: PropTypes.arrayOf(PropTypes.number).isRequired,
+        enum: PropTypes.arrayOf(PropTypes.string).isRequired,
         enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
       }).isRequired,
     }).isRequired,
   }).isRequired,
   formData: PropTypes.shape({
     version: PropTypes.number,
-    objectsApiGroup: PropTypes.number,
+    objectsApiGroup: PropTypes.string,
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.number,
     updateExistingObject: PropTypes.bool,

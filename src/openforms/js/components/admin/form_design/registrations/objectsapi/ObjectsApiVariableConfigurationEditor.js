@@ -28,7 +28,7 @@ const VARIABLE_CONFIGURATION_OPTIONS = {
  *
  * @typedef {{
  *   version: 1 | 2;
- *   objectsApiGroup: number;
+ *   objectsApiGroup: string;
  *   objecttype: string;
  *   objecttypeVersion: number;
  *   variablesMapping: {variableKey: string, targetPath: string[]}[];

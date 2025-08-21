@@ -83,7 +83,7 @@ ZGWOptionsForm.propTypes = {
         enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
       }).isRequired,
       objectsApiGroup: PropTypes.shape({
-        enum: PropTypes.arrayOf(PropTypes.number).isRequired,
+        enum: PropTypes.arrayOf(PropTypes.string).isRequired,
         enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
       }).isRequired,
     }).isRequired,
@@ -104,7 +104,7 @@ ZGWOptionsForm.propTypes = {
         eigenschap: PropTypes.string,
       })
     ),
-    objectsApiGroup: PropTypes.number,
+    objectsApiGroup: PropTypes.string,
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
     contentJson: PropTypes.string,

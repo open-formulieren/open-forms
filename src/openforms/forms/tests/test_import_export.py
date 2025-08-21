@@ -1690,6 +1690,49 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
 
 
+class ExportObjectsAPITests(TempdirMixin, TestCase):
+    @tag("gh-5384")
+    def test_export_form_with_objects_registration_backend(self):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            identifier="test-objects-api-group"
+        )
+        form = FormFactory.create()
+        FormRegistrationBackendFactory.create(
+            form=form,
+            backend="objects_api",
+            key="test-objects-backend",
+            options={
+                "objects_api_group": objects_api_group.identifier,
+            },
+        )
+
+        call_command("export", form.pk, self.filepath)
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            self.assertEqual(
+                f.namelist(),
+                [
+                    "forms.json",
+                    "formSteps.json",
+                    "formDefinitions.json",
+                    "formLogic.json",
+                    "formVariables.json",
+                    f"{EXPORT_META_KEY}.json",
+                ],
+            )
+
+            forms = json.loads(f.read("forms.json"))
+            self.assertEqual(len(forms), 1)
+            self.assertEqual(len(forms[0]["registration_backends"]), 1)
+            self.assertEqual(
+                forms[0]["registration_backends"][0]["key"], "test-objects-backend"
+            )
+            self.assertEqual(
+                forms[0]["registration_backends"][0]["options"]["objects_api_group"],
+                "test-objects-api-group",
+            )
+
+
 class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
     """This test case requires the Objects & Objecttypes API and Open Zaak to be running.
 
@@ -1756,7 +1799,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                             "options": {
                                 "objects_api_group": ObjectsAPIGroupConfigFactory.create(
                                     for_test_docker_compose=True
-                                ).pk,
+                                ).identifier,
                                 "version": 2,
                                 "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
@@ -1804,7 +1847,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                             "options": {
                                 "objects_api_group": ObjectsAPIGroupConfigFactory.create(
                                     for_test_docker_compose=True
-                                ).pk,
+                                ).identifier,
                                 "version": 2,
                                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
@@ -1846,7 +1889,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                             "options": {
                                 "objects_api_group": ObjectsAPIGroupConfigFactory.create(
                                     for_test_docker_compose=True
-                                ).pk,
+                                ).identifier,
                                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
                             },
@@ -1889,7 +1932,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                             "options": {
                                 "objects_api_group": ObjectsAPIGroupConfigFactory.create(
                                     for_test_docker_compose=True
-                                ).pk,
+                                ).identifier,
                                 "version": 1,
                                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
@@ -1902,7 +1945,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                             "options": {
                                 "objects_api_group": ObjectsAPIGroupConfigFactory.create(
                                     for_test_docker_compose=True
-                                ).pk,
+                                ).identifier,
                                 "version": 2,
                                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
@@ -1954,7 +1997,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                             "options": {
                                 "objects_api_group": ObjectsAPIGroupConfigFactory.create(
                                     for_test_docker_compose=True
-                                ).pk,
+                                ).identifier,
                                 "version": 2,
                                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
@@ -2004,7 +2047,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                             "options": {
                                 "objects_api_group": ObjectsAPIGroupConfigFactory.create(
                                     for_test_docker_compose=True
-                                ).pk,
+                                ).identifier,
                                 "version": 2,
                                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
@@ -2027,6 +2070,52 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             "options"
         ]["variables_mapping"]["non_field_errors"][0]
         self.assertEqual(error_detail.code, "not_a_list")
+
+    @tag("gh-5384")
+    def test_import_form_with_objects_api_group_pk(self):
+        """
+        test that there is a backward compatibility after objects_api_group attribute
+        was converted from pk to slug
+        """
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
+        )
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form-1",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "objects_api_group": objects_api_group.pk,
+                                "version": 2,
+                                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype_version": 2,
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
+        self.assertEqual(
+            registration_backend.options["objects_api_group"],
+            objects_api_group.identifier,
+        )
 
 
 class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
@@ -2134,7 +2223,7 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
         self.assertEqual(
             registration_backend.options["objects_api_group"],
-            objects_api_group.pk,
+            objects_api_group.identifier,
         )
 
     def test_import_form_with_zgw_registration_backend_cant_determine_objects_api_group(
@@ -2181,7 +2270,7 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
                         "zgw_api_group": zgw_group.pk,
                         "zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
                         "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-                        "objects_api_group": objects_api_group.pk,
+                        "objects_api_group": objects_api_group.identifier,
                         "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                         "objecttype_version": 1,
                     },
@@ -2195,5 +2284,5 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             )
             self.assertEqual(
                 registration_backend.options["objects_api_group"],
-                objects_api_group.pk,
+                objects_api_group.identifier,
             )

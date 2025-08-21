@@ -109,7 +109,7 @@ const VARIABLES = [
     serviceFetchConfiguration: undefined,
     initialValue: [],
     prefillOptions: {
-      objectsApiGroup: 1,
+      objectsApiGroup: 'group-1',
       objecttypeUuid: '2c77babf-a967-4057-9969-0200320d23f2',
       objecttypeVersion: 1,
       variablesMapping: [{variableKey: 'formioComponent', targetPath: ['firstName']}],
@@ -165,8 +165,8 @@ export default {
         label: 'Objects API',
         configurationContext: {
           apiGroups: [
-            [1, 'Objects API group 1'],
-            [2, 'Objects API group 2'],
+            ['group-1', 'Objects API group 1'],
+            ['group-2', 'Objects API group 2'],
           ],
         },
       },
@@ -300,7 +300,7 @@ export const WithObjectsAPIRegistrationBackends = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           variablesMapping: [
@@ -322,7 +322,7 @@ export const WithObjectsAPIRegistrationBackends = {
         name: 'Other Objects API registration with a long name',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '209e0341-834d-4060-bd19-a3419d19ed74',
           objecttypeVersion: 2,
           variablesMapping: [
@@ -340,7 +340,7 @@ export const WithObjectsAPIRegistrationBackends = {
         name: "Shouldn't display!",
         options: {
           version: 1,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '209e0341-834d-4060-bd19-a3419d19ed74',
           objecttypeVersion: 2,
         },
@@ -476,7 +476,7 @@ export const WithObjectsAPIRegistrationBackendsTransformToList = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           variablesMapping: [],
@@ -587,7 +587,7 @@ export const WithObjectsAPIRegistrationBackendsGeometryField = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           variablesMapping: [],
@@ -644,7 +644,7 @@ export const EmptyUserDefinedVariableWithObjectsAPIRegistration = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           variablesMapping: [
@@ -699,7 +699,7 @@ export const FilesMappingAndObjectAPIRegistration = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           variablesMapping: [
@@ -831,7 +831,7 @@ export const WithObjectsAPIAndTestRegistrationBackends = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           variablesMapping: [
@@ -1281,7 +1281,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           authAttributePath: ['path', 'to', 'bsn'],
@@ -1303,7 +1303,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
         name: 'Other Objects API registration with a long name',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '209e0341-834d-4060-bd19-a3419d19ed74',
           objecttypeVersion: 2,
           authAttributePath: ['path', 'to', 'bsn'],
@@ -1368,7 +1368,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       await waitFor(
         () => {
           expect(modalForm).toHaveFormValues({
-            'options.objectsApiGroup': '1',
+            'options.objectsApiGroup': 'group-1',
             'options.objecttypeUuid': '209e0341-834d-4060-bd19-a3419d19ed74',
             'options.objecttypeVersion': '2',
             'options.authAttributePath': JSON.stringify(['path', 'to', 'bsn']),
@@ -1594,7 +1594,7 @@ export const ConfigurePrefillObjectsAPIWithValidationErrors = {
         serviceFetchConfiguration: undefined,
         initialValue: [],
         options: {
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           authAttributePath: ['path', 'to', 'bsn'],
@@ -1674,7 +1674,7 @@ export const AddressNLMappingSpecificTargetsNoDeriveAddress = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           variablesMapping: [],
@@ -1804,7 +1804,7 @@ export const AddressNLMappingSpecificTargetsDeriveAddress = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'group-1',
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           variablesMapping: [],

@@ -56,7 +56,7 @@ class ObjectsAPIPrefillPluginEndpointTests(OFVCRMixin, APITestCase):
         for endpoint in self.endpoints.values():
             with self.subTest(endpoint=endpoint):
                 response = self.client.get(
-                    endpoint, {"objects_api_group": self.objects_api_group.pk}
+                    endpoint, {"objects_api_group": self.objects_api_group.identifier}
                 )
 
                 self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -77,7 +77,7 @@ class ObjectsAPIPrefillPluginEndpointTests(OFVCRMixin, APITestCase):
 
         response = self.client.get(
             self.endpoints["objecttype_list"],
-            {"objects_api_group": self.objects_api_group.pk},
+            {"objects_api_group": self.objects_api_group.identifier},
         )
 
         tree_objecttype = next(obj for obj in response.json() if obj["name"] == "Tree")
@@ -100,7 +100,7 @@ class ObjectsAPIPrefillPluginEndpointTests(OFVCRMixin, APITestCase):
 
         response = self.client.get(
             self.endpoints["objecttype_versions_list"],
-            {"objects_api_group": self.objects_api_group.pk},
+            {"objects_api_group": self.objects_api_group.identifier},
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -120,7 +120,7 @@ class ObjectsAPIPrefillPluginEndpointTests(OFVCRMixin, APITestCase):
 
         response = self.client.get(
             self.endpoints["attribute_list"],
-            {"objects_api_group": self.objects_api_group.pk},
+            {"objects_api_group": self.objects_api_group.identifier},
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

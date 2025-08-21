@@ -189,7 +189,7 @@ def schedule_emails(submission_id: int) -> None:
         logger.debug(
             "confirmation_email_skip",
             submission_uuid=str(submission.uuid),
-            form_uuid=submission.form.uuid,
+            form_uuid=str(submission.form.uuid),
             reason="form_configured_no_confirmation_email",
         )
         logevent.confirmation_email_skip(submission)
