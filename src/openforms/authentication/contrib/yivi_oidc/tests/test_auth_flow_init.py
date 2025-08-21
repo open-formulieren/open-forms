@@ -86,14 +86,31 @@ class YiviInitTests(IntegrationTestsBase):
             with_yivi=True,
             options__identity_settings__bsn_claim_path=["attribute.bsn"],
         )
-        AttributeGroupFactory(name="personal", attributes=["first_name", "last_name"])
-        AttributeGroupFactory(name="mail", attributes=["email_address"])
-        AttributeGroupFactory(name="phone", attributes=["phone_number"])
+        AttributeGroupFactory.create(
+            name="personal",
+            uuid="e90c2d3e-4ee2-4590-ab10-206d1a438293",
+            attributes=["first_name", "last_name"],
+        )
+        AttributeGroupFactory.create(
+            name="mail",
+            uuid="7b083f26-74dc-49ea-9794-60e3e6e71c1c",
+            attributes=["email_address"],
+        )
+        # This `phone` group is defined, but isn't used in the form
+        AttributeGroupFactory.create(
+            name="phone",
+            uuid="7cca8de0-bbaa-49bc-bd22-c07cb331ff3a",
+            attributes=["phone_number"],
+        )
         form = FormFactory.create(
             authentication_backend="yivi_oidc",
             authentication_backend__options={
                 "authentication_options": [AuthAttribute.bsn],
-                "additional_attributes_groups": ["personal", "mail"],
+                "additional_attributes_groups": [
+                    # The uuids of the `personal` and `mail` attributegroups
+                    "e90c2d3e-4ee2-4590-ab10-206d1a438293",
+                    "7b083f26-74dc-49ea-9794-60e3e6e71c1c",
+                ],
             },
         )
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="yivi_oidc")
