@@ -44,14 +44,15 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
         plugin = oidc_register[oidc_client.identifier]
         AttributeGroupFactory.create(
             name="know_attributes",
+            uuid="e4bfa861-3ac0-4b9a-90ff-1bdbb3a17e09",
             attributes=["irma-demo.gemeente.personalData.familyname"],
         )
         request = self._setup_form(
             options={
                 "authentication_options": [],
                 "additional_attributes_groups": [
-                    "know_attributes",
-                    "know_attributes_2",
+                    # The attributegroup that was defined above
+                    "e4bfa861-3ac0-4b9a-90ff-1bdbb3a17e09",
                 ],
                 "bsn_loa": "",
                 "kvk_loa": "",
@@ -86,15 +87,22 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
         )
         plugin = oidc_register[oidc_client.identifier]
         AttributeGroupFactory.create(
-            name="know_attributes", attributes=["firstname", "lastname"]
+            name="know_attributes",
+            uuid="e4bfa861-3ac0-4b9a-90ff-1bdbb3a17e09",
+            attributes=["firstname", "lastname"],
         )
-        AttributeGroupFactory.create(name="know_attributes_2", attributes=["dob"])
+        AttributeGroupFactory.create(
+            name="know_attributes_2",
+            uuid="9eb88579-a6e5-4d06-b780-6edc0968e673",
+            attributes=["dob"],
+        )
         request = self._setup_form(
             options={
                 "authentication_options": [],
                 "additional_attributes_groups": [
-                    "know_attributes",
-                    "know_attributes_2",
+                    # The two attributegroups from above
+                    "e4bfa861-3ac0-4b9a-90ff-1bdbb3a17e09",
+                    "9eb88579-a6e5-4d06-b780-6edc0968e673",
                 ],
                 "bsn_loa": "",
                 "kvk_loa": "",
@@ -127,7 +135,10 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
         request = self._setup_form(
             options={
                 "authentication_options": [],
-                "additional_attributes_groups": ["unknow_attributes"],
+                "additional_attributes_groups": [
+                    # An unknown attributegroup uuid
+                    "9eb88579-a6e5-4d06-b780-6edc0968e673"
+                ],
                 "bsn_loa": "",
                 "kvk_loa": "",
             }
@@ -147,12 +158,16 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
         )
         plugin = oidc_register[oidc_client.identifier]
         AttributeGroupFactory.create(
-            name="know_attributes", attributes=["firstname", "lastname"]
+            name="know_attributes",
+            uuid="9eb88579-a6e5-4d06-b780-6edc0968e673",
+            attributes=["firstname", "lastname"],
         )
         request = self._setup_form(
             options={
                 "authentication_options": [],
-                "additional_attributes_groups": ["know_attributes"],
+                "additional_attributes_groups": [
+                    "9eb88579-a6e5-4d06-b780-6edc0968e673"
+                ],
                 "bsn_loa": "",
                 "kvk_loa": "",
             }
@@ -177,15 +192,22 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
 
         plugin = oidc_register[oidc_client.identifier]
         AttributeGroupFactory.create(
-            name="know_attributes", attributes=["firstname", "lastname"]
+            name="know_attributes",
+            uuid="9eb88579-a6e5-4d06-b780-6edc0968e673",
+            attributes=["firstname", "lastname"],
         )
-        AttributeGroupFactory.create(name="know_attributes_2", attributes=["dob"])
+        AttributeGroupFactory.create(
+            name="know_attributes_2",
+            uuid="e4bfa861-3ac0-4b9a-90ff-1bdbb3a17e09",
+            attributes=["dob"],
+        )
         request = self._setup_form(
             options={
                 "authentication_options": [],
                 "additional_attributes_groups": [
-                    "know_attributes",
-                    "know_attributes_2",
+                    # The two attributegroups from above
+                    "9eb88579-a6e5-4d06-b780-6edc0968e673",
+                    "e4bfa861-3ac0-4b9a-90ff-1bdbb3a17e09",
                 ],
                 "bsn_loa": "",
                 "kvk_loa": "",

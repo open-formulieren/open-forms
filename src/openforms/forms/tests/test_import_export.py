@@ -1594,7 +1594,9 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(error_detail.code, "invalid")
 
     def test_import_form_with_yivi_auth_backend(self):
-        AttributeGroupFactory(name="known_attributes")
+        AttributeGroupFactory(
+            name="known_attributes", uuid="00000000-0000-0000-0000-12345678abcd"
+        )
         resources = {
             "forms": [
                 {
@@ -1612,7 +1614,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                                     "kvk",
                                 ],
                                 "additional_attributes_groups": [
-                                    "known_attributes",
+                                    "00000000-0000-0000-0000-12345678abcd",
                                 ],
                                 "bsn_loa": DigiDAssuranceLevels.substantial,
                                 "kvk_loa": AssuranceLevels.low,
@@ -1642,13 +1644,16 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(auth_backend.options["kvk_loa"], AssuranceLevels.low)
         self.assertEqual(auth_backend.options["authentication_options"], ["bsn", "kvk"])
         self.assertEqual(
-            auth_backend.options["additional_attributes_groups"], ["known_attributes"]
+            auth_backend.options["additional_attributes_groups"],
+            ["00000000-0000-0000-0000-12345678abcd"],
         )
 
     def test_import_form_with_yivi_auth_backend_with_unknown_additional_attributes_groups(
         self,
     ):
-        AttributeGroupFactory(name="some_known_scope")
+        AttributeGroupFactory(
+            name="some_known_scope", uuid="447aad2c-dc7d-4220-ba5c-dd15183c7a02"
+        )
         resources = {
             "forms": [
                 {
@@ -1662,8 +1667,10 @@ class ImportExportTests(TempdirMixin, TestCase):
                             "backend": "yivi_oidc",
                             "options": {
                                 "additional_attributes_groups": [
-                                    "some_unknown_scope",
-                                    "some_known_scope",
+                                    # A known uuid
+                                    "447aad2c-dc7d-4220-ba5c-dd15183c7a02",
+                                    # An unknown/invalid uuid
+                                    "86ed3db9-8aad-4d9d-a516-a4c3794ed036",
                                 ]
                             },
                         }
@@ -1686,7 +1693,8 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         # Expect only the known scope to be present
         self.assertEqual(
-            auth_backend.options["additional_attributes_groups"], ["some_known_scope"]
+            auth_backend.options["additional_attributes_groups"],
+            ["447aad2c-dc7d-4220-ba5c-dd15183c7a02"],
         )
 
 
