@@ -1233,6 +1233,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           languages: state.languageInfo.languages,
           translationEnabled: state.form.translationEnabled,
           registrationBackends: state.form.registrationBackends,
+          authBackends: state.form.authBackends,
           selectedAuthPlugins: state.selectedAuthPlugins,
         }}
       >
