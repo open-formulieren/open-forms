@@ -172,7 +172,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
             return []
 
         attributes = AttributeGroup.objects.filter(
-            name__in=(auth_backend_options or {}).get(
+            uuid__in=(auth_backend_options or {}).get(
                 "additional_attributes_groups", []
             )
         ).values_list("attributes", flat=True)
@@ -325,7 +325,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         """
         additional_attributes_condiscon: list[list[list[str]]] = []
         attributes_groups = AttributeGroup.objects.filter(
-            name__in=options["additional_attributes_groups"]
+            uuid__in=options["additional_attributes_groups"]
         )
 
         for attributes_group in attributes_groups:
