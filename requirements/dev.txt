@@ -632,7 +632,7 @@ lxml-html-clean==0.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-mail-cleaner==1.2.0
+mail-cleaner==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

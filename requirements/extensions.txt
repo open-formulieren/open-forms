@@ -528,7 +528,7 @@ lxml-html-clean==0.4.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-mail-cleaner==1.2.0
+mail-cleaner==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
