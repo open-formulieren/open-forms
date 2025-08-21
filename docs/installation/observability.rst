@@ -215,6 +215,22 @@ Accounts
 
     - ``username`` - username of the user who logged out.
 
+Forms
+^^^^^
+
+Form metrics describe the forms defined by the organization. For submission statistics,
+see the :ref:`Submission <installation_observability_metrics_submissions>` metrics.
+
+``form_count``
+    The total count of forms defined in the database, ignoring forms that have been
+    moved into the trash. Additional attributes are:
+
+    - ``scope`` - fixed, set to ``global`` to enable de-duplication.
+    - ``type`` - one of ``total``, ``live``, ``translation_enabled``, ``is_appointment``
+      or ``trash``. For all but ``trash`` the forms in the trash are excluded.
+
+.. _installation_observability_metrics_submissions:
+
 Submissions
 ^^^^^^^^^^^
 
