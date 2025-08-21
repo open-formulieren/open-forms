@@ -18,6 +18,8 @@ if [[ "$ENABLE_COVERAGE" ]]; then
 fi
 
 echo "Starting celery worker $WORKER_NAME with queue $QUEUE"
+# unset this if NOT using a process pool
+export _OTEL_DEFER_SETUP="true"
 exec $_binary --workdir src --app openforms.celery worker \
     -Q $QUEUE \
     -n $WORKER_NAME \
