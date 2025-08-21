@@ -352,7 +352,7 @@ maykin-2fa==1.0.0
     # via
     #   -r requirements/base.in
     #   maykin-common
-maykin-common==0.7.0
+maykin-common==0.8.0
     # via -r requirements/base.in
 maykin-json-logic-py==0.13.0
     # via -r requirements/base.in

@@ -339,7 +339,7 @@ use any vendor that supports this protocol (over gRPC or HTTP/protobuf).
   exported. The exports run in a background thread and should not affect the performance
   of the application. The default is every minute (``60000``).
 
-* ``OF_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR=true``: enable this when not deploying on
+* ``_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR=true``: enable this when not deploying on
   Kubernetes, but in another container runtime like Docker or Podman.
 
   .. tip:: On Kubernetes, use the Collector

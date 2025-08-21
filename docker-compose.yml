@@ -53,12 +53,13 @@ x-app-env: &x-app-env
   # Enabling Open Telemetry requires the services in docker/docker-compose.observability.yml
   # to be up and running.
   - OTEL_SDK_DISABLED=${OTEL_SDK_DISABLED:-true}
+  - OTEL_RESOURCE_ATTRIBUTES=of.client=of,of.target=docker-compose
   - OTEL_METRIC_EXPORT_INTERVAL=${OTEL_METRIC_EXPORT_INTERVAL:-60000}
   - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}  # gRPC
   # otel:supersecret, escape spaces and = with percent encoding
   - OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic b3RlbDpzdXBlcnNlY3JldA==
   - OTEL_EXPORTER_OTLP_METRICS_INSECURE=${OTEL_EXPORTER_OTLP_METRICS_INSECURE:-true}
-  - OF_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR=true
+  - _OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR=true
 
 x-app-volumes: &x-app-volumes
   - static:/srv/static

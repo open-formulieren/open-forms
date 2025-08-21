@@ -25,6 +25,12 @@ processors:
   memory_limiter:
     check_interval: 1s
     limit_mib: 1024
+  transform:
+    metric_statements:
+      - context: datapoint
+        statements:
+        - set(attributes["client"], resource.attributes["of.client"])
+        - set(attributes["target"], resource.attributes["of.target"])
 
 exporters:
   # NOTE: Prior to v0.86.0 use `logging` instead of `debug`.
@@ -35,7 +41,9 @@ exporters:
     endpoint: 0.0.0.0:8889
     namespace: otel  # this becomes a prefix in the prometheus metrics: `otel_*`
     const_labels:
-      environment: docker
+      environment: local_otel_collector
+    resource_to_telemetry_conversion:
+      enabled: true
 
 service:
   extensions: [basicauth/server]
@@ -46,7 +54,7 @@ service:
       exporters: [debug]
     metrics:
       receivers: [otlp]
-      processors: [memory_limiter, batch]
+      processors: [memory_limiter, transform, batch]
       exporters: [debug, prometheus]
     logs:
       receivers: [otlp]
