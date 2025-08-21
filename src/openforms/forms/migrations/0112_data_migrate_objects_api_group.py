@@ -18,19 +18,18 @@ def convert_objects_api_group_pk_to_slug(apps: StateApps, _):
     for registration_backend in FormRegistrationBackend.objects.exclude(
         options__objects_api_group__isnull=True
     ):
-        if (
-            registration_backend.options["objects_api_group"]
-            not in objects_api_pk_to_slug
-        ):
+        api_group_pk = registration_backend.options["objects_api_group"]
+        if api_group_pk not in objects_api_pk_to_slug:
             logger.warning(
                 "migration_objects_api_group_not_found",
-                form=registration_backend.form,
-                objects_api_group=registration_backend.options["objects_api_group"],
+                form_uuid=registration_backend.form.uuid,
+                objects_api_group=api_group_pk,
             )
             continue
 
-        registration_backend.options["objects_api_group"] = objects_api_pk_to_slug[api_group_pk]
-
+        registration_backend.options["objects_api_group"] = objects_api_pk_to_slug[
+            api_group_pk
+        ]
         registration_backends_to_update.append(registration_backend)
 
     FormRegistrationBackend.objects.bulk_update(
@@ -50,23 +49,18 @@ def reverse_objects_api_group_slug_to_pk(apps: StateApps, _):
     for registration_backend in FormRegistrationBackend.objects.exclude(
         options__objects_api_group__isnull=True
     ):
-        if (
-            registration_backend.options["objects_api_group"]
-            not in objects_api_slug_to_pk
-        ):
+        api_group_slug = registration_backend.options["objects_api_group"]
+        if api_group_slug not in objects_api_slug_to_pk:
             logger.warning(
                 "migration_objects_api_group_not_found",
-                form=registration_backend.form,
-                objects_api_group=registration_backend.options["objects_api_group"],
+                form_uuid=registration_backend.form.uuid,
+                objects_api_group=api_group_slug,
             )
             continue
 
-        options = registration_backend.options
-        options["objects_api_group"] = objects_api_slug_to_pk[
-            options["objects_api_group"]
+        registration_backend.options["objects_api_group"] = objects_api_slug_to_pk[
+            api_group_slug
         ]
-        registration_backend.options = options
-
         registration_backends_to_update.append(registration_backend)
 
     FormRegistrationBackend.objects.bulk_update(

@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from drf_spectacular.plumbing import build_array_type
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema_field
@@ -21,6 +22,7 @@ from openforms.contrib.haal_centraal.api.serializers import (
     BRPPersonenRequestOptionsSerializer,
 )
 from openforms.contrib.haal_centraal.models import BRPPersonenRequestOptions
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.formio.typing import Component
@@ -37,6 +39,8 @@ from ...constants import StatementCheckboxChoices
 from ...models import Category, Form, FormAuthenticationBackend, FormRegistrationBackend
 from .button_text import ButtonTextSerializer
 from .form_step import MinimalFormStepSerializer
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class SubmissionsRemovalOptionsSerializer(serializers.ModelSerializer):
@@ -412,6 +416,38 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             ] + payment_register.get_choices()
 
         return fields
+
+    def convert_objects_api_group(self, attrs) -> None:
+        """
+        backwards compatibility for using objects_api_group as pk in the form registration backends
+        see GH issue #5384
+        """
+        if not self.context.get("is_import", False):
+            return
+
+        if "registration_backends" not in attrs:
+            return
+
+        objects_api_pk_to_slug = {
+            group.pk: group.identifier for group in ObjectsAPIGroupConfig.objects.all()
+        }
+        for plugin in attrs["registration_backends"]:
+            options = plugin["options"]
+            if not (api_group_id := options.get("objects_api_group")):
+                continue
+
+            if isinstance(api_group_id, int):
+                api_group_slug = objects_api_pk_to_slug[api_group_id]
+                options["objects_api_group"] = api_group_slug
+                logger.info(
+                    "objects_api_group_reference_converted",
+                    from_pk=api_group_id,
+                    to_identifier=api_group_slug,
+                )
+
+    def to_internal_value(self, attrs):
+        self.convert_objects_api_group(attrs)
+        return super().to_internal_value(attrs)
 
     def _handle_import(self, attrs) -> None:
         # we're not importing, nothing to do

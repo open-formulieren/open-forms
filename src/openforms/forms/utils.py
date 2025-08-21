@@ -15,7 +15,6 @@ import structlog
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
-from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
 from openforms.typing import JSONObject
@@ -235,8 +234,6 @@ def import_form_data(
                 # the imported form.
                 entry["theme"] = None
 
-                convert_objects_api_group(entry)
-
             if resource == "forms" and not existing_form_instance:
                 entry["active"] = False
 
@@ -416,29 +413,3 @@ def clear_old_service_fetch_config(rule: dict) -> None:
         # We can't reliably relate the service fetch configured to an existing configuration.
         # So we don't add any existing service fetch config to the variables
         action["action"]["value"] = ""
-
-
-def convert_objects_api_group(form_data: dict) -> None:
-    """
-    backwards compatibility for using objects_api_group as pk in the form registration backends
-    see GH issue #5384
-    """
-    if "registration_backends" not in form_data:
-        return
-
-    objects_api_pk_to_slug = {
-        group.pk: group.identifier for group in ObjectsAPIGroupConfig.objects.all()
-    }
-    for plugin in form_data["registration_backends"]:
-        options = plugin["options"]
-        if not (objects_api_group := options.get("objects_api_group")):
-            continue
-
-        if isinstance(objects_api_group, int):
-            identifier = objects_api_pk_to_slug[objects_api_group]
-            logger.info(
-                "objects_api_group_reference_converted", 
-                from_pk=object_api_group,
-                to_identifier=identifier,
-            )
-            options["objects_api_group"] = objects_api_pk_to_slug[objects_api_group]
