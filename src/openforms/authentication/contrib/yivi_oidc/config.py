@@ -1,5 +1,7 @@
 from typing import Literal, TypedDict
 
+from django.db.models import CharField
+from django.db.models.functions.comparison import Cast
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
@@ -83,7 +85,9 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
 
         # Pre-process 'additional_attributes_groups' before DRF validates it
         attribute_groups = data.get("additional_attributes_groups", [])
-        valid_choices = AttributeGroup.objects.all().values_list("name", flat=True)
+        valid_choices = AttributeGroup.objects.annotate(
+            str_uuid=Cast("uuid", output_field=CharField())
+        ).values_list("str_uuid", flat=True)
 
         # Filter out invalid attribute groups
         data["additional_attributes_groups"] = [
