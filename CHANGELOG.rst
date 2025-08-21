@@ -56,10 +56,7 @@ Detailed changes
 3.2.1 (2025-08-19)
 ==================
 
-Upgrade procedure
------------------
-
-**💰 Ingenico Ogone migration**
+Regular bugfix release.
 
 .. note:: Worldline is ending support for Ogone Legacy at the end of 2025. Open Forms 3.3.0 will
    have support for the replacement. To make migrating easier, we've added new configuration options
@@ -71,27 +68,22 @@ Upgrade procedure
    You can find these via configuration overview page. They are currently not used, but will make the
    automatic migration easier in Open Forms 3.3.0.
 
-Regular bugfix release.
-
-* [:backend:`4879`] Added fields to the `Ogone Merchant` and added
-  the `Ogone webhook configuration`.
+* [:backend:`4879`] Added fields to the `Ogone Merchant` and added the
+  `Ogone webhook configuration`.
 * [:backend:`5413`] Fixed uploading filenames with soft-hyphens not passing form validation.
 * [:backend:`5471`] Fixed BRP "doelbinding" advanced options not becoming available
   when using family members components.
 * [:backend:`5481`] Fixed incorrect lookup of the prefill-variable for a partners
   component variable.
-* [:backend:`5271`] Fixed false positives being reported in the digest email when
-  you have logic rules that use the ``reduce`` operation.
-* [:backend:`5454`] Updated Piwik Pro tag manager config
+* [:backend:`5271`] Fixed false positives being reported in the digest email when you
+  have logic rules that use the ``reduce`` operation.
+* [:backend:`5454`] Fixed Piwik Pro debug mode no longer working.
 
 
 3.1.6 (2025-08-19)
 ==================
 
-Upgrade procedure
------------------
-
-**💰 Ingenico Ogone migration**
+Regular bugfix release.
 
 .. note:: Worldline is ending support for Ogone Legacy at the end of 2025. Open Forms 3.3.0 will
    have support for the replacement. To make migrating easier, we've added new configuration options
@@ -103,11 +95,10 @@ Upgrade procedure
    You can find these via configuration overview page. They are currently not used, but will make the
    automatic migration easier in Open Forms 3.3.0.
 
-Regular bugfix release.
-
-* [:backend:`4879`] Added fields to the `Ogone Merchant` and added
-  the `Ogone webhook configuration`.
-* [:backend:`5271`] Fixed false positives being reported in the digest email when you have logic rules that use the ``reduce`` operation.
+* [:backend:`4879`] Added fields to the `Ogone Merchant` and added the
+  `Ogone webhook configuration`.
+* [:backend:`5271`] Fixed false positives being reported in the digest email when you
+  have logic rules that use the ``reduce`` operation.
 
 
 3.1.5 (2025-07-24)
