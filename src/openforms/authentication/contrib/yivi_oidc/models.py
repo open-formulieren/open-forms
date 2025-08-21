@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -14,6 +16,7 @@ class AttributeGroup(models.Model):
             "configuration."
         ),
     )
+    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     description = models.CharField(
         _("group description"),
         max_length=200,
