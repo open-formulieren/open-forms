@@ -18,6 +18,7 @@ const FormContext = React.createContext({
   staticVariables: [],
   registrationPluginsVariables: [],
   registrationBackends: [],
+  authBackends: [],
   availableYiviAttributeGroups: [],
   plugins: {},
   languages: [],
