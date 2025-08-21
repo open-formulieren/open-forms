@@ -18,3 +18,9 @@ Public Python API
 
 .. automodule:: openforms.payments
    :members:
+
+
+.. toctree::
+   :maxdepth: 1
+
+   worldline

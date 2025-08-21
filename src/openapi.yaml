@@ -6388,11 +6388,13 @@ paths:
     get:
       operationId: payment_webhook_retrieve
       description: |-
-        This endpoint is used for server-to-server calls. Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.
+        This endpoint is used for server-to-server calls. Depending on the plugin, multiple request HTTP methods are supported.
 
         Various validations are performed:
         * the `plugin_id` is configured on the form
         * payment is required and configured on the form
+
+        Whenever the webhook_verification_header and webhook_verification_method settings are set for a plugin and a request has an empty request body, the request headers will be searched for the webhook_verification_header and will be returned as the response body.
       summary: Webhook handler for external payment flow
       parameters:
       - in: path
@@ -6422,7 +6424,21 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-          description: No response body
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                WebhookEvent:
+                  value: ''
+                  summary: Webhook event
+                  description: The response returned when a webhook event is processed.
+                VerificationHeader:
+                  value: <verification-header-value>
+                  summary: Verification header
+                  description: The response returned when a verification header is
+                    set and no request body is found.
+          description: ''
         '400':
           headers:
             Allow:
@@ -6466,11 +6482,13 @@ paths:
     post:
       operationId: payment_webhook_create
       description: |-
-        This endpoint is used for server-to-server calls. Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.
+        This endpoint is used for server-to-server calls. Depending on the plugin, multiple request HTTP methods are supported.
 
         Various validations are performed:
         * the `plugin_id` is configured on the form
         * payment is required and configured on the form
+
+        Whenever the webhook_verification_header and webhook_verification_method settings are set for a plugin and a request has an empty request body, the request headers will be searched for the webhook_verification_header and will be returned as the response body.
       summary: Webhook handler for external payment flow
       parameters:
       - in: path
@@ -6500,7 +6518,21 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-          description: No response body
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                WebhookEvent:
+                  value: ''
+                  summary: Webhook event
+                  description: The response returned when a webhook event is processed.
+                VerificationHeader:
+                  value: <verification-header-value>
+                  summary: Verification header
+                  description: The response returned when a verification header is
+                    set and no request body is found.
+          description: ''
         '400':
           headers:
             Allow:

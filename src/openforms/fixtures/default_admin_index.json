@@ -187,18 +187,6 @@
                 "eherkenningconfiguration"
             ],
             [
-                "mozilla_django_oidc_db",
-                "oidcprovider"
-            ],
-            [
-                "mozilla_django_oidc_db",
-                "oidcclient"
-            ],
-            [
-                "yivi_oidc",
-                "attributegroup"
-            ],
-            [
                 "django_camunda",
                 "camundaconfig"
             ],
@@ -215,16 +203,28 @@
                 "outgoingrequestslogconfig"
             ],
             [
+                "mozilla_django_oidc_db",
+                "oidcclient"
+            ],
+            [
+                "mozilla_django_oidc_db",
+                "oidcprovider"
+            ],
+            [
                 "multidomain",
                 "domain"
             ],
             [
-                "prefill",
-                "prefillconfig"
-            ],
-            [
                 "payments_ogone",
                 "ogonewebhookconfiguration"
+            ],
+            [
+                "payments_worldline",
+                "worldlinewebhookconfiguration"
+            ],
+            [
+                "prefill",
+                "prefillconfig"
             ],
             [
                 "simple_certmanager",
@@ -241,6 +241,10 @@
             [
                 "variables",
                 "servicefetchconfiguration"
+            ],
+            [
+                "yivi_oidc",
+                "attributegroup"
             ],
             [
                 "zgw_consumers",
@@ -293,16 +297,16 @@
                 "message"
             ],
             [
-                "log_outgoing_requests",
-                "outgoingrequestslog"
-            ],
-            [
                 "logging",
                 "avgtimelinelogproxy"
             ],
             [
                 "logging",
                 "timelinelogproxy"
+            ],
+            [
+                "log_outgoing_requests",
+                "outgoingrequestslog"
             ],
             [
                 "submissions",

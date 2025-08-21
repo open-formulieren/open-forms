@@ -6,6 +6,7 @@ from onlinepayments.sdk.client import IMerchantClient
 from onlinepayments.sdk.communicator_configuration import CommunicatorConfiguration
 from onlinepayments.sdk.factory import Factory
 from onlinepayments.sdk.merchant.merchant_client import IHostedCheckoutClient
+from solo.models import SingletonModel
 
 from .constants import WorldlineEndpoints
 
@@ -60,3 +61,13 @@ class WorldlineMerchant(models.Model):
     def get_checkout_client(self) -> IHostedCheckoutClient:
         merchant_client = self.get_merchant_client()
         return merchant_client.hosted_checkout()
+
+
+class WorldlineWebhookConfiguration(SingletonModel):
+    webhook_key_id = models.CharField(_("Webhook Key ID"), max_length=255, default="")
+    webhook_key_secret = models.CharField(
+        _("Webhook Key Secret"), max_length=255, default=""
+    )
+
+    def __str__(self):
+        return self.webhook_key_id

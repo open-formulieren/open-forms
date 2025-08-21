@@ -7,12 +7,13 @@ from django.test.client import RequestFactory
 from django.urls import reverse
 
 from rest_framework import status
+from rest_framework.views import Request
 
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..base import BasePlugin, PaymentInfo
+from ..base import BasePlugin, Options, PaymentInfo
 from ..constants import PaymentStatus
 from ..models import SubmissionPayment
 from ..registry import Registry
@@ -322,6 +323,37 @@ class PaymentPlugin(BasePlugin):
         return HttpResponseRedirect(payment.submission.form_url)
 
 
+class BaseWebhookVerificationPaymentPlugin(BasePlugin):
+    webhook_verification_header = "X-Custom-Verification"
+
+    def handle_webhook(self, request: Request) -> SubmissionPayment | None:
+        order_id = request.data["orderID"]
+        status = request.data.get("status")
+        payment = SubmissionPayment.objects.get(public_order_id=order_id)
+
+        if not status:
+            return payment
+
+        payment.status = status
+        payment.save(update_fields=("status",))
+        return payment
+
+    def handle_return(
+        self, request: Request, payment: SubmissionPayment, options: Options
+    ) -> HttpResponse:
+        return HttpResponseRedirect(payment.submission.form_url)
+
+
+class WebhookVerificationGetPaymentPlugin(BaseWebhookVerificationPaymentPlugin):
+    webhook_method = "POST"
+    webhook_verification_method = "GET"
+
+
+class WebhookVerificationPostPaymentPlugin(BaseWebhookVerificationPaymentPlugin):
+    webhook_verification_method = "POST"
+    webhook_method = "POST"
+
+
 @override_settings(
     CORS_ALLOW_ALL_ORIGINS=False,
     CORS_ALLOWED_ORIGINS=["http://allowed.foo"],
@@ -468,3 +500,109 @@ class WebhookReturnTests(TestCase):
         m_on_post_submission_event.assert_called_once_with(
             submission.pk, PostSubmissionEvents.on_payment_complete
         )
+
+    def test_verification_header_plugin(self):
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product__price=Decimal("11.25"),
+            form__payment_backend="payment-plugin",
+            form_url="http://allowed.foo/my-form",
+        )
+        payment = SubmissionPaymentFactory.for_submission(
+            submission, status=PaymentStatus.processing
+        )
+        base_request = RequestFactory().get("/foo")
+
+        with self.subTest("Verification through the GET request method failed"):
+            self.register("webhook-verification-get-plugin")(
+                WebhookVerificationGetPaymentPlugin
+            )
+            plugin = self.register["webhook-verification-get-plugin"]
+            webhook_url = plugin.get_webhook_url(base_request)
+
+            with self.captureOnCommitCallbacks(execute=True):
+                with patch(
+                    "openforms.payments.views.on_post_submission_event"
+                ) as m_on_post_submission_event:
+                    response = self.client.get(
+                        webhook_url,
+                        headers={"X-Custom-Verification": "verification-code"},
+                    )
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.content, b"verification-code")
+
+            m_on_post_submission_event.assert_not_called()
+
+            payment.refresh_from_db()
+            self.assertEqual(payment.status, PaymentStatus.processing)
+
+        with self.subTest("Verification through the POST request method failed"):
+            self.register("webhook-verification-post-plugin")(
+                WebhookVerificationPostPaymentPlugin
+            )
+            plugin = self.register["webhook-verification-post-plugin"]
+            webhook_url = plugin.get_webhook_url(base_request)
+
+            with self.captureOnCommitCallbacks(execute=True):
+                with patch(
+                    "openforms.payments.views.on_post_submission_event"
+                ) as m_on_post_submission_event:
+                    response = self.client.post(
+                        webhook_url,
+                        headers={"X-Custom-Verification": "verification-code"},
+                        content_type="text/plain; charset=utf-8",
+                        data="",
+                    )
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.content, b"verification-code")
+
+            m_on_post_submission_event.assert_not_called()
+
+            payment.refresh_from_db()
+            self.assertEqual(payment.status, PaymentStatus.processing)
+
+    def test_payment_processed_with_verification_header_set(self):
+        """
+        Tests that the webhook is processed without triggering the verification
+        header logic.
+        """
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product__price=Decimal("11.25"),
+            form__payment_backend="payment-plugin",
+            form_url="http://allowed.foo/my-form",
+        )
+        payment = SubmissionPaymentFactory.for_submission(
+            submission, status=PaymentStatus.processing
+        )
+
+        self.register("webhook-verification-post-plugin")(
+            WebhookVerificationPostPaymentPlugin
+        )
+        plugin = self.register["webhook-verification-post-plugin"]
+        base_request = RequestFactory().get("/foo")
+        webhook_url = plugin.get_webhook_url(base_request)
+
+        with self.captureOnCommitCallbacks(execute=True):
+            with patch(
+                "openforms.payments.views.on_post_submission_event"
+            ) as m_on_post_submission_event:
+                response = self.client.post(
+                    webhook_url,
+                    headers={"X-Custom-Verification": "verification-code"},
+                    data={
+                        "orderID": payment.public_order_id,
+                        "status": PaymentStatus.completed,
+                    },
+                )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Payment was successful, so 'transaction.on_commit' is called and triggers the on_post_submission_event
+        m_on_post_submission_event.assert_called_once_with(
+            submission.pk, PostSubmissionEvents.on_payment_complete
+        )
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.completed)
