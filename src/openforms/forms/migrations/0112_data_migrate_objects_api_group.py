@@ -22,7 +22,7 @@ def convert_objects_api_group_pk_to_slug(apps: StateApps, _):
         if api_group_pk not in objects_api_pk_to_slug:
             logger.warning(
                 "migration_objects_api_group_not_found",
-                form_uuid=registration_backend.form.uuid,
+                form_uuid=str(registration_backend.form.uuid),
                 objects_api_group=api_group_pk,
             )
             continue
@@ -53,7 +53,7 @@ def reverse_objects_api_group_slug_to_pk(apps: StateApps, _):
         if api_group_slug not in objects_api_slug_to_pk:
             logger.warning(
                 "migration_objects_api_group_not_found",
-                form_uuid=registration_backend.form.uuid,
+                form_uuid=str(registration_backend.form.uuid),
                 objects_api_group=api_group_slug,
             )
             continue
