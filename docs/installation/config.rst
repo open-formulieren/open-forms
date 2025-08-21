@@ -181,7 +181,7 @@ Open Forms uses the official Python SDK which should adhere to the environment v
 
 There is one custom setting for integration with container runtimes:
 
-* ``OF_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR``: set to ``true`` when deploying with
+* ``_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR``: set to ``true`` when deploying with
   Docker engine or similar to enable container resource detection. On Kubernetes, it's
   recommended to enable the `kubernetes attributes processor`_ and leave this setting off.
 
