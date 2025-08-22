@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Generic, TypeVar
 
 from django.db.models import TextChoices
 from django.urls import reverse
@@ -46,17 +45,12 @@ class Location:
         return self.identifier
 
 
-F = TypeVar("F", bound=TextChoices)
-# generic type for the plugin-specific enum of field names
-
-
 @dataclass
-class CustomerDetails(Generic[F]):
+class CustomerDetails[F: TextChoices]:
     # these should realistically only be string values, as they are user input stored as JSON.
     details: dict[F, JSONPrimitive]
 
 
-TInput = TypeVar("TInput", bound=JSONPrimitive)
 type Normalizer[TInput: JSONPrimitive] = Callable[[TInput], TInput]
 
 
@@ -78,7 +72,7 @@ class AppointmentDetails:
         return self.identifier
 
 
-class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
+class BasePlugin[F: TextChoices](ABC, AbstractBasePlugin):
     """
     Base Appointment plugin.
     """
