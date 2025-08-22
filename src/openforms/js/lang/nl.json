@@ -2000,6 +2000,11 @@
     "description": "Admin save submit button",
     "originalDefault": "Save"
   },
+  "YS5Qye": {
+    "defaultMessage": "The Yivi prefill plugin only works in conjunction with the Yivi authentication plugin. Make sure to also configure the Yivi authentication plugin!",
+    "description": "Yivi prefill plugin warning message",
+    "originalDefault": "The Yivi prefill plugin only works in conjunction with the Yivi authentication plugin. Make sure to also configure the Yivi authentication plugin!"
+  },
   "YbnFnL": {
     "defaultMessage": "Er is een fout bij de component \"{label}\" (met sleutel \"{key}\"{location}) in het veld \"{field}\": {error}",
     "description": "Formio configuration backend validation error for specific component property",

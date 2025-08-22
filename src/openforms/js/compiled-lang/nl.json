@@ -4106,6 +4106,12 @@
       "value": "Opslaan"
     }
   ],
+  "YS5Qye": [
+    {
+      "type": 0,
+      "value": "The Yivi prefill plugin only works in conjunction with the Yivi authentication plugin. Make sure to also configure the Yivi authentication plugin!"
+    }
+  ],
   "YSuwK2": [
     {
       "type": 0,
