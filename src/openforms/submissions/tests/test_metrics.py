@@ -1,9 +1,6 @@
-import itertools
-from collections.abc import Collection
-
 from django.test import TestCase
 
-from opentelemetry.metrics import CallbackOptions, Observation
+from opentelemetry.metrics import CallbackOptions
 
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.constants import Stages
@@ -11,24 +8,6 @@ from openforms.utils.tests.metrics_assert import MetricsAssertMixin
 
 from ..metrics import count_submissions
 from .factories import SubmissionFactory
-
-
-def _group_observations_by(
-    observations: Collection[Observation], attribute: str
-) -> dict[str, int | float]:
-    def _key_func(o: Observation) -> str:
-        assert o.attributes is not None
-        form_name = o.attributes[attribute]
-        assert isinstance(form_name, str)
-        return form_name
-
-    grouped_by_attribute = itertools.groupby(
-        sorted(observations, key=_key_func), key=_key_func
-    )
-    return {
-        form_name: sum(o.value for o in _observations)
-        for form_name, _observations in grouped_by_attribute
-    }
 
 
 class SubmissionCountMetricTests(MetricsAssertMixin, TestCase):
@@ -63,7 +42,7 @@ class SubmissionCountMetricTests(MetricsAssertMixin, TestCase):
             self.assertEqual(total, 6 + 2 + 3)
 
         with self.subTest(aggregation="by form"):
-            by_form = _group_observations_by(result, "form.name")
+            by_form = self._group_observations_by(result, "form.name")
 
             self.assertEqual(
                 by_form,
@@ -74,7 +53,7 @@ class SubmissionCountMetricTests(MetricsAssertMixin, TestCase):
             )
 
         with self.subTest(aggregation="by stage"):
-            by_stage = _group_observations_by(result, "type")
+            by_stage = self._group_observations_by(result, "type")
 
             self.assertEqual(
                 by_stage,
