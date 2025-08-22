@@ -1,4 +1,5 @@
 import dataclasses
+from collections import defaultdict
 from collections.abc import Iterable
 
 from django.core.exceptions import ValidationError as DJ_ValidationError
@@ -9,6 +10,7 @@ import structlog
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRF_ValidationError
 
+from openforms.forms.models import Form, FormDefinition
 from openforms.plugins.registry import BaseRegistry
 from openforms.submissions.models import Submission
 from openforms.typing import JSONValue
@@ -99,7 +101,23 @@ class Registry(BaseRegistry[BasePlugin[JSONValue]]):
         else:
             return ValidationResult(True)
 
+    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int]]:
+        usage_counts = defaultdict[str, int](lambda: 0)
+        qs = FormDefinition.objects.filter(formstep__form__in=Form.objects.live())
+        for fd in qs:
+            for component in fd.iter_components(recursive=True):
+                if not (validate := component.get("validate", {})):
+                    continue
+                if not (plugins := validate.get("plugins", [])):
+                    continue
+                for plugin in plugins:
+                    usage_counts[plugin] += 1
+
+        for plugin in self:
+            yield plugin, usage_counts[plugin.identifier]
+
 
 # Sentinel to provide the default registry. You an easily instantiate another
 # :class:`Registry` object to use as dependency injection in tests.
 register = Registry()
+register.set_as_metric_reporter()

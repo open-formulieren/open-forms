@@ -32,6 +32,8 @@ include = [
     # Config app
     "src/openforms/config/forms.py",
     # Formio tooling
+    "src/openforms/formio/serializers.py",
+    "src/openforms/formio/service.py",
     "src/openforms/formio/typing/",
     "src/openforms/formio/formatters/",
     "src/openforms/formio/dynamic_config/reference_lists.py",
@@ -58,10 +60,7 @@ include = [
     "src/openforms/authentication/contrib/outage/",
     "src/openforms/authentication/models.py",
     # Prefill
-    "src/openforms/prefill/contrib/family_members",
-    "src/openforms/prefill/models.py",
-    "src/openforms/prefill/signals.py",
-    "src/openforms/prefill/validators.py",
+    "src/openforms/prefill/",
     # Registrations
     "src/openforms/registrations/tasks.py",
     "src/openforms/registrations/contrib/demo/",
@@ -107,6 +106,7 @@ exclude = [
     "src/openforms/payments/tests/",
     "src/openforms/payments/contrib/demo/tests/",
     "src/openforms/payments/contrib/ogone/tests/",
+    "src/openforms/prefill/management/commands/generate_prefill_from_spec.py",
     "src/openforms/registrations/contrib/objects_api/tests/test_backend_v1.py",
     "src/openforms/registrations/contrib/objects_api/tests/test_backend_v2.py",
     "src/openforms/registrations/contrib/objects_api/tests/test_update_payment_status_v1.py",

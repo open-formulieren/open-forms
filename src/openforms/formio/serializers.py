@@ -8,13 +8,14 @@ https://github.com/formio/formio.js/blob/4.13.x/src/validator/Validator.js.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import structlog
 from glom import assign, glom
 from rest_framework import serializers
 
-from openforms.typing import JSONObject
+from openforms.formio.typing.base import FormioConfiguration
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
@@ -30,7 +31,7 @@ type FieldOrNestedFields = serializers.Field | dict[str, "FieldOrNestedFields"]
 
 class StepDataSerializer(serializers.Serializer):
     def apply_hidden_state(
-        self, configuration: JSONObject, fields: dict[str, FieldOrNestedFields]
+        self, configuration: FormioConfiguration, fields: dict[str, FieldOrNestedFields]
     ) -> None:
         """
         Apply the hidden/visible state of the formio components to the serializer.
@@ -137,7 +138,7 @@ def dict_to_serializer(
 
 
 def build_serializer(
-    components: list[Component], register: ComponentRegistry, **kwargs
+    components: Sequence[Component], register: ComponentRegistry, **kwargs
 ) -> StepDataSerializer:
     """
     Translate a sequence of Formio.js component definitions into a serializer.
@@ -147,7 +148,7 @@ def build_serializer(
     """
     fields: dict[str, FieldOrNestedFields] = {}
 
-    config: JSONObject = {"components": components}
+    config: FormioConfiguration = {"components": components}
     for component in iter_components(config, recurse_into_editgrid=False):
         if is_layout_component(component):
             continue

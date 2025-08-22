@@ -18,10 +18,10 @@
 output_dir=`mktemp -d`
 
 # Dump the certificates to file
-src/manage.py dump_certs --filename "$output_dir/certificates.zip"
+OTEL_SDK_DISABLED=True src/manage.py dump_certs --filename "$output_dir/certificates.zip"
 
 # Dump the DB content in a fixture file
-src/manage.py dumpdata \
+OTEL_SDK_DISABLED=True src/manage.py dumpdata \
     --indent=4 \
     --natural-foreign \
     --natural-primary \

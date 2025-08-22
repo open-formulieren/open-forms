@@ -13,10 +13,10 @@ class Plugin(BasePlugin):
     return_method = "GET"
     webhook_method = "POST"
 
-    def start_payment(self, request, payment):
+    def start_payment(self, request, payment, options):
         return PaymentInfo(type="get", url="http://testserver/foo")
 
-    def handle_return(self, request, payment):
+    def handle_return(self, request, payment, options):
         return HttpResponseRedirect(payment.submission.form_url)
 
     def handle_webhook(self, request):

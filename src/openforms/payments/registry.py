@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING
 
+from django.db.models import Count
 from django.http import HttpRequest
 
 from openforms.plugins.registry import BaseRegistry
@@ -48,7 +49,23 @@ class Registry(BaseRegistry[BasePlugin]):
             options.append(info)
         return options
 
+    def report_plugin_usage(self) -> Iterable[tuple[BasePlugin, int]]:
+        from openforms.forms.models import Form
+
+        qs = (
+            Form.objects.live()
+            .exclude(payment_backend="")
+            .values("payment_backend")
+            .annotate(count=Count("*"))
+        )
+        plugin_usages: dict[str, int] = {
+            item["payment_backend"]: item["count"] for item in qs
+        }
+        for plugin in self:
+            yield plugin, plugin_usages.get(plugin.identifier, 0)
+
 
 # Sentinel to provide the default registry. You an easily instantiate another
 # :class:`Registry` object to use as dependency injection in tests.
 register = Registry()
+register.set_as_metric_reporter()

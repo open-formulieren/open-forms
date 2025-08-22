@@ -4,8 +4,10 @@ Base types for more specific component types.
 These are common ancestors for all specific component types.
 """
 
+from collections.abc import Sequence
 from typing import Literal, NotRequired, TypedDict
 
+from openforms.prefill.constants import IdentifierRoles
 from openforms.typing import JSONValue
 
 from ..constants import DataSrcOptions
@@ -25,6 +27,12 @@ class Validate(TypedDict, total=False):
     minTime: str
     maxTime: str
     plugins: list[str]
+
+
+class Conditional(TypedDict, total=False):
+    show: bool | None
+    when: str | None
+    eq: str | bool | int | float | None
 
 
 # Custom validation for AddressNL sub components
@@ -71,7 +79,9 @@ class OptionDict(TypedDict):
 class PrefillConfiguration(TypedDict):
     plugin: str
     attribute: str
-    identifierRole: Literal["main", "authorizee"]
+    identifierRole: Literal[
+        "main", "authorizee", IdentifierRoles.main, IdentifierRoles.authorizee
+    ]
 
 
 class Component(TypedDict):
@@ -83,6 +93,7 @@ class Component(TypedDict):
     certain logic.
     """
 
+    id: NotRequired[str]  # actually required, but automatically filled by Formio...
     type: str
     key: str
     label: str
@@ -90,13 +101,18 @@ class Component(TypedDict):
     tooltip: NotRequired[str]
     description: NotRequired[str]
     hidden: NotRequired[bool]
+    conditional: NotRequired[Conditional]
+    clearOnHide: NotRequired[bool]
     defaultValue: NotRequired[JSONValue]
     validate: NotRequired[Validate]
     prefill: NotRequired[PrefillConfiguration]
     openForms: NotRequired[OpenFormsConfig]
     autocomplete: NotRequired[str]
+    placeholder: NotRequired[str]
     dataType: NotRequired[Literal["string"]]
+    showInEmail: NotRequired[bool]
 
 
 class FormioConfiguration(TypedDict):
-    components: list[Component]
+    display: NotRequired[Literal["form"]]
+    components: Sequence[Component]

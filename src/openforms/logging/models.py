@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Iterator, Sequence
+from typing import TYPE_CHECKING, ClassVar
 
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
@@ -17,7 +20,7 @@ from openforms.typing import StrOrPromise
 from .constants import TimelineLogTags
 
 
-class TimelineLogProxyQueryset(models.QuerySet):
+class TimelineLogProxyQueryset(models.QuerySet["TimelineLogProxy"]):
     # vendored from https://github.com/maykinmedia/django-timeline-logger/pull/32/files
     def for_object(self, obj: models.Model):
         content_type = ContentType.objects.get_for_model(obj)
@@ -33,11 +36,22 @@ class TimelineLogProxyQueryset(models.QuerySet):
         return self.exclude(extra_data__contains={tag: True})
 
 
+if TYPE_CHECKING:
+
+    class TimelineLogProxyManager(models.Manager["TimelineLogProxy"]):
+        def for_object(self, obj: models.Model) -> TimelineLogProxyQueryset: ...
+        def filter_event(self, event: str) -> TimelineLogProxyQueryset: ...
+        def has_tag(self, tag: str) -> TimelineLogProxyQueryset: ...
+        def exclude_tag(self, tag: str) -> TimelineLogProxyQueryset: ...
+
+
 class TimelineLogProxy(TimelineLog):
     content_type_id: int
     user_id: int | None
 
-    objects = TimelineLogProxyQueryset.as_manager()
+    objects = TimelineLogProxyQueryset.as_manager()  # pyright: ignore
+    if TYPE_CHECKING:
+        objects: ClassVar[TimelineLogProxyManager]  # pyright: ignore[reportIncompatibleVariableOverride]
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         proxy = True
@@ -197,7 +211,9 @@ class AVGTimelineLogProxyManager(models.Manager):
 
 
 class AVGTimelineLogProxy(TimelineLogProxy):
-    objects = AVGTimelineLogProxyManager()
+    objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
+        AVGTimelineLogProxyManager
+    ] = AVGTimelineLogProxyManager()
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         proxy = True

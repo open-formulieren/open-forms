@@ -243,6 +243,7 @@ class FormVersionFactory(factory.django.DjangoModelFactory):
 
 
 class FormLogicFactory(factory.django.DjangoModelFactory):
+    form = factory.SubFactory(FormFactory)
     json_logic_trigger = {"==": [{"var": "test-key"}, 1]}
 
     class Meta:

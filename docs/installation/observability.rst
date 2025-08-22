@@ -215,6 +215,32 @@ Accounts
 
     - ``username`` - username of the user who logged out.
 
+Forms
+^^^^^
+
+Form metrics describe the forms defined by the organization. For submission statistics,
+see the :ref:`Submission <installation_observability_metrics_submissions>` metrics.
+
+``form_count``
+    The total count of forms defined in the database, ignoring forms that have been
+    moved into the trash. Additional attributes are:
+
+    - ``scope`` - fixed, set to ``global`` to enable de-duplication.
+    - ``type`` - one of ``total``, ``live``, ``translation_enabled``, ``is_appointment``
+      or ``trash``. For all but ``trash`` the forms in the trash are excluded.
+
+``form_component_count``
+    Keeps track of how often a Formio component type is used in a form. This is only
+    reported for live, non-appointment forms. Additional attributes are:
+
+    - ``scope`` - fixed, set to ``global`` to enable de-duplication.
+    - ``form.uuid`` - the unique database ID of the form.
+    - ``form.name`` - the name of the form.
+    - ``type`` - the Formio component type, e.g. ``textfield``, ``email``,
+      ``selectboxes``...
+
+.. _installation_observability_metrics_submissions:
+
 Submissions
 ^^^^^^^^^^^
 
@@ -273,6 +299,41 @@ Submissions
             [5m]
           )
         )
+
+``attachment.file_size``
+    A histogram of submission attachments, with buckets covering file upload sizes from
+    0 bytes to 1 GiB (Open Forms by default limits uploads to 50 MB). Additional
+    attributes are:
+
+    - ``step.name`` - the name of the step that was saved.
+    - ``step.number`` - the step sequence, starting at 1 for the first step.
+    - ``form.uuid`` - the unique database ID of the form.
+    - ``form.name`` - the name of the form that was submitted.
+    - ``content_type`` - the file type of the attachment.
+
+``submission.attachments_per_submission``
+    A histogram counting the amount of attachments within a submission. Additional
+    attributes are:
+
+    - ``form.uuid`` - the unique database ID of the form.
+    - ``form.name`` - the name of the form that was submitted.
+
+Plugins
+^^^^^^^
+
+``plugin_usage_count``
+    A gauge reporting how many times each (installed) plugin is used in an instance.
+    This is a global metric, you must take care in de-duplicating results. Additional
+    attributes are:
+
+    - ``scope`` - fixed, set to ``global`` to enable de-duplication.
+    - ``plugin.module`` - the feature module the plugin/metric belongs to, such as
+      ``registrations``, ``prefill``, ``authentication``...
+    - ``plugin.identifier`` - the unique identifier for a plugin. The combination of
+      ``(module, identifier)`` is guaranteed to be unique.
+    - ``plugin.is_enabled`` - flag to indicate whether the plugin is enabled or not.
+      Disabled plugin metrics should have a value of ``0`` during normal operation.
+    - ``plugin.is_demo`` - flag that marks demo plugins only available for testing.
 
 Tracing
 =======
