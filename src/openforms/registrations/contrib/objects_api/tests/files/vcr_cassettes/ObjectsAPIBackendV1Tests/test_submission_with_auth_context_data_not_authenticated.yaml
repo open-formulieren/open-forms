@@ -30,11 +30,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 01 Jul 2025 08:33:07 GMT
+      - Mon, 18 Aug 2025 11:46:41 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.4
+      - nginx/1.29.0
       Vary:
       - origin
       X-Content-Type-Options:
@@ -46,7 +46,7 @@ interactions:
       message: OK
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
-      "record": {"typeVersion": 1, "data": {"auth": null}, "startAt": "2025-07-01"}}'
+      "record": {"typeVersion": 1, "data": {"auth": null}, "startAt": "2025-08-18"}}'
     headers:
       Accept:
       - '*/*'
@@ -68,7 +68,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/8e59678c-a1c2-4053-be14-6dac1b9e1153","uuid":"8e59678c-a1c2-4053-be14-6dac1b9e1153","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"auth":null},"geometry":null,"startAt":"2025-07-01","endAt":null,"registrationAt":"2025-07-01","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/6da69c08-db99-4bd4-94d0-71e73a93a741","uuid":"6da69c08-db99-4bd4-94d0-71e73a93a741","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"auth":null},"geometry":null,"startAt":"2025-08-18","endAt":null,"registrationAt":"2025-08-18","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -83,13 +83,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 01 Jul 2025 08:33:07 GMT
+      - Mon, 18 Aug 2025 11:46:41 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/8e59678c-a1c2-4053-be14-6dac1b9e1153
+      - http://localhost:8002/api/v2/objects/6da69c08-db99-4bd4-94d0-71e73a93a741
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.4
+      - nginx/1.29.0
       Vary:
       - origin
       X-Content-Type-Options:

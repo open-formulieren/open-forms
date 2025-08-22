@@ -25,16 +25,12 @@ interactions:
       - no-store
       Connection:
       - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '132'
       Content-Security-Policy:
       - frame-ancestors 'none', default-src 'none'
       Content-Type:
       - application/json
       Date:
-      - Mon, 30 Jun 2025 14:54:56 GMT
+      - Mon, 18 Aug 2025 14:46:17 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
@@ -47,8 +43,11 @@ interactions:
       - nosniff
       X-Frame-Options:
       - DENY
+      content-length:
+      - '121'
       strict-transport-security:
       - max-age=157680000 ; includeSubDomains
+      - max-age=0; includeSubDomains
     status:
       code: 404
       message: ''

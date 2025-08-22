@@ -6,7 +6,7 @@ interactions:
       \       \n\n<ZKN:genereerDocumentIdentificatie_Di02 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
       \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Di02</StUF:berichtcode>\n
       \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>6a555368-dbcc-473b-a2f3-47cd6072da36</StUF:referentienummer>\n<StUF:tijdstipBericht>20250709141109</StUF:tijdstipBericht>\n\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>24961c6b-b604-4e9c-a068-3704acc6dc1a</StUF:referentienummer>\n<StUF:tijdstipBericht>20250819141157</StUF:tijdstipBericht>\n\n
       \       <StUF:functie>genereerDocumentidentificatie</StUF:functie>\n    </ZKN:stuurgegevens>\n</ZKN:genereerDocumentIdentificatie_Di02>\n
       \   </soapenv:Body>\n</soapenv:Envelope>\n"
     headers:
@@ -40,7 +40,7 @@ interactions:
         \               <StUF:functie>genereerDocumentidentificatie</StUF:functie>\n
         \           </ZKN:stuurgegevens>\n            <ZKN:melding>melding</ZKN:melding>\n
         \           <ZKN:document StUF:entiteittype=\"EDC\" StUF:functie=\"entiteit\">\n
-        \               <ZKN:identificatie>9500bca31d404bef</ZKN:identificatie>\n
+        \               <ZKN:identificatie>e0f171c33b02ac8c</ZKN:identificatie>\n
         \           </ZKN:document>\n        </ZKN:genereerDocumentIdentificatie_Du02>\n
         \   </soapenv:Body>\n</soapenv:Envelope>"
     headers:
@@ -51,9 +51,9 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Wed, 09 Jul 2025 14:11:09 GMT
+      - Tue, 19 Aug 2025 14:11:57 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.9
+      - Werkzeug/3.1.3 Python/3.12.11
     status:
       code: 200
       message: OK
@@ -64,25 +64,25 @@ interactions:
       \       \n\n<ZKN:edcLk01 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\"
       xmlns:xmime=\"http://www.w3.org/2005/05/xmlmime\">\n    <ZKN:stuurgegevens>\n
       \       <StUF:berichtcode>Lk01</StUF:berichtcode>\n        <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>39a56120-abeb-4842-a2d7-21451ccc1a1e</StUF:referentienummer>\n<StUF:tijdstipBericht>20250709141109</StUF:tijdstipBericht>\n\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>121f738f-1231-4137-a747-47939617be3e</StUF:referentienummer>\n<StUF:tijdstipBericht>20250819141157</StUF:tijdstipBericht>\n\n
       \       <StUF:entiteittype>EDC</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
       \   <ZKN:parameters>\n        <StUF:mutatiesoort>T</StUF:mutatiesoort>\n        <StUF:indicatorOvername>I</StUF:indicatorOvername>\n
       \   </ZKN:parameters>\n    <ZKN:object StUF:entiteittype=\"EDC\" StUF:verwerkingssoort=\"T\">\n
-      \       <ZKN:identificatie>9500bca31d404bef</ZKN:identificatie>\n        <ZKN:dct.omschrijving>foo</ZKN:dct.omschrijving>\n
-      \       <ZKN:creatiedatum>20250709</ZKN:creatiedatum>\n        <ZKN:ontvangstdatum>20250709</ZKN:ontvangstdatum>\n
+      \       <ZKN:identificatie>e0f171c33b02ac8c</ZKN:identificatie>\n        <ZKN:dct.omschrijving>foo</ZKN:dct.omschrijving>\n
+      \       <ZKN:creatiedatum>20250819</ZKN:creatiedatum>\n        <ZKN:ontvangstdatum>20250819</ZKN:ontvangstdatum>\n
       \       <ZKN:titel>Bevestigingsmail</ZKN:titel>\n        <ZKN:beschrijving>De
       bevestigingsmail die naar de initiator is verstuurd.</ZKN:beschrijving>\n        <ZKN:formaat>application/pdf</ZKN:formaat>\n
       \       <ZKN:taal>nld</ZKN:taal>\n        <ZKN:status>definitief</ZKN:status>\n
-      \       <ZKN:verzenddatum>20250709</ZKN:verzenddatum>\n        <ZKN:vertrouwelijkAanduiding>GEHEIM</ZKN:vertrouwelijkAanduiding>\n
+      \       <ZKN:verzenddatum>20250819</ZKN:verzenddatum>\n        <ZKN:vertrouwelijkAanduiding>GEHEIM</ZKN:vertrouwelijkAanduiding>\n
       \       <ZKN:auteur>open-forms</ZKN:auteur>\n        <ZKN:inhoud xmime:contentType=\"application/pdf\"
-      StUF:bestandsnaam=\"bevestigingsmail.pdf\">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</ZKN:inhoud>\n
-      \       <StUF:tijdvakGeldigheid>\n            <StUF:beginGeldigheid>20250709</StUF:beginGeldigheid>\n
+      StUF:bestandsnaam=\"bevestigingsmail.pdf\">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</ZKN:inhoud>\n
+      \       <StUF:tijdvakGeldigheid>\n            <StUF:beginGeldigheid>20250819</StUF:beginGeldigheid>\n
       \           <StUF:eindGeldigheid StUF:noValue=\"geenWaarde\" xsi:nil=\"true\"/>\n
-      \       </StUF:tijdvakGeldigheid>\n        <StUF:tijdstipRegistratie>20250709141109</StUF:tijdstipRegistratie>\n
+      \       </StUF:tijdvakGeldigheid>\n        <StUF:tijdstipRegistratie>20250819141157</StUF:tijdstipRegistratie>\n
       \       <ZKN:isRelevantVoor StUF:entiteittype=\"EDCZAK\" StUF:verwerkingssoort=\"T\">\n
       \           <ZKN:gerelateerde StUF:entiteittype=\"ZAK\" StUF:verwerkingssoort=\"I\">\n
       \               <ZKN:identificatie>abc123</ZKN:identificatie>\n                <ZKN:omschrijving>Form
-      000</ZKN:omschrijving>\n            </ZKN:gerelateerde>\n            <StUF:tijdstipRegistratie>20250709141109</StUF:tijdstipRegistratie>\n
+      000</ZKN:omschrijving>\n            </ZKN:gerelateerde>\n            <StUF:tijdstipRegistratie>20250819141157</StUF:tijdstipRegistratie>\n
       \       </ZKN:isRelevantVoor>\n    </ZKN:object>\n</ZKN:edcLk01>\n    </soapenv:Body>\n</soapenv:Envelope>\n"
     headers:
       Accept:
@@ -92,7 +92,7 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '7640'
+      - '7680'
       Content-Type:
       - application/soap+xml
       SOAPAction:
@@ -125,9 +125,9 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Wed, 09 Jul 2025 14:11:09 GMT
+      - Tue, 19 Aug 2025 14:11:57 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.9
+      - Werkzeug/3.1.3 Python/3.12.11
     status:
       code: 200
       message: OK

@@ -7,7 +7,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTEzNTY1NDEsImV4cCI6MTc1MTM5OTc0MSwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.D0xSOfIk6o0teF7dzJtiKTPgAzv1GtITmHetQXA81Bw
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTU1MTQ1NzcsImV4cCI6MTc1NTU1Nzc3NywiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.7cHYkOeZGPNOdN1iriVjblDcQIKCJpA1GvqNXO3UeeY
       Connection:
       - keep-alive
       User-Agent:
@@ -19,17 +19,17 @@ interactions:
       string: "<!DOCTYPE html>\n<html lang=\"en\" class=\"view view---\">\n    <head>\n
         \       <meta charset=\"utf-8\">\n        <title>Referentielijsten</title>\n
         \       <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n
-        \       <link href=\"/static/ico/favicon.2978a71d20f0.svg\" sizes=\"any\"
-        rel=\"icon\" type=\"image/svg+xml\" />\n        <link href=\"/static/ico/favicon-96x96.b0ba6124d619.png\"
-        sizes=\"96x96\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/ico/favicon-32x32.dcddabfbd587.png\"
-        sizes=\"32x32\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/ico/favicon.7b5c19132162.png\"
-        sizes=\"16x16\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/ico/favicon.7b5c19132162.png\"
-        rel=\"shortcut icon\">\n        <link href=\"/static/bundles/referentielijsten-css.c5d4c2e9bb26.css\"
+        \       <link href=\"/static/ico/favicon.svg\" sizes=\"any\" rel=\"icon\"
+        type=\"image/svg+xml\" />\n        <link href=\"/static/ico/favicon-96x96.png\"
+        sizes=\"96x96\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/ico/favicon-32x32.png\"
+        sizes=\"32x32\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/ico/favicon.png\"
+        sizes=\"16x16\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/ico/favicon.png\"
+        rel=\"shortcut icon\">\n        <link href=\"/static/bundles/referentielijsten-css.css\"
         media=\"all\" rel=\"stylesheet\" />\n        \n    </head>\n\n    <body class=\"view__body\">\n
         \       <main>\n            \n\n  <h1>Sorry, the requested page could not
         be found (404)</h1>\n\n\n\n        </main>\n\n        <footer class=\"footer
         container\">\n            <div class=\"footer__row\">\n              <div
-        class=\"footer__col footer__col--small\">\n                <img src=\"/static/ico/favicon-96x96.b0ba6124d619.png\"
+        class=\"footer__col footer__col--small\">\n                <img src=\"/static/ico/favicon-96x96.png\"
         alt=\"Maykin logo\" height=\"48\">\n                <p>\n                  Developed
         by <a class=\"link\" href=\"https://www.maykinmedia.nl\">Maykin</a><br>\n
         \                 within the <a class=\"link\" href=\"https://opengem.nl\">Open
@@ -48,17 +48,16 @@ interactions:
         class=\"footer__row\">\n              <div class=\"footer__col\">\n                <code></code>\n
         \             </div>\n              <div class=\"footer__col footer__col--right\">\n
         \               <code></code>\n              </div>\n            </div>\n
-        \         </footer>\n        \n        <script src=\"/static/bundles/referentielijsten-js.43e840b064cd.js\"></script>\n
+        \         </footer>\n        \n        <script src=\"/static/bundles/referentielijsten-js.js\"></script>\n
         \   </body>\n</html>\n"
     headers:
       Content-Length:
-      - '2864'
+      - '2760'
       Content-Security-Policy:
-      - 'frame-src ''self''; worker-src ''self'' blob:; frame-ancestors ''none'';
-        default-src ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'';
-        font-src ''self'' fonts.gstatic.com; object-src ''none''; form-action ''self'';
-        img-src ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline''
-        fonts.googleapis.com'
+      - 'base-uri ''self''; object-src ''none''; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com; font-src ''self'' fonts.gstatic.com; frame-src ''self'';
+        worker-src ''self'' blob:; frame-ancestors ''none''; script-src ''self'' ''unsafe-inline'';
+        default-src ''self''; form-action ''self''; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - text/html; charset=utf-8
       Cross-Origin-Opener-Policy:

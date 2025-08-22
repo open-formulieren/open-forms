@@ -7,7 +7,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1Mjc1NzYwNCwiZXhwIjoxNzUyODAwODA0LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.E8daM352rHheNbr94PHbtaVBpdF36t8Rp6hQrgxLas0
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1NTUxODAxNSwiZXhwIjoxNzU1NTYxMjE1LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.lb_Fn9syqbfIM7Bv5qaxJ4X0gj9giohEf8YndkzcSZg
       Connection:
       - keep-alive
       User-Agent:
@@ -49,7 +49,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1Mjc1NzYwNCwiZXhwIjoxNzUyODAwODA0LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.E8daM352rHheNbr94PHbtaVBpdF36t8Rp6hQrgxLas0
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1NTUxODAxNSwiZXhwIjoxNzU1NTYxMjE1LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.lb_Fn9syqbfIM7Bv5qaxJ4X0gj9giohEf8YndkzcSZg
       Connection:
       - keep-alive
       User-Agent:
@@ -85,9 +85,9 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2025-07-17", "startdatum": "2025-07-17", "productenOfDiensten":
+      "registratiedatum": "2025-08-18", "startdatum": "2025-08-18", "productenOfDiensten":
       ["http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10"], "omschrijving":
-      "Form 1420", "toelichting": "Aangemaakt door Open Formulieren", "betalingsindicatie":
+      "Form 020", "toelichting": "Aangemaakt door Open Formulieren", "betalingsindicatie":
       "nvt"}'
     headers:
       Accept:
@@ -97,13 +97,13 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1Mjc1NzYwNCwiZXhwIjoxNzUyODAwODA0LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.E8daM352rHheNbr94PHbtaVBpdF36t8Rp6hQrgxLas0
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1NTUxODAxNSwiZXhwIjoxNzU1NTYxMjE1LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.lb_Fn9syqbfIM7Bv5qaxJ4X0gj9giohEf8YndkzcSZg
       Connection:
       - keep-alive
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '438'
+      - '437'
       Content-Type:
       - application/json
       User-Agent:
@@ -112,8 +112,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/52815612-b155-4613-b0a6-342d2d78724d","uuid":"52815612-b155-4613-b0a6-342d2d78724d","identificatie":"ZAAK-2025-0000000201","bronorganisatie":"000000000","omschrijving":"Form
-        1420","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2025-07-17","verantwoordelijkeOrganisatie":"000000000","startdatum":"2025-07-17","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":["http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10"],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/ae2560fe-95a5-4849-b9b7-e84e9fdd80c6","uuid":"ae2560fe-95a5-4849-b9b7-e84e9fdd80c6","identificatie":"ZAAK-2025-0000000019","bronorganisatie":"000000000","omschrijving":"Form
+        020","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2025-08-18","verantwoordelijkeOrganisatie":"000000000","startdatum":"2025-08-18","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":["http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10"],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -123,13 +123,13 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '1453'
+      - '1452'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/52815612-b155-4613-b0a6-342d2d78724d
+      - http://localhost:8003/zaken/api/v1/zaken/ae2560fe-95a5-4849-b9b7-e84e9fdd80c6
       Referrer-Policy:
       - same-origin
       Vary:
@@ -151,7 +151,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1Mjc1NzYwNSwiZXhwIjoxNzUyODAwODA1LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.bUt7SRqWzK1nlMVEenKEUO_-P3-AfVWPEmMz29O0oRE
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1NTUxODAxNSwiZXhwIjoxNzU1NTYxMjE1LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.lb_Fn9syqbfIM7Bv5qaxJ4X0gj9giohEf8YndkzcSZg
       Connection:
       - keep-alive
       Content-Crs:
@@ -159,11 +159,11 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: http://localhost:8003/zaken/api/v1/zaken/52815612-b155-4613-b0a6-342d2d78724d
+    uri: http://localhost:8003/zaken/api/v1/zaken/ae2560fe-95a5-4849-b9b7-e84e9fdd80c6
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/52815612-b155-4613-b0a6-342d2d78724d","uuid":"52815612-b155-4613-b0a6-342d2d78724d","identificatie":"ZAAK-2025-0000000201","bronorganisatie":"000000000","omschrijving":"Form
-        1420","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2025-07-17","verantwoordelijkeOrganisatie":"000000000","startdatum":"2025-07-17","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":["http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10"],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/ae2560fe-95a5-4849-b9b7-e84e9fdd80c6","uuid":"ae2560fe-95a5-4849-b9b7-e84e9fdd80c6","identificatie":"ZAAK-2025-0000000019","bronorganisatie":"000000000","omschrijving":"Form
+        020","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2025-08-18","verantwoordelijkeOrganisatie":"000000000","startdatum":"2025-08-18","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":["http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10"],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -173,13 +173,13 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '1453'
+      - '1452'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"5a2ab0035c9191d2e4dcace9c831d0a4"'
+      - '"060f9844477443b71824623a46132147"'
       Referrer-Policy:
       - same-origin
       Vary:
