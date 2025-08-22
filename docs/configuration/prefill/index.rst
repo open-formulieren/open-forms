@@ -16,3 +16,4 @@ Prefill plugins
    family_members
    eidas
    eidas_company
+   yivi
