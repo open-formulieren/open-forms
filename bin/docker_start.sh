@@ -45,6 +45,7 @@ exec uwsgi \
     --master \
     --single-interpreter \
     --die-on-term \
+    --optimize 1 \
     --need-app \
     --processes $uwsgi_processes \
     --threads $uwsgi_threads \
