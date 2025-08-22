@@ -16,20 +16,6 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 
-# Jsonlogic, which we use to access the variables in the json logic and components,
-# cannot retrieve data from a key that contains periods (aka dots ".").
-# To allow these values to be targeted, we replace the period with an underscore.
-# In case of nested attributes, this replacing is done recursively.
-# https://github.com/open-formulieren/open-forms/issues/5475
-def clean_attribute_keys(attributes: dict[str, object]) -> dict[str, object]:
-    return {
-        key.replace(".", "_"): clean_attribute_keys(value)
-        if isinstance(value, dict)
-        else value
-        for key, value in attributes.items()
-    }
-
-
 @register_static_variable("submission_id")
 class SubmissionID(BaseStaticVariable):
     name = _("Internal ID")
@@ -79,9 +65,7 @@ class Auth(BaseStaticVariable):
             plugin=submission.auth_info.plugin,
             attribute=submission.auth_info.attribute,
             value=submission.auth_info.value,
-            additional_claims=clean_attribute_keys(
-                submission.auth_info.additional_claims
-            ),
+            additional_claims=submission.auth_info.additional_claims,
         )
 
         return auth_data
@@ -186,7 +170,7 @@ class AuthAdditionalClaims(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None):
         if submission is None or not submission.is_authenticated:
             return None
-        return clean_attribute_keys(submission.auth_info.additional_claims)
+        return submission.auth_info.additional_claims
 
     def as_json_schema(self):
         return {
@@ -212,9 +196,7 @@ class AuthContext(BaseStaticVariable):
             # attributes, which won't be accessible for jsonlogic and django templating.
             # So we have to clean them.
             auth_context["authorizee"]["legalSubject"]["additionalInformation"] = (
-                clean_attribute_keys(
-                    auth_context["authorizee"]["legalSubject"]["additionalInformation"]
-                )
+                auth_context["authorizee"]["legalSubject"]["additionalInformation"]
             )
 
         return auth_context
