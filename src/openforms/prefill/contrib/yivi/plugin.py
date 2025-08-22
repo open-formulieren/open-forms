@@ -1,7 +1,12 @@
 from django.utils.translation import gettext_lazy as _
 
+import structlog
+from glom import GlomError, glom
+
 from openforms.authentication.constants import AuthAttribute
-from openforms.config.data import Action
+from openforms.authentication.contrib.yivi_oidc.constants import (
+    PLUGIN_ID as AUTH_PLUGIN_ID,
+)
 from openforms.prefill.base import BasePlugin
 from openforms.prefill.constants import IdentifierRoles
 from openforms.prefill.registry import register
@@ -9,10 +14,13 @@ from openforms.submissions.models import Submission
 
 from .constants import PLUGIN_IDENTIFIER
 
+logger = structlog.stdlib.get_logger(__name__)
+
 
 @register(PLUGIN_IDENTIFIER)
 class YiviPrefill(BasePlugin):
     verbose_name = _("Yivi")
+    requires_auth_plugin = (AUTH_PLUGIN_ID,)
     requires_auth = (
         AuthAttribute.bsn,
         AuthAttribute.kvk,
@@ -44,20 +52,28 @@ class YiviPrefill(BasePlugin):
         attributes: list[str],
         identifier_role: IdentifierRoles = IdentifierRoles.main,
     ) -> dict[str, object]:
-        if not submission.is_authenticated or not (
-            cls.requires_auth and submission.auth_info.attribute in cls.requires_auth
+        # Check if the user is authenticated using the required plugin, and resulted into
+        # the right auth attribute.
+        if (
+            not submission.is_authenticated
+            or not cls.verify_used_auth_plugin(submission)
+            or not (
+                cls.requires_auth
+                and submission.auth_info.attribute in cls.requires_auth
+            )
         ):
             return {}
 
         prefill_values: dict[str, object] = {}
         for attribute in attributes:
-            # @TODO could also include auth info attributes
-            prefill_values[attribute] = submission.auth_info.additional_claims.get(
-                attribute, ""
-            )
+            try:
+                prefill_values[attribute] = glom(submission.auth_info, attribute)
+            except GlomError as exc:
+                logger.warning(
+                    "missing_attribute_in_response", attribute=attribute, exc_info=exc
+                )
 
         return prefill_values
 
-    def check_config(self) -> list[Action]:
-        # @TODO
-        return []
+    def check_config(self):
+        pass
