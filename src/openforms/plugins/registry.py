@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING
 
 from django.db import OperationalError
 
@@ -10,13 +10,10 @@ from flags.state import flag_enabled
 from .constants import UNIQUE_ID_MAX_LENGTH
 
 if TYPE_CHECKING:
-    from .plugin import AbstractBasePlugin  # noqa: F401
+    from .plugin import AbstractBasePlugin
 
 
-PluginT = TypeVar("PluginT", bound="AbstractBasePlugin")
-
-
-class BaseRegistry(Generic[PluginT]):
+class BaseRegistry[PluginT: AbstractBasePlugin]:
     """
     Base registry class for plugin modules.
     """
