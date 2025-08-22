@@ -122,6 +122,7 @@ def prefill_variables(submission: Submission, register: Registry | None = None) 
     key_source_mappings: defaultdict[str, str] = defaultdict()
     if state.variables:
         for variable_key, variable in state.variables.items():
+            assert variable.form_variable is not None
             key_source_mappings[variable_key] = variable.form_variable.source
 
     variables_with_attribute: list[SubmissionValueVariable] = []
@@ -129,6 +130,7 @@ def prefill_variables(submission: Submission, register: Registry | None = None) 
     prefill_data: defaultdict[str, JSONEncodable] = defaultdict(dict)
 
     for variable in variables_to_prefill:
+        assert variable.form_variable is not None
         key_source_mappings[variable.form_variable.key] = variable.form_variable.source
         # variables which have prefill enabled via the component's configuration
         if (

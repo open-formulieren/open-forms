@@ -40,6 +40,7 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
         )
         cls.objects_api_group_unused = ObjectsAPIGroupConfigFactory.create()
 
+        assert cls.VCR_TEST_FILES is not None
         with with_setup_test_data_vcr(cls.VCR_TEST_FILES, cls.__qualname__):
             with get_objects_client(cls.objects_api_group_used) as client:
                 object = client.create_object(

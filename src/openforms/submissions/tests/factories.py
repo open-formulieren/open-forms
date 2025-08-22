@@ -1,4 +1,5 @@
 import copy
+from collections.abc import Sequence
 from datetime import timedelta
 from decimal import Decimal
 from typing import Any
@@ -13,6 +14,7 @@ import magic
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.formio.service import FormioData
+from openforms.formio.typing import Component
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -188,7 +190,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
     @classmethod
     def from_components(
         cls,
-        components_list: list[dict],
+        components_list: Sequence[Component] | list[dict],
         submitted_data: dict | None = None,
         form_definition_kwargs: dict | None = None,
         **kwargs,

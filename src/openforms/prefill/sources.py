@@ -174,10 +174,8 @@ def fetch_prefill_values_from_options(
         else:
             if new_values:
                 values.update(**new_values)
-                logevent.prefill_retrieve_success(
-                    submission, plugin, list(values.keys())
-                )
+                logevent.prefill_retrieve_success(submission, plugin, list(values))
             else:
-                logevent.prefill_retrieve_empty(submission, plugin, list(values.keys()))
+                logevent.prefill_retrieve_empty(submission, plugin, list(values))
 
     return values

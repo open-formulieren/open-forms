@@ -1,3 +1,4 @@
+from collections.abc import Collection, Mapping
 from typing import Any
 
 from django.urls import reverse
@@ -25,10 +26,14 @@ logger = structlog.stdlib.get_logger(__name__)
 
 PLUGIN_IDENTIFIER = "haalcentraal"
 
-VERSION_TO_ATTRIBUTES_MAP = {
+VERSION_TO_ATTRIBUTES_MAP: Mapping[
+    BRPVersions, type[AttributesV1] | type[AttributesV2]
+] = {
     BRPVersions.v13: AttributesV1,
     BRPVersions.v20: AttributesV2,
 }
+
+type HCAttributes = Collection[AttributesV1] | Collection[AttributesV2]
 
 
 def get_attributes_cls():
@@ -58,7 +63,7 @@ class HaalCentraalPrefill(BasePlugin):
         cls,
         client: BRPClient,
         bsn: str,
-        attributes: list[str],
+        attributes: Collection[str],
     ) -> dict[str, Any]:
         if not (data := client.find_persons([bsn], attributes=attributes)):
             return {}
@@ -151,10 +156,10 @@ class HaalCentraalPrefill(BasePlugin):
                 client,
                 identifier,
                 (
-                    Attributes.naam_voornamen,
-                    Attributes.naam_voorvoegsel,
-                    Attributes.naam_geslachtsnaam,
-                    Attributes.naam_voorletters,
+                    str(Attributes.naam_voornamen),
+                    str(Attributes.naam_voorvoegsel),
+                    str(Attributes.naam_geslachtsnaam),
+                    str(Attributes.naam_voorletters),
                 ),
             )
 
