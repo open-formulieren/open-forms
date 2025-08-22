@@ -5,8 +5,9 @@ from django.utils.translation import gettext as _
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from openforms.submissions.models import Submission
-from openforms.validations.base import BasePlugin
-from openforms.validations.registry import Registry
+
+from ..base import BasePlugin
+from ..registry import Registry
 
 
 class DjangoValidator(BasePlugin[str]):
