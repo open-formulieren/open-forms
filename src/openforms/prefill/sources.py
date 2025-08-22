@@ -111,6 +111,7 @@ def fetch_prefill_values_from_options(
 
     values: dict[str, JSONEncodable] = {}
     for variable in variables:
+        assert variable.form_variable is not None
         plugin = register[variable.form_variable.prefill_plugin]
         raw_options = variable.form_variable.prefill_options
         log = logger.bind(
@@ -159,8 +160,8 @@ def fetch_prefill_values_from_options(
         else:
             if new_values:
                 values.update(**new_values)
-                logevent.prefill_retrieve_success(submission, plugin, values)
+                logevent.prefill_retrieve_success(submission, plugin, list(values))
             else:
-                logevent.prefill_retrieve_empty(submission, plugin, values)
+                logevent.prefill_retrieve_empty(submission, plugin, list(values))
 
     return values

@@ -19,15 +19,16 @@ class PrefillPluginChoiceField(CharField):
 
         self.validators.append(PluginExistsValidator(self.registry))
 
-    def formfield(self, **kwargs):
+    def formfield(self, *args, **kwargs):
         """
         Force this into a choices field.
         """
-        monkeypatch = not self.choices
+        monkeypatch = not (_old := self.choices)
         if monkeypatch:
-            _old = self.choices
             self.choices = self._get_plugin_choices()
-        field = super().formfield(**kwargs)
+
+        field = super().formfield(*args, **kwargs)
+
         if monkeypatch:
             self.choices = _old
         return field
