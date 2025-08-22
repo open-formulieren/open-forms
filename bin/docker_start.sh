@@ -27,7 +27,7 @@ export OTEL_SERVICE_NAME="${OTEL_SERVICE_NAME:-openforms}"
 
 # Apply database migrations
 >&2 echo "Apply database migrations"
-python src/manage.py migrate
+OTEL_SDK_DISABLED=True python src/manage.py migrate
 
 # Start server
 >&2 echo "Starting server"
