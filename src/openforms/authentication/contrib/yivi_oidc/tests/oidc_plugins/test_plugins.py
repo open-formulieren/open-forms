@@ -73,7 +73,7 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
                 "bsn_claim": "123456782",
                 "loa_claim": "low",
                 "additional_claims": {
-                    "irma-demo.gemeente.personalData.familyname": "Doe"
+                    "irma-demo_gemeente_personalData_familyname": "Doe"
                 },
             },
         )
