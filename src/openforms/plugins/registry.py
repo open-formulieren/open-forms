@@ -137,6 +137,7 @@ def record_plugin_usage(
                     "plugin.module": module,
                     "plugin.identifier": plugin.identifier,
                     "plugin.is_enabled": plugin.is_enabled,
+                    "plugin.is_demo": plugin.is_demo_plugin,
                 },
             )
 

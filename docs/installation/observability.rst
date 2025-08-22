@@ -318,6 +318,23 @@ Submissions
     - ``form.uuid`` - the unique database ID of the form.
     - ``form.name`` - the name of the form that was submitted.
 
+Plugins
+^^^^^^^
+
+``plugin_usage_count``
+    A gauge reporting how many times each (installed) plugin is used in an instance.
+    This is a global metric, you must take care in de-duplicating results. Additional
+    attributes are:
+
+    - ``scope`` - fixed, set to ``global`` to enable de-duplication.
+    - ``plugin.module`` - the feature module the plugin/metric belongs to, such as
+      ``registrations``, ``prefill``, ``authentication``...
+    - ``plugin.identifier`` - the unique identifier for a plugin. The combination of
+      ``(module, identifier)`` is guaranteed to be unique.
+    - ``plugin.is_enabled`` - flag to indicate whether the plugin is enabled or not.
+      Disabled plugin metrics should have a value of ``0`` during normal operation.
+    - ``plugin.is_demo`` - flag that marks demo plugins only available for testing.
+
 Tracing
 =======
 
