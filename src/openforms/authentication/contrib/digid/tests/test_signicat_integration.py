@@ -92,7 +92,6 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         config.want_assertions_signed = False
         config.want_assertions_encrypted = False
         config.slo = False
-        config.attribute_consuming_service_index = "1"
 
         with METADATA.open("rb") as md_file:
             config.idp_metadata_file = File(md_file, METADATA.name)
@@ -141,16 +140,10 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         our_faux_redirect = self.client.get(
             login_url, {"next": str(form_url)}, follow=True
         )
-        # do the js submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session, our_faux_redirect
+        )
 
-        # select DigiD from the Signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
-        sim_response = session.get(select_digid_sim)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
         # select LoA lower than substantial/loa3
         sim_form["loa"] = "loa2plus"
         auth_response = session.request(sim_method, sim_action_url, data=sim_form)
@@ -176,16 +169,10 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         our_faux_redirect = self.client.get(
             login_url, {"next": str(form_url)}, follow=True
         )
-        # do the JS submit to get redirected to Signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session, our_faux_redirect
+        )
 
-        # select DigiD from the Signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
-        sim_response = session.get(select_digid_sim)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
         # select LOA higher than substantial/loa3
         sim_form["loa"] = "loa4"
         auth_response = session.request(
@@ -236,18 +223,10 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         )
 
         our_faux_redirect = self.client.get(resume_path, follow=True)
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session, our_faux_redirect
+        )
 
-        self.assertEqual(our_faux_redirect.status_code, 200)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select digid from the signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
-        sim_response = session.get(select_digid_sim)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
         # select LOA higher than substantial/loa3
         sim_form["loa"] = "loa4"
         auth_response = session.request(
@@ -296,18 +275,10 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         )
 
         our_faux_redirect = self.client.get(resume_path, follow=True)
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session, our_faux_redirect
+        )
 
-        self.assertEqual(our_faux_redirect.status_code, 200)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select digid from the signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
-        sim_response = session.get(select_digid_sim)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
         # select LOA higher than substantial/loa3
         sim_form["loa"] = "loa4"
         # but we are a different person
@@ -357,18 +328,10 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         )
 
         our_faux_redirect = self.client.get(resume_path, follow=True)
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session, our_faux_redirect
+        )
 
-        self.assertEqual(our_faux_redirect.status_code, 200)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select digid from the signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
-        sim_response = session.get(select_digid_sim)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
         # select LOA lower than substantial/loa3
         sim_form["loa"] = "loa2"
         auth_response = session.request(
@@ -403,18 +366,10 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         )
 
         our_faux_redirect = self.client.get(resume_path, follow=True)
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session, our_faux_redirect
+        )
 
-        self.assertEqual(our_faux_redirect.status_code, 200)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select digid from the signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
-        sim_response = session.get(select_digid_sim)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
         # select LOA lower to substantial/loa3
         sim_form["loa"] = "loa3"
         auth_response = session.request(
@@ -452,18 +407,16 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         )
 
         our_faux_redirect = self.client.get(resume_path, follow=True)
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session, our_faux_redirect
+        )
+        # copy for later
+        sim_method_2, sim_action_url_2, sim_form_2 = (
+            sim_method,
+            sim_action_url,
+            sim_form,
+        )
 
-        self.assertEqual(our_faux_redirect.status_code, 200)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select digid from the signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
-        sim_response = session.get(select_digid_sim)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
         # select substantial LOA
         sim_form["loa"] = "loa3"
         auth_response = session.request(
@@ -496,10 +449,11 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
             session.request(method_2, redirect_url_2, data=form_values_2).ok
         )
 
-        sim_response_2 = session.get(select_digid_sim)
+        sim_response_2 = session.get(
+            str(SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid")
+        )
         self.assertTrue(sim_response_2.ok)
 
-        sim_method_2, sim_action_url_2, sim_form_2 = _parse_form(sim_response)
         # select substantial LOA
         sim_form_2["loa"] = "loa4"
         auth_response_2 = session.request(
@@ -523,12 +477,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         config = DigidConfiguration.get_solo()
         config.base_url = "https://sharkbait.example.com"
         config.save()
-
-        def reset_config():
-            config.base_url = config.entity_id = "https://localhost:8000"
-            config.save()
-
-        self.addCleanup(reset_config)
+        self.addCleanup(DigidConfiguration.clear_cache)
 
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
@@ -544,16 +493,19 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = furl("http://testserver/") / form_path
 
-        our_faux_redirect = self.client.get(f"{login_url}?next={form_url}", follow=True)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        session.request(method, redirect_url, data=form_values)
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
-        sim_response = session.get(select_digid_sim)
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
+        our_faux_redirect = self.client.get(
+            login_url, {"next": str(form_url)}, follow=True
+        )
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session,
+            our_faux_redirect,
+            with_idp_selection=True,
+        )
+
         auth_response = session.request(
             sim_method, sim_action_url, data=sim_form, allow_redirects=False
         )
+
         # not redirected
         self.assertFalse(auth_response.ok)
 
@@ -611,6 +563,39 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
 # poor person's enum.StrEnum
 type Method = Literal["get", "post"]
 type Response = TemplateResponse | requests.Response
+
+
+def _do_signicat_login(
+    session: requests.Session,
+    our_redirect: TemplateResponse,
+    with_idp_selection: bool = False,
+) -> tuple[Method, str, dict[str, str]]:
+    """
+    Receive the JS-auto-submit (template) response and simulate the auto-submit.
+
+    This handles the signicat login screens until we redirect back to Open Forms.
+    """
+    # do the JS submit to get redirected to Signicat broker
+    method, redirect_url, form_values = _parse_form(our_redirect)
+    saml_submit_response = session.request(method, redirect_url, data=form_values)
+    assert saml_submit_response.ok
+
+    if with_idp_selection:
+        # select 'simulator' from the IdP selector screen
+        idp_response = session.get(
+            str(SIGNICAT_BROKER_BASE / "select/authn"),
+            params={"connectionId": "simulator"},
+        )
+        assert idp_response.ok
+
+    # select EHerkenning from the Signicat simulator selection screen
+    sim_response = session.get(
+        str(SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid")
+    )
+    assert sim_response.ok
+
+    sim_method, sim_action_url, sim_form = _parse_form(sim_response)
+    return sim_method, sim_action_url, sim_form
 
 
 def _parse_form(response: Response) -> tuple[Method, str, dict[str, str]]:
