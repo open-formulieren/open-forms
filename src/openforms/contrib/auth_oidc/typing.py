@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from typing import NotRequired, TypedDict
 
 from mozilla_django_oidc_db.typing import ClaimPath
@@ -33,6 +34,9 @@ class ClaimProcessingInstructions(TypedDict):
     strict_required_claims: list[ClaimPathDetails]
     optional_claims: list[ClaimPathDetails]
     loa_claims: LoaClaimInstructions
+    # after processing, one of the specified claim paths must be present in the
+    # result to be considered valid
+    one_of_required_claims: NotRequired[Collection[ClaimPath]]
 
 
 #

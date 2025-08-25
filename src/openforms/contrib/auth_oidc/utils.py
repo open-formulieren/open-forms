@@ -203,6 +203,23 @@ def process_claims(
         )
         assign(processed_claims, Path(*processed_path), loa)
 
+    # Validate the processed claims
+    if candidate_paths := claim_processing_instructions.get(
+        "one_of_required_claims", ()
+    ):
+        for candidate in candidate_paths:
+            try:
+                glom(processed_claims, Path(*candidate))
+                break
+            except PathAccessError:
+                pass
+        else:
+            candidates = ", ".join([" > ".join(path) for path in candidate_paths])
+            raise ValueError(
+                f"At least one of the {candidates} claim paths must be present in the "
+                "processed claims."
+            )
+
     return processed_claims
 
 

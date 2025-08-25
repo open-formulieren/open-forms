@@ -92,7 +92,7 @@ class BaseDigiDeHerkenningPlugin(
             processed_claims = process_claims(
                 payload,
                 self.get_claim_processing_instructions(),
-                self.strict_mode(),
+                strict=self.strict_mode(),
             )
         except ValueError as exc:
             logger.error(
@@ -399,15 +399,13 @@ class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
 
+        # We expect one of `legal_subject_bsn_identifier_claim_path` or
+        # `legal_subject_pseudo_identifier_claim_path` is provided. But because of the
+        # "one or the other" relation, we mark them both as optional, and use
+        # ``one_of_required_claims`` as a final validation step.
         # TODO: are these always required??
         return {
             "always_required_claims": [
-                {
-                    "path_in_claim": config.options["identity_settings"][
-                        "legal_subject_pseudo_identifier_claim_path"
-                    ],
-                    "processed_path": ["legal_subject_pseudo_identifier_claim"],
-                },
                 {
                     "path_in_claim": config.options["identity_settings"][
                         "legal_subject_first_name_claim_path"
@@ -435,6 +433,12 @@ class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
                     ],
                     "processed_path": ["legal_subject_bsn_identifier_claim"],
                 },
+                {
+                    "path_in_claim": config.options["identity_settings"][
+                        "legal_subject_pseudo_identifier_claim_path"
+                    ],
+                    "processed_path": ["legal_subject_pseudo_identifier_claim"],
+                },
             ],
             "loa_claims": {
                 "path_in_claim": config.options["loa_settings"]["claim_path"],
@@ -442,6 +446,10 @@ class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
                 "value_mapping": config.options["loa_settings"]["value_mapping"],
                 "processed_path": ["loa_claim"],
             },
+            "one_of_required_claims": (
+                ["legal_subject_bsn_identifier_claim"],
+                ["legal_subject_pseudo_identifier_claim"],
+            ),
         }
 
 
@@ -470,6 +478,10 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
 
+        # We expect one of `acting_subject_bsn_identifier_claim_path` or
+        # `acting_subject_pseudo_identifier_claim_path` is provided. But because of the
+        # "one or the other" relation, we mark them both as optional, and use
+        # ``one_of_required_claims`` as a final validation step.
         # TODO: are these always required??
         return {
             "always_required_claims": [
@@ -484,12 +496,6 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
                         "legal_subject_identifier_claim_path"
                     ],
                     "processed_path": ["legal_subject_identifier_claim"],
-                },
-                {
-                    "path_in_claim": config.options["identity_settings"][
-                        "acting_subject_pseudo_identifier_claim_path"
-                    ],
-                    "processed_path": ["acting_subject_pseudo_identifier_claim"],
                 },
                 {
                     "path_in_claim": config.options["identity_settings"][
@@ -524,6 +530,12 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
                     ],
                     "processed_path": ["acting_subject_bsn_identifier_claim"],
                 },
+                {
+                    "path_in_claim": config.options["identity_settings"][
+                        "acting_subject_pseudo_identifier_claim_path"
+                    ],
+                    "processed_path": ["acting_subject_pseudo_identifier_claim"],
+                },
             ],
             "loa_claims": {
                 "path_in_claim": config.options["loa_settings"]["claim_path"],
@@ -531,4 +543,8 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
                 "value_mapping": config.options["loa_settings"]["value_mapping"],
                 "processed_path": ["loa_claim"],
             },
+            "one_of_required_claims": (
+                ["acting_subject_bsn_identifier_claim"],
+                ["acting_subject_pseudo_identifier_claim"],
+            ),
         }
