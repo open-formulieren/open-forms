@@ -30,6 +30,7 @@ CERT = TEST_FILES / "our_certificate.pem"
 METADATA = TEST_FILES / "signicat_metadata.xml"
 
 SIGNICAT_BROKER_BASE = furl("https://maykin.pre.ie01.signicat.pro/broker")
+SELECT_IDP = SIGNICAT_BROKER_BASE / "select/authn"
 SELECT_EHERKENNING_SIM = (
     SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/eherkenning"
 )
@@ -100,8 +101,10 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         config.service_language = "nl"
 
         config.eh_requested_attributes = [
-            "urn:etoegang:1.9:EntityConcernedID:KvKnr",
-            "urn:etoegang:1.9:EntityConcernedID:Pseudo",
+            {
+                "name": "urn:etoegang:1.11:attribute-represented:CompanyName",
+                "required": False,
+            }
         ]
         config.eh_attribute_consuming_service_index = "9052"
         config.eh_service_uuid = "588932b9-28ae-4323-ab6c-fabbddae05cd"
@@ -154,15 +157,9 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         our_faux_redirect = self.client.get(
             login_url, {"next": str(form_url)}, follow=True
         )
-        # do the JS submit to get redirected to Signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select EHerkenning from the Signicat simulator selection screen
-        sim_response = session.get(SELECT_EHERKENNING_SIM)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session, our_faux_redirect
+        )
         # select LOA higher than substantial/loa3
         sim_form["loa"] = "loa4"
         auth_response = session.request(
@@ -212,17 +209,9 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         )
 
         our_faux_redirect = self.client.get(resume_path, follow=True)
-
-        self.assertEqual(our_faux_redirect.status_code, 200)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select eherkenning from the signicat simulator selection screen
-        sim_response = session.get(SELECT_EHERKENNING_SIM)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session, our_faux_redirect
+        )
         # select LOA higher than substantial/loa3
         sim_form["loa"] = "loa4"
         auth_response = session.request(
@@ -269,17 +258,9 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         )
 
         our_faux_redirect = self.client.get(resume_path, follow=True)
-
-        self.assertEqual(our_faux_redirect.status_code, 200)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select eherkenning from the signicat simulator selection screen
-        sim_response = session.get(SELECT_EHERKENNING_SIM)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session, our_faux_redirect
+        )
         # select LOA higher than substantial/loa3
         sim_form["loa"] = "loa4"
         # but we are a different person
@@ -306,12 +287,7 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         config = EherkenningConfiguration.get_solo()
         config.base_url = "https://sharkbait.example.com"
         config.save()
-
-        def reset_config():
-            config.base_url = config.entity_id = "https://localhost:8000"
-            config.save()
-
-        self.addCleanup(reset_config)
+        self.addCleanup(EherkenningConfiguration.clear_cache)
 
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
@@ -326,15 +302,17 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = furl("http://testserver/") / form_path
 
-        our_faux_redirect = self.client.get(f"{login_url}?next={form_url}", follow=True)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        session.request(method, redirect_url, data=form_values)
-        sim_response = session.get(SELECT_EHERKENNING_SIM)
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
+        our_faux_redirect = self.client.get(
+            login_url, {"next": str(form_url)}, follow=True
+        )
+        sim_method, sim_action_url, sim_form = _do_signicat_login(
+            session, our_faux_redirect
+        )
+
         auth_response = session.request(
             sim_method, sim_action_url, data=sim_form, allow_redirects=False
         )
+
         # not redirected
         self.assertFalse(auth_response.ok)
 
@@ -392,6 +370,31 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
 # poor person's enum.StrEnum
 type Method = Literal["get", "post"]
 type Response = TemplateResponse | requests.Response
+
+
+def _do_signicat_login(
+    session: requests.Session, our_redirect: TemplateResponse
+) -> tuple[Method, str, dict[str, str]]:
+    """
+    Receive the JS-auto-submit (template) response and simulate the auto-submit.
+
+    This handles the signicat login screens until we redirect back to Open Forms.
+    """
+    # do the JS submit to get redirected to Signicat broker
+    method, redirect_url, form_values = _parse_form(our_redirect)
+    saml_submit_response = session.request(method, redirect_url, data=form_values)
+    assert saml_submit_response.ok
+
+    # select 'simulator' from the IdP selector screen
+    idp_response = session.get(str(SELECT_IDP), params={"connectionId": "simulator"})
+    assert idp_response.ok
+
+    # select EHerkenning from the Signicat simulator selection screen
+    sim_response = session.get(str(SELECT_EHERKENNING_SIM))
+    assert sim_response.ok
+
+    sim_method, sim_action_url, sim_form = _parse_form(sim_response)
+    return sim_method, sim_action_url, sim_form
 
 
 def _parse_form(response: Response) -> tuple[Method, str, dict[str, str]]:
