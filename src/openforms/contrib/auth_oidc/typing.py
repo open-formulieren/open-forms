@@ -115,8 +115,8 @@ class EIDASClaims(TypedDict):
     for the source of this structure.
     """
 
-    legal_subject_identifier_claim: str
-    legal_subject_identifier_type_claim: str
+    legal_subject_bsn_identifier_claim: str
+    legal_subject_pseudo_identifier_claim: str
     # *could* be a number if no value mapping is specified and the source claims return
     # numeric values...
     loa_claim: NotRequired[str | int | float]

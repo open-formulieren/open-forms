@@ -137,11 +137,7 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, NoOptions]):
 @register(EIDAS_PLUGIN_ID)
 class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, NoOptions]):
     verbose_name = _("eIDAS via OpenID Connect")
-    provides_auth = (
-        AuthAttribute.bsn,
-        AuthAttribute.national_id,
-        AuthAttribute.pseudo,
-    )
+    provides_auth = (AuthAttribute.bsn, AuthAttribute.pseudo,)
     oidc_plugin_identifier = OIDC_EIDAS_IDENTIFIER
     manage_auth_context = True
     provides_multiple_auth_attributes = True
@@ -154,8 +150,6 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, NoOptions]):
 
     def auth_info_to_auth_context(self, auth_info: AuthInfo) -> EIDASContext:
         match auth_info.attribute:
-            case AuthAttribute.national_id:
-                legal_subject_identifier_type = "nationalID"
             case AuthAttribute.bsn:
                 legal_subject_identifier_type = "bsn"
             case AuthAttribute.pseudo:
@@ -180,24 +174,25 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, NoOptions]):
     def transform_claims(
         self, options: NoOptions, normalized_claims: EIDASClaims
     ) -> FormAuth:
-        legal_subject_identifier_value = normalized_claims[
-            "legal_subject_identifier_claim"
-        ]
+        legal_subject_bsn_identifier_value = normalized_claims.get(
+            "legal_subject_bsn_identifier_claim"
+        )
+        legal_subject_pseudo_identifier_value = normalized_claims.get(
+            "legal_subject_pseudo_identifier_claim"
+        )
 
-        # If legal_subject_identifier_type isn't provided, or is unknown, fallback to
-        # pseudo.
-        if (
-            legal_subject_identifier_type := normalized_claims.get(
-                "legal_subject_identifier_type_claim"
-            )
-        ) not in AuthAttribute:
-            legal_subject_identifier_type = AuthAttribute.pseudo
+        legal_subject_identifier_type = (
+            AuthAttribute.bsn
+            if legal_subject_bsn_identifier_value is not None
+            else AuthAttribute.pseudo
+        )
 
         return {
             "plugin": self.identifier,
             "loa": str(normalized_claims.get("loa_claim", "")),
             "attribute": legal_subject_identifier_type,
-            "value": legal_subject_identifier_value,
+            "value": legal_subject_bsn_identifier_value
+            or legal_subject_pseudo_identifier_value,
             "additional_claims": {
                 "first_name": normalized_claims["legal_subject_first_name_claim"],
                 "family_name": normalized_claims["legal_subject_family_name_claim"],
