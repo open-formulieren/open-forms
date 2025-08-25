@@ -455,7 +455,12 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
 
         return [
             config.options["identity_settings"]["legal_subject_identifier_claim_path"],
-            config.options["identity_settings"]["acting_subject_identifier_claim_path"],
+            config.options["identity_settings"][
+                "acting_subject_bsn_identifier_claim_path"
+            ],
+            config.options["identity_settings"][
+                "acting_subject_pseudo_identifier_claim_path"
+            ],
             config.options["identity_settings"]["acting_subject_first_name_claim_path"],
             config.options["identity_settings"][
                 "acting_subject_family_name_claim_path"
@@ -482,9 +487,9 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
                 },
                 {
                     "path_in_claim": config.options["identity_settings"][
-                        "acting_subject_identifier_claim_path"
+                        "acting_subject_pseudo_identifier_claim_path"
                     ],
-                    "processed_path": ["acting_subject_identifier_claim"],
+                    "processed_path": ["acting_subject_pseudo_identifier_claim"],
                 },
                 {
                     "path_in_claim": config.options["identity_settings"][
@@ -515,9 +520,9 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
             "optional_claims": [
                 {
                     "path_in_claim": config.options["identity_settings"][
-                        "acting_subject_identifier_type_claim_path"
+                        "acting_subject_bsn_identifier_claim_path"
                     ],
-                    "processed_path": ["acting_subject_identifier_type_claim"],
+                    "processed_path": ["acting_subject_bsn_identifier_claim"],
                 },
             ],
             "loa_claims": {

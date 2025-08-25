@@ -31,9 +31,6 @@ class ModeChoices(models.TextChoices):
 
 class ActingSubjectIdentifierType(models.TextChoices):
     opaque = "opaque", _("Opaque")
-
-    # For eIDAS (via OIDC) we support additional ID types for the acting subject
-    national_id = "national_id", _("National ID")
     bsn = "bsn", _("BSN")
 
 

@@ -136,8 +136,8 @@ class EIDASCompanyClaims(TypedDict):
     # As the Signicat simulator only returns natural person information, we don't exactly
     # know how this is returned.
     legal_subject_identifier_claim: str
-    acting_subject_identifier_claim: str
-    acting_subject_identifier_type_claim: str
+    acting_subject_bsn_identifier_claim: str
+    acting_subject_pseudo_identifier_claim: str
     # *could* be a number if no value mapping is specified and the source claims return
     # numeric values...
     loa_claim: NotRequired[str | int | float]
