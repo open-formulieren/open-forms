@@ -14,7 +14,7 @@ Open Forms
 
 Easily create and publish smart forms (`Nederlandse versie`_)
 
-Developed by `Maykin B.V.`_, originally commissioned by `Dimpact`_.
+Developed by `Maykin B.V.`_, initiated by the `Stakeholders`_.
 
 
 Introduction
@@ -70,14 +70,13 @@ References
 Licence
 =======
 
-Copyright © `"the Stakeholders"`_, 2025
+Copyright © the `Stakeholders`_, 2025
 
 Licensed under the `EUPL`_.
 
 .. _`Nederlandse versie`: README.NL.rst
 .. _`Maykin B.V.`: https://www.maykin.nl
-.. _`Dimpact`: https://www.dimpact.nl
-.. _`"the Stakeholders"`: STAKEHOLDERS.md
+.. _`Stakeholders`: STAKEHOLDERS.md
 .. _`EUPL`: LICENSE.md
 
 .. |build-status| image:: https://github.com/open-formulieren/open-forms/actions/workflows/ci.yml/badge.svg

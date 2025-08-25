@@ -14,7 +14,8 @@ Open Formulieren
 
 Snel en eenvoudig slimme formulieren bouwen en publiceren. (`English version`_)
 
-Ontwikkeld door `Maykin B.V.`_, oorspronkelijk in opdracht van `Dimpact`_.
+Ontwikkeld door `Maykin B.V.`_, geïnitieerd door de `Stakeholders`_.
+
 
 Introductie
 ===========
@@ -86,7 +87,6 @@ Licensed under the `EUPL`_.
 
 .. _`English version`: README.rst
 .. _`Maykin B.V.`: https://www.maykin.nl
-.. _`Dimpact`: https://www.dimpact.nl
 .. _`Stakeholders`: STAKEHOLDERS.md
 .. _`GOVERNANCE.md`: GOVERNANCE.md
 .. _`EUPL`: LICENSE.md
