@@ -494,7 +494,7 @@ jobs:
           docker compose run -e RELEASE=${RELEASE} web \
             /app/bin/test_fix_scripts.sh
         env:
-          RELEASE: '3.2.0'
+          RELEASE: '3.3.0-alpha.0'
           # ensure local image gets used
           TAG: ${{ needs.docker_build_setup.outputs.version }}
 

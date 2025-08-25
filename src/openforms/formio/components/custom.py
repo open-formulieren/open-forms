@@ -730,7 +730,7 @@ class PartnerListField(serializers.Field):
 
             if initial_value and initial_value != partners:
                 raise serializers.ValidationError(
-                    "The family members prefill data may not be altered."
+                    _("The family members prefill data may not be altered.")
                 )
 
 

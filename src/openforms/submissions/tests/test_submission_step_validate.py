@@ -2,6 +2,7 @@ from unittest.mock import patch
 from uuid import UUID
 
 from django.test import tag
+from django.utils.translation import gettext as _
 
 from privates.test import temp_private_root
 from rest_framework import status
@@ -935,7 +936,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(invalid_params[0]["name"], "data.partners")
         self.assertEqual(
             invalid_params[0]["reason"],
-            "The family members prefill data may not be altered.",
+            _("The family members prefill data may not be altered."),
         )
 
     def test_partners_component_retrieves_correct_variable_for_validation(self):
@@ -1265,5 +1266,5 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(invalid_params[0]["name"], "data.children")
         self.assertEqual(
             invalid_params[0]["reason"],
-            "The family members prefill data may not be altered.",
+            _("The family members prefill data may not be altered."),
         )
