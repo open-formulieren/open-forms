@@ -65,8 +65,7 @@ description:
 
 legal:
   license: EUPL-1.2
-  mainCopyrightOwner: Dimpact
-  repoOwner: Maykin Media
+  repoOwner: Maykin
 
 dependsOn:
   open:
@@ -110,4 +109,4 @@ maintenance:
       website: https://www.maykinmedia.nl/
   contacts:
     - name: Joeri Bekker
-      affiliation: Maykin Media
+      affiliation: Maykin
