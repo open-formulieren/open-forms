@@ -135,8 +135,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
     def test_conditional(
         component: ComponentT, value: VariableValue, compare_value: VariableValue
     ):
-        """Perform a component-specific comparison whether a conditional is triggered.
-        """
+        """Perform a component-specific comparison whether a conditional is triggered."""
 
 
 class ComponentRegistry(BaseRegistry[BasePlugin]):

@@ -12,7 +12,11 @@ from glom import assign
 from json_logic import jsonLogic
 
 from openforms.dmn.service import evaluate_dmn
-from openforms.formio.service import FormioConfigurationWrapper, FormioData
+from openforms.formio.service import (
+    FormioConfigurationWrapper,
+    FormioData,
+    get_component_empty_value as get_component_empty_value_,
+)
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.typing import DataMapping, JSONObject
@@ -46,6 +50,26 @@ def compile_action_operation(action: ActionDict) -> ActionOperation:
     return cls.from_action(action)
 
 
+def get_component_empty_value(component):
+    empty_values = {}
+    match component["type"]:
+        case "fieldset":
+            for child in component.get("components", []):
+                if not child.get("clearOnHide", True):
+                    continue
+                empty_values.update(get_component_empty_value(child))
+        case "columns":
+            for column in component.get("columns", []):
+                for child in column.get("components", []):
+                    if not child.get("clearOnHide", True):
+                        continue
+                    empty_values.update(get_component_empty_value(child))
+        case _:
+            empty_values[component["key"]] = get_component_empty_value_(component)
+
+    return empty_values
+
+
 class ActionOperation:
     rule: FormLogic
 
@@ -67,6 +91,7 @@ class ActionOperation:
     def eval(
         self,
         context: FormioData,
+        configuration: FormioConfigurationWrapper,
         submission: Submission,
     ) -> DataMapping | None:
         """
@@ -97,6 +122,32 @@ class PropertyAction(ActionOperation):
             return None
         component = configuration[self.component]
         assign(component, self.property, self.value, missing=dict)
+
+    def eval(
+        self,
+        context: FormioData,
+        configuration: FormioConfigurationWrapper,
+        submission: Submission,
+    ) -> DataMapping | None:
+        if self.component not in configuration:
+            # Note that this can happen when the action applies to a component of a
+            # different step than we are currently evaluating. We don't have to do
+            # anything in this case, because the clear-on-hide behaviour of that
+            # component will be handled once the user has reached that step.
+            return None
+
+        component = configuration[self.component]
+
+        # Only apply clearOnHide logic for components for which their action sets the
+        # "hidden" property to True. If the default is hidden and an action causes it to
+        # be shown, the value should not be cleared of course.
+        if not (self.property == "hidden" and self.value):
+            return None
+
+        if not component.get("clearOnHide", True):
+            return None
+
+        return get_component_empty_value(component)
 
 
 class DisableNextAction(ActionOperation):
@@ -173,6 +224,7 @@ class VariableAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
+        configuration: FormioConfigurationWrapper,
         submission: Submission,
     ) -> DataMapping:
         with log_errors(self.value, self.rule):
@@ -190,6 +242,7 @@ class ServiceFetchAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
+        configuration: FormioConfigurationWrapper,
         submission: Submission,
     ) -> DataMapping:
         var = self.rule.form.formvariable_set.get(key=self.variable)
@@ -231,6 +284,7 @@ class EvaluateDMNAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
+        configuration: FormioConfigurationWrapper,
         submission: Submission,
     ) -> DataMapping | None:
         # Mapping from form variables to DMN inputs
