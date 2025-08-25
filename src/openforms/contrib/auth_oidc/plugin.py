@@ -10,7 +10,7 @@ from django.http import (
 )
 
 from mozilla_django_oidc_db.registry import register as oidc_registry
-from mozilla_django_oidc_db.typing import ClaimPath
+from mozilla_django_oidc_db.typing import ClaimPath, JSONObject
 from mozilla_django_oidc_db.utils import do_op_logout
 from mozilla_django_oidc_db.views import (
     _RETURN_URL_SESSION_KEY,
@@ -146,6 +146,18 @@ class OFBaseOIDCPluginProtocol(Protocol):
     def _get_legacy_callback(self) -> str:
         """Get the django URL name of the callback URL."""
         ...
+
+    def validate_processed_claims(self, claims: JSONObject):
+        """
+        Custom validation for the claims after processing.
+
+        Perform an OIDC plugin specific validation over the processed claims. Allowing
+        more complex and flexible processing rules, that aren't possible using the
+        ClaimProcessingInstructions.
+
+        If validation doesn't pass, a `ValueError` exception is raised.
+        """
+        pass
 
     def get_sensitive_claims(self) -> list[ClaimPath]: ...
 

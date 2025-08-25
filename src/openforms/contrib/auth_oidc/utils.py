@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Literal
 
 import structlog
@@ -68,6 +69,7 @@ def _process_loa(
 def process_claims(
     claims: JSONObject,
     claim_processing_instructions: ClaimProcessingInstructions,
+    validate_processed_claims: Callable[[JSONObject]],
     strict: bool = True,
 ) -> JSONObject:
     """
@@ -199,6 +201,9 @@ def process_claims(
             claim_processing_instructions, "loa_claims.processed_path", default=None
         )
         assign(processed_claims, Path(*processed_path), loa)
+
+    # Validate the processed claims
+    validate_processed_claims(processed_claims)
 
     return processed_claims
 
