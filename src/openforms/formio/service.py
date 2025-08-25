@@ -34,6 +34,7 @@ from .typing import (
     FieldsetComponent,
 )
 from .utils import (
+    get_component_empty_value,
     iter_components,
     iterate_data_with_components,
     recursive_apply,
@@ -59,6 +60,7 @@ __all__ = [
     "as_json_schema",
     "apply_visibility",
     "test_conditional",
+    "get_component_empty_value",
 ]
 
 

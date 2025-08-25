@@ -9,7 +9,7 @@ import re
 from collections.abc import Callable, Mapping
 from copy import deepcopy
 from datetime import time
-from typing import TYPE_CHECKING, Any, NoReturn
+from typing import TYPE_CHECKING, Any
 
 from django.core.files.uploadedfile import UploadedFile
 from django.core.validators import (
@@ -58,20 +58,20 @@ from ..formatters.formio import (
     TextFieldFormatter,
     TimeFormatter,
 )
-from ..registry import BasePlugin, register, ComponentT
+from ..registry import BasePlugin, register
 from ..serializers import build_serializer
 from ..service import as_json_schema
 from ..typing import (
+    ColumnsComponent,
     Component,
     ContentComponent,
     EditGridComponent,
+    FieldsetComponent,
     FileComponent,
     RadioComponent,
     SelectBoxesComponent,
     SelectComponent,
     TextFieldComponent,
-    ColumnsComponent,
-    FieldsetComponent,
 )
 from ..typing.base import OpenFormsConfig
 from .translations import translate_options

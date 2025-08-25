@@ -24,7 +24,6 @@ from openforms.formio.typing import (
 from openforms.formio.utils import (
     ComponentLike,
     get_component_empty_value,
-    iter_components,
 )
 
 from .logic.actions import ActionOperation
@@ -40,9 +39,10 @@ def evaluate_form_logic(
     submission: Submission,
     step: SubmissionStep,
     unsaved_data: FormioData | None = None,
-    use_new_behaviour=False,
+    use_new_behaviour=True,
 ) -> FormioConfiguration:
     """
+    TODO-5134: update description of the steps
     Process all the form logic rules and mutate the step configuration if required.
 
     The form logic evaluation is split up in multiple stages to achieve a deterministic
@@ -67,7 +67,6 @@ def evaluate_form_logic(
     6. Apply the dynamic configuration
 
        1. Apply the component property mutations that were recorded in 5
-       2. Handle the 'clearOnHide' property
        3. Interpolate the component configuration with the variables
        4. Handle custom formio types
 
@@ -123,7 +122,9 @@ def evaluate_form_logic(
 
     # 5.1 If the action type is to set a variable, update the data. This happens inside
     # of iter_evaluate_rules. This is the ONLY operation that is allowed to execute
-    # while we're looping through the rules.
+    # while we're looping through the rules.]
+    # TODO-5134: I think we can remove this data_diff actually, as we save
+    #  `data_for_evaluation` to the state now anyway
     data_diff = FormioData()
     with elasticapm.capture_span(
         name="collect_logic_operations", span_type="app.submissions.logic"
@@ -131,6 +132,7 @@ def evaluate_form_logic(
         for operation, mutations in iter_evaluate_rules(
             rules,
             data_for_evaluation,
+            config_wrapper,
             submission=submission,
         ):
             mutation_operations.append(operation)
@@ -150,34 +152,6 @@ def evaluate_form_logic(
     # 6.1 Apply the component mutation operations
     for mutation in mutation_operations:
         mutation.apply(step, config_wrapper)
-
-    # 6.2 Handle 'clearOnHide' property
-    # XXX: See #2340 and #2409 - we need to clear the values of components that are
-    # (eventually) hidden BEFORE we do any further processing. This is only a bandaid
-    # fix, as the (stale) data has potentially been input for other logic rules.
-    # Note that only the dirty data logic check acts on these differences.
-    for component in config_wrapper:
-        if use_new_behaviour:
-            break
-
-        key = component["key"]
-        is_visible = config_wrapper.is_visible_in_frontend(key, data_for_evaluation)
-        if is_visible:
-            continue
-
-        # Reset the value of any field that may have become hidden again after
-        # evaluating the logic
-        original_value = initial_data.get(key, empty)
-        empty_value = get_component_empty_value(component)
-        if original_value is empty or original_value == empty_value:
-            continue
-
-        if not component.get("clearOnHide", True):
-            continue
-
-        # clear the value
-        data_for_evaluation[key] = empty_value
-        data_diff[key] = empty_value
 
     # 6.3 Interpolate the component configuration with the variables.
     inject_variables(config_wrapper, data_for_evaluation)
@@ -308,8 +282,8 @@ def process_visibility(
 ):
     """
     Process the visibility of the components inside the configuration, by checking if
-    they were hidden because of conditional logic, and clearing the value (set to empty
-    component value) when applicable (clearOnHide is set).
+    they were hidden because of conditional logic or a hidden parent, and clearing the
+    value (set to empty component value) when applicable (clearOnHide is set).
 
     Note that the data mutations are applied directly.
     """
@@ -317,19 +291,17 @@ def process_visibility(
         key = component["key"]
         clear_on_hide = component.get("clearOnHide", True)
 
-        evaluation_data = get_evaluation_data(data) if get_evaluation_data else data
         hidden = parent_hidden or is_hidden_by_conditional(
-            component, evaluation_data, wrapper
+            component,
+            get_evaluation_data(data) if get_evaluation_data else data,
+            wrapper,
         )
 
-        if hidden and clear_on_hide:
-            # Need to perform this check because fieldset, columns, softRequiredErrors,
-            # and content components have no value
-            # TODO-5134: this might mask bugs? Perhaps better to explicitly check for
-            #  these components?
-            if key in data:
-                empty_value = get_component_empty_value(component)
-                data[key] = empty_value
+        # Need to check whether the component is present in the data because layout
+        # components have no value
+        if hidden and clear_on_hide and key in data:
+            empty_value = get_component_empty_value(component)
+            data[key] = empty_value
 
         # Apply the visibility to children components, if applicable
         apply_visibility(component, data, wrapper, hidden, get_evaluation_data)
@@ -357,8 +329,11 @@ def check_submission_logic(
 
     mutation_operations: list[ActionOperation] = []
     data_diff = FormioData({})
+    # TODO-5134: note that this will now also be applying the clearOnHide behaviour.
+    #  Not sure if the matters? Also, is it even necessary to update the state with
+    #  mutated values here?
     for operation, mutations in iter_evaluate_rules(
-        rules, data_for_evaluation, submission
+        rules, data_for_evaluation, submission.total_configuration_wrapper, submission
     ):
         mutation_operations.append(operation)
         if mutations:
@@ -377,4 +352,8 @@ def check_submission_logic(
             configuration = step.form_step.form_definition.configuration_wrapper
             mutation.apply(step, configuration)
 
+    # Note that the total configuration wrapper is a cached property, so we need to
+    # reset to ensure we are not operating on outdated configurations later
+    # TODO-5134: perhaps better to make it optional in `iter_evaluate_rules`?
+    submission._total_configuration_wrapper = None
     submission._form_logic_evaluated = True
