@@ -6,6 +6,7 @@ from mozilla_django_oidc_db.registry import register as oidc_register
 from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.contrib.auth_oidc.typing import ClaimProcessingInstructions
 from openforms.contrib.auth_oidc.utils import process_claims
+from openforms.typing import JSONObject
 from openforms.utils.tests.oidc import OIDCMixin
 
 
@@ -1432,9 +1433,13 @@ class OIDCUtilsTests(TestCase):
             },
         }
 
+        def _validate_processed_claims(claims: JSONObject):
+            pass
+
         processed_claims = process_claims(
             idp_claims,
             processing_instructions,
+            _validate_processed_claims,
             strict=True,
         )
 

@@ -127,57 +127,17 @@ class EIDASAuthContextTests(
             },
         )
 
-    def test_record_auth_context_for_eidas_natural_national_person_authentication(self):
+    def test_record_auth_context_for_eidas_natural_pseudo_person_authentication(self):
         OFOIDCClientFactory.create(with_keycloak_provider=True, with_eidas=True)
 
         self._login_and_start_form(
             "eidas_oidc",
-            username="eidas-person-national",
-            password="eidas-person-national",
+            username="eidas-person-pseudo",
+            password="eidas-person-pseudo",
         )
 
         submission = Submission.objects.get()
         self.assertTrue(submission.is_authenticated)
-        self.assertEqual(submission.auth_info.attribute, AuthAttribute.national_id)
-        auth_context = submission.auth_info.to_auth_context_data()
-
-        self.assertValidContext(auth_context)
-        self.assertEqual(
-            auth_context,
-            {
-                "source": "eidas",
-                "levelOfAssurance": "urn:etoegang:core:assurance-class:loa2",
-                "authorizee": {
-                    "legalSubject": {
-                        "identifierType": "nationalID",
-                        "identifier": "070770-905D",
-                        "firstName": "John",
-                        "familyName": "Doe",
-                        "dateOfBirth": "1946-01-25",
-                    },
-                },
-            },
-        )
-
-    def test_record_auth_context_for_eidas_natural_person_authentication_with_missing_legal_subject_identifier_type_claim(
-        self,
-    ):
-        OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
-            with_eidas=True,
-            options__identity_settings__legal_subject_identifier_type_claim_path=[
-                "invalid-claim"
-            ],
-        )
-
-        self._login_and_start_form(
-            "eidas_oidc", username="eidas-person", password="eidas-person"
-        )
-
-        submission = Submission.objects.get()
-        self.assertTrue(submission.is_authenticated)
-        # Assert that, in the absense of the ``legal_subject_identifier_type_claim``,
-        # ``AuthAttribute.pseudo`` was set as the ``auth_info.attribute``.
         self.assertEqual(submission.auth_info.attribute, AuthAttribute.pseudo)
         auth_context = submission.auth_info.to_auth_context_data()
 
@@ -190,7 +150,7 @@ class EIDASAuthContextTests(
                 "authorizee": {
                     "legalSubject": {
                         "identifierType": "opaque",
-                        "identifier": "123456789",
+                        "identifier": "4B75A0EA107B3D36",
                         "firstName": "John",
                         "familyName": "Doe",
                         "dateOfBirth": "1946-01-25",
@@ -198,6 +158,27 @@ class EIDASAuthContextTests(
                 },
             },
         )
+
+    def test_record_auth_context_for_eidas_natural_person_without_bsn_and_pseudo_claims_authentication(
+        self,
+    ):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas=True,
+            options__identity_settings__legal_subject_bsn_identifier_claim_path=[
+                "invalid-claim"
+            ],
+            options__identity_settings__legal_subject_pseudo_identifier_claim_path=[
+                "invalid-claim"
+            ],
+        )
+
+        self._login_and_start_form(
+            "eidas_oidc", username="eidas-person", password="eidas-person"
+        )
+
+        submission = Submission.objects.get()
+        self.assertFalse(submission.is_authenticated)
 
 
 @override_settings(ALLOWED_HOSTS=["*"])
@@ -209,7 +190,9 @@ class EIDASCompanyAuthContextTests(
         "HTTP_HOST": "localhost:8000",
     }
 
-    def test_record_auth_context_for_eidas_company_authentication(self):
+    def test_record_auth_context_for_eidas_company_and_acting_subject_with_bsn_authentication(
+        self,
+    ):
         OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eidas_company=True,
@@ -251,33 +234,25 @@ class EIDASCompanyAuthContextTests(
             },
         )
 
-    def test_record_auth_context_for_eidas_company_authentication_with_missing_acting_subject_identifier_type_claim(
+    def test_record_auth_context_for_eidas_company_and_acting_subject_with_pseudo_authentication(
         self,
     ):
         OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eidas_company=True,
-            options__identity_settings__acting_subject_identifier_type_claim_path=[
-                "invalid-claim"
-            ],
         )
 
         self._login_and_start_form(
-            "eidas_company_oidc", username="eidas-company", password="eidas-company"
+            "eidas_company_oidc",
+            username="eidas-company-pseudo",
+            password="eidas-company-pseudo",
         )
 
         submission = Submission.objects.get()
         self.assertTrue(submission.is_authenticated)
-        # Assert that, in the absense of the ``acting_subject_identifier_type_claim``,
-        # ``AuthAttribute.pseudo`` was set as the ``acting_subject_identifier_type``.
-        self.assertEqual(
-            submission.auth_info.acting_subject_identifier_type, AuthAttribute.pseudo
-        )
         auth_context = submission.auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
-        # Without the `legal_subject_identifier_claim`, expect the actingSubject
-        # identifierType to be `"opaque"`
         self.assertEqual(
             auth_context,
             {
@@ -291,7 +266,7 @@ class EIDASCompanyAuthContextTests(
                     },
                     "actingSubject": {
                         "identifierType": "opaque",
-                        "identifier": "123456789",
+                        "identifier": "4B75A0EA107B3D36",
                         "firstName": "John",
                         "familyName": "Doe",
                         "dateOfBirth": "1946-01-25",
@@ -304,6 +279,27 @@ class EIDASCompanyAuthContextTests(
                 },
             },
         )
+
+    def test_record_auth_context_for_eidas_company_without_acting_subject_bsn_and_pseudo_claims_authentication(
+        self,
+    ):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas_company=True,
+            options__identity_settings__acting_subject_bsn_identifier_claim_path=[
+                "invalid-claim"
+            ],
+            options__identity_settings__acting_subject_peseudo_identifier_claim_path=[
+                "invalid-claim"
+            ],
+        )
+
+        self._login_and_start_form(
+            "eidas_company_oidc", username="eidas-company", password="eidas-company"
+        )
+
+        submission = Submission.objects.get()
+        self.assertFalse(submission.is_authenticated)
 
 
 @override_settings(ALLOWED_HOSTS=["*"])
