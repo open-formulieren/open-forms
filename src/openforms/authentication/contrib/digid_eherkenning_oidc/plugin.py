@@ -139,7 +139,6 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, NoOptions]):
     verbose_name = _("eIDAS via OpenID Connect")
     provides_auth = (
         AuthAttribute.bsn,
-        AuthAttribute.national_id,
         AuthAttribute.pseudo,
     )
     oidc_plugin_identifier = OIDC_EIDAS_IDENTIFIER
@@ -154,8 +153,6 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, NoOptions]):
 
     def auth_info_to_auth_context(self, auth_info: AuthInfo) -> EIDASContext:
         match auth_info.attribute:
-            case AuthAttribute.national_id:
-                legal_subject_identifier_type = "nationalID"
             case AuthAttribute.bsn:
                 legal_subject_identifier_type = "bsn"
             case AuthAttribute.pseudo:
@@ -180,24 +177,25 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, NoOptions]):
     def transform_claims(
         self, options: NoOptions, normalized_claims: EIDASClaims
     ) -> FormAuth:
-        legal_subject_identifier_value = normalized_claims[
-            "legal_subject_identifier_claim"
-        ]
+        legal_subject_bsn_identifier_value = normalized_claims.get(
+            "legal_subject_bsn_identifier_claim"
+        )
+        legal_subject_pseudo_identifier_value = normalized_claims.get(
+            "legal_subject_pseudo_identifier_claim"
+        )
 
-        # If legal_subject_identifier_type isn't provided, or is unknown, fallback to
-        # pseudo.
-        if (
-            legal_subject_identifier_type := normalized_claims.get(
-                "legal_subject_identifier_type_claim"
-            )
-        ) not in AuthAttribute:
-            legal_subject_identifier_type = AuthAttribute.pseudo
+        legal_subject_identifier_type = (
+            AuthAttribute.bsn
+            if legal_subject_bsn_identifier_value is not None
+            else AuthAttribute.pseudo
+        )
 
         return {
             "plugin": self.identifier,
             "loa": str(normalized_claims.get("loa_claim", "")),
             "attribute": legal_subject_identifier_type,
-            "value": legal_subject_identifier_value,
+            "value": legal_subject_bsn_identifier_value
+            or legal_subject_pseudo_identifier_value,
             "additional_claims": {
                 "first_name": normalized_claims["legal_subject_first_name_claim"],
                 "family_name": normalized_claims["legal_subject_family_name_claim"],
@@ -227,8 +225,6 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, NoOp
 
     def auth_info_to_auth_context(self, auth_info: AuthInfo) -> EIDASCompanyContext:
         match auth_info.acting_subject_identifier_type:
-            case AuthAttribute.national_id:
-                acting_subject_identifier_type = "nationalID"
             case AuthAttribute.bsn:
                 acting_subject_identifier_type = "bsn"
             case AuthAttribute.pseudo:
@@ -259,17 +255,18 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, NoOp
     def transform_claims(
         self, options: NoOptions, normalized_claims: EIDASCompanyClaims
     ) -> FormAuth:
-        acting_subject_identifier_value = normalized_claims[
-            "acting_subject_identifier_claim"
-        ]
+        acting_subject_bsn_identifier_value = normalized_claims.get(
+            "acting_subject_bsn_identifier_claim"
+        )
+        acting_subject_pseudo_identifier_value = normalized_claims.get(
+            "acting_subject_pseudo_identifier_claim"
+        )
 
-        # If acting_subject_identifier_type isn't provided, or is unknown, fallback to pseudo.
-        if (
-            acting_subject_identifier_type := normalized_claims.get(
-                "acting_subject_identifier_type_claim"
-            )
-        ) not in AuthAttribute:
-            acting_subject_identifier_type = AuthAttribute.pseudo
+        acting_subject_identifier_type = (
+            AuthAttribute.bsn
+            if acting_subject_bsn_identifier_value is not None
+            else AuthAttribute.pseudo
+        )
 
         loa_value = str(normalized_claims.get("loa_claim", ""))
 
@@ -287,7 +284,8 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, NoOp
             "value": legal_subject_identifier_value,
             "legal_subject_identifier_value": legal_subject_identifier_value,
             "legal_subject_identifier_type": "opaque",
-            "acting_subject_identifier_value": acting_subject_identifier_value,
+            "acting_subject_identifier_value": acting_subject_bsn_identifier_value
+            or acting_subject_pseudo_identifier_value,
             "acting_subject_identifier_type": acting_subject_identifier_type,
             "mandate_context": mandate_context,
             "additional_claims": {

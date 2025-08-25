@@ -47,31 +47,30 @@ EIDAS_SCHEMA = {
             "description": _("eIDAS identity settings."),
             "type": "object",
             "required": [
-                "legal_subject_identifier_claim_path",
-                "legal_subject_identifier_type_claim_path",
+                "legal_subject_bsn_identifier_claim_path",
+                "legal_subject_pseudo_identifier_claim_path",
                 "legal_subject_first_name_claim_path",
                 "legal_subject_family_name_claim_path",
                 "legal_subject_date_of_birth_claim_path",
             ],
             "properties": {
-                "legal_subject_identifier_claim_path": {
-                    "title": ("Legal subject identifier claim path"),
+                "legal_subject_bsn_identifier_claim_path": {
+                    "title": ("Legal subject bsn identifier claim path"),
                     "description": _(
-                        "Path to the claim value holding the identifier of the authenticated user."
+                        "Path to the claim value holding the bsn identifier of the authenticated user."
                     ),
-                    "default": ["urn:etoegang:1.12:EntityConcernedID:PseudoID"],
+                    "default": ["urn:etoegang:1.12:EntityConcernedID:BSN"],
                     "type": "array",
                     "items": {
                         "type": "string",
                     },
                 },
-                "legal_subject_identifier_type_claim_path": {
-                    "title": _("Legal subject identifier type claim path"),
+                "legal_subject_pseudo_identifier_claim_path": {
+                    "title": _("Legal subject pseudo identifier claim path"),
                     "description": _(
-                        "Path to the claim value that specifies how the person identifier claim must be interpreted. "
-                        "The expected claim value is one of: 'bsn', 'pseudo' or 'national_id'."
+                        "Path to the claim value holding the pseudo identifier of the authenticated user."
                     ),
-                    "default": ["namequalifier"],
+                    "default": ["urn:etoegang:1.12:EntityConcernedID:PseudoID"],
                     "type": "array",
                     "items": {
                         "type": "string",
@@ -160,8 +159,8 @@ EIDAS_COMPANY_SCHEMA = {
             "required": [
                 "legal_subject_identifier_claim_path",
                 "legal_subject_name_claim_path",
-                "acting_subject_identifier_claim_path",
-                "acting_subject_identifier_type_claim_path",
+                "acting_subject_bsn_identifier_claim_path",
+                "acting_subject_pseudo_identifier_claim_path",
                 "acting_subject_first_name_claim_path",
                 "acting_subject_family_name_claim_path",
                 "acting_subject_date_of_birth_claim_path",
@@ -192,25 +191,23 @@ EIDAS_COMPANY_SCHEMA = {
                         "type": "string",
                     },
                 },
-                "acting_subject_identifier_claim_path": {
-                    "title": _("Acting subject identifier claim path"),
+                "acting_subject_bsn_identifier_claim_path": {
+                    "title": _("Acting subject bsn identifier claim path"),
                     "description": _(
-                        "Path to the claim value that holds identifier of the acting subject."
+                        "Path to the claim value holding the bsn identifier of the acting subject."
                     ),
-                    "default": ["urn:etoegang:1.12:EntityConcernedID:PseudoID"],
+                    "default": ["urn:etoegang:1.12:EntityConcernedID:BSN"],
                     "type": "array",
                     "items": {
                         "type": "string",
                     },
                 },
-                "acting_subject_identifier_type_claim_path": {
-                    "title": _("Acting subject identifier type claim path"),
+                "acting_subject_pseudo_identifier_claim_path": {
+                    "title": _("Acting subject pseudo identifier claim path"),
                     "description": _(
-                        "Path to the claim value that specifies how the acting subject identifier claim must be "
-                        "interpreted. The expected claim value is one of: 'bsn', 'pseudo' or "
-                        "'national_id'."
+                        "Path to the claim value holding the pseudo identifier of the acting subject."
                     ),
-                    "default": ["namequalifier"],
+                    "default": ["urn:etoegang:1.12:EntityConcernedID:PseudoID"],
                     "type": "array",
                     "items": {
                         "type": "string",
