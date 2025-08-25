@@ -2,6 +2,7 @@ from django.http import HttpRequest
 from django.test import RequestFactory, TestCase
 
 from mozilla_django_oidc_db.registry import register as oidc_register
+from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
 from openforms.authentication.tests.factories import AttributeGroupFactory
@@ -9,7 +10,6 @@ from openforms.authentication.tests.utils import URLsHelper
 from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.contrib.auth_oidc.typing import ClaimProcessingInstructions
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.oidc import OIDCMixin
 
 from ...config import YiviOptions
 from ...constants import PLUGIN_ID as YIVI_PLUGIN_ID

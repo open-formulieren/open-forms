@@ -31,10 +31,6 @@
                 "tokenproxy"
             ],
             [
-                "mozilla_django_oidc_db",
-                "openidconnectconfig"
-            ],
-            [
                 "otp_static",
                 "staticdevice"
             ],

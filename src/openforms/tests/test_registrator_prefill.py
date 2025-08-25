@@ -6,6 +6,7 @@ from django.test import override_settings
 
 import requests_mock
 from django_webtest import WebTest
+from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 from rest_framework import status
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -22,7 +23,6 @@ from openforms.prefill.contrib.haalcentraal_brp.constants import AttributesV1
 from openforms.submissions.models import Submission
 from openforms.utils.tests.concurrent import mock_parallel_executor
 from openforms.utils.tests.keycloak import keycloak_login
-from openforms.utils.tests.oidc import OIDCMixin
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.utils.urls import reverse_plus
 

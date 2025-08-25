@@ -18,12 +18,12 @@ from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
 from mozilla_django_oidc_db.models import OIDCClient
+from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 
 from openforms.contrib.auth_oidc.tests.factories import (
     OFOIDCClientFactory,
 )
 from openforms.utils.tests.keycloak import keycloak_login
-from openforms.utils.tests.oidc import OIDCMixin
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import User
