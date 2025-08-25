@@ -134,8 +134,11 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
     def test_obfuscate_claims_eidas(self):
         oidc_client = OFOIDCClientFactory.create(
             with_eidas=True,
-            options__identity_settings__legal_subject_identifier_claim_path=[
-                "person_identifier"
+            options__identity_settings__legal_subject_bsn_identifier_claim_path=[
+                "person_bsn_identifier"
+            ],
+            options__identity_settings__legal_subject_pseudo_identifier_claim_path=[
+                "person_pseudo_identifier"
             ],
             options__identity_settings__legal_subject_first_name_claim_path=[
                 "first_name"
@@ -151,7 +154,8 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
         assert isinstance(plugin, OFBaseOIDCPluginProtocol)
         obfuscated_claims = obfuscate_claims(
             {
-                "person_identifier": "123456789",
+                "person_bsn_identifier": "123456789",
+                "person_pseudo_identifier": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
                 "first_name": "John",
                 "family_name": "Doe",
             },
@@ -161,7 +165,8 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
         self.assertEqual(
             obfuscated_claims,
             {
-                "person_identifier": "*******89",
+                "person_bsn_identifier": "*******89",
+                "person_pseudo_identifier": "**********************************************************************************4lvxEzdpgtnzCt5TbKJ4cnd0gL",
                 "first_name": "****",
                 "family_name": "***",
             },
@@ -173,8 +178,11 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
             options__identity_settings__legal_subject_identifier_claim_path=[
                 "company_identifier"
             ],
-            options__identity_settings__acting_subject_identifier_claim_path=[
-                "person_identifier"
+            options__identity_settings__acting_subject_bsn_identifier_claim_path=[
+                "person_bsn_identifier"
+            ],
+            options__identity_settings__acting_subject_pseudo_identifier_claim_path=[
+                "person_pseudo_identifier"
             ],
             options__identity_settings__acting_subject_first_name_claim_path=[
                 "first_name"
@@ -191,7 +199,8 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
         obfuscated_claims = obfuscate_claims(
             {
                 "company_identifier": "123456789",
-                "person_identifier": "000111222",
+                "person_bsn_identifier": "000111222",
+                "person_pseudo_identifier": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
                 "family_name": "Doe",
                 "first_name": "John",
             },
@@ -201,7 +210,8 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
         self.assertEqual(
             obfuscated_claims,
             {
-                "person_identifier": "*******22",
+                "person_bsn_identifier": "*******22",
+                "person_pseudo_identifier": "**********************************************************************************4lvxEzdpgtnzCt5TbKJ4cnd0gL",
                 "company_identifier": "*******89",
                 "first_name": "****",
                 "family_name": "***",

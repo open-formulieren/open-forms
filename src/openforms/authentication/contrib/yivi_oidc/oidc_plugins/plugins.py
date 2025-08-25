@@ -137,12 +137,16 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
             self.get_claim_processing_instructions(
                 claims, config, additional_attributes
             ),
+            self.validate_processed_claims,
             # Yivi cannot be strict, as all its attributes should be optional!
             strict=False,
         )
         return processed_claims
 
     def validate_settings(self) -> None:
+        pass
+
+    def validate_processed_claims(self, claims: JSONObject):
         pass
 
     def handle_callback(self, request: HttpRequest) -> HttpResponse:

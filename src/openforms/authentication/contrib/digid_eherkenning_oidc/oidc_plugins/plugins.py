@@ -92,6 +92,7 @@ class BaseDigiDeHerkenningPlugin(
             processed_claims = process_claims(
                 payload,
                 self.get_claim_processing_instructions(),
+                self.validate_processed_claims,
                 self.strict_mode(),
             )
         except ValueError as exc:
@@ -386,23 +387,39 @@ class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
         config = self.get_config()
 
         return [
-            config.options["identity_settings"]["legal_subject_identifier_claim_path"],
+            config.options["identity_settings"][
+                "legal_subject_bsn_identifier_claim_path"
+            ],
+            config.options["identity_settings"][
+                "legal_subject_pseudo_identifier_claim_path"
+            ],
             config.options["identity_settings"]["legal_subject_first_name_claim_path"],
             config.options["identity_settings"]["legal_subject_family_name_claim_path"],
         ]
 
+    def validate_processed_claims(self, claims: JSONObject):
+        is_valid = (
+            "legal_subject_bsn_identifier_claim" in claims
+            or "legal_subject_pseudo_identifier_claim" in claims
+        )
+        if not is_valid:
+            raise ValueError(
+                f"{OIDC_EIDAS_IDENTIFIER} misses either a "
+                "'legal_subject_bsn_identifier_claim' or "
+                "'legal_subject_pseudo_identifier_claim' claim"
+            )
+
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
 
+        # We expect one of `legal_subject_bsn_identifier_claim_path` or
+        # `legal_subject_pseudo_identifier_claim_path` is provided. But because of the
+        # "one or the other" relation, we mark them both as optional, and check the
+        # presence of the legal subject identification afterwards using
+        # ``validate_processed_claims``.
         # TODO: are these always required??
         return {
             "always_required_claims": [
-                {
-                    "path_in_claim": config.options["identity_settings"][
-                        "legal_subject_identifier_claim_path"
-                    ],
-                    "processed_path": ["legal_subject_identifier_claim"],
-                },
                 {
                     "path_in_claim": config.options["identity_settings"][
                         "legal_subject_first_name_claim_path"
@@ -426,9 +443,15 @@ class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
             "optional_claims": [
                 {
                     "path_in_claim": config.options["identity_settings"][
-                        "legal_subject_identifier_type_claim_path"
+                        "legal_subject_bsn_identifier_claim_path"
                     ],
-                    "processed_path": ["legal_subject_identifier_type_claim"],
+                    "processed_path": ["legal_subject_bsn_identifier_claim"],
+                },
+                {
+                    "path_in_claim": config.options["identity_settings"][
+                        "legal_subject_pseudo_identifier_claim_path"
+                    ],
+                    "processed_path": ["legal_subject_pseudo_identifier_claim"],
                 },
             ],
             "loa_claims": {
@@ -450,16 +473,38 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
 
         return [
             config.options["identity_settings"]["legal_subject_identifier_claim_path"],
-            config.options["identity_settings"]["acting_subject_identifier_claim_path"],
+            config.options["identity_settings"][
+                "acting_subject_bsn_identifier_claim_path"
+            ],
+            config.options["identity_settings"][
+                "acting_subject_pseudo_identifier_claim_path"
+            ],
             config.options["identity_settings"]["acting_subject_first_name_claim_path"],
             config.options["identity_settings"][
                 "acting_subject_family_name_claim_path"
             ],
         ]
 
+    def validate_processed_claims(self, claims: JSONObject):
+        is_valid = (
+            "acting_subject_bsn_identifier_claim" in claims
+            or "acting_subject_pseudo_identifier_claim" in claims
+        )
+        if not is_valid:
+            raise ValueError(
+                f"{OIDC_EIDAS_IDENTIFIER} misses either a "
+                "'acting_subject_bsn_identifier_claim' or "
+                "'acting_subject_pseudo_identifier_claim' claim"
+            )
+
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
 
+        # We expect one of `acting_subject_bsn_identifier_claim_path` or
+        # `acting_subject_pseudo_identifier_claim_path` is provided. But because of the
+        # "one or the other" relation, we mark them both as optional, and check the
+        # presence of the acting subject identification afterwards using
+        # ``validate_processed_claims``.
         # TODO: are these always required??
         return {
             "always_required_claims": [
@@ -474,12 +519,6 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
                         "legal_subject_identifier_claim_path"
                     ],
                     "processed_path": ["legal_subject_identifier_claim"],
-                },
-                {
-                    "path_in_claim": config.options["identity_settings"][
-                        "acting_subject_identifier_claim_path"
-                    ],
-                    "processed_path": ["acting_subject_identifier_claim"],
                 },
                 {
                     "path_in_claim": config.options["identity_settings"][
@@ -510,9 +549,15 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
             "optional_claims": [
                 {
                     "path_in_claim": config.options["identity_settings"][
-                        "acting_subject_identifier_type_claim_path"
+                        "acting_subject_bsn_identifier_claim_path"
                     ],
-                    "processed_path": ["acting_subject_identifier_type_claim"],
+                    "processed_path": ["acting_subject_bsn_identifier_claim"],
+                },
+                {
+                    "path_in_claim": config.options["identity_settings"][
+                        "acting_subject_pseudo_identifier_claim_path"
+                    ],
+                    "processed_path": ["acting_subject_pseudo_identifier_claim"],
                 },
             ],
             "loa_claims": {

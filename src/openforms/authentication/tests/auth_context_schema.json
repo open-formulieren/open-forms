@@ -528,11 +528,10 @@
         "required": ["identifierType", "identifier", "firstName", "familyName", "dateOfBirth"],
         "properties": {
           "identifierType": {
-            "description": "A natural person can be identified by a range of identification values.",
+            "description": "A natural person can be identified by BSN or opaque.",
             "type": "string",
             "enum": [
               "bsn",
-              "nationalID",
               "opaque"
             ]
           },

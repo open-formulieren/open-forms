@@ -53,10 +53,15 @@ VCR.py). The primary reason this setup exists, is for automated testing reasons.
 - `admin` / `admin`, intended to create as django user (can be made staff). The email address is
   `admin@example.com`. Should get the `employeeId` claim (See below for how to add the custom
   claim).
-- `eidas-person` / `eidas-person`, has the `person_identifier`, `person_identifier_type`,
-  `first_name`, `family_name`, `birthdate`, `service_id` and `service_uuid` attributes (for eIDAS
-  with natural person)
-- `eidas-company` / `eidas-company`, has the `person_identifier`, `person_identifier_type`,
+- `eidas-person` / `eidas-person`, has the `person_bsn_identifier`, `first_name`, `family_name`,
+  `birthdate`, `service_id` and `service_uuid` attributes (for eIDAS with natural person)
+- `eidas-person-pseudo` / `eidas-person-pseudo`, has the `person_pseudo_identifier`, `first_name`,
+  `family_name`, `birthdate`, `service_id` and `service_uuid` attributes (for eIDAS with natural
+  person)
+- `eidas-company` / `eidas-company`, has the `person_bsn_identifier`, `company_identifier`,
+  `company_identifier_type`, `company_name`, `first_name`, `family_name`, `birthdate`, `service_id`
+  and `service_uuid` attributes (for eIDAS with company)
+- `eidas-company-pseudo` / `eidas-company-pseudo`, has the `person_bsn_identifier`,
   `company_identifier`, `company_identifier_type`, `company_name`, `first_name`, `family_name`,
   `birthdate`, `service_id` and `service_uuid` attributes (for eIDAS with company)
 
