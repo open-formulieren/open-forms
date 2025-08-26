@@ -3648,6 +3648,45 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/prefill/plugins/yivi/attribute-groups:
+    get:
+      operationId: prefill_plugins_yivi_attribute_groups_list
+      description: |-
+        List all Yivi prefill attributes, based on the Yivi attribute groups.
+
+        This endpoint lists all available Yivi attribute groups, and is used for Yivi
+        authentication and prefill plugin configuration. The `prefill_attributes` and
+        `is_virtual` are solely used for the Yivi prefill plugin configuration.
+
+        `prefill_attributes` contains the attributes that are derived from the
+        attribute group.
+
+        `is_virtual` is used for attribute groups that don't actually exist. These attribute
+        groups are added to pass any additional Yivi prefill attributes to the frontend
+        (like the prefill attributes for identifier and loa values).
+      summary: List available Yivi prefill attributes
+      tags:
+      - prefill
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/YiviPrefillAttribute'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/products:
     get:
       operationId: products_list
@@ -9789,6 +9828,17 @@ components:
       required:
       - id
       - label
+    PrefillAttributeChoice:
+      type: object
+      properties:
+        label:
+          type: string
+          default: ''
+          description: Prefill attribute label
+        value:
+          type: string
+          default: ''
+          description: Prefill attribute value
     PrefillIdentifierRoleEnum:
       enum:
       - main
@@ -10807,6 +10857,29 @@ components:
       - componentKey
       - email
       - submission
+    YiviPrefillAttribute:
+      type: object
+      properties:
+        attributeGroupUuid:
+          type: string
+          format: uuid
+          description: The UUID of the related attribute group.
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrefillAttributeChoice'
+          default: []
+          title: Prefill attributes
+          description: Prefill attributes derived from the attribute group with uuid`attribute_group_uuid`.
+            The `attributes` should only be used for prefill, ifthe corresponding
+            Yivi attribute group is used in the authenticationbackend.
+        isStatic:
+          type: boolean
+          default: false
+          description: Static prefill attributes aren't related to any attribute groups,
+            and canalways be used for Yivi prefill.
+      required:
+      - attributeGroupUuid
     _AppointmentProduct:
       type: object
       properties:
