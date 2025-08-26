@@ -729,7 +729,10 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         )
         self._add_submission_to_session(submission)
 
-        with patch("openforms.formio.dynamic_config.register", new=register):
+        with (
+            patch("openforms.formio.dynamic_config.register", new=register),
+            patch("openforms.formio.visibility.register", new=register),
+        ):
             response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
