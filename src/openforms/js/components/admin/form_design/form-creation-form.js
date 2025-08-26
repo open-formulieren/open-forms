@@ -50,6 +50,7 @@ import {
   REGISTRATION_VARIABLES_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
   THEMES_ENDPOINT,
+  YIVI_PREFILL_ATTRIBUTES_ENDPOINT,
 } from './constants';
 import {loadForm, loadFromBackend, saveCompleteForm} from './data';
 import {updateWarningsValidationError} from './logic/utils';
@@ -142,6 +143,7 @@ const initialFormState = {
   logicRules: [],
   formVariables: [],
   staticVariables: [],
+  yiviPrefillAttributes: [],
   // backend error handling
   validationErrors: [],
   tabsWithErrors: [],
@@ -919,6 +921,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
     {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
     {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
     {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
+    {endpoint: YIVI_PREFILL_ATTRIBUTES_ENDPOINT, stateVar: 'yiviPrefillAttributes'},
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: THEMES_ENDPOINT, stateVar: 'availableThemes'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
@@ -1224,6 +1227,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           formVariables: state.formVariables,
           staticVariables: state.staticVariables,
           registrationPluginsVariables: state.registrationPluginsVariables,
+          yiviPrefillAttributes: state.yiviPrefillAttributes,
           plugins: {
             availableAuthPlugins: state.availableAuthPlugins,
             selectedAuthPlugins: state.selectedAuthPlugins,

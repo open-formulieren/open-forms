@@ -18,4 +18,8 @@ urlpatterns += [
         "plugins/objects-api/",
         include("openforms.prefill.contrib.objects_api.api.urls"),
     ),
+    path(
+        "plugins/yivi/",
+        include("openforms.prefill.contrib.yivi.api.urls"),
+    ),
 ]
