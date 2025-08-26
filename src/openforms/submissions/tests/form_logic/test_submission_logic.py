@@ -187,7 +187,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             json_logic_trigger={"!=": [{"var": "var1"}, 10]},
             actions=[
                 {
-                    "form_step": f"http://example.com{form_step2_path}",
+                    "form_step_uuid": str(step2.uuid),
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",
@@ -743,94 +743,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     "hidden": False,
                 },
             )
-
-    @tag("gh-2056")
-    def test_components_hidden_by_frontend_have_correct_empty_value(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "key": "radio",
-                        "type": "radio",
-                        "values": [
-                            {"label": "yes", "value": "yes"},
-                            {"label": "no", "value": "no"},
-                        ],
-                    },
-                    {
-                        "type": "file",
-                        "key": "file",
-                        "hidden": False,
-                        "conditional": {"eq": "yes", "show": True, "when": "radio"},
-                        "clearOnHide": True,
-                    },
-                ]
-            },
-        )
-
-        submission = SubmissionFactory.create(form=form)
-
-        self._add_submission_to_session(submission)
-        logic_check_endpoint = reverse(
-            "api:submission-steps-logic-check",
-            kwargs={
-                "submission_uuid": submission.uuid,
-                "step_uuid": form_step.uuid,
-            },
-        )
-        response = self.client.post(logic_check_endpoint, {"data": {"radio": "no"}})
-
-        data = response.json()
-
-        self.assertEqual([], data["step"]["data"]["file"])
-
-    def test_components_hidden_by_frontend_after_filling_have_correct_empty_value(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "key": "radio",
-                        "type": "radio",
-                        "values": [
-                            {"label": "yes", "value": "yes"},
-                            {"label": "no", "value": "no"},
-                        ],
-                    },
-                    {
-                        "type": "file",
-                        "key": "file",
-                        "hidden": False,
-                        "conditional": {"eq": "yes", "show": True, "when": "radio"},
-                        "clearOnHide": True,
-                    },
-                ]
-            },
-        )
-
-        submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=form_step,
-            data={"radio": "yes", "file": [{"some": "file data"}]},
-        )
-
-        self._add_submission_to_session(submission)
-        logic_check_endpoint = reverse(
-            "api:submission-steps-logic-check",
-            kwargs={
-                "submission_uuid": submission.uuid,
-                "step_uuid": form_step.uuid,
-            },
-        )
-        response = self.client.post(logic_check_endpoint, {"data": {"radio": "no"}})
-
-        data = response.json()
-
-        self.assertEqual([], data["step"]["data"]["file"])
 
     @tag("gh-2054")
     def test_hidden_components_dont_get_cleared_if_they_are_already_empty(self):

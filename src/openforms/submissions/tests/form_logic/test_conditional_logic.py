@@ -1,6 +1,6 @@
 from unittest import expectedFailure
 
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from openforms.formio.service import FormioData
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -75,6 +75,17 @@ class ConditionalLogicTests(TestCase):
                     "clearOnHide": True,
                 },
                 {
+                    "type": "file",
+                    "key": "file",
+                    "hidden": False,
+                    "conditional": {
+                        "eq": False,
+                        "show": "hide",
+                        "when": "textfieldVisible",
+                    },
+                    "clearOnHide": True,
+                },
+                {
                     "type": "textfield",
                     "key": "textfieldConditionallyHidden2",
                     "label": "Textfield to hide 2",
@@ -90,6 +101,7 @@ class ConditionalLogicTests(TestCase):
                 "textfieldVisible": "hide",
                 "textfieldConditionallyHidden": "clear me",
                 "textfieldConditionallyHidden2": "clear me",
+                "file": [{"clear": "me"}],
             },
         )
         step = submission.submissionstep_set.first()
@@ -104,6 +116,7 @@ class ConditionalLogicTests(TestCase):
                 "textfieldVisible": "hide",
                 "textfieldConditionallyHidden": "",
                 "textfieldConditionallyHidden2": "",
+                "file": [],
             },
         )
         self.assertEqual(step.unsaved_data, {})
@@ -581,4 +594,35 @@ class ConditionalLogicTests(TestCase):
                 "textfield2": "",
             },
         )
+        self.assertEqual(step.unsaved_data, {})
+
+    @tag("gh-2056")
+    def test_file_component_hidden_by_frontend_has_correct_empty_value(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "radio",
+                    "type": "radio",
+                    "values": [
+                        {"label": "yes", "value": "yes"},
+                        {"label": "no", "value": "no"},
+                    ],
+                },
+                {
+                    "type": "file",
+                    "key": "file",
+                    "hidden": False,
+                    "conditional": {"eq": "yes", "show": True, "when": "radio"},
+                    "clearOnHide": True,
+                },
+            ]
+        )
+
+        step = submission.submissionstep_set.first()
+
+        evaluate_form_logic(submission, step)
+
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
+        self.assertEqual(data["file"], [])
         self.assertEqual(step.unsaved_data, {})

@@ -137,14 +137,22 @@ class DownloadSubmissionReportTests(APITestCase):
             ("number", "1"),
             (
                 "partners",
-                '[{"bsn": "999970136", "firstNames": "Pia", "initials": "P.", "affixes": "", "lastName": "Pauw", "dateOfBirth": "April 1, 1989", "dateOfBirthPrecision": "date"}]',
+                (
+                    '[{"bsn": "999970136", "firstNames": "Pia", "initials": "P.", '
+                    '"affixes": "", "lastName": "Pauw", '
+                    '"dateOfBirth": "April 1, 1989", "dateOfBirthPrecision": "date"}]'
+                ),
             ),
             (
                 "children",
-                '[{"bsn": "999970409","affixes": "van","initials": "P.","lastName": "Paassen","firstNames": "Pero","dateOfBirth": "Feb. 1, 2023","dateOfBirthPrecision": "date","selected":"False"}]',
+                (
+                    '[{"bsn": "999970409","affixes": "van","initials": "P.",'
+                    '"lastName": "Paassen","firstNames": "Pero",'
+                    '"dateOfBirth": "Feb. 1, 2023","dateOfBirthPrecision": "date",'
+                    '"selected":"False"}]'
+                ),
             ),
-            ("password", "Panda1911!"),  # XXX Why is this widget even an option?
-            ("phonenumber", "+49 1234 567 890"),
+            ("phoneNumber", "+49 1234 567 890"),
             ("postcode", "3744 AA"),
             ("radio", "Radio number one"),
             ("select", "A fine selection"),
@@ -153,7 +161,6 @@ class DownloadSubmissionReportTests(APITestCase):
             ("textarea", "Largish predetermined ASCII"),
             ("textfield", "Short predetermined ASCII"),
             ("time", "11:50 p.m."),  # 23:50
-            ("updatenote", "C#"),
         ]
 
         components = []  # FormDefiniton
@@ -283,7 +290,10 @@ class DownloadSubmissionReportTests(APITestCase):
                         },
                     ]
 
-        # pop the last few components into structural components
+        # Add editgrid and pop the last few components into layout components fieldset
+        # and columns. Note that popping into an editgrid is not desirable, as the
+        # submission data for the editgrid will change when a component is removed from
+        # or added to this test. This can result in failures that are difficult to debug
         components.extend(
             [
                 {
@@ -327,7 +337,13 @@ class DownloadSubmissionReportTests(APITestCase):
                     "hidden": False,
                     "label": "Untranslated Repeating Group label",
                     "groupLabel": "Untranslated Repeating Group Item label",
-                    "components": [components.pop()],
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInEditgrid",
+                            "label": "Textfield in editgrid",
+                        }
+                    ],
                     "openForms": {
                         "translations": {
                             "en": {
@@ -378,7 +394,7 @@ class DownloadSubmissionReportTests(APITestCase):
                 "checkboxkey": True,
                 "currencykey": "1100000",
                 "datekey": "1911-06-29",
-                "editgrid1": [{"textareakey": "Largish predetermined ASCII"}],
+                "editgrid1": [{"textfieldInEditgrid": "Foo bar"}],
                 "emailkey": "hostmaster@example.org",
                 "filekey": [{"originalName": "download(2).pdf"}],
                 "ibankey": "NL56 INGB 0705 0051 00",
@@ -418,8 +434,7 @@ class DownloadSubmissionReportTests(APITestCase):
                         "__id": UUID("2232657a-cb04-467d-9ded-6eb7a4819cc4"),
                     },
                 ],
-                "passwordkey": "Panda1911!",
-                "phonenumberkey": "+49 1234 567 890",
+                "phoneNumberkey": "+49 1234 567 890",
                 "postcodekey": "3744 AA",
                 "radiokey": "radioOne",
                 "selectkey": "selectOne",
@@ -433,7 +448,6 @@ class DownloadSubmissionReportTests(APITestCase):
                 "textareakey": "Largish predetermined ASCII",
                 "textfieldkey": "Short predetermined ASCII",
                 "timekey": "23:50",
-                "updatenotekey": "C#",
                 "interpolkey": True,
             },
         )
@@ -510,9 +524,6 @@ class DownloadSubmissionReportTests(APITestCase):
             )
         )
         self.assertEqual(tested_plugins, plugins, "Untested component plugins!")
-
-        # For the lolz, check this again. Fine™ :ok_hand:
-        self.assertIn("Panda1911!", html_report)
 
     @patch(
         "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}

@@ -783,7 +783,7 @@ class ComponentModificationTests(TestCase):
             },
             actions=[
                 {
-                    "component": "step2_textfield1",
+                    "component": "step2_textfield",
                     "action": {
                         "name": "Hide element",
                         "type": "property",

@@ -249,7 +249,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 {"type": "time", "key": "time"},
                 {"type": "date", "key": "date"},
                 {"type": "datetime", "key": "datetime"},
-                {"type": "string", "key": "result"},
+                {"type": "textfield", "key": "result"},
                 {"type": "date", "key": "resultDate"},
                 {"type": "datetime", "key": "resultDatetime"},
             ]
