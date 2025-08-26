@@ -8,8 +8,8 @@ from rest_framework.reverse import reverse
 from openforms.logging import logevent
 
 from ..constants import PostSubmissionEvents
-from ..metrics import completion_counter
-from ..models import Submission
+from ..metrics import attachments_per_submission, completion_counter
+from ..models import Submission, SubmissionFileAttachment
 from ..signals import submission_complete
 from ..tasks import on_post_submission_event
 from ..tokens import submission_status_token_generator
@@ -69,12 +69,14 @@ class SubmissionCompletionMixin:
         )
 
         form = submission.form
-        completion_counter.add(
-            1,
-            {
-                "form.uuid": str(form.uuid),
-                "form.name": str(form.name),
-            },
-        )
+        metric_attributes = {
+            "form.uuid": str(form.uuid),
+            "form.name": str(form.name),
+        }
+        completion_counter.add(1, metric_attributes)
+        num_attachments = SubmissionFileAttachment.objects.filter(
+            submission_step__submission=submission
+        ).count()
+        attachments_per_submission.record(num_attachments, metric_attributes)
 
         return status_url
