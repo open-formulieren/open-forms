@@ -47,6 +47,10 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     )
     additional_attributes_groups = serializers.SlugRelatedField(
         slug_field="uuid",
+        # Because our export data is just a list of uuids, we need to manually set the
+        # value of this field as list of strings.
+        # Otherwise, the app expects the import data to be a list of AttributeGroup
+        # objects.
         queryset=AttributeGroup.objects.annotate(
             str_uuid=Cast("uuid", output_field=CharField())
         ).values_list("str_uuid", flat=True),
@@ -83,15 +87,21 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         if not self.context.get("is_import", False):
             return
 
-        # Pre-process 'additional_attributes_groups' before DRF validates it
         attribute_groups = data.get("additional_attributes_groups", [])
-        valid_choices = AttributeGroup.objects.annotate(
-            str_uuid=Cast("uuid", output_field=CharField())
-        ).values_list("str_uuid", flat=True)
+        if not attribute_groups:
+            return
 
-        # Filter out invalid attribute groups
+        attribute_groups_map = dict(AttributeGroup.objects.values_list("name", "uuid"))
+
+        # If we encounter an attribute_group that uses the old notation (attribute_group
+        # name as identifier) and we have an attributeGroup with the same name, we use
+        # the uuid of that known attributeGroup as identifier.
+        # Otherwise, we just use the imported data
         data["additional_attributes_groups"] = [
-            group for group in attribute_groups if group in valid_choices
+            group
+            if group not in attribute_groups_map
+            else str(attribute_groups_map[group])
+            for group in attribute_groups
         ]
 
     def to_internal_value(self, data: YiviOptions) -> YiviOptions:
