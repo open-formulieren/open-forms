@@ -55,8 +55,7 @@ class YiviPrefill(BasePlugin):
         # Check if the user is authenticated using the required plugin, and resulted into
         # the right auth attribute.
         if (
-            not submission.is_authenticated
-            or not cls.verify_used_auth_plugin(submission)
+            not cls.verify_used_auth_plugin(submission)
             or not (
                 cls.requires_auth
                 and submission.auth_info.attribute in cls.requires_auth
