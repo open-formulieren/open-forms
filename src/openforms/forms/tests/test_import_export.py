@@ -1595,7 +1595,7 @@ class ImportExportTests(TempdirMixin, TestCase):
 
     def test_import_form_with_yivi_auth_backend(self):
         AttributeGroupFactory(
-            name="known_attributes", uuid="00000000-0000-0000-0000-12345678abcd"
+            name="known_attributes", uuid="a1c9df69-927c-4390-be26-f39daf107691"
         )
         resources = {
             "forms": [
@@ -1614,7 +1614,66 @@ class ImportExportTests(TempdirMixin, TestCase):
                                     "kvk",
                                 ],
                                 "additional_attributes_groups": [
-                                    "00000000-0000-0000-0000-12345678abcd",
+                                    "a1c9df69-927c-4390-be26-f39daf107691",
+                                ],
+                                "bsn_loa": DigiDAssuranceLevels.substantial,
+                                "kvk_loa": AssuranceLevels.low,
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        imported_form = Form.objects.get(slug="test-form")
+        authentication_backends = imported_form.auth_backends.all()
+        assert len(authentication_backends) == 1
+
+        auth_backend = authentication_backends[0]
+
+        # Expect all authentication backend data to be imported
+        self.assertEqual(auth_backend.backend, "yivi_oidc")
+        self.assertEqual(
+            auth_backend.options["bsn_loa"], DigiDAssuranceLevels.substantial
+        )
+        self.assertEqual(auth_backend.options["kvk_loa"], AssuranceLevels.low)
+        self.assertEqual(auth_backend.options["authentication_options"], ["bsn", "kvk"])
+        self.assertEqual(
+            auth_backend.options["additional_attributes_groups"],
+            ["a1c9df69-927c-4390-be26-f39daf107691"],
+        )
+
+    def test_import_form_with_yivi_auth_backend_with_known_old_additional_attributes_groups_reference_updates_options(
+        self,
+    ):
+        AttributeGroupFactory(
+            name="known_attributes", uuid="a1c9df69-927c-4390-be26-f39daf107691"
+        )
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "auth_backends": [
+                        {
+                            "backend": "yivi_oidc",
+                            "options": {
+                                "authentication_options": [
+                                    "bsn",
+                                    "kvk",
+                                ],
+                                "additional_attributes_groups": [
+                                    # The name of the previously defined attributeGroup
+                                    "known_attributes",
                                 ],
                                 "bsn_loa": DigiDAssuranceLevels.substantial,
                                 "kvk_loa": AssuranceLevels.low,
@@ -1639,16 +1698,11 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         self.assertEqual(auth_backend.backend, "yivi_oidc")
         self.assertEqual(
-            auth_backend.options["bsn_loa"], DigiDAssuranceLevels.substantial
-        )
-        self.assertEqual(auth_backend.options["kvk_loa"], AssuranceLevels.low)
-        self.assertEqual(auth_backend.options["authentication_options"], ["bsn", "kvk"])
-        self.assertEqual(
             auth_backend.options["additional_attributes_groups"],
-            ["00000000-0000-0000-0000-12345678abcd"],
+            ["a1c9df69-927c-4390-be26-f39daf107691"],
         )
 
-    def test_import_form_with_yivi_auth_backend_with_unknown_additional_attributes_groups(
+    def test_import_form_with_yivi_auth_backend_with_unknown_additional_attributes_groups_raises_exception(
         self,
     ):
         AttributeGroupFactory(
@@ -1683,19 +1737,14 @@ class ImportExportTests(TempdirMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        call_command("import", import_file=self.filepath)
+        with self.assertRaises(CommandError) as exc:
+            call_command("import", import_file=self.filepath)
 
-        imported_form = Form.objects.get(slug="test-form")
-        authentication_backends = imported_form.auth_backends.all()
-        assert len(authentication_backends) == 1
+        error_detail = exc.exception.args[0].detail["auth_backends"][0]["options"][
+            "additional_attributes_groups"
+        ][0]
 
-        auth_backend = authentication_backends[0]
-
-        # Expect only the known scope to be present
-        self.assertEqual(
-            auth_backend.options["additional_attributes_groups"],
-            ["447aad2c-dc7d-4220-ba5c-dd15183c7a02"],
-        )
+        self.assertEqual(error_detail.code, "does_not_exist")
 
 
 class ExportObjectsAPITests(TempdirMixin, TestCase):
