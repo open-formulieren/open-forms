@@ -734,6 +734,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+    # TODO-5134: this test does not assert anything related to clear on hide
     @tag("gh-5191")
     def test_validate_map_component_hidden_and_clear_on_hide(self):
         submission = SubmissionFactory.create(
@@ -770,7 +771,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             actions=[
                 {
                     "uuid": "981ebf58-4d2e-4b1f-bf6b-709a52104714",
-                    "component": "kaart",
+                    "component": "map",
                     "formStepUuid": None,
                     "action": {
                         "type": "property",
