@@ -823,7 +823,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             actions=[
                 {
                     "uuid": "981ebf58-4d2e-4b1f-bf6b-709a52104714",
-                    "component": "kaart",
+                    "component": "map",
                     "formStepUuid": None,
                     "action": {
                         "type": "property",

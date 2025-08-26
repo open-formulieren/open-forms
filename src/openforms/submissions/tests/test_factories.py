@@ -36,7 +36,7 @@ class SubmissionFactoryTests(TestCase):
             },
             {
                 "key": "bar",
-                "type": "text",
+                "type": "textfield",
                 "label": "Bar",
             },
         ]
