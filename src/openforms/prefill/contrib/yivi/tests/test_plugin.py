@@ -34,6 +34,34 @@ class YiviPrefillTests(TestCase):
         }
         self.assertEqual(values, expected)
 
+    def test_get_prefill_values_with_unknown_attribute(self):
+        plugin = YiviPrefill(identifier="yivi")
+
+        submission = SubmissionFactory.create(
+            auth_info__value="111222333",
+            auth_info__plugin="yivi_oidc",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__additional_claims={
+                "irma-demo_gemeente_personalData_firstname": "Joe",
+            },
+        )
+
+        values = plugin.get_prefill_values(
+            submission,
+            [
+                "value",
+                "additional_claims.irma-demo_gemeente_personalData_firstname",
+                "additional_claims.irma-demo_gemeente_personalData_over18",
+            ],
+        )
+
+        # Expect the unknown attribute not to be resolved
+        expected = {
+            "value": "111222333",
+            "additional_claims.irma-demo_gemeente_personalData_firstname": "Joe",
+        }
+        self.assertEqual(values, expected)
+
     def test_get_prefill_values_not_authenticated(self):
         plugin = YiviPrefill(identifier="yivi")
 

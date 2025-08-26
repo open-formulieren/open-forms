@@ -72,6 +72,4 @@ class AttributeGroupListView(ListMixin, views.APIView):
             }
             prefill_attribute_groups.append(prefill_attribute)
 
-        print(prefill_attribute_groups)
-
         return prefill_attribute_groups + self._get_virtual_prefill_attribute_groups()
