@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from mozilla_django_oidc_db.registry import register as oidc_register
+from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 from mozilla_django_oidc_db.utils import obfuscate_claims
 
 from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.plugins import (
@@ -15,7 +16,6 @@ from openforms.contrib.auth_oidc.plugin import OFBaseOIDCPluginProtocol
 from openforms.contrib.auth_oidc.tests.factories import (
     OFOIDCClientFactory,
 )
-from openforms.utils.tests.oidc import OIDCMixin
 
 
 class OIDCPluginsTestCase(OIDCMixin, TestCase):

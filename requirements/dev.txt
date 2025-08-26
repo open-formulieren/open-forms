@@ -698,7 +698,7 @@ mozilla-django-oidc==4.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc-db
-mozilla-django-oidc-db==0.25.0
+mozilla-django-oidc-db==0.25.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

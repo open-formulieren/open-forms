@@ -8,6 +8,7 @@ from django.utils.translation import gettext
 
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
+from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 
 from openforms.accounts.tests.factories import (
     RecoveryTokenFactory,
@@ -15,7 +16,6 @@ from openforms.accounts.tests.factories import (
     SuperUserFactory,
 )
 from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
-from openforms.utils.tests.oidc import OIDCMixin
 
 LOGIN_URL = reverse_lazy("admin:login")
 

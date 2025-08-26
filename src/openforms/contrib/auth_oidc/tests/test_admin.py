@@ -9,10 +9,10 @@ from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
 from mozilla_django_oidc_db.models import OIDCClient
 from mozilla_django_oidc_db.tests.factories import OIDCProviderFactory
+from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.oidc import OIDCMixin
 
 from .factories import OFOIDCClientFactory
 

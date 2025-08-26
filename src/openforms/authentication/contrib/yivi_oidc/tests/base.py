@@ -3,8 +3,8 @@ from pathlib import Path
 from django.test import override_settings
 
 from django_webtest import WebTest
+from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 
-from openforms.utils.tests.oidc import OIDCMixin
 from openforms.utils.tests.vcr import OFVCRMixin
 
 TEST_FILES = (Path(__file__).parent / "data").resolve()

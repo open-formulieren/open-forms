@@ -2,11 +2,11 @@ from django.test import TestCase
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from mozilla_django_oidc_db.registry import register as oidc_register
+from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 
 from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.contrib.auth_oidc.typing import ClaimProcessingInstructions
 from openforms.contrib.auth_oidc.utils import process_claims
-from openforms.utils.tests.oidc import OIDCMixin
 
 
 class ProcessClaimsDigiDTest(OIDCMixin, TestCase):
