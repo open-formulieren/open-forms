@@ -14,3 +14,4 @@ Prefill plugins
    suwinet
    objects_api
    family_members
+   yivi

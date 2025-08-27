@@ -51,6 +51,7 @@ import {
   STATIC_VARIABLES_ENDPOINT,
   THEMES_ENDPOINT,
   YIVI_ATTRIBUTE_GROUPS_ENDPOINT,
+  YIVI_PREFILL_ATTRIBUTES_ENDPOINT,
 } from './constants';
 import {loadForm, loadFromBackend, saveCompleteForm} from './data';
 import {updateWarningsValidationError} from './logic/utils';
@@ -143,6 +144,7 @@ const initialFormState = {
   logicRules: [],
   formVariables: [],
   staticVariables: [],
+  yiviPrefillAttributes: [],
   // backend error handling
   validationErrors: [],
   tabsWithErrors: [],
@@ -920,6 +922,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
     {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
     {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
     {endpoint: YIVI_ATTRIBUTE_GROUPS_ENDPOINT, stateVar: 'availableYiviAttributeGroups'},
+    {endpoint: YIVI_PREFILL_ATTRIBUTES_ENDPOINT, stateVar: 'yiviPrefillAttributes'},
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: THEMES_ENDPOINT, stateVar: 'availableThemes'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
@@ -1226,6 +1229,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           staticVariables: state.staticVariables,
           registrationPluginsVariables: state.registrationPluginsVariables,
           availableYiviAttributeGroups: state.availableYiviAttributeGroups,
+          yiviPrefillAttributes: state.yiviPrefillAttributes,
           plugins: {
             availableAuthPlugins: state.availableAuthPlugins,
             selectedAuthPlugins: state.selectedAuthPlugins,
@@ -1235,6 +1239,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           languages: state.languageInfo.languages,
           translationEnabled: state.form.translationEnabled,
           registrationBackends: state.form.registrationBackends,
+          authBackends: state.form.authBackends,
           selectedAuthPlugins: state.selectedAuthPlugins,
         }}
       >

@@ -254,7 +254,15 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
             [
                 ClaimPathDetails(
                     path_in_claim=[str(attribute)],
-                    processed_path=["additional_claims", str(attribute)],
+                    # Jsonlogic, which we use to access the variables in the json logic and components,
+                    # cannot retrieve data from a key that contains periods (aka dots ".").
+                    # To allow these values to be targeted, we replace the period with an underscore.
+                    # In case of nested attributes, this replacing is done recursively.
+                    # https://github.com/open-formulieren/open-forms/issues/5475
+                    processed_path=[
+                        "additional_claims",
+                        str(attribute).replace(".", "_"),
+                    ],
                 )
                 for attribute in list(chain.from_iterable(additional_attributes))
                 if attribute in claims
