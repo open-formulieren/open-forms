@@ -8,7 +8,6 @@ class AttributesV1(models.TextChoices):
 
     spec:    https://op.open-forms.test.maykin.opengem.nl/api/schema/openapi.yaml
     path:    /ingeschrevenpersonen/{burgerservicenummer}
-    command: manage.py generate_prefill_from_spec --path /ingeschrevenpersonen/{burgerservicenummer} --url https://op.open-forms.test.maykin.opengem.nl/api/schema/openapi.yaml
     """
 
     burgerservicenummer = "burgerservicenummer", _("Burgerservicenummer")

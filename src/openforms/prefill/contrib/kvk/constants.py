@@ -8,8 +8,6 @@ class Attributes(models.TextChoices):
 
     spec:    https://developers.kvk.nl/cms/api/uploads/api_basisprofiel_widget_aa888449ed.yaml
     schema:  Basisprofiel
-    command: manage.py generate_prefill_from_spec --schema Basisprofiel \
-        --url https://developers.kvk.nl/cms/api/uploads/api_basisprofiel_widget_aa888449ed.yaml
 
     Post-processed by hand by commenting out all the array items and deleting all the
     HAL 'links' constructs.

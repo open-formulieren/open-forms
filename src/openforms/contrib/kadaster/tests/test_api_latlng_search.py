@@ -24,7 +24,6 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
 
         cls.kadaster_service = ServiceFactory.build(
             api_root="https://kadaster/",
-            oas="https://kadaster/api/schema/openapi.yaml",
         )
 
     def setUp(self):

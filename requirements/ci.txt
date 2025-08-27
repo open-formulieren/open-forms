@@ -210,6 +210,7 @@ django==4.2.23
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   zgw-consumers
+    #   zgw-consumers-oas
 django-admin-index==3.1.1
     # via
     #   -c requirements/base.txt
@@ -459,6 +460,7 @@ faker==23.1.0
     # via
     #   factory-boy
     #   zgw-consumers
+    #   zgw-consumers-oas
 flower==2.0.1
     # via
     #   -c requirements/base.txt
@@ -930,6 +932,7 @@ pyyaml==6.0.1
     #   tablib
     #   vcrpy
     #   zgw-consumers
+    #   zgw-consumers-oas
 qrcode==7.4.2
     # via
     #   -c requirements/base.txt
@@ -1150,6 +1153,7 @@ typing-extensions==4.12.2
     #   pyopenssl
     #   qrcode
     #   zgw-consumers
+    #   zgw-consumers-oas
 tzdata==2025.2
     # via
     #   -c requirements/base.txt
@@ -1251,11 +1255,13 @@ zeep==4.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers==0.38.0
+zgw-consumers==1.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   -r requirements/test-tools.in
+zgw-consumers-oas==1.1.0
+    # via -r requirements/test-tools.in
 zipp==3.23.0
     # via
     #   -c requirements/base.txt

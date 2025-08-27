@@ -30,7 +30,6 @@ class BAGClientTests(SimpleTestCase):
             search_service=None,  # unused, but would otherwise execute queries
             bag_service=ServiceFactory.build(
                 api_root="https://bag/api/",
-                oas="https://bag/api/schema/openapi.yaml",
             ),
         )
         patcher = patch(

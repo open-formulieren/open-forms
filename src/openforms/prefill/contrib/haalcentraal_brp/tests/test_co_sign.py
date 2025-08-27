@@ -46,7 +46,6 @@ class CoSignPrefillTests:
         hc_config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
-                oas="https://this.is.ignored",
             ),
             brp_personen_version=self.version,
         )

@@ -45,7 +45,6 @@ class HaalCentraalFindPersonTests:
         config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
-                oas="https://this.is.ignored",
             ),
             brp_personen_version=self.version,
         )
@@ -603,7 +602,6 @@ class ClientFactoryInvalidVersionTests(SimpleTestCase):
         config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
-                oas="https://this.is.ignored",
             ),
             brp_personen_version="0.999",
         )
@@ -631,7 +629,6 @@ class HaalCentraalXHeadersTests(TestCase):
         config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
-                oas="https://this.is.ignored",
             ),
             brp_personen_version=BRPVersions.v20,
             default_brp_personen_purpose_limitation_header_value="BRPACT-AanschrijvenZakelijkGerechtigde",

@@ -21,7 +21,6 @@ class ObjecttypesClientTest(OFVCRMixin, TestCase):
             objecttypes_service=Service(
                 api_root="http://localhost:8001/api/v2/",
                 api_type=APITypes.orc,
-                oas="https://example.com/",
                 header_key="Authorization",
                 header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
                 auth_type=AuthTypes.api_key,

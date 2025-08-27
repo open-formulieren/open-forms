@@ -12,7 +12,6 @@ def get_default_search_service():
         defaults={
             "api_type": APITypes.orc,
             "label": "PDOK locatieserver",
-            "oas": "https://api.pdok.nl/bzk/locatieserver/search/v3_1/openapi.json",
             "auth_type": AuthTypes.no_auth,
         },
     )

@@ -81,7 +81,6 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
         mock_brp_config_get_solo.return_value = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
-                oas="https://this.is.irrelevant",
             )
         )
         with (TEST_FILES / "op_2_children.json").open("r") as infile:
