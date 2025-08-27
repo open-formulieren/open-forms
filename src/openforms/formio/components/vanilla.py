@@ -1151,13 +1151,17 @@ class EditGrid(BasePlugin[EditGridComponent]):
         for item_data in edit_grid_data:
             # For evaluation of the conditionals, we only care about the current item,
             # so we set it to the editgrid data directly
-            def get_evaluation_data(item_data_):
+            def get_evaluation_data(item_data_: FormioData) -> FormioData:
                 inner_evaluation_data = deepcopy(data)
                 inner_evaluation_data[key] = item_data_
                 return outer_get_evaluation_data(inner_evaluation_data)
 
             process_visibility(
-                component, item_data, wrapper, parent_hidden, get_evaluation_data
+                component,
+                item_data,
+                wrapper,
+                parent_hidden=parent_hidden,
+                get_evaluation_data=get_evaluation_data,
             )
             edit_grid_data_new.append(item_data)
 
@@ -1174,18 +1178,14 @@ class Columns(BasePlugin[ColumnsComponent]):
         parent_hidden: bool,
         get_evaluation_data: Callable | None = None,
     ):
-        # Create an artificial flat component list to make processing easier
-        config_new = {
-            "components": [
-                child
-                for column in component["columns"]
-                for child in column["components"]
-            ]
-        }
-
-        process_visibility(
-            config_new, data, wrapper, parent_hidden, get_evaluation_data
-        )
+        for column in component["columns"]:
+            process_visibility(
+                column,
+                data,
+                wrapper,
+                parent_hidden=parent_hidden,
+                get_evaluation_data=get_evaluation_data,
+            )
 
 
 @register("fieldset")
@@ -1200,4 +1200,10 @@ class Fieldset(BasePlugin[FieldsetComponent]):
     ):
         # We need to process the children, so we just pass the component as the
         # configuration.
-        process_visibility(component, data, wrapper, parent_hidden, get_evaluation_data)
+        process_visibility(
+            component,
+            data,
+            wrapper,
+            parent_hidden=parent_hidden,
+            get_evaluation_data=get_evaluation_data,
+        )

@@ -41,7 +41,7 @@ class ConditionalLogicTests(TestCase):
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step, use_new_behaviour=True)
+        evaluate_form_logic(submission, step)
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_static_variables=False)
@@ -106,7 +106,7 @@ class ConditionalLogicTests(TestCase):
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step, use_new_behaviour=True)
+        evaluate_form_logic(submission, step)
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_static_variables=False)
@@ -168,7 +168,7 @@ class ConditionalLogicTests(TestCase):
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step, use_new_behaviour=True)
+        evaluate_form_logic(submission, step)
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_static_variables=False)
@@ -241,7 +241,7 @@ class ConditionalLogicTests(TestCase):
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step, use_new_behaviour=True)
+        evaluate_form_logic(submission, step)
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_static_variables=False)
@@ -302,7 +302,7 @@ class ConditionalLogicTests(TestCase):
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step, use_new_behaviour=True)
+        evaluate_form_logic(submission, step)
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_static_variables=False)
@@ -372,7 +372,7 @@ class ConditionalLogicTests(TestCase):
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step, use_new_behaviour=True)
+        evaluate_form_logic(submission, step)
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_static_variables=False)
@@ -464,12 +464,7 @@ class ConditionalLogicTests(TestCase):
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(
-            submission,
-            step,
-            FormioData({"textfield1": "hidden"}),
-            use_new_behaviour=True,
-        )
+        evaluate_form_logic(submission, step, FormioData({"textfield1": "hidden"}))
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_static_variables=False)
@@ -519,7 +514,7 @@ class ConditionalLogicTests(TestCase):
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step, use_new_behaviour=True)
+        evaluate_form_logic(submission, step)
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_static_variables=False)
@@ -582,7 +577,7 @@ class ConditionalLogicTests(TestCase):
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step, use_new_behaviour=True)
+        evaluate_form_logic(submission, step)
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_static_variables=False)

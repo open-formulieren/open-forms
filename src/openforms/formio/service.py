@@ -11,12 +11,12 @@ apps/packages:
 
 from __future__ import annotations
 
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, cast
 
 import elasticapm
 
-from openforms.typing import JSONObject, VariableValue
+from openforms.typing import JSONObject
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .dynamic_config import (
@@ -40,6 +40,7 @@ from .utils import (
     recursive_apply,
 )
 from .variables import inject_variables
+from .visibility import process_visibility
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
@@ -58,8 +59,7 @@ __all__ = [
     "build_serializer",
     "rewrite_formio_components",
     "as_json_schema",
-    "apply_visibility",
-    "test_conditional",
+    "process_visibility",
     "get_component_empty_value",
 ]
 
@@ -188,35 +188,3 @@ def _add_child_schemas_to_schema_list(
         else:
             # Other components get added to the list as a dict with their key
             schema_list.append({child["key"]: child_schema})
-
-
-def apply_visibility(
-    component: Component,
-    data: FormioData,
-    wrapper: FormioConfigurationWrapper,
-    parent_hidden: bool,
-    get_evaluation_data: Callable | None = None,
-    _register: ComponentRegistry | None = None,
-):
-    registry = _register or register
-
-    match component["type"]:
-        case "softRequiredErrors":
-            pass
-        case _:
-            plugin = registry[component["type"]]
-            plugin.apply_visibility(
-                component, data, wrapper, parent_hidden, get_evaluation_data
-            )
-
-
-def test_conditional(
-    component: Component,
-    value: VariableValue,
-    compare_value: VariableValue,
-    _register: ComponentRegistry | None = None,
-) -> bool:
-    registry = _register or register
-
-    plugin = registry[component["type"]]
-    return plugin.test_conditional(component, value, compare_value)
