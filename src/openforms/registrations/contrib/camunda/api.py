@@ -10,30 +10,21 @@ from openforms.api.views import ListMixin
 
 
 class ProcessDefinitionSerializer(serializers.Serializer):
-    def to_representation(self, instance):
-        return {
-            "id": instance.id,
-            "key": instance.key,
-            "name": instance.name,
-            "version": instance.version,
-        }
+    id = serializers.CharField()
+    key = serializers.CharField(
+        help_text=_(
+            "The process definition identifier, used to group different versions."
+        )
+    )
+    name = serializers.CharField(
+        help_text=_("The human-readable name of the process definition.")
+    )
+    version = serializers.IntegerField(
+        help_text=_("The version identifier relative to the 'key'.")
+    )
 
     class Meta:
         model = ProcessDefinition
-        fields = ("id", "key", "name", "version")
-        extra_kwargs = {
-            "key": {
-                "help_text": _(
-                    "The process definition identifier, used to group different versions."
-                ),
-            },
-            "name": {
-                "help_text": _("The human-readable name of the process definition."),
-            },
-            "version": {
-                "help_text": _("The version identifier relative to the 'key'."),
-            },
-        }
 
 
 @extend_schema_view(
