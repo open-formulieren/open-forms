@@ -21,6 +21,8 @@ from ..mixins import SubmissionsMixin
 
 
 class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
+    maxDiff = None
+
     def test_update_not_applicable_steps(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -403,3 +405,217 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # No changes during logic evaluation, so the returned data should be empty
         self.assertEqual(response.json()["step"]["data"], {})
+
+    def test_clear_on_hide_behaviour(self):
+        """
+        Test clear-on-hide behaviour in two ways:
+          1. Components that are shown by default and get hidden when a logic rule
+             triggers
+          2. Components that are hidden by default and get shown when a logic rule
+             triggers. This means they become hidden again when a logic rule DOESN'T
+             trigger.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "checkbox",
+                    "type": "checkbox",
+                    "label": "Checkbox",
+                },
+                {
+                    "key": "textfield",
+                    "type": "textfield",
+                    "label": "Textfield",
+                    "clearOnHide": True,
+                    "hidden": False,
+                },
+                {
+                    "key": "textfieldInverted",
+                    "type": "textfield",
+                    "label": "Textfield Inverted",
+                    "clearOnHide": True,
+                    "hidden": True,
+                },
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                    "clearOnHide": True,
+                    "hidden": False,
+                },
+                {
+                    "key": "dateInverted",
+                    "type": "date",
+                    "label": "Date Inverted",
+                    "clearOnHide": True,
+                    "hidden": True,
+                },
+                {
+                    "key": "fieldset",
+                    "type": "fieldset",
+                    "label": "Fieldset",
+                    "clearOnHide": True,
+                    "hidden": False,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInFieldset",
+                            "label": "Textfield in Fieldset",
+                            "clearOnHide": True,
+                        },
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInFieldsetWithoutClearOnHide",
+                            "label": "Textfield in Fieldset w/o clearOnHide",
+                            "clearOnHide": False,
+                        },
+                    ],
+                },
+                {
+                    "key": "fieldsetInverted",
+                    "type": "fieldset",
+                    "label": "FieldsetInverted",
+                    "clearOnHide": True,
+                    "hidden": True,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInInvertedFieldset",
+                            "label": "Textfield in inverted Fieldset",
+                            "clearOnHide": True,
+                        },
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInInvertedFieldsetWithoutClearOnHide",
+                            "label": "Textfield in inverted Fieldset w/o clearOnHide",
+                            "clearOnHide": False,
+                        },
+                    ],
+                },
+                {
+                    "key": "editgrid",
+                    "type": "editgrid",
+                    "label": "Editgrid",
+                    "clearOnHide": True,
+                    "hidden": False,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInEditgrid",
+                            "label": "Textfield in Editgrid",
+                            "clearOnHide": True,
+                        },
+                    ],
+                },
+                {
+                    "key": "editgridInverted",
+                    "type": "editgrid",
+                    "label": "Editgrid inverted",
+                    "clearOnHide": True,
+                    "hidden": True,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInInvertedEditgrid",
+                            "label": "Textfield in inverted Editgrid",
+                            "clearOnHide": True,
+                        },
+                    ],
+                },
+            ]
+        )
+
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": key,
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": state,
+                    },
+                }
+                for key, state in [
+                    ("textfield", True),
+                    ("textfieldInverted", False),
+                    ("date", True),
+                    ("dateInverted", False),
+                    ("fieldset", True),
+                    ("fieldsetInverted", False),
+                    ("editgrid", True),
+                    ("editgridInverted", False),
+                ]
+            ],
+        )
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": submission.form.formstep_set.first().uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        with self.subTest("Logic rule is triggered"):
+            # Assuming we go from an unchecked to a checked state for the checkbox, all
+            # components with ``"hidden": False`` will be visible initially
+            response = self.client.post(
+                endpoint,
+                data={
+                    "data": {
+                        "checkbox": True,
+                        "textfield": "a",
+                        "date": "2025-08-27",
+                        "textfieldInFieldset": "b",
+                        "textfieldInFieldsetWithoutClearOnHide": "c",
+                        "editgrid": [
+                            {"textfieldInEditgrid": "d"},
+                            {"textfieldInEditgrid": "e"},
+                        ],
+                    },
+                },
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(
+                response.json()["step"]["data"],
+                {
+                    "textfield": "",
+                    "date": "",
+                    "textfieldInFieldset": "",
+                    "editgrid": [],
+                },
+            )
+
+        with self.subTest("Logic rule is not triggered"):
+            # Assuming we go from a checked to an unchecked state for the checkbox, all
+            # components with ``"hidden": True`` will be visible initially
+            response = self.client.post(
+                endpoint,
+                data={
+                    "data": {
+                        "checkbox": False,
+                        "textfieldInverted": "a",
+                        "dateInverted": "2025-08-27",
+                        "textfieldInInvertedFieldset": "b",
+                        "textfieldInInvertedFieldsetWithoutClearOnHide": "c",
+                        "editgridInverted": [
+                            {"textfieldInInvertedEditgrid": "d"},
+                            {"textfieldInInvertedEditgrid": "e"},
+                        ],
+                    },
+                },
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(
+                response.json()["step"]["data"],
+                {
+                    "textfieldInverted": "",
+                    "dateInverted": "",
+                    "textfieldInInvertedFieldset": "",
+                    "editgridInverted": [],
+                },
+            )
