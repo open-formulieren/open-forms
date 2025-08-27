@@ -80,12 +80,12 @@ class FormLogic(OrderedModel):
     @property
     def hidden_actions(self):
         from openforms.submissions.logic.actions import (
-            compile_action_operation,
             PropertyAction,
+            compile_action_operation,
         )
 
         for action in map(compile_action_operation, self.actions):
-            if not isinstance(action, PropertyAction):
+            if not isinstance(action, PropertyAction) or action.property != "hidden":
                 continue
 
             action.rule = self

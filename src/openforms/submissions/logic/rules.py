@@ -3,11 +3,15 @@ from collections.abc import Iterable, Iterator
 import elasticapm
 from json_logic import jsonLogic
 
-from openforms.formio.service import FormioConfigurationWrapper, FormioData
+from openforms.formio.service import (
+    FormioConfigurationWrapper,
+    FormioData,
+    process_visibility,
+)
 from openforms.forms.models import FormLogic, FormStep
 
 from ..models import Submission, SubmissionStep
-from .actions import ActionOperation, get_component_empty_value
+from .actions import ActionOperation
 from .log_utils import log_errors
 
 
@@ -157,15 +161,13 @@ def iter_evaluate_rules(
                 yield operation, mutations_python
 
 
+# TODO-5134: perhaps instead of this routine, create a
+#  ``PropertyAction.eval_on_not_triggered`` method that will be executed instead.
 def handle_clear_on_hide(rule, data, configuration):
     """
     Handle clear-on-hide behaviour for components of which the (hidden) property
     actions were not triggered.
     """
-    # TODO-5134: might be better to introduce a separate action for the "hidden"
-    #  property, given that we do more than just change the property now. Also, it might
-    #  be easier to get those from the rule directly, without having to iterate over all
-    #  the other actions
     for operation in rule.hidden_actions:
         if operation.component not in configuration:
             # Note that this can happen when the action applies to a component of a
@@ -175,7 +177,15 @@ def handle_clear_on_hide(rule, data, configuration):
             return
 
         component = configuration[operation.component]
-        if not (component.get("hidden", False) and component.get("clearOnHide", True)):
+
+        if not component.get("hidden", False):
+            # Because ``process_visibility`` also handles conditional logic, we only
+            # want to call it when the component is actually hidden (the conditional
+            # will not be evaluated at all if ``parent_hidden`` is passed as True)
             continue
 
-        data.update(get_component_empty_value(component))
+        # Process the visibility of the component. We want to process the component
+        # itself, not iterate over its children, so we create a 'fake' configuration.
+        process_visibility(
+            {"components": [component]}, data, configuration, parent_hidden=True
+        )

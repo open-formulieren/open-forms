@@ -1,30 +1,18 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from copy import deepcopy
 from typing import TYPE_CHECKING
-
-from django.utils.functional import empty
 
 import elasticapm
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
     FormioData,
-    apply_visibility,
     get_dynamic_configuration,
     inject_variables,
-    test_conditional,
+    process_visibility,
 )
-from openforms.formio.typing import (
-    Component,
-    ConditionalCompareValue,
-    FormioConfiguration,
-)
-from openforms.formio.utils import (
-    ComponentLike,
-    get_component_empty_value,
-)
+from openforms.formio.typing import FormioConfiguration
 
 from .logic.actions import ActionOperation
 from .logic.rules import get_rules_to_evaluate, iter_evaluate_rules
@@ -39,7 +27,6 @@ def evaluate_form_logic(
     submission: Submission,
     step: SubmissionStep,
     unsaved_data: FormioData | None = None,
-    use_new_behaviour=True,
 ) -> FormioConfiguration:
     """
     TODO-5134: update description of the steps
@@ -109,10 +96,9 @@ def evaluate_form_logic(
     # to make sure we are not processing with outdated data. The frontend will not send
     # data for fields that were conditionally hidden, so applying the incoming unsaved
     # data to the state will not set the values of those fields to empty.
-    if use_new_behaviour:
-        evaluate_conditional_logic(
-            config_wrapper.configuration, data_for_evaluation, config_wrapper
-        )
+    evaluate_conditional_logic(
+        config_wrapper.configuration, data_for_evaluation, config_wrapper
+    )
     initial_data = deepcopy(data_for_evaluation)
 
     # 5. Evaluate the logic rules in order
@@ -122,7 +108,7 @@ def evaluate_form_logic(
 
     # 5.1 If the action type is to set a variable, update the data. This happens inside
     # of iter_evaluate_rules. This is the ONLY operation that is allowed to execute
-    # while we're looping through the rules.]
+    # while we're looping through the rules.
     # TODO-5134: I think we can remove this data_diff actually, as we save
     #  `data_for_evaluation` to the state now anyway
     data_diff = FormioData()
@@ -188,69 +174,8 @@ def evaluate_form_logic(
     return config_wrapper.configuration
 
 
-def get_conditional(
-    component: Component,
-) -> tuple[bool, str, ConditionalCompareValue] | None:
-    """
-    Get the conditional logic for this component. Will return ``None`` if the
-    conditional is not configured or complete.
-    """
-    conditional = component.get("conditional")
-    if not conditional:
-        return None
-
-    show = conditional.get("show")
-    when = conditional.get("when")
-    eq = conditional.get("eq")
-
-    if any([show in ["", None], when in ["", None], eq is None]):
-        return None
-
-    return show, when, eq
-
-
-def is_hidden_by_conditional(
-    component: Component,
-    data: FormioData,
-    configuration: FormioConfigurationWrapper,
-) -> bool:
-    """
-    Determine whether the component is hidden by the conditional.
-
-    It is assumed that this is called BEFORE evaluating backend logic. With this, note
-    that the previous (and frontend) implementation also checked the "hidden" property.
-    We cannot do that in this case, as it might result in values being cleared that
-    shouldn't. For example, a field that is hidden by default and shown with a backend
-    logic rule would have its value always cleared.
-    """
-    conditional = get_conditional(component)
-
-    if conditional is None:
-        return False
-
-    show, trigger_component_key, compare_value = conditional
-
-    trigger_component_value = data.get(trigger_component_key, None)
-    trigger_component = configuration[trigger_component_key]
-
-    if (
-        triggered := test_conditional(
-            trigger_component, trigger_component_value, compare_value
-        )
-    ) is None:
-        if trigger_component.get("multiple", False):
-            assert isinstance(trigger_component_value, list)
-            triggered = compare_value in trigger_component_value
-        else:
-            triggered = trigger_component_value == compare_value
-
-    # Note that we return whether the component is hidden, not shown, so we invert the
-    # return value
-    return not show if triggered else show
-
-
 def evaluate_conditional_logic(
-    configuration: ComponentLike,
+    configuration: FormioConfiguration,
     data: FormioData,
     wrapper: FormioConfigurationWrapper,
 ):
@@ -268,43 +193,6 @@ def evaluate_conditional_logic(
     while initial_data != data:
         initial_data = deepcopy(data)
         process_visibility(configuration, data, wrapper)
-
-
-# TODO-5134: probably be good to also update the hidden property of the configuration.
-#  The backend might send an outdated different configration to the frontend if we don't
-#  This wasn't done before, though, so not sure if necessary
-def process_visibility(
-    configuration: ComponentLike,
-    data: FormioData,
-    wrapper: FormioConfigurationWrapper,
-    parent_hidden: bool = False,
-    get_evaluation_data: Callable | None = None,
-):
-    """
-    Process the visibility of the components inside the configuration, by checking if
-    they were hidden because of conditional logic or a hidden parent, and clearing the
-    value (set to empty component value) when applicable (clearOnHide is set).
-
-    Note that the data mutations are applied directly.
-    """
-    for component in configuration.get("components", []):
-        key = component["key"]
-        clear_on_hide = component.get("clearOnHide", True)
-
-        hidden = parent_hidden or is_hidden_by_conditional(
-            component,
-            get_evaluation_data(data) if get_evaluation_data else data,
-            wrapper,
-        )
-
-        # Need to check whether the component is present in the data because layout
-        # components have no value
-        if hidden and clear_on_hide and key in data:
-            empty_value = get_component_empty_value(component)
-            data[key] = empty_value
-
-        # Apply the visibility to children components, if applicable
-        apply_visibility(component, data, wrapper, hidden, get_evaluation_data)
 
 
 def check_submission_logic(
