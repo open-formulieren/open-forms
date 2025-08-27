@@ -251,6 +251,12 @@
       "value": "Configure options"
     }
   ],
+  "1U0I5C": [
+    {
+      "type": 0,
+      "value": "Firstnames"
+    }
+  ],
   "1Vvryq": [
     {
       "type": 0,
@@ -497,12 +503,6 @@
     {
       "type": 0,
       "value": "CSS class"
-    }
-  ],
-  "3rmiz8": [
-    {
-      "type": 0,
-      "value": "FirstNames"
     }
   ],
   "3z1hhJ": [
@@ -3735,12 +3735,6 @@
       "value": "File"
     }
   ],
-  "V2/ceD": [
-    {
-      "type": 0,
-      "value": "Configuration (deprecated)"
-    }
-  ],
   "V21YkS": [
     {
       "type": 0,
@@ -5037,12 +5031,6 @@
     {
       "type": 0,
       "value": "The property that gets compared with the identifier (e.g. BSN/KVK) of the authenticated user to verify ownership of the object being updated. This is important to prevent malicious users modifying information of other people than themselves."
-    }
-  ],
-  "fGTdJz": [
-    {
-      "type": 0,
-      "value": "Deriving the location via text fields is deprecated. Use the AddressNL component instead."
     }
   ],
   "fLCWjk": [
@@ -6615,6 +6603,12 @@
     {
       "type": 0,
       "value": "(not configured yet)"
+    }
+  ],
+  "s8ercf": [
+    {
+      "type": 0,
+      "value": "Configuration"
     }
   ],
   "sAfROS": [

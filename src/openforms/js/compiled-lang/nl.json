@@ -251,6 +251,12 @@
       "value": "Opties instellen"
     }
   ],
+  "1U0I5C": [
+    {
+      "type": 0,
+      "value": "Firstnames"
+    }
+  ],
   "1Vvryq": [
     {
       "type": 0,
@@ -497,12 +503,6 @@
     {
       "type": 0,
       "value": "Weergavestijl"
-    }
-  ],
-  "3rmiz8": [
-    {
-      "type": 0,
-      "value": "FirstNames"
     }
   ],
   "3z1hhJ": [
@@ -3752,12 +3752,6 @@
       "value": "Bestand"
     }
   ],
-  "V2/ceD": [
-    {
-      "type": 0,
-      "value": "Instellingen (verouderd)"
-    }
-  ],
   "V21YkS": [
     {
       "type": 0,
@@ -5059,12 +5053,6 @@
     {
       "type": 0,
       "value": "Het attribuut dat vergeleken wordt met de identificatiewaarde (bijv. BSN/KVK-nummer) van de ingelogde gebruiker om de eigenaar van het object dat bijgewerkt wordt te controleren. Dit is belangrijk om te voorkomen dat kwaadwillenden gegevens van anderen bijwerken in plaast van zichzelf."
-    }
-  ],
-  "fGTdJz": [
-    {
-      "type": 0,
-      "value": "Het afleiden van adres via tekstveld-componenten is verouderd. Gebruik in de plaats de 'AddressNL'-component (in de 'Speciale velden' groep)."
     }
   ],
   "fLCWjk": [
@@ -6637,6 +6625,12 @@
     {
       "type": 0,
       "value": "(nog niet ingesteld)"
+    }
+  ],
+  "s8ercf": [
+    {
+      "type": 0,
+      "value": "Instellingen"
     }
   ],
   "sAfROS": [
