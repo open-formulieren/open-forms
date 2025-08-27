@@ -1324,7 +1324,6 @@ class FormDesignerRegressionTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
             await open_component_options_modal(page, "Field 2")
             await page.get_by_role("tab", name="Location").click()
-            await page.get_by_role("button", name="Configuration (deprecated)").click()
 
             dropdown = page.get_by_role("combobox", name="Postcode component")
             await dropdown.focus()
@@ -1391,7 +1390,6 @@ class FormDesignerRegressionTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
             await open_component_options_modal(page, "Field 1")
             await page.get_by_role("tab", name="Location").click()
-            await page.get_by_role("button", name="Configuration (deprecated)").click()
 
             dropdown = page.get_by_role("combobox", name="Postcode component")
             await dropdown.focus()
