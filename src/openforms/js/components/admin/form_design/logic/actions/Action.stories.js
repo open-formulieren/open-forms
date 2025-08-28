@@ -291,3 +291,66 @@ export const EvaluateDMNWithInitialErrors = {
     });
   },
 };
+
+export const SynchronizeChildren = {
+  render,
+  name: 'Synchronize children',
+  args: {
+    prefixText: 'Action',
+
+    action: {
+      component: '',
+      variable: 'bar',
+      formStep: '',
+      formStepUuid: '',
+
+      action: {
+        config: {},
+        type: 'synchronize-children',
+        value: '',
+      },
+    },
+    availableFormVariables: [
+      {
+        dataFormat: '',
+        dataType: 'array',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        formDefinition: null,
+        initialValue: '',
+        isSensitiveData: false,
+        key: 'children',
+        name: 'children',
+        prefillAttribute: '',
+        prefillPlugin: '',
+        source: 'component',
+      },
+      {
+        dataFormat: '',
+        dataType: 'array',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        formDefinition: null,
+        initialValue: '',
+        isSensitiveData: false,
+        key: 'editgrid',
+        name: 'editgrid',
+        prefillAttribute: '',
+        prefillPlugin: '',
+        source: 'component',
+      },
+      {
+        dataFormat: '',
+        dataType: 'string',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        formDefinition: null,
+        initialValue: '',
+        isSensitiveData: false,
+        key: 'textfield',
+        name: 'textfield',
+        prefillAttribute: '',
+        prefillPlugin: '',
+        source: 'component',
+      },
+    ],
+  },
+  decorators: [FormDecorator],
+};

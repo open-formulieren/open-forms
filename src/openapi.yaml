@@ -8835,6 +8835,7 @@ components:
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicFetchAction'
       - $ref: '#/components/schemas/LogicActionPolymorphicDMNEvaluateAction'
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicSetRegistrationBackendAction'
+      - $ref: '#/components/schemas/LogicActionPolymorphicSynchronizeChildrenAction'
       discriminator:
         propertyName: type
         mapping:
@@ -8846,6 +8847,7 @@ components:
           fetch-from-service: '#/components/schemas/LogicActionPolymorphicLogicFetchAction'
           evaluate-dmn: '#/components/schemas/LogicActionPolymorphicDMNEvaluateAction'
           set-registration-backend: '#/components/schemas/LogicActionPolymorphicLogicSetRegistrationBackendAction'
+          synchronize-children: '#/components/schemas/LogicActionPolymorphicSynchronizeChildrenAction'
     LogicActionPolymorphicDMNEvaluateAction:
       allOf:
       - $ref: '#/components/schemas/LogicActionPolymorphicShared'
@@ -8905,6 +8907,7 @@ components:
             * `fetch-from-service` - Fetch the value from a service
             * `set-registration-backend` - Set the registration backend to use for the submission
             * `evaluate-dmn` - Evaluate DMN
+            * `synchronize-children` - Synchronize the retrieved/selected children with another editgrid component
       required:
       - type
     LogicActionPolymorphicSharedTypeEnum:
@@ -8917,6 +8920,7 @@ components:
       - fetch-from-service
       - set-registration-backend
       - evaluate-dmn
+      - synchronize-children
       type: string
       description: |-
         * `step-not-applicable` - Mark the form step as not-applicable
@@ -8927,6 +8931,11 @@ components:
         * `fetch-from-service` - Fetch the value from a service
         * `set-registration-backend` - Set the registration backend to use for the submission
         * `evaluate-dmn` - Evaluate DMN
+        * `synchronize-children` - Synchronize the retrieved/selected children with another editgrid component
+    LogicActionPolymorphicSynchronizeChildrenAction:
+      allOf:
+      - $ref: '#/components/schemas/LogicActionPolymorphicShared'
+      - $ref: '#/components/schemas/SynchronizeChildrenAction'
     LogicComponentAction:
       type: object
       properties:
@@ -10448,6 +10457,29 @@ components:
         * `_save` - Save
         * `_addanother` - Save and add another
         * `_continue` - Save and continue editing
+    SynchronizeChildrenAction:
+      type: object
+      properties:
+        config:
+          allOf:
+          - $ref: '#/components/schemas/SynchronizeChildrenActionConfig'
+          title: Configuration
+      required:
+      - config
+    SynchronizeChildrenActionConfig:
+      type: object
+      properties:
+        sourceVariable:
+          type: string
+          title: Key of the form variable that will be used as the source.
+          pattern: ^(\w|\w[\w.\-]*\w)$
+        destinationVariable:
+          type: string
+          title: Key of the form variable that will be used as the destination.
+          pattern: ^(\w|\w[\w.\-]*\w)$
+      required:
+      - destinationVariable
+      - sourceVariable
     TargetPaths:
       type: object
       properties:

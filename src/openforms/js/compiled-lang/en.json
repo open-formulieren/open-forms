@@ -1333,6 +1333,12 @@
       "value": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
     }
   ],
+  "AW2A8b": [
+    {
+      "type": 0,
+      "value": "Synchronize children"
+    }
+  ],
   "AWyevn": [
     {
       "type": 0,
@@ -3955,6 +3961,12 @@
     {
       "type": 0,
       "value": "Authentication automatic login"
+    }
+  ],
+  "XF7/iB": [
+    {
+      "type": 0,
+      "value": "To variable"
     }
   ],
   "XMV3t2": [
@@ -7179,6 +7191,12 @@
     {
       "type": 0,
       "value": "Generate JSON schema"
+    }
+  ],
+  "xwOofe": [
+    {
+      "type": 0,
+      "value": "From variable"
     }
   ],
   "xxVNeU": [
