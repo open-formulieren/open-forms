@@ -2648,6 +2648,11 @@
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" label",
     "originalDefault": "Submission report PDF informatieobjecttype"
   },
+  "jDK4/3": {
+    "defaultMessage": "The eIDAS prefill plugin only works in conjunction with the eIDAS authentication plugin. Make sure to also configure the eIDAS authentication plugin!",
+    "description": "eIDAS prefill plugin warning message",
+    "originalDefault": "The eIDAS prefill plugin only works in conjunction with the eIDAS authentication plugin. Make sure to also configure the eIDAS authentication plugin!"
+  },
   "jLv6k8": {
     "defaultMessage": "DMN-variabele",
     "description": "Accessible label for DMN variable dropdown",
@@ -2977,6 +2982,11 @@
     "defaultMessage": "Er zijn geen relevante geavanceerde instellingen.",
     "description": "Form advanced configuration fallback message",
     "originalDefault": "No advanced configuration is available for this form."
+  },
+  "p+m3Si": {
+    "defaultMessage": "The eIDAS for companies prefill plugin only works in conjunction with the eIDAS for companies authentication plugin. Make sure to configure the eIDAS for companies authentication plugin!",
+    "description": "eIDAS company prefill plugin warning message",
+    "originalDefault": "The eIDAS for companies prefill plugin only works in conjunction with the eIDAS for companies authentication plugin. Make sure to configure the eIDAS for companies authentication plugin!"
   },
   "p18yml": {
     "defaultMessage": "Complexe procesvariabelen",

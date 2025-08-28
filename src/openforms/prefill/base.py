@@ -34,6 +34,7 @@ SerializerCls = type[serializers.Serializer]
 
 class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     requires_auth: Collection[AuthAttribute] = ()
+    requires_auth_plugin: Collection[str] = ()
     for_components: Container[str] = AllComponentTypes()
     options: SerializerCls = EmptyOptions
 
@@ -150,6 +151,22 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
             and submission.auth_info.attribute in cls.requires_auth
         ):
             return submission.auth_info.value
+
+    @classmethod
+    def verify_used_auth_plugin(cls, submission: Submission) -> bool:
+        """
+        Hook to check if the authenticated user used the required auth plugin.
+
+        :param submission: an active :class:`Submission` instance
+        :return: Whether the required auth plugin was used or not.
+        """
+        if not submission.is_authenticated:
+            return False
+
+        return (
+            cls.requires_auth_plugin is not None
+            and submission.auth_info.plugin in cls.requires_auth_plugin
+        )
 
     @classmethod
     def configuration_context(cls) -> JSONObject | None:
