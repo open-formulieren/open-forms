@@ -66,14 +66,14 @@ References
 Licence
 =======
 
-Copyright © `"the Stakeholders`_, 2025
+Copyright © `"the Stakeholders"`_, 2025
 
 Licensed under the `EUPL`_.
 
 .. _`Nederlandse versie`: README.NL.rst
 .. _`Maykin B.V.`: https://www.maykinmedia.nl
 .. _`Dimpact`: https://www.dimpact.nl
-.. _ `"the Stakeholders"`: STAKEHOLDERS.md
+.. _`"the Stakeholders"`: STAKEHOLDERS.md
 .. _`EUPL`: LICENSE.md
 
 .. |build-status| image:: https://github.com/open-formulieren/open-forms/actions/workflows/ci.yml/badge.svg
