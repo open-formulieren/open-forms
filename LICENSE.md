@@ -1,6 +1,6 @@
 # Licence
 
-Copyright © Dimpact, 2021
+Copyright © "the Stakeholders" (see: STAKEHOLDERS.md), 2025
 
 Licensed under the EUPL
 
