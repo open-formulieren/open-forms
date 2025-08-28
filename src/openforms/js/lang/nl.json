@@ -586,6 +586,11 @@
     "description": "literals.changeText help text",
     "originalDefault": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
   },
+  "AW2A8b": {
+    "defaultMessage": "Synchronize children",
+    "description": "action type \"synchronize children\" label",
+    "originalDefault": "Synchronize children"
+  },
   "AWyevn": {
     "defaultMessage": "Vertrouwelijkheidaanduiding",
     "description": "ZGW APIs registration options 'zaakVertrouwelijkheidaanduiding' label",
@@ -1929,6 +1934,11 @@
     "defaultMessage": "Authenticatie automatische login",
     "description": "Auto-login field label",
     "originalDefault": "Authentication automatic login"
+  },
+  "XF7/iB": {
+    "defaultMessage": "To variable",
+    "description": "To variable message",
+    "originalDefault": "To variable"
   },
   "XNqV97": {
     "defaultMessage": "Onderwerp",
@@ -3424,6 +3434,11 @@
     "defaultMessage": "Genereer JSON-schema",
     "description": "Link label to generate JSON schema of registration backend",
     "originalDefault": "Generate JSON schema"
+  },
+  "xwOofe": {
+    "defaultMessage": "From variable",
+    "description": "From variable message",
+    "originalDefault": "From variable"
   },
   "xxyIg/": {
     "defaultMessage": "Markeer het formulier als afspraakformulier, met een aparte flow. Hiervoor dient een afsprakenplugin ingesteld te zijn.",

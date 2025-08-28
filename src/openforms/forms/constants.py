@@ -21,6 +21,12 @@ class LogicActionTypes(models.TextChoices):
         _("Set the registration backend to use for the submission"),
     )
     evaluate_dmn = "evaluate-dmn", _("Evaluate DMN")
+    synchronize_children = (
+        "synchronize-children",
+        _(
+            "Synchronize the retrieved/selected children with another editgrid component"
+        ),
+    )
 
     @classmethod
     def get_label(cls, value: str) -> str:

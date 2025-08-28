@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Self, TypedDict
 
@@ -179,6 +180,70 @@ class VariableAction(ActionOperation):
             return {self.variable: jsonLogic(self.value, context.data)}
 
 
+class ChildrenConfig(TypedDict):
+    source_variable: str
+    destination_variable: str
+
+
+@dataclass
+class SynchronizeChildrenAction(ActionOperation):
+    source_variable: str
+    destination_variable: str
+
+    @classmethod
+    def from_action(cls, action: ActionDict) -> Self:
+        children_config: ChildrenConfig = action["action"]["config"]
+        return cls(**children_config)
+
+    def eval(
+        self,
+        context: FormioData,
+        submission: Submission,
+    ) -> DataMapping:
+        source_data = context.get(self.source_variable, [])
+        destination_data = context.get(self.destination_variable, [])
+
+        if not (source_data or destination_data):
+            return {self.destination_variable: destination_data}
+
+        # check if a child should be included
+        def should_be_included(child):
+            return child.get("selected") is None or bool(child.get("selected"))
+
+        # initialize the destination data if empty
+        if not destination_data:
+            updated = [
+                {"bsn": child["bsn"], "childName": child["firstNames"]}
+                for child in source_data
+                if should_be_included(child)
+            ]
+            return {self.destination_variable: updated}
+
+        # update the existing destination data
+        destination_data_copy = deepcopy(destination_data)
+        destination_data_bsns = {child["bsn"] for child in destination_data_copy}
+
+        # add missing/selected children
+        for child in source_data:
+            if child["bsn"] not in destination_data_bsns and should_be_included(child):
+                destination_data_copy.append(
+                    {"bsn": child["bsn"], "childName": child["firstNames"]}
+                )
+
+        # remove the children that became unselected
+        destination_data_copy = [
+            destination_data_child
+            for destination_data_child in destination_data_copy
+            if any(
+                source_data_child["bsn"] == destination_data_child["bsn"]
+                and should_be_included(source_data_child)
+                for source_data_child in source_data
+            )
+        ]
+
+        return {self.destination_variable: destination_data_copy}
+
+
 @dataclass
 class ServiceFetchAction(ActionOperation):
     variable: str
@@ -292,6 +357,7 @@ ACTION_TYPE_MAPPING: Mapping[LogicActionTypes, type[ActionOperation]] = {
     LogicActionTypes.step_not_applicable: StepNotApplicableAction,
     LogicActionTypes.step_applicable: StepApplicableAction,
     LogicActionTypes.variable: VariableAction,
+    LogicActionTypes.synchronize_children: SynchronizeChildrenAction,
     LogicActionTypes.fetch_from_service: ServiceFetchAction,
     LogicActionTypes.evaluate_dmn: EvaluateDMNAction,
     LogicActionTypes.set_registration_backend: SetRegistrationBackendAction,

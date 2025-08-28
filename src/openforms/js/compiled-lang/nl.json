@@ -1337,6 +1337,12 @@
       "value": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "AW2A8b": [
+    {
+      "type": 0,
+      "value": "Synchronize children"
+    }
+  ],
   "AWyevn": [
     {
       "type": 0,
@@ -3966,6 +3972,12 @@
     {
       "type": 0,
       "value": "Authenticatie automatische login"
+    }
+  ],
+  "XF7/iB": [
+    {
+      "type": 0,
+      "value": "To variable"
     }
   ],
   "XMV3t2": [
@@ -7191,6 +7203,12 @@
     {
       "type": 0,
       "value": "Genereer JSON-schema"
+    }
+  ],
+  "xwOofe": [
+    {
+      "type": 0,
+      "value": "From variable"
     }
   ],
   "xxVNeU": [

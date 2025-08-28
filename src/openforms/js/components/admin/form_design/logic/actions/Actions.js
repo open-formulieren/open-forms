@@ -102,6 +102,39 @@ const ActionVariableValue = ({action, errors, onChange}) => (
   </>
 );
 
+const ActionSynchronizeChildren = ({action, errors, onChange}) => {
+  const intl = useIntl();
+
+  return (
+    <>
+      {intl.formatMessage({
+        description: 'From variable message',
+        defaultMessage: 'From variable',
+      })}
+      <DSLEditorNode errors={errors?.action?.config?.sourceVariable}>
+        <VariableSelection
+          name="action.config.sourceVariable"
+          onChange={onChange}
+          value={action?.action?.config?.sourceVariable}
+          filter={variable => variable.dataType === 'array' && variable.source === 'component'}
+        />
+      </DSLEditorNode>
+      {intl.formatMessage({
+        description: 'To variable message',
+        defaultMessage: 'To variable',
+      })}
+      <DSLEditorNode errors={errors?.action?.config?.destinationVariable}>
+        <VariableSelection
+          name="action.config.destinationVariable"
+          onChange={onChange}
+          value={action?.action?.config?.destinationVariable}
+          filter={variable => variable.dataType === 'array' && variable.source === 'component'}
+        />
+      </DSLEditorNode>
+    </>
+  );
+};
+
 const ActionFetchFromService = ({action, errors, onChange}) => {
   const intl = useIntl();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -349,6 +382,10 @@ const ActionComponent = ({action, errors, onChange}) => {
     }
     case 'evaluate-dmn': {
       Component = ActionEvaluateDMN;
+      break;
+    }
+    case 'synchronize-children': {
+      Component = ActionSynchronizeChildren;
       break;
     }
     default: {
