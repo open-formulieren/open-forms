@@ -732,6 +732,59 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+    @tag("gh-5557")
+    def test_validate_step_with_filename_with_diff_chars(self):
+        for filename in [
+            "Name with parentheses ()[]{}.png",
+            "Name with non-latin chars например.png",
+            "Name with magic t̸̨͔͍̭̜̦̙͈̐̃̃̇͊̈́͆͂͗̔̕͠͝ẹ̴̡̠̼͍̙̲̱̩̫̝̜̝̬̲̟̳͔̘͓͔̙̲̐̄͐̏̌̒́̎̒͂̐͛͗̚ͅŝ̶̢̧̢̠̦̞̬̯̖̺̱̯̣̹̗͕̳̆̅̃̄̾̂̈́̃͋͊̍̈͒͌̈́͐͜͠ͅ.png",
+        ]:
+            with self.subTest(filename):
+                temporary_file_upload = TemporaryFileUploadFactory.create(
+                    file_name=filename
+                )
+                file = SubmittedFileFactory.create(
+                    temporary_upload=temporary_file_upload,
+                    temporary_upload__original_name=filename,
+                )
+
+                submission = temporary_file_upload.submission
+                form_step = FormStepFactory.create(
+                    form=submission.form,
+                    form_definition__configuration={
+                        "components": [
+                            {
+                                "key": "fileUpload",
+                                "file": {
+                                    "name": "",
+                                    "type": ["image/png", "image/jpeg"],
+                                    "allowedTypesLabels": [".png", ".jpg"],
+                                },
+                                "type": "file",
+                                "input": True,
+                                "label": "File Upload",
+                                "tableView": False,
+                                "filePattern": "image/png,image/jpeg",
+                                "useConfigFiletypes": True,
+                            },
+                        ]
+                    },
+                )
+
+                self._add_submission_to_session(submission)
+                response = self.client.post(
+                    reverse(
+                        "api:submission-steps-validate",
+                        kwargs={
+                            "submission_uuid": submission.uuid,
+                            "step_uuid": form_step.uuid,
+                        },
+                    ),
+                    {"data": {"fileUpload": [file]}},
+                )
+
+                self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
     @tag("gh-5191")
     def test_validate_map_component_hidden_and_clear_on_hide(self):
         submission = SubmissionFactory.create(
