@@ -18,6 +18,12 @@ receivers:
         auth:
           authenticator: basicauth/server
 
+  # See https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/redisreceiver/README.md
+  redis:
+    endpoint: "redis:6379"
+    tls:
+      insecure: true
+
 processors:
   batch:
     timeout: 1s
@@ -53,7 +59,7 @@ service:
       processors: [memory_limiter, batch]
       exporters: [debug]
     metrics:
-      receivers: [otlp]
+      receivers: [otlp, redis]
       processors: [memory_limiter, transform, batch]
       exporters: [debug, prometheus]
     logs:
