@@ -28,7 +28,7 @@ const YiviOptionsFormFields = ({name, plugin}) => {
     <ValidationErrorsProvider errors={relevantErrors}>
       <Fieldset>
         <AuthenticationOptionsField schema={plugin.schema} />
-        <AdditionalAttributesGroupsField schema={plugin.schema} />
+        <AdditionalAttributesGroupsField />
       </Fieldset>
 
       {showBsnFields && <YiviOptionsFormBsnFields plugin={plugin} />}
