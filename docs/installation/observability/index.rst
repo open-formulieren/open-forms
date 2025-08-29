@@ -32,6 +32,7 @@ their observability stack.
    tracing
    error_monitoring
    otel_config
+   supporting_components
 
 .. seealso:: The base integration layer is provided through our shared library, which
    includes some `architecture documentation <https://maykin-django-common.readthedocs.io/en/latest/otel.html#architecture>`_.
