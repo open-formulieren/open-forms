@@ -5,7 +5,6 @@ Custom component types (defined by us or third parties) need to be organized in 
 adjacent custom.py module.
 """
 
-import re
 from collections.abc import Mapping
 from datetime import time
 from typing import TYPE_CHECKING, Any
@@ -78,8 +77,6 @@ if TYPE_CHECKING:
 
 
 logger = structlog.stdlib.get_logger(__name__)
-
-FORMIO_FILENAME_PATTERN = re.compile(r"[^0-9a-zA-Z.\-_ ]")
 
 
 @register("default")
@@ -400,11 +397,11 @@ class FileSerializer(serializers.Serializer):
         super().__init__(*args, **kwargs)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        # FormIO applies a regex pattern to the sent 'name' attribute which can
-        # cause the comparison between 'originalName' and 'name' to fail.
-        # The same pattern is applied here to follow that behaviour.
-        # See https://github.com/open-formulieren/formio.js/blob/maykin-4.13.12/src/components/file/File.js#L611.
-        attrs["originalName"] = FORMIO_FILENAME_PATTERN.sub("", attrs["originalName"])
+        # If FormIO uploads file with a soft-hyphen it removes if from the name of the fileobject.
+        # For now such behaviour is discovered only for soft hyphens, so they are manually removed
+        # from the filename during the backend validation
+        # Other unicode characters in the filename seem to be transferred without issues
+        attrs["originalName"] = attrs["originalName"].replace("\xad", "")
 
         for root_key, nested_key in (
             ("url", "url"),
