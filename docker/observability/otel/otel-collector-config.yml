@@ -35,6 +35,11 @@ receivers:
     tls:
       insecure: true
 
+  # See https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/nginxreceiver
+  nginx:
+    endpoint: "http://nginx:80/_status"
+    collection_interval: 10s
+
 processors:
   batch:
     timeout: 1s
@@ -70,7 +75,7 @@ service:
       processors: [memory_limiter, batch]
       exporters: [debug]
     metrics:
-      receivers: [otlp, postgresql, redis]
+      receivers: [otlp, postgresql, redis, nginx]
       processors: [memory_limiter, transform, batch]
       exporters: [prometheus]
     logs:

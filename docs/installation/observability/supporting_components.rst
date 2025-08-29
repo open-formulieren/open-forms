@@ -77,3 +77,26 @@ Example configuration:
 
 The receiver will periodically scrape the redis instance(s). Adapt the configuration as
 needed for the correct host name and possible authentication credentials.
+
+nginx
+=====
+
+nginx is used as reverse proxy and for serving binary files. The OTel Collector contrib
+package supports extracting some basic metrics by leveraging the "stub status" module,
+via the `nginx receiver <https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/nginxreceiver>`_.
+
+Example configuration:
+
+.. code-block:: yaml
+
+    receivers:
+      otlp: ...
+
+      redis:
+        endpoint: "nginx:8080/_status"
+
+    service:
+      metrics:
+        receivers: [otlp, nginx]
+        processors: [...]
+        exporters: [...]
