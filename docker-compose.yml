@@ -82,7 +82,7 @@ services:
       - open-forms-dev
 
   redis:
-    image: redis:6
+    image: redis:8
     command: ["redis-server", "--appendonly", "yes"]
     networks:
       - open-forms-dev
