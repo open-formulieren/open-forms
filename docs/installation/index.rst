@@ -24,7 +24,7 @@ After installation, follow the :ref:`configuration_index` instructions to enable
    docker_compose
    security
    config
-   observability
+   observability/index
    setup_configuration
    file_uploads
    self_signed
