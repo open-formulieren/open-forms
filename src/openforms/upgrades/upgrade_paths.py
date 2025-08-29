@@ -79,6 +79,13 @@ UPGRADE_PATHS = {
     "3.1": UpgradeConstraint(
         valid_ranges={VersionRange(minimum="3.0.1")},
     ),
+    "3.3": UpgradeConstraint(
+        valid_ranges={
+            VersionRange(minimum="3.1.7", maximum="3.2.0"),
+            VersionRange(minimum="3.2.2", maximum="3.3.0"),
+        },
+        scripts=["report_duplicate_merchants"],
+    ),
 }
 
 
