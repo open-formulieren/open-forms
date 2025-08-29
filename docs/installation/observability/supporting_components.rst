@@ -81,6 +81,9 @@ needed for the correct host name and possible authentication credentials.
 nginx
 =====
 
+Metrics
+-------
+
 nginx is used as reverse proxy and for serving binary files. The OTel Collector contrib
 package supports extracting some basic metrics by leveraging the "stub status" module,
 via the `nginx receiver <https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/nginxreceiver>`_.
@@ -100,3 +103,15 @@ Example configuration:
         receivers: [otlp, nginx]
         processors: [...]
         exporters: [...]
+
+Traces
+------
+
+nginx provides the `ngx_otel_module <https://nginx.org/en/docs/ngx_otel_module.html>`_
+for distributed tracing - which is not compiled/enabled by default. The Open Forms team
+does not publish an image with this module enabled - you can opt-into doing this
+yourself. Our `docker-compose.yml <https://github.com/open-formulieren/open-forms/tree/master/docker-compose.yml>`_ can provide inspiration.
+
+Follow the upstream documentation on how to enable this - it should be pretty straight
+forward to send the OTLP traces to the collector receiver since this is the same
+mechanism as exporting the application-specific telemetry.
