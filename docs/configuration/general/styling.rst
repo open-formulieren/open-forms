@@ -86,13 +86,12 @@ Design token values
 
     With the design token values, you can control aspects such as back- and foreground
     colors in the skeleton. This is considered advanced usage, as the structure from
-    `style dictionary`_ is used.
+    style dictionary is used.
 
     All available design tokens can be consulted by opening the design token editor. As long
     as you use the default Open Forms theme, all tokens are optional and have default values.
 
 .. _NL DS theme switcher: https://github.com/nl-design-system/themes/blob/main/packages/theme-switcher/src/index.js
-.. _style dictionary: https://styledictionary.com/
 
 .. todo::
 
