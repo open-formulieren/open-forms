@@ -115,3 +115,32 @@ yourself. Our `docker-compose.yml <https://github.com/open-formulieren/open-form
 Follow the upstream documentation on how to enable this - it should be pretty straight
 forward to send the OTLP traces to the collector receiver since this is the same
 mechanism as exporting the application-specific telemetry.
+
+Flower
+======
+
+`Flower <https://flower.readthedocs.io/en/latest/prometheus-integration.html>`_ is a
+Celery monitoring tool. It natively exposes Prometheus metrics, which you can scrape
+with the OTel Collector `Prometheus receiver <https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/prometheusreceiver/README.md>`_.
+
+Example configuration:
+
+.. code-block:: yaml
+
+    receivers:
+      otlp: ...
+
+      prometheus:
+        config:
+          scrape_configs:
+            - job_name: 'otel-flower'
+              scrape_interval: 15s
+              static_configs:
+                - targets: ['celery-flower:5555']
+              metrics_path: /metrics
+
+    service:
+      metrics:
+        receivers: [otlp, prometheus]
+        processors: [...]
+        exporters: [...]
