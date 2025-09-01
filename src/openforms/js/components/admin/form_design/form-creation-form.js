@@ -121,6 +121,7 @@ const initialFormState = {
       brpPersonenProcessingHeaderValue: '',
     },
     authBackends: [],
+    newRendererEnabled: false,
   },
   newForm: true,
   formSteps: [],
@@ -183,6 +184,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   variables: 'variables',
   appointmentOptions: 'form',
   brpPersonenRequestOptions: 'advanced-configuration',
+  newRendererEnabled: 'form',
 };
 
 const TRANSLATION_FIELD_TO_TAB_NAMES = {

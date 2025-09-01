@@ -1367,6 +1367,12 @@
       "value": "'Groep verwijderen'-tekst"
     }
   ],
+  "AzBz1q": [
+    {
+      "type": 0,
+      "value": "Enable the EXPERIMENTAL new renderer. Disclaimer: the new renderer is not feature complete and is very likely to contain bugs. You should not enable this in production."
+    }
+  ],
   "B/A1Bk": [
     {
       "type": 0,
@@ -2934,6 +2940,12 @@
     {
       "type": 0,
       "value": "Zaaktype-API-resource URL in de Catalogi-API."
+    }
+  ],
+  "NqShTs": [
+    {
+      "type": 0,
+      "value": "Experimental features"
     }
   ],
   "NrF5vy": [
@@ -5553,6 +5565,12 @@
     {
       "type": 0,
       "value": "Informatieobjecttype inzendings-PDF"
+    }
+  ],
+  "jHW6p5": [
+    {
+      "type": 0,
+      "value": "Enable new renderer"
     }
   ],
   "jLg5l6": [
