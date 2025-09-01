@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 import sys
 from pathlib import Path
 
 import django
 from django.urls import reverse
 
-import click
 from tabulate import tabulate
 
 SRC_DIR = Path(__file__).parent.parent / "src"
@@ -45,12 +45,11 @@ def main(**kwargs) -> bool:
     duplicates = report_duplicate_merchants(**kwargs)
 
     if not duplicates:
-        click.echo(click.style("No merchant duplicates found.", fg="green"))
+        print("No merchant duplicates found.")
         return True
 
-    click.echo(click.style("Found duplicate merchants.", fg="red"))
-    click.echo("")
-    click.echo(
+    print("Found duplicate merchants.")
+    print(
         tabulate(
             [
                 (
@@ -75,7 +74,6 @@ def main(**kwargs) -> bool:
     return False
 
 
-@click.command()
 def cli() -> bool:
     return main()
 
