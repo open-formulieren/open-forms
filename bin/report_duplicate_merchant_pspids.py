@@ -36,11 +36,12 @@ def report_duplicate_merchants() -> dict[str, list[int]]:
     return dict(sorted(merchant_mapping.items(), key=lambda item: item[0]))
 
 
-def main(**kwargs) -> bool:
+def main(skip_setup=False, **kwargs) -> bool:
     from openforms.setup import setup_env
 
-    setup_env()
-    django.setup()
+    if not skip_setup:
+        setup_env()
+        django.setup()
 
     duplicates = report_duplicate_merchants(**kwargs)
 
