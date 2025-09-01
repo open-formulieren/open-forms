@@ -70,7 +70,7 @@ from ..typing import (
 )
 from ..typing.base import OpenFormsConfig
 from .translations import translate_options
-from .utils import _normalize_pattern
+from .utils import _normalize_pattern, sanitize_file_name
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
@@ -397,11 +397,14 @@ class FileSerializer(serializers.Serializer):
         super().__init__(*args, **kwargs)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        # If FormIO uploads file with a soft-hyphen it removes if from the name of the fileobject.
-        # For now such behaviour is discovered only for soft hyphens, so they are manually removed
-        # from the filename during the backend validation
-        # Other unicode characters in the filename seem to be transferred without issues
-        attrs["originalName"] = attrs["originalName"].replace("\xad", "")
+        # when the file is being uploaded "temporary-file-upload" endpoint is used.
+        # It has MultiPartParser, which changes the file name in sanitize_file_name,
+        # including the removal of soft-hyphens.
+        # Formio isn't aware of change so its "originalName" attribute may differ
+        # from the file name stored in django.
+        # Here we apply the same changes to the "originalName" attribute, so it won't differ
+        # from the stored file name
+        attrs["originalName"] = sanitize_file_name(attrs["originalName"])
 
         for root_key, nested_key in (
             ("url", "url"),
