@@ -6,6 +6,15 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.2.2 (2025-09-01)
+==================
+
+Hotfix release to fix file upload validation bug.
+
+* Fixed a bug where link extraction from WYSIWYG elements could crash.
+* [:backend:`5557`] Fixed a bug introduced in 3.1.5 causing non-alphanumeric characters
+  in file upload names to trigger invalid validation errors.
+
 3.2.1 (2025-08-19)
 ==================
 
