@@ -92,7 +92,7 @@ Design token values
     as you use the default Open Forms theme, all tokens are optional and have default values.
 
 .. _NL DS theme switcher: https://github.com/nl-design-system/themes/blob/main/packages/theme-switcher/src/index.js
-.. _style dictionary: https://styledictionary.com/
+.. _style dictionary: https://styledictionarytemp.netlify.app/
 
 .. todo::
 
