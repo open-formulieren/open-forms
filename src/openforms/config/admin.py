@@ -4,12 +4,21 @@ from django.urls import path, reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from import_export.admin import ImportExportModelAdmin
 from modeltranslation.admin import TranslationAdmin
 from solo.admin import SingletonModelAdmin
 
 from .admin_views import ThemePreviewView
 from .forms import GlobalConfigurationAdminForm, ThemeAdminForm
-from .models import CSPSetting, GlobalConfiguration, MapTileLayer, RichTextColor, Theme
+from .models import (
+    CSPSetting,
+    GlobalConfiguration,
+    MapTileLayer,
+    MapWMSTileLayer,
+    RichTextColor,
+    Theme,
+)
+from .resources import MapWMSTileLayerResource
 
 
 @admin.register(GlobalConfiguration)
@@ -244,6 +253,15 @@ class MapTileLayerAdmin(admin.ModelAdmin):
         "url",
     )
     prepopulated_fields = {"identifier": ("label",)}
+
+
+@admin.register(MapWMSTileLayer)
+class MapWMSTileLayerAdmin(ImportExportModelAdmin):
+    list_display = ("name", "url", "uuid")
+    search_fields = ("name", "uuid")
+
+    # Import and export options:
+    resource_classes = (MapWMSTileLayerResource,)
 
 
 @admin.register(CSPSetting)
