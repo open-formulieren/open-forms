@@ -1363,6 +1363,12 @@
       "value": "'Remove row' text"
     }
   ],
+  "AzBz1q": [
+    {
+      "type": 0,
+      "value": "Enable the EXPERIMENTAL new renderer. Disclaimer: the new renderer is not feature complete and is very likely to contain bugs. You should not enable this in production."
+    }
+  ],
   "B/A1Bk": [
     {
       "type": 0,
@@ -2913,6 +2919,12 @@
     {
       "type": 0,
       "value": "Case type API resource URL in the Catalogi API."
+    }
+  ],
+  "NqShTs": [
+    {
+      "type": 0,
+      "value": "Experimental features"
     }
   ],
   "NrF5vy": [
@@ -5531,6 +5543,12 @@
     {
       "type": 0,
       "value": "Submission report PDF informatieobjecttype"
+    }
+  ],
+  "jHW6p5": [
+    {
+      "type": 0,
+      "value": "Enable new renderer"
     }
   ],
   "jLg5l6": [

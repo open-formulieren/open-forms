@@ -553,6 +553,7 @@ const FormConfigurationFields = ({
     askPrivacyConsent,
     askStatementOfTruth,
     appointmentOptions,
+    newRendererEnabled,
   } = form;
 
   const onCheckboxChange = (event, currentValue) => {
@@ -731,6 +732,39 @@ const FormConfigurationFields = ({
         askStatementOfTruth={askStatementOfTruth}
         onChange={onChange}
       />
+
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="Form feature flags fieldset title"
+            defaultMessage="Experimental features"
+          />
+        }
+        collapsible
+        initialCollapsed
+      >
+        <FormRow>
+          <Checkbox
+            name="form.newRendererEnabled"
+            label={
+              <FormattedMessage
+                description="New renderer enabled feature flag label"
+                defaultMessage="Enable new renderer"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="New renderer enabled feature flag help text"
+                defaultMessage={`Enable the EXPERIMENTAL new renderer. Disclaimer: the
+                new renderer is not feature complete and is very likely to contain bugs.
+                You should not enable this in production.`}
+              />
+            }
+            checked={newRendererEnabled}
+            onChange={event => onCheckboxChange(event, newRendererEnabled)}
+          />
+        </FormRow>
+      </Fieldset>
     </>
   );
 };

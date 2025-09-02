@@ -601,6 +601,11 @@
     "description": "Form definition select confirm button",
     "originalDefault": "Confirm"
   },
+  "AzBz1q": {
+    "defaultMessage": "Enable the EXPERIMENTAL new renderer. Disclaimer: the new renderer is not feature complete and is very likely to contain bugs. You should not enable this in production.",
+    "description": "New renderer enabled feature flag help text",
+    "originalDefault": "Enable the EXPERIMENTAL new renderer. Disclaimer: the new renderer is not feature complete and is very likely to contain bugs. You should not enable this in production."
+  },
   "B/A1Bk": {
     "defaultMessage": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier.",
     "description": "Ogone legacy payment options 'merchantId' help text",
@@ -1446,6 +1451,11 @@
     "defaultMessage": "Zaaktype-API-resource URL in de Catalogi-API.",
     "description": "ZGW APIs registration options 'CaseType' help text",
     "originalDefault": "Case type API resource URL in the Catalogi API."
+  },
+  "NqShTs": {
+    "defaultMessage": "Experimental features",
+    "description": "Form feature flags fieldset title",
+    "originalDefault": "Experimental features"
   },
   "NrF5vy": {
     "defaultMessage": "Documenttype",
@@ -2647,6 +2657,11 @@
     "defaultMessage": "Informatieobjecttype inzendings-PDF",
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" label",
     "originalDefault": "Submission report PDF informatieobjecttype"
+  },
+  "jHW6p5": {
+    "defaultMessage": "Enable new renderer",
+    "description": "New renderer enabled feature flag label",
+    "originalDefault": "Enable new renderer"
   },
   "jLv6k8": {
     "defaultMessage": "DMN-variabele",
