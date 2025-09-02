@@ -100,6 +100,11 @@
     "description": "Form 'BRP Personen processing header value' field label",
     "originalDefault": "BRP Personen processing header value"
   },
+  "18Bzjy": {
+    "defaultMessage": "Synchronize children configuration:",
+    "description": "Configuration button Synchronize children label",
+    "originalDefault": "Synchronize children configuration:"
+  },
   "1ArmQ5": {
     "defaultMessage": "Bevestigen",
     "description": "Camunda complex process variables confirm button",
@@ -119,6 +124,11 @@
     "defaultMessage": "Opties instellen",
     "description": "Link label to open registration options modal",
     "originalDefault": "Configure options"
+  },
+  "1NZLXT": {
+    "defaultMessage": "Are you sure you want to remove this mapping?",
+    "description": "Delete confirmation message for property mapped to variable",
+    "originalDefault": "Are you sure you want to remove this mapping?"
   },
   "1fD+K4": {
     "defaultMessage": "Opschoonmethode voor niet voltooide inzendingen",
@@ -586,10 +596,20 @@
     "description": "literals.changeText help text",
     "originalDefault": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
   },
+  "AW2A8b": {
+    "defaultMessage": "Synchronize children",
+    "description": "action type \"synchronize children\" label",
+    "originalDefault": "Synchronize children"
+  },
   "AWyevn": {
     "defaultMessage": "Vertrouwelijkheidaanduiding",
     "description": "ZGW APIs registration options 'zaakVertrouwelijkheidaanduiding' label",
     "originalDefault": "Confidentiality"
+  },
+  "AXL5sn": {
+    "defaultMessage": "(not configured yet or partially configured)",
+    "description": "Synchronize children not configured yet message",
+    "originalDefault": "(not configured yet or partially configured)"
   },
   "AdyBdF": {
     "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare roltypen in het geselecteerde zaaktype. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn.",
@@ -620,6 +640,11 @@
     "defaultMessage": "{varCount, plural, =0 {} one {(1 variabele gekoppeld)} other {({varCount} variabelen gekoppeld)} }",
     "description": "Managed Camunda process vars state feedback",
     "originalDefault": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }"
+  },
+  "BNDR9T": {
+    "defaultMessage": "All possible properties are mapped to a simple component.",
+    "description": "Warning that all possible properties are mapped",
+    "originalDefault": "All possible properties are mapped to a simple component."
   },
   "BR6rKB": {
     "defaultMessage": "Vink aan om het veld op te nemen als procesvariabele",
@@ -1326,6 +1351,11 @@
     "description": "Copy form button",
     "originalDefault": "Copy"
   },
+  "LP3BZ7": {
+    "defaultMessage": "Select a property name.",
+    "description": "Column help text for the allowed property that a variable is mapped to",
+    "originalDefault": "Select a property name."
+  },
   "LaovNg": {
     "defaultMessage": "Variabele toevoegen",
     "description": "Add process variable button",
@@ -1416,6 +1446,11 @@
     "defaultMessage": "Formuliervariabelenconfiguratie",
     "description": "Form variables configuration editor fieldset title",
     "originalDefault": "Form variables configuration"
+  },
+  "Mzb7MH": {
+    "defaultMessage": "Configure",
+    "description": "Button to open Synchronize children configuration modal",
+    "originalDefault": "Configure"
   },
   "N5Hv+1": {
     "defaultMessage": "Zaaktype",
@@ -1612,6 +1647,11 @@
     "description": "Select form definition tile",
     "originalDefault": "Select existing form definition"
   },
+  "QJ3P3I": {
+    "defaultMessage": "To variable",
+    "description": "Synchronize children modal select to variable field label",
+    "originalDefault": "To variable"
+  },
   "QLTh2N": {
     "defaultMessage": "'Opslaan' tekst",
     "description": "Form step save text label",
@@ -1671,6 +1711,11 @@
     "defaultMessage": "De gegevens worden opgehaald voor het geselecteerde persoonstype.",
     "description": "Family members options: 'Type' helpText",
     "originalDefault": "The data will be retrieved for the selected type of person."
+  },
+  "ROZubV": {
+    "defaultMessage": "From variable",
+    "description": "Synchronize children modal select from variable field label",
+    "originalDefault": "From variable"
   },
   "RcVlPF": {
     "defaultMessage": "Interne naam van het formulier voor onderscheid in overzichten",
@@ -2467,6 +2512,11 @@
     "description": "Logic action warning icon text",
     "originalDefault": "Detected some problems in this action: {problems}."
   },
+  "giJxUm": {
+    "defaultMessage": "Property",
+    "description": "Column title for the allowed property that a variable is mapped to",
+    "originalDefault": "Property"
+  },
   "gpiYPI": {
     "defaultMessage": "Accepteren",
     "description": "Confirmation modal confirm button",
@@ -2737,6 +2787,11 @@
     "defaultMessage": "Plugin-instellingen: Worldline",
     "description": "Worldline options modal title",
     "originalDefault": "Plugin configuration: Worldline"
+  },
+  "kH8eZ6": {
+    "defaultMessage": "Synchronize children configuration",
+    "description": "Synchronizing children configuration modal title",
+    "originalDefault": "Synchronize children configuration"
   },
   "kHn5Yw": {
     "defaultMessage": "Wijzig definitie",
@@ -3491,6 +3546,16 @@
     "defaultMessage": "Zaaktypeomschrijving",
     "description": "StUF-ZDS registration options 'zdsZaaktypeOmschrijving' label",
     "originalDefault": "Zds zaaktype omschrijving"
+  },
+  "z76xxo": {
+    "defaultMessage": "There are errors in the Synchronize children configuration.",
+    "description": "Synchronize children configuration errors message",
+    "originalDefault": "There are errors in the Synchronize children configuration."
+  },
+  "zA2P0g": {
+    "defaultMessage": "Add variable",
+    "description": "Add children (mapping) button",
+    "originalDefault": "Add variable"
   },
   "zItxZ9": {
     "defaultMessage": "Yivi-pluginopties voor kvk",

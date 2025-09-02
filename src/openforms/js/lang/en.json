@@ -99,6 +99,11 @@
     "description": "Form 'BRP Personen processing header value' field label",
     "originalDefault": "BRP Personen processing header value"
   },
+  "18Bzjy": {
+    "defaultMessage": "Synchronize children configuration:",
+    "description": "Configuration button Synchronize children label",
+    "originalDefault": "Synchronize children configuration:"
+  },
   "1ArmQ5": {
     "defaultMessage": "Confirm",
     "description": "Camunda complex process variables confirm button",
@@ -118,6 +123,11 @@
     "defaultMessage": "Configure options",
     "description": "Link label to open registration options modal",
     "originalDefault": "Configure options"
+  },
+  "1NZLXT": {
+    "defaultMessage": "Are you sure you want to remove this mapping?",
+    "description": "Delete confirmation message for property mapped to variable",
+    "originalDefault": "Are you sure you want to remove this mapping?"
   },
   "1fD+K4": {
     "defaultMessage": "Incomplete Submissions Removal Method",
@@ -579,10 +589,20 @@
     "description": "literals.changeText help text",
     "originalDefault": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
   },
+  "AW2A8b": {
+    "defaultMessage": "Synchronize children",
+    "description": "action type \"synchronize children\" label",
+    "originalDefault": "Synchronize children"
+  },
   "AWyevn": {
     "defaultMessage": "Confidentiality",
     "description": "ZGW APIs registration options 'zaakVertrouwelijkheidaanduiding' label",
     "originalDefault": "Confidentiality"
+  },
+  "AXL5sn": {
+    "defaultMessage": "(not configured yet or partially configured)",
+    "description": "Synchronize children not configured yet message",
+    "originalDefault": "(not configured yet or partially configured)"
   },
   "AdyBdF": {
     "defaultMessage": "Something went wrong while retrieving the available role types defined in the selected case. Please check that the services in the selected API group are configured correctly.",
@@ -613,6 +633,11 @@
     "defaultMessage": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }",
     "description": "Managed Camunda process vars state feedback",
     "originalDefault": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }"
+  },
+  "BNDR9T": {
+    "defaultMessage": "All possible properties are mapped to a simple component.",
+    "description": "Warning that all possible properties are mapped",
+    "originalDefault": "All possible properties are mapped to a simple component."
   },
   "BR6rKB": {
     "defaultMessage": "Check to include the field as process variable",
@@ -1314,6 +1339,11 @@
     "description": "Copy form button",
     "originalDefault": "Copy"
   },
+  "LP3BZ7": {
+    "defaultMessage": "Select a property name.",
+    "description": "Column help text for the allowed property that a variable is mapped to",
+    "originalDefault": "Select a property name."
+  },
   "LaovNg": {
     "defaultMessage": "Add variable",
     "description": "Add process variable button",
@@ -1403,6 +1433,11 @@
     "defaultMessage": "Form variables configuration",
     "description": "Form variables configuration editor fieldset title",
     "originalDefault": "Form variables configuration"
+  },
+  "Mzb7MH": {
+    "defaultMessage": "Configure",
+    "description": "Button to open Synchronize children configuration modal",
+    "originalDefault": "Configure"
   },
   "N5Hv+1": {
     "defaultMessage": "Case type",
@@ -1594,6 +1629,11 @@
     "description": "Select form definition tile",
     "originalDefault": "Select existing form definition"
   },
+  "QJ3P3I": {
+    "defaultMessage": "To variable",
+    "description": "Synchronize children modal select to variable field label",
+    "originalDefault": "To variable"
+  },
   "QLTh2N": {
     "defaultMessage": "Save text",
     "description": "Form step save text label",
@@ -1653,6 +1693,11 @@
     "defaultMessage": "The data will be retrieved for the selected type of person.",
     "description": "Family members options: 'Type' helpText",
     "originalDefault": "The data will be retrieved for the selected type of person."
+  },
+  "ROZubV": {
+    "defaultMessage": "From variable",
+    "description": "Synchronize children modal select from variable field label",
+    "originalDefault": "From variable"
   },
   "RcVlPF": {
     "defaultMessage": "Internal name/title of the form",
@@ -2444,6 +2489,11 @@
     "description": "Logic action warning icon text",
     "originalDefault": "Detected some problems in this action: {problems}."
   },
+  "giJxUm": {
+    "defaultMessage": "Property",
+    "description": "Column title for the allowed property that a variable is mapped to",
+    "originalDefault": "Property"
+  },
   "gpiYPI": {
     "defaultMessage": "Confirm",
     "description": "Confirmation modal confirm button",
@@ -2713,6 +2763,11 @@
     "defaultMessage": "Plugin configuration: Worldline",
     "description": "Worldline options modal title",
     "originalDefault": "Plugin configuration: Worldline"
+  },
+  "kH8eZ6": {
+    "defaultMessage": "Synchronize children configuration",
+    "description": "Synchronizing children configuration modal title",
+    "originalDefault": "Synchronize children configuration"
   },
   "kHn5Yw": {
     "defaultMessage": "Edit definition",
@@ -3463,6 +3518,16 @@
     "defaultMessage": "Zds zaaktype omschrijving",
     "description": "StUF-ZDS registration options 'zdsZaaktypeOmschrijving' label",
     "originalDefault": "Zds zaaktype omschrijving"
+  },
+  "z76xxo": {
+    "defaultMessage": "There are errors in the Synchronize children configuration.",
+    "description": "Synchronize children configuration errors message",
+    "originalDefault": "There are errors in the Synchronize children configuration."
+  },
+  "zA2P0g": {
+    "defaultMessage": "Add variable",
+    "description": "Add children (mapping) button",
+    "originalDefault": "Add variable"
   },
   "zItxZ9": {
     "defaultMessage": "Yivi plugin options for kvk",

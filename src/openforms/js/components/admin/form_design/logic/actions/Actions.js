@@ -22,6 +22,7 @@ import Modal from 'components/admin/modals/Modal';
 
 import DMNActionConfig from './dmn/DMNActionConfig';
 import {detectMappingProblems as detectDMNMappingProblems} from './dmn/utils';
+import {SynchronizeChildrenActionConfig} from './synchronize_children/SynchronizeChildrenConfigModal';
 import {ActionError, Action as ActionType} from './types';
 
 const ActionProperty = ({action, errors, onChange}) => {
@@ -101,6 +102,93 @@ const ActionVariableValue = ({action, errors, onChange}) => (
     </DSLEditorNode>
   </>
 );
+
+const ActionSynchronizeChildren = ({action, errors, onChange}) => {
+  const intl = useIntl();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const config = {
+    sourceVariable: '',
+    destinationVariable: '',
+    childrenMappings: [],
+    ...(action?.action?.config || {}),
+  };
+
+  const onConfigSave = values => {
+    onChange({target: {name: 'action.config', value: values}});
+    setIsModalOpen(false);
+  };
+
+  const getRelevantErrors = errors => {
+    const relevantErrors = errors.action?.value ? [errors.action.value] : [];
+    if (!errors.action?.config) {
+      return relevantErrors;
+    }
+
+    // Global errors about the config should be shown at the top level.
+    // Otherwise, there are some errors in the config, that should be announced.
+    relevantErrors.push(
+      typeof errors.action.config === 'string'
+        ? errors.action.config
+        : intl.formatMessage({
+            description: 'Synchronize children configuration errors message',
+            defaultMessage: 'There are errors in the Synchronize children configuration.',
+          })
+    );
+    return relevantErrors;
+  };
+
+  return (
+    <>
+      <DSLEditorNode errors={getRelevantErrors(errors)}>
+        <label className="required" htmlFor="sync_children_config_button">
+          <FormattedMessage
+            description="Configuration button Synchronize children label"
+            defaultMessage="Synchronize children configuration:"
+          />
+        </label>
+        {!(config.sourceVariable && config.destinationVariable && config.childrenMappings)
+          ? intl.formatMessage({
+              description: 'Synchronize children not configured yet message',
+              defaultMessage: '(not configured yet or partially configured)',
+            })
+          : null}
+        <ActionButton
+          id="sync_children_config_button"
+          name="sync_children_config_button"
+          onClick={event => {
+            event.preventDefault();
+            setIsModalOpen(true);
+          }}
+          text={intl.formatMessage({
+            description: 'Button to open Synchronize children configuration modal',
+            defaultMessage: 'Configure',
+          })}
+        />
+      </DSLEditorNode>
+
+      <Modal
+        isOpen={isModalOpen}
+        closeModal={() => {
+          setIsModalOpen(false);
+        }}
+        title={
+          <FormattedMessage
+            description="Synchronizing children configuration modal title"
+            defaultMessage="Synchronize children configuration"
+          />
+        }
+        contentModifiers={['with-form', 'large']}
+      >
+        <SynchronizeChildrenActionConfig
+          initialValues={config}
+          onSave={onConfigSave}
+          errors={errors.action?.config}
+        />
+      </Modal>
+    </>
+  );
+};
 
 const ActionFetchFromService = ({action, errors, onChange}) => {
   const intl = useIntl();
@@ -349,6 +437,10 @@ const ActionComponent = ({action, errors, onChange}) => {
     }
     case 'evaluate-dmn': {
       Component = ActionEvaluateDMN;
+      break;
+    }
+    case 'synchronize-children': {
+      Component = ActionSynchronizeChildren;
       break;
     }
     default: {

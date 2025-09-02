@@ -227,6 +227,12 @@
       "value": "BRP Personen processing header value"
     }
   ],
+  "18Bzjy": [
+    {
+      "type": 0,
+      "value": "Synchronize children configuration:"
+    }
+  ],
   "1ArmQ5": [
     {
       "type": 0,
@@ -251,10 +257,10 @@
       "value": "Configure options"
     }
   ],
-  "1U0I5C": [
+  "1NZLXT": [
     {
       "type": 0,
-      "value": "Firstnames"
+      "value": "Are you sure you want to remove this mapping?"
     }
   ],
   "1Vvryq": [
@@ -503,6 +509,12 @@
     {
       "type": 0,
       "value": "CSS class"
+    }
+  ],
+  "3rmiz8": [
+    {
+      "type": 0,
+      "value": "FirstNames"
     }
   ],
   "3z1hhJ": [
@@ -1333,10 +1345,22 @@
       "value": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
     }
   ],
+  "AW2A8b": [
+    {
+      "type": 0,
+      "value": "Synchronize children"
+    }
+  ],
   "AWyevn": [
     {
       "type": 0,
       "value": "Confidentiality"
+    }
+  ],
+  "AXL5sn": [
+    {
+      "type": 0,
+      "value": "(not configured yet or partially configured)"
     }
   ],
   "AdyBdF": [
@@ -1441,6 +1465,12 @@
     {
       "type": 0,
       "value": "The option value is a required field."
+    }
+  ],
+  "BNDR9T": [
+    {
+      "type": 0,
+      "value": "All possible properties are mapped to a simple component."
     }
   ],
   "BR10QN": [
@@ -2721,6 +2751,12 @@
       "value": "Copy"
     }
   ],
+  "LP3BZ7": [
+    {
+      "type": 0,
+      "value": "Select a property name."
+    }
+  ],
   "LZc4TN": [
     {
       "type": 0,
@@ -2861,6 +2897,12 @@
     {
       "type": 0,
       "value": "Form variables configuration"
+    }
+  ],
+  "Mzb7MH": [
+    {
+      "type": 0,
+      "value": "Configure"
     }
   ],
   "N5Hv+1": [
@@ -3199,6 +3241,12 @@
       "value": "Select existing form definition"
     }
   ],
+  "QJ3P3I": [
+    {
+      "type": 0,
+      "value": "To variable"
+    }
+  ],
   "QL4SGQ": [
     {
       "type": 0,
@@ -3337,6 +3385,12 @@
     {
       "type": 0,
       "value": "Translations for literals used in this component."
+    }
+  ],
+  "ROZubV": [
+    {
+      "type": 0,
+      "value": "From variable"
     }
   ],
   "RPzjrJ": [
@@ -3733,6 +3787,12 @@
     {
       "type": 0,
       "value": "File"
+    }
+  ],
+  "V2/ceD": [
+    {
+      "type": 0,
+      "value": "Configuration (deprecated)"
     }
   ],
   "V21YkS": [
@@ -5033,6 +5093,12 @@
       "value": "The property that gets compared with the identifier (e.g. BSN/KVK) of the authenticated user to verify ownership of the object being updated. This is important to prevent malicious users modifying information of other people than themselves."
     }
   ],
+  "fGTdJz": [
+    {
+      "type": 0,
+      "value": "Deriving the location via text fields is deprecated. Use the AddressNL component instead."
+    }
+  ],
   "fLCWjk": [
     {
       "type": 0,
@@ -5195,6 +5261,12 @@
     {
       "type": 0,
       "value": "."
+    }
+  ],
+  "giJxUm": [
+    {
+      "type": 0,
+      "value": "Property"
     }
   ],
   "gpiYPI": [
@@ -5727,6 +5799,12 @@
     {
       "type": 0,
       "value": "Plugin configuration: Worldline"
+    }
+  ],
+  "kH8eZ6": [
+    {
+      "type": 0,
+      "value": "Synchronize children configuration"
     }
   ],
   "kHn5Yw": [
@@ -6605,12 +6683,6 @@
       "value": "(not configured yet)"
     }
   ],
-  "s8ercf": [
-    {
-      "type": 0,
-      "value": "Configuration"
-    }
-  ],
   "sAfROS": [
     {
       "type": 0,
@@ -7335,10 +7407,22 @@
       "value": "Zds zaaktype omschrijving"
     }
   ],
+  "z76xxo": [
+    {
+      "type": 0,
+      "value": "There are errors in the Synchronize children configuration."
+    }
+  ],
   "z7HXSS": [
     {
       "type": 0,
       "value": "Use globally configured map component settings"
+    }
+  ],
+  "zA2P0g": [
+    {
+      "type": 0,
+      "value": "Add variable"
     }
   ],
   "zItxZ9": [
