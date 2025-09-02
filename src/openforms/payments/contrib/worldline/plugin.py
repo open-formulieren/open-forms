@@ -40,7 +40,10 @@ from openforms.payments.constants import (
 )
 from openforms.payments.models import SubmissionPayment
 from openforms.submissions.tokens import submission_status_token_generator
+from openforms.template import render_from_string, sandbox_backend
+from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+from openforms.variables.utils import get_variables_for_context
 
 from ...registry import register
 from .constants import (
@@ -54,6 +57,7 @@ from .typing import (
     CheckoutInput,
     Order,
     PaymentOptions,
+    References,
 )
 from .utils import get_merchant_reference, get_webhook_helper
 
@@ -72,24 +76,71 @@ class WorldlineOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializ
         required=True,
         help_text=_("Merchant to use"),
     )
-
+    variant = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default="",
+        label=_("Variant name"),
+        help_text=_(
+            "Name of the template that should be used during the payment process. "
+            'This can be found under the "Variant name" field in the "Branding" section.'
+        ),
+    )
+    descriptor_template = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default="",
+        label=_("Descriptor template"),
+        validators=[
+            DjangoTemplateValidator(backend="openforms.template.sandbox_backend")
+        ],
+        help_text=_(
+            "Optional custom template for the description, included in the payment "
+            "overviews for the backoffice. Use this to link the payment back to a "
+            "particular process or form. You can include all form variables (using "
+            "their keys) and the 'public_reference' variable (using expression "
+            "'{{ public_reference }}'). If unspecified, a default description is used. "
+            "Note that the length of the result is capped to 32 characters and only "
+            "alpha-numeric characters are allowed."
+        ),
+    )
     _checkoutDetails = CheckoutSerializer(required=False)
 
 
-def _generate_order(payment: SubmissionPayment) -> Order:
+def _generate_order(payment: SubmissionPayment, options: PaymentOptions) -> Order:
     amount_of_money = AmountOfMoney(
         currencyCode="EUR", amount=int((payment.amount * 100).to_integral_exact())
     )
-    return Order(amountOfMoney=amount_of_money)
+
+    public_reference = payment.submission.public_registration_reference
+    default_description = f"{_('Submission')}: {public_reference}"
+    template_context = get_variables_for_context(payment.submission)
+    template_context["public_reference"] = public_reference
+    descriptor = (
+        render_from_string(
+            descriptor_template, template_context, backend=sandbox_backend
+        )
+        if (descriptor_template := options.get("descriptor_template"))
+        else default_description
+    )
+
+    references = References(descriptor=descriptor[:32])
+    return Order(amountOfMoney=amount_of_money, references=references)
 
 
 def _generate_checkout_input(
     request: HttpRequest,
     payment: SubmissionPayment,
+    options: PaymentOptions,
     payment_plugin: "WorldlinePaymentPlugin",
 ) -> CheckoutInput:
     return_url = payment_plugin.get_return_url(request, payment)
-    return CheckoutInput(returnUrl=return_url)
+    input = CheckoutInput(returnUrl=return_url)
+
+    if variant := options.get("variant"):
+        input["variant"] = variant
+
+    return input
 
 
 @register("worldline")
@@ -107,8 +158,8 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         payment: SubmissionPayment,
         options: PaymentOptions,
     ) -> PaymentInfo:
-        order = _generate_order(payment)
-        checkout_input = _generate_checkout_input(request, payment, self)
+        order = _generate_order(payment, options)
+        checkout_input = _generate_checkout_input(request, payment, options, self)
         client = options["merchant"].get_checkout_client()
 
         # See the hostedCheckoutSpecificInput field on
@@ -140,6 +191,8 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         option_serializer = self.configuration_options(
             data={
                 "merchant": options["merchant"].pspid,
+                "variant": options.get("variant", ""),
+                "descriptor_template": options.get("descriptor_template", ""),
                 "_checkoutDetails": {
                     "RETURNMAC": checkout_response.returnmac,
                     "hostedCheckoutId": checkout_response.hosted_checkout_id,
