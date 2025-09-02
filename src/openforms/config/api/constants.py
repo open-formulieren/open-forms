@@ -9,7 +9,7 @@ assert BOOL_TYPE is not None
 
 STATEMENT_CHECKBOX_SCHEMA = build_object_type(
     title=_("Statement checkbox"),
-    description=_(
+    description=_(  # pyright: ignore[reportArgumentType]
         "A single Form.io checkbox component for the statements that a user may "
         "have to accept before submitting a form."
     ),

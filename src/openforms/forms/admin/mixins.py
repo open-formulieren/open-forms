@@ -5,7 +5,12 @@ from flags.state import flag_enabled
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.config.constants import UploadFileType
-from openforms.config.models import GlobalConfiguration, MapTileLayer, RichTextColor
+from openforms.config.models import (
+    GlobalConfiguration,
+    MapTileLayer,
+    MapWMSTileLayer,
+    RichTextColor,
+)
 
 
 def get_rich_text_colors():
@@ -21,6 +26,10 @@ def get_map_tile_layers():
     return list(MapTileLayer.objects.values("identifier", "url", "label"))
 
 
+def get_wms_layers():
+    return list(MapWMSTileLayer.objects.values("uuid", "name", "url"))
+
+
 class FormioConfigMixin:
     def render_change_form(
         self, request, context, add=False, change=False, form_url="", obj=None
@@ -31,6 +40,7 @@ class FormioConfigMixin:
                 "required_default": config.form_fields_required_default,
                 "rich_text_colors": get_rich_text_colors(),
                 "map_tile_layers": get_map_tile_layers(),
+                "wms_layers": get_wms_layers(),
                 "upload_filetypes": [
                     {"label": label, "value": value}
                     for value, label in UploadFileType.choices
