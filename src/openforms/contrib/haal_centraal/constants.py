@@ -4,6 +4,7 @@ from django.db import models
 
 DEFAULT_HC_BRP_PERSONEN_GEBRUIKER_HEADER = "BurgerZelf"
 
+# needed attributes for the requests to the API
 HC_PARTNERS_ATTRIBUTES = [
     "partners.burgerservicenummer",
     "partners.naam.voornamen",
@@ -22,7 +23,14 @@ HC_CHILDREN_ATTRIBUTES = [
     "kinderen.geboorte.datum",
 ]
 
+# extra needed attributes for the deceased children
 HC_DECEASED_ATTRIBUTES = ["burgerservicenummer", "overlijden"]
+
+# properties/data which can be populated by the already retreived data (in a second form step)
+HC_CHILDREN_EXTRA_STEP_ALLOWED_PROPERTIES = {
+    "bsn": "id_bsn",
+    "first_names": "id_firstNames",
+}
 
 type DateOfBirthPrecisionType = Literal["date", "year_month", "year"]
 DATE_OF_BIRTH_TYPE_MAPPINGS: dict[str, DateOfBirthPrecisionType] = {
