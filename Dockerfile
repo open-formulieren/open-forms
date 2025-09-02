@@ -99,6 +99,7 @@ COPY \
     ./bin/check_celery_worker_liveness.py \
     ./bin/report_component_problems.py \
     ./bin/report_form_registration_problems.py \
+    ./bin/report_duplicate_merchant_pspids.py \
     ./bin/fix_selectboxes_component_default_values.py \
     ./bin/fix_component_default_values.py \
     ./bin/fix_objects_api_form_registration_variables_mapping.py \
