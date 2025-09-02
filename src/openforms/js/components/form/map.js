@@ -19,9 +19,7 @@ const MAP_DEFAULTS = {
   zoom: 3,
 };
 
-const MAP_TILE_LAYERS = jsonScriptToVar('config-MAP_TILE_LAYERS', {
-  default: [],
-});
+const MAP_TILE_LAYERS = jsonScriptToVar('config-MAP_TILE_LAYERS', {default: []});
 
 export default class Map extends TextFieldComponent {
   static schema(...extend) {
