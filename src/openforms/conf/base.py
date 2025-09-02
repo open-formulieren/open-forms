@@ -19,6 +19,7 @@ from upgrade_check.constraints import UpgradePaths
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
 from openforms.logging.processors import drop_user_agent_in_dev
+from openforms.upgrades.script_checks import BinScriptCheck
 
 from .utils import Filesize, config, get_sentry_integrations
 
@@ -1280,7 +1281,10 @@ SETUP_CONFIGURATION_STEPS = [
 # DJANGO-UPGRADE-CHECK
 #
 UPGRADE_CHECK_PATHS: UpgradePaths = {
-    "3.3.0": UpgradeCheck(VersionRange(minimum="3.2.0")),
+    "3.3.0": UpgradeCheck(
+        VersionRange(minimum="3.2.0"),
+        code_checks=[BinScriptCheck("report_duplicate_merchant_pspids")],
+    ),
     "3.2.0": UpgradeCheck(VersionRange(minimum="3.0.1")),
 }
 UPGRADE_CHECK_STRICT = False
