@@ -1,4 +1,4 @@
-from typing import NotRequired, TypedDict
+from typing import Literal, NotRequired, TypedDict
 
 
 class MapInitialCenter(TypedDict):
@@ -10,3 +10,10 @@ class MapInteractions(TypedDict):
     marker: bool
     polygon: bool
     polyline: bool
+
+
+class Overlay(TypedDict):
+    uuid: str
+    label: str
+    type: Literal["wms", "wfs"]
+    layers: list[str]
