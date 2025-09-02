@@ -11,7 +11,7 @@ import {
 import {getChoicesFromSchema} from 'utils/json-schema';
 
 import OptionsConfiguration from '../OptionsConfiguration';
-import {Merchant} from './fields';
+import {DescriptorTemplate, Merchant, Variant} from './fields';
 
 const WorldlineOptionsForm = ({schema, formData, onSubmit}) => {
   const validationErrors = useContext(ValidationErrorContext);
@@ -41,6 +41,8 @@ const WorldlineOptionsForm = ({schema, formData, onSubmit}) => {
       <ValidationErrorsProvider errors={relevantErrors}>
         <Fieldset>
           <Merchant options={merchantChoices} />
+          <Variant />
+          <DescriptorTemplate />
         </Fieldset>
       </ValidationErrorsProvider>
     </OptionsConfiguration>

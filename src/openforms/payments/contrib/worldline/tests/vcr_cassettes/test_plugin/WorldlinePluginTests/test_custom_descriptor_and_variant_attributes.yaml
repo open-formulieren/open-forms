@@ -1,0 +1,488 @@
+interactions:
+- request:
+    body: "{\n    \"hostedCheckoutSpecificInput\": {\n        \"returnUrl\": \"http://testserver/payment/c79dbab7-bd3a-4ac8-a60b-5e04e4438d9c/return\",\n
+      \       \"variant\": \"SimplifiedCustomPaymentPage\"\n    },\n    \"order\":
+      {\n        \"amountOfMoney\": {\n            \"amount\": 1135,\n            \"currencyCode\":
+      \"EUR\"\n        },\n        \"references\": {\n            \"descriptor\":
+      \"Descriptor: OF-XLRF2G\"\n        }\n    }\n}"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '395'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 04 Sep 2025 10:08:45 GMT
+      User-Agent:
+      - python-requests/2.32.4
+      X-GCS-ServerMetaInfo:
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE1LjYtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMTAgSnVsIDIwMjUgMTc6MTA6MTggKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+    method: POST
+    uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/hostedcheckouts
+  response:
+    body:
+      string: '{"RETURNMAC":"59cb743c-bf94-4636-8416-f750c3ebb684","hostedCheckoutId":"4373101624","merchantReference":"69eb988411c840d59003737f75fb6d33","redirectUrl":"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/59596af2183640cca466f1367608401a","partialRedirectUrl":"preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/59596af2183640cca466f1367608401a"}'
+    headers:
+      api_auth:
+      - 'true'
+      content-length:
+      - '394'
+      content-security-policy:
+      - 'default-src ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
+        https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
+        https://www.paypalobjects.com https://www.sandbox.paypal.com https://pay.google.com
+        https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js
+        https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png https://us-online.stg.mpay.samsung.com/
+        https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; img-src ''self'' data: https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; style-src ''self'' ''unsafe-inline'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com ''nonce-CDIKcuk2Wjg=''  ; style-src-attr ''unsafe-inline'';
+        style-src-elem ''unsafe-inline'' ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; script-src ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com ''nonce-CDIKcuk2Wjg=''; object-src ''none'';'
+      content-type:
+      - application/json; charset=utf-8
+      correlation-id:
+      - fb13ac40-370d-42aa-adbe-80f3b2c13219
+      - fb13ac40-370d-42aa-adbe-80f3b2c13219
+      date:
+      - Thu, 04 Sep 2025 10:08:44 GMT
+      strict-transport-security:
+      - max-age=16000000; includeSubDomains; preload;
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/59596af2183640cca466f1367608401a
+  response:
+    body:
+      string: ''
+    headers:
+      content-length:
+      - '0'
+      content-security-policy:
+      - 'default-src ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
+        https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
+        https://www.paypalobjects.com https://www.sandbox.paypal.com https://pay.google.com
+        https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js
+        https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png https://us-online.stg.mpay.samsung.com/
+        https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; img-src ''self'' data: https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; style-src ''self'' ''unsafe-inline'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com ''nonce-Jk5nJW4u0as=''  ; style-src-attr ''unsafe-inline'';
+        style-src-elem ''unsafe-inline'' ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; script-src ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com ''nonce-Jk5nJW4u0as=''; object-src ''none'';'
+      correlation-id:
+      - c18f5fea-d031-4744-81fb-91c4649e6df7
+      - c18f5fea-d031-4744-81fb-91c4649e6df7
+      date:
+      - Thu, 04 Sep 2025 10:08:45 GMT
+      location:
+      - https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3a%2f%2fpayment.preprod.direct.worldline-solutions.com%2fhostedcheckout%2fRedirect%2fReturn%2fdb9a3344604f4dd0982ec7e66f59d445
+      strict-transport-security:
+      - max-age=16000000; includeSubDomains; preload;
+    status:
+      code: 302
+      message: Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3A%2F%2Fpayment.preprod.direct.worldline-solutions.com%2Fhostedcheckout%2FRedirect%2FReturn%2Fdb9a3344604f4dd0982ec7e66f59d445
+  response:
+    body:
+      string: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <meta charset=\"utf-8\"
+        />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n
+        \   <title>iDEAL Simulator</title>\r\n    <link href=\"https://simulator.test.v-psp.com/web-simulator/Content/default.css\"
+        rel=\"stylesheet\" type=\"text/css\" />\r\n</head>\r\n<body>\r\n\r\n    <div
+        id=\"header\">\r\n        <h1>iDEAL</h1>\r\n        <p>This page simulates
+        iDEAL payments</p>\r\n    </div>\r\n\r\n    <div id=\"main\">\r\n        \r\n<form
+        action=\"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Redirect/Return/db9a3344604f4dd0982ec7e66f59d445\"
+        method=\"GET\" name=\"redirectForm\" id=\"redirectForm\">\r\n        <input
+        type=\"hidden\" name=\"ec\" />\r\n        <input type=\"hidden\" name=\"trxid\"
+        value=\"0\" />\r\n\r\n    <div class=\"section first\">\r\n        <h2>Redirection</h2>\r\n
+        \       <ul>\r\n            <li>Redirect to domain: payment.preprod.direct.worldline-solutions.com</li>\r\n
+        \           <li><a class=\"btn btn-primary btn-lg submit-link\" id=\"lnk_redirect\">Redirect
+        &raquo;</a></li>\r\n            <li>or close this browser window to simulate
+        an interrupted redirection</li>\r\n        </ul>\r\n    </div>\r\n\r\n\r\n<div
+        class=\"section last\">\r\n    <h2>Details of the payment</h2>\r\n    <ul>\r\n
+        \       <li id=\"payid\">Payid: 0</li>\r\n        <li id=\"trxid\">TransactionId:
+        0</li>\r\n        <li id=\"issuer\">Issuer: </li>\r\n    </ul>\r\n</div>\r\n</form>\r\n
+        \   </div>\r\n</body>\r\n</html>\r\n<script src=\"https://simulator.test.v-psp.com/web-simulator/Content/main.js\"
+        type=\"text/javascript\"></script>"
+    headers:
+      content-security-policy:
+      - default-src 'self'; script-src 'self'
+      content-type:
+      - text/html; charset=utf-8
+      correlation-id:
+      - 3b930adb-a7f2-4f8d-a8b0-d54c78444716
+      - 3b930adb-a7f2-4f8d-a8b0-d54c78444716
+      date:
+      - Thu, 04 Sep 2025 10:08:45 GMT
+      pragma:
+      - no-cache
+      strict-transport-security:
+      - max-age=16000000; includeSubDomains; preload;
+      transfer-encoding:
+      - chunked
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Redirect/Return/db9a3344604f4dd0982ec7e66f59d445?ec=&trxid=0
+  response:
+    body:
+      string: "<!DOCTYPE html>\r\n<html lang=\"NL\">\r\n<head>\r\n    <meta charset=\"utf-8\">\r\n
+        \   <title>\r\n        DIRECT E-COMMERCE - Uw betaling is geaccepteerd\r\n
+        \   </title>\r\n    <meta name=\"viewport\" content=\"width=device-width,
+        initial-scale=1\">\r\n    <link rel=\"stylesheet\" href=\"https://assets.test.cdn.v-psp.com/otp/15083fb2cca79c6b4e85/templates/hostedcheckout/wlop_direct/styles.css\"
+        crossorigin=\"anonymous\" integrity=\"sha384-zTExDVXtitELNdQqQ2fTNIAEwIIudKLU2gz2xo8077HHhg2fhXdVExRh9ACKTRY8\">\r\n
+        \   <link rel=\"stylesheet\" href=\"https://assets.test.cdn.v-psp.com/otp/15083fb2cca79c6b4e85/templates/hostedcheckout/wlop_direct/worldline_favicon.ico\">\r\n
+        \   <style type=\"text/css\" nonce=\"75aGbTeru2A=\"><!--\r\n.button--raised
+        { background-color: #007B7C }\r\n.button--raised:hover { background-color:
+        #59A9A9 }\r\n--></style>\r\n</head>\r\n\r\n<body class=\"paysecurely-switch\">\r\n
+        \   <div class=\"container\">\r\n        <div class=\"row banner\">\r\n            <div
+        class=\"banner-content\">\r\n                <h1 class=\"banner__merchant-name\">\r\n
+        \                   \r\n                    Test title\r\n                </h1>\r\n
+        \           </div>\r\n        </div>\r\n\r\n        <div class=\"row main-content\">\r\n\r\n
+        \           \r\n\r\n            \r\n\r\n            <form class=\"payment-statuspage\"
+        name=\"payment-statuspage\" id=\"payment-statuspage\" method=\"get\" action=\"http://testserver/payment/c79dbab7-bd3a-4ac8-a60b-5e04e4438d9c/return\"
+        payment-js-autosubmit=\"3000\"><input type=\"hidden\" name=\"RETURNMAC\" value=\"59cb743c-bf94-4636-8416-f750c3ebb684\"><input
+        type=\"hidden\" name=\"hostedCheckoutId\" value=\"4373101624\">\r\n                <div
+        class=\"navigation\">\r\n                    <div class=\"progress-bar\">\r\n
+        \                       <div aria-describedby=\"progress-bar-label-text\">\r\n
+        \                           <span id=\"progress-bar-label-text\">Betalingsvoortgang</span>\r\n
+        \                           <ol>\r\n                                <li class=\"progress-bar__step
+        progress-bar__step--success\">\r\n                                    Winkelwagentje\r\n
+        \                                   <span class=\"payment-status-icon-information-description\">&nbsp;Status:
+        Aanvaard</span>\r\n                                </li>\r\n                                \r\n
+        \                               <li class=\"progress-bar__step progress-bar__step--success\">\r\n
+        \                                   Details betaling\r\n                                    <span
+        class=\"payment-status-icon-information-description\">&nbsp;Status: Aanvaard</span>\r\n
+        \                               </li>\r\n                                <li
+        id=\"li-span-status-indicator\" class=\"progress-bar__step progress-bar__step--success\"
+        aria-current=\"step\" aria-labelledby=\"span-status-indicator\">\r\n                                    De
+        betaling is voltooid\r\n                                    <span class=\"payment-status-icon-information-description\">&nbsp;Status:
+        Aanvaard</span>\r\n                                </li>\r\n                            </ol>\r\n
+        \                       </div>\r\n                    </div>\r\n                </div>\r\n
+        \               <div class=\"paymentpart\">\r\n                    <div class=\"row\">\r\n
+        \                       <h2>\r\n                            <span class=\"payment-status-icon--success\"></span>\r\n
+        \                           Uw betaling is geaccepteerd\r\n                        </h2>\r\n
+        \                   </div>\r\n                    <div class=\"row\">\r\n
+        \                       <p>\r\n                            U wordt nu doorgestuurd
+        naar de website van de handelaar. Mogelijk wordt een waarschuwingsbericht
+        weergegeven omdat u de beveiligde omgeving gaat verlaten.\r\n                        </p>\r\n
+        \                       <p>\r\n                            \r\n                        </p>\r\n
+        \                       <p id=\"payment-cardnumber-error\">\r\n                            \r\n
+        \                       </p>\r\n                    </div>\r\n                    <div
+        id=\"redirect-button-query\" class=\"row\">\r\n                        <input
+        type=\"submit\" id=\"payment-ContinueToMerchantWebsite\" class=\"payment-button
+        button button--raised button--secure\" name=\"ContinueToMerchantWebsite\"
+        value=\"Ga verder\">\r\n                    </div>\r\n                </div>\r\n\r\n
+        \               <div class=\"clear\"></div>\r\n            </form>\r\n\r\n
+        \           \r\n        </div>\r\n        <div class=\"order-summary orderpart-mobile\"
+        id=\"paymentmethod-selection-order-summary-mobile\">\r\n            <label
+        id=\"order-summary-accordion-toggle-label\"\r\n                   for=\"order-summary-accordion\"\r\n
+        \                  aria-expanded=\"false\"\r\n                   aria-controls=\"order-summary-accordion-content\"\r\n
+        \                  tabindex=\"0\"\r\n                   role=\"button\"\r\n
+        \                  class=\"order-summary__label accordion__label\">\r\n                <span
+        class=\"bolder\">Totale kostprijs</span>\r\n                <span class=\"bold
+        price total-amount\">EUR&nbsp;11.35</span>\r\n            </label>\r\n            <input
+        type=\"checkbox\"\r\n                   tabindex=\"-1\"\r\n                   class=\"css-hidden
+        accordion__input\"\r\n                   id=\"order-summary-accordion\"\r\n
+        \                  aria-hidden=\"true\" />\r\n            <div class=\"accordion
+        order-summary__content\" id=\"order-summary-accordion-content\">\r\n                <div
+        class=\"row\">\r\n                    <h2 class=\"order__summary-title\">Overzicht
+        van de bestelling</h2>\r\n                </div>\r\n                <div class=\"row
+        order-total\">\r\n                    <span>Totale kostprijs:&nbsp;</span>\r\n
+        \                   <span class=\"total-amount\">EUR&nbsp;11.35</span>\r\n
+        \               </div>\r\n\r\n                \r\n\r\n                <div
+        class=\"row order-ref order__reference\">\r\n                    Referentie
+        van de bestelling: 69eb988411c840d59003737f75fb6d33\r\n                </div>\r\n\r\n
+        \               \r\n\r\n                \r\n\r\n                \r\n\r\n                \r\n
+        \           </div>\r\n        </div>\r\n        <div id=\"buttons-part-mobile\">\r\n
+        \           <div class=\"payment-proceed-to-payment\"><span class=\"payment-error
+        proceed-to-payment-label-error-id\" role=\"alert\" style=\"display: none;\">Selecteer
+        een betaalmethode</span></span><button class=\"button button--raised proceed-to-payment-button-id\"
+        role=\"button\" type=\"button\" tabindex=\"0\"><span class=\"next-step-dynamic-text\">Ga
+        verder naar betalingsgegevens</span></button></div>\r\n            \r\n        </div>\r\n
+        \       <div class=\"order-summary orderpart\">\r\n            <input type=\"checkbox\"\r\n
+        \                  class=\"css-hidden accordion__input\"\r\n                   id=\"order-summary-accordion\"\r\n
+        \                  aria-hidden=\"true\" checked/>\r\n            <div class=\"accordion
+        order-summary__content\">\r\n                <div class=\"row\">\r\n                    <h2
+        class=\"order__summary-title\">Overzicht van de bestelling</h2>\r\n                </div>\r\n
+        \               <div class=\"row order-total\">\r\n                    <span>Totale
+        kostprijs:&nbsp;</span>\r\n                    <span class=\"total-amount\">EUR&nbsp;11.35</span>\r\n
+        \               </div>\r\n\r\n                \r\n\r\n                <div
+        class=\"row order-ref order__reference\">\r\n                    Referentie
+        van de bestelling: 69eb988411c840d59003737f75fb6d33\r\n                </div>\r\n\r\n
+        \               \r\n\r\n                \r\n\r\n                \r\n\r\n                \r\n\r\n\t\t\t\t<div
+        id=\"payment-submit-switch\" payment-submit-all-valid-message=\"!\" payment-submit-all-invalid-message=\"!\"><div
+        class=\"button button--raised button--secure\" role=\"button\" id=\"submit-all\"
+        tabindex=\"0\"><span class=\"next-step-dynamic-text\">Ga verder</span></div></div>\r\n\t\t\t\t<div
+        class=\"payment-proceed-to-payment\"><span class=\"payment-error proceed-to-payment-label-error-id\"
+        role=\"alert\" style=\"display: none;\">Selecteer een betaalmethode</span></span><button
+        class=\"button button--raised proceed-to-payment-button-id\" role=\"button\"
+        type=\"button\" tabindex=\"0\"><span class=\"next-step-dynamic-text\">Ga verder
+        naar betalingsgegevens</span></button></div>\r\n\t\t\t\t\r\n            </div>\r\n
+        \           <label for=\"order-summary-accordion\"\r\n                   class=\"order-summary__label
+        accordion__label\">\r\n                <span class=\"bolder\">Totale kostprijs</span>\r\n
+        \               <span class=\"bold price total-amount\">EUR&nbsp;11.35</span>\r\n
+        \           </label>\r\n        </div>\r\n    </div>\r\n\r\n    <div class=\"u-full-width
+        center footer\">\r\n        <div class=\"content\">\r\n            <div class=\"row\">\r\n
+        \               <span class=\"footer__processed-legend\">\r\n                    De
+        betaling is verwerkt door\r\n                </span>\r\n                <img
+        src=\"https://assets.test.cdn.v-psp.com/otp/15083fb2cca79c6b4e85/images/branding/worldline_logo_2.png\"
+        id=\"payment-Betaling verwerkt door Worldline-image\" alt=\"Betaling verwerkt
+        door Worldline\">\r\n            </div>\r\n            <div class=\"row\">\r\n
+        \               <a href=\"https://worldline.com/?lang=3&amp;branding=WLOP_Direct\"
+        target=\"_blank\">Over Worldline</a><a href=\"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/SecurityContent/Get/59596af2183640cca466f1367608401a\"
+        target=\"_blank\">Veiligheid</a><a href=\"https://worldline.com/en/home/main-navigation/git/office-locations.html?lang=3&amp;branding=WLOP_Direct\"
+        target=\"_blank\">Wettelijke informatie</a>\r\n            </div>\r\n            <div
+        class=\"clear\"></div>\r\n        </div>\r\n    </div>\r\n    <script src=\"https://assets.test.cdn.v-psp.com/otp/15083fb2cca79c6b4e85/templates/hostedcheckout/wlop_direct/script.js\"
+        crossorigin=\"anonymous\" integrity=\"sha384-6Ed9bd4v17SozCvvWunfxKEaU3cwYd0mAYnPonP/7zqiQxHGCqRmTFOixz7i3XcD\"></script>\r\n<script
+        type=\"text/javascript\" src=\"https://assets.test.cdn.v-psp.com/hpp/d99f1af432dd03e5a753/js/cdn/ingenico-direct.min.js\"
+        crossorigin=\"anonymous\" integrity=\"sha384-cXsWeV3HXr0OSRMvBrxC4TsExt&#x2B;ESQo2JZTdfqS02HB5q/kSvvf3nuSPzJbs2CoX\"
+        nonce=\"75aGbTeru2A=\"></script>\r\n</body>\r\n</html>\r\n"
+    headers:
+      content-length:
+      - '9784'
+      content-security-policy:
+      - 'default-src ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
+        https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
+        https://www.paypalobjects.com https://www.sandbox.paypal.com https://pay.google.com
+        https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js
+        https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png https://us-online.stg.mpay.samsung.com/
+        https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; img-src ''self'' data: https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; style-src ''self'' ''unsafe-inline'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com ''nonce-75aGbTeru2A=''  ; style-src-attr ''unsafe-inline'';
+        style-src-elem ''unsafe-inline'' ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; script-src ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com ''nonce-75aGbTeru2A=''; object-src ''none'';'
+      content-type:
+      - text/html; charset=utf-8
+      correlation-id:
+      - 13eb6660-79c4-4604-8bea-2e0910fc13db
+      - 13eb6660-79c4-4604-8bea-2e0910fc13db
+      date:
+      - Thu, 04 Sep 2025 10:08:50 GMT
+      strict-transport-security:
+      - max-age=16000000; includeSubDomains; preload;
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Date:
+      - Thu, 04 Sep 2025 10:08:50 GMT
+      User-Agent:
+      - python-requests/2.32.4
+      X-GCS-ServerMetaInfo:
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE1LjYtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMTAgSnVsIDIwMjUgMTc6MTA6MTggKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+    method: GET
+    uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/hostedcheckouts/4373101624
+  response:
+    body:
+      string: '{"createdPaymentOutput":{"payment":{"hostedCheckoutSpecificOutput":{"hostedCheckoutId":"4373101624"},"paymentOutput":{"amountOfMoney":{"amount":1135,"currencyCode":"EUR"},"references":{"merchantReference":"69eb988411c840d59003737f75fb6d33"},"acquiredAmount":{"amount":1135,"currencyCode":"EUR"},"customer":{"device":{"ipAddressCountryCode":"99"}},"paymentMethod":"redirect","redirectPaymentMethodSpecificOutput":{"paymentProductId":809,"fraudResults":{"fraudServiceResult":"no-advice"},"customerBankAccount":{"bic":"RABONL2U","accountHolderName":"Simulator"},"authorisationCode":"869931570226439"}},"status":"CAPTURED","statusOutput":{"isCancellable":false,"statusCategory":"COMPLETED","statusCode":9,"isAuthorized":false,"isRefundable":true},"id":"4373101624_0"},"paymentStatusCategory":"SUCCESSFUL"},"status":"PAYMENT_CREATED"}'
+    headers:
+      api_auth:
+      - 'true'
+      content-length:
+      - '829'
+      content-security-policy:
+      - 'default-src ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
+        https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
+        https://www.paypalobjects.com https://www.sandbox.paypal.com https://pay.google.com
+        https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js
+        https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png https://us-online.stg.mpay.samsung.com/
+        https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; img-src ''self'' data: https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; style-src ''self'' ''unsafe-inline'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com ''nonce-Gsgeg0QhbSM=''  ; style-src-attr ''unsafe-inline'';
+        style-src-elem ''unsafe-inline'' ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; script-src ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com ''nonce-Gsgeg0QhbSM=''; object-src ''none'';'
+      content-type:
+      - application/json; charset=utf-8
+      correlation-id:
+      - 7bd18ddd-68a3-4297-810c-bfd622c9c56a
+      - 7bd18ddd-68a3-4297-810c-bfd622c9c56a
+      date:
+      - Thu, 04 Sep 2025 10:08:50 GMT
+      strict-transport-security:
+      - max-age=16000000; includeSubDomains; preload;
+    status:
+      code: 200
+      message: OK
+version: 1
