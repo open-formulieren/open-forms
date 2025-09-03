@@ -1,18 +1,42 @@
 [
-{
-    "model": "config.maptilelayer",
-    "fields": {
-        "identifier": "brt",
-        "url": "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/standaard/EPSG:28992/{z}/{x}/{y}.png",
-        "label": "BRT"
+    {
+        "model": "config.maptilelayer",
+        "fields": {
+            "identifier": "brt",
+            "url": "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/standaard/EPSG:28992/{z}/{x}/{y}.png",
+            "label": "BRT"
+        }
+    },
+    {
+        "model": "config.maptilelayer",
+        "fields": {
+            "identifier": "brt-grijs",
+            "url": "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/grijs/EPSG:28992/{z}/{x}/{y}.png",
+            "label": "BRT (grijs)"
+        }
+    },
+    {
+        "model": "config.maptilelayer",
+        "fields": {
+            "identifier": "brt-pastel",
+            "url": "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/pastel/EPSG:28992/{z}/{x}/{y}.png",
+            "label": "BRT (pastel)"
+        }
+    },
+    {
+        "model": "config.maptilelayer",
+        "fields": {
+            "identifier": "brt-water",
+            "url": "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/water/EPSG:28992/{z}/{x}/{y}.png",
+            "label": "BRT (water)"
+        }
+    },
+    {
+        "model": "config.maptilelayer",
+        "fields": {
+            "identifier": "luchtfoto",
+            "url": "https://service.pdok.nl/hwh/luchtfotorgb/wmts/v1_0/Actueel_orthoHR/EPSG:28992/{z}/{x}/{y}.png",
+            "label": "Luchtfoto"
+        }
     }
-},
-{
-    "model": "config.maptilelayer",
-    "fields": {
-        "identifier": "luchtfoto",
-        "url": "https://service.pdok.nl/hwh/luchtfotorgb/wmts/v1_0/Actueel_orthoHR/EPSG:28992/{z}/{x}/{y}.png",
-        "label": "Luchtfoto"
-    }
-}
 ]
