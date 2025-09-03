@@ -243,6 +243,7 @@ class MapTileLayerAdmin(admin.ModelAdmin):
         "identifier",
         "url",
     )
+    prepopulated_fields = {"identifier": ("label",)}
 
 
 @admin.register(CSPSetting)

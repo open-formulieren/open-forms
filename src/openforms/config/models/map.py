@@ -3,6 +3,8 @@ from __future__ import annotations
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from autoslug import AutoSlugField
+
 
 class MapTileLayerManager(models.Manager["MapTileLayer"]):
     def get_by_natural_key(self, identifier: str) -> MapTileLayer:
@@ -10,10 +12,12 @@ class MapTileLayerManager(models.Manager["MapTileLayer"]):
 
 
 class MapTileLayer(models.Model):
-    identifier = models.SlugField(
+    identifier = AutoSlugField(
         _("identifier"),
+        populate_from="label",
         unique=True,
-        max_length=50,
+        editable=True,
+        max_length=100,
         help_text=_("A unique identifier for the tile layer."),
     )
     url = models.URLField(
