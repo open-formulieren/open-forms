@@ -18,6 +18,38 @@ receivers:
         auth:
           authenticator: basicauth/server
 
+  # See https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/redisreceiver/README.md
+  redis:
+    endpoint: "redis:6379"
+    tls:
+      insecure: true
+
+  # See https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/postgresqlreceiver
+  postgresql:
+    endpoint: "db:5432"
+    transport: tcp
+    username: postgres
+    password: irrelevant
+    databases:
+      - openforms
+    tls:
+      insecure: true
+
+  # See https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/nginxreceiver
+  nginx:
+    endpoint: "http://nginx:80/_status"
+    collection_interval: 10s
+
+  # See https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/prometheusreceiver/README.md
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'otel-flower'
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['celery-flower:5555']
+          metrics_path: /metrics
+
 processors:
   batch:
     timeout: 1s
@@ -53,9 +85,9 @@ service:
       processors: [memory_limiter, batch]
       exporters: [debug]
     metrics:
-      receivers: [otlp]
+      receivers: [otlp, postgresql, redis, nginx, prometheus]
       processors: [memory_limiter, transform, batch]
-      exporters: [debug, prometheus]
+      exporters: [prometheus]
     logs:
       receivers: [otlp]
       processors: [memory_limiter, batch]

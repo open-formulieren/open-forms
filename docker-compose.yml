@@ -27,6 +27,8 @@ x-app-env: &x-app-env
   - CACHE_AXES=redis:6379/0
   - CACHE_PORTALOCKER=redis:6379/0
   - ALLOWED_HOSTS=*
+  - USE_X_FORWARDED_HOST=true
+  - CSRF_TRUSTED_ORIGINS=http://localhost:9000,http://localhost:8000
   - CELERY_BROKER_URL=redis://redis:6379/0
   - CELERY_RESULT_BACKEND=redis://redis:6379/0
   - CELERY_LOGLEVEL=DEBUG
@@ -82,7 +84,7 @@ services:
       - open-forms-dev
 
   redis:
-    image: redis:6
+    image: redis:8
     command: ["redis-server", "--appendonly", "yes"]
     networks:
       - open-forms-dev
@@ -147,9 +149,9 @@ services:
       - open-forms-dev
 
   nginx:
-    image: nginx
+    build:
+      context: ./docker/nginx
     volumes:
-      - ./docker-nginx-default.conf:/etc/nginx/conf.d/default.conf
       - static:/static
       - private_media:/private-media
     ports:
