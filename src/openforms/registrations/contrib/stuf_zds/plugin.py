@@ -276,8 +276,11 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         else:
             variables = FormVariable.objects.filter(
                 source=FormVariableSources.user_defined,
+                form=submission.form,
                 prefill_plugin="family_members",
-            ).exclude(prefill_options={})
+                prefill_options__type="partners",
+            )
+
             for variable in variables:
                 from_key, to_key = (
                     variable.key,

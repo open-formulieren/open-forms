@@ -3742,6 +3742,71 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.bsn']",
         )
 
+    def test_only_relevant_variables_are_taken_into_account(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "partnersKey",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
+            form__name="my-form",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="000009921",
+            language_code="en",
+            public_registration_reference="abc890",
+            registration_result={"zaak": "890"},
+        )
+        FormVariableFactory.create(
+            key="irrelevant_variable",
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "someKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+        FormVariableFactory.create(
+            key="partners_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partnersKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        prefill_variables(submission)
+        self.plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[1]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.bsn']": "999995182",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.firstNames']": "Anna Maria Petra",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.initials']": "A.M.P.",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.affixes']": "",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.lastName']": "Jansma",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.dateOfBirth']": "1945-04-18",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.bsn']": "123456782",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.firstNames']": "Test second partner",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.initials']": "T.s.p.",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.affixes']": "",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.lastName']": "Test",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.dateOfBirth']": "1945-04-18",
+            },
+        )
+
 
 class StufZDSConfirmationEmailVCRTests(OFVCRMixin, StUFZDSTestBase):
     VCR_TEST_FILES = TESTS_DIR / "files"
