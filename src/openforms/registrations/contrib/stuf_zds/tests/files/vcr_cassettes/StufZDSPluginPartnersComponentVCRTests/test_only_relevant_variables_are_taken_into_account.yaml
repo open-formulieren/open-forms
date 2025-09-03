@@ -1,0 +1,50 @@
+interactions:
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["000009921"],
+      "fields": ["partners.burgerservicenummer", "partners.naam.voornamen", "partners.naam.voorletters",
+      "partners.naam.voorvoegsel", "partners.naam.geslachtsnaam", "partners.geboorte.datum"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTY4ODk1OTMsImV4cCI6MTc1NjkzMjc5MywiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.VNlHR6Uqrm1fakrDy6TROmh6WWgoJenPca-xNGUpjKk
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.4
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"partners":[{"burgerservicenummer":"999995182","naam":{"voornamen":"Anna
+        Maria Petra","geslachtsnaam":"Jansma","voorletters":"A.M.P."},"geboorte":{"datum":{"type":"Datum","datum":"1945-04-18","langFormaat":"18
+        april 1945"}}},{"burgerservicenummer":"123456782","naam":{"voornamen":"Test
+        second partner","geslachtsnaam":"Test","voorletters":"T.s.p."},"geboorte":{"datum":{"type":"Datum","datum":"1945-04-18","langFormaat":"18
+        april 1945"}}}]}]}'
+    headers:
+      Content-Length:
+      - '497'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 03 Sep 2025 08:53:13 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 200
+      message: OK
+version: 1
