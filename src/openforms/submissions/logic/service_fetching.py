@@ -5,6 +5,7 @@ from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
 import jq
+import structlog
 from json_logic import jsonLogic
 from zgw_consumers.client import build_client
 
@@ -12,6 +13,8 @@ from openforms.formio.service import FormioData
 from openforms.forms.models import FormVariable
 from openforms.typing import JSONObject, JSONValue
 from openforms.variables.models import DataMappingTypes, ServiceFetchConfiguration
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @dataclass
@@ -40,6 +43,8 @@ def perform_service_fetch(
     The value returned by the request is cached using the submission UUID and the
     arguments to the request (hashed to make a cache key).
     """
+    log = logger.bind(variable=var.key, submission_uuid=str(submission_uuid))
+    log.info("perform_service_fetch_started")
 
     if not var.service_fetch_configuration:
         raise ValueError(
@@ -52,10 +57,13 @@ def perform_service_fetch(
     request_args = fetch_config.request_arguments(context)
 
     def _do_fetch():
+        log.info("perform_service_fetch_http_call_started")
         with client:
             response = client.request(**request_args)
             response.raise_for_status()
-        return response.json()
+        data = response.json()
+        log.info("perform_service_fetch_http_call_done")
+        return data
 
     if not submission_uuid:
         raw_value = _do_fetch()
@@ -76,6 +84,8 @@ def perform_service_fetch(
             value = jsonLogic(expression, raw_value)
         case _:
             value = raw_value
+
+    log.info("perform_service_fetch_done")
 
     return FetchResult(
         value=value,
