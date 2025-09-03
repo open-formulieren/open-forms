@@ -23,7 +23,9 @@ def migrate_merchants(apps: StateApps, schema_editor: BaseDatabaseSchemaEditor) 
     OgoneMerchant = apps.get_model("payments_ogone", "OgoneMerchant")
     WorldlineMerchant = apps.get_model("payments_worldline", "WorldlineMerchant")
     known_pspids = WorldlineMerchant.objects.values_list("pspid", flat=True)
-    ogone_merchants = OgoneMerchant.objects.all()
+    ogone_merchants = OgoneMerchant.objects.exclude(pspid="").exclude(
+        endpoint_preset=""
+    )
     new_merchants = []
 
     for merchant in ogone_merchants:
