@@ -227,6 +227,12 @@
       "value": "BRP Personen 'verwerking' header-waarde"
     }
   ],
+  "18Bzjy": [
+    {
+      "type": 0,
+      "value": "Synchronize children configuration:"
+    }
+  ],
   "1ArmQ5": [
     {
       "type": 0,
@@ -251,10 +257,10 @@
       "value": "Opties instellen"
     }
   ],
-  "1U0I5C": [
+  "1NZLXT": [
     {
       "type": 0,
-      "value": "Firstnames"
+      "value": "Are you sure you want to remove this mapping?"
     }
   ],
   "1Vvryq": [
@@ -503,6 +509,12 @@
     {
       "type": 0,
       "value": "Weergavestijl"
+    }
+  ],
+  "3rmiz8": [
+    {
+      "type": 0,
+      "value": "FirstNames"
     }
   ],
   "3z1hhJ": [
@@ -1337,10 +1349,22 @@
       "value": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "AW2A8b": [
+    {
+      "type": 0,
+      "value": "Synchronize children"
+    }
+  ],
   "AWyevn": [
     {
       "type": 0,
       "value": "Vertrouwelijkheidaanduiding"
+    }
+  ],
+  "AXL5sn": [
+    {
+      "type": 0,
+      "value": "(not configured yet or partially configured)"
     }
   ],
   "AdyBdF": [
@@ -1451,6 +1475,12 @@
     {
       "type": 0,
       "value": "De optiewaarde is een verplicht veld."
+    }
+  ],
+  "BNDR9T": [
+    {
+      "type": 0,
+      "value": "All possible properties are mapped to a simple component."
     }
   ],
   "BR10QN": [
@@ -2748,6 +2778,12 @@
       "value": "Kopiëren"
     }
   ],
+  "LP3BZ7": [
+    {
+      "type": 0,
+      "value": "Select a property name."
+    }
+  ],
   "LZc4TN": [
     {
       "type": 0,
@@ -2888,6 +2924,12 @@
     {
       "type": 0,
       "value": "Formuliervariabelenconfiguratie"
+    }
+  ],
+  "Mzb7MH": [
+    {
+      "type": 0,
+      "value": "Configure"
     }
   ],
   "N5Hv+1": [
@@ -3228,6 +3270,12 @@
       "value": "Selecteer een bestaande formulierdefinitie"
     }
   ],
+  "QJ3P3I": [
+    {
+      "type": 0,
+      "value": "To variable"
+    }
+  ],
   "QL4SGQ": [
     {
       "type": 0,
@@ -3366,6 +3414,12 @@
     {
       "type": 0,
       "value": "Vertalingen voor teksten die in dit component gebruikt worden."
+    }
+  ],
+  "ROZubV": [
+    {
+      "type": 0,
+      "value": "From variable"
     }
   ],
   "RPzjrJ": [
@@ -3762,6 +3816,12 @@
     {
       "type": 0,
       "value": "Bestand"
+    }
+  ],
+  "V2/ceD": [
+    {
+      "type": 0,
+      "value": "Instellingen (verouderd)"
     }
   ],
   "V21YkS": [
@@ -5067,6 +5127,12 @@
       "value": "Het attribuut dat vergeleken wordt met de identificatiewaarde (bijv. BSN/KVK-nummer) van de ingelogde gebruiker om de eigenaar van het object dat bijgewerkt wordt te controleren. Dit is belangrijk om te voorkomen dat kwaadwillenden gegevens van anderen bijwerken in plaast van zichzelf."
     }
   ],
+  "fGTdJz": [
+    {
+      "type": 0,
+      "value": "Het afleiden van adres via tekstveld-componenten is verouderd. Gebruik in de plaats de 'AddressNL'-component (in de 'Speciale velden' groep)."
+    }
+  ],
   "fLCWjk": [
     {
       "type": 0,
@@ -5229,6 +5295,12 @@
     {
       "type": 0,
       "value": "."
+    }
+  ],
+  "giJxUm": [
+    {
+      "type": 0,
+      "value": "Property"
     }
   ],
   "gpiYPI": [
@@ -5767,6 +5839,12 @@
     {
       "type": 0,
       "value": "Plugin-instellingen: Worldline"
+    }
+  ],
+  "kH8eZ6": [
+    {
+      "type": 0,
+      "value": "Synchronize children configuration"
     }
   ],
   "kHn5Yw": [
@@ -6645,12 +6723,6 @@
       "value": "(nog niet ingesteld)"
     }
   ],
-  "s8ercf": [
-    {
-      "type": 0,
-      "value": "Instellingen"
-    }
-  ],
   "sAfROS": [
     {
       "type": 0,
@@ -7371,10 +7443,22 @@
       "value": "Zaaktypeomschrijving"
     }
   ],
+  "z76xxo": [
+    {
+      "type": 0,
+      "value": "There are errors in the Synchronize children configuration."
+    }
+  ],
   "z7HXSS": [
     {
       "type": 0,
       "value": "Gebruik algemene kaartinstellingen"
+    }
+  ],
+  "zA2P0g": [
+    {
+      "type": 0,
+      "value": "Add variable"
     }
   ],
   "zItxZ9": [

@@ -65,6 +65,32 @@ class LogicValueActionSerializer(serializers.Serializer):
     )
 
 
+class SynchronizeChildrenVariableMappingSerializer(serializers.Serializer):
+    allowed_property = serializers.CharField(
+        required=True, label=_("Property that needs mapping.")
+    )
+    form_variable = FormioVariableKeyField(
+        required=True,
+        label=_("Key of the form variable."),
+    )
+
+
+class SynchronizeChildrenActionConfigSerializer(serializers.Serializer):
+    source_variable = FormioVariableKeyField(
+        label=_("Key of the form variable that will be used as the source."),
+    )
+    destination_variable = FormioVariableKeyField(
+        label=_("Key of the form variable that will be used as the destination."),
+    )
+    children_mappings = SynchronizeChildrenVariableMappingSerializer(
+        many=True, label=_("Synchronize children mapping")
+    )
+
+
+class SynchronizeChildrenActionSerializer(serializers.Serializer):
+    config = SynchronizeChildrenActionConfigSerializer(label=_("Configuration"))
+
+
 class LogicFetchActionSerializer(serializers.Serializer):
     value = serializers.JSONField(
         label=_("service_fetch_configuration"),
@@ -128,6 +154,7 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
         str(
             LogicActionTypes.set_registration_backend
         ): LogicSetRegistrationBackendActionSerializer,
+        str(LogicActionTypes.synchronize_children): SynchronizeChildrenActionSerializer,
     }
 
 

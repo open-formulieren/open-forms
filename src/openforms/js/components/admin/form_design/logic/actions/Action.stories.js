@@ -291,3 +291,105 @@ export const EvaluateDMNWithInitialErrors = {
     });
   },
 };
+
+export const SynchronizeChildren = {
+  render,
+  name: 'Synchronize children',
+  args: {
+    prefixText: 'Action',
+
+    action: {
+      component: '',
+      variable: 'bar',
+      formStep: '',
+      formStepUuid: '',
+
+      action: {
+        config: {},
+        type: 'synchronize-children',
+        value: '',
+      },
+    },
+    availableComponents: {
+      children: {
+        key: 'children',
+        type: 'children',
+        label: 'Children',
+      },
+      editgrid: {
+        key: 'editgrid',
+        type: 'editgrid',
+        label: 'Editgrid',
+      },
+      textfield: {
+        key: 'textfield',
+        type: 'textfield',
+        label: 'Textfield',
+      },
+      textfield1: {
+        key: 'textfield1',
+        type: 'textfield',
+        label: 'Textfield1',
+      },
+    },
+    availableFormVariables: [
+      {
+        id: 'id_children',
+        dataFormat: '',
+        dataType: 'array',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        formDefinition: null,
+        initialValue: '',
+        isSensitiveData: false,
+        key: 'children',
+        name: 'children',
+        prefillAttribute: '',
+        prefillPlugin: '',
+        source: 'component',
+      },
+      {
+        id: 'id_editgrid',
+        dataFormat: '',
+        dataType: 'array',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        formDefinition: null,
+        initialValue: '',
+        isSensitiveData: false,
+        key: 'editgrid',
+        name: 'editgrid',
+        prefillAttribute: '',
+        prefillPlugin: '',
+        source: 'component',
+      },
+      {
+        id: 'id_textfield',
+        dataFormat: '',
+        dataType: 'string',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        formDefinition: null,
+        initialValue: '',
+        isSensitiveData: false,
+        key: 'textfield',
+        name: 'textfield',
+        prefillAttribute: '',
+        prefillPlugin: '',
+        source: 'component',
+      },
+      {
+        id: 'id_textfield1',
+        dataFormat: '',
+        dataType: 'string',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        formDefinition: null,
+        initialValue: '',
+        isSensitiveData: false,
+        key: 'textfield1',
+        name: 'textfield1',
+        prefillAttribute: '',
+        prefillPlugin: '',
+        source: 'component',
+      },
+    ],
+  },
+  decorators: [FormDecorator],
+};

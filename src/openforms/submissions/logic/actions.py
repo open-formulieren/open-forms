@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Self, TypedDict
 
@@ -11,6 +12,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 from glom import assign
 from json_logic import jsonLogic
 
+from openforms.contrib.haal_centraal.constants import (
+    HC_CHILDREN_EXTRA_STEP_ALLOWED_PROPERTIES,
+)
 from openforms.dmn.service import evaluate_dmn
 from openforms.formio.service import FormioConfigurationWrapper, FormioData
 from openforms.forms.constants import LogicActionTypes
@@ -179,6 +183,98 @@ class VariableAction(ActionOperation):
             return {self.variable: jsonLogic(self.value, context.data)}
 
 
+class ChildrenMappingsConfig(TypedDict):
+    allowed_property: str
+    form_variable: str
+
+
+class ChildrenConfig(TypedDict):
+    source_variable: str
+    destination_variable: str
+    children_mappings: list[ChildrenMappingsConfig]
+
+
+@dataclass
+class SynchronizeChildrenAction(ActionOperation):
+    source_variable: str
+    destination_variable: str
+    children_mappings: list[ChildrenMappingsConfig]
+
+    @classmethod
+    def from_action(cls, action: ActionDict) -> Self:
+        children_config: ChildrenConfig = action["action"]["config"]
+        return cls(**children_config)
+
+    def eval(
+        self,
+        context: FormioData,
+        submission: Submission,
+    ) -> DataMapping:
+        source_data = context.get(self.source_variable, [])
+        destination_data = context.get(self.destination_variable, [])
+
+        if not (source_data or destination_data):
+            return {self.destination_variable: destination_data}
+
+        # validate component configuration
+        for mapping in self.children_mappings:
+            parts = mapping["form_variable"].split(".")
+            assert len(parts) == 2 and parts[0] == self.destination_variable, (
+                "wrong component configuration, should be an editgrid with one nested level"
+            )
+
+        def should_be_included(child):
+            return child.get("selected") is None or bool(child.get("selected"))
+
+        def map_child(child):
+            mapped = {}
+            for mapping in self.children_mappings:
+                field = mapping["form_variable"].split(".")[1]
+                if (
+                    mapping["allowed_property"]
+                    == HC_CHILDREN_EXTRA_STEP_ALLOWED_PROPERTIES["bsn"]
+                ):
+                    mapped[field] = child["bsn"]
+                elif (
+                    mapping["allowed_property"]
+                    == HC_CHILDREN_EXTRA_STEP_ALLOWED_PROPERTIES["first_names"]
+                ):
+                    mapped[field] = child["firstNames"]
+            return mapped
+
+        updated = deepcopy(destination_data)
+
+        # destination_data empty, add new children
+        if not destination_data:
+            updated = [
+                map_child(source_data_child)
+                for source_data_child in source_data
+                if should_be_included(source_data_child)
+            ]
+            return {self.destination_variable: updated}
+
+        # existing destination data - update
+        existing_bsns = {c.get("bsn") for c in updated}
+        for child in source_data:
+            if should_be_included(child) and child["bsn"] not in existing_bsns:
+                mapped = map_child(child)
+                if mapped:
+                    updated.append(mapped)
+
+        # remove unselected children
+        updated = [
+            destination_child
+            for destination_child in updated
+            if any(
+                source_child["bsn"] == destination_child.get("bsn")
+                and should_be_included(source_child)
+                for source_child in source_data
+            )
+        ]
+
+        return {self.destination_variable: updated}
+
+
 @dataclass
 class ServiceFetchAction(ActionOperation):
     variable: str
@@ -292,6 +388,7 @@ ACTION_TYPE_MAPPING: Mapping[LogicActionTypes, type[ActionOperation]] = {
     LogicActionTypes.step_not_applicable: StepNotApplicableAction,
     LogicActionTypes.step_applicable: StepApplicableAction,
     LogicActionTypes.variable: VariableAction,
+    LogicActionTypes.synchronize_children: SynchronizeChildrenAction,
     LogicActionTypes.fetch_from_service: ServiceFetchAction,
     LogicActionTypes.evaluate_dmn: EvaluateDMNAction,
     LogicActionTypes.set_registration_backend: SetRegistrationBackendAction,
