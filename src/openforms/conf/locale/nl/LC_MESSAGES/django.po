@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-04 14:15+0200\n"
+"POT-Creation-Date: 2025-09-04 08:42+0200\n"
 "PO-Revision-Date: 2025-08-14 10:19+0200\n"
 "Last-Translator:   <sonny@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -1122,14 +1122,14 @@ msgstr "Ongeldig antwoord: {exception}"
 #: openforms/contrib/kvk/checks.py:46
 #: openforms/forms/api/serializers/logic/action_serializers.py:102
 #: openforms/payments/contrib/ogone/plugin.py:246
-#: openforms/payments/contrib/worldline/plugin.py:445
+#: openforms/payments/contrib/worldline/plugin.py:392
 #: openforms/prefill/contrib/haalcentraal_brp/plugin.py:181
 #: openforms/prefill/contrib/kvk/plugin.py:134
 #: openforms/prefill/contrib/stufbg/plugin.py:215
 #: openforms/prefill/contrib/suwinet/plugin.py:97
 #: openforms/registrations/contrib/camunda/plugin.py:165
 #: openforms/registrations/contrib/microsoft_graph/plugin.py:129
-#: openforms/registrations/contrib/stuf_zds/plugin.py:487
+#: openforms/registrations/contrib/stuf_zds/plugin.py:484
 #: openforms/config/templates/admin/config/overview.html:4
 #: openforms/config/templates/admin/config/overview.html:9
 #: openforms/config/templates/admin/config/overview.html:15
@@ -2133,7 +2133,6 @@ msgstr "Authenticatiedetails"
 #: openforms/authentication/models.py:414 openforms/emails/constants.py:16
 #: openforms/formio/api/serializers.py:33
 #: openforms/payments/contrib/ogone/plugin.py:96
-#: openforms/payments/contrib/worldline/plugin.py:116
 #: openforms/submissions/api/serializers.py:595
 msgid "Submission"
 msgstr "Inzending"
@@ -5006,10 +5005,12 @@ msgid "Live"
 msgstr "Live"
 
 #: openforms/forms/admin/form.py:293
+#, python-brace-format
 msgid "{} {} was successfully copied"
 msgstr "{} {} is met succes gekopieerd"
 
 #: openforms/forms/admin/form.py:312
+#, python-brace-format
 msgid "{} {} was successfully exported"
 msgstr "{} {} is met succes geëxporteerd"
 
@@ -5104,6 +5105,7 @@ msgid "Success! You will receive an email when your export is ready."
 msgstr "Gelukt! U ontvangt een e-mail zodra de export gereed is."
 
 #: openforms/forms/admin/views.py:96
+#, python-brace-format
 msgid "Something went wrong while importing form: {}"
 msgstr "Er is iets foutgegaan bij het importeren van formulier: {}"
 
@@ -7902,7 +7904,7 @@ msgid "Webhook Key Secret"
 msgstr "Webhook Key Secret"
 
 #: openforms/payments/contrib/ogone/plugin.py:39
-#: openforms/payments/contrib/worldline/plugin.py:77
+#: openforms/payments/contrib/worldline/plugin.py:73
 msgid "Merchant to use"
 msgstr "Handelaar (Merchant) om te gebruiken"
 
@@ -7974,65 +7976,19 @@ msgstr "API Key aangemaakt voor de specifieke PSPID"
 msgid "API Secret created for the specified PSPID"
 msgstr "API Secret aangemaakt voor de specifieke PSPID"
 
-#: openforms/payments/contrib/worldline/plugin.py:83
-#, fuzzy
-#| msgid "last name"
-msgid "Variant name"
-msgstr "achternaam"
-
-#: openforms/payments/contrib/worldline/plugin.py:85
-msgid ""
-"Name of the template that should be used during the payment process. This "
-"can be found under the \"Variant name\" field in the \"Branding\" section."
-msgstr ""
-
-#: openforms/payments/contrib/worldline/plugin.py:93
-#, fuzzy
-#| msgid "explanation template"
-msgid "Descriptor template"
-msgstr "Toelichtingssjabloon"
-
-#: openforms/payments/contrib/worldline/plugin.py:98
-#, fuzzy
-#| msgid ""
-#| "Optional custom template for the description, included in the payment "
-#| "overviews for the backoffice. Use this to link the payment back to a "
-#| "particular process or form. You can include all form variables (using "
-#| "their keys) and the 'public_reference' variable (using expression "
-#| "'{{ public_reference }}'). If unspecified, a default description is used. "
-#| "Note that the length of the result is capped to 100 characters and only "
-#| "alpha-numeric characters are allowed."
-msgid ""
-"Optional custom template for the description, included in the payment "
-"overviews for the backoffice. Use this to link the payment back to a "
-"particular process or form. You can include all form variables (using their "
-"keys) and the 'public_reference' variable (using expression "
-"'{{ public_reference }}'). If unspecified, a default description is used. "
-"Note that the length of the result is capped to 32 characters and only alpha-"
-"numeric characters are allowed."
-msgstr ""
-"Sjabloon voor de omschrijving van de betaling in de afschriften die je bij "
-"Ogone kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te "
-"koppelen. Je kan alle formuliervariabelen gebruiken (gebruik de "
-"variabelesleutel als naam) en de 'public_reference' sjabloonvariabele "
-"(gebruik de expressie '{{ public_reference }}'). Indien geen sjabloon "
-"opgegeven is, dan wordt een standaardomschrijving gebruikt. Merk op dat het "
-"resultaat op 100 karakters afgekapt wordt en enkel alfanumerieke tekens "
-"toegestaan zijn."
-
-#: openforms/payments/contrib/worldline/plugin.py:148
+#: openforms/payments/contrib/worldline/plugin.py:97
 msgid "Wordline"
 msgstr "Wordline"
 
-#: openforms/payments/contrib/worldline/plugin.py:360
+#: openforms/payments/contrib/worldline/plugin.py:307
 msgid "Unknown webhook event encountered"
 msgstr ""
 
-#: openforms/payments/contrib/worldline/plugin.py:409
+#: openforms/payments/contrib/worldline/plugin.py:356
 msgid "Add merchant"
 msgstr "Merchant toevoegen"
 
-#: openforms/payments/contrib/worldline/plugin.py:425
+#: openforms/payments/contrib/worldline/plugin.py:372
 msgid "Configure webhooks"
 msgstr ""
 
@@ -10026,7 +9982,7 @@ msgid "MSGraphService not selected"
 msgstr "Microsoft Graph service is niet ingesteld."
 
 #: openforms/registrations/contrib/microsoft_graph/plugin.py:113
-#: openforms/registrations/contrib/stuf_zds/plugin.py:481
+#: openforms/registrations/contrib/stuf_zds/plugin.py:478
 #, python-brace-format
 msgid "Could not connect: {exception}"
 msgstr "Kan geen verbinding maken: {exception}"
@@ -10515,7 +10471,7 @@ msgstr ""
 msgid "StUF-ZDS"
 msgstr "StUF-ZDS"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:474
+#: openforms/registrations/contrib/stuf_zds/plugin.py:471
 msgid "StufService not selected"
 msgstr "StUF-service is niet ingesteld"
 
