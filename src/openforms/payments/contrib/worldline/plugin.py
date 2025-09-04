@@ -194,8 +194,8 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         option_serializer = self.configuration_options(
             data={
                 "merchant": options["merchant"].pspid,
-                "variant": options.get("variant", ""),
-                "descriptor_template": options.get("descriptor_template", ""),
+                "variant": options["variant"],
+                "descriptor_template": options["descriptor_template"],
                 "_checkoutDetails": {
                     "RETURNMAC": checkout_response.returnmac,
                     "hostedCheckoutId": checkout_response.hosted_checkout_id,
