@@ -31,7 +31,7 @@ export const Merchant = ({options}) => (
 Merchant.propTypes = {
   options: PropTypes.arrayOf(
     PropTypes.shape({
-      value: PropTypes.number,
+      value: PropTypes.string,
       label: PropTypes.node.isRequired,
     })
   ).isRequired,

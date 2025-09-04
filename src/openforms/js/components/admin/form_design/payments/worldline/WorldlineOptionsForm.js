@@ -53,14 +53,14 @@ WorldlineOptionsForm.propTypes = {
     type: PropTypes.oneOf(['object']), // it's the JSON schema root, it has to be
     properties: PropTypes.shape({
       merchant: PropTypes.shape({
-        enum: PropTypes.arrayOf(PropTypes.number),
+        enum: PropTypes.arrayOf(PropTypes.string),
         enumNames: PropTypes.arrayOf(PropTypes.string),
       }),
     }),
     required: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   formData: PropTypes.shape({
-    merchant: PropTypes.number,
+    merchant: PropTypes.string,
   }),
 };
 
