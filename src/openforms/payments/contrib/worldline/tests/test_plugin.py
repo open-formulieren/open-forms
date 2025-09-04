@@ -142,9 +142,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
                 },
             )
 
-            self.assertNotIn(
-                os.getenv("WORLDLINE_VARIANT_TITLE", "Custom page title"), response.text
-            )
+            self.assertNotIn("Test title", response.text)
 
             # we need another arbitrary request
             request = factory.get("/foo")
@@ -917,7 +915,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             form__payment_backend="worldline",
             form__payment_backend_options={
                 "merchant": merchant.pspid,
-                "variant": os.getenv("WORLDLINE_VARIANT", "placeholder_variant"),
+                "variant": "SimplifiedCustomPaymentPage",
                 "descriptor_template": "Descriptor: {{ public_reference }}",
             },
             form__product__price=Decimal("11.35"),
@@ -966,9 +964,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
                 },
             )
 
-            self.assertIn(
-                os.getenv("WORLDLINE_VARIANT_TITLE", "Custom page title"), response.text
-            )
+            self.assertIn("Test title", response.text)
 
             # we need another arbitrary request
             request = factory.get("/foo")
