@@ -54,8 +54,9 @@ from .typing import (
     CheckoutInput,
     Order,
     PaymentOptions,
+    References,
 )
-from .utils import get_merchant_reference, get_webhook_helper
+from .utils import get_webhook_helper
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -80,7 +81,8 @@ def _generate_order(payment: SubmissionPayment) -> Order:
     amount_of_money = AmountOfMoney(
         currencyCode="EUR", amount=int((payment.amount * 100).to_integral_exact())
     )
-    return Order(amountOfMoney=amount_of_money)
+    references = References(merchantReference=payment.public_order_id)
+    return Order(amountOfMoney=amount_of_money, references=references)
 
 
 def _generate_checkout_input(
@@ -150,9 +152,12 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         valid_options = option_serializer.is_valid(raise_exception=False)
 
         assert valid_options, "Incorrect payment options encountered"
+        assert checkout_response.merchant_reference == payment.public_order_id, (
+            "Mismatch between payment reference and merchant reference"
+        )
 
         payment.plugin_options = option_serializer.data
-        payment.provider_payment_id = checkout_response.merchant_reference or ""
+        payment.provider_payment_id = payment.public_order_id
         payment.save(
             update_fields=(
                 "plugin_options",
@@ -257,19 +262,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                     checkout_status
                 )
 
-            payment_response = (
-                response.created_payment_output
-                if response.created_payment_output
-                else None
-            )
-
-            assert payment_response and payment_response.payment, (
-                "No payment data found in response"
-            )
-
-            external_payment_id = get_merchant_reference(payment_response.payment)
-
-            self.apply_status(payment, status, external_payment_id)
+            self.apply_status(payment, status, payment.provider_payment_id)
 
             redirect_url = get_frontend_redirect_url(
                 payment.submission,
@@ -309,7 +302,15 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 }
             )
 
-        merchant_reference = get_merchant_reference(webhook_event.payment)
+        payment_response = webhook_event.payment
+        merchant_reference = (
+            payment_response.payment_output.references.merchant_reference
+            if payment_response.payment_output
+            and payment_response.payment_output.references
+            else None
+        )
+
+        assert merchant_reference, "Merchant reference not found"
 
         try:
             payment = get_object_or_404(
