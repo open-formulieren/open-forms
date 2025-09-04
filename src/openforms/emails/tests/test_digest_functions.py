@@ -1263,11 +1263,19 @@ class InvalidCertificatesTests(TestCase):
             )
             ServiceFactory.create(client_certificate=certificate)
 
-        with freeze_time("2026-04-01T21:15:00Z"):
-            invalid_certificates = collect_invalid_certificates()
+        with self.subTest("expiry in the near future"):
+            with freeze_time("2026-04-01T21:15:00Z"):
+                invalid_certificates = collect_invalid_certificates()
 
-        self.assertEqual(len(invalid_certificates), 1)
-        self.assertEqual(invalid_certificates[0].error_message, "will expire soon")
+            self.assertEqual(len(invalid_certificates), 1)
+            self.assertEqual(invalid_certificates[0].error_message, "will expire soon")
+
+        with self.subTest("expiry in the past"):
+            with freeze_time("2026-04-10T21:15:00Z"):
+                invalid_certificates = collect_invalid_certificates()
+
+            self.assertEqual(len(invalid_certificates), 1)
+            self.assertEqual(invalid_certificates[0].error_message, "expired")
 
     def test_invalid_certificates_are_collected(self):
         # the certificate (test.certificate) expires on Apr 9 05:17:53 2026 GMT and
@@ -1304,13 +1312,25 @@ class InvalidCertificatesTests(TestCase):
             )
             ServiceFactory.create(client_certificate=certificate)
 
-        with freeze_time("2026-04-01T21:15:00Z"):
-            invalid_certificates = collect_invalid_certificates()
+        with self.subTest("expiry in the near future"):
+            with freeze_time("2026-04-01T21:15:00Z"):
+                invalid_certificates = collect_invalid_certificates()
 
-        self.assertEqual(len(invalid_certificates), 1)
-        self.assertEqual(
-            invalid_certificates[0].error_message, "invalid keypair, will expire soon"
-        )
+            self.assertEqual(len(invalid_certificates), 1)
+            self.assertEqual(
+                invalid_certificates[0].error_message,
+                "invalid keypair, will expire soon",
+            )
+
+        with self.subTest("expiry in the past"):
+            with freeze_time("2026-04-10T21:15:00Z"):
+                invalid_certificates = collect_invalid_certificates()
+
+            self.assertEqual(len(invalid_certificates), 1)
+            self.assertEqual(
+                invalid_certificates[0].error_message,
+                "invalid keypair, expired",
+            )
 
 
 class InvalidRegistrationBackendsTests(TestCase):

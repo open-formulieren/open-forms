@@ -297,8 +297,10 @@ def collect_broken_configurations() -> list[BrokenConfiguration]:
 def collect_invalid_certificates() -> list[InvalidCertificate]:
     today = timezone.now()
     error_messages = {
+        "expired": _("expired"),
         "expiring": _("will expire soon"),
         "invalid": _("has invalid keypair"),
+        "invalid_expired": _("invalid keypair, expired"),
         "invalid_expiring": _("invalid keypair, will expire soon"),
     }
 
@@ -311,30 +313,37 @@ def collect_invalid_certificates() -> list[InvalidCertificate]:
         | Q(service_server__isnull=False)
     )
     for cert in configured_certificates:
-        time_until_expiry = cert.expiry_date - today
         error_message = ""
-        is_valid_pair = False
+        is_valid_pair = cert.is_valid_key_pair()
+        time_until_expiry = cert.expiry_date - today
+        is_expired = time_until_expiry <= timedelta(days=0)
+        no_longer_valid_in_two_weeks = time_until_expiry <= timedelta(days=14)
 
-        match (time_until_expiry <= timedelta(days=14), cert.is_valid_key_pair()):
+        match (no_longer_valid_in_two_weeks, is_valid_pair):
             case (True, True) | (True, None):
-                error_message = error_messages["expiring"]
-                is_valid_pair = True
+                error_message = (
+                    error_messages["expired"]
+                    if is_expired
+                    else error_messages["expiring"]
+                )
 
             case (False, False):
                 error_message = error_messages["invalid"]
-                is_valid_pair = False
 
             case (True, False):
-                error_message = error_messages["invalid_expiring"]
-                is_valid_pair = False
+                error_message = (
+                    error_messages["invalid_expired"]
+                    if is_expired
+                    else error_messages["invalid_expiring"]
+                )
 
         if error_message:
             invalid_certs.append(
                 InvalidCertificate(
-                    id=cert.id,
+                    id=cert.pk,
                     label=str(cert),
-                    error_message=error_message,
-                    is_valid_pair=is_valid_pair,
+                    error_message=str(error_message),
+                    is_valid_pair=is_valid_pair or is_valid_pair is None,
                     expiry_date=cert.expiry_date,
                 )
             )
