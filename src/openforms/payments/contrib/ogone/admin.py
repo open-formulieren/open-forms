@@ -3,6 +3,7 @@ from django.contrib import admin
 from solo.admin import SingletonModelAdmin
 
 from ...registry import register
+from ..base import FeedbackUrlMixin
 from .models import OgoneMerchant, OgoneWebhookConfiguration
 
 
@@ -38,5 +39,11 @@ class OgoneMerchantAdmin(admin.ModelAdmin):
 
 
 @admin.register(OgoneWebhookConfiguration)
-class OgoneWebhookAdmin(SingletonModelAdmin):
-    pass
+class OgoneWebhookAdmin(SingletonModelAdmin, FeedbackUrlMixin):
+    fields = (
+        "webhook_key_id",
+        "webhook_key_secret",
+        "feedback_url",
+    )
+
+    readonly_fields = ("feedback_url",)

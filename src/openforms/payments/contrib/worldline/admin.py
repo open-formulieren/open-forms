@@ -1,17 +1,9 @@
 from django.contrib import admin
-from django.db.models import Model
 
 from solo.admin import SingletonModelAdmin
 
-from ...registry import register
+from ..base import FeedbackUrlMixin
 from .models import WorldlineMerchant, WorldlineWebhookConfiguration
-
-
-class FeedbackUrlMixin:
-    def feedback_url(self, obj: Model | None = None) -> str:
-        if not obj:
-            return ""
-        return register["worldline"].get_webhook_url(None)
 
 
 @admin.register(WorldlineMerchant)
@@ -46,5 +38,3 @@ class WorldlineWebhookConfigurationAdmin(SingletonModelAdmin, FeedbackUrlMixin):
     )
 
     readonly_fields = ("feedback_url",)
-    list_display = ("webhook_key_id",)
-    search_fields = ("webhook_key_id",)
