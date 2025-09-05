@@ -19,6 +19,29 @@ app = Celery("open-forms")
 assert app.steps is not None
 app.steps["worker"].add(DjangoStructLogInitStep)
 app.config_from_object("django.conf:settings", namespace="CELERY")
+
+app.conf.broker_transport_options = {
+    # only used when the broker uses redis sentinel. Failing to specify a master name
+    # when the broker is configured with sentinel will trigger a `ValueError` in workers.
+    "master_name": config("REDIS_BROKER_SENTINEL_MASTER", default="") or None,
+    # Optional authentication parameters
+    "sentinel_kwargs": {
+        "password": config("REDIS_BROKER_SENTINEL_PASSWORD", default="") or None,
+        "username": config("REDIS_BROKER_SENTINEL_USERNAME", default="") or None,
+    },
+}
+app.conf.result_backend_transport_options = {
+    # only used when the broker uses redis sentinel. Failing to specify a master name
+    # when the broker is configured with sentinel will trigger a `ValueError` in workers.
+    "master_name": config("REDIS_RESULT_BACKEND_SENTINEL_MASTER", default="") or None,
+    # Optional authentication parameters
+    "sentinel_kwargs": {
+        "password": config("REDIS_RESULT_BACKEND_SENTINEL_PASSWORD", default="")
+        or None,
+        "username": config("REDIS_RESULT_BACKEND_SENTINEL_USERNAME", default="")
+        or None,
+    },
+}
 app.conf.ONCE = {
     "backend": "celery_once.backends.Redis",
     "settings": {
