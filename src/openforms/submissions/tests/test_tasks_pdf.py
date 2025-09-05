@@ -10,13 +10,14 @@ from privates.test import temp_private_root
 from pyquery import PyQuery as pq
 
 from openforms.logging.models import TimelineLogProxy
-from openforms.config.models import GlobalConfiguration
+from openforms.config.models import GlobalConfiguration, MapTileLayer
 from openforms.formio.constants import DataSrcOptions
 from openforms.forms.tests.factories import FormLogicFactory
 
 from ..models import SubmissionReport
 from ..tasks.pdf import generate_submission_report
 from .factories import SubmissionFactory, SubmissionReportFactory
+from ...utils.pdf import render_to_pdf
 
 
 @temp_private_root()
@@ -672,6 +673,62 @@ class SubmissionReportGenerationTests(TestCase):
             "pdf_generation_failure"
         )
         self.assertEqual(logs.count(), 1)
+
+    def test_map(self):
+        from openforms.submissions.report import Report
+
+        # The tile layers are default fixtures
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "map",
+                    "key": "mapPoint",
+                    "label": "Map point",
+                    "tileLayerIdentifier": "brt",
+                },
+                {
+                    "type": "map",
+                    "key": "mapLine",
+                    "label": "Map line",
+                    "tileLayerIdentifier": "brt-grijs",
+                },
+                {
+                    "type": "map",
+                    "key": "mapPolygon",
+                    "label": "Map polygon",
+                    "tileLayerIdentifier": "brt-pastel",
+                },
+            ],
+            with_report=True,
+            submitted_data={
+                "mapPoint": {"type": "Point", "coordinates": [5.291105, 52.132714]},
+                "mapLine": {
+                    "type": "LineString",
+                    "coordinates": [[5.252177, 52.124783], [5.296103, 52.142341]],
+                },
+                "mapPolygon": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [3.856187, 51.807071],
+                            [6.104054, 51.395801],
+                            [6.008254, 52.525139],
+                            [3.856187, 51.807071],
+                        ]
+                    ],
+                },
+            },
+        )
+
+        html_report, pdf_report = render_to_pdf(
+            "report/submission_report.html",
+            context={
+                "report": Report(submission),
+            },
+        )
+
+        with open("output.pdf", "wb") as f:
+            f.write(pdf_report)
 
 
 @temp_private_root()

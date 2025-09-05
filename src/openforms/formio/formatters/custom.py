@@ -14,8 +14,6 @@ from openforms.utils.map.wmts_draw import (
     draw_geojson_rd,
     find_best_zoom,
     geojson_to_rd,
-    get_bounds_rd,
-    get_center,
 )
 from openforms.utils.map.wmts_map_generator import WMTSMapGenerator
 
@@ -37,49 +35,58 @@ type MapValue = PointGeometry | LineStringGeometry | PolygonGeometry
 
 
 class MapFormatter(FormatterBase):
+    # TODO-4951: think about converting a map value to shapely.BaseGeometry in the
+    #  SubmissionValueVariableState.get_data. This does require proper serialization
+    #  again though, using shapely.to_geojson
     def format(self, component: MapComponent, value: MapValue) -> str:
-        if self.as_html:
-            tile_layer = MapTileLayer.objects.get(
-                identifier=component["tileLayerIdentifier"]
-            )
+        coordinates = ", ".join(str(x) for x in value.get("coordinates", []))
 
-            geojson_rd = geojson_to_rd(value)
-            bounds = get_bounds_rd(geojson_rd)
-            x_rd, y_rd = get_center(geojson_rd)
+        if not self.as_html:
+            return coordinates
 
-            image_size_px = (718, 500)
+        from shapely.geometry import shape
 
-            zoom = find_best_zoom(bounds, image_size_px=image_size_px)
+        # Note that "brt" is a default fixture from default_map_tile_layers.json
+        tile_layer = MapTileLayer.objects.get(
+            identifier=component.get("tileLayerIdentifier", "brt")
+        )
 
-            map_img = WMTSMapGenerator.make_map_rd(
-                url_template=tile_layer.url,
-                x_rd=x_rd,
-                y_rd=y_rd,
-                zoom=zoom,
-                img_size=image_size_px,
-            )
+        geometry = shape(value)
+        geometry_rd = geojson_to_rd(geometry)
 
-            draw_geojson_rd(
-                map_img,
-                geojson_rd,
-                zoom=zoom,
-                img_size=image_size_px,
-                center_x_rd=x_rd,
-                center_y_rd=y_rd,
-            )
+        x_rd, y_rd = geometry_rd.centroid.coords[0]
 
-            png_array = BytesIO()
-            map_img.save(png_array, format="png")
-            encoded = base64.b64encode(png_array.getvalue()).decode()
-            img_data_uri = f"data:image/png;base64,{encoded}"
+        # TODO-4951: changing the image size also affects how much of the map is shown,
+        #  not only big it is. The zoom level stays the same. Is that OK?
+        image_size_px = (400, 300)
 
-            return format_html("<img src='{}'>", img_data_uri)
+        zoom = find_best_zoom(geometry_rd, image_size_px=image_size_px)
 
-        # use a comma here since its a single data element
-        if coordinates := value.get("coordinates"):
-            return ", ".join(str(x) for x in coordinates)
-        else:
-            return ""
+        map_img = WMTSMapGenerator.make_map_rd(
+            url_template=tile_layer.url,
+            center=geometry_rd.centroid,
+            x_rd=x_rd,
+            y_rd=y_rd,
+            zoom=zoom,
+            img_size=image_size_px,
+        )
+
+        img_with_shape = draw_geojson_rd(
+            map_img,
+            geometry_rd,
+            zoom=zoom,
+        )
+
+        stream = BytesIO()
+        img_with_shape.save(stream, format="png")
+        encoded = base64.b64encode(stream.getvalue()).decode()
+        img_data_uri = f"data:image/png;base64,{encoded}"
+
+        return format_html(
+            '<img src="{src}" alt="{text}" style="max-width: 100%;"/>',
+            src=img_data_uri,
+            text=coordinates,
+        )
 
 
 class AddressValue(TypedDict):

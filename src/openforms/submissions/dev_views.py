@@ -7,6 +7,7 @@ from openforms.utils.views import DevViewMixin
 from .report import Report
 
 
+# TODO-4951: this doesn't render pages properly, if there is time, have a gander.
 class SubmissionPDFTestView(DevViewMixin, DetailView):
     """
     Dev-only view to test/implement the PDF styling.
