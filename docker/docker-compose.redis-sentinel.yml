@@ -1,0 +1,85 @@
+---
+#
+# DISCLAIMER: failover will not actually work properly in this setup - see
+# https://redis.io/docs/latest/operate/oss_and_stack/management/sentinel/#sentinel-docker-nat-and-possible-issues
+#
+# This docker-compose only exists to verify/test that a local setup can work with
+# Redis Sentinels, it does NOT cover the actual failover scenario.
+#
+# Redis config file references:
+# * https://raw.githubusercontent.com/redis/redis/8.0/redis.conf
+# * https://raw.githubusercontent.com/redis/redis/8.0/redis-full.conf
+#
+# Docs:
+# * https://redis.io/docs/latest/operate/oss_and_stack/management/sentinel/
+# * https://www.squash.io/tutorial-on-redis-sentinel-a-deep-look/
+
+services:
+  # https://redis.io/docs/latest/operate/oss_and_stack/management/sentinel/#testing-the-failover
+  # To 'kill' the primary, you can run:
+  #
+  #   docker compose -f docker-compose.redis-sentinel.yml exec redis-primary \
+  #     redis-cli -p 6380 DEBUG sleep 60
+  #
+
+  redis-primary:
+    image: redis:8
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./redis/sentinel.primary.conf:/usr/local/etc/redis/redis.conf:ro
+      - data-primary:/data
+    network_mode: host
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a insecure-supersecret ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  redis-replica-0:
+    image: redis:8
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./redis/sentinel.replica.conf:/usr/local/etc/redis/redis.conf:ro
+      - data-replica-0:/data
+    network_mode: host
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a insecure-supersecret ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      - redis-primary
+
+  redis-sentinel-0: &redis-sentinel
+    image: redis:8
+    command:
+      - sh
+      - -c
+      - |
+        mkdir -p /usr/local/etc/redis/
+        cp /tmp/sentinel.conf /usr/local/etc/redis/sentinel.conf
+        exec redis-sentinel /usr/local/etc/redis/sentinel.conf --port $${REDIS_PORT}
+    volumes:
+      - ./redis/sentinel.conf:/tmp/sentinel.conf:ro
+    environment:
+      - REDIS_PORT=26379
+    network_mode: host
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli --port 26379 ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  redis-sentinel-1:
+    <<: *redis-sentinel
+    environment:
+      - REDIS_PORT=26380
+
+  redis-sentinel-2:
+    <<: *redis-sentinel
+    environment:
+      - REDIS_PORT=26381
+
+volumes:
+  data-primary:
+  data-replica-0:
