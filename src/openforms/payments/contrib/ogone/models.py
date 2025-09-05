@@ -87,5 +87,5 @@ class OgoneWebhookConfiguration(SingletonModel):
     def __str__(self):
         return self.webhook_key_id
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Worldline webhook configuration (transition)")
