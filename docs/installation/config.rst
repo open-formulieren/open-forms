@@ -64,6 +64,9 @@ Common settings
 * ``CELERY_RESULT_BACKEND``: URL for the Redis result broker for Celery.
   Defaults to ``redis://127.0.0.1:6379/1``.
 
+.. seealso:: For advanced Celery broker/result backend configurations, see
+   :ref:`installation_redis`.
+
 .. _email-settings:
 
 Email settings
