@@ -2,43 +2,39 @@ from django.contrib import admin
 
 from solo.admin import SingletonModelAdmin
 
-from ...registry import register
+from ..base import FeedbackUrlMixin
 from .models import WorldlineMerchant, WorldlineWebhookConfiguration
 
 
 @admin.register(WorldlineMerchant)
-class WorldlineMerchantAdmin(admin.ModelAdmin):
+class WorldlineMerchantAdmin(admin.ModelAdmin, FeedbackUrlMixin):
     fields = (
         "label",
         "pspid",
         "api_key",
         "api_secret",
         "endpoint",
+        "feedback_url",
     )
     list_display = (
         "label",
         "pspid",
         "endpoint",
-        "feedback_url",
     )
     search_fields = (
         "label",
         "pspid",
         "api_key",
     )
-
-    def feedback_url(self, obj: WorldlineMerchant | None = None) -> str:
-        if not obj:
-            return ""
-        return register["worldline"].get_webhook_url(None)
+    readonly_fields = ("feedback_url",)
 
 
 @admin.register(WorldlineWebhookConfiguration)
-class WorldlineWebhookConfigurationAdmin(SingletonModelAdmin):
+class WorldlineWebhookConfigurationAdmin(SingletonModelAdmin, FeedbackUrlMixin):
     fields = (
         "webhook_key_id",
         "webhook_key_secret",
+        "feedback_url",
     )
 
-    list_display = ("webhook_key_id",)
-    search_fields = ("webhook_key_id",)
+    readonly_fields = ("feedback_url",)
