@@ -14,18 +14,19 @@ class WorldlineMerchantAdmin(admin.ModelAdmin):
         "api_key",
         "api_secret",
         "endpoint",
+        "feedback_url",
     )
     list_display = (
         "label",
         "pspid",
         "endpoint",
-        "feedback_url",
     )
     search_fields = (
         "label",
         "pspid",
         "api_key",
     )
+    readonly_fields = ("feedback_url",)
 
     def feedback_url(self, obj: WorldlineMerchant | None = None) -> str:
         if not obj:
