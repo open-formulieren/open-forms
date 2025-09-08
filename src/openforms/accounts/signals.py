@@ -8,6 +8,7 @@ from django.contrib.auth.signals import (
 from django.dispatch import receiver
 from django.http import HttpRequest
 
+import structlog
 from axes.signals import user_locked_out
 from hijack.signals import hijack_ended, hijack_started
 
@@ -15,6 +16,8 @@ from openforms.logging import logevent
 
 from .metrics import login_failures, logins, logouts, user_lockouts
 from .models import User
+
+logger = structlog.stdlib.get_logger()
 
 
 @receiver(hijack_started, dispatch_uid="hijack_started.manage_totp_device")
@@ -28,7 +31,12 @@ def handle_hijack_start(
     data causing only the hijacked user to show up in the audit log instead of the
     hijacker.
     """
-    logevent.hijack_started(hijacker, hijacked)
+    logger.info(
+        "hijack_started",
+        audit=True,
+        hijacker=hijacker.username,
+        hijacked=hijacked.username,
+    )
 
 
 @receiver(hijack_ended, dispatch_uid="hijack_ended.manage_totp_device")
