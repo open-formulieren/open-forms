@@ -152,18 +152,9 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         valid_options = option_serializer.is_valid(raise_exception=False)
 
         assert valid_options, "Incorrect payment options encountered"
-        assert checkout_response.merchant_reference == payment.public_order_id, (
-            "Mismatch between payment reference and merchant reference"
-        )
 
         payment.plugin_options = option_serializer.data
-        payment.provider_payment_id = payment.public_order_id
-        payment.save(
-            update_fields=(
-                "plugin_options",
-                "provider_payment_id",
-            )
-        )
+        payment.save(update_fields=("plugin_options",))
 
         return PaymentInfo(
             type=PaymentRequestType.get,
@@ -175,7 +166,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         self,
         payment: SubmissionPayment,
         worldline_status: WorldlinePaymentStatus,
-        payment_id: str,
+        payment_reference: str,
     ) -> None:
         if payment.status in PAYMENT_STATUS_FINAL:
             # shouldn't happen or race-condition
@@ -183,7 +174,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 "payment_status_final",
                 payment=payment,
                 worldline_status=worldline_status,
-                payment_id=payment_id,
+                payment_reference=payment_reference,
             )
             return
 
@@ -196,7 +187,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             .exclude(status__in=PAYMENT_STATUS_FINAL)
             .exclude(status=status)
         )
-        result_count = queryset.update(status=status, provider_payment_id=payment_id)
+        result_count = queryset.update(status=status, public_order_id=payment_reference)
 
         if result_count > 0:
             payment.refresh_from_db()
@@ -251,18 +242,22 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
 
             checkout_status = WorldlineHostedCheckoutStatus(response.status)
             payment_data = response.created_payment_output
-            try:
+
+            if payment_data and payment_data.payment:
                 status = WorldlinePaymentStatus(
                     payment_data.payment.status
                     if payment_data and payment_data.payment
                     else None
                 )
-            except ValueError:
+
+                payment.provider_payment_id = payment_data.payment.id
+                payment.save(update_fields=("provider_payment_id",))
+            else:
                 status = WorldlineHostedCheckoutStatus.to_payment_status(
                     checkout_status
                 )
 
-            self.apply_status(payment, status, payment.provider_payment_id)
+            self.apply_status(payment, status, payment.public_order_id)
 
             redirect_url = get_frontend_redirect_url(
                 payment.submission,
@@ -315,12 +310,12 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         try:
             payment = get_object_or_404(
                 SubmissionPayment,
-                provider_payment_id=merchant_reference,
+                public_order_id=merchant_reference,
             )
         except Http404:
             logger.warning(
                 "unknown_payment",
-                provider_payment_id=merchant_reference,
+                public_order_id=merchant_reference,
                 plugin="worldline",
             )
             raise
@@ -328,7 +323,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         with structlog.contextvars.bound_contextvars(
             submission_uuid=str(payment.submission.uuid),
             payment_uuid=str(payment.uuid),
-            payment_id=payment.provider_payment_id,
+            payment_reference=merchant_reference,
             plugin=self,
             entrypoint="webhook",
         ):
@@ -339,8 +334,15 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             self.apply_status(
                 payment,
                 status,
-                payment.provider_payment_id,
+                merchant_reference,
             )
+
+            # Save the payment ID whenever this was not set yet whenever the user
+            # got redirected. This can happen whenever no payment was created yet
+            # after the user got redirected.
+            if not payment.provider_payment_id:
+                payment.provider_payment_id = webhook_event.payment.id
+                payment.save(update_fields=("provider_payment_id",))
 
             return payment
 
