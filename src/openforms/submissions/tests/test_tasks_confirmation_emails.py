@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from django.core import mail
 from django.db import close_old_connections
-from django.test import TestCase, TransactionTestCase, override_settings
+from django.test import TestCase, TransactionTestCase, override_settings, tag
 from django.utils.translation import override as override_language
 
 from privates.test import temp_private_root
@@ -672,6 +672,67 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 "X-OF-Event": EmailEventChoices.confirmation,
             },
         )
+
+    @tag("gh-5574")
+    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
+    def test_completed_submission_hashed_attributes_send_confirmation_email(self):
+        """
+        regression test for https://github.com/open-formulieren/open-forms/issues/5574
+        Test that when send_confirmation_email task nothing crashes started after attributes
+        are hashed, nothing crashes
+        """
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            auth_info__attribute_hashed=False,
+            components_list=[
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            submitted_data={"email": "test@test.nl"},
+        )
+        form_step = FormStepFactory.create(
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "foo",
+                        "type": "textfield",
+                        "label": "Foo",
+                        "showInEmail": True,
+                    }
+                ],
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"foo": "bar"},
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form,
+            subject="Confirmation mail",
+            content="Information filled in: {{foo}}",
+        )
+
+        submission.auth_info.hash_identifying_attributes()
+
+        # "execute" the celery task
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            schedule_emails(submission.id)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.subject, "Confirmation mail")
+
+        # Check status is updated
+        submission.refresh_from_db()
+        self.assertTrue(submission.confirmation_email_sent)
 
 
 class RaceConditionTests(TransactionTestCase):
