@@ -1,7 +1,6 @@
+from collections.abc import Sequence
 from typing import Literal, TypedDict
 
-from django.db.models import CharField
-from django.db.models.functions.comparison import Cast
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
@@ -22,7 +21,7 @@ class YiviOptions(TypedDict):
     """
 
     authentication_options: list[AuthAttribute]
-    additional_attributes_groups: list[str]
+    additional_attributes_groups: Sequence[AttributeGroup]
     bsn_loa: DigiDAssuranceLevels | Literal[""]
     kvk_loa: AssuranceLevels | Literal[""]
 
@@ -46,14 +45,8 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         allow_empty=True,
     )
     additional_attributes_groups = serializers.SlugRelatedField(
+        queryset=AttributeGroup.objects.all(),
         slug_field="uuid",
-        # Because our export data is just a list of uuids, we need to manually set the
-        # value of this field as list of strings.
-        # Otherwise, the app expects the import data to be a list of AttributeGroup
-        # objects.
-        queryset=AttributeGroup.objects.annotate(
-            str_uuid=Cast("uuid", output_field=CharField())
-        ).values_list("str_uuid", flat=True),
         many=True,
         label=_("Additional attributes groups"),
         help_text=_(

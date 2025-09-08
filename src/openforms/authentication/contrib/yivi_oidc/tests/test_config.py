@@ -28,7 +28,7 @@ class YiviOptionsSerializerTest(TestCase):
         )
 
     def test_valid_filled_in_options(self):
-        AttributeGroupFactory.create(
+        attr_group = AttributeGroupFactory.create(
             name="some_group", uuid="6af22687-08b3-4546-ad2e-22ed90c18a13"
         )
 
@@ -54,9 +54,7 @@ class YiviOptionsSerializerTest(TestCase):
                     "bsn",
                     "kvk",
                 ],
-                "additional_attributes_groups": [
-                    "6af22687-08b3-4546-ad2e-22ed90c18a13",
-                ],
+                "additional_attributes_groups": [attr_group],
                 "bsn_loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
                 "kvk_loa": "urn:etoegang:core:assurance-class:loa2",
             },
