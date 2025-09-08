@@ -18,7 +18,10 @@ from upgrade_check import UpgradeCheck, VersionRange
 from upgrade_check.constraints import UpgradePaths
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
-from openforms.logging.processors import drop_user_agent_in_dev
+from openforms.logging.processors import (
+    add_timeline_logger_attributes,
+    drop_user_agent_in_dev,
+)
 from openforms.upgrades.script_checks import BinScriptCheck
 
 from .utils import Filesize, config, get_sentry_integrations
@@ -531,6 +534,7 @@ structlog.configure(
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
+        add_timeline_logger_attributes,
         # structlog.processors.ExceptionPrettyPrinter(),
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ],
