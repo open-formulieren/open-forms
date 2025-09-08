@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Generic, TypedDict, TypeVar
+from typing import TYPE_CHECKING, TypedDict
 
 from rest_framework import serializers
 
@@ -35,10 +35,7 @@ class Options(TypedDict):
     pass
 
 
-OptionsT = TypeVar("OptionsT", bound=Options)
-
-
-class BasePlugin(Generic[OptionsT], ABC, AbstractBasePlugin):
+class BasePlugin[OptionsT: Options](ABC, AbstractBasePlugin):
     configuration_options: SerializerCls = EmptyOptions
     """
     A serializer class describing the plugin-specific configuration options.

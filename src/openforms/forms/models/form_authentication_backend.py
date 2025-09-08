@@ -1,3 +1,4 @@
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -18,6 +19,7 @@ class FormAuthenticationBackend(models.Model):
     backend = AuthenticationBackendChoiceField(_("authentication backend"))
     options = models.JSONField(
         _("authentication backend options"),
+        encoder=DjangoJSONEncoder,
         blank=True,
         null=True,
     )

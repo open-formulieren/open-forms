@@ -1298,7 +1298,7 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         self.assertEqual(authentication_backends[0].backend, "digid")
         self.assertEqual(authentication_backends[0].form, imported_form)
-        self.assertEqual(authentication_backends[0].options, None)
+        self.assertEqual(authentication_backends[0].options, {"loa": ""})
 
         self.assertEqual(authentication_backends[1].backend, "demo")
         self.assertEqual(authentication_backends[1].form, imported_form)
