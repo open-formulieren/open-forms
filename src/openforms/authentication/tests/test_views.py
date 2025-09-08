@@ -29,7 +29,13 @@ from ..views import (
     AuthenticationReturnView,
     AuthenticationStartView,
 )
-from .mocks import FailingPlugin, Plugin, RequiresAdminPlugin, mock_register
+from .mocks import (
+    BadConfigurationOptionsPlugin,
+    FailingPlugin,
+    Plugin,
+    RequiresAdminPlugin,
+    mock_register,
+)
 
 
 class AuthenticationFlowTests(APITestCase):
@@ -136,6 +142,38 @@ class AuthenticationFlowTests(APITestCase):
     def test_plugin_start_failure_redirects(self):
         register = Registry()
         register("plugin1")(FailingPlugin)
+        plugin = register["plugin1"]
+
+        step = FormStepFactory(
+            form__slug="myform",
+            form__authentication_backend="plugin1",
+            form_definition__login_required=True,
+        )
+        form = step.form
+
+        # we need an arbitrary request
+        factory = RequestFactory()
+        init_request = factory.get("/foo")
+
+        # actual test starts here
+        next_url = furl("http://foo.bar?bazz=buzz")
+        url = plugin.get_start_url(init_request, form)
+        start_view = AuthenticationStartView.as_view(register=register)
+
+        response = start_view(
+            factory.get(url, {"next": next_url}),
+            slug=form.slug,
+            plugin_id="plugin1",
+        )
+
+        expected = furl("http://foo.bar?bazz=buzz")
+        expected.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = "plugin1"
+        self.assertEqual(furl(response["Location"]), expected)
+
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_plugin_bad_configuration_options(self):
+        register = Registry()
+        register("plugin1")(BadConfigurationOptionsPlugin)
         plugin = register["plugin1"]
 
         step = FormStepFactory(

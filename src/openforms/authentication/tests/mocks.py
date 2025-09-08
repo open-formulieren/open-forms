@@ -3,6 +3,8 @@ from unittest.mock import PropertyMock, patch
 
 from django.http import HttpResponse, HttpResponseRedirect
 
+from rest_framework import serializers
+
 from ..base import BasePlugin
 from ..constants import AuthAttribute
 from ..registry import Registry
@@ -57,6 +59,15 @@ class RequiresAdminPlugin(BasePlugin):
                 "mock_field_2": "",
             },
         }
+
+
+class FailingSerializer(serializers.Serializer):
+    def validate(self, attrs):
+        raise serializers.ValidationError("always fails")
+
+
+class BadConfigurationOptionsPlugin(Plugin):
+    configuration_options = FailingSerializer
 
 
 @contextmanager

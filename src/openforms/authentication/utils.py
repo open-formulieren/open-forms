@@ -1,3 +1,4 @@
+import structlog
 from furl import furl
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
@@ -10,6 +11,8 @@ from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from .models import AuthInfo, RegistratorInfo
 from .registry import register as auth_register
 from .typing import BaseAuth, FormAuth
+
+logger = structlog.stdlib.get_logger()
 
 
 def store_auth_details(
@@ -67,8 +70,17 @@ def meets_plugin_requirements(request: Request, form: Form, plugin_id: str) -> b
     # called after is_authenticated_with_plugin and get_authentication_plugin so this is
     # correct and there is a FormAuthenticationBackend object
     plugin = auth_register[plugin_id]
-    plugin_configuration = form.auth_backends.get(backend=plugin_id)
-    return plugin.check_requirements(request, plugin_configuration.options)
+    authentication_backend = form.auth_backends.get(backend=plugin_id)
+
+    if opts_serializer_cls := plugin.configuration_options:
+        serializer = opts_serializer_cls(data=authentication_backend.options)
+        # we can be brazen, as this code is called after succesful auth with the plugin
+        serializer.is_valid(raise_exception=True)
+        options = serializer.validated_data
+    else:
+        options = {}
+
+    return plugin.check_requirements(request, options)
 
 
 def get_cosign_login_url(request: Request, form: Form, plugin_id: str) -> str:

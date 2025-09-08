@@ -211,14 +211,22 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
 
             self._validate_co_sign_submission(plugin)
 
+            if opts_serializer_cls := plugin.configuration_options:
+                serializer = opts_serializer_cls(data=authentication_backend.options)
+                if not serializer.is_valid():
+                    logger.error(
+                        "authentication.start_blocked", reason="invalid_options"
+                    )
+                    f = furl(form_url)
+                    f.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = plugin_id
+                    return HttpResponseRedirect(f.url)
+                options = serializer.validated_data
+            else:
+                options = {}
+
             logger.info("authentication.call_plugin")
             try:
-                response = plugin.start_login(
-                    request,
-                    form,
-                    form_url,
-                    authentication_backend.options or {},
-                )
+                response = plugin.start_login(request, form, form_url, options)
             except Exception as exc:
                 logger.exception("authentication.start_failure", exc_info=exc)
                 # append failure parameter and return to form
@@ -356,10 +364,19 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             except InvalidCoSignData as exc:
                 return HttpResponseBadRequest(exc.args[0])
 
+            # we can be more brazen, since ending up in the return flow implies the
+            # start flow was successful
+            if opts_serializer_cls := plugin.configuration_options:
+                serializer = opts_serializer_cls(data=authentication_backend.options)
+                serializer.is_valid(raise_exception=True)
+                options = serializer.validated_data
+            else:
+                options = {}
+
             response = plugin.handle_return(
                 request,
                 form,
-                authentication_backend.options or {},
+                options,
             )
 
             if response.status_code in (301, 302):

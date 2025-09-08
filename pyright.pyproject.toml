@@ -86,7 +86,6 @@ include = [
     # Utils
     "src/openforms/utils/form_fields.py",
     "src/openforms/utils/pdf.py",
-    "src/openforms/utils/tests/oidc.py",
     # JSON schema generation
     "src/openforms/forms/json_schema.py"
 ]
