@@ -91,7 +91,7 @@ class Migration(migrations.Migration):
     dependencies = [
         (
             "forms",
-            "0112_data_migrate_objects_api_group",
+            "0113_form_new_renderer_enabled",
         ),
         ("yivi_oidc", "0005_data_migrate_set_attributegroup_uuid"),
     ]

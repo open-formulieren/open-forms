@@ -2,8 +2,8 @@ from openforms.utils.tests.test_migrations import TestMigrations
 
 
 class YiviAuthBackendAttributeGroupMigrationTest(TestMigrations):
-    migrate_from = "0112_data_migrate_objects_api_group"
-    migrate_to = "0113_data_migrate_yivi_form_authentication_attribute_groups"
+    migrate_from = "0113_form_new_renderer_enabled"
+    migrate_to = "0114_data_migrate_yivi_form_authentication_attribute_groups"
     app = "forms"
 
     def setUpBeforeMigration(self, apps):
@@ -65,8 +65,8 @@ class YiviAuthBackendAttributeGroupMigrationTest(TestMigrations):
 
 
 class YiviAuthBackendAttributeGroupMigrationBackwardTest(TestMigrations):
-    migrate_from = "0113_data_migrate_yivi_form_authentication_attribute_groups"
-    migrate_to = "0112_data_migrate_objects_api_group"
+    migrate_from = "0114_data_migrate_yivi_form_authentication_attribute_groups"
+    migrate_to = "0113_form_new_renderer_enabled"
     app = "forms"
 
     def setUpBeforeMigration(self, apps):
