@@ -1,9 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import authentication, permissions
-from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import ListModelMixin
+from rest_framework import authentication, generics, permissions
 
 from ..models import AttributeGroup
 from .serializers import AttributeGroupSerializer
@@ -12,7 +10,7 @@ from .serializers import AttributeGroupSerializer
 @extend_schema_view(
     get=extend_schema(summary=_("List available Yivi attribute groups")),
 )
-class AttributeGroupListView(ListModelMixin, GenericAPIView):
+class AttributeGroupListView(generics.ListAPIView):
     """
     List all Yivi attribute groups.
 
@@ -25,6 +23,3 @@ class AttributeGroupListView(ListModelMixin, GenericAPIView):
     serializer_class = AttributeGroupSerializer
     queryset = AttributeGroup.objects.all()
     lookup_field = "uuid"
-
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)

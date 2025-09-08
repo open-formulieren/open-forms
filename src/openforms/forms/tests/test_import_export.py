@@ -1594,7 +1594,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(error_detail.code, "invalid")
 
     def test_import_form_with_yivi_auth_backend(self):
-        AttributeGroupFactory(
+        AttributeGroupFactory.create(
             name="known_attributes", uuid="a1c9df69-927c-4390-be26-f39daf107691"
         )
         resources = {
@@ -1652,7 +1652,7 @@ class ImportExportTests(TempdirMixin, TestCase):
     def test_import_form_with_yivi_auth_backend_with_known_old_additional_attributes_groups_reference_updates_options(
         self,
     ):
-        AttributeGroupFactory(
+        AttributeGroupFactory.create(
             name="known_attributes", uuid="a1c9df69-927c-4390-be26-f39daf107691"
         )
         resources = {
@@ -1705,7 +1705,7 @@ class ImportExportTests(TempdirMixin, TestCase):
     def test_import_form_with_yivi_auth_backend_with_unknown_additional_attributes_groups_raises_exception(
         self,
     ):
-        AttributeGroupFactory(
+        AttributeGroupFactory.create(
             name="some_known_scope", uuid="447aad2c-dc7d-4220-ba5c-dd15183c7a02"
         )
         resources = {
