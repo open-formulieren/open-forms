@@ -15,5 +15,6 @@ class MapInteractions(TypedDict):
 class Overlay(TypedDict):
     uuid: str
     label: str
+    url: NotRequired[str]  # added in dynamically
     type: Literal["wms", "wfs"]
     layers: list[str]

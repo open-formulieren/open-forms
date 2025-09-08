@@ -5,7 +5,7 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
 from openforms.config.models import GlobalConfiguration
-from openforms.config.tests.factories import MapTileLayerFactory
+from openforms.config.tests.factories import MapTileLayerFactory, MapWMSTileLayerFactory
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.dynamic_config import (
     rewrite_formio_components,
@@ -288,5 +288,104 @@ class DynamicConfigTests(TestCase):
             "useConfigDefaultMapSettings": True,
             "tileLayerIdentifier": "identifier",
             "tileLayerUrl": map.url,
+        }
+        self.assertEqual(configuration["components"][0], expected)
+
+    def test_map_with_known_WMS_overlay(self):
+        MapWMSTileLayerFactory.create(
+            uuid="1266c027-9a18-4ecb-8a9e-6acddf7e74f3", url="https://example.wms.com"
+        )
+        configuration = {
+            "components": [
+                {
+                    "type": "map",
+                    "key": "map",
+                    "defaultZoom": 3,
+                    "initialCenter": {
+                        "lat": 43.23,
+                        "lng": 41.23,
+                    },
+                    "overlays": [
+                        {
+                            "type": "wms",
+                            "uuid": "1266c027-9a18-4ecb-8a9e-6acddf7e74f3",
+                            "name": "My first overlay",
+                            "layers": ["layer1", "layer2"],
+                        }
+                    ],
+                }
+            ]
+        }
+
+        formio_configuration = FormioConfigurationWrapper(configuration)
+        submission = SubmissionFactory.create()
+        rewrite_formio_components(formio_configuration, submission)
+
+        request = rf.get("/dummy")
+        rewrite_formio_components_for_request(formio_configuration, request)
+
+        # Expect that the overlay has the "url" attribute with the value of the WMS tile
+        # layer url.
+        expected = {
+            "type": "map",
+            "key": "map",
+            "defaultZoom": 3,
+            "initialCenter": {
+                "lat": 43.23,
+                "lng": 41.23,
+            },
+            "overlays": [
+                {
+                    "type": "wms",
+                    "uuid": "1266c027-9a18-4ecb-8a9e-6acddf7e74f3",
+                    "name": "My first overlay",
+                    "layers": ["layer1", "layer2"],
+                    "url": "https://example.wms.com",
+                }
+            ],
+        }
+        self.assertEqual(configuration["components"][0], expected)
+
+    def test_map_with_unknown_WMS_overlay(self):
+        configuration = {
+            "components": [
+                {
+                    "type": "map",
+                    "key": "map",
+                    "defaultZoom": 3,
+                    "initialCenter": {
+                        "lat": 43.23,
+                        "lng": 41.23,
+                    },
+                    "overlays": [
+                        {
+                            "type": "wms",
+                            # Some unknown uuid
+                            "uuid": "44c9ee90-96a3-4ac2-bb55-f2f42b547b15",
+                            "name": "My first overlay",
+                            "layers": ["layer1", "layer2"],
+                        }
+                    ],
+                }
+            ]
+        }
+
+        formio_configuration = FormioConfigurationWrapper(configuration)
+        submission = SubmissionFactory.create()
+        rewrite_formio_components(formio_configuration, submission)
+
+        request = rf.get("/dummy")
+        rewrite_formio_components_for_request(formio_configuration, request)
+
+        # Expect that the invalid overlay is removed from the component.
+        expected = {
+            "type": "map",
+            "key": "map",
+            "defaultZoom": 3,
+            "initialCenter": {
+                "lat": 43.23,
+                "lng": 41.23,
+            },
+            "overlays": [],
         }
         self.assertEqual(configuration["components"][0], expected)
