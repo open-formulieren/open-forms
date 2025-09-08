@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("payments_ogone", "0002_auto_20210902_2120"),
     ]
@@ -37,6 +36,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "abstract": False,
+                "verbose_name": "Worldline webhook configuration (transition)",
             },
         ),
         migrations.AddField(
