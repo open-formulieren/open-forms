@@ -393,6 +393,8 @@ LOG_OUTGOING_REQUESTS = config("LOG_OUTGOING_REQUESTS", default=True)
 
 LOGGING_DIR = BASE_DIR / "log"
 
+_default_handler = "json_file" if not LOG_STDOUT else "console"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -427,7 +429,11 @@ LOGGING = {
         # legacy
         "outgoing_requests": {"()": HttpFormatter},
     },
-    "filters": {},
+    "filters": {
+        "audit_only": {
+            "()": "openforms.logging.filters.AuditFilter",
+        },
+    },
     "handlers": {
         "null": {  # used by the ``mute_logging`` util
             "level": "DEBUG",
@@ -448,6 +454,11 @@ LOGGING = {
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             "backupCount": 10,
         },
+        "timeline_logger": {
+            "level": "DEBUG",
+            "class": "openforms.logging.handlers.TimelineLoggerHandler",
+            "filters": ["audit_only"],
+        },
         "log_outgoing_requests": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
@@ -461,17 +472,17 @@ LOGGING = {
     },
     "loggers": {
         "openforms": {
-            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
+            "handlers": [_default_handler, "timeline_logger"],
             "level": "INFO",
             "propagate": True,
         },
         "stuf": {
-            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
+            "handlers": [_default_handler, "timeline_logger"],
             "level": "DEBUG",
             "propagate": True,
         },
         "django.request": {
-            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
+            "handlers": [_default_handler],
             "level": "ERROR",
             "propagate": False,
         },
@@ -488,7 +499,7 @@ LOGGING = {
             "propagate": True,
         },
         "mozilla_django_oidc": {
-            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
+            "handlers": [_default_handler],
             "level": "INFO",
         },
         "log_outgoing_requests": {
@@ -501,7 +512,7 @@ LOGGING = {
             "propagate": True,
         },
         "django_structlog": {
-            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
+            "handlers": [_default_handler],
             "level": "INFO",
             "propagate": False,
         },
