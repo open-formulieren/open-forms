@@ -540,6 +540,37 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/authentication/plugins/yivi/attribute-groups:
+    get:
+      operationId: authentication_plugins_yivi_attribute_groups_list
+      description: |-
+        List all Yivi attribute groups.
+
+        The attribute groups are used during Yivi authentication. They allow greater levels
+        of authentication customization, by per form definition of authentication attributes.
+      summary: List available Yivi attribute groups
+      tags:
+      - authentication
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttributeGroup'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/categories:
     get:
       operationId: categories_list
@@ -7037,6 +7068,26 @@ components:
       required:
       - code
       - identifier
+      - name
+    AttributeGroup:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          title: Group name
+          description: A human-readable name for the group of attributes, used in
+            the form configuration.
+          maxLength: 100
+        description:
+          type: string
+          title: Group description
+          description: A longer human-readable description for the group of attributes,
+            used in the form configuration.
+          maxLength: 200
+      required:
       - name
     AuthPlugin:
       type: object

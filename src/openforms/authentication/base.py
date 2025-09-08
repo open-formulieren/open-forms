@@ -5,6 +5,7 @@ from typing import ClassVar, TypedDict
 from django.http import HttpRequest, HttpResponse
 
 from furl import furl
+from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
@@ -23,6 +24,8 @@ from openforms.typing import AnyRequest, JSONObject, StrOrPromise
 
 from .constants import AuthAttribute
 from .utils import get_cosign_login_url
+
+type SerializerCls = type[serializers.Serializer]
 
 
 @dataclass()
@@ -57,6 +60,16 @@ class Options(TypedDict):
 
 
 class BasePlugin[OptionsT: Options](AbstractBasePlugin):
+    configuration_options: SerializerCls | None = None
+    """
+    A serializer class describing the plugin-specific configuration options.
+
+    A plugin instance is the combination of a plugin callback and a set of options that
+    are plugin specific. Multiple forms can use the same plugin with different
+    configuration options. Using a serializer allows us to serialize the options as JSON
+    in the database, and de-serialize them into native Python/Django objects when the
+    plugin is called.
+    """
     provides_auth: ClassVar[Sequence[AuthAttribute]]
     return_method = "GET"
     is_for_gemachtigde = False

@@ -11,15 +11,16 @@ from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.contrib.auth_oidc.typing import ClaimProcessingInstructions
 from openforms.forms.tests.factories import FormFactory
 
-from ...config import YiviOptions
+from ...config import YiviOptions, YiviOptionsSerializer
 from ...constants import PLUGIN_ID as YIVI_PLUGIN_ID
 
 
 class ProcessClaimsYiviTest(OIDCMixin, TestCase):
     def _setup_form(self, options: YiviOptions) -> HttpRequest:
+        serializer = YiviOptionsSerializer(instance=options)
         form = FormFactory.create(
             authentication_backend=YIVI_PLUGIN_ID,
-            authentication_backend__options=options,
+            authentication_backend__options=serializer.data,
         )
         url_helper = URLsHelper(form=form)
 
@@ -42,17 +43,15 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
             options__loa_settings__bsn_loa_claim_path=["bsn.loa"],
         )
         plugin = oidc_register[oidc_client.identifier]
-        AttributeGroupFactory.create(
+        attr_group = AttributeGroupFactory.create(
             name="know_attributes",
+            uuid="e4bfa861-3ac0-4b9a-90ff-1bdbb3a17e09",
             attributes=["irma-demo.gemeente.personalData.familyname"],
         )
         request = self._setup_form(
             options={
                 "authentication_options": [],
-                "additional_attributes_groups": [
-                    "know_attributes",
-                    "know_attributes_2",
-                ],
+                "additional_attributes_groups": [attr_group],
                 "bsn_loa": "",
                 "kvk_loa": "",
             }
@@ -85,17 +84,20 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
             options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
         )
         plugin = oidc_register[oidc_client.identifier]
-        AttributeGroupFactory.create(
-            name="know_attributes", attributes=["firstname", "lastname"]
+        attr_group_1 = AttributeGroupFactory.create(
+            name="know_attributes",
+            uuid="e4bfa861-3ac0-4b9a-90ff-1bdbb3a17e09",
+            attributes=["firstname", "lastname"],
         )
-        AttributeGroupFactory.create(name="know_attributes_2", attributes=["dob"])
+        attr_group_2 = AttributeGroupFactory.create(
+            name="know_attributes_2",
+            uuid="9eb88579-a6e5-4d06-b780-6edc0968e673",
+            attributes=["dob"],
+        )
         request = self._setup_form(
             options={
                 "authentication_options": [],
-                "additional_attributes_groups": [
-                    "know_attributes",
-                    "know_attributes_2",
-                ],
+                "additional_attributes_groups": [attr_group_1, attr_group_2],
                 "bsn_loa": "",
                 "kvk_loa": "",
             }
@@ -124,21 +126,24 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
             options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
         )
         plugin = oidc_register[oidc_client.identifier]
+        unsaved_attr_group = AttributeGroupFactory.build()
+        unsaved_attr_group.uuid = str(
+            unsaved_attr_group.uuid
+        )  # make sure it can be json-serialized
         request = self._setup_form(
             options={
                 "authentication_options": [],
-                "additional_attributes_groups": ["unknow_attributes"],
+                "additional_attributes_groups": [
+                    # results in an unknown attributegroup (uuid)
+                    unsaved_attr_group,
+                ],
                 "bsn_loa": "",
                 "kvk_loa": "",
             }
         )
 
-        additional_attributes = plugin.get_additional_attributes(request)
-        extracted_claims = plugin.process_claims(
-            {"firstname": "bob"}, additional_attributes
-        )
-
-        self.assertEqual(extracted_claims, {})
+        with self.assertRaises(RuntimeError):
+            plugin.get_additional_attributes(request)
 
     def test_extract_additional_claims_with_missing_claims(self):
         oidc_client = OFOIDCClientFactory.create(
@@ -146,13 +151,15 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
             options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
         )
         plugin = oidc_register[oidc_client.identifier]
-        AttributeGroupFactory.create(
-            name="know_attributes", attributes=["firstname", "lastname"]
+        attr_group = AttributeGroupFactory.create(
+            name="know_attributes",
+            uuid="9eb88579-a6e5-4d06-b780-6edc0968e673",
+            attributes=["firstname", "lastname"],
         )
         request = self._setup_form(
             options={
                 "authentication_options": [],
-                "additional_attributes_groups": ["know_attributes"],
+                "additional_attributes_groups": [attr_group],
                 "bsn_loa": "",
                 "kvk_loa": "",
             }
@@ -176,17 +183,20 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
         )
 
         plugin = oidc_register[oidc_client.identifier]
-        AttributeGroupFactory.create(
-            name="know_attributes", attributes=["firstname", "lastname"]
+        attr_group_1 = AttributeGroupFactory.create(
+            name="know_attributes",
+            uuid="9eb88579-a6e5-4d06-b780-6edc0968e673",
+            attributes=["firstname", "lastname"],
         )
-        AttributeGroupFactory.create(name="know_attributes_2", attributes=["dob"])
+        attr_group_2 = AttributeGroupFactory.create(
+            name="know_attributes_2",
+            uuid="e4bfa861-3ac0-4b9a-90ff-1bdbb3a17e09",
+            attributes=["dob"],
+        )
         request = self._setup_form(
             options={
                 "authentication_options": [],
-                "additional_attributes_groups": [
-                    "know_attributes",
-                    "know_attributes_2",
-                ],
+                "additional_attributes_groups": [attr_group_1, attr_group_2],
                 "bsn_loa": "",
                 "kvk_loa": "",
             }

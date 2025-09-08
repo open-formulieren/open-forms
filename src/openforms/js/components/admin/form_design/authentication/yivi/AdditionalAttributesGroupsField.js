@@ -1,35 +1,58 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {components} from 'react-select';
+import {useAsync} from 'react-use';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
-import {getReactSelectOptionsFromSchema} from 'utils/json-schema';
+import {get} from 'utils/fetch';
+
+export const YIVI_ATTRIBUTE_GROUPS_ENDPOINT =
+  '/api/v2/authentication/plugins/yivi/attribute-groups';
+
+const getYiviAttributeGroups = async () => {
+  const response = await get(YIVI_ATTRIBUTE_GROUPS_ENDPOINT);
+  if (!response.ok) {
+    throw new Error('Loading available attribute groups failed');
+  }
+  return response.data;
+};
 
 const AdditionalGroupSelectorOption = props => {
-  const {value, label} = props.data;
+  const {label, description} = props.data;
   return (
     <components.Option {...props}>
       <span className="form-additional-attributes-groups-dropdown-option">
-        <b className="form-additional-attributes-groups-dropdown-option__key">{value}</b>
-        <span className="form-additional-attributes-groups-dropdown-option__label">{label}</span>
+        <b className="form-additional-attributes-groups-dropdown-option__key">{label}</b>
+        <span className="form-additional-attributes-groups-dropdown-option__label">
+          {description}
+        </span>
       </span>
     </components.Option>
   );
 };
 
 const AdditionalGroupSelectorValueLabel = props => {
-  const {value} = props.data;
-  return <components.MultiValueLabel {...props}>{value}</components.MultiValueLabel>;
+  const {label} = props.data;
+  return <components.MultiValueLabel {...props}>{label}</components.MultiValueLabel>;
 };
 
-const AdditionalAttributesGroupsField = ({schema}) => {
-  const additionalAttributesGroupsOptions = getReactSelectOptionsFromSchema(
-    schema.properties.additionalAttributesGroups.items.enum,
-    schema.properties.additionalAttributesGroups.items.enumNames
-  );
+const AdditionalAttributesGroupsField = () => {
+  const {
+    loading,
+    value: availableYiviAttributeGroups = [],
+    error,
+  } = useAsync(getYiviAttributeGroups, []);
+  if (error) throw error;
+
+  const additionalAttributesGroupsOptions = availableYiviAttributeGroups.map(attributeGroup => ({
+    value: attributeGroup.uuid,
+    label: attributeGroup.name,
+    description: attributeGroup.description,
+  }));
+
   return (
     <FormRow>
       <Field
@@ -49,6 +72,7 @@ const AdditionalAttributesGroupsField = ({schema}) => {
       >
         <ReactSelect
           name="additionalAttributesGroups"
+          isLoading={loading}
           options={additionalAttributesGroupsOptions}
           components={{
             Option: AdditionalGroupSelectorOption,

@@ -28,18 +28,24 @@ class YiviOptionsSerializerTest(TestCase):
         )
 
     def test_valid_filled_in_options(self):
-        AttributeGroupFactory.create(name="some_group")
+        attr_group = AttributeGroupFactory.create(
+            name="some_group", uuid="6af22687-08b3-4546-ad2e-22ed90c18a13"
+        )
+
         serializer = YiviOptionsSerializer(
             data={
                 "authentication_options": [
                     AuthAttribute.bsn,
                     AuthAttribute.kvk,
                 ],
-                "additional_attributes_groups": ["some_group"],
+                "additional_attributes_groups": [
+                    "6af22687-08b3-4546-ad2e-22ed90c18a13",
+                ],
                 "bsn_loa": DigiDAssuranceLevels.high,
                 "kvk_loa": AssuranceLevels.low,
             },
         )
+
         self.assertTrue(serializer.is_valid())
         self.assertEqual(
             serializer.validated_data,
@@ -48,7 +54,7 @@ class YiviOptionsSerializerTest(TestCase):
                     "bsn",
                     "kvk",
                 ],
-                "additional_attributes_groups": ["some_group"],
+                "additional_attributes_groups": [attr_group],
                 "bsn_loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
                 "kvk_loa": "urn:etoegang:core:assurance-class:loa2",
             },
@@ -71,7 +77,10 @@ class YiviOptionsSerializerTest(TestCase):
     def test_invalid_options_with_unknown_additional_attributes_groups(self):
         serializer = YiviOptionsSerializer(
             data={
-                "additional_attributes_groups": ["some_unknown_group"],
+                "additional_attributes_groups": [
+                    # Unknown uuid
+                    "6af22687-08b3-4546-ad2e-22ed90c18a13"
+                ],
             },
         )
 
@@ -79,6 +88,6 @@ class YiviOptionsSerializerTest(TestCase):
 
         self.assertTrue("additional_attributes_groups" in serializer.errors)
         self.assertEqual(
-            serializer.errors["additional_attributes_groups"][0][0].code,
-            "invalid_choice",
+            serializer.errors["additional_attributes_groups"][0].code,
+            "does_not_exist",
         )

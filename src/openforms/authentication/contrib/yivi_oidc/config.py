@@ -1,6 +1,6 @@
+from collections.abc import Sequence
 from typing import Literal, TypedDict
 
-from django.db.utils import OperationalError, ProgrammingError
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
@@ -21,7 +21,7 @@ class YiviOptions(TypedDict):
     """
 
     authentication_options: list[AuthAttribute]
-    additional_attributes_groups: list[str]
+    additional_attributes_groups: Sequence[AttributeGroup]
     bsn_loa: DigiDAssuranceLevels | Literal[""]
     kvk_loa: AssuranceLevels | Literal[""]
 
@@ -44,8 +44,10 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
         allow_empty=True,
     )
-    additional_attributes_groups = serializers.ListField(
-        child=serializers.ChoiceField(choices=[]),  # Choices are dynamically defined
+    additional_attributes_groups = serializers.SlugRelatedField(
+        queryset=AttributeGroup.objects.all(),
+        slug_field="uuid",
+        many=True,
         label=_("Additional attributes groups"),
         help_text=_(
             "Additional attributes groups to use for authentication. The end-user can "
@@ -78,36 +80,23 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         if not self.context.get("is_import", False):
             return
 
-        # Pre-process 'additional_attributes_groups' before DRF validates it
         attribute_groups = data.get("additional_attributes_groups", [])
-        valid_choices = AttributeGroup.objects.all().values_list("name", flat=True)
+        if not attribute_groups:
+            return
 
-        # Filter out invalid attribute groups
+        attribute_groups_map = dict(AttributeGroup.objects.values_list("name", "uuid"))
+
+        # If we encounter an attribute_group that uses the old notation (attribute_group
+        # name as identifier) and we have an attributeGroup with the same name, we use
+        # the uuid of that known attributeGroup as identifier.
+        # Otherwise, we just use the imported data
         data["additional_attributes_groups"] = [
-            group for group in attribute_groups if group in valid_choices
+            group
+            if group not in attribute_groups_map
+            else str(attribute_groups_map[group])
+            for group in attribute_groups
         ]
 
     def to_internal_value(self, data: YiviOptions) -> YiviOptions:
         self._handle_before_import(data)
         return super().to_internal_value(data)
-
-    def get_fields(self):
-        fields = super().get_fields()
-        view = self.context.get("view")
-        if getattr(view, "swagger_fake_view", False):
-            return fields
-
-        # help out the type checker a little
-        attribute_groups_field = fields["additional_attributes_groups"]
-        assert isinstance(attribute_groups_field, serializers.ListField)
-        _attribute_group_field = attribute_groups_field.child
-        assert isinstance(_attribute_group_field, serializers.ChoiceField)
-
-        try:
-            _attribute_group_field.choices = AttributeGroup.objects.values_list(
-                "name", "description"
-            )
-        except (OperationalError, ProgrammingError):
-            # Early check without DB connection
-            _attribute_group_field.choices = []
-        return fields

@@ -1,8 +1,8 @@
 import base64
 import json
-from collections.abc import Iterable
+from collections.abc import Collection
 from copy import deepcopy
-from itertools import chain
+from typing import cast
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
@@ -18,7 +18,7 @@ from mozilla_django_oidc_db.plugins import (
     BaseOIDCPlugin,
 )
 from mozilla_django_oidc_db.registry import register
-from mozilla_django_oidc_db.typing import JSONObject
+from mozilla_django_oidc_db.typing import ClaimPath, JSONObject
 from mozilla_django_oidc_db.utils import obfuscate_claims
 from mozilla_django_oidc_db.views import (
     _RETURN_URL_SESSION_KEY,
@@ -26,10 +26,7 @@ from mozilla_django_oidc_db.views import (
 from rest_framework.request import Request
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.contrib.auth_oidc.typing import (
-    ClaimPathDetails,
-    ClaimProcessingInstructions,
-)
+from openforms.contrib.auth_oidc.typing import ClaimProcessingInstructions
 from openforms.contrib.auth_oidc.utils import (
     get_of_auth_plugin,
     process_claims,
@@ -37,12 +34,32 @@ from openforms.contrib.auth_oidc.utils import (
 from openforms.contrib.auth_oidc.views import anon_user_callback_view
 from openforms.forms.models.form_authentication_backend import FormAuthenticationBackend
 
-from ..config import YiviOptions
-from ..models import AttributeGroup
+from ..config import YiviOptions, YiviOptionsSerializer
 from .constants import OIDC_YIVI_IDENTIFIER
 from .schemas import YIVI_SCHEMA
 
 logger = structlog.stdlib.get_logger(__name__)
+
+type YiviAttributes = Collection[str]
+"""
+A set of Yivi attribute names.
+
+Either the entire set or none of the set are granted, this cannot be broken up further.
+"""
+
+type YiviAttributeGroups = Collection[YiviAttributes]
+"""
+A collection of Yivi attributes.
+
+Each member can be granted or declined.
+"""
+
+type CondisconItem = Collection[YiviAttributes]
+"""
+A single condiscon item contains possible sets of Yivi attributes.
+
+Note that including an empty attribute sets makes the item optional.
+"""
 
 
 @register(OIDC_YIVI_IDENTIFIER)
@@ -52,29 +69,22 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
 
     def get_sensitive_claims(
         self,
-        additional_attributes: Iterable[Iterable[AttributeGroup]],
-    ) -> list[list[str]]:
+        additional_attributes: YiviAttributeGroups,
+    ) -> Collection[ClaimPath]:
         config = self.get_config()
 
-        sensitive_claims = [
+        sensitive_claims: list[ClaimPath] = [
             config.options["identity_settings"]["bsn_claim_path"],
             config.options["identity_settings"]["kvk_claim_path"],
             config.options["identity_settings"]["pseudo_claim_path"],
-        ]
-
-        # All claims that we receive, that where part of the Yivi additional attributes,
-        # should be marked as sensitive. As all Yivi claims *could* be sensitive, let's
-        # handle them all as such.
-        sensitive_claims.extend(
-            [
-                # The attribute is a path in the claim, but it is expressed as a string instead
-                # of an array like the other paths in the claims. So we make it an array
-                # for compatibility with the claim paths configured in the OIDCClient
+            # All claims that we receive, that were part of the Yivi additional attributes,
+            # should be marked as sensitive.
+            *(
                 [attribute]
-                for attribute in list(chain.from_iterable(additional_attributes))
-            ]
-        )
-
+                for attribute_group in additional_attributes
+                for attribute in attribute_group
+            ),
+        ]
         return sensitive_claims
 
     def get_or_create_user(
@@ -126,9 +136,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         return user
 
     def process_claims(
-        self,
-        claims: JSONObject,
-        additional_attributes: Iterable[Iterable[AttributeGroup]],
+        self, claims: JSONObject, additional_attributes: YiviAttributeGroups
     ) -> JSONObject:
         config = self.get_config()
 
@@ -154,15 +162,23 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         auth_backend = FormAuthenticationBackend.objects.filter(
             form__slug=form_slug, backend=plugin.identifier
         ).first()
-
-        if not auth_backend:
+        if auth_backend is None:
             return None
 
-        return auth_backend.options
+        serializer = YiviOptionsSerializer(data=auth_backend.options)
+        # TODO: this should be picked up in the digest email, but unfortunately time
+        # constraints postpone it
+        if not serializer.is_valid():
+            logger.error(
+                "invalid_yivi_configuration_detected",
+                form_slug=form_slug,
+                errors=serializer.errors,
+            )
+            raise RuntimeError("Invalid Yivi configuration options detected")
 
-    def get_additional_attributes(
-        self, request: HttpRequest
-    ) -> Iterable[Iterable[AttributeGroup]]:
+        return serializer.validated_data
+
+    def get_additional_attributes(self, request: HttpRequest) -> YiviAttributeGroups:
         return_url = request.session.get(_RETURN_URL_SESSION_KEY, "")
         return_path = furl(return_url).path
         _, _, kwargs = resolve(str(return_path))
@@ -171,18 +187,16 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         if auth_backend_options is None:
             return []
 
-        attributes = AttributeGroup.objects.filter(
-            name__in=(auth_backend_options or {}).get(
-                "additional_attributes_groups", []
-            )
-        ).values_list("attributes", flat=True)
-        return attributes
+        return [
+            cast(list[str], attributes_group.attributes)
+            for attributes_group in auth_backend_options["additional_attributes_groups"]
+        ]
 
     def get_claim_processing_instructions(
         self,
         claims: JSONObject,
         config: OIDCClient,
-        additional_attributes: Iterable[Iterable[AttributeGroup]],
+        additional_attributes: YiviAttributeGroups,
     ) -> ClaimProcessingInstructions:
         bsn_claim_path = config.options["identity_settings"]["bsn_claim_path"]
         kvk_claim_path = config.options["identity_settings"]["kvk_claim_path"]
@@ -252,17 +266,18 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         # Additional Yivi attributes
         claim_processing_instruction["optional_claims"].extend(
             [
-                ClaimPathDetails(
-                    path_in_claim=[str(attribute)],
-                    processed_path=["additional_claims", str(attribute)],
-                )
-                for attribute in list(chain.from_iterable(additional_attributes))
+                {
+                    "path_in_claim": [attribute],
+                    "processed_path": ["additional_claims", attribute],
+                }
+                for attribute_group in additional_attributes
+                for attribute in attribute_group
                 if attribute in claims
             ]
         )
         return claim_processing_instruction
 
-    def _build_authentication_condiscon(self, options: YiviOptions) -> list[list[str]]:
+    def _build_authentication_condiscon(self, options: YiviOptions) -> CondisconItem:
         """
         Create the "authentication attributes" part of the Signicat Yivi condiscon.
         """
@@ -272,11 +287,11 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
             # If no authentication options are selected, fallback to the pseudo_claim
             return [glom(yivi_config.options, "identity_settings.pseudo_claim_path")]
 
-        authentication_condiscon: list[list[str]] = []
+        authentication_condiscon: CondisconItem = []
         for option in options["authentication_options"]:
             match option:
                 case AuthAttribute.bsn:
-                    bsn_attributes: list[str] = deepcopy(
+                    bsn_attributes: ClaimPath = deepcopy(
                         glom(yivi_config.options, "identity_settings.bsn_claim_path")
                     )
 
@@ -288,7 +303,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
                     authentication_condiscon.append(bsn_attributes)
 
                 case AuthAttribute.kvk:
-                    kvk_attributes: list[str] = deepcopy(
+                    kvk_attributes: ClaimPath = deepcopy(
                         glom(yivi_config.options, "identity_settings.kvk_claim_path")
                     )
 
@@ -300,21 +315,20 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
                     authentication_condiscon.append(kvk_attributes)
 
                 case AuthAttribute.pseudo:
-                    authentication_condiscon.append(
-                        deepcopy(
-                            glom(
-                                yivi_config.options,
-                                "identity_settings.pseudo_claim_path",
-                            )
+                    pseudo_attributes: ClaimPath = deepcopy(
+                        glom(
+                            yivi_config.options,
+                            "identity_settings.pseudo_claim_path",
                         )
                     )
+                    authentication_condiscon.append(pseudo_attributes)
 
         return authentication_condiscon
 
     @staticmethod
     def _build_additional_attributes_condiscon(
         options: YiviOptions,
-    ) -> list[list[list[str]]]:
+    ) -> Collection[CondisconItem]:
         """
         Helper function for creating the "additional attributes" part of the Signicat
         Yivi condiscon.
@@ -322,24 +336,19 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         All the `additional_attributes_groups` are optional, meaning that the end-user
         can choose which information they want to provide. This is defined by the empty
         list in the ``additional_attributes_condiscon`` (see below).
-        """
-        additional_attributes_condiscon: list[list[list[str]]] = []
-        attributes_groups = AttributeGroup.objects.filter(
-            name__in=options["additional_attributes_groups"]
-        )
 
-        for attributes_group in attributes_groups:
-            assert isinstance(attributes_group.attributes, list)
-            # documentation: https://irma.app/docs/condiscon/#other-features
-            additional_attributes_condiscon.append(
-                [
-                    attributes_group.attributes,
-                    # The empty list ensures that this attribute becomes optional.
-                    # This needs to be placed as last, otherwise it doesn't work
-                    # (see https://dashboard.signicat.com/contact-us/tickets/207907)
-                    [],
-                ]
-            )
+        See https://irma.app/docs/condiscon/#other-features
+        """
+        additional_attributes_condiscon: Collection[CondisconItem] = [
+            [
+                cast(YiviAttributes, attributes_group.attributes),
+                # The empty list ensures that this attribute becomes optional.
+                # This needs to be placed as last, otherwise it doesn't work
+                # (see https://dashboard.signicat.com/contact-us/tickets/207907)
+                [],
+            ]
+            for attributes_group in options["additional_attributes_groups"]
+        ]
 
         return additional_attributes_condiscon
 
@@ -369,11 +378,11 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         """
 
         # Start with condiscon of authentication attributes
-        condiscon_items: list[list[list[str]]] = [
+        condiscon_items: Collection[CondisconItem] = [
             self._build_authentication_condiscon(options)
         ]
 
-        additional_attributes_condiscon: list[list[list[str]]] = (
+        additional_attributes_condiscon: Collection[CondisconItem] = (
             self._build_additional_attributes_condiscon(options)
         )
         if additional_attributes_condiscon:

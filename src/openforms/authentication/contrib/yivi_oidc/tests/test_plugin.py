@@ -92,10 +92,15 @@ class YiviPluginTransformClaimsTest(TestCase):
         )
 
     def test_transform_claims_with_additional_attributes_claims(self):
-        AttributeGroupFactory(name="foo_attribute", attributes=["attribute_name"])
+        AttributeGroupFactory.create(
+            name="foo_attribute",
+            uuid="6af22687-08b3-4546-ad2e-22ed90c18a13",
+            attributes=["attribute_name"],
+        )
+
         plugin_options: YiviOptions = {
             "authentication_options": list(AuthAttribute),
-            "additional_attributes_groups": ["foo_attribute"],
+            "additional_attributes_groups": ["6af22687-08b3-4546-ad2e-22ed90c18a13"],
             "bsn_loa": "",
             "kvk_loa": "",
         }

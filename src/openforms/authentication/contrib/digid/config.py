@@ -24,7 +24,7 @@ class DigidOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         label=_("options LoA"),
         help_text=_("The minimal LoA for authentication."),
         choices=DigiDAssuranceLevels.choices,
-        default=DigiDAssuranceLevels.middle,
+        default="",
         required=False,
         allow_blank=True,
     )
