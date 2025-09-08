@@ -8,6 +8,7 @@ import {
 import {rsSelect} from 'utils/storybookTestHelpers';
 
 import YiviOptionsFormFields from './YiviOptionsFormFields';
+import {mockYiviAttributeGroupsGet} from './mocks';
 
 const NAME = 'form.authBackends.0.options';
 
@@ -39,8 +40,6 @@ export default {
             type: 'array',
             items: {
               type: 'string',
-              enum: ['custom_group', 'profile'],
-              enumNames: ['A custom group for fetching custom attributes', 'Profile group'],
             },
             title: 'Additional attributes groups',
             description: 'Additional attributes groups to use for authentication.',
@@ -80,6 +79,13 @@ export default {
             description: 'The minimal LoA for kvk authentication.',
           },
         },
+      },
+    },
+  },
+  parameters: {
+    msw: {
+      handlers: {
+        yiviAttributeGroupsList: [mockYiviAttributeGroupsGet()],
       },
     },
   },
