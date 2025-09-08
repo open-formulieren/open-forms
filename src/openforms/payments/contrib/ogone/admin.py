@@ -2,6 +2,8 @@ from django.contrib import admin
 
 from solo.admin import SingletonModelAdmin
 
+from openforms.utils.urls import reverse_plus
+
 from ...registry import register
 from .models import OgoneMerchant, OgoneWebhookConfiguration
 
@@ -39,4 +41,17 @@ class OgoneMerchantAdmin(admin.ModelAdmin):
 
 @admin.register(OgoneWebhookConfiguration)
 class OgoneWebhookAdmin(SingletonModelAdmin):
-    pass
+    fields = (
+        "webhook_key_id",
+        "webhook_key_secret",
+        "feedback_url",
+    )
+
+    readonly_fields = ("feedback_url",)
+
+    def feedback_url(self, obj: OgoneWebhookConfiguration | None = None) -> str:
+        return reverse_plus(
+            "payments:webhook",
+            kwargs={"plugin_id": "worldline"},
+            request=None,
+        )
