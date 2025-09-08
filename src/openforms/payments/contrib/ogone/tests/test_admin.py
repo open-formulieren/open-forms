@@ -6,6 +6,7 @@ from furl import furl
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.utils.urls import reverse_plus
 
 
 @disable_admin_mfa()
@@ -28,3 +29,21 @@ class OgoneMerchantAdminTest(WebTest):
         parsed_url = furl(feedback_url)
 
         self.assertEqual(parsed_url.host, "example.com")
+
+
+@disable_admin_mfa()
+class OgoneWebhookConfigurationAdminTest(WebTest):
+    @override_settings()
+    def test_webhook_configuration_detail_page(self):
+        user = SuperUserFactory.create()
+        webhook_url = reverse_plus(
+            "payments:webhook",
+            kwargs={"plugin_id": "worldline"},
+            request=None,
+        )
+        url = reverse("admin:payments_ogone_ogonewebhookconfiguration_change")
+
+        response = self.app.get(url, user=user)
+
+        self.assertEqual(200, response.status_code)
+        self.assertContains(response, webhook_url)
