@@ -115,18 +115,21 @@ class ResponseTests(APITestCase):
                 "id": "test",
                 "label": "Test",
                 "requiresAuth": [AuthAttribute.bsn],
+                "requiresAuthPlugin": [],
                 "configurationContext": None,
             },
             {
                 "id": "onlyvars",
                 "label": "Only Vars",
                 "requiresAuth": [AuthAttribute.bsn],
+                "requiresAuthPlugin": [],
                 "configurationContext": None,
             },
             {
                 "id": "vanityplates",
                 "label": "Vanity Plates",
                 "requiresAuth": [AuthAttribute.bsn],
+                "requiresAuthPlugin": [],
                 "configurationContext": None,
             },
         ]
@@ -145,6 +148,7 @@ class ResponseTests(APITestCase):
                 "id": "test",
                 "label": "Test",
                 "requiresAuth": [AuthAttribute.bsn],
+                "requiresAuthPlugin": [],
                 "configurationContext": None,
             },
             # spec'd for licenseplate
@@ -152,6 +156,7 @@ class ResponseTests(APITestCase):
                 "id": "vanityplates",
                 "label": "Vanity Plates",
                 "requiresAuth": [AuthAttribute.bsn],
+                "requiresAuthPlugin": [],
                 "configurationContext": None,
             },
         ]
