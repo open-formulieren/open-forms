@@ -16,6 +16,7 @@ from openforms.prefill.base import BasePlugin
 from openforms.prefill.constants import IdentifierRoles
 from openforms.prefill.registry import register
 from openforms.submissions.models import Submission
+from openforms.typing import JSONEncodable
 
 from .constants import REQUIRED_CLIENT_IDENTITY_SETTINGS, Attributes
 
@@ -43,7 +44,7 @@ class EIDASPrefill(BasePlugin):
         submission: Submission,
         attributes: list[str],
         identifier_role: IdentifierRoles = IdentifierRoles.main,
-    ) -> dict[str, str]:
+    ) -> dict[str, JSONEncodable]:
         """
         Given the requested attributes, look up the appropriate values and return them.
 
@@ -52,10 +53,6 @@ class EIDASPrefill(BasePlugin):
         :param attributes: a list of requested prefill attributes, provided in bulk
           to efficiently fetch as much data as possible with the minimal amount of calls.
         """
-        # Check if authentication was done with the required plugin, and resulted into
-        # the right auth attribute.
-        if not cls.verify_used_auth_plugin(submission):
-            return {}
 
         # To easily fetch the identifier and identifier-type data, we use the auth
         # context as data source.

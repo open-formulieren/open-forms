@@ -1,5 +1,5 @@
 from collections.abc import Collection, Container, Iterable
-from typing import Any, TypedDict
+from typing import Any, ClassVar, TypedDict
 
 from rest_framework import serializers
 
@@ -34,7 +34,21 @@ SerializerCls = type[serializers.Serializer]
 
 class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     requires_auth: Collection[AuthAttribute] = ()
-    requires_auth_plugin: Collection[str] = ()
+    """
+    Indicates the type of authentication that must be present on the form.
+
+    The prefill plugin will be inert if the user is not authenticated with one of the
+    specified attributes. An empty value means that no particular authentication is
+    required.
+    """
+    requires_auth_plugin: ClassVar[Collection[str]] = ()
+    """
+    A collection of authentication plugin IDs, of wich one must be enabled.
+
+    If a non-empty value is provided, it means the plugin requires a specific auth
+    plugin to be enabled on the form to be functional, going beyond
+    :attr:`requires_auth`.
+    """
     for_components: Container[str] = AllComponentTypes()
     options: SerializerCls = EmptyOptions
 
@@ -153,20 +167,23 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
             return submission.auth_info.value
 
     @classmethod
-    def verify_used_auth_plugin(cls, submission: Submission) -> bool:
+    def verify_auth_plugin_requirement(cls, submission: Submission) -> bool:
         """
         Hook to check if the authenticated user used the required auth plugin.
+
+        This only performs a check if any required auth plugin is specified on the
+        prefill plugin class.
 
         :param submission: an active :class:`Submission` instance
         :return: Whether the required auth plugin was used or not.
         """
+        if not cls.requires_auth_plugin:
+            return True
+
         if not submission.is_authenticated:
             return False
 
-        return (
-            cls.requires_auth_plugin is not None
-            and submission.auth_info.plugin in cls.requires_auth_plugin
-        )
+        return submission.auth_info.plugin in cls.requires_auth_plugin
 
     @classmethod
     def configuration_context(cls) -> JSONObject | None:

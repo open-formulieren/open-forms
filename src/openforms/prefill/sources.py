@@ -62,6 +62,10 @@ def fetch_prefill_values_from_attribute(
             log.debug("plugin_disabled")
             raise PluginNotEnabled()
 
+        if not plugin.verify_auth_plugin_requirement(submission):
+            log.info("prefill.plugin.auth_plugin_requirements_not_met")
+            return fields, {}
+
         attributes = [attribute for field in fields for attribute in field]
         log.debug("prefill.plugin.lookup_attributes", attributes=attributes)
         try:
@@ -111,7 +115,18 @@ def fetch_prefill_values_from_options(
 
     values: dict[str, JSONEncodable] = {}
     for variable in variables:
+        assert variable.form_variable is not None
         plugin = register[variable.form_variable.prefill_plugin]
+        log = logger.bind(plugin=plugin)
+
+        if not plugin.is_enabled:
+            log.debug("plugin_disabled")
+            continue
+
+        if not plugin.verify_auth_plugin_requirement(submission):
+            log.info("prefill.plugin.auth_plugin_requirements_not_met")
+            continue
+
         raw_options = variable.form_variable.prefill_options
         log = logger.bind(
             variable=variable.key, plugin=plugin, submission_uuid=str(submission.uuid)
@@ -159,8 +174,10 @@ def fetch_prefill_values_from_options(
         else:
             if new_values:
                 values.update(**new_values)
-                logevent.prefill_retrieve_success(submission, plugin, values)
+                logevent.prefill_retrieve_success(
+                    submission, plugin, list(values.keys())
+                )
             else:
-                logevent.prefill_retrieve_empty(submission, plugin, values)
+                logevent.prefill_retrieve_empty(submission, plugin, list(values.keys()))
 
     return values
