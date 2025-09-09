@@ -28,6 +28,7 @@ export default {
       {
         id: 'dummy-prefill',
         requiresAuth: ['bsn'],
+        requiresAuthPlugin: [],
       },
     ],
   },

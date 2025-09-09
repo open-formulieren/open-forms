@@ -158,8 +158,18 @@ export default {
       },
     },
     availablePrefillPlugins: [
-      {id: 'stuf-bg', label: 'StUF-BG'},
-      {id: 'haalcentraal', label: 'BRP Personen (HaalCentraal)'},
+      {
+        id: 'stuf-bg',
+        label: 'StUF-BG',
+        requiresAuth: ['bsn'],
+        requiresAuthPlugin: [],
+      },
+      {
+        id: 'haalcentraal',
+        label: 'BRP Personen (HaalCentraal)',
+        requiresAuth: ['bsn'],
+        requiresAuthPlugin: [],
+      },
       {
         id: 'objects_api',
         label: 'Objects API',
@@ -169,10 +179,14 @@ export default {
             ['group-2', 'Objects API group 2'],
           ],
         },
+        requiresAuth: [],
+        requiresAuthPlugin: [],
       },
       {
         id: 'family_members',
         label: 'Family members',
+        requiresAuth: ['bsn'],
+        requiresAuthPlugin: [],
       },
     ],
     onChange: fn(),
