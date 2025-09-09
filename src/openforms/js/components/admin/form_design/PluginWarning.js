@@ -25,37 +25,61 @@ const PluginWarning = ({loginRequired, configuration}) => {
     if (!pluginId) return;
 
     const prefillPlugin = availablePrefillPlugins.find(plugin => plugin.id === pluginId);
-    const requiredAuthAttribute = prefillPlugin.requiresAuth;
+    const {requiresAuth, requiresAuthPlugin} = prefillPlugin;
 
-    if (!requiredAuthAttribute) return;
+    const requiresAnyAuth =
+      (requiresAuth && requiresAuth.length) || (requiresAuthPlugin && requiresAuthPlugin.length);
+    if (!requiresAnyAuth) return;
 
     // Iterate over the selected plugins and check if they provide the required Auth attribute
-    let pluginProvidesAttribute = false;
-    for (const pluginName of selectedAuthPlugins) {
-      const authPlugin = availableAuthPlugins.find(plugin => plugin.id === pluginName);
-      if (!authPlugin) break;
+    if (requiresAuth.length) {
+      let pluginProvidesAttribute = false;
+      for (const pluginName of selectedAuthPlugins) {
+        const authPlugin = availableAuthPlugins.find(plugin => plugin.id === pluginName);
+        if (!authPlugin) break;
 
-      if (requiredAuthAttribute.some(attr => authPlugin.providesAuth.includes(attr))) {
-        pluginProvidesAttribute = true;
-        break;
+        if (requiresAuth.some(attr => authPlugin.providesAuth.includes(attr))) {
+          pluginProvidesAttribute = true;
+          break;
+        }
+      }
+      if (!pluginProvidesAttribute) {
+        const warning = (
+          <FormattedMessage
+            description="Prefill plugin requires unavailable auth attribute warning"
+            defaultMessage={
+              'Component "{label}" uses a prefill that requires one of the "{requiredAuthAttribute}" attributes. \
+              Please select one or more authentication plugins that provide such an attribute.'
+            }
+            values={{
+              label: configuration.label,
+              requiredAuthAttribute: requiresAuth.join(', '),
+            }}
+          />
+        );
+        warnings.push(warning);
       }
     }
 
-    if (!pluginProvidesAttribute) {
-      const warning = (
-        <FormattedMessage
-          description="Prefill plugin requires unavailable auth attribute warning"
-          defaultMessage={
-            'Component "{label}" uses a prefill that requires one of the "{requiredAuthAttribute}" attributes. \
-            Please select one or more authentication plugins that provide such an attribute.'
-          }
-          values={{
-            label: configuration.label,
-            requiredAuthAttribute: requiredAuthAttribute.join(', '),
-          }}
-        />
-      );
-      warnings.push(warning);
+    if (requiresAuthPlugin.length) {
+      const hasAuthPlugin = requiresAuthPlugin.some(plugin => selectedAuthPlugins.includes(plugin));
+      if (!hasAuthPlugin) {
+        const relevantAuthPluginsLabels = availableAuthPlugins
+          .filter(plugin => requiresAuthPlugin.includes(plugin.id))
+          .map(plugin => plugin.label);
+        const warning = (
+          <FormattedMessage
+            description="Prefill plugin requires unavailable auth plugin warning"
+            defaultMessage={`Component "{label}" uses a prefill that requires one of the "{requiredPlugin}"
+              login options. Please select one or remove the prefill plugin.`}
+            values={{
+              label: configuration.label,
+              requiredPlugin: relevantAuthPluginsLabels.join(', '),
+            }}
+          />
+        );
+        warnings.push(warning);
+      }
     }
   };
 

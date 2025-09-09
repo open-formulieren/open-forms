@@ -1,6 +1,4 @@
 import DefaultFields from './default/DefaultFields';
-import EidasFields from './eidas/EidasFields';
-import EidasCompanyFields from './eidas_company/EidasCompanyFields';
 import FamilyMembersFields from './family_members/FamilyMembersFields';
 import ObjectsAPIFields from './objects_api/ObjectsAPIFields';
 import ToggleCopyButton from './objects_api/ToggleCopyButton';
@@ -12,14 +10,6 @@ const PLUGIN_COMPONENT_MAPPING = {
   },
   family_members: {
     component: FamilyMembersFields,
-    pluginFieldExtra: null,
-  },
-  eidas: {
-    component: EidasFields,
-    pluginFieldExtra: null,
-  },
-  eidas_company: {
-    component: EidasCompanyFields,
     pluginFieldExtra: null,
   },
   default: {

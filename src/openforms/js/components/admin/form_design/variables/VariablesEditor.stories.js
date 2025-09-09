@@ -1202,6 +1202,43 @@ export const ConfigurePrefill = {
   },
 };
 
+export const ConfigurePrefillShowPluginWarnings = {
+  args: {
+    availableFormVariables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined',
+        key: 'userDefined',
+        source: 'user_defined',
+        prefillPlugin: 'stuf-bg',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'array',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+        prefillOptions: {},
+      },
+    ],
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
+    expect(userDefinedVarsTab).toBeVisible();
+    await userEvent.click(userDefinedVarsTab);
+
+    // open modal for configuration
+    const editIcon = canvas.getByTitle('Prefill instellen');
+    await userEvent.click(editIcon);
+
+    const pluginDropdown = await canvas.findByLabelText('Plugin');
+    expect(pluginDropdown).toBeVisible();
+  },
+};
+
 export const ConfigurePrefillObjectsAPI = {
   parameters: {
     msw: {

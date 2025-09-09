@@ -20,6 +20,7 @@ export default {
     availableAuthPlugins: [
       {
         id: 'dummy-auth',
+        label: 'Dummy',
         providesAuth: [],
       },
     ],
@@ -27,6 +28,7 @@ export default {
     availablePrefillPlugins: [
       {
         id: 'dummy-prefill',
+        label: 'Dummy',
         requiresAuth: ['bsn'],
         requiresAuthPlugin: [],
       },
@@ -56,5 +58,42 @@ export const PrefillAuthAttributeNotProvided = {
         },
       ],
     },
+  },
+};
+
+export const PrefillAuthPluginNotUsed = {
+  args: {
+    configuration: {
+      components: [
+        {
+          type: 'textfield',
+          key: 'someTextField',
+          label: 'Some textfield',
+          prefill: {
+            plugin: 'eidas-citizen',
+          },
+        },
+      ],
+    },
+    availableAuthPlugins: [
+      {
+        id: 'eidas_oidc',
+        label: 'eIDAS (citizen)',
+        providesAuth: ['bsn', 'pseudo'],
+      },
+      {
+        id: 'digid',
+        label: 'DigiD',
+        providesAuth: ['bsn'],
+      },
+    ],
+    selectedAuthPlugins: ['digid'],
+    availablePrefillPlugins: [
+      {
+        id: 'eidas-citizen',
+        requiresAuth: ['bsn', 'pseudo'],
+        requiresAuthPlugin: ['eidas_oidc'],
+      },
+    ],
   },
 };
