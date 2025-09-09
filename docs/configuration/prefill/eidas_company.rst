@@ -6,9 +6,9 @@ eIDAS for companies
 
 `eIDAS`_ (Electronic Identification and Trust Services) is an European Union regulation,
 to allow european citizen and companies to digitally authenticate in any european country
-using their national identity. When authentication with eIDAS, the user supplies some
+using their national identity. When authenticating with eIDAS, the user supplies some
 basic personal information; their first- and lastname, date of birth and their BSN or
-other national identification. When authentication as a company, the legal name of the
+other national identification. When authenticating as a company, the legal name of the
 company will also be made available.
 
 The **eIDAS** prefill plugin can be used to access this data in order to prefill personal
@@ -23,10 +23,10 @@ and company information of the authenticated company and acting person within a 
 Configuration
 =============
 
-#. First thing you need is to configure the eIDAS for companies OIDC provider and OIDC
-   client (see :ref:`configuration guide <configuration_authentication_oidc_eidas_company>`
+#. First ensure the eIDAS for companies OIDC provider and OIDC client are configured
+   (see :ref:`configuration guide <configuration_authentication_oidc_eidas_company>`
    for details)
-#. Next step is to navigate to: **Configuration** > **General configuration** > **Plugin configuration**.
+#. Then, navigate to: **Configuration** > **General configuration** > **Plugin configuration**.
 #. Make sure the **eIDAS for companies** prefill- and authentication plugins are enabled.
 #. Click **Save**.
 #. The prefill configuration is ready.
