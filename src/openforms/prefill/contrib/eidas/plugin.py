@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 
 import structlog
-from glom import GlomError, glom
+from glom import Coalesce, glom
 from mozilla_django_oidc_db.models import OIDCClient
 from mozilla_django_oidc_db.typing import ClaimPath
 
@@ -29,6 +29,8 @@ from .constants import (
 )
 
 logger = structlog.stdlib.get_logger(__name__)
+
+MISSING = object()
 
 
 @register("eidas-citizen")
@@ -63,17 +65,18 @@ class EIDASCitizenPrefill(BasePlugin):
         # To easily fetch the identifier and identifier-type data, we use the auth
         # context as data source.
         auth_context = submission.auth_info.to_auth_context_data()
+        spec = {attr: Coalesce(attr, default=MISSING) for attr in attributes}
+        values = glom(auth_context["authorizee"], spec)
 
-        values = dict()
-        for attr in attributes:
-            try:
-                values[attr] = glom(auth_context["authorizee"], attr)
-            except GlomError as exc:
-                logger.warning(
-                    "missing_attribute_in_auth_context_authorizee",
-                    attribute=attr,
-                    exc_info=exc,
-                )
+        # remove the `None` defaults
+        for key in list(values.keys()):
+            if values[key] is not MISSING:
+                continue
+            del values[key]
+            logger.warning(
+                "missing_attribute_in_auth_context_authorizee",
+                attribute=key,
+            )
 
         return values
 
@@ -134,21 +137,21 @@ class EIDASCompanyPrefill(BasePlugin):
         :param attributes: a list of requested prefill attributes, provided in bulk
           to efficiently fetch as much data as possible with the minimal amount of calls.
         """
-
         # To easily fetch the identifier and identifier-type data, we use the auth
         # context as data source.
         auth_context = submission.auth_info.to_auth_context_data()
+        spec = {attr: Coalesce(attr, default=MISSING) for attr in attributes}
+        values = glom(auth_context["authorizee"], spec)
 
-        values = dict()
-        for attr in attributes:
-            try:
-                values[attr] = glom(auth_context["authorizee"], attr)
-            except GlomError as exc:
-                logger.warning(
-                    "missing_attribute_in_auth_context_authorizee",
-                    attribute=attr,
-                    exc_info=exc,
-                )
+        # remove the `None` defaults
+        for key in list(values.keys()):
+            if values[key] is not MISSING:
+                continue
+            del values[key]
+            logger.warning(
+                "missing_attribute_in_auth_context_authorizee",
+                attribute=key,
+            )
 
         return values
 
