@@ -4373,6 +4373,28 @@
       "value": "Vereist authenticatie"
     }
   ],
+  "adFa0X": [
+    {
+      "type": 0,
+      "value": "Component \""
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": "\" uses a prefill that requires one of the \""
+    },
+    {
+      "type": 1,
+      "value": "requiredPlugin"
+    },
+    {
+      "type": 0,
+      "value": "\" login options. Please select one or remove the prefill plugin."
+    }
+  ],
   "af22yB": [
     {
       "type": 0,
@@ -4583,6 +4605,24 @@
     {
       "type": 0,
       "value": "Gemachtigde"
+    }
+  ],
+  "cJnFcK": [
+    {
+      "type": 1,
+      "value": "plugin"
+    },
+    {
+      "type": 0,
+      "value": " requires one of the \""
+    },
+    {
+      "type": 1,
+      "value": "requiredAuthAttribute"
+    },
+    {
+      "type": 0,
+      "value": "\" attributes. Please select one or more authentication plugins that provide such an attribute."
     }
   ],
   "cK2O6E": [
@@ -5567,12 +5607,6 @@
       "value": "Informatieobjecttype inzendings-PDF"
     }
   ],
-  "jDK4/3": [
-    {
-      "type": 0,
-      "value": "The eIDAS prefill plugin only works in conjunction with the eIDAS authentication plugin. Make sure to also configure the eIDAS authentication plugin!"
-    }
-  ],
   "jHW6p5": [
     {
       "type": 0,
@@ -6285,12 +6319,6 @@
     {
       "type": 0,
       "value": "Er zijn geen relevante geavanceerde instellingen."
-    }
-  ],
-  "p+m3Si": [
-    {
-      "type": 0,
-      "value": "The eIDAS for companies prefill plugin only works in conjunction with the eIDAS for companies authentication plugin. Make sure to configure the eIDAS for companies authentication plugin!"
     }
   ],
   "p18yml": [
@@ -7447,6 +7475,24 @@
     {
       "type": 0,
       "value": "Plugin-instellingen: Ogone legacy"
+    }
+  ],
+  "zhPXHY": [
+    {
+      "type": 1,
+      "value": "plugin"
+    },
+    {
+      "type": 0,
+      "value": " requires one of the \""
+    },
+    {
+      "type": 1,
+      "value": "requiredPlugin"
+    },
+    {
+      "type": 0,
+      "value": "\" login options. Please select one or remove the prefill plugin."
     }
   ],
   "zqnTBZ": [
