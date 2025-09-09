@@ -20,6 +20,15 @@ class PrefillPluginSerializer(PluginBaseSerializer):
             ),
         ),
     )
+    requires_auth_plugin = serializers.ListField(
+        child=serializers.CharField(
+            label=_("Required authentication plugin"),
+            help_text=_(
+                "The specific authentication plugin required for this plugin to be "
+                "activated. If empty, then no requirements apply."
+            ),
+        ),
+    )
     configuration_context = serializers.JSONField(
         label=_("Extra configuration context"),
         help_text=_(
@@ -69,7 +78,7 @@ class PrefillAttributeSerializer(serializers.Serializer):
         label=_("ID"),
         help_text=_("The unique attribute identifier"),
     )
-    label = serializers.CharField(
+    label = serializers.CharField(  # pyright: ignore[reportAssignmentType]
         label=_("Label"),
         help_text=_("The human-readable name for an attribute."),
     )

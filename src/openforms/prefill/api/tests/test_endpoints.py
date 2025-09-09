@@ -15,7 +15,8 @@ class TestPrefill(BasePlugin):
     requires_auth = (AuthAttribute.bsn,)
     verbose_name = "Test"
 
-    def get_available_attributes(self):
+    @staticmethod
+    def get_available_attributes():
         return [("foo", "Foo"), ("bar", "Bar")]
 
 
@@ -30,7 +31,8 @@ class OnlyVarsPrefill(BasePlugin):
     verbose_name = "Only Vars"
     for_components = ()
 
-    def get_available_attributes(self):
+    @staticmethod
+    def get_available_attributes():
         return [("foo", "Foo"), ("bar", "Bar")]
 
 
@@ -40,7 +42,8 @@ class VanityPlatePrefill(BasePlugin):
     verbose_name = "Vanity Plates"
     for_components = {"licenseplate"}
 
-    def get_available_attributes(self):
+    @staticmethod
+    def get_available_attributes():
         return [("NOMODES", "Larry Tesler's plates")]
 
 
@@ -112,18 +115,21 @@ class ResponseTests(APITestCase):
                 "id": "test",
                 "label": "Test",
                 "requiresAuth": [AuthAttribute.bsn],
+                "requiresAuthPlugin": [],
                 "configurationContext": None,
             },
             {
                 "id": "onlyvars",
                 "label": "Only Vars",
                 "requiresAuth": [AuthAttribute.bsn],
+                "requiresAuthPlugin": [],
                 "configurationContext": None,
             },
             {
                 "id": "vanityplates",
                 "label": "Vanity Plates",
                 "requiresAuth": [AuthAttribute.bsn],
+                "requiresAuthPlugin": [],
                 "configurationContext": None,
             },
         ]
@@ -142,6 +148,7 @@ class ResponseTests(APITestCase):
                 "id": "test",
                 "label": "Test",
                 "requiresAuth": [AuthAttribute.bsn],
+                "requiresAuthPlugin": [],
                 "configurationContext": None,
             },
             # spec'd for licenseplate
@@ -149,6 +156,7 @@ class ResponseTests(APITestCase):
                 "id": "vanityplates",
                 "label": "Vanity Plates",
                 "requiresAuth": [AuthAttribute.bsn],
+                "requiresAuthPlugin": [],
                 "configurationContext": None,
             },
         ]

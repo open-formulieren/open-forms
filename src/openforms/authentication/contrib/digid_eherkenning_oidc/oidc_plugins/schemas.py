@@ -164,7 +164,7 @@ EIDAS_COMPANY_SCHEMA = {
                 "acting_subject_identifier_type_claim_path",
                 "acting_subject_first_name_claim_path",
                 "acting_subject_family_name_claim_path",
-                "legal_subject_date_of_birth_claim_path",
+                "acting_subject_date_of_birth_claim_path",
                 "mandate_service_id_claim_path",
             ],
             "properties": {

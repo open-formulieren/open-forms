@@ -9813,6 +9813,13 @@ components:
             title: Required authentication attribute
             description: The authentication attribute required for this plugin to
               lookup remote data.
+        requiresAuthPlugin:
+          type: array
+          items:
+            type: string
+            title: Required authentication plugin
+            description: The specific authentication plugin required for this plugin
+              to be activated. If empty, then no requirements apply.
         configurationContext:
           nullable: true
           title: Extra configuration context
@@ -9823,6 +9830,7 @@ components:
       - id
       - label
       - requiresAuth
+      - requiresAuthPlugin
     PrefillTargetPaths:
       type: object
       properties:

@@ -2120,6 +2120,11 @@
     "description": "Form step login required label",
     "originalDefault": "Login required?"
   },
+  "adFa0X": {
+    "defaultMessage": "Component \"{label}\" uses a prefill that requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin.",
+    "description": "Prefill plugin requires unavailable auth plugin warning",
+    "originalDefault": "Component \"{label}\" uses a prefill that requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin."
+  },
   "af22yB": {
     "defaultMessage": "Het veranderen van het datatype vereist een verandering aan de beginwaarde. Dit zal de beginwaarde terugbrengen naar de standaardwaarde. Weet je zeker dat je dit wilt doen?",
     "description": "Changing user variable data type and transforming initial value confirmation message",
@@ -2215,6 +2220,11 @@
     "defaultMessage": "(complexe waarde)",
     "description": "JSON editor: complex value representation",
     "originalDefault": "(complex value)"
+  },
+  "cJnFcK": {
+    "defaultMessage": "{plugin} requires one of the \"{requiredAuthAttribute}\" attributes. Please select one or more authentication plugins that provide such an attribute.",
+    "description": "Prefill plugin requires unavailable auth attribute warning",
+    "originalDefault": "{plugin} requires one of the \"{requiredAuthAttribute}\" attributes. Please select one or more authentication plugins that provide such an attribute."
   },
   "cK2O6E": {
     "defaultMessage": "Er ging helaas iets fout bij het ophalen van de beschikbare bestemmingspaden.",
@@ -3536,6 +3546,11 @@
     "defaultMessage": "Plugin-instellingen: Ogone legacy",
     "description": "Ogone legacy options modal title",
     "originalDefault": "Plugin configuration: Ogone legacy"
+  },
+  "zhPXHY": {
+    "defaultMessage": "{plugin} requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin.",
+    "description": "Prefill plugin requires unavailable auth plugin warning",
+    "originalDefault": "{plugin} requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin."
   },
   "zqnTBZ": {
     "defaultMessage": "Inzending-instellingen",

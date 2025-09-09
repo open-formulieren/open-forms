@@ -2099,6 +2099,11 @@
     "description": "Form step login required label",
     "originalDefault": "Login required?"
   },
+  "adFa0X": {
+    "defaultMessage": "Component \"{label}\" uses a prefill that requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin.",
+    "description": "Prefill plugin requires unavailable auth plugin warning",
+    "originalDefault": "Component \"{label}\" uses a prefill that requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin."
+  },
   "af22yB": {
     "defaultMessage": "Changing the data type requires the initial value to be changed. This will reset the initial value back to the empty value. Are you sure that you want to do this?",
     "description": "Changing user variable data type and transforming initial value confirmation message",
@@ -2193,6 +2198,11 @@
     "defaultMessage": "(complex value)",
     "description": "JSON editor: complex value representation",
     "originalDefault": "(complex value)"
+  },
+  "cJnFcK": {
+    "defaultMessage": "{plugin} requires one of the \"{requiredAuthAttribute}\" attributes. Please select one or more authentication plugins that provide such an attribute.",
+    "description": "Prefill plugin requires unavailable auth attribute warning",
+    "originalDefault": "{plugin} requires one of the \"{requiredAuthAttribute}\" attributes. Please select one or more authentication plugins that provide such an attribute."
   },
   "cK2O6E": {
     "defaultMessage": "Something went wrong when fetching the available target paths",
@@ -3508,6 +3518,11 @@
     "defaultMessage": "Plugin configuration: Ogone legacy",
     "description": "Ogone legacy options modal title",
     "originalDefault": "Plugin configuration: Ogone legacy"
+  },
+  "zhPXHY": {
+    "defaultMessage": "{plugin} requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin.",
+    "description": "Prefill plugin requires unavailable auth plugin warning",
+    "originalDefault": "{plugin} requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin."
   },
   "zqnTBZ": {
     "defaultMessage": "Submission settings",

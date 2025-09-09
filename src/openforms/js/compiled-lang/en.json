@@ -4355,6 +4355,28 @@
       "value": "Login required?"
     }
   ],
+  "adFa0X": [
+    {
+      "type": 0,
+      "value": "Component \""
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": "\" uses a prefill that requires one of the \""
+    },
+    {
+      "type": 1,
+      "value": "requiredPlugin"
+    },
+    {
+      "type": 0,
+      "value": "\" login options. Please select one or remove the prefill plugin."
+    }
+  ],
   "af22yB": [
     {
       "type": 0,
@@ -4561,6 +4583,24 @@
     {
       "type": 0,
       "value": "Authorised person"
+    }
+  ],
+  "cJnFcK": [
+    {
+      "type": 1,
+      "value": "plugin"
+    },
+    {
+      "type": 0,
+      "value": " requires one of the \""
+    },
+    {
+      "type": 1,
+      "value": "requiredAuthAttribute"
+    },
+    {
+      "type": 0,
+      "value": "\" attributes. Please select one or more authentication plugins that provide such an attribute."
     }
   ],
   "cK2O6E": [
@@ -7417,6 +7457,24 @@
     {
       "type": 0,
       "value": "Plugin configuration: Ogone legacy"
+    }
+  ],
+  "zhPXHY": [
+    {
+      "type": 1,
+      "value": "plugin"
+    },
+    {
+      "type": 0,
+      "value": " requires one of the \""
+    },
+    {
+      "type": 1,
+      "value": "requiredPlugin"
+    },
+    {
+      "type": 0,
+      "value": "\" login options. Please select one or remove the prefill plugin."
     }
   ],
   "zqnTBZ": [

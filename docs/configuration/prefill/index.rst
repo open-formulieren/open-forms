@@ -14,3 +14,5 @@ Prefill plugins
    suwinet
    objects_api
    family_members
+   eidas
+   eidas_company

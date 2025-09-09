@@ -1,5 +1,4 @@
 import {useFormikContext} from 'formik';
-import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
@@ -9,7 +8,6 @@ import FormRow from 'components/admin/forms/FormRow';
 import {LOADING_OPTION} from 'components/admin/forms/Select';
 import {get} from 'utils/fetch';
 
-import {ErrorsType} from '../types';
 import AttributeField from './AttributeField';
 import IdentifierRoleField from './IdentifierRoleField';
 
