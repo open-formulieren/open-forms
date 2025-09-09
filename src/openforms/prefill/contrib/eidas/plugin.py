@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 from glom import GlomError, glom
 from mozilla_django_oidc_db.models import OIDCClient
+from mozilla_django_oidc_db.typing import ClaimPath
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.contrib.digid_eherkenning_oidc.constants import (
@@ -90,11 +91,19 @@ class EIDASCitizenPrefill(BasePlugin):
             )
 
         # All the claims that are available for prefill should be configured.
+        missing_claim_paths: list[str] = []
         for setting in REQUIRED_CITIZEN_CLIENT_IDENTITY_SETTINGS:
-            if not len(client.options["identity_settings"].get(setting, [])):
-                raise InvalidPluginConfiguration(
-                    _("Missing OIDC client identity settings for eIDAS.")
-                )
+            claim_path: ClaimPath = client.options["identity_settings"].get(setting, [])
+            if not claim_path:
+                missing_claim_paths.append(setting)
+
+        if missing_claim_paths:
+            raise InvalidPluginConfiguration(
+                _(
+                    "The eIDAS client identity settings are missing values for the "
+                    "settings: {settings}."
+                ).format(settings=", ".join(missing_claim_paths))
+            )
 
 
 @register("eidas-company")
@@ -159,8 +168,16 @@ class EIDASCompanyPrefill(BasePlugin):
             )
 
         # All the claims that are available for prefill should be configured.
+        missing_claim_paths: list[str] = []
         for setting in REQUIRED_COMPANY_CLIENT_IDENTITY_SETTINGS:
-            if not len(client.options["identity_settings"].get(setting, [])):
-                raise InvalidPluginConfiguration(
-                    _("Missing OIDC client identity settings for eIDAS Company.")
-                )
+            claim_path: ClaimPath = client.options["identity_settings"].get(setting, [])
+            if not claim_path:
+                missing_claim_paths.append(setting)
+
+        if missing_claim_paths:
+            raise InvalidPluginConfiguration(
+                _(
+                    "The eIDAS client identity settings are missing values for the "
+                    "settings: {settings}."
+                ).format(settings=", ".join(missing_claim_paths))
+            )
