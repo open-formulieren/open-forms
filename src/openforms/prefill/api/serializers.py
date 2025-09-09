@@ -69,7 +69,7 @@ class PrefillAttributeSerializer(serializers.Serializer):
         label=_("ID"),
         help_text=_("The unique attribute identifier"),
     )
-    label = serializers.CharField(
+    label = serializers.CharField(  # pyright: ignore[reportAssignmentType]
         label=_("Label"),
         help_text=_("The human-readable name for an attribute."),
     )

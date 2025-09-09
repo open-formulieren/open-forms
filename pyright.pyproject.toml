@@ -57,6 +57,7 @@ include = [
     "src/openforms/authentication/contrib/outage/",
     "src/openforms/authentication/models.py",
     # Prefill
+    "src/openforms/prefill/api/",
     "src/openforms/prefill/co_sign.py",
     "src/openforms/prefill/contrib/family_members",
     "src/openforms/prefill/contrib/eidas",
