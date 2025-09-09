@@ -81,12 +81,15 @@ class EIDASCitizenPrefill(BasePlugin):
         return values
 
     def check_config(self):
-        try:
-            client = OIDCClient.objects.get(
-                identifier=OIDC_EIDAS_IDENTIFIER, enabled=True
+        # check if we have an enabled client. Note that the mozilla-django-oidc-db
+        # post_migrate hook ensures the defined clients exist in the DB.
+        client = OIDCClient.objects.filter(
+            identifier=OIDC_EIDAS_IDENTIFIER, enabled=True
+        ).first()
+        if client is None:
+            raise InvalidPluginConfiguration(
+                _("No enabled OIDC client for eIDAS (citizen) found.")
             )
-        except OIDCClient.DoesNotExist:
-            raise InvalidPluginConfiguration(_("Missing OIDC client for eIDAS."))
 
         if not client.options["identity_settings"]:
             raise InvalidPluginConfiguration(
@@ -156,13 +159,14 @@ class EIDASCompanyPrefill(BasePlugin):
         return values
 
     def check_config(self):
-        try:
-            client = OIDCClient.objects.get(
-                identifier=OIDC_EIDAS_COMPANY_IDENTIFIER, enabled=True
-            )
-        except OIDCClient.DoesNotExist:
+        # check if we have an enabled client. Note that the mozilla-django-oidc-db
+        # post_migrate hook ensures the defined clients exist in the DB.
+        client = OIDCClient.objects.filter(
+            identifier=OIDC_EIDAS_COMPANY_IDENTIFIER, enabled=True
+        ).first()
+        if client is None:
             raise InvalidPluginConfiguration(
-                _("Missing OIDC client for eIDAS Company.")
+                _("No enabled OIDC client for eIDAS (company) found.")
             )
 
         if not client.options["identity_settings"]:

@@ -36,14 +36,17 @@ class EIDASCitizenConfigCheckTests(OIDCMixin, TestCase):
         except InvalidPluginConfiguration as exc:
             raise self.failureException("Config check should have passed") from exc
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_no_eidas_OIDC_client_configured(self):
         plugin = EIDASCitizenPrefill(identifier="eidas")
 
-        with self.assertRaises(InvalidPluginConfiguration) as exc:
+        with self.assertRaisesMessage(
+            InvalidPluginConfiguration,
+            "No enabled OIDC client for eIDAS (citizen) found.",
+        ):
             plugin.check_config()
 
-        self.assertEqual(exc.exception.args[0], _("Missing OIDC client for eIDAS."))
-
+    @override_settings(LANGUAGE_CODE="en")
     def test_eidas_OIDC_client_disabled(self):
         OFOIDCClientFactory.create(
             enabled=False,
@@ -52,10 +55,11 @@ class EIDASCitizenConfigCheckTests(OIDCMixin, TestCase):
         )
         plugin = EIDASCitizenPrefill(identifier="eidas")
 
-        with self.assertRaises(InvalidPluginConfiguration) as exc:
+        with self.assertRaisesMessage(
+            InvalidPluginConfiguration,
+            "No enabled OIDC client for eIDAS (citizen) found.",
+        ):
             plugin.check_config()
-
-        self.assertEqual(exc.exception.args[0], _("Missing OIDC client for eIDAS."))
 
     def test_eidas_OIDC_client_missing_identity_settings(self):
         OFOIDCClientFactory.create(
@@ -133,16 +137,17 @@ class EIDASCompanyPrefillConfigCheckTests(OIDCMixin, TestCase):
         except InvalidPluginConfiguration as exc:
             raise self.failureException("Config check should have passed") from exc
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_no_eidas_company_OIDC_client_configured(self):
         plugin = EIDASCompanyPrefill(identifier="eidas_company")
 
-        with self.assertRaises(InvalidPluginConfiguration) as exc:
+        with self.assertRaisesMessage(
+            InvalidPluginConfiguration,
+            "No enabled OIDC client for eIDAS (company) found.",
+        ):
             plugin.check_config()
 
-        self.assertEqual(
-            exc.exception.args[0], _("Missing OIDC client for eIDAS Company.")
-        )
-
+    @override_settings(LANGUAGE_CODE="en")
     def test_eidas_company_OIDC_client_disabled(self):
         OFOIDCClientFactory.create(
             enabled=False,
@@ -151,12 +156,11 @@ class EIDASCompanyPrefillConfigCheckTests(OIDCMixin, TestCase):
         )
         plugin = EIDASCompanyPrefill(identifier="eidas_company")
 
-        with self.assertRaises(InvalidPluginConfiguration) as exc:
+        with self.assertRaisesMessage(
+            InvalidPluginConfiguration,
+            "No enabled OIDC client for eIDAS (company) found.",
+        ):
             plugin.check_config()
-
-        self.assertEqual(
-            exc.exception.args[0], _("Missing OIDC client for eIDAS Company.")
-        )
 
     def test_eidas_company_OIDC_client_missing_identity_settings(self):
         plugin = EIDASCompanyPrefill(identifier="eidas_company")
