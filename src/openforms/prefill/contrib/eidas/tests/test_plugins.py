@@ -1,16 +1,19 @@
-from django.test import TestCase
+from django.test import TransactionTestCase
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 
 from openforms.authentication.service import AuthAttribute
+from openforms.forms.tests.factories import FormVariableFactory
+from openforms.prefill.registry import register
+from openforms.prefill.service import prefill_variables
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..constants import CitizenAttributes, CompanyAttributes
 from ..plugin import EIDASCitizenPrefill, EIDASCompanyPrefill
 
 
-class EIDASCitizenTests(TestCase):
+class EIDASCitizenTests(TransactionTestCase):
     def test_get_prefill_values(self):
         plugin = EIDASCitizenPrefill(identifier="eidas-citizen")
 
@@ -46,24 +49,25 @@ class EIDASCitizenTests(TestCase):
         self.assertEqual(values, expected)
 
     def test_get_prefill_values_not_authenticated(self):
-        plugin = EIDASCitizenPrefill(identifier="eidas-citizen")
-
         submission = SubmissionFactory.create()
         assert not submission.is_authenticated
-
-        values = plugin.get_prefill_values(
-            submission,
-            [
-                CitizenAttributes.legal_identifier,
-                CitizenAttributes.legal_first_name,
-            ],
+        FormVariableFactory.create(
+            key="skipped_prefill",
+            form=submission.form,
+            user_defined=True,
+            # use key access so that invalid values raise KeyError
+            prefill_plugin=register["eidas-citizen"].identifier,
+            prefill_attribute=CitizenAttributes.legal_identifier,
         )
-        expected = {}
-        self.assertEqual(values, expected)
+
+        prefill_variables(submission=submission)
+        state = submission.load_submission_value_variables_state()
+
+        # assert that nothing was prefilled
+        values = state.get_data()
+        self.assertEqual(values, {})
 
     def test_get_prefill_values_not_authenticated_with_eidas(self):
-        plugin = EIDASCitizenPrefill(identifier="eidas-citizen")
-
         submission = SubmissionFactory.create(
             auth_info__value="111222333",
             auth_info__plugin="digid_oidc",
@@ -71,16 +75,21 @@ class EIDASCitizenTests(TestCase):
             auth_info__attribute=AuthAttribute.bsn,
         )
         assert submission.is_authenticated
-
-        values = plugin.get_prefill_values(
-            submission,
-            [
-                CitizenAttributes.legal_identifier,
-            ],
+        FormVariableFactory.create(
+            key="skipped_prefill",
+            form=submission.form,
+            user_defined=True,
+            # use key access so that invalid values raise KeyError
+            prefill_plugin=register["eidas-citizen"].identifier,
+            prefill_attribute=CitizenAttributes.legal_identifier,
         )
 
-        expected = {}
-        self.assertEqual(values, expected)
+        prefill_variables(submission=submission)
+        state = submission.load_submission_value_variables_state()
+
+        # assert that nothing was prefilled
+        values = state.get_data()
+        self.assertEqual(values, {})
 
     def test_get_available_attributes(self):
         plugin = EIDASCitizenPrefill(identifier="eidas-citizen")
@@ -99,7 +108,7 @@ class EIDASCitizenTests(TestCase):
         )
 
 
-class EIDASCompanyPrefillTests(TestCase):
+class EIDASCompanyPrefillTests(TransactionTestCase):
     def test_get_prefill_values(self):
         plugin = EIDASCompanyPrefill(identifier="eidas-company")
 
@@ -145,24 +154,25 @@ class EIDASCompanyPrefillTests(TestCase):
         self.assertEqual(values, expected)
 
     def test_get_prefill_values_not_authenticated(self):
-        plugin = EIDASCompanyPrefill(identifier="eidas-company")
-
         submission = SubmissionFactory.create()
         assert not submission.is_authenticated
-
-        values = plugin.get_prefill_values(
-            submission,
-            [
-                CompanyAttributes.legal_identifier,
-                CompanyAttributes.legal_company_name,
-            ],
+        FormVariableFactory.create(
+            key="skipped_prefill",
+            form=submission.form,
+            user_defined=True,
+            # use key access so that invalid values raise KeyError
+            prefill_plugin=register["eidas-company"].identifier,
+            prefill_attribute=CompanyAttributes.legal_identifier,
         )
-        expected = {}
-        self.assertEqual(values, expected)
+
+        prefill_variables(submission=submission)
+        state = submission.load_submission_value_variables_state()
+
+        # assert that nothing was prefilled
+        values = state.get_data()
+        self.assertEqual(values, {})
 
     def test_get_prefill_values_not_authenticated_with_eidas(self):
-        plugin = EIDASCompanyPrefill(identifier="eidas-company")
-
         # User was authenticated with digid_oidc, instead of with eidas_company_oidc.
         submission = SubmissionFactory.create(
             auth_info__value="111222333",
@@ -171,16 +181,21 @@ class EIDASCompanyPrefillTests(TestCase):
             auth_info__attribute=AuthAttribute.pseudo,
         )
         assert submission.is_authenticated
-
-        values = plugin.get_prefill_values(
-            submission,
-            [
-                CompanyAttributes.legal_identifier,
-            ],
+        FormVariableFactory.create(
+            key="skipped_prefill",
+            form=submission.form,
+            user_defined=True,
+            # use key access so that invalid values raise KeyError
+            prefill_plugin=register["eidas-company"].identifier,
+            prefill_attribute=CompanyAttributes.legal_identifier,
         )
 
-        expected = {}
-        self.assertEqual(values, expected)
+        prefill_variables(submission=submission)
+        state = submission.load_submission_value_variables_state()
+
+        # assert that nothing was prefilled
+        values = state.get_data()
+        self.assertEqual(values, {})
 
     def test_get_available_attributes(self):
         plugin = EIDASCompanyPrefill(identifier="eidas-company")
