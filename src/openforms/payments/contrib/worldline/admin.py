@@ -14,22 +14,21 @@ class WorldlineMerchantAdmin(admin.ModelAdmin):
         "api_key",
         "api_secret",
         "endpoint",
+        "feedback_url",
     )
     list_display = (
         "label",
         "pspid",
         "endpoint",
-        "feedback_url",
     )
     search_fields = (
         "label",
         "pspid",
         "api_key",
     )
+    readonly_fields = ("feedback_url",)
 
     def feedback_url(self, obj: WorldlineMerchant | None = None) -> str:
-        if not obj:
-            return ""
         return register["worldline"].get_webhook_url(None)
 
 
@@ -38,7 +37,12 @@ class WorldlineWebhookConfigurationAdmin(SingletonModelAdmin):
     fields = (
         "webhook_key_id",
         "webhook_key_secret",
+        "feedback_url",
     )
 
     list_display = ("webhook_key_id",)
     search_fields = ("webhook_key_id",)
+    readonly_fields = ("feedback_url",)
+
+    def feedback_url(self, obj: WorldlineWebhookConfiguration | None = None) -> str:
+        return register["worldline"].get_webhook_url(None)
