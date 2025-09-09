@@ -59,6 +59,7 @@ include = [
     # Prefill
     "src/openforms/prefill/co_sign.py",
     "src/openforms/prefill/contrib/family_members",
+    "src/openforms/prefill/contrib/eidas",
     "src/openforms/prefill/models.py",
     "src/openforms/prefill/signals.py",
     "src/openforms/prefill/sources.py",
