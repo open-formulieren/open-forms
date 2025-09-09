@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import uuid as _uuid
 from collections.abc import Iterator
 from contextlib import suppress
@@ -46,7 +48,7 @@ if TYPE_CHECKING:
     from . import FormAuthenticationBackend
 
 
-class FormQuerySet(models.QuerySet):
+class FormQuerySet(models.QuerySet["Form"]):
     def live(self):
         return self.filter(active=True, _is_deleted=False)
 
@@ -122,7 +124,7 @@ class Form(models.Model):
     auto_login_authentication_backend = models.CharField(
         _("automatic login"), max_length=UNIQUE_ID_MAX_LENGTH, blank=True
     )
-    auth_backends: BaseManager["FormAuthenticationBackend"]
+    auth_backends: BaseManager[FormAuthenticationBackend]
 
     # appointments
     is_appointment = models.BooleanField(

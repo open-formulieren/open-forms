@@ -1,6 +1,6 @@
 import uuid
 from collections import defaultdict
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable, Iterator, Mapping, MutableMapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from itertools import groupby
@@ -11,17 +11,19 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+import requests
 import structlog
 from django_yubin.models import Message
 from furl import furl
 from json_logic.typing import JSON
+from lxml import etree
 from requests.exceptions import RequestException
 from rest_framework import serializers
 from simple_certmanager.models import Certificate
 from zgw_consumers.client import build_client
 from zgw_consumers.models import Service
 
-from openforms.config.models import GlobalConfiguration
+from openforms.config.models import GlobalConfiguration, MapWMSTileLayer
 from openforms.contrib.brk.service import check_brk_config_for_addressNL
 from openforms.contrib.kadaster.service import check_bag_config_for_address_fields
 from openforms.contrib.reference_lists.client import (
@@ -30,6 +32,8 @@ from openforms.contrib.reference_lists.client import (
     TableItem,
 )
 from openforms.formio.constants import DataSrcOptions
+from openforms.formio.typing import Component
+from openforms.formio.typing.map import Overlay
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import Form
 from openforms.forms.models.form_registration_backend import FormRegistrationBackend
@@ -106,7 +110,7 @@ class FailedPrefill:
 @dataclass
 class BrokenConfiguration:
     config_name: StrOrPromise
-    exception_message: str
+    exception_message: StrOrPromise
 
 
 @dataclass
@@ -130,7 +134,7 @@ class InvalidCertificate:
 @dataclass
 class InvalidRegistrationBackend:
     config_name: StrOrPromise
-    exception_message: str
+    exception_message: StrOrPromise
     form_name: str
     form_id: int
 
@@ -170,6 +174,22 @@ class ExpiringReferenceListsService:
     def general_config_admin_link(self) -> str:
         general_config_admin_url = reverse("admin:config_globalconfiguration_change")
         return build_absolute_uri(general_config_admin_url)
+
+
+@dataclass
+class InvalidMapComponentOverlay:
+    form_id: int
+    form_name: str
+    overlay_name: str
+    component_name: str
+    exception_message: StrOrPromise = ""
+
+    @property
+    def admin_link(self) -> str:
+        form_relative_admin_url = reverse(
+            "admin:forms_form_change", kwargs={"object_id": self.form_id}
+        )
+        return build_absolute_uri(form_relative_admin_url)
 
 
 def collect_failed_emails(since: datetime) -> Iterable[FailedEmail]:
@@ -564,7 +584,6 @@ def collect_expired_or_near_expiry_reference_lists_data() -> list[
 
     # check only the services that are used by active forms and by specific components
     for form in live_forms:
-        assert isinstance(form, Form)  # help the type checker a bit
         components = form.iter_components()
 
         for component in components:
@@ -670,5 +689,120 @@ def collect_expired_or_near_expiry_reference_lists_data() -> list[
                 table_items=data["items"],
             )
         )
+
+    return problems
+
+
+class WMS:
+    """
+    Helper to process WMS tile layer configuration.
+    """
+
+    _layers_for_wms_url: MutableMapping[str, set[str] | requests.RequestException]
+
+    def __init__(self):
+        self.session = requests.Session()
+        self._layers_for_wms_url = {}
+
+    def __enter__(self):
+        self.session.__enter__()
+        return self
+
+    def __exit__(self, *args):
+        self.session.__exit__(*args)
+
+    def get_layer_names(self, wms_layer_url: str) -> Collection[str]:
+        if self._layers_for_wms_url.get(wms_layer_url) is None:
+            # populate the cache and do the expensive processing
+            try:
+                response = self.session.get(wms_layer_url)
+                response.raise_for_status()
+            except requests.RequestException as exc:
+                self._layers_for_wms_url[wms_layer_url] = exc
+            else:
+                root = etree.fromstring(response.content)
+                # Try with common wms standard namespace first (used in WMS 1.3.0)
+                names = root.findall(
+                    ".//wms:Layer/wms:Name",
+                    namespaces={"wms": "http://www.opengis.net/wms"},
+                    # Fallback to no namespace (for WMS 1.1.1)
+                ) or root.findall(".//Layer/Name")
+
+                self._layers_for_wms_url[wms_layer_url] = set(
+                    element.text.strip() for element in names if element.text
+                )
+
+        cache_result = self._layers_for_wms_url[wms_layer_url]
+        if isinstance(cache_result, requests.RequestException):
+            raise cache_result
+        return cache_result
+
+
+def collect_invalid_map_component_overlays() -> list[InvalidMapComponentOverlay]:
+    live_forms = Form.objects.live()
+    wms_tile_layers_map: Mapping[str, str] = {
+        str(uuid): str(url)
+        for uuid, url in MapWMSTileLayer.objects.values_list("uuid", "url")
+    }
+
+    problems: list[InvalidMapComponentOverlay] = []
+
+    def _iter_overlays() -> Iterator[tuple[Form, Component, Overlay]]:
+        for form in live_forms:
+            for component in form.iter_components(recursive=True):
+                if component["type"] != "map":
+                    continue
+                if not (overlays := component.get("overlays", [])):
+                    continue
+                for overlay in overlays:
+                    yield form, component, overlay
+
+    with WMS() as wms_helper:
+        for form, component, overlay in _iter_overlays():
+            overlay_url = wms_tile_layers_map.get(overlay["uuid"])
+
+            # Is the uuid connected to a known WMS tile layer
+            if not overlay_url:
+                problems.append(
+                    InvalidMapComponentOverlay(
+                        form_id=form.pk,
+                        form_name=form.name,
+                        overlay_name=overlay["label"],
+                        component_name=component["key"],
+                        exception_message=_("Invalid UUID"),
+                    )
+                )
+                continue
+
+            try:
+                xml_layer_names = wms_helper.get_layer_names(overlay_url)
+            except requests.RequestException:
+                problems.append(
+                    InvalidMapComponentOverlay(
+                        form_id=form.pk,
+                        form_name=form.name,
+                        overlay_name=overlay["label"],
+                        component_name=component["key"],
+                        exception_message=_("Overlay url returned an error"),
+                    )
+                )
+                continue
+
+            # Check if all overlay layers are actually available in the WMS tile
+            # layer. It could be that the WMS tile layer was updated, and that the
+            # layer is no-longer available.
+            missing_layers = set(overlay["layers"]) - set(xml_layer_names)
+            if missing_layers:
+                problems.append(
+                    InvalidMapComponentOverlay(
+                        form_id=form.pk,
+                        form_name=form.name,
+                        overlay_name=overlay["label"],
+                        component_name=component["key"],
+                        exception_message=_(
+                            "Overlay uses unavailable layers: {layers}"
+                        ).format(layers=", ".join(sorted(missing_layers))),
+                    )
+                )
 
     return problems

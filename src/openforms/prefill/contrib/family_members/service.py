@@ -24,7 +24,7 @@ def check_unmatched_variables() -> str:
         return ""
 
     form_component_mappings = [
-        {form.id: component["key"]}
+        {form.pk: component["key"]}
         for form in live_forms
         for component in form.iter_components()
         if component["type"] in ("partners", "children")

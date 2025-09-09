@@ -1,0 +1,460 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?request=GetCapabilities&service=WMS
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<WMS_Capabilities xmlns=\"http://www.opengis.net/wms\"
+        xmlns:sld=\"http://www.opengis.net/sld\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:inspire_common=\"http://inspire.ec.europa.eu/schemas/common/1.0\"
+        xmlns:inspire_vs=\"http://inspire.ec.europa.eu/schemas/inspire_vs/1.0\" version=\"1.3.0\"
+        xsi:schemaLocation=\"http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd
+        http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd
+        http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd\">\n\t<Service>\n\t\t<Name>WMS</Name>\n\t\t<Title>BRO
+        Model Grondwaterspiegeldiepte (WDM) WMS</Title>\n\t\t<Abstract>Het grondwaterspiegeldieptemodel
+        maakt deel uit van de Basisregistratieondergrond (BRO). Het bestaat uit een
+        aantal grondwaterkarakteristieken die samen de langjarig gemiddelde fluctuatiedieptes
+        van de grondwaterspiegel weergegeven. Deze statistieken zijn de gemiddelde
+        kleinste grondwaterspiegeldiepte (GHG), de gemiddelde grootste grondwaterspiegeldiepte
+        (GLG), en de daarvan afgeleide grondwatertrap (Gt). De grondwatertrap maakte
+        tot voor kort deel uit van een ander registratieobject, te weten de Bodemkaart
+        van Nederland schaal 1:50000. Voor onder meer ecologische toepassingen is
+        ook de gemiddelde voorjaarsgrondwaterspiegeldiepte (GVG) aan het grondwaterspiegeldieptemodel
+        toegevoegd.</Abstract>\n\t\t<KeywordList>\n\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t<Keyword>infoMapAccessService</Keyword>\n\t\t</KeywordList>\n\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://www.pdok.nl\"/>\n\t\t<ContactInformation>\n\t\t\t<ContactPersonPrimary>\n\t\t\t\t<ContactPerson>KlantContactCenter
+        PDOK</ContactPerson>\n\t\t\t\t<ContactOrganization>PDOK</ContactOrganization>\n\t\t\t</ContactPersonPrimary>\n\t\t\t<ContactPosition>pointOfContact</ContactPosition>\n\t\t\t<ContactAddress>\n\t\t\t\t<AddressType>Work</AddressType>\n\t\t\t\t<Address/>\n\t\t\t\t<City>Apeldoorn</City>\n\t\t\t\t<StateOrProvince/>\n\t\t\t\t<PostCode/>\n\t\t\t\t<Country>Netherlands</Country>\n\t\t\t</ContactAddress>\n\t\t\t<ContactVoiceTelephone/>\n\t\t\t<ContactFacsimileTelephone/>\n\t\t\t<ContactElectronicMailAddress>BeheerPDOK@kadaster.nl</ContactElectronicMailAddress>\n\t\t</ContactInformation>\n\t\t<Fees>NONE</Fees>\n\t\t<AccessConstraints>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</AccessConstraints>\n\t\t<MaxWidth>4000</MaxWidth>\n\t\t<MaxHeight>4000</MaxHeight>\n\t</Service>\n\t<Capability>\n\t\t<Request>\n\t\t\t<GetCapabilities>\n\t\t\t\t<Format>text/xml</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetCapabilities>\n\t\t\t<GetMap>\n\t\t\t\t<Format>image/png</Format>\n\t\t\t\t<Format>image/jpeg</Format>\n\t\t\t\t<Format>image/png;
+        mode=8bit</Format>\n\t\t\t\t<Format>image/vnd.jpeg-png</Format>\n\t\t\t\t<Format>image/vnd.jpeg-png8</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t\t<Post>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0\"/>\n\t\t\t\t\t\t</Post>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetMap>\n\t\t\t<GetFeatureInfo>\n\t\t\t\t<Format>application/json</Format>\n\t\t\t\t<Format>application/json;
+        subtype=geojson</Format>\n\t\t\t\t<Format>application/vnd.ogc.gml</Format>\n\t\t\t\t<Format>text/html</Format>\n\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t<Format>text/xml</Format>\n\t\t\t\t<Format>text/xml;
+        subtype=gml/3.1.1</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t\t<Post>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0\"/>\n\t\t\t\t\t\t</Post>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetFeatureInfo>\n\t\t</Request>\n\t\t<Exception>\n\t\t\t<Format>XML</Format>\n\t\t\t<Format>INIMAGE</Format>\n\t\t\t<Format>BLANK</Format>\n\t\t</Exception>\n\t\t<inspire_vs:ExtendedCapabilities>\n\t\t\t<inspire_common:MetadataUrl>\n\t\t\t\t<inspire_common:URL>https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=757a7c50-540d-4105-9135-73f09f700743</inspire_common:URL>\n\t\t\t\t<inspire_common:MediaType>application/vnd.ogc.csw.GetRecordByIdResponse_xml</inspire_common:MediaType>\n\t\t\t</inspire_common:MetadataUrl>\n\t\t\t<inspire_common:SupportedLanguages>\n\t\t\t\t<inspire_common:DefaultLanguage>\n\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t</inspire_common:DefaultLanguage>\n\t\t\t\t<inspire_common:SupportedLanguage>\n\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t</inspire_common:SupportedLanguage>\n\t\t\t</inspire_common:SupportedLanguages>\n\t\t\t<inspire_common:ResponseLanguage>\n\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t</inspire_common:ResponseLanguage>\n\t\t</inspire_vs:ExtendedCapabilities>\n\t\t<Layer
+        queryable=\"1\">\n\t\t\t<Title>BRO Model Grondwaterspiegeldiepte (WDM) WMS</Title>\n\t\t\t<Abstract>Het
+        grondwaterspiegeldieptemodel maakt deel uit van de Basisregistratieondergrond
+        (BRO). Het bestaat uit een aantal grondwaterkarakteristieken die samen de
+        langjarig gemiddelde fluctuatiedieptes van de grondwaterspiegel weergegeven.
+        Deze statistieken zijn de gemiddelde kleinste grondwaterspiegeldiepte (GHG),
+        de gemiddelde grootste grondwaterspiegeldiepte (GLG), en de daarvan afgeleide
+        grondwatertrap (Gt). De grondwatertrap maakte tot voor kort deel uit van een
+        ander registratieobject, te weten de Bodemkaart van Nederland schaal 1:50000.
+        Voor onder meer ecologische toepassingen is ook de gemiddelde voorjaarsgrondwaterspiegeldiepte
+        (GVG) aan het grondwaterspiegeldieptemodel toegevoegd.</Abstract>\n\t\t\t<KeywordList>\n\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t</KeywordList>\n\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t<CRS>CRS:84</CRS>\n\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t</EX_GeographicBoundingBox>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldieptemetingen</Title>\n\t\t\t\t<Abstract>Om het model voor
+        de fluctuatie van de grondwaterspiegeldiepte te genereren worden in het voorjaar
+        en najaar veldmetingen uitgevoerd om de diepte van de grondwaterspiegel te
+        meten. De metingen worden uitgevoerd in een tijdelijk boorgat waarin alleen
+        de diepte wordt gemeten nadat in het gat het grondwaterniveau stabiel is.
+        Het is een puntenbestand met de locatie, datum en de diepte in cm onder maaiveld.
+        Het grondwaterspiegeldieptemodel maakt deel uit van de Basisregistratieondergrond
+        (BRO). Het bestaat uit een aantal grondwaterkarakteristieken die samen de
+        langjarig gemiddelde fluctuatiedieptes van de grondwaterspiegel weergegeven.
+        Deze statistieken zijn de gemiddelde kleinste grondwaterspiegeldiepte (GHG),
+        de gemiddelde grootste grondwaterspiegeldiepte (GLG), en de daarvan afgeleide
+        grondwatertrap (Gt). De grondwatertrap maakte tot voor kort deel uit van een
+        ander registratieobject, te weten de Bodemkaart van Nederland schaal 1:50000.
+        Voor onder meer ecologische toepassingen is ook de gemiddelde voorjaarsgrondwaterspiegeldiepte
+        (GVG) aan het grondwaterspiegeldieptemodel toegevoegd.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>observations</Name>\n\t\t\t\t\t<Title>Observations</Title>\n\t\t\t\t\t<LegendURL
+        width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen/observations.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GHG</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldiepte GHG</Title>\n\t\t\t\t<Abstract>Het grondwaterspiegeldieptemodel
+        maakt deel uit van de Basisregistratieondergrond (BRO). Het bestaat uit een
+        aantal grondwaterkarakteristieken die samen de langjarig gemiddelde fluctuatiedieptes
+        van de grondwaterspiegel weergegeven. E\xE9n van die karakteristieken in het
+        grondwaterspiegeldieptemodel is \u2018Gemiddelde Hoogste Grondwaterspiegeldiepte
+        (GHG). Deze laag bevat de waarden hiervoor in cm onder maaiveld.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>mediaan</Name>\n\t\t\t\t\t<Title>GHG
+        Mediaan</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GHG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GLG</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldiepte GLG</Title>\n\t\t\t\t<Abstract>Het grondwaterspiegeldieptemodel
+        maakt deel uit van de Basisregistratieondergrond (BRO). Het bestaat uit een
+        aantal grondwaterkarakteristieken die samen de langjarig gemiddelde fluctuatiedieptes
+        van de grondwaterspiegel weergegeven. E\xE9n van die karakteristieken in het
+        grondwaterspiegeldieptemodel is \u2018Gemiddelde Laagste Grondwaterspiegeldiepte
+        (GLG). Deze laag bevat de waarden hiervoor in cm onder maaiveld.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>mediaan</Name>\n\t\t\t\t\t<Title>GLG
+        Mediaan</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GLG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GVG</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldiepte GVG</Title>\n\t\t\t\t<Abstract>Het grondwaterspiegeldieptemodel
+        maakt deel uit van de Basisregistratieondergrond (BRO). Het bestaat uit een
+        aantal grondwaterkarakteristieken die samen de langjarig gemiddelde fluctuatiedieptes
+        van de grondwaterspiegel weergegeven. E\xE9n van die karakteristieken in het
+        grondwaterspiegeldieptemodel is \u2018Gemiddelde Voorjaars Grondwaterspiegeldiepte
+        (GVG). Voor onder meer ecologische toepassingen is ook de gemiddelde voorjaarsgrondwaterspiegeldiepte
+        (GVG) aan het grondwaterspiegeldieptemodel toegevoegd. Deze laag bevat de
+        waarden hiervoor in cm onder maaiveld.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>mediaan</Name>\n\t\t\t\t\t<Title>GVG
+        Mediaan</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GVG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GT</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldiepte Grondwatertrappen Gt</Title>\n\t\t\t\t<Abstract>Het
+        grondwaterspiegeldieptemodel maakt deel uit van de Basisregistratieondergrond
+        (BRO). Het bestaat uit een aantal grondwaterkarakteristieken die samen de
+        langjarig gemiddelde fluctuatiedieptes van de grondwaterspiegel weergegeven.
+        Deze statistieken zijn de gemiddelde kleinste grondwaterspiegeldiepte (GHG),
+        de gemiddelde grootste grondwaterspiegeldiepte (GLG), en de daarvan afgeleide
+        grondwatertrap (Gt). Meer informatie en de voor deze afleiding gebruikte indeling
+        in klassen is te vinden in tabel 1 van het \u2018Scopedocument Model grondwaterspiegeldiepte
+        1.0\u2019 [https://www.bro-productomgeving.nl/bpo/latest/modellen/model-grondwaterspiegeldiepte-wdm/wdm-scopedocument].
+        De grondwatertrap maakte eerder deel uit van een ander registratieobject,
+        te weten de Bodemkaart van Nederland schaal 1:50000, maar voor opname in de
+        BRO is besloten deze te scheiden.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>gt-mediane-gxg</Name>\n\t\t\t\t\t<Title>GT
+        Mediane GXG</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GT/gt-mediane-gxg.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldiepte-modeldocumentatie</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldiepte modeldocumentatie</Title>\n\t\t\t\t<Abstract>Voor
+        de realisatie van het grondwaterspiegeldieptemodel wordt een onderscheid gemaakt
+        in hoog Nederland, waar vrij afwaterende systemen overheersen en laag Nederland,
+        waar de grondwaterspiegeldiepte wordt bepaald door peilbeheer. Deze laag in
+        de dataset bevat voor iedere locatie de referentie naar de documentatie waarin
+        dit verder beschreven is.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>references</Name>\n\t\t\t\t\t<Title>References</Title>\n\t\t\t\t\t<LegendURL
+        width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldiepte-modeldocumentatie/references.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t</Layer>\n\t</Capability>\n</WMS_Capabilities>"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Headers:
+      - Content-Type
+      Access-Control-Allow-Method:
+      - GET, POST, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - public, max-age=3600, no-transform
+      Content-Length:
+      - '28385'
+      Content-Type:
+      - text/xml; charset=UTF-8
+      Date:
+      - Fri, 12 Sep 2025 13:53:07 GMT
+      Referrer-Policy:
+      - origin
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://schemas.opengis.net/wms/1.1.1/capabilities_1_1_1.xml
+  response:
+    body:
+      string: "<?xml version='1.0' encoding=\"UTF-8\" standalone=\"no\" ?>\n<!-- The
+        DTD (Document Type Definition) given here must correspond to the version number
+        declared in the WMT_MS_Capabilities element below. -->\n<!DOCTYPE WMT_MS_Capabilities
+        SYSTEM\n \"http://www.digitalearth.gov/wmt/xml/capabilities_1_1_1.dtd\"\n
+        [\n <!-- Vendor-specific elements are defined here if needed. -->\n <!-- If
+        not needed, just leave this EMPTY declaration.  Do not\n  delete the declaration
+        entirely. -->\n <!ELEMENT VendorSpecificCapabilities EMPTY>\n ]>  <!-- end
+        of DOCTYPE declaration -->\n\n<!-- Note: this XML is just an EXAMPLE that
+        attempts to show all\nrequired and optional elements for illustration.  Consult
+        the Web Map\nService 1.1.0 specification and the DTD for guidance on what
+        to actually\ninclude and what to leave out. -->\n\n<!-- The version number
+        listed in the WMT_MS_Capabilities element here must\ncorrespond to the DTD
+        declared above.  See the WMT specification document for\nhow to respond when
+        a client requests a version number not implemented by the\nserver. -->\n<WMT_MS_Capabilities
+        version=\"1.1.1\" updateSequence=\"0\">\n<!-- Service Metadata -->\n<Service>\n
+        \ <!-- The WMT-defined name for this type of service -->\n  <Name>OGC:WMS</Name>\n
+        \ <!-- Human-readable title for pick lists -->\n  <Title>Acme Corp. Map Server</Title>\n
+        \ <!-- Narrative description providing additional information -->\n  <Abstract>WMT
+        Map Server maintained by Acme Corporation.  Contact: webmaster@wmt.acme.com.
+        \ High-quality maps showing roadrunner nests and possible ambush locations.</Abstract>\n
+        \ <KeywordList>\n    <Keyword>bird</Keyword>\n    <Keyword>roadrunner</Keyword>\n
+        \   <Keyword>ambush</Keyword>\n  </KeywordList>\n  <!-- Top-level web address
+        of service or service provider.  See also OnlineResource\n  elements under
+        <DCPType>. -->\n  <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\"
+        xlink:type=\"simple\"\n   xlink:href=\"http://hostname/\" />\n  <!-- Contact
+        information -->\n  <ContactInformation>\n    <ContactPersonPrimary>\n      <ContactPerson>Jeff
+        deLaBeaujardiere</ContactPerson>\n      <ContactOrganization>NASA</ContactOrganization>\n
+        \   </ContactPersonPrimary>\n    <ContactPosition>Computer Scientist</ContactPosition>\n
+        \   <ContactAddress>\n      <AddressType>postal</AddressType>\n      <Address>NASA
+        Goddard Space Flight Center, Code 933</Address>\n      <City>Greenbelt</City>\n
+        \     <StateOrProvince>MD</StateOrProvince>\n      <PostCode>20771</PostCode>\n
+        \     <Country>USA</Country>\n    </ContactAddress>\n    <ContactVoiceTelephone>+1
+        301 286-1569</ContactVoiceTelephone>\n    <ContactFacsimileTelephone>+1 301
+        286-1777</ContactFacsimileTelephone>\n    <ContactElectronicMailAddress>delabeau@iniki.gsfc.nasa.gov</ContactElectronicMailAddress>\n
+        \ </ContactInformation>\n  <!-- Fees or access constraints imposed. -->\n
+        \ <Fees>none</Fees>\n  <AccessConstraints>none</AccessConstraints>\n</Service>\n<Capability>\n
+        \ <Request>\n    <GetCapabilities>\n      <Format>application/vnd.ogc.wms_xml</Format>\n
+        \     <DCPType>\n        <HTTP>\n          <Get>\n            <!-- The URL
+        here for invoking GetCapabilities using HTTP GET\n            is only a prefix
+        to which a query string is appended. -->\n            <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n
+        \            xlink:type=\"simple\"\n             xlink:href=\"http://hostname:port/path\"
+        />\n          </Get>\n          <Post>\n            <!-- The URL here for
+        invoking GetCapabilities using HTTP POST\n            includes the complete
+        address to which a query would be sent in\n            XML format.  This is
+        here for future expansion; no POST encoding\n\t    has yet been defined. -->\n
+        \           <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n
+        \            xlink:type=\"simple\"\n             xlink:href=\"http://hostname:port/path\"
+        />\n          </Post>\n        </HTTP>\n      </DCPType>\n    </GetCapabilities>\n
+        \   <GetMap>\n      <Format>image/gif</Format>\n      <Format>image/png</Format>\n
+        \     <Format>image/jpeg</Format>\n      <DCPType>\n        <HTTP>\n          <Get>\n
+        \           <!-- The URL here for invoking GetCapabilities using HTTP GET\n
+        \           is only a prefix to which a query string is appended. -->\n            <OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n             xlink:type=\"simple\"\n
+        \            xlink:href=\"http://hostname:port/path\" />\n          </Get>\n
+        \       </HTTP>\n      </DCPType>\n    </GetMap>\n    <GetFeatureInfo>\n      <Format>application/vnd.ogc.gml</Format>\n
+        \     <Format>text/plain</Format>\n      <Format>text/html</Format>\n      <DCPType>\n
+        \       <HTTP>\n          <Get>\n            <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n
+        \            xlink:type=\"simple\"\n             xlink:href=\"http://hostname:port/path\"
+        />\n          </Get>\n        </HTTP>\n      </DCPType>\n    </GetFeatureInfo>\n
+        \   <DescribeLayer><!--optional; used only by SLD-enabled WMS-->\n      <Format>application/vnd.ogc.gml</Format>\n
+        \     <DCPType>\n        <HTTP>\n          <Get>\n            <OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n             xlink:type=\"simple\"\n
+        \            xlink:href=\"http://hostname:port/path\" />\n          </Get>\n
+        \       </HTTP>\n      </DCPType>\n    </DescribeLayer>\n  </Request>\n  <Exception>\n
+        \   <Format>application/vnd.ogc.se_xml</Format>\n    <Format>application/vnd.ogc.se_inimage</Format>\n
+        \   <Format>application/vnd.ogc.se_blank</Format>\n  </Exception>\n  <!--
+        Any text or markup is allowed here, as required to describe\n       vendor-specific
+        capabilities.  Please define elements and attributes\n       in the DOCTYPE
+        declaration at the start of the document. -->\n  <!-- This example is empty
+        because no VSPs were defined in preamble -->\n  <VendorSpecificCapabilities
+        />\n  <!-- Place-holder for Styled Layer Descriptor (SLD)-enabled WMSes.\n
+        \      This element is absent for a basic WMS. -->\n  <UserDefinedSymbolization
+        SupportSLD=\"1\" UserLayer=\"1\" UserStyle=\"1\"\n\tRemoteWFS=\"1\" />\n  <Layer>\n
+        \   <Title>Acme Corp. Map Server</Title>\n    <SRS>EPSG:4326</SRS> <!-- all
+        layers are available in at least this SRS -->\n    <AuthorityURL name=\"DIF_ID\">\n
+        \     <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\"\n
+        \      xlink:href=\"http://gcmd.gsfc.nasa.gov/difguide/whatisadif.html\" />\n
+        \   </AuthorityURL>\n    <Layer>\n      <!-- This parent layer has a Name
+        and can therefore be requested from a Map Server, yielding a map of all subsidiary
+        layers. -->\n      <Name>ROADS_RIVERS</Name> \n      <Title>Roads and Rivers</Title>\n
+        \     <!-- See the spec to learn how some characteristics are inherited by\n
+        \          subsidiary layers. -->\n      <SRS>EPSG:26986</SRS> <!-- An additional
+        SRS for this layer --> \n      <LatLonBoundingBox minx=\"-71.63\" miny=\"41.75\"
+        maxx=\"-70.78\" maxy=\"42.90\"/>\n      <!-- The optional resx and resy attributes
+        below indicate the X and Y spatial\n           resolution in the units of
+        that SRS. -->\n      <!-- The EPSG:4326 BoundingBox duplicates some of the
+        info in LatLonBoundingBox\n           and is therefore optional, but using
+        it here allows the additional\n           resolution attributes. -->\n      <BoundingBox
+        SRS=\"EPSG:4326\"\n       minx=\"-71.63\" miny=\"41.75\" maxx=\"-70.78\" maxy=\"42.90\"
+        resx=\"0.01\" resy=\"0.01\"/>\n      <BoundingBox SRS=\"EPSG:26986\"\n       minx=\"189000\"
+        miny=\"834000\" maxx=\"285000\" maxy=\"962000\" resx=\"1\" resy=\"1\" />\n
+        \     <!-- Optional Title, URL and logo image of data provider. -->\n      <Attribution>\n
+        \       <Title>State College University</Title>\n        <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\"
+        xlink:type=\"simple\"\n         xlink:href=\"http://www.university.edu/\"
+        />\n        <LogoURL width=\"100\" height=\"100\">\n          <Format>image/gif</Format>\n
+        \         <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n           xlink:type=\"simple\"\n
+        \          xlink:href=\"http://www.university.edu/icons/logo.gif\" />\n        </LogoURL>\n
+        \     </Attribution>\n      <!-- Identifier whose meaning is defined in an
+        AuthorityURL element -->\n      <Identifier authority=\"DIF_ID\">123456</Identifier>\n
+        \     <FeatureListURL>\n        <Format>application/vnd.ogc.se_xml\"</Format>\n
+        \       <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\"\n
+        \        xlink:href=\"http://www.university.edu/data/roads_rivers.gml\" />\n
+        \     </FeatureListURL>\n      <Style>\n        <Name>USGS</Name>\n        <Title>USGS
+        Topo Map Style</Title>\n        <Abstract>Features are shown in a style like
+        that used in USGS topographic maps.</Abstract>\n        <!-- A picture of
+        a legend for a Layer in this Style -->\n        <LegendURL width=\"72\" height=\"72\">\n
+        \         <Format>image/gif</Format>\n          <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n
+        \          xlink:type=\"simple\"\n           xlink:href=\"http://www.university.edu/legends/usgs.gif\"
+        />\n        </LegendURL>\n        <!-- An XSL stylesheet describing how GML
+        feature data will rendered to create\n             a map of this layer. -->\n
+        \       <StyleSheetURL>\n          <Format>text/xsl</Format>\n          <OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n           xlink:type=\"simple\"\n
+        \          xlink:href=\"http://www.university.edu/stylesheets/usgs.xsl\" />\n
+        \       </StyleSheetURL>\n      </Style>\n      <ScaleHint min=\"4000\" max=\"35000\"></ScaleHint>\n
+        \     <Layer queryable=\"1\">\n\t<Name>ROADS_1M</Name> \n\t<Title>Roads at
+        1:1M scale</Title>\n\t<Abstract>Roads at a scale of 1 to 1 million.</Abstract>\n\t<KeywordList>\n
+        \         <Keyword>road</Keyword>\n          <Keyword>transportation</Keyword>\n
+        \         <Keyword>atlas</Keyword>\n\t</KeywordList>\n\t<Identifier authority=\"DIF_ID\">123456</Identifier>\n
+        \       <!-- Metadata specific to this particular layer.  The same FGDC metadata
+        is offered in two formats. -->\n\t<MetadataURL type=\"FGDC\">\n          <Format>text/plain</Format>\n
+        \         <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n           xlink:type=\"simple\"\n
+        \          xlink:href=\"http://www.university.edu/metadata/roads.txt\" />\n
+        \       </MetadataURL>\n\t<MetadataURL type=\"FGDC\">\n           <Format>text/xml</Format>\n
+        \          <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n
+        \           xlink:type=\"simple\"\n            xlink:href=\"http://www.university.edu/metadata/roads.xml\"
+        />\n        </MetadataURL>\n        <!-- In addition to the Style specified
+        in the parent Layer, this Layer is available in this style. -->\n\t<Style>\n\t
+        \ <Name>ATLAS</Name>\n\t  <Title>Road atlas style</Title>\n\t  <Abstract>Roads
+        are shown in a style like that used in a commercial road atlas.</Abstract>\n
+        \       <LegendURL width=\"72\" height=\"72\">\n          <Format>image/gif</Format>\n
+        \         <OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n           xlink:type=\"simple\"\n
+        \          xlink:href=\"http://www.university.edu/legends/atlas.gif\" />\n
+        \       </LegendURL>\n\t</Style>\n      </Layer>\n      <Layer queryable=\"1\">\n\t<Name>RIVERS_1M</Name>\n\t<Title>Rivers
+        at 1:1M scale</Title>\n\t<Abstract>Rivers at a scale of 1 to 1 million.</Abstract>\n\t<KeywordList>\n
+        \         <Keyword>river</Keyword>\n          <Keyword>canal</Keyword>\n          <Keyword>waterway</Keyword>\n\t</KeywordList>\n
+        \     </Layer>\n    </Layer>\n    <Layer queryable=\"1\">\n      <Title>Weather
+        Forecast Data</Title>\n      <SRS>EPSG:4326</SRS> <!-- harmless repetition
+        of common SRS -->\n      <LatLonBoundingBox minx=\"-180\" miny=\"-90\" maxx=\"180\"
+        maxy=\"90\" />\n      <!-- These weather data are available daily from 1999-01-01
+        through\n           2000-08-22. -->\n      <Dimension name=\"time\" units=\"ISO8601\"
+        />\n      <Extent name=\"time\" default=\"2000-08-22\">1999-01-01/2000-08-22/P1D</Extent>\n
+        \     <Layer>\n\t<Name>Clouds</Name> \n\t<Title>Forecast cloud cover</Title>\n
+        \     </Layer>\n      <Layer>\n\t<Name>Temperature</Name> \n\t<Title>Forecast
+        temperature</Title>\n      </Layer>\n      <Layer>\n\t<Name>Pressure</Name>
+        \n\t<Title>Forecast barometric pressure</Title>\n        <!-- Pressure is
+        available at several elevations.\n         EPSG:5030 is WGS 84 ellipsoid,
+        units in metres.\n         Pressure is also available at several times.\n
+        \        NOTE: first list all Dimension elements, then all Extent elements.
+        -->\n         <Dimension name=\"time\" units=\"ISO8601\" />\n         <Dimension
+        name=\"elevation\" units=\"EPSG:5030\" />\n         <Extent name=\"time\"
+        default=\"2000-08-22\">1999-01-01/2000-08-22/P1D</Extent>\n         <Extent
+        name=\"elevation\" default=\"0\" nearestValue=\"1\">0,1000,3000,5000,10000</Extent>\n
+        \     </Layer>\n    </Layer>\n    <!-- Example of a layer which is a static
+        map of fixed\n         size which the server cannot subset or make transparent
+        -->\n    <Layer opaque=\"1\" noSubsets=\"1\" fixedWidth=\"512\" fixedHeight=\"256\">\n
+        \     <Name>ozone_image</Name>\n      <Title>Global ozone distribution (1992)</Title>\n
+        \     <LatLonBoundingBox minx=\"-180\" miny=\"-90\" maxx=\"180\" maxy=\"90\"
+        />\n      <Extent name=\"time\" default=\"1992\">1992</Extent>\n    </Layer>\n
+        \   <!-- Example of a layer which originated from another WMS and has been\n
+        \        \"cascaded\" by this WMS. -->\n    <Layer cascaded=\"1\">\n      <Name>population</Name>\n
+        \     <Title>World population, annual</Title>\n      <LatLonBoundingBox minx=\"-180\"
+        miny=\"-90\" maxx=\"180\" maxy=\"90\" />\n      <Extent name=\"time\" default=\"2000\">1990/2000/P1Y</Extent>\n
+        \   </Layer>\n  </Layer>\n</Capability>\n</WMT_MS_Capabilities>\n\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Connection:
+      - Keep-Alive
+      Content-Security-Policy:
+      - upgrade-insecure-requests
+      Content-Type:
+      - application/xml
+      Date:
+      - Fri, 12 Sep 2025 13:53:07 GMT
+      ETag:
+      - '"337a-6324eaafa178e-gzip"'
+      Keep-Alive:
+      - timeout=5, max=100
+      Last-Modified:
+      - Wed, 09 Apr 2025 01:48:37 GMT
+      Server:
+      - Apache
+      Vary:
+      - upgrade-insecure-requests,Accept-Encoding
+      X-Hostname:
+      - (null)
+      content-length:
+      - '13178'
+    status:
+      code: 200
+      message: OK
+version: 1

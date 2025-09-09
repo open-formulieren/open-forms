@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django.core.files import File
 from django.test import TestCase, override_settings, tag
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import requests_mock
@@ -15,6 +16,7 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import MapWMSTileLayerFactory
 from openforms.contrib.brk.models import BRKConfig
 from openforms.contrib.brk.tests.base import BRK_SERVICE, INVALID_BRK_SERVICE
 from openforms.contrib.haal_centraal.constants import BRPVersions
@@ -37,12 +39,14 @@ from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.tests.vcr import OFVCRMixin
+from openforms.utils.urls import build_absolute_uri
 from openforms.variables.constants import FormVariableDataTypes
 from stuf.stuf_bg.client import NoServiceConfigured
 from stuf.stuf_bg.models import StufBGConfig
 
 from ..digest import (
     InvalidLogicRule,
+    InvalidMapComponentOverlay,
     collect_broken_configurations,
     collect_expired_or_near_expiry_reference_lists_data,
     collect_failed_emails,
@@ -50,6 +54,7 @@ from ..digest import (
     collect_failed_registrations,
     collect_invalid_certificates,
     collect_invalid_logic_rules,
+    collect_invalid_map_component_overlays,
     collect_invalid_registration_backends,
 )
 from ..tasks import Digest
@@ -1735,3 +1740,231 @@ class ReferencelistExpiredDataTests(TestCase):
         expired_data = collect_expired_or_near_expiry_reference_lists_data()
 
         self.assertEqual(len(expired_data), 0)
+
+
+class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
+    v111_EXAMPLE = "https://schemas.opengis.net/wms/1.1.1/capabilities_1_1_1.xml"
+    v130_EXAMPLE = "https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?request=GetCapabilities&service=WMS"
+
+    def test_valid_map_component_without_overlays(self):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "map",
+                        "key": "map",
+                        "defaultZoom": 3,
+                        "initialCenter": {
+                            "lat": 43.23,
+                            "lng": 41.23,
+                        },
+                    }
+                ]
+            },
+        )
+
+        # Collect invalid map component overlays
+        invalid_map_component_overlays = collect_invalid_map_component_overlays()
+
+        self.assertEqual(len(invalid_map_component_overlays), 0)
+
+    def test_valid_map_component_with_wms_overlays(self):
+        v130_wms_layer = MapWMSTileLayerFactory.create(url=self.v130_EXAMPLE)
+        v110_wms_layer = MapWMSTileLayerFactory.create(url=self.v111_EXAMPLE)
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "map",
+                        "key": "map",
+                        "defaultZoom": 3,
+                        "initialCenter": {
+                            "lat": 43.23,
+                            "lng": 41.23,
+                        },
+                        "overlays": [
+                            {
+                                "type": "wms",
+                                "uuid": str(v130_wms_layer.uuid),
+                                "label": "My first overlay",
+                                # Layers from /data/wms_getCapabilities_v130.xml
+                                "layers": ["bro-grondwaterspiegeldieptemetingen-GT"],
+                            },
+                            {
+                                "type": "wms",
+                                "uuid": str(v110_wms_layer.uuid),
+                                "label": "My second overlay",
+                                # Layers from /data/wms_getCapabilities_v111.xml
+                                "layers": ["Clouds"],
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+
+        # Collect invalid map component overlays
+        invalid_map_component_overlays = collect_invalid_map_component_overlays()
+
+        self.assertEqual(len(invalid_map_component_overlays), 0)
+
+    def test_invalid_map_component_with_unknown_wms_overlay(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "map",
+                        "key": "map",
+                        "defaultZoom": 3,
+                        "initialCenter": {
+                            "lat": 43.23,
+                            "lng": 41.23,
+                        },
+                        "overlays": [
+                            {
+                                "type": "wms",
+                                # Unknown tile layer uuid
+                                "uuid": "ca0fd363-917a-41cd-ad93-2c5ae99d82d9",
+                                "label": "My first overlay",
+                                # Layers from /data/wms_getCapabilities_v130.xml
+                                "layers": ["bro-grondwaterspiegeldieptemetingen"],
+                            }
+                        ],
+                    }
+                ]
+            },
+        )
+
+        # Collect invalid map component overlays
+        invalid_map_component_overlays = collect_invalid_map_component_overlays()
+
+        self.assertEqual(len(invalid_map_component_overlays), 1)
+        self.assertEqual(
+            InvalidMapComponentOverlay(
+                form_id=form.id,
+                form_name=form.name,
+                component_name="map",
+                overlay_name="My first overlay",
+                exception_message="Invalid UUID",
+            ),
+            invalid_map_component_overlays[0],
+        )
+
+        with self.subTest("Link to affected form"):
+            # Link to form
+            form_relative_admin_url = reverse(
+                "admin:forms_form_change", kwargs={"object_id": form.id}
+            )
+            absolute_uri_to_form = build_absolute_uri(form_relative_admin_url)
+            self.assertEqual(
+                absolute_uri_to_form,
+                invalid_map_component_overlays[0].admin_link,
+            )
+
+    def test_invalid_map_component_with_unreachable_wms_overlay_url(self):
+        # domain does not exist
+        wms_layer = MapWMSTileLayerFactory.create(url="http://bad-host:9999/fake-wms")
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "map",
+                        "key": "map",
+                        "defaultZoom": 3,
+                        "initialCenter": {
+                            "lat": 43.23,
+                            "lng": 41.23,
+                        },
+                        "overlays": [
+                            {
+                                "type": "wms",
+                                "uuid": str(wms_layer.uuid),
+                                "label": "My first overlay",
+                                # Layers from /data/wms_getCapabilities_v130.xml
+                                "layers": ["bro-grondwaterspiegeldieptemetingen"],
+                            }
+                        ],
+                    }
+                ]
+            },
+        )
+
+        # Collect invalid map component overlays
+        with self.vcr_raises():
+            invalid_map_component_overlays = collect_invalid_map_component_overlays()
+
+        self.assertEqual(len(invalid_map_component_overlays), 1)
+        self.assertEqual(
+            InvalidMapComponentOverlay(
+                form_id=form.id,
+                form_name=form.name,
+                component_name="map",
+                overlay_name="My first overlay",
+                exception_message="Overlay url returned an error",
+            ),
+            invalid_map_component_overlays[0],
+        )
+
+    def test_invalid_map_component_with_multiple_unknown_overlays_layers(self):
+        wms_layer = MapWMSTileLayerFactory.create(url=self.v130_EXAMPLE)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "map",
+                        "key": "map",
+                        "defaultZoom": 3,
+                        "initialCenter": {
+                            "lat": 43.23,
+                            "lng": 41.23,
+                        },
+                        "overlays": [
+                            {
+                                "type": "wms",
+                                "uuid": str(wms_layer.uuid),
+                                "label": "My first overlay",
+                                # Layers aren't present in XML
+                                "layers": ["unknown-layer", "another-unknown-layer"],
+                            },
+                            {
+                                "type": "wms",
+                                "uuid": str(wms_layer.uuid),
+                                "label": "My second overlay",
+                                # Layer isn't present in XML
+                                "layers": ["a-third-unknown-layer"],
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+
+        # Collect invalid map component overlays
+        invalid_map_component_overlays = collect_invalid_map_component_overlays()
+
+        self.assertEqual(len(invalid_map_component_overlays), 2)
+        self.assertEqual(
+            InvalidMapComponentOverlay(
+                form_id=form.id,
+                form_name=form.name,
+                component_name="map",
+                overlay_name="My first overlay",
+                exception_message="Overlay uses unavailable layers: another-unknown-layer, unknown-layer",
+            ),
+            invalid_map_component_overlays[0],
+        )
+        self.assertEqual(
+            InvalidMapComponentOverlay(
+                form_id=form.id,
+                form_name=form.name,
+                component_name="map",
+                overlay_name="My second overlay",
+                exception_message="Overlay uses unavailable layers: a-third-unknown-layer",
+            ),
+            invalid_map_component_overlays[1],
+        )
