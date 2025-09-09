@@ -6,6 +6,28 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.2.3 (2025-09-09)
+==================
+
+Regular bugfix release.
+
+.. note:: This release contains the ``report_duplication_merchant_pspids.py`` script.
+   This script allows administrators to detect Ogone merchants that have the same
+   ``PSPID`` value. As support for Ogone legacy will end at the end of 2025, this script
+   allows administrators to prepare for the migration to Worldline merchants, which will
+   not allow multiple merchants with the same ``PSPID`` value.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/report_duplication_merchant_pspids.py
+
+* [:backend:`4879`] Added a report script to detect duplicate Ogone merchants.
+* [:backend:`5572`] Fixed a crash in the StUF-ZDS registration plugin when another
+  form has family member components in its configuration.
+* [:backend:`4879`] Renamed the "Ogone webhook configuration" admin to "Worldline
+  webhook configuration (transition)".
+
 3.2.2 (2025-09-01)
 ==================
 
