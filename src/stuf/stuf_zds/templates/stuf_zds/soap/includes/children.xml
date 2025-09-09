@@ -1,0 +1,36 @@
+{% if children %}
+    {% for child in children %}
+        <ZKN:heeftAlsOverigBetrokkene StUF:entiteittype="ZAKBTROVR" StUF:verwerkingssoort="T">
+            <ZKN:gerelateerde>
+                <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
+                {% if child.bsn %}
+                    <BG:inp.bsn>{{ child.bsn }}</BG:inp.bsn>
+                    {% if child.prefilled %}
+                        <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                    {% else %}
+                        <BG:authentiek StUF:metagegeven="true">N</BG:authentiek>
+                    {% endif %}
+                {% endif %}
+                {% if child.lastName %}
+                    <BG:geslachtsnaam>{{ child.lastName }}</BG:geslachtsnaam>
+                {% endif %}
+                {% if child.affixes %}
+                    <BG:voorvoegselGeslachtsnaam>{{ child.affixes }}</BG:voorvoegselGeslachtsnaam>
+                {% endif %}
+                {% if child.initials %}
+                    <BG:voorletters>{{ child.initials }}</BG:voorletters>
+                {% endif %}
+                {% if child.firstNames %}
+                    <BG:voornamen>{{ child.firstNames }}</BG:voornamen>
+                {% endif %}
+                {% if child.dateOfBirth %}
+                    <BG:geboortedatum>{{ child.dateOfBirth }}</BG:geboortedatum>
+                {% endif %}
+                </ZKN:natuurlijkPersoon>
+            </ZKN:gerelateerde>
+            {% if stuf_zds_config.zaakbetrokkene_children_omschrijving %}
+                <ZKN:omschrijving StUF:exact="true">{{ stuf_zds_config.zaakbetrokkene_children_omschrijving }}</ZKN:omschrijving>
+            {% endif %}
+        </ZKN:heeftAlsOverigBetrokkene>
+    {% endfor %}
+{% endif %}

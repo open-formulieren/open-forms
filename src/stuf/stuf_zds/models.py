@@ -41,6 +41,16 @@ class StufZDSConfig(SingletonModel):
             "form submitter are registered as 'betrokkene'."
         ),
     )
+    zaakbetrokkene_children_omschrijving = models.CharField(
+        _("description for zaakbetrokkene children registration"),
+        max_length=100,
+        default="",
+        blank=True,
+        help_text=_(
+            "The 'zaakbetrokkene.omschrijving' value for when the children of the "
+            "form submitter are registered as 'betrokkene'."
+        ),
+    )
     zaakbetrokkene_cosigner_omschrijving = models.CharField(
         _("description for registrator zaakbetrokkene"),
         max_length=100,
