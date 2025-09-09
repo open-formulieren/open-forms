@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-12 12:36+0200\n"
-"PO-Revision-Date: 2025-08-12 12:39+0200\n"
+"POT-Creation-Date: 2025-09-09 10:32+0200\n"
+"PO-Revision-Date: 2025-09-09 10:41+0200\n"
 "Last-Translator:   <sonny@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -5407,8 +5407,8 @@ msgstr "Form.io-integratie"
 
 #: openforms/formio/components/custom.py:299
 #: openforms/formio/components/custom.py:665
-#: openforms/formio/components/vanilla.py:124
-#: openforms/formio/components/vanilla.py:334
+#: openforms/formio/components/vanilla.py:121
+#: openforms/formio/components/vanilla.py:331
 msgid "This value does not match the required pattern."
 msgstr "De waarde komt niet overeen met het verwachte patroon."
 
@@ -5456,20 +5456,20 @@ msgstr "Welke API gebruikt wordt om familiegegevens op te halen."
 msgid "Family members type configuration"
 msgstr "Familieleden typeconfiguratie"
 
-#: openforms/formio/components/vanilla.py:155
+#: openforms/formio/components/vanilla.py:152
 #, python-brace-format
 msgid "The email address {value} has not been verified yet."
 msgstr "Het e-mailadres {value} is nog niet bevestigd."
 
-#: openforms/formio/components/vanilla.py:243
+#: openforms/formio/components/vanilla.py:240
 msgid "Value is before minimum time"
 msgstr "De waarde is voor de minimumtijd"
 
-#: openforms/formio/components/vanilla.py:248
+#: openforms/formio/components/vanilla.py:245
 msgid "Value is after maximum time"
 msgstr "De waarde is na de maximale tijd"
 
-#: openforms/formio/components/vanilla.py:256
+#: openforms/formio/components/vanilla.py:253
 msgid "Value is not between mininum and maximum time."
 msgstr "De waarde ligt niet tussen de minimale en maximale tijd."
 
@@ -8323,10 +8323,9 @@ msgstr ""
 "betalingsprovider ondersteunt."
 
 #: openforms/payments/contrib/ogone/models.py:63
-#, fuzzy
 #| msgid "secret"
 msgid "API Secret"
-msgstr "secret"
+msgstr "API Secret"
 
 #: openforms/payments/contrib/ogone/models.py:67
 msgid ""
@@ -8349,6 +8348,10 @@ msgstr "Webhook Key ID"
 #: openforms/payments/contrib/ogone/models.py:91
 msgid "Webhook Key Secret"
 msgstr "Webhook Key Secret"
+
+#: openforms/payments/contrib/ogone/models.py:98
+msgid "Worldline webhook configuration (transition)"
+msgstr "Wordline webhook configuratie (transitie)"
 
 #: openforms/payments/contrib/ogone/plugin.py:40
 msgid "Merchant to use"
