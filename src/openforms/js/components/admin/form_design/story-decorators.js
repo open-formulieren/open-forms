@@ -81,6 +81,7 @@ export const FormDecorator = (Story, {args}) => (
         availableAuthPlugins: args.availableAuthPlugins || [],
         availablePrefillPlugins: args.availablePrefillPlugins || [],
         availableDMNPlugins: args.availableDMNPlugins || [],
+        selectedAuthPlugins: args.selectedAuthPlugins || [],
       },
       components: args.availableComponents || {},
       registrationBackends: args.registrationBackends || [],
