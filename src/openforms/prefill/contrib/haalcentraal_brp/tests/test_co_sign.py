@@ -17,6 +17,8 @@ from ..plugin import PLUGIN_IDENTIFIER
 
 plugin = register[PLUGIN_IDENTIFIER]
 
+AUTH_ATTRIBUTE = next(attr for attr in plugin.requires_auth)
+
 
 class CoSignPrefillTests:
     """
@@ -72,7 +74,7 @@ class CoSignPrefillTests:
             }
         )
 
-        add_co_sign_representation(submission, plugin.requires_auth[0])
+        add_co_sign_representation(submission, AUTH_ATTRIBUTE)
 
         submission.refresh_from_db()
         expected = {
@@ -101,7 +103,7 @@ class CoSignPrefillTests:
             }
         )
 
-        add_co_sign_representation(submission, plugin.requires_auth[0])
+        add_co_sign_representation(submission, AUTH_ATTRIBUTE)
 
         submission.refresh_from_db()
         expected = {
@@ -187,7 +189,7 @@ class CoSignPrefillEmptyConfigTests(TestCase):
             }
         )
 
-        add_co_sign_representation(submission, plugin.requires_auth[0])
+        add_co_sign_representation(submission, AUTH_ATTRIBUTE)
 
         submission.refresh_from_db()
         expected = {

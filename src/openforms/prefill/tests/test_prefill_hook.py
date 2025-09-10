@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from copy import deepcopy
 from unittest.mock import patch
 
@@ -9,11 +10,13 @@ from django.utils.translation import gettext as _
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
+from openforms.formio.typing import Component, FormioConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.models import Submission, SubmissionValueVariable
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.typing import JSONEncodable
 
 from ..base import BasePlugin
 from ..constants import IdentifierRoles
@@ -24,81 +27,40 @@ from .utils import get_test_register
 
 register = get_test_register()
 
-CONFIGURATION = {
+CONFIGURATION: FormioConfiguration = {
     "display": "form",
     "components": [
         {
             "id": "e4ty7zs",
             "key": "voornamen",
-            "mask": False,
             "type": "textfield",
-            "input": True,
             "label": "Voornamen",
             "hidden": False,
-            "prefix": "",
-            "suffix": "",
-            "unique": False,
-            "widget": {"type": "input"},
-            "dbIndex": False,
-            "overlay": {"top": "", "left": "", "style": "", "width": "", "height": ""},
             "prefill": {
                 "plugin": "demo",
                 "attribute": "random_string",
+                "identifierRole": IdentifierRoles.main,
             },
             "tooltip": "",
-            "disabled": False,
             "multiple": False,
-            "redrawOn": "",
-            "tabindex": "",
             "validate": {
-                "custom": "",
-                "unique": False,
                 "pattern": "",
-                "multiple": False,
                 "required": False,
-                "maxLength": "",
-                "minLength": "",
-                "customPrivate": False,
-                "strictDateValidation": False,
             },
-            "autofocus": False,
-            "encrypted": False,
-            "hideLabel": False,
-            "inputMask": "",
-            "inputType": "text",
-            "modalEdit": False,
-            "protected": False,
-            "refreshOn": "",
-            "tableView": True,
-            "attributes": {},
-            "errorLabel": "",
-            "persistent": True,
-            "properties": {},
-            "spellcheck": True,
-            "validateOn": "change",
             "clearOnHide": True,
             "conditional": {"eq": "", "show": None, "when": None},
-            "customClass": "",
             "description": "",
-            "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": False,
             "defaultValue": None,
-            "dataGridLabel": False,
-            "labelPosition": "top",
-            "showCharCount": False,
-            "showWordCount": False,
-            "calculateValue": "",
-            "ca lculateServer": False,
-            "allowMultipleMasks": False,
-            "customDefaultValue": "",
-            "allowCalculateOverride": False,
         }
     ],
 }
 
 
-def apply_prefill(configuration: dict, submission: "Submission", register=None) -> dict:
+def apply_prefill(
+    configuration: FormioConfiguration, submission: "Submission", register=None
+) -> FormioConfiguration:
     # apply_prefill used to be a public function in openforms.prefill, which became
     # obsolete after introducing the variables feature and has therefore been removed.
     # The prefill is now calculated on submission start and stored in the variable values
@@ -122,10 +84,11 @@ class PrefillHookTests(TransactionTestCase):
         return_value={"naam.voornamen": "John", "naam.geslachtsnaam": "Dodo"},
     )
     def test_fetch_values_with_multiple_people(self, m_haal_centraal):
-        components = [
+        components: Sequence[Component] = [
             {
                 "key": "mainPersonName",
                 "type": "textfield",
+                "label": "mainPersonName",
                 "prefill": {
                     "plugin": "haalcentraal",
                     "attribute": "naam.voornamen",
@@ -135,6 +98,7 @@ class PrefillHookTests(TransactionTestCase):
             {
                 "key": "authorisedPersonSurname",
                 "type": "textfield",
+                "label": "authorisedPersonSurname",
                 "prefill": {
                     "plugin": "haalcentraal",
                     "attribute": "naam.geslachtsnaam",
@@ -167,32 +131,35 @@ class PrefillHookTests(TransactionTestCase):
         return_value={"bezoekadres.postcode": "1111 AA"},
     )
     def test_fetch_values_with_legal_entity_and_person(self, m_kvk, m_haal_centraal):
-        components = [
+        components: Sequence[Component] = [
             {
                 "key": "companyPostcode",
                 "type": "postcode",
+                "label": "companyPostcode",
                 "prefill": {
                     "plugin": "kvk-kvknumber",
                     "attribute": "bezoekadres.postcode",
-                    "identifier": IdentifierRoles.main,
+                    "identifierRole": IdentifierRoles.main,
                 },
             },
             {
                 "key": "authorisedPersonSurname",
                 "type": "textfield",
+                "label": "authorisedPersonSurname",
                 "prefill": {
                     "plugin": "haalcentraal",
                     "attribute": "naam.geslachtsnaam",
-                    "identifier": IdentifierRoles.authorizee,
+                    "identifierRole": IdentifierRoles.authorizee,
                 },
             },
             {
                 "key": "authorisedPersonName",
                 "type": "textfield",
+                "label": "authorisedPersonName",
                 "prefill": {
                     "plugin": "haalcentraal",
                     "attribute": "naam.voornamen",
-                    "identifier": IdentifierRoles.authorizee,
+                    "identifierRole": IdentifierRoles.authorizee,
                 },
             },
         ]
@@ -227,6 +194,7 @@ class PrefillHookTests(TransactionTestCase):
         )
 
         field = new_configuration["components"][0]
+        assert "defaultValue" in field
         self.assertIsNotNone(field["defaultValue"])
         self.assertIsInstance(field["defaultValue"], str)
 
@@ -285,13 +253,13 @@ class PrefillHookTests(TransactionTestCase):
         fieldset = new_configuration["components"][0]
         self.assertNotIn("defaultValue", fieldset)
 
-        field = fieldset["components"][0]
+        field = fieldset["components"][0]  # type: ignore - can't narrow to FieldsetComponent
         self.assertIn("prefill", field)
         self.assertIn("defaultValue", field)
         self.assertIsNotNone(field["defaultValue"])
         self.assertIsInstance(field["defaultValue"], str)
 
-        column1, column2 = new_configuration["components"][1]["columns"]
+        column1, column2 = new_configuration["components"][1]["columns"]  # type: ignore - can't narrow to ColumnsComponent
         self.assertNotIn("defaultValue", column1)
         self.assertNotIn("defaultValue", column2)
         col_field1, col_field2 = column1["components"][0], column2["components"][0]
@@ -327,6 +295,7 @@ class PrefillHookTests(TransactionTestCase):
         )
 
         field = new_configuration["components"][0]
+        assert "defaultValue" in field
         self.assertIsNotNone(field["defaultValue"])
         self.assertEqual(field["defaultValue"], "some-default")
 
@@ -339,8 +308,10 @@ class PrefillHookTests(TransactionTestCase):
 
         @register("demo")
         class EmptyPrefillPlug(DemoPrefill):
-            @staticmethod
-            def get_prefill_values(submission, attributes, identifier_role):
+            @classmethod
+            def get_prefill_values(
+                cls, submission, attributes, identifier_role=IdentifierRoles.main
+            ):
                 return {}
 
         apply_prefill(
@@ -356,7 +327,7 @@ class PrefillHookTests(TransactionTestCase):
             "%(lead)s: Prefill plugin %(plugin)s returned empty values"
         ) % {
             "lead": escape_filter(log.fmt_lead),
-            "plugin": escape_filter(log.fmt_plugin),
+            "plugin": escape_filter(str(log.fmt_plugin)),
         }
         self.assertEqual(log.get_message().strip(), expected_message)
 
@@ -380,11 +351,16 @@ class PrefillHookTests(TransactionTestCase):
         )
 
         field = new_configuration["components"][0]
+        assert "defaultValue" in field
         self.assertIsNone(field["defaultValue"])
 
     def tests_no_prefill_configured(self):
         config = deepcopy(CONFIGURATION)
-        config["components"][0]["prefill"] = {"plugin": "", "attribute": ""}
+        config["components"][0]["prefill"] = {
+            "plugin": "",
+            "attribute": "",
+            "identifierRole": IdentifierRoles.main,
+        }
         form_step = FormStepFactory.create(form_definition__configuration=config)
         submission = SubmissionFactory.create(form=form_step.form)
 
@@ -445,6 +421,7 @@ class PrefillHookTests(TransactionTestCase):
         )
 
         field = new_configuration["components"][0]
+        assert "defaultValue" in field
         self.assertIsNotNone(field["defaultValue"])
         self.assertIsInstance(field["defaultValue"], str)
         self.assertEqual("2020-12-12", field["defaultValue"])
@@ -481,6 +458,7 @@ class PrefillHookTests(TransactionTestCase):
         )
 
         field = new_configuration["components"][0]
+        assert "defaultValue" in field
         self.assertIsNotNone(field["defaultValue"])
         self.assertIsInstance(field["defaultValue"], str)
         self.assertEqual("2020-12-12", field["defaultValue"])
@@ -517,6 +495,7 @@ class PrefillHookTests(TransactionTestCase):
         )
 
         field = new_configuration["components"][0]
+        assert "defaultValue" in field
         self.assertIsNotNone(field["defaultValue"])
         self.assertIsInstance(field["defaultValue"], str)
         self.assertEqual("", field["defaultValue"])
@@ -528,15 +507,17 @@ class PrefillHookTests(TransactionTestCase):
         Ensure that values retrieved from prefill plugins are normalized according
         to the postal code inputMask.
         """
-        configuration = {
+        configuration: FormioConfiguration = {
             "components": [
                 {
                     "type": "postcode",
                     "key": "postcode",
-                    "inputMask": "9999 AA",
+                    "label": "postcode",
+                    "inputMask": "9999 AA",  # type: ignore - can't narrow to postcode component
                     "prefill": {
                         "plugin": "postcode",
                         "attribute": "static",
+                        "identifierRole": IdentifierRoles.main,
                     },
                     "defaultValue": "",
                 }
@@ -550,8 +531,10 @@ class PrefillHookTests(TransactionTestCase):
 
         @register("postcode")
         class HavePlugin(DemoPrefill):
-            @staticmethod
-            def get_prefill_values(submission, attributes, identifier_role):
+            @classmethod
+            def get_prefill_values(
+                cls, submission, attributes, identifier_role=IdentifierRoles.main
+            ) -> dict[str, JSONEncodable]:
                 return {"static": "1015CJ"}
 
         new_configuration = apply_prefill(
@@ -559,6 +542,7 @@ class PrefillHookTests(TransactionTestCase):
         )
 
         field = new_configuration["components"][0]
+        assert "defaultValue" in field
         self.assertEqual(field["defaultValue"], "1015 CJ")
 
     @patch("openforms.prefill.tests.test_prefill_hook.DemoPrefill.get_prefill_values")
@@ -632,10 +616,11 @@ class PrefillHookTests(TransactionTestCase):
         self.assertEqual("123123123", result)
 
     def test_prefill_logging_with_mismatching_login_method(self):
-        components = [
+        components: Sequence[Component] = [
             {
                 "key": "mainPersonName",
                 "type": "textfield",
+                "label": "mainPersonName",
                 "prefill": {
                     "plugin": "demo",
                     "attribute": "naam.voornamen",
@@ -652,8 +637,10 @@ class PrefillHookTests(TransactionTestCase):
         class MismatchPlugin(DemoPrefill):
             requires_auth = (AuthAttribute.bsn,)
 
-            @staticmethod
-            def get_prefill_values(submission, attributes, identifier_role):
+            @classmethod
+            def get_prefill_values(
+                cls, submission, attributes, identifier_role=IdentifierRoles.main
+            ):
                 return {}
 
         apply_prefill(

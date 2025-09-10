@@ -122,8 +122,8 @@ class KVKPrefillTests(KVKTestMixin, TestCase):
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
         attrs = plugin.get_available_attributes()
         self.assertIsInstance(attrs, list)
-        self.assertIsInstance(attrs[0], tuple)
-        self.assertEqual(len(attrs[0]), 2)
+        self.assertIsInstance(attrs[0], tuple)  # pyright: ignore[reportIndexIssue]
+        self.assertEqual(len(attrs[0]), 2)  # pyright: ignore[reportIndexIssue]
 
     def test_plugin_usage_without_configuring_kvk_service(self):
         config = self.config_mock.return_value

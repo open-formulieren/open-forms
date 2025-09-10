@@ -16,8 +16,6 @@ include = [
     "src/openforms/formio/rendering/registry.py",
     "src/openforms/pre_requests/base.py",
     "src/openforms/pre_requests/registry.py",
-    "src/openforms/prefill/base.py",
-    "src/openforms/prefill/registry.py",
     "src/openforms/registrations/base.py",
     "src/openforms/registrations/registry.py",
     "src/openforms/validations/base.py",
@@ -31,6 +29,8 @@ include = [
     # Config app
     "src/openforms/config/forms.py",
     # Formio tooling
+    "src/openforms/formio/serializers.py",
+    "src/openforms/formio/service.py",
     "src/openforms/formio/typing/",
     "src/openforms/formio/formatters/",
     "src/openforms/formio/dynamic_config/reference_lists.py",
@@ -57,14 +57,7 @@ include = [
     "src/openforms/authentication/contrib/outage/",
     "src/openforms/authentication/models.py",
     # Prefill
-    "src/openforms/prefill/api/",
-    "src/openforms/prefill/co_sign.py",
-    "src/openforms/prefill/contrib/family_members",
-    "src/openforms/prefill/contrib/eidas",
-    "src/openforms/prefill/models.py",
-    "src/openforms/prefill/signals.py",
-    "src/openforms/prefill/sources.py",
-    "src/openforms/prefill/validators.py",
+    "src/openforms/prefill/",
     # Registrations
     "src/openforms/registrations/tasks.py",
     "src/openforms/registrations/contrib/demo/",

@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from typing import Any
 
 from django.urls import reverse
@@ -99,13 +100,17 @@ class StufBgPrefill(BasePlugin):
         return FieldChoices.choices
 
     @staticmethod
-    def _get_values_for_bsn(bsn: str, attributes: list[FieldChoices]) -> dict[str, Any]:
+    def _get_values_for_bsn(bsn: str, attributes: Collection[str]) -> dict[str, Any]:
         with get_client() as client:
             data = client.get_values(bsn, [str(attr) for attr in attributes])
 
         response_dict = {}
         for attribute in attributes:
-            value = glom(data, ATTRIBUTES_TO_STUF_BG_MAPPING[attribute], default=None)
+            value = glom(
+                data,
+                ATTRIBUTES_TO_STUF_BG_MAPPING[FieldChoices(attribute)],
+                default=None,
+            )
             # if the XML element has attributes, we don't get a return value of the content,
             # but rather an OrderedDict from xmltodict with the #text key for the content
             # and @<attribute> keys for the attributes.

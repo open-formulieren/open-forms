@@ -173,6 +173,7 @@ class PrefillVariablesTests(TestCase):
 
         prefill_variables(submission=submission)
 
+        assert submission_step1.form_step is not None
         config_wrapper1 = FormioConfigurationWrapper(
             submission_step1.form_step.form_definition.configuration
         )
@@ -180,6 +181,7 @@ class PrefillVariablesTests(TestCase):
             config_wrapper1,
             submission=submission,
         )
+        assert submission_step2.form_step is not None
         config_wrapper2 = FormioConfigurationWrapper(
             submission_step2.form_step.form_definition.configuration
         )
@@ -190,10 +192,12 @@ class PrefillVariablesTests(TestCase):
 
         component_postcode = dynamic_config1.configuration["components"][0]
         self.assertEqual(component_postcode["type"], "postcode")
+        assert "defaultValue" in component_postcode
         self.assertEqual(component_postcode["defaultValue"], "1015 CJ")
 
         component_date = dynamic_config2.configuration["components"][0]
         self.assertEqual(component_date["type"], "date")
+        assert "defaultValue" in component_date
         self.assertEqual(component_date["defaultValue"], "1999-06-15")
 
         variable_postcode = submission.submissionvaluevariable_set.get(key="postcode")

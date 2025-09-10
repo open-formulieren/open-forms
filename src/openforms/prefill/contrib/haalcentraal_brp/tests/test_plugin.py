@@ -54,9 +54,9 @@ class AttributeResolutionTests(SimpleTestCase):
                 ):
                     attrs = HaalCentraalPrefill.get_available_attributes()
 
-                self.assertIsInstance(attrs, list)  # type: ignore
-                self.assertIsInstance(attrs[0], tuple)  # type: ignore
-                self.assertEqual(len(attrs[0]), 2)  # type: ignore
+                self.assertIsInstance(attrs, list)
+                self.assertIsInstance(attrs[0], tuple)  # pyright: ignore[reportIndexIssue]
+                self.assertEqual(len(attrs[0]), 2)  # pyright: ignore[reportIndexIssue]
 
 
 class HaalCentraalPluginTests:
@@ -76,7 +76,7 @@ class HaalCentraalPluginTests:
     config: HaalCentraalConfig
 
     def setUp(self):
-        super().setUp()  # type: ignore
+        super().setUp()  # pyright: ignore[reportAttributeAccessIssue]
 
         # set up patcher for the configuration
         config = HaalCentraalConfig(
@@ -90,18 +90,18 @@ class HaalCentraalPluginTests:
             return_value=config,
         )
         config_patcher.start()
-        self.addCleanup(config_patcher.stop)  # type: ignore
+        self.addCleanup(config_patcher.stop)  # pyright: ignore[reportAttributeAccessIssue]
 
         # prepare a requests mock instance to wire up the mocks
         self.requests_mock = requests_mock.Mocker()
         self.requests_mock.start()
-        self.addCleanup(self.requests_mock.stop)  # type: ignore
+        self.addCleanup(self.requests_mock.stop)  # pyright: ignore[reportAttributeAccessIssue]
 
     def test_get_available_attributes(self):
         attributes = HaalCentraalPrefill.get_available_attributes()
 
         expected = VERSION_TO_ATTRIBUTES_MAP[self.version].choices
-        self.assertEqual(attributes, expected)  # type: ignore
+        self.assertEqual(attributes, expected)  # pyright: ignore[reportAttributeAccessIssue]
 
     def test_prefill_values(self):
         Attributes = get_attributes_cls()
@@ -118,7 +118,7 @@ class HaalCentraalPluginTests:
             "naam.voornamen": "Cornelia Francisca",
             "naam.geslachtsnaam": "Wiegman",
         }
-        self.assertEqual(values, expected)  # type: ignore
+        self.assertEqual(values, expected)  # pyright: ignore[reportAttributeAccessIssue]
 
     def test_prefill_values_not_authenticated(self):
         Attributes = get_attributes_cls()
@@ -131,7 +131,7 @@ class HaalCentraalPluginTests:
             attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
         )
 
-        self.assertEqual(values, {})  # type: ignore
+        self.assertEqual(values, {})  # pyright: ignore[reportAttributeAccessIssue]
 
     def test_prefill_values_for_gemachtigde_by_bsn(self):
         Attributes = get_attributes_cls()
@@ -149,13 +149,13 @@ class HaalCentraalPluginTests:
             identifier_role=IdentifierRoles.authorizee,
         )
 
-        self.assertEqual(
+        self.assertEqual(  # pyright: ignore[reportAttributeAccessIssue]
             values,
             {
                 "naam.voornamen": "Cornelia Francisca",
                 "naam.geslachtsnaam": "Wiegman",
             },
-        )  # type: ignore
+        )
 
     def test_person_not_found_returns_empty(self):
         Attributes = get_attributes_cls()
@@ -168,7 +168,7 @@ class HaalCentraalPluginTests:
             submission,
             attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
         )
-        self.assertEqual(values, {})  # type: ignore
+        self.assertEqual(values, {})  # pyright: ignore[reportAttributeAccessIssue]
 
     def test_pre_request_hooks_called(self):
         pre_req_register = Registry()
@@ -191,7 +191,7 @@ class HaalCentraalPluginTests:
 
             mock.assert_called_once()
             context = mock.call_args.kwargs["context"]
-            self.assertIsNotNone(context)  # type: ignore
+            self.assertIsNotNone(context)  # pyright: ignore[reportAttributeAccessIssue]
 
     def test_extract_authorizee_identifier_value(self):
         cases = (
@@ -215,12 +215,14 @@ class HaalCentraalPluginTests:
         plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
 
         for submission, expected in cases:
-            with self.subTest(auth_context=submission.auth_info.to_auth_context_data()):
+            with self.subTest(  # pyright: ignore[reportAttributeAccessIssue]
+                auth_context=submission.auth_info.to_auth_context_data()
+            ):
                 identifier_value = plugin.get_identifier_value(
                     submission, IdentifierRoles.authorizee
                 )
 
-                self.assertEqual(identifier_value, expected)
+                self.assertEqual(identifier_value, expected)  # pyright: ignore[reportAttributeAccessIssue]
 
 
 class HaalCentraalFindPersonV1Tests(HaalCentraalPluginTests, TestCase):
@@ -304,7 +306,7 @@ class HaalCentraalEmptyConfigTests(TestCase):
             return_value=config,
         )
         config_patcher.start()
-        self.addCleanup(config_patcher.stop)  # type: ignore
+        self.addCleanup(config_patcher.stop)  # pyright: ignore[reportAttributeAccessIssue]
 
     def test_get_available_attributes(self):
         attributes = HaalCentraalPrefill.get_available_attributes()
@@ -321,7 +323,7 @@ class HaalCentraalEmptyConfigTests(TestCase):
             assert not submission.is_authenticated
 
             values = plugin.get_prefill_values(
-                submission, attributes=(Attributes.naam_voornamen,)
+                submission, attributes=[str(Attributes.naam_voornamen)]
             )
 
             self.assertEqual(values, {})
@@ -331,7 +333,7 @@ class HaalCentraalEmptyConfigTests(TestCase):
             assert submission.is_authenticated
 
             values = plugin.get_prefill_values(
-                submission, attributes=(Attributes.naam_voornamen,)
+                submission, attributes=[str(Attributes.naam_voornamen)]
             )
 
             self.assertEqual(values, {})

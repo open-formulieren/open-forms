@@ -11,6 +11,7 @@ apps/packages:
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, cast
 
 import elasticapm
@@ -110,7 +111,9 @@ def get_dynamic_configuration(
 
 
 def build_serializer(
-    components: list[Component], _register: ComponentRegistry | None = None, **kwargs
+    components: Sequence[Component],
+    _register: ComponentRegistry | None = None,
+    **kwargs,
 ):
     """
     Translate a sequence of Formio.js component definitions into a serializer.
