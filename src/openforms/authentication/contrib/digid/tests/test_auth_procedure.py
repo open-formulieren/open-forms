@@ -236,6 +236,46 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
             auth_context_class_ref.text, DigiDAssuranceLevels.substantial.value
         )
 
+    @patch(
+        "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
+        return_value="ONELOGIN_123456",
+    )
+    def test_authn_request_uses_default_loa_if_not_overriden(self, mock_id):
+        form = FormFactory.create(
+            authentication_backend="digid",
+            authentication_backend_options={},
+        )
+        form_definition = FormDefinitionFactory.create(login_required=True)
+        FormStepFactory.create(form_definition=form_definition, form=form)
+
+        login_url = reverse(
+            "authentication:start", kwargs={"slug": form.slug, "plugin_id": "digid"}
+        )
+        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
+        form_url = f"https://testserver{form_path}"
+
+        response = self.client.get(f"{login_url}?next={form_url}", follow=True)
+
+        next_parameter = furl(response.context["form"].initial["RelayState"]).args[
+            "next"
+        ]
+        self.assertEqual(form_url, next_parameter)
+
+        saml_request = b64decode(
+            response.context["form"].initial["SAMLRequest"].encode("utf-8")
+        )
+        tree = etree.fromstring(saml_request)
+
+        auth_context_class_ref = tree.xpath(
+            "samlp:RequestedAuthnContext[@Comparison='minimum']/saml:AuthnContextClassRef",
+            namespaces={
+                "samlp": "urn:oasis:names:tc:SAML:2.0:protocol",
+                "saml": "urn:oasis:names:tc:SAML:2.0:assertion",
+            },
+        )[0]
+
+        self.assertEqual(auth_context_class_ref.text, DigiDAssuranceLevels.middle.value)
+
 
 @temp_private_root()
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
