@@ -50,7 +50,9 @@ class DigiDLoginView(_DigiDLoginView):
         # FormAuthenticationBackend situations.
         try:
             auth_backend = form.auth_backends.get(backend=PLUGIN_ID)
-            return auth_backend.options["loa"] or DIGID_DEFAULT_LOA
+            # the authentication backend options can be None as well, so make sure we
+            # can safely access the loa key
+            return (auth_backend.options or {}).get("loa") or DIGID_DEFAULT_LOA
         except FormAuthenticationBackend.DoesNotExist:
             raise SuspiciousOperation("plugin not allowed")
 
