@@ -6,6 +6,14 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.2.4 (2025-09-10)
+==================
+
+Hotfix for DigiD login flow.
+
+* [:backend:`5605`] Fixed a potential crash when attemping to log in to a form with
+  DigiD. Explicitly setting the LOA for the form can be used as workaround.
+
 3.2.3 (2025-09-09)
 ==================
 
