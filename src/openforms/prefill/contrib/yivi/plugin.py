@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 
 import structlog
-from glom import GlomError, glom
+from glom import Coalesce, glom
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.contrib.yivi_oidc.constants import (
@@ -11,21 +11,24 @@ from openforms.prefill.base import BasePlugin
 from openforms.prefill.constants import IdentifierRoles
 from openforms.prefill.registry import register
 from openforms.submissions.models import Submission
+from openforms.typing import JSONEncodable
 
 from .constants import PLUGIN_IDENTIFIER
 
 logger = structlog.stdlib.get_logger(__name__)
 
+MISSING = object()
+
 
 @register(PLUGIN_IDENTIFIER)
 class YiviPrefill(BasePlugin):
     verbose_name = _("Yivi")
-    requires_auth_plugin = (AUTH_PLUGIN_ID,)
     requires_auth = (
         AuthAttribute.bsn,
         AuthAttribute.kvk,
         AuthAttribute.pseudo,
     )
+    requires_auth_plugin = (AUTH_PLUGIN_ID,)
 
     @staticmethod
     def get_available_attributes():
@@ -51,28 +54,21 @@ class YiviPrefill(BasePlugin):
         submission: Submission,
         attributes: list[str],
         identifier_role: IdentifierRoles = IdentifierRoles.main,
-    ) -> dict[str, object]:
-        # Check if the user is authenticated using the required plugin, and resulted into
-        # the right auth attribute.
-        if (
-            not cls.verify_used_auth_plugin(submission)
-            or not (
-                cls.requires_auth
-                and submission.auth_info.attribute in cls.requires_auth
+    ) -> dict[str, JSONEncodable]:
+        spec = {attr: Coalesce(attr, default=MISSING) for attr in attributes}
+        values = glom(submission.auth_info, spec)
+
+        # remove the `None` defaults
+        for key in list(values.keys()):
+            if values[key] is not MISSING:
+                continue
+            del values[key]
+            logger.warning(
+                "missing_attribute_in_auth_info",
+                attribute=key,
             )
-        ):
-            return {}
 
-        prefill_values: dict[str, object] = {}
-        for attribute in attributes:
-            try:
-                prefill_values[attribute] = glom(submission.auth_info, attribute)
-            except GlomError as exc:
-                logger.warning(
-                    "missing_attribute_in_response", attribute=attribute, exc_info=exc
-                )
-
-        return prefill_values
+        return values
 
     def check_config(self):
         pass
