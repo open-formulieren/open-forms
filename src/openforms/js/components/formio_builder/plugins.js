@@ -13,8 +13,8 @@ export const getRegistrationAttributes = async () => {
   return resp.data;
 };
 
-export const getPrefillPlugins = async () => {
-  const resp = await get('/api/v2/prefill/plugins');
+export const getPrefillPlugins = async componentType => {
+  const resp = await get('/api/v2/prefill/plugins', {componentType});
   return resp.data;
 };
 
