@@ -615,7 +615,7 @@ maykin-2fa==1.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   maykin-common
-maykin-common==0.8.0
+maykin-common==0.10.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
