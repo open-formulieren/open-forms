@@ -17,8 +17,8 @@ const DEFAULT_ATTRIBUTE_GROUPS = [
     name: 'Profile group',
     description: '',
     attributes: [
-      'irma.gemeente.personalDetails.dateOfBirth',
       'irma.gemeente.personalDetails.firstName',
+      'irma.gemeente.personalDetails.dateOfBirth',
     ],
   },
 ];

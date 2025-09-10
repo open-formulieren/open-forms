@@ -13,6 +13,7 @@ import {
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 import {serializeValue} from 'components/admin/forms/VariableMapping';
+import {mockYiviAttributeGroupsGet} from 'components/admin/forms/yivi/mocks';
 import {findReactSelectMenu, rsSelect} from 'utils/storybookTestHelpers';
 
 import VariablesEditor from './VariablesEditor';
@@ -298,6 +299,7 @@ export default {
             ],
           }),
         ],
+        yivi: [mockYiviAttributeGroupsGet()],
       },
     },
   },
@@ -1583,8 +1585,8 @@ export const ConfigurePrefillYivi = {
             kvkLoa: 'urn:etoegang:core:assurance-class:loa3',
             authenticationOptions: ['bsn', 'kvk'],
             additionalAttributesGroups: [
-              'd5d6695b-4ae1-480d-94ed-b6f2669a92e1',
-              '5e8d105c-c004-47ac-b3f2-bc60e1725b15',
+              'efffa9ef-5697-4fea-9f7b-c296cc3f95fa',
+              'fc9eff0e-4b87-4231-afd1-76e3fe5e8530',
             ],
           },
         },
@@ -1675,6 +1677,15 @@ export const ConfigurePrefillYivi = {
       expect(canvas.queryByRole('option', {name: 'Pseudo ID'})).not.toBeInTheDocument();
 
       // from attribute groups
+      expect(
+        canvas.getByRole('option', {name: 'irma.gemeente.personalDetails.dateOfBirth'})
+      ).toBeVisible();
+      expect(
+        canvas.getAllByRole('option', {name: 'irma.gemeente.personalDetails.firstName'})
+      ).toHaveLength(1);
+      expect(
+        canvas.getByRole('option', {name: 'irma.gemeente.personalDetails.lastName'})
+      ).toBeVisible();
     });
   },
 };

@@ -5,12 +5,13 @@ import {FormContext} from 'components/admin/form_design/Context';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
+import {useGetYiviAttributeGroups} from 'components/admin/forms/yivi/AttributeGroups';
 
 import AttributeField from '../default/AttributeField';
 
 const PLUGIN_ID = 'yivi';
 
-const getPrefillAttributes = (prefillPlugins, authBackends) => {
+const getPrefillAttributes = (prefillPlugins, authBackends, attributeGroups) => {
   const prefillAttributes = [];
   const yiviPlugin = prefillPlugins.find(elem => elem.id === PLUGIN_ID);
   // shouldn't happen, but just in case... don't crash the entire component
@@ -40,6 +41,17 @@ const getPrefillAttributes = (prefillPlugins, authBackends) => {
     prefillAttributes.push([attribute, label]);
   });
 
+  // add the attributes from the attribute groups, taking care to de-duplicate and sort
+  // them. we only consider attribute groups that are included in the auth plugin options
+  const uniqueAttributes = Array.from(
+    new Set(
+      attributeGroups
+        .filter(attrGroup => attributeGroupIds.includes(attrGroup.uuid))
+        .reduce((acc, attrGroup) => [...acc, ...attrGroup.attributes], [])
+    )
+  ).sort((a, b) => a.localeCompare(b));
+  prefillAttributes.push(...uniqueAttributes.map(attr => [attr, attr]));
+
   return prefillAttributes;
 };
 
@@ -48,10 +60,13 @@ const YiviFields = () => {
     form: {authBackends = []},
     plugins: {availablePrefillPlugins},
   } = useContext(FormContext);
+  const {availableYiviAttributeGroups, error} = useGetYiviAttributeGroups();
   const prefillAttributes = useMemo(
-    () => getPrefillAttributes(availablePrefillPlugins, authBackends),
-    [availablePrefillPlugins, authBackends]
+    () => getPrefillAttributes(availablePrefillPlugins, authBackends, availableYiviAttributeGroups),
+    [availablePrefillPlugins, authBackends, availableYiviAttributeGroups]
   );
+  if (error) throw error;
+
   return (
     <Fieldset>
       <FormRow>
@@ -61,6 +76,15 @@ const YiviFields = () => {
             <FormattedMessage
               description="Variable prefill attribute label"
               defaultMessage="Attribute"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              description="Yivi prefill attribute help text"
+              defaultMessage={`Available attributes based on the configured Yivi
+              authentication plugin options. The identifier attributes are fixed,
+              while the remaining attributes are taken from the configured
+              attribute groups.`}
             />
           }
         >
