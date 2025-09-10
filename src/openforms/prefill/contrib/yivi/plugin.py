@@ -31,8 +31,6 @@ class YiviPrefill(BasePlugin[YiviOptions]):
     verbose_name = _("Yivi")
     requires_auth = (AuthAttribute.bsn, AuthAttribute.kvk, AuthAttribute.pseudo)
     requires_auth_plugin = (AUTH_PLUGIN_ID,)
-    # do not expose the plugin to the 'prefill' tab of components
-    for_components = ()
 
     @staticmethod
     def get_available_attributes() -> Iterable[tuple[str, str]]:

@@ -11,7 +11,7 @@ import AttributeField from '../default/AttributeField';
 
 const PLUGIN_ID = 'yivi';
 
-const getPrefillAttributes = (prefillPlugins, authBackends, attributeGroups) => {
+export const getPrefillAttributes = (prefillPlugins, authBackends, attributeGroups) => {
   const prefillAttributes = [];
   const yiviPlugin = prefillPlugins.find(elem => elem.id === PLUGIN_ID);
   // shouldn't happen, but just in case... don't crash the entire component
