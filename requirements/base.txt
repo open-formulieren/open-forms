@@ -46,6 +46,7 @@ celery-once==3.0.1
 certifi==2024.7.4
     # via
     #   elastic-apm
+    #   pyproj
     #   requests
     #   self-certifi
     #   sentry-sdk
@@ -364,6 +365,8 @@ mozilla-django-oidc-db==0.25.1
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning
+numpy==2.3.3
+    # via shapely
 o365==2.0.31
     # via -r requirements/base.in
 oauthlib==3.2.2
@@ -486,6 +489,8 @@ pyphen==0.14.0
     # via weasyprint
 pypng==0.20220715.0
     # via qrcode
+pyproj==3.7.2
+    # via -r requirements/base.in
 python-dateutil==2.9.0.post0
     # via
     #   celery
@@ -576,6 +581,8 @@ semantic-version==2.10.0
     #   -r requirements/base.in
     #   django-upgrade-check
 sentry-sdk==2.10.0
+    # via -r requirements/base.in
+shapely==2.1.1
     # via -r requirements/base.in
 simplejson==3.19.3
     # via mail-parser

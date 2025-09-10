@@ -80,6 +80,7 @@ certifi==2024.7.4
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   elastic-apm
+    #   pyproj
     #   requests
     #   self-certifi
     #   sentry-sdk
@@ -596,6 +597,11 @@ mozilla-django-oidc-db==0.25.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+numpy==2.3.3
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   shapely
 o365==2.0.31
     # via
     #   -c requirements/base.txt
@@ -828,6 +834,10 @@ pypng==0.20220715.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   qrcode
+pyproj==3.7.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 python-dateutil==2.9.0.post0
     # via
     #   -c requirements/base.txt
@@ -968,6 +978,10 @@ semantic-version==2.10.0
     #   -r requirements/base.txt
     #   django-upgrade-check
 sentry-sdk==2.10.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+shapely==2.1.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

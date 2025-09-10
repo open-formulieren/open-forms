@@ -19,6 +19,7 @@ O365  # microsoft graph
 Pillow  # handle images
 portalocker[redis]
 psycopg  # database driver
+pyproj  # map coordinate transformations
 python-dotenv  # environment variables for secrets
 python-decouple  # processing of envvar configs
 python-magic
@@ -29,6 +30,7 @@ referencing
 self-certifi
 semantic-version
 schwifty
+shapely  # map geometry shapes
 tabulate
 typing-extensions
 weasyprint
