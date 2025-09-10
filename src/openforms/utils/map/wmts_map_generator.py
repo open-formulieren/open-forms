@@ -5,6 +5,7 @@ The Amsterdam Signal WMTS generator was used as an inspiration:
 https://github.com/Amsterdam/signals/blob/main/app/signals/apps/services/domain/wmts_map_generator.py
 """
 
+from functools import lru_cache
 from io import BytesIO
 from math import ceil, modf
 
@@ -119,6 +120,7 @@ def construct_image_from_tiles(
     return img
 
 
+@lru_cache(maxsize=32)
 def generate_map_image(
     url_template: str,
     center: Point,
