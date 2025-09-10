@@ -689,6 +689,11 @@
     "description": "Delete icon title",
     "originalDefault": "Delete"
   },
+  "COscBI": {
+    "defaultMessage": "Available attributes based on the configured Yivi authentication plugin options. The identifier attributes are fixed, while the remaining attributes are taken from the configured attribute groups.",
+    "description": "Yivi prefill attribute help text",
+    "originalDefault": "Available attributes based on the configured Yivi authentication plugin options. The identifier attributes are fixed, while the remaining attributes are taken from the configured attribute groups."
+  },
   "CXKQZZ": {
     "defaultMessage": "Confirmation",
     "description": "Form confirmation options tab title",

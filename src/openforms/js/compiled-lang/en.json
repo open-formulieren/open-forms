@@ -1597,6 +1597,12 @@
       "value": "Delete"
     }
   ],
+  "COscBI": [
+    {
+      "type": 0,
+      "value": "Available attributes based on the configured Yivi authentication plugin options. The identifier attributes are fixed, while the remaining attributes are taken from the configured attribute groups."
+    }
+  ],
   "CRN74c": [
     {
       "type": 0,
