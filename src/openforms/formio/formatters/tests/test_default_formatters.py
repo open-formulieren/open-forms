@@ -1,10 +1,18 @@
 from datetime import date, datetime, time
+from pathlib import Path
 
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 from django.utils.translation import gettext_lazy as _
 
+from openforms.api.geojson import LineStringGeometry, PointGeometry, PolygonGeometry
+from openforms.config.tests.factories import MapTileLayerFactory
+from openforms.utils.tests.vcr import OFVCRMixin
+
 from ...service import format_value
+from ...typing import MapComponent
 from .utils import load_json
+
+FILES_DIR = Path(__file__).parent / "files"
 
 
 class DefaultFormatterTestCase(SimpleTestCase):
@@ -187,3 +195,96 @@ class DefaultFormatterTestCase(SimpleTestCase):
                 formatted_html,
                 "test 1A DD<br>1234AA Amsterdam",
             )
+
+
+class MapFormatterTests(OFVCRMixin, TestCase):
+    VCR_TEST_FILES = FILES_DIR
+
+    def test_point(self):
+        component: MapComponent = {
+            "type": "map",
+            "key": "map",
+            "label": "Map",
+            "useConfigDefaultMapSettings": True,
+            "interactions": {"marker": True, "polygon": False, "polyline": False},
+        }
+
+        value: PointGeometry = {"type": "Point", "coordinates": (5.291105, 52.132714)}
+
+        formatted_value = format_value(component, value, as_html=True)
+
+        with open(FILES_DIR / "map_with_point.html") as f:
+            expected = f.read()
+
+        self.assertHTMLEqual(formatted_value, expected)
+
+    def test_line_string(self):
+        component: MapComponent = {
+            "type": "map",
+            "key": "map",
+            "label": "Map",
+            "useConfigDefaultMapSettings": True,
+            "interactions": {"marker": False, "polygon": False, "polyline": True},
+        }
+
+        value: LineStringGeometry = {
+            "type": "LineString",
+            "coordinates": [(5.252177, 52.124783), (5.296103, 52.142341)],
+        }
+
+        formatted_value = format_value(component, value, as_html=True)
+
+        with open(FILES_DIR / "map_with_line.html") as f:
+            expected = f.read()
+
+        self.assertHTMLEqual(formatted_value, expected)
+
+    def test_polygon(self):
+        component: MapComponent = {
+            "type": "map",
+            "key": "map",
+            "label": "Map",
+            "useConfigDefaultMapSettings": True,
+            "interactions": {"marker": False, "polygon": True, "polyline": False},
+        }
+
+        value: PolygonGeometry = {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    (3.856187, 51.807071),
+                    (6.104054, 51.395801),
+                    (6.008254, 52.525139),
+                    (3.856187, 51.807071),
+                ]
+            ],
+        }
+
+        formatted_value = format_value(component, value, as_html=True)
+
+        with open(FILES_DIR / "map_with_polygon.html") as f:
+            expected = f.read()
+
+        self.assertHTMLEqual(formatted_value, expected)
+
+    def test_fallback_to_coordinates_if_image_was_not_generated(self):
+        component: MapComponent = {
+            "type": "map",
+            "key": "map",
+            "label": "Map",
+            "useConfigDefaultMapSettings": True,
+            "interactions": {"marker": True, "polygon": False, "polyline": False},
+            "tileLayerIdentifier": "fake_layer",
+        }
+
+        MapTileLayerFactory.create(
+            identifier="fake_layer",
+            url="https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/fake_layer/EPSG:28992/{z}/{x}/{y}.png",
+            label="Fake layer",
+        )
+
+        value: PointGeometry = {"type": "Point", "coordinates": (5.291105, 52.132714)}
+
+        formatted_value = format_value(component, value, as_html=True)
+
+        self.assertEqual(formatted_value, "5.291105, 52.132714")
