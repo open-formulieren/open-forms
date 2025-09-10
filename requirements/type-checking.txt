@@ -93,6 +93,7 @@ certifi==2024.7.4
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   elastic-apm
+    #   pyproj
     #   requests
     #   self-certifi
     #   sentry-sdk
@@ -680,6 +681,11 @@ multidict==6.6.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   yarl
+numpy==2.3.3
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   shapely
 o365==2.0.31
     # via
     #   -c requirements/ci.txt
@@ -929,6 +935,10 @@ pypng==0.20220715.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   qrcode
+pyproj==3.7.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 pyquery==1.4.1
     # via
     #   -c requirements/ci.txt
@@ -1089,6 +1099,10 @@ semantic-version==2.10.0
     #   -r requirements/ci.txt
     #   django-upgrade-check
 sentry-sdk==2.10.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+shapely==2.1.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
