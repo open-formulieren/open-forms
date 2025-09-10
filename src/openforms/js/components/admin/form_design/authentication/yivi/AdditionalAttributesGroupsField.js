@@ -1,24 +1,11 @@
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {components} from 'react-select';
-import {useAsync} from 'react-use';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
-import {get} from 'utils/fetch';
-
-export const YIVI_ATTRIBUTE_GROUPS_ENDPOINT =
-  '/api/v2/authentication/plugins/yivi/attribute-groups';
-
-const getYiviAttributeGroups = async () => {
-  const response = await get(YIVI_ATTRIBUTE_GROUPS_ENDPOINT);
-  if (!response.ok) {
-    throw new Error('Loading available attribute groups failed');
-  }
-  return response.data;
-};
+import {useGetYiviAttributeGroups} from 'components/admin/forms/yivi/AttributeGroups';
 
 const AdditionalGroupSelectorOption = props => {
   const {label, description} = props.data;
@@ -40,11 +27,7 @@ const AdditionalGroupSelectorValueLabel = props => {
 };
 
 const AdditionalAttributesGroupsField = () => {
-  const {
-    loading,
-    value: availableYiviAttributeGroups = [],
-    error,
-  } = useAsync(getYiviAttributeGroups, []);
+  const {loading, availableYiviAttributeGroups, error} = useGetYiviAttributeGroups();
   if (error) throw error;
 
   const additionalAttributesGroupsOptions = availableYiviAttributeGroups.map(attributeGroup => ({

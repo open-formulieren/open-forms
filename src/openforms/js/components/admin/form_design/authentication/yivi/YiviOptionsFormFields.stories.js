@@ -5,10 +5,10 @@ import {
   FormikDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
+import {mockYiviAttributeGroupsGet} from 'components/admin/forms/yivi/mocks';
 import {rsSelect} from 'utils/storybookTestHelpers';
 
 import YiviOptionsFormFields from './YiviOptionsFormFields';
-import {mockYiviAttributeGroupsGet} from './mocks';
 
 const NAME = 'form.authBackends.0.options';
 
