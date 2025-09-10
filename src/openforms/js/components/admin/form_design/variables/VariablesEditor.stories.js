@@ -1572,6 +1572,145 @@ export const ConfigurePrefillFamilyMembersChildren = {
   },
 };
 
+export const ConfigurePrefillYivi = {
+  args: {
+    form: {
+      authBackends: [
+        {
+          backend: 'yivi_oidc',
+          options: {
+            bsnLoa: 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport',
+            kvkLoa: 'urn:etoegang:core:assurance-class:loa3',
+            authenticationOptions: ['bsn', 'kvk'],
+            additionalAttributesGroups: [
+              'd5d6695b-4ae1-480d-94ed-b6f2669a92e1',
+              '5e8d105c-c004-47ac-b3f2-bc60e1725b15',
+            ],
+          },
+        },
+      ],
+    },
+    availableAuthPlugins: [
+      {
+        id: 'yivi_oidc',
+        label: 'Yivi (via OIDC)',
+        providesAuth: ['bsn', 'kvk', 'pseudo'],
+      },
+    ],
+    selectedAuthPlugins: ['yivi_oidc'],
+    availablePrefillPlugins: [
+      {
+        id: 'yivi',
+        label: 'Yivi',
+        configurationContext: {
+          fixedAttributes: [
+            {
+              attribute: '_internal.auth_info.value',
+              label: 'Identifier value',
+              authAttribute: '',
+            },
+            {
+              attribute: '_internal.bsn',
+              label: 'BSN',
+              authAttribute: 'bsn',
+            },
+            {
+              attribute: '_internal.kvk',
+              label: 'KvK number',
+              authAttribute: 'kvk',
+            },
+            {
+              attribute: '_internal.pseudo',
+              label: 'Pseudo ID',
+              authAttribute: 'pseudo',
+            },
+          ],
+        },
+        requiresAuth: ['bsn', 'kvk', 'pseudo'],
+        requiresAuthPlugin: ['yivi_oidc'],
+      },
+    ],
+    availableFormVariables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined',
+        key: 'userDefined',
+        source: 'user_defined',
+        prefillPlugin: 'yivi',
+        prefillAttribute: '_internal.bsn',
+        prefillIdentifierRole: 'main',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: true,
+        serviceFetchConfiguration: undefined,
+        initialValue: '',
+      },
+    ],
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    await step('Open configuration modal', async () => {
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
+      expect(userDefinedVarsTab).toBeVisible();
+      await userEvent.click(userDefinedVarsTab);
+
+      // open modal for configuration
+      const editIcon = canvas.getByTitle('Prefill instellen');
+      await userEvent.click(editIcon);
+      expect(await canvas.findByRole('dialog')).toBeVisible();
+    });
+
+    const modal = within(await canvas.findByRole('dialog'));
+    const pluginDropdown = await modal.findByLabelText('Plugin');
+    expect(pluginDropdown).toBeVisible();
+    expect(await modal.findByText('Yivi')).toBeVisible();
+
+    await step('Test attribute availability', async () => {
+      // From fixed options
+      expect(canvas.getByRole('option', {name: 'Identifier value'})).toBeVisible();
+      expect(canvas.getByRole('option', {name: 'BSN'})).toBeVisible();
+      expect(canvas.getByRole('option', {name: 'KvK number'})).toBeVisible();
+      expect(canvas.queryByRole('option', {name: 'Pseudo ID'})).not.toBeInTheDocument();
+
+      // from attribute groups
+    });
+  },
+};
+
+export const ConfigurePrefillYiviAuthPluginWarning = {
+  ...ConfigurePrefillYivi,
+  args: {
+    ...ConfigurePrefillYivi.args,
+    selectedAuthPlugins: [],
+  },
+  globals: {
+    locale: 'en',
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    await step('Open configuration modal', async () => {
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: /User defined/});
+      expect(userDefinedVarsTab).toBeVisible();
+      await userEvent.click(userDefinedVarsTab);
+
+      // open modal for configuration
+      const editIcon = canvas.getByTitle('Edit prefill configuration');
+      await userEvent.click(editIcon);
+      expect(await canvas.findByRole('dialog')).toBeVisible();
+    });
+
+    await step('Check warning messages', async () => {
+      const modal = within(await canvas.findByRole('dialog'));
+
+      expect(await modal.findByText(/Yivi requires one of the .* attributes./)).toBeVisible();
+      expect(await modal.findByText(/Yivi requires one of the .* login options./)).toBeVisible();
+    });
+  },
+};
+
 export const WithValidationErrors = {
   args: {
     availableFormVariables: [
