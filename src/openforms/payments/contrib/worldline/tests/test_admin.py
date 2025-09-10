@@ -13,17 +13,6 @@ from .factories import WorldlineMerchantFactory
 @disable_admin_mfa()
 @override_settings(BASE_URL="https://example.com/foo")
 class WorldlineMerchantAdminTest(WebTest):
-    def test_merchant_detail_page(self):
-        user = SuperUserFactory.create()
-        plugin = register["worldline"]
-        webhook_url = plugin.get_webhook_url(None)
-        url = reverse("admin:payments_worldline_worldlinemerchant_add")
-
-        response = self.app.get(url, user=user)
-
-        self.assertEqual(200, response.status_code)
-        self.assertContains(response, webhook_url)
-
     def test_merchant_list_page(self):
         user = SuperUserFactory.create()
         plugin = register["worldline"]

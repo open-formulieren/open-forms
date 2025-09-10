@@ -55,11 +55,10 @@ a *Worldline Webhook configuration* in the admin interface.
 14. Copy the **Webhook ID** from step 12 into the **Webhook Key ID** form field and the **Secret webhook key**
     into the **Webhook Key Secret** form field.
 
-15. Save the changes.
+15. Copy the **Feedback url** from the webhook configuration page.
 
-16. Navigate in the Open Forms admin to the **Worldline merchant** list overview and copy
-    the **Feedback url** value.
+16. Save the changes.
 
 17. Head back to Worldline's Merchant Portal and navigate to the **Webhooks** section
     (see step 11). Click on the **Add webhook endpoint button** and fill in the
-    **Feedback url** that was copied in step 16 and click **Confirm**.
+    **Feedback url** that was copied in step 15 and click **Confirm**.

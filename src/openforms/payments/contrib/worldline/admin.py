@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 
 from solo.admin import SingletonModelAdmin
 
@@ -14,7 +15,6 @@ class WorldlineMerchantAdmin(admin.ModelAdmin):
         "api_key",
         "api_secret",
         "endpoint",
-        "feedback_url",
     )
     list_display = (
         "label",
@@ -26,10 +26,6 @@ class WorldlineMerchantAdmin(admin.ModelAdmin):
         "pspid",
         "api_key",
     )
-    readonly_fields = ("feedback_url",)
-
-    def feedback_url(self, obj: WorldlineMerchant | None = None) -> str:
-        return register["worldline"].get_webhook_url(None)
 
 
 @admin.register(WorldlineWebhookConfiguration)
@@ -45,4 +41,8 @@ class WorldlineWebhookConfigurationAdmin(SingletonModelAdmin):
     readonly_fields = ("feedback_url",)
 
     def feedback_url(self, obj: WorldlineWebhookConfiguration | None = None) -> str:
-        return register["worldline"].get_webhook_url(None)
+        url = register["worldline"].get_webhook_url(None)
+        return format_html(
+            '<a href="{url}" target="_blank" rel="noopener nofollower">{url}</a>',
+            url=url,
+        )
