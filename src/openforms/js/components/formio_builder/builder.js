@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {FormBuilder, Templates} from 'react-formio';
 
-import {FeatureFlagsContext} from 'components/admin/form_design/Context';
+import {FeatureFlagsContext, FormContext} from 'components/admin/form_design/Context';
 import useOnChanged from 'hooks/useOnChanged';
 import jsonScriptToVar from 'utils/json-script';
 
@@ -278,6 +278,14 @@ const FormIOBuilder = ({
   set(builderOptions, 'openForms.componentNamespace', componentNamespaceRef.current);
   set(builderOptions, 'openForms.featureFlags', featureFlags);
   set(builderOptions, 'openForms.registrationBackendInfoRef', registrationBackendInfoRef);
+
+  // add custom options here to expose the necessary form context
+  const {
+    form: {authBackends = []},
+    plugins: {availablePrefillPlugins = []},
+  } = useContext(FormContext);
+  set(builderOptions, 'openForms.authBackends', authBackends);
+  set(builderOptions, 'openForms.availablePrefillPlugins', availablePrefillPlugins);
 
   // if an update must be forced, we mutate the ref state to point to the new
   // configuration, which causes the form builder to re-render the new configuration.

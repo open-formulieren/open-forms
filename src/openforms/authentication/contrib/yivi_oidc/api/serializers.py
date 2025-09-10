@@ -10,4 +10,5 @@ class AttributeGroupSerializer(serializers.ModelSerializer):
             "uuid",
             "name",
             "description",
+            "attributes",
         )

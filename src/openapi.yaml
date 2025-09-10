@@ -7087,6 +7087,16 @@ components:
           description: A longer human-readable description for the group of attributes,
             used in the form configuration.
           maxLength: 200
+        attributes:
+          type: array
+          items:
+            type: string
+            title: Attribute
+            maxLength: 100
+          description: List of attributes that will be requested from the user. The
+            user can choose whether to grant access to all these attributes, or none.
+            If you want individually optional attributes, you should define them as
+            separate attribute groups.
       required:
       - name
     AuthPlugin:

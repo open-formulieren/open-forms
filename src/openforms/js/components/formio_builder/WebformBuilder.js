@@ -152,6 +152,9 @@ class WebformBuilder extends WebformBuilderFormio {
       return temp.key;
     };
 
+    // this context is not available when editing a form definition (standalone)
+    const {authBackends = [], availablePrefillPlugins = []} = this.webform?.options?.openForms;
+
     // hand contents of modal over to React
     (async () => {
       const intlProviderProps = await getIntlProviderProps();
@@ -172,7 +175,12 @@ class WebformBuilder extends WebformBuilderFormio {
             getReferenceListsTables={getReferenceListsTables}
             getReferenceListsTableItems={getReferenceListsTableItems}
             getPrefillPlugins={getPrefillPlugins}
-            getPrefillAttributes={getPrefillAttributes}
+            getPrefillAttributes={async plugin =>
+              await getPrefillAttributes(plugin, {
+                authBackends,
+                availablePrefillPlugins,
+              })
+            }
             getFileTypes={async () => FILE_TYPES}
             serverUploadLimit={MAX_FILE_UPLOAD_SIZE}
             getDocumentTypes={async () => await getAvailableDocumentTypes(this)}

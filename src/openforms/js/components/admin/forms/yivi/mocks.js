@@ -7,11 +7,19 @@ const DEFAULT_ATTRIBUTE_GROUPS = [
     uuid: 'efffa9ef-5697-4fea-9f7b-c296cc3f95fa',
     name: 'A custom group for fetching custom attributes',
     description: 'Custom group description',
+    attributes: [
+      'irma.gemeente.personalDetails.firstName',
+      'irma.gemeente.personalDetails.lastName',
+    ],
   },
   {
     uuid: 'fc9eff0e-4b87-4231-afd1-76e3fe5e8530',
     name: 'Profile group',
     description: '',
+    attributes: [
+      'irma.gemeente.personalDetails.firstName',
+      'irma.gemeente.personalDetails.dateOfBirth',
+    ],
   },
 ];
 
