@@ -103,10 +103,6 @@ De gebruiker bepaalt daarbij telkens zelf of deze gegevens gedeeld worden.
 
 .. note:: Na authenticatie met Yivi worden eventuele aanvullende attributen beschikbaar
    gesteld onder de :ref:`vaste variabele <manual_forms_variables_static_variables>`
-   ``auth.additional_claims``. Om de Yivi attributen beschikbaar te maken in
-   :ref:`logica <manual_logic>` en in :ref:`sjabloonfunctionaliteit <manual_templates>`,
-   worden de punten in de attribuutnamen in de variabele automatisch vervangen met
-   liggende streepjes.
-
-   Bijvoorbeeld: het Yivi attribuut ``pbdf.gemeente.personalData.over18`` kan in logica
-   als ``auth.additional_claims.pbdf_gemeente_personalData_over18`` gebruikt worden.
+   ``auth.additional_claims``. Bijvoorbeeld: het Yivi attribuut
+   ``pbdf.gemeente.personalData.over18`` kan in logica als
+   ``auth.additional_claims.pbdf.gemeente.personalData.over18`` gebruikt worden.

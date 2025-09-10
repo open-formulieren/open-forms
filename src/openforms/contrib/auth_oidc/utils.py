@@ -139,6 +139,9 @@ def process_claims(
            "pet": "cat",
            "loa_claim": "urn:etoegang:core:assurance-class:loa1"
        }
+
+    .. todo:: this can probably benefit from building complex Glom specs instead of manually
+        processing each element individually.
     """
     processed_claims = {}
 

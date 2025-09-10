@@ -2,7 +2,6 @@ from uuid import UUID
 
 from django.test import TestCase
 
-from digid_eherkenning.choices import DigiDAssuranceLevels
 from jsonschema.validators import Draft202012Validator
 
 from openforms.authentication.constants import AuthAttribute
@@ -42,47 +41,6 @@ class TestStaticVariables(TestCase):
                 "additional_claims": {
                     "firstName": "John",
                     "familyName": "Doe",
-                },
-            },
-            "auth_bsn": "111222333",
-            "auth_kvk": "",
-            "auth_pseudo": "",
-            "auth_type": "bsn",
-        }
-
-        for variable_key, value in expected.items():
-            with self.subTest(key=variable_key, value=value):
-                self.assertIn(variable_key, static_data)
-                self.assertEqual(static_data[variable_key].initial_value, value)
-
-    def test_auth_static_data_periods_and_hyphens_in_additional_claims_claim_keys_are_replaced_with_underscores(
-        self,
-    ):
-        auth_info = AuthInfoFactory.create(
-            plugin="test-plugin",
-            attribute=AuthAttribute.bsn,
-            value="111222333",
-            additional_claims={
-                "first.name": "John",
-                "family.name": "Doe",
-                "pbdf.pilot-amsterdam.passport.over18": "Yes",
-            },
-        )
-
-        static_data = {
-            variable.key: variable
-            for variable in get_static_variables(submission=auth_info.submission)
-        }
-
-        expected = {
-            "auth": {
-                "plugin": "test-plugin",
-                "attribute": AuthAttribute.bsn,
-                "value": "111222333",
-                "additional_claims": {
-                    "first_name": "John",
-                    "family_name": "Doe",
-                    "pbdf_pilot-amsterdam_passport_over18": "Yes",
                 },
             },
             "auth_bsn": "111222333",
@@ -212,76 +170,6 @@ class TestStaticVariables(TestCase):
         self.assertEqual(
             static_data["auth_additional_claims"],
             {"firstName": "John", "familyName": "Doe"},
-        )
-
-    def test_additional_claims_periods_and_hyphens_in_claim_keys_are_replaced_with_underscores(
-        self,
-    ):
-        auth_info = AuthInfoFactory.create(
-            plugin="test-plugin",
-            attribute=AuthAttribute.bsn,
-            value="111222333",
-            additional_claims={
-                "first.name": "John",
-                "family.name": "Doe",
-                "pbdf.pilot-amsterdam.passport.over18": "Yes",
-                "pbdf.pilot-amsterdam": {"passport.over18": "Yes"},
-            },
-        )
-
-        static_data = {
-            variable.key: variable.initial_value
-            for variable in get_static_variables(submission=auth_info.submission)
-        }
-
-        self.assertEqual(
-            static_data["auth_additional_claims"],
-            {
-                "first_name": "John",
-                "family_name": "Doe",
-                "pbdf_pilot-amsterdam_passport_over18": "Yes",
-                "pbdf_pilot-amsterdam": {"passport_over18": "Yes"},
-            },
-        )
-
-    def test_auth_context_periods_and_hyphens_in_additional_claims_claim_keys_are_replaced_with_underscores(
-        self,
-    ):
-        auth_info = AuthInfoFactory.create(
-            plugin="yivi_oidc",
-            attribute=AuthAttribute.bsn,
-            value="111222333",
-            additional_claims={
-                "first.name": "John",
-                "family.name": "Doe",
-                "pbdf.pilot-amsterdam.passport.over18": "Yes",
-                "pbdf.pilot-amsterdam": {"passport.over18": "Yes"},
-            },
-        )
-
-        static_data = {
-            variable.key: variable.initial_value
-            for variable in get_static_variables(submission=auth_info.submission)
-        }
-
-        self.assertEqual(
-            static_data["auth_context"],
-            {
-                "source": "yivi",
-                "levelOfAssurance": DigiDAssuranceLevels.middle,
-                "authorizee": {
-                    "legalSubject": {
-                        "identifierType": "bsn",
-                        "identifier": "111222333",
-                        "additionalInformation": {
-                            "first_name": "John",
-                            "family_name": "Doe",
-                            "pbdf_pilot-amsterdam_passport_over18": "Yes",
-                            "pbdf_pilot-amsterdam": {"passport_over18": "Yes"},
-                        },
-                    }
-                },
-            },
         )
 
 

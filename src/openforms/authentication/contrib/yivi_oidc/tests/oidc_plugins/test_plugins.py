@@ -43,15 +43,16 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
             options__loa_settings__bsn_loa_claim_path=["bsn.loa"],
         )
         plugin = oidc_register[oidc_client.identifier]
-        attr_group = AttributeGroupFactory.create(
-            name="know_attributes",
-            uuid="e4bfa861-3ac0-4b9a-90ff-1bdbb3a17e09",
+        attr_group_1 = AttributeGroupFactory.create(
             attributes=["irma-demo.gemeente.personalData.familyname"],
+        )
+        attr_group_2 = AttributeGroupFactory.create(
+            attributes=["irma-demo.gemeente.personalData.givenName"],
         )
         request = self._setup_form(
             options={
                 "authentication_options": [],
-                "additional_attributes_groups": [attr_group],
+                "additional_attributes_groups": [attr_group_1, attr_group_2],
                 "bsn_loa": "",
                 "kvk_loa": "",
             }
@@ -63,6 +64,7 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
                 "test.attribute.bsn": "123456782",
                 "bsn.loa": "low",
                 "irma-demo.gemeente.personalData.familyname": "Doe",
+                "irma-demo.gemeente.personalData.givenName": "John",
             },
             additional_attributes,
         )
@@ -73,7 +75,14 @@ class ProcessClaimsYiviTest(OIDCMixin, TestCase):
                 "bsn_claim": "123456782",
                 "loa_claim": "low",
                 "additional_claims": {
-                    "irma-demo.gemeente.personalData.familyname": "Doe"
+                    "irma-demo": {
+                        "gemeente": {
+                            "personalData": {
+                                "familyname": "Doe",
+                                "givenName": "John",
+                            }
+                        }
+                    }
                 },
             },
         )
