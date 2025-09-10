@@ -13,6 +13,7 @@ from .constants import DATA_TYPE_TO_JSON_SCHEMA, FormVariableDataTypes
 class BaseStaticVariable(ABC, AbstractBasePlugin):
     name: ClassVar[StrOrPromise]
     data_type: ClassVar[FormVariableDataTypes]
+    exclude_from_confirmation_email: ClassVar[bool] = False
 
     @abstractmethod
     def get_initial_value(self, submission: Submission | None = None):

@@ -38,7 +38,9 @@ def check_initial_value(initial_value: JSONObject, data_type: str) -> JSONObject
         return DEFAULT_INITIAL_VALUE[data_type]
 
 
-def get_variables_for_context(submission: Submission) -> dict[str, VariableValue]:
+def get_variables_for_context(
+    submission: Submission, is_confirmation_email: bool = False
+) -> dict[str, VariableValue]:
     """
     Return the key/value pairs of data in the state (static, user-defined, and component
     variables). If specified in the settings, strings will be escaped for HTML.
@@ -47,7 +49,9 @@ def get_variables_for_context(submission: Submission) -> dict[str, VariableValue
     auth_kvk...) can be already hashed.
     """
     state = submission.load_submission_value_variables_state()
-    data = state.get_data(include_static_variables=True).data
+    data = state.get_data(
+        include_static_variables=True, is_confirmation_email=is_confirmation_email
+    ).data
 
     if settings.ESCAPE_REGISTRATION_OUTPUT:
         data = recursively_escape_html_strings(data)

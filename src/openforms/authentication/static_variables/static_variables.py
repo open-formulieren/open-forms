@@ -54,6 +54,7 @@ class LanguageCode(BaseStaticVariable):
 class Auth(BaseStaticVariable):
     name = _("Authentication")
     data_type = FormVariableDataTypes.object
+    exclude_from_confirmation_email = True
 
     def get_initial_value(
         self, submission: Submission | None = None
@@ -112,6 +113,7 @@ def get_auth_value(submission: Submission | None, attribute: AuthAttribute) -> s
 class AuthBSN(BaseStaticVariable):
     name = _("Authentication BSN")
     data_type = FormVariableDataTypes.string
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.bsn)
@@ -133,6 +135,7 @@ class AuthBSN(BaseStaticVariable):
 class AuthKvK(BaseStaticVariable):
     name = _("Authentication KvK")
     data_type = FormVariableDataTypes.string
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.kvk)
@@ -154,6 +157,7 @@ class AuthKvK(BaseStaticVariable):
 class AuthPseudo(BaseStaticVariable):
     name = _("Authentication pseudo")
     data_type = FormVariableDataTypes.string
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.pseudo)
@@ -166,6 +170,7 @@ class AuthPseudo(BaseStaticVariable):
 class AuthAdditionalClaims(BaseStaticVariable):
     name = _("Authentication additional claims")
     data_type = FormVariableDataTypes.object
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None):
         if submission is None or not submission.is_authenticated:
@@ -184,6 +189,7 @@ class AuthAdditionalClaims(BaseStaticVariable):
 class AuthContext(BaseStaticVariable):
     name = _("Authentication context data")
     data_type = FormVariableDataTypes.object
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None):
         if submission is None:
@@ -229,6 +235,7 @@ class AuthContextSource(BaseStaticVariable):
 class AuthContextLOA(BaseStaticVariable):
     name = _("Authentication context data: level of assurance")
     data_type = FormVariableDataTypes.string
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         if submission is None or not submission.is_authenticated:
@@ -252,6 +259,7 @@ class AuthContextLOA(BaseStaticVariable):
 class AuthContextRepresenteeType(BaseStaticVariable):
     name = _("Authentication context data: representee identifier type")
     data_type = FormVariableDataTypes.string
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         if submission is None or not submission.is_authenticated:
@@ -273,6 +281,7 @@ class AuthContextRepresenteeType(BaseStaticVariable):
 class AuthContextRepresenteeIdentifier(BaseStaticVariable):
     name = _("Authentication context data: representee identifier")
     data_type = FormVariableDataTypes.string
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         if submission is None or not submission.is_authenticated:
@@ -294,6 +303,7 @@ class AuthContextRepresenteeIdentifier(BaseStaticVariable):
 class AuthContextLegalSubjectIdentifierType(BaseStaticVariable):
     name = _("Authentication context data: authorizee, legal subject identifier type")
     data_type = FormVariableDataTypes.string
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         if submission is None or not submission.is_authenticated:
@@ -316,6 +326,7 @@ class AuthContextLegalSubjectIdentifierType(BaseStaticVariable):
 class AuthContextLegalSubjectIdentifier(BaseStaticVariable):
     name = _("Authentication context data: authorizee, legal subject identifier")
     data_type = FormVariableDataTypes.string
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         if submission is None or not submission.is_authenticated:
@@ -338,6 +349,7 @@ class AuthContextLegalSubjectIdentifier(BaseStaticVariable):
 class AuthContextBranchNumber(BaseStaticVariable):
     name = _("Authentication context data: branch number")
     data_type = FormVariableDataTypes.string
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         if submission is None or not submission.is_authenticated:
@@ -363,6 +375,7 @@ class AuthContextBranchNumber(BaseStaticVariable):
 class AuthContextActingSubjectIdentifierType(BaseStaticVariable):
     name = _("Authentication context data: authorizee, acting subject identifier type")
     data_type = FormVariableDataTypes.string
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         if submission is None or not submission.is_authenticated:
@@ -380,6 +393,7 @@ class AuthContextActingSubjectIdentifierType(BaseStaticVariable):
 class AuthContextActingSubjectIdentifier(BaseStaticVariable):
     name = _("Authentication context data: authorizee, acting subject identifier")
     data_type = FormVariableDataTypes.string
+    exclude_from_confirmation_email = True
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         if submission is None or not submission.is_authenticated:
