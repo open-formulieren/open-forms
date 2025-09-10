@@ -268,7 +268,10 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
             [
                 {
                     "path_in_claim": [attribute],
-                    "processed_path": ["additional_claims", attribute],
+                    "processed_path": [
+                        "additional_claims",
+                        *attribute.split("."),
+                    ],
                 }
                 for attribute_group in additional_attributes
                 for attribute in attribute_group
