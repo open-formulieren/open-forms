@@ -36,6 +36,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 "abstract": False,
+                "verbose_name": "Worldline webhook configuration (transition)",
             },
         ),
         migrations.AddField(

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 
 from solo.admin import SingletonModelAdmin
 
@@ -19,7 +20,6 @@ class WorldlineMerchantAdmin(admin.ModelAdmin):
         "label",
         "pspid",
         "endpoint",
-        "feedback_url",
     )
     search_fields = (
         "label",
@@ -27,18 +27,22 @@ class WorldlineMerchantAdmin(admin.ModelAdmin):
         "api_key",
     )
 
-    def feedback_url(self, obj: WorldlineMerchant | None = None) -> str:
-        if not obj:
-            return ""
-        return register["worldline"].get_webhook_url(None)
-
 
 @admin.register(WorldlineWebhookConfiguration)
 class WorldlineWebhookConfigurationAdmin(SingletonModelAdmin):
     fields = (
         "webhook_key_id",
         "webhook_key_secret",
+        "feedback_url",
     )
 
     list_display = ("webhook_key_id",)
     search_fields = ("webhook_key_id",)
+    readonly_fields = ("feedback_url",)
+
+    def feedback_url(self, obj: WorldlineWebhookConfiguration | None = None) -> str:
+        url = register["worldline"].get_webhook_url(None)
+        return format_html(
+            '<a href="{url}" target="_blank" rel="noopener nofollower">{url}</a>',
+            url=url,
+        )
