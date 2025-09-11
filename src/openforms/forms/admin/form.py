@@ -12,6 +12,7 @@ from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInli
 
 from openforms.api.utils import underscore_to_camel
 from openforms.emails.models import ConfirmationEmailTemplate
+from openforms.payments.contrib.ogone.models import OgoneMerchant
 from openforms.registrations.admin import RegistrationBackendFieldMixin
 from openforms.typing import StrOrPromise
 from openforms.utils.expressions import FirstNotBlank
@@ -25,6 +26,8 @@ from .views import (
     ExportFormsForm,
     ExportFormsView,
     ImportFormsView,
+    PaymentMigrationForm,
+    PaymentMigrationView,
 )
 
 
@@ -142,6 +145,7 @@ class FormAdmin(
         "set_to_maintenance_mode",
         "remove_from_maintenance_mode",
         "export_forms",
+        "migrate_to_worldline",
     ]
     list_filter = (
         "active",
@@ -329,6 +333,11 @@ class FormAdmin(
                 self.admin_site.admin_view(ExportFormsView.as_view()),
                 name="forms_export",
             ),
+            path(
+                "worldline-migrate/",
+                self.admin_site.admin_view(PaymentMigrationView.as_view()),
+                name="forms_payment_migration",
+            ),
         ]
         return my_urls + urls
 
@@ -379,6 +388,14 @@ class FormAdmin(
                 count=count,
                 verbose_name=queryset.model._meta.verbose_name,
             ),
+        )
+
+    @admin.action(description=_("Migrate form(s) to Worldline payment provider"))
+    def migrate_to_worldline(self, request, queryset) -> TemplateResponse:
+        form = PaymentMigrationForm(initial={"forms_to_migrate": queryset})
+        context = dict(self.admin_site.each_context(request), form=form)
+        return TemplateResponse(
+            request, "admin/forms/form/migrate-payment-backend.html", context
         )
 
     def delete_model(self, request, form):
