@@ -3,6 +3,8 @@ from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.test import APITestCase
+from zgw_consumers.constants import APITypes
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
@@ -207,7 +209,17 @@ class FormJsonSchemaAPITests(APITestCase):
             name="Generic JSON",
             backend="json_dump",
             form=form,
-            options={"transform_to_list": []},
+            options={
+                "service": ServiceFactory.create(api_type=APITypes.orc).pk,
+                "variables": [
+                    "firstName",
+                    "last",
+                    "file",
+                    "selectboxes",
+                    "foo",
+                ],
+                "fixed_metadata_variables": [],
+            },
         )
 
         url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})
