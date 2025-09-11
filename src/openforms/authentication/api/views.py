@@ -11,10 +11,9 @@ from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.views import ListMixin
 from openforms.submissions.api.permissions import ActiveSubmissionPermission
 from openforms.submissions.models import Submission
-from openforms.submissions.utils import remove_submission_from_session
 
-from ..constants import FORM_AUTH_SESSION_KEY, REGISTRATOR_SUBJECT_SESSION_KEY
 from ..registry import register
+from ..utils import logout_submission
 from .serializers import AuthPluginSerializer
 
 
@@ -61,26 +60,15 @@ class SubmissionLogoutView(GenericAPIView[Submission]):
     def delete(self, request, *args, **kwargs):
         submission = self.get_object()
 
-        remove_submission_from_session(submission, request.session)
+        logout_submission(submission, request)
 
-        if submission.is_authenticated:
-            if submission.auth_info.plugin in register:
-                plugin = register[submission.auth_info.plugin]
-                plugin.logout(request)
+        if submission.is_ready_to_hash_identifying_attributes:
+            if not submission.auth_info.attribute_hashed:
+                submission.auth_info.hash_identifying_attributes()
 
-            if submission.is_ready_to_hash_identifying_attributes:
-                if not submission.auth_info.attribute_hashed:
-                    submission.auth_info.hash_identifying_attributes()
-
-                if (
-                    registrator := submission.registrator
-                ) and not registrator.attribute_hashed:
-                    registrator.hash_identifying_attributes()
-
-        if FORM_AUTH_SESSION_KEY in request.session:
-            del request.session[FORM_AUTH_SESSION_KEY]
-
-        if REGISTRATOR_SUBJECT_SESSION_KEY in request.session:
-            del request.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+            if (
+                registrator := submission.registrator
+            ) and not registrator.attribute_hashed:
+                registrator.hash_identifying_attributes()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
