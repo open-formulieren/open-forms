@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 from openforms.payments.base import Options
 
@@ -12,6 +12,7 @@ class AmountOfMoney(TypedDict):
 
 class References(TypedDict):
     merchantReference: str
+    descriptor: str
 
 
 class Order(TypedDict):
@@ -21,6 +22,7 @@ class Order(TypedDict):
 
 class CheckoutInput(TypedDict):
     returnUrl: str
+    variant: NotRequired[str]
 
 
 class CheckoutDetails(TypedDict):
@@ -31,3 +33,5 @@ class CheckoutDetails(TypedDict):
 class PaymentOptions(Options):
     merchant: WorldlineMerchant
     _checkoutDetails: CheckoutDetails | None
+    variant: str
+    descriptor_template: str

@@ -577,6 +577,12 @@
       "value": " files to upload."
     }
   ],
+  "4PqTET": [
+    {
+      "type": 0,
+      "value": "Variant"
+    }
+  ],
   "4sFGgA": [
     {
       "type": 0,
@@ -1497,6 +1503,60 @@
       "value": "Save changes"
     }
   ],
+  "Bp3X7R": [
+    {
+      "type": 0,
+      "value": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " You can include form variables (using their keys) and the public-reference variable (using expression "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ public_reference }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "). If unspecified, a default description is used."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "Note"
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": ": the length of the result is capped to 32 characters."
+    }
+  ],
   "BqA9of": [
     {
       "type": 0,
@@ -1779,6 +1839,12 @@
     {
       "type": 0,
       "value": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
+    }
+  ],
+  "DVx0uj": [
+    {
+      "type": 0,
+      "value": "Payment descriptor"
     }
   ],
   "DWhkNq": [
@@ -5955,6 +6021,12 @@
     {
       "type": 0,
       "value": "The minimum date that can be picked."
+    }
+  ],
+  "lZw4g0": [
+    {
+      "type": 0,
+      "value": "Which template variant should be used for payments related to this form. This can be found under the \"Variant name\" field in the \"Branding\" section."
     }
   ],
   "lcR5L6": [

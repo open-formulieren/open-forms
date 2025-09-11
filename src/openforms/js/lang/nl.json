@@ -246,6 +246,11 @@
     "description": "JSON editor: 'configure' header label",
     "originalDefault": "Configure"
   },
+  "4PqTET": {
+    "defaultMessage": "Variant",
+    "description": "Worldline payment options 'variant' label",
+    "originalDefault": "Variant"
+  },
   "4sFGgA": {
     "defaultMessage": "De expressies hieronder komen uit de geselecteerde beslisdefinitie. Het is mogelijk dat sommige inputs zichtbaar zijn die al ingevuld worden door een eerdere definitie. Dit komt door de complexiteit van de expressie.",
     "description": "DMN input expressions warning about extraction accuracy",
@@ -656,6 +661,11 @@
     "description": "Text on button in modal to save design token values",
     "originalDefault": "Save changes"
   },
+  "Bp3X7R": {
+    "defaultMessage": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 32 characters.",
+    "description": "Worldline payment options 'descriptorTemplate' help text",
+    "originalDefault": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 32 characters."
+  },
   "BqA9of": {
     "defaultMessage": "Probeer het uit",
     "description": "Service fetch config try it out tab title",
@@ -781,6 +791,11 @@
     "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare beslisdefinities. Is de geselecteerde DMN-plugin goed ingesteld en beschikbaar?",
     "description": "Admin error for API error when configuring Camunda actions",
     "originalDefault": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
+  },
+  "DVx0uj": {
+    "defaultMessage": "Payment descriptor",
+    "description": "Worldline payment options 'descriptorTemplate' label",
+    "originalDefault": "Payment descriptor"
   },
   "DWhkNq": {
     "defaultMessage": "Plugin",
@@ -2822,6 +2837,11 @@
     "defaultMessage": "Het pad naar de map waar mappen voor documenten van Open Formulieren aangemaakt worden. Je kan de expressies <code>'{{' year '}}'</code>, <code>'{{' month '}}'</code> en <code>'{{' day '}}'</code> gebruiken. Het pad moet beginnen met <code>/</code>.",
     "description": "MS Graph registration options 'folderPath' help text",
     "originalDefault": "The path of the folder where folders containing Open-Forms related documents will be created. You can use the expressions <code>'{{' year '}}'</code>, <code>'{{' month '}}'</code> and <code>'{{' day '}}'</code>. The path must start with <code>/</code>."
+  },
+  "lZw4g0": {
+    "defaultMessage": "Which template variant should be used for payments related to this form. This can be found under the \"Variant name\" field in the \"Branding\" section.",
+    "description": "Worldline payment options 'variant' help text",
+    "originalDefault": "Which template variant should be used for payments related to this form. This can be found under the \"Variant name\" field in the \"Branding\" section."
   },
   "lcR5L6": {
     "defaultMessage": "Item toevoegen",
