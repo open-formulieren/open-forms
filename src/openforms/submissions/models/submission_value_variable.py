@@ -74,6 +74,7 @@ class SubmissionValueVariablesState:
         submission_step: SubmissionStep | None = None,
         include_unsaved=False,
         include_static_variables=False,
+        is_confirmation_email=False,
     ) -> FormioData:
         """Return the values of the variables from the submission (step) in a
         ``FormioData`` instance.
@@ -89,6 +90,8 @@ class SubmissionValueVariablesState:
           will be returned.
         :param include_unsaved: Whether to include unsaved variables.
         :param include_static_variables: Whether to include static variables.
+        :param is_confirmation_email: Whether to include static variables with
+               'exclude_from_confirmation_email' = True property.
         """
 
         if submission_step:
@@ -104,7 +107,9 @@ class SubmissionValueVariablesState:
                 data[variable.key] = variable.to_python()
 
         if include_static_variables:
-            data.update(self.get_static_data())
+            data.update(
+                self.get_static_data(is_confirmation_email=is_confirmation_email)
+            )
 
         return data
 
@@ -194,23 +199,35 @@ class SubmissionValueVariablesState:
             if key in self._variables:
                 del self._variables[key]
 
-    def _get_static_data(self, other_registry: VariablesRegistry | None = None):
+    def _get_static_data(
+        self,
+        other_registry: VariablesRegistry | None = None,
+        is_confirmation_email: bool = False,
+    ):
         return {
             variable.key: variable.initial_value
             for variable in get_static_variables(
                 submission=self.submission,
                 variables_registry=other_registry,
+                is_confirmation_email=is_confirmation_email,
             )
         }
 
     def get_static_data(
-        self, other_registry: VariablesRegistry | None = None
+        self,
+        other_registry: VariablesRegistry | None = None,
+        is_confirmation_email: bool = False,
     ) -> JSONObject:
         # Ensure we do not accidentally cache the non-default registry
         if other_registry is not None:
-            return self._get_static_data(other_registry=other_registry)
+            return self._get_static_data(
+                other_registry=other_registry,
+                is_confirmation_email=is_confirmation_email,
+            )
         if self._static_data is None:
-            self._static_data = self._get_static_data()
+            self._static_data = self._get_static_data(
+                is_confirmation_email=is_confirmation_email
+            )
         return self._static_data
 
     def get_prefill_variables(self) -> list[SubmissionValueVariable]:

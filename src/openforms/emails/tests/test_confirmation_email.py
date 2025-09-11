@@ -485,6 +485,39 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             self.assertNotIn("Snowflake text", result)
             self.assertNotIn(expected_heading, result)
 
+    def test_auth_static_variables_excluded_from_confirmation_email_context(self):
+        submission = SubmissionFactory.create()
+        context = get_confirmation_email_context_data(submission)
+
+        excluded_variables = [
+            "auth",
+            "auth_bsn",
+            "auth_kvk",
+            "auth_pseudo",
+            "auth_additional_claims",
+            "auth_context_loa",
+            "auth_context_representee_identifier_type",
+            "auth_context_representee_identifier",
+            "auth_context_legal_subject_identifier_type",
+            "auth_context_legal_subject_identifier",
+            "auth_context_branch_number",
+            "auth_context_acting_subject_identifier_type",
+            "auth_context_acting_subject_identifier",
+        ]
+        included_variables = [
+            "submission_id",
+            "language_code",
+            "auth_type",
+            "auth_context_source",
+        ]
+        for variable in excluded_variables:
+            with self.subTest(variable):
+                self.assertNotIn(variable, context)
+
+        for variable in included_variables:
+            with self.subTest(variable):
+                self.assertIn(variable, context)
+
 
 @override_settings(
     CACHES=NOOP_CACHES,

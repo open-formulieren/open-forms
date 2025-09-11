@@ -65,7 +65,7 @@ def get_confirmation_email_context_data(submission: Submission) -> dict[str, Any
             # starting with underscores are blocked by the Django template engine.
             "_submission": submission,
             "_form": submission.form,  # should be the same as self.form
-            **get_variables_for_context(submission),
+            **get_variables_for_context(submission, is_confirmation_email=True),
             "public_reference": submission.public_registration_reference,
             "registration_completed": submission.is_registered,
             "waiting_on_cosign": submission.cosign_state.is_waiting,

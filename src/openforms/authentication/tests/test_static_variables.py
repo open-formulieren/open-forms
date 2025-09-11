@@ -172,6 +172,54 @@ class TestStaticVariables(TestCase):
             {"firstName": "John", "familyName": "Doe"},
         )
 
+    def test_static_variables_in_confirmation_email(self):
+        auth_info = AuthInfoFactory.create(
+            plugin="test-plugin",
+            attribute=AuthAttribute.bsn,
+            value="111222333",
+            additional_claims={
+                "firstName": "John",
+                "familyName": "Doe",
+            },
+        )
+
+        excluded_variables = [
+            "auth",
+            "auth_bsn",
+            "auth_kvk",
+            "auth_pseudo",
+            "auth_additional_claims",
+            "auth_context_loa",
+            "auth_context_representee_identifier_type",
+            "auth_context_representee_identifier",
+            "auth_context_legal_subject_identifier_type",
+            "auth_context_legal_subject_identifier",
+            "auth_context_branch_number",
+            "auth_context_acting_subject_identifier_type",
+            "auth_context_acting_subject_identifier",
+        ]
+        included_variables = [
+            "submission_id",
+            "language_code",
+            "auth_type",
+            "auth_context_source",
+        ]
+
+        static_data = {
+            variable.key: variable
+            for variable in get_static_variables(
+                submission=auth_info.submission, is_confirmation_email=True
+            )
+        }
+
+        for variable in excluded_variables:
+            with self.subTest(variable):
+                self.assertNotIn(variable, static_data)
+
+        for variable in included_variables:
+            with self.subTest(variable):
+                self.assertIn(variable, static_data)
+
 
 class StaticVariableValidJsonSchemaTests(TestCase):
     validator = Draft202012Validator
