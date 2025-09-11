@@ -9,11 +9,11 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Mon, 08 Sep 2025 10:40:10 GMT
+      - Thu, 11 Sep 2025 12:16:46 GMT
       User-Agent:
       - python-requests/2.32.4
       X-GCS-ServerMetaInfo:
-      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE1LjYtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMTAgSnVsIDIwMjUgMTc6MTA6MTggKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE2LjUtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMDQgU2VwIDIwMjUgMjM6MTg6MTMgKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
     method: GET
     uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/services/testconnection
   response:
@@ -30,17 +30,17 @@ interactions:
         data: https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
         https://devicefingerprint.pay.checkout.worldline-solutions.com; style-src
         ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
-        https://devicefingerprint.pay.checkout.worldline-solutions.com ''nonce-k3l5Wz2RIWQ='';
+        https://devicefingerprint.pay.checkout.worldline-solutions.com ''nonce-ZSv2H+0Q1kA='';
         style-src-attr ''unsafe-inline''; script-src ''self'' https://assets.test.cdn.v-psp.com
         https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com
-        ''nonce-k3l5Wz2RIWQ=''; object-src ''none'';'
+        ''nonce-ZSv2H+0Q1kA=''; object-src ''none'';'
       content-type:
       - application/json; charset=utf-8
       correlation-id:
-      - 820bd540-3826-4c32-baa6-99749c6782ce
-      - 820bd540-3826-4c32-baa6-99749c6782ce
+      - 5f699bfa-19ed-4d69-a123-5db31b3d5370
+      - 5f699bfa-19ed-4d69-a123-5db31b3d5370
       date:
-      - Mon, 08 Sep 2025 10:40:10 GMT
+      - Thu, 11 Sep 2025 12:16:45 GMT
       strict-transport-security:
       - max-age=16000000; includeSubDomains; preload;
     status:
@@ -56,16 +56,16 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Mon, 08 Sep 2025 10:40:11 GMT
+      - Thu, 11 Sep 2025 12:16:46 GMT
       User-Agent:
       - python-requests/2.32.4
       X-GCS-ServerMetaInfo:
-      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE1LjYtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMTAgSnVsIDIwMjUgMTc6MTA6MTggKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE2LjUtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMDQgU2VwIDIwMjUgMjM6MTg6MTMgKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
     method: GET
     uri: https://payment.preprod.direct.worldline-solutions.com/v2/dummy/services/testconnection
   response:
     body:
-      string: "{\r\n  \"errorId\": \"313a4e2b-a338-44a8-93a7-c1ba36d1b94a\",\r\n  \"errors\":
+      string: "{\r\n  \"errorId\": \"bbba05b7-6eff-47d0-ac6b-e7c7e93f0f2a\",\r\n  \"errors\":
         [\r\n    {\r\n      \"code\": \"9007\",\r\n      \"id\": \"ACCESS_TO_MERCHANT_NOT_ALLOWED\",\r\n
         \     \"category\": \"DIRECT_PLATFORM_ERROR\",\r\n      \"message\": \"ACCESS_TO_MERCHANT_NOT_ALLOWED\",\r\n
         \     \"httpStatusCode\": 403\r\n    }\r\n  ],\r\n  \"status\": 403\r\n}"
@@ -73,10 +73,10 @@ interactions:
       content-type:
       - application/json
       correlation-id:
-      - 313a4e2b-a338-44a8-93a7-c1ba36d1b94a
-      - 313a4e2b-a338-44a8-93a7-c1ba36d1b94a
+      - bbba05b7-6eff-47d0-ac6b-e7c7e93f0f2a
+      - bbba05b7-6eff-47d0-ac6b-e7c7e93f0f2a
       date:
-      - Mon, 08 Sep 2025 10:40:10 GMT
+      - Thu, 11 Sep 2025 12:16:46 GMT
       strict-transport-security:
       - max-age=16000000; includeSubDomains; preload;
       transfer-encoding:
