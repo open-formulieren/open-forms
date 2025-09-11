@@ -56,7 +56,6 @@ from .typing import (
     CheckoutInput,
     Order,
     PaymentOptions,
-    References,
 )
 from .utils import get_webhook_helper
 
