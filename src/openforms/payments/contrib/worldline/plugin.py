@@ -322,13 +322,14 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             )
 
         payment_response = webhook_event.payment
+
+        assert payment_response.payment_output, "No payment output found in response"
+        assert payment_response.payment_output.references, (
+            "No payment references found in response"
+        )
         merchant_reference = (
             payment_response.payment_output.references.merchant_reference
-            if payment_response.payment_output
-            and payment_response.payment_output.references
-            else None
         )
-
         assert merchant_reference, "Merchant reference not found"
 
         try:
