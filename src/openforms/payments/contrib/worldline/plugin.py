@@ -78,11 +78,15 @@ class WorldlineOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializ
 
 
 def _generate_order(payment: SubmissionPayment) -> Order:
-    amount_of_money = AmountOfMoney(
-        currencyCode="EUR", amount=int((payment.amount * 100).to_integral_exact())
-    )
-    references = References(merchantReference=payment.public_order_id)
-    return Order(amountOfMoney=amount_of_money, references=references)
+    return {
+        "amountOfMoney": {
+            "currencyCode": "EUR",
+            "amount": int((payment.amount * 100).to_integral_exact()),
+        },
+        "references": {
+            "merchantReference": payment.public_order_id,
+        },
+    }
 
 
 def _generate_checkout_input(
