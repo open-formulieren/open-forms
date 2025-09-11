@@ -52,7 +52,7 @@ CONFIGURATION: FormioConfiguration = {
             "description": "",
             "placeholder": "",
             "showInEmail": False,
-            "defaultValue": None,
+            "defaultValue": "",
         }
     ],
 }
@@ -352,7 +352,7 @@ class PrefillHookTests(TransactionTestCase):
 
         field = new_configuration["components"][0]
         assert "defaultValue" in field
-        self.assertIsNone(field["defaultValue"])
+        self.assertEqual(field["defaultValue"], "")
 
     def tests_no_prefill_configured(self):
         config = deepcopy(CONFIGURATION)

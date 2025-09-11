@@ -19,6 +19,7 @@ from openforms.formio.typing import Component
 from openforms.formio.utils import (
     get_component_data_subtype,
     get_component_datatype,
+    get_component_empty_value,
     iter_components,
 )
 from openforms.forms.models.form_variable import FormVariable
@@ -174,16 +175,21 @@ class SubmissionValueVariablesState:
                 continue
 
             configuration = {}
+            initial_value = form_variable.get_initial_value()
             if form_variable.source == FormVariableSources.component:
                 configuration = form_variable.form_definition.configuration_wrapper[
                     variable_key
                 ]
+                # If it does not have an initial value, make sure to set the empty
+                # component value.
+                if initial_value is None:
+                    initial_value = get_component_empty_value(configuration)
 
             # TODO Fill source field
             unsaved_submission_var = SubmissionValueVariable(
                 submission=self.submission,
                 key=variable_key,
-                value=form_variable.get_initial_value(),
+                value=initial_value,
                 is_initially_prefilled=(form_variable.prefill_plugin != ""),
                 configuration=configuration,
                 data_type=form_variable.data_type,
