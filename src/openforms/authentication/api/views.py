@@ -62,4 +62,13 @@ class SubmissionLogoutView(GenericAPIView[Submission]):
 
         logout_submission(submission, request)
 
+        if submission.is_ready_to_hash_identifying_attributes:
+            if not submission.auth_info.attribute_hashed:
+                submission.auth_info.hash_identifying_attributes()
+
+            if (
+                registrator := submission.registrator
+            ) and not registrator.attribute_hashed:
+                registrator.hash_identifying_attributes()
+
         return Response(status=status.HTTP_204_NO_CONTENT)
