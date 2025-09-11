@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.formio.constants import DataSrcOptions
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -30,6 +31,7 @@ class FormJsonSchemaAPITests(APITestCase):
         self.client.force_authenticate(user=self.user)
 
     def test_objects_api(self):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create()
         form = FormFactory.create()
         form_def = FormDefinitionFactory.create(
             configuration={
@@ -70,7 +72,13 @@ class FormJsonSchemaAPITests(APITestCase):
             name="Objects API",
             backend="objects_api",
             form=form,
-            options={"version": 2, "transform_to_list": []},
+            options={
+                "version": 2,
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "transform_to_list": [],
+            },
         )
 
         url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})
@@ -138,11 +146,16 @@ class FormJsonSchemaAPITests(APITestCase):
         # legacy/old forms may have incomplete registration backend options in the
         # database. These are handled through serializer defaults and may not cause
         # crashes.
+        objects_api_group = ObjectsAPIGroupConfigFactory.create()
         form_registration_backend = FormRegistrationBackendFactory.create(
             key="backend1",
             name="Objects API",
             backend="objects_api",
-            options={},
+            options={
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+            },
         )
 
         url = reverse(
@@ -334,6 +347,7 @@ class FormJsonSchemaAPITests(APITestCase):
         )
 
     def test_properties_should_not_be_converted_to_camel_case(self):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create()
         form = FormFactory.create()
         form_def = FormDefinitionFactory.create(
             configuration={
@@ -356,7 +370,13 @@ class FormJsonSchemaAPITests(APITestCase):
             name="Objects API",
             backend="objects_api",
             form=form,
-            options={"version": 2, "transform_to_list": []},
+            options={
+                "objects_api_group": objects_api_group.identifier,
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "version": 2,
+                "transform_to_list": [],
+            },
         )
 
         url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})

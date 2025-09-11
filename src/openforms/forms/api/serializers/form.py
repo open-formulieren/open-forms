@@ -692,7 +692,17 @@ class FormJsonSchemaOptionsSerializer(serializers.Serializer):
                 )
             ) from exc
 
-        if not plugin_allows_json_schema_generation(backend.backend, backend.options):
+        plugin = registration_register[backend.backend]
+        options_serializer = plugin.configuration_options(
+            data=backend.options,
+            context={"validate_business_logic": False},
+        )
+        # the options are expected to be valid since the form must be saved before you
+        # can call this endpoint
+        options_serializer.is_valid(raise_exception=True)
+        if not plugin_allows_json_schema_generation(
+            backend.backend, options_serializer.validated_data
+        ):
             raise ValidationError(
                 _(
                     "Backend with id '{backend}' does not allow JSON schema generation"
