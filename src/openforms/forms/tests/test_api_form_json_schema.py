@@ -1,4 +1,4 @@
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.urls import reverse
 
 from rest_framework import status
@@ -132,6 +132,27 @@ class FormJsonSchemaAPITests(APITestCase):
         expected_schema["required"] = set(expected_schema["required"])
 
         self.assertEqual(schema, expected_schema)
+
+    @tag("gh-5464")
+    def test_objects_api_incomplete_configuration_options(self):
+        # legacy/old forms may have incomplete registration backend options in the
+        # database. These are handled through serializer defaults and may not cause
+        # crashes.
+        form_registration_backend = FormRegistrationBackendFactory.create(
+            key="backend1",
+            name="Objects API",
+            backend="objects_api",
+            options={},
+        )
+
+        url = reverse(
+            "api:form-json-schema",
+            kwargs={"uuid_or_slug": form_registration_backend.form.uuid},
+        )
+
+        response = self.client.get(url, {"registration_backend_key": "backend1"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_generic_json(self):
         form = FormFactory.create()
