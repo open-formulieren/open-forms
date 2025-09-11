@@ -7,6 +7,7 @@ from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.contrib.auth_oidc.typing import ClaimProcessingInstructions
 from openforms.contrib.auth_oidc.utils import process_claims
+from openforms.typing import JSONObject
 
 
 class ProcessClaimsDigiDTest(OIDCMixin, TestCase):
@@ -25,7 +26,11 @@ class ProcessClaimsDigiDTest(OIDCMixin, TestCase):
         plugin = oidc_register[oidc_client.identifier]
 
         with self.subTest("BSN extraction + transform loa values"):
-            claims = {"sub": "XXXXXXX54", "authsp_level": "30", "extra": "irrelevant"}
+            claims: JSONObject = {
+                "sub": "XXXXXXX54",
+                "authsp_level": "30",
+                "extra": "irrelevant",
+            }
 
             processed_claims = process_claims(
                 claims,
@@ -42,7 +47,7 @@ class ProcessClaimsDigiDTest(OIDCMixin, TestCase):
             )
 
         with self.subTest("BSN extraction + missing loa claim"):
-            claims = {"sub": "XXXXXXX54"}
+            claims: JSONObject = {"sub": "XXXXXXX54"}
 
             processed_claims = process_claims(
                 claims,
@@ -59,7 +64,11 @@ class ProcessClaimsDigiDTest(OIDCMixin, TestCase):
             )
 
         with self.subTest("BSN extraction + unmapped LOA value"):
-            claims = {"sub": "XXXXXXX54", "authsp_level": "20", "extra": "irrelevant"}
+            claims: JSONObject = {
+                "sub": "XXXXXXX54",
+                "authsp_level": "20",
+                "extra": "irrelevant",
+            }
 
             processed_claims = process_claims(
                 claims,
@@ -754,9 +763,601 @@ class ProcessClaimsEHBewindvoeringTest(OIDCMixin, TestCase):
         )
 
 
+class ProcessClaimsEidasTest(OIDCMixin, TestCase):
+    def test_eidas_claim_processing(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas=True,
+            options__identity_settings__legal_subject_bsn_identifier_claim_path=["bsn"],
+            options__identity_settings__legal_subject_pseudo_identifier_claim_path=[
+                "pseudo_id"
+            ],
+            options__identity_settings__legal_subject_first_name_claim_path=[
+                "first_name"
+            ],
+            options__identity_settings__legal_subject_family_name_claim_path=[
+                "family_name"
+            ],
+            options__identity_settings__legal_subject_date_of_birth_claim_path=[
+                "date_of_birth"
+            ],
+            options__loa_settings__claim_path=["loa"],
+            options__loa_settings__default=AssuranceLevels.low_plus,
+            options__loa_settings__value_mapping=[
+                {"from": 3, "to": AssuranceLevels.substantial},
+            ],
+        )
+
+        plugin = oidc_register[oidc_client.identifier]
+
+        with self.subTest("all claims provided, happy flow"):
+            processed_claims = process_claims(
+                {
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
+
+            self.assertEqual(
+                processed_claims,
+                {
+                    "legal_subject_bsn_identifier_claim": "XXXXXXX54",
+                    "legal_subject_pseudo_identifier_claim": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "legal_subject_first_name_claim": "John",
+                    "legal_subject_family_name_claim": "Doe",
+                    "legal_subject_date_of_birth_claim": "01-01-2000",
+                    "loa_claim": "urn:etoegang:core:assurance-class:loa2plus",
+                },
+            )
+
+        with self.subTest("all claims except bsn provided, happy flow"):
+            processed_claims = process_claims(
+                {
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
+
+            self.assertEqual(
+                processed_claims,
+                {
+                    "legal_subject_pseudo_identifier_claim": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "legal_subject_first_name_claim": "John",
+                    "legal_subject_family_name_claim": "Doe",
+                    "legal_subject_date_of_birth_claim": "01-01-2000",
+                    "loa_claim": "urn:etoegang:core:assurance-class:loa2plus",
+                },
+            )
+
+        with self.subTest("all claims except pseudo_id provided, happy flow"):
+            processed_claims = process_claims(
+                {
+                    "bsn": "XXXXXXX54",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
+
+            self.assertEqual(
+                processed_claims,
+                {
+                    "legal_subject_bsn_identifier_claim": "XXXXXXX54",
+                    "legal_subject_first_name_claim": "John",
+                    "legal_subject_family_name_claim": "Doe",
+                    "legal_subject_date_of_birth_claim": "01-01-2000",
+                    "loa_claim": "urn:etoegang:core:assurance-class:loa2plus",
+                },
+            )
+
+        with self.subTest("mapping loa value"):
+            processed_claims = process_claims(
+                {
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": 3,
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
+
+            self.assertEqual(
+                processed_claims,
+                {
+                    "legal_subject_bsn_identifier_claim": "XXXXXXX54",
+                    "legal_subject_pseudo_identifier_claim": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "legal_subject_first_name_claim": "John",
+                    "legal_subject_family_name_claim": "Doe",
+                    "legal_subject_date_of_birth_claim": "01-01-2000",
+                    "loa_claim": "urn:etoegang:core:assurance-class:loa3",
+                },
+            )
+
+        with self.subTest("default/fallback loa"):
+            processed_claims = process_claims(
+                {
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
+
+            self.assertEqual(
+                processed_claims,
+                {
+                    "legal_subject_bsn_identifier_claim": "XXXXXXX54",
+                    "legal_subject_pseudo_identifier_claim": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "legal_subject_first_name_claim": "John",
+                    "legal_subject_family_name_claim": "Doe",
+                    "legal_subject_date_of_birth_claim": "01-01-2000",
+                    "loa_claim": "urn:etoegang:core:assurance-class:loa2plus",
+                },
+            )
+
+    def test_raises_on_missing_claims(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas=True,
+            options__identity_settings__legal_subject_bsn_identifier_claim_path=["bsn"],
+            options__identity_settings__legal_subject_pseudo_identifier_claim_path=[
+                "pseudo_id"
+            ],
+            options__identity_settings__legal_subject_first_name_claim_path=[
+                "first_name"
+            ],
+            options__identity_settings__legal_subject_family_name_claim_path=[
+                "family_name"
+            ],
+            options__identity_settings__legal_subject_date_of_birth_claim_path=[
+                "date_of_birth"
+            ],
+            options__loa_settings__claim_path=["loa"],
+            options__loa_settings__default=AssuranceLevels.low_plus,
+            options__loa_settings__value_mapping=[
+                {"from": 3, "to": AssuranceLevels.substantial},
+            ],
+        )
+
+        plugin = oidc_register[oidc_client.identifier]
+
+        with self.assertRaises(ValueError):
+            # Missing first_name
+            process_claims(
+                {
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            # Missing family_name
+            process_claims(
+                {
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            # Missing date_of_birth
+            process_claims(
+                {
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            # Missing bsn and pseudo_id
+            process_claims(
+                {
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+
+class ProcessClaimsEidasCompanyTest(OIDCMixin, TestCase):
+    def test_eidas_company_claim_processing(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas_company=True,
+            options__identity_settings__legal_subject_identifier_claim_path=[
+                "company_id"
+            ],
+            options__identity_settings__legal_subject_name_claim_path=["company_name"],
+            options__identity_settings__acting_subject_bsn_identifier_claim_path=[
+                "bsn"
+            ],
+            options__identity_settings__acting_subject_pseudo_identifier_claim_path=[
+                "pseudo_id"
+            ],
+            options__identity_settings__acting_subject_first_name_claim_path=[
+                "first_name"
+            ],
+            options__identity_settings__acting_subject_family_name_claim_path=[
+                "family_name"
+            ],
+            options__identity_settings__acting_subject_date_of_birth_claim_path=[
+                "date_of_birth"
+            ],
+            options__identity_settings__mandate_service_id_claim_path=["service_id"],
+            options__loa_settings__claim_path=["loa"],
+            options__loa_settings__default=AssuranceLevels.low_plus,
+            options__loa_settings__value_mapping=[
+                {"from": 3, "to": AssuranceLevels.substantial},
+            ],
+        )
+
+        plugin = oidc_register[oidc_client.identifier]
+
+        with self.subTest("all claims provided, happy flow"):
+            processed_claims = process_claims(
+                {
+                    "company_id": "NL/NTR/123456789",
+                    "company_name": "example company BV",
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
+
+            self.assertEqual(
+                processed_claims,
+                {
+                    "legal_subject_identifier_claim": "NL/NTR/123456789",
+                    "legal_subject_name_claim": "example company BV",
+                    "acting_subject_bsn_identifier_claim": "XXXXXXX54",
+                    "acting_subject_pseudo_identifier_claim": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "acting_subject_first_name_claim": "John",
+                    "acting_subject_family_name_claim": "Doe",
+                    "acting_subject_date_of_birth_claim": "01-01-2000",
+                    "mandate_service_id_claim": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "loa_claim": "urn:etoegang:core:assurance-class:loa2plus",
+                },
+            )
+
+        with self.subTest("all claims except bsn provided, happy flow"):
+            processed_claims = process_claims(
+                {
+                    "company_id": "NL/NTR/123456789",
+                    "company_name": "example company BV",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
+
+            self.assertEqual(
+                processed_claims,
+                {
+                    "legal_subject_identifier_claim": "NL/NTR/123456789",
+                    "legal_subject_name_claim": "example company BV",
+                    "acting_subject_pseudo_identifier_claim": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "acting_subject_first_name_claim": "John",
+                    "acting_subject_family_name_claim": "Doe",
+                    "acting_subject_date_of_birth_claim": "01-01-2000",
+                    "mandate_service_id_claim": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "loa_claim": "urn:etoegang:core:assurance-class:loa2plus",
+                },
+            )
+
+        with self.subTest("all claims except pseudo_id provided, happy flow"):
+            processed_claims = process_claims(
+                {
+                    "company_id": "NL/NTR/123456789",
+                    "company_name": "example company BV",
+                    "bsn": "XXXXXXX54",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
+
+            self.assertEqual(
+                processed_claims,
+                {
+                    "legal_subject_identifier_claim": "NL/NTR/123456789",
+                    "legal_subject_name_claim": "example company BV",
+                    "acting_subject_bsn_identifier_claim": "XXXXXXX54",
+                    "acting_subject_first_name_claim": "John",
+                    "acting_subject_family_name_claim": "Doe",
+                    "acting_subject_date_of_birth_claim": "01-01-2000",
+                    "mandate_service_id_claim": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "loa_claim": "urn:etoegang:core:assurance-class:loa2plus",
+                },
+            )
+
+        with self.subTest("mapping loa value"):
+            processed_claims = process_claims(
+                {
+                    "company_id": "NL/NTR/123456789",
+                    "company_name": "example company BV",
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "loa": 3,
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
+
+            self.assertEqual(
+                processed_claims,
+                {
+                    "legal_subject_identifier_claim": "NL/NTR/123456789",
+                    "legal_subject_name_claim": "example company BV",
+                    "acting_subject_bsn_identifier_claim": "XXXXXXX54",
+                    "acting_subject_pseudo_identifier_claim": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "acting_subject_first_name_claim": "John",
+                    "acting_subject_family_name_claim": "Doe",
+                    "acting_subject_date_of_birth_claim": "01-01-2000",
+                    "mandate_service_id_claim": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "loa_claim": "urn:etoegang:core:assurance-class:loa3",
+                },
+            )
+
+        with self.subTest("default/fallback loa"):
+            processed_claims = process_claims(
+                {
+                    "company_id": "NL/NTR/123456789",
+                    "company_name": "example company BV",
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
+
+            self.assertEqual(
+                processed_claims,
+                {
+                    "legal_subject_identifier_claim": "NL/NTR/123456789",
+                    "legal_subject_name_claim": "example company BV",
+                    "acting_subject_bsn_identifier_claim": "XXXXXXX54",
+                    "acting_subject_pseudo_identifier_claim": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "acting_subject_first_name_claim": "John",
+                    "acting_subject_family_name_claim": "Doe",
+                    "acting_subject_date_of_birth_claim": "01-01-2000",
+                    "mandate_service_id_claim": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "loa_claim": "urn:etoegang:core:assurance-class:loa2plus",
+                },
+            )
+
+    def test_raises_on_missing_claims(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas=True,
+            options__identity_settings__legal_subject_identifier_claim_path=[
+                "company_id"
+            ],
+            options__identity_settings__legal_subject_name_claim_path=["company_name"],
+            options__identity_settings__acting_subject_bsn_identifier_claim_path=[
+                "bsn"
+            ],
+            options__identity_settings__acting_subject_pseudo_identifier_claim_path=[
+                "pseudo_id"
+            ],
+            options__identity_settings__acting_subject_first_name_claim_path=[
+                "first_name"
+            ],
+            options__identity_settings__acting_subject_family_name_claim_path=[
+                "family_name"
+            ],
+            options__identity_settings__acting_subject_date_of_birth_claim_path=[
+                "date_of_birth"
+            ],
+            options__identity_settings__mandate_service_id_claim_path=["service_id"],
+            options__loa_settings__claim_path=["loa"],
+            options__loa_settings__default=AssuranceLevels.low_plus,
+            options__loa_settings__value_mapping=[
+                {"from": 3, "to": AssuranceLevels.substantial},
+            ],
+        )
+
+        plugin = oidc_register[oidc_client.identifier]
+
+        with self.assertRaises(ValueError):
+            # Missing first_name
+            process_claims(
+                {
+                    "company_id": "NL/NTR/123456789",
+                    "company_name": "example company BV",
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            # Missing family_name
+            process_claims(
+                {
+                    "company_id": "NL/NTR/123456789",
+                    "company_name": "example company BV",
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            # Missing date_of_birth
+            process_claims(
+                {
+                    "company_id": "NL/NTR/123456789",
+                    "company_name": "example company BV",
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            # Missing bsn and pseudo_id
+            process_claims(
+                {
+                    "company_id": "NL/NTR/123456789",
+                    "company_name": "example company BV",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            # Missing company_id
+            process_claims(
+                {
+                    "company_name": "example company BV",
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            # Missing company_name
+            process_claims(
+                {
+                    "company_id": "NL/NTR/123456789",
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            # Missing service_id
+            process_claims(
+                {
+                    "company_id": "NL/NTR/123456789",
+                    "company_name": "example company BV",
+                    "bsn": "XXXXXXX54",
+                    "pseudo_id": "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL",
+                    "first_name": "John",
+                    "family_name": "Doe",
+                    "date_of_birth": "01-01-2000",
+                    "loa": "urn:etoegang:core:assurance-class:loa2plus",
+                    "extra": "ignored",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+
 class OIDCUtilsTests(TestCase):
     def test_processing_claims(self):
-        idp_claims = {
+        idp_claims: JSONObject = {
             "bsn": "123456782",
             "user": {"pet": "cat", "some": "other info"},
             "loa": "urn:etoegang:core:assurance-class:loa1",
@@ -790,7 +1391,7 @@ class OIDCUtilsTests(TestCase):
             strict=True,
         )
 
-        expected_claims = {
+        expected_claims: JSONObject = {
             "bsn_claim": "123456782",
             "user": {
                 "pet": "cat",

@@ -208,11 +208,11 @@ class OFOIDCClientFactory(OIDCClientFactory):
                     ),
                     "identity_settings": factory.Dict(
                         {
-                            "legal_subject_identifier_claim_path": [
-                                "person_identifier"
+                            "legal_subject_bsn_identifier_claim_path": [
+                                "person_bsn_identifier"
                             ],
-                            "legal_subject_identifier_type_claim_path": [
-                                "person_identifier_type"
+                            "legal_subject_pseudo_identifier_claim_path": [
+                                "person_pseudo_identifier"
                             ],
                             "legal_subject_first_name_claim_path": ["first_name"],
                             "legal_subject_family_name_claim_path": ["family_name"],
@@ -240,11 +240,11 @@ class OFOIDCClientFactory(OIDCClientFactory):
                                 "company_identifier"
                             ],
                             "legal_subject_name_claim_path": ["company_name"],
-                            "acting_subject_identifier_claim_path": [
-                                "person_identifier"
+                            "acting_subject_bsn_identifier_claim_path": [
+                                "person_bsn_identifier"
                             ],
-                            "acting_subject_identifier_type_claim_path": [
-                                "person_identifier_type"
+                            "acting_subject_pseudo_identifier_claim_path": [
+                                "person_pseudo_identifier"
                             ],
                             "acting_subject_first_name_claim_path": ["first_name"],
                             "acting_subject_family_name_claim_path": ["family_name"],

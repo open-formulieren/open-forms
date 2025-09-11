@@ -502,10 +502,9 @@
     "attributes" : {
       "birthdate" : [ "1946-01-25" ],
       "service_uuid" : [ "e922b4a2-4313-4e47-b59d-7aea595822b5" ],
-      "person_identifier" : [ "123456789" ],
       "service_id" : [ "urn:etoegang:DV:00000003244440010000:services:9102" ],
       "company_name" : [ "example company BV" ],
-      "person_identifier_type" : [ "bsn" ],
+      "person_bsn_identifier" : [ "123456789" ],
       "company_identifier" : [ "NL/NTR/123456789" ],
       "first_name" : [ "John" ],
       "family_name" : [ "Doe" ]
@@ -524,6 +523,36 @@
     "notBefore" : 0,
     "groups" : [ ]
   }, {
+    "id" : "de1becfa-a9e3-40e1-83a2-0e9094016d4e",
+    "createdTimestamp" : 1756118427276,
+    "username" : "eidas-company-pseudo",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "attributes" : {
+      "birthdate" : [ "1946-01-25" ],
+      "service_uuid" : [ "e922b4a2-4313-4e47-b59d-7aea595822b5" ],
+      "service_id" : [ "urn:etoegang:DV:00000003244440010000:services:9102" ],
+      "company_name" : [ "example company BV" ],
+      "person_pseudo_identifier" : [ "4B75A0EA107B3D36" ],
+      "company_identifier" : [ "NL/NTR/123456789" ],
+      "first_name" : [ "John" ],
+      "family_name" : [ "Doe" ]
+    },
+    "credentials" : [ {
+      "id" : "83ec402e-270d-4c7c-93ca-4dc6a4efbdd2",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1756118571371,
+      "secretData" : "{\"value\":\"MG35kjVwpZ1RNidfXA7vKyH5PY0Zs0s2fwTNUfReSGw=\",\"salt\":\"pDp4V4ye5aBevnkfBdrAnQ==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-test" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
     "id" : "03574994-5f58-4164-82f9-ee4534f81812",
     "createdTimestamp" : 1747722087235,
     "username" : "eidas-person",
@@ -533,10 +562,9 @@
     "attributes" : {
       "birthdate" : [ "1946-01-25" ],
       "service_uuid" : [ "e922b4a2-4313-4e47-b59d-7aea595822b5" ],
-      "person_identifier" : [ "123456789" ],
       "actingSubjectID" : [ "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt/Y4lvxEzdpgtnzCt5TbKJ4cnd0gL" ],
       "service_id" : [ "urn:etoegang:DV:00000003244440010000:services:9102" ],
-      "person_identifier_type" : [ "bsn" ],
+      "person_bsn_identifier" : [ "123456789" ],
       "first_name" : [ "John" ],
       "family_name" : [ "Doe" ]
     },
@@ -554,28 +582,27 @@
     "notBefore" : 0,
     "groups" : [ ]
   }, {
-    "id" : "d4b37044-82a9-4010-b3c3-af0fd40336ef",
-    "createdTimestamp" : 1752048653095,
-    "username" : "eidas-person-national",
+    "id" : "f3fe09d4-5caf-47a6-9222-57e114619ed1",
+    "createdTimestamp" : 1756118244567,
+    "username" : "eidas-person-pseudo",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : false,
     "attributes" : {
       "birthdate" : [ "1946-01-25" ],
-      "person_identifier" : [ "070770-905D" ],
       "service_uuid" : [ "e922b4a2-4313-4e47-b59d-7aea595822b5" ],
       "actingSubjectID" : [ "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt" ],
       "service_id" : [ "urn:etoegang:DV:00000003244440010000:services:9102" ],
-      "person_identifier_type" : [ "national_id" ],
+      "person_pseudo_identifier" : [ "4B75A0EA107B3D36" ],
       "first_name" : [ "John" ],
       "family_name" : [ "Doe" ]
     },
     "credentials" : [ {
-      "id" : "03981523-6a5b-45bf-8c40-0c8d62b47aeb",
+      "id" : "1dcf9203-fa6b-4d3b-839f-1ace84c9b266",
       "type" : "password",
       "userLabel" : "My password",
-      "createdDate" : 1752049055260,
-      "secretData" : "{\"value\":\"fCf2lgNWUQGs+FH/5Gp7OqJGxUcmFy5EqNMHWRZqn5s=\",\"salt\":\"xRDPhVv7vouMRho9oe4XUA==\",\"additionalParameters\":{}}",
+      "createdDate" : 1756118596383,
+      "secretData" : "{\"value\":\"qtXuLoHiSaVDuDCbl7s+TvJ42ez6QXLBMxplwOyLsWE=\",\"salt\":\"UQdr+cetGo78UA27DWaV9g==\",\"additionalParameters\":{}}",
       "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
     } ],
     "disableableCredentialTypes" : [ ],
@@ -971,7 +998,7 @@
         "jsonType.label" : "String"
       }
     } ],
-    "defaultClientScopes" : [ "web-origins", "kvk", "acr", "eidas", "roles", "profile", "groups", "employeeId", "bsn", "email" ],
+    "defaultClientScopes" : [ "web-origins", "kvk", "acr", "eidas", "signicat%3Aparam%3Acondiscon_base64%3AW1tbImlybWEtZGVtby5nZW1lZW50ZS5wZXJzb25hbERhdGEuYnNuIiwgImlybWEtZGVtby5nZW1lZW50ZS5wZXJzb25hbERhdGEuZGlnaWRsZXZlbCJdXSwgW1siaXJtYS1kZW1vLmdlbWVlbnRlLnBlcnNvbmFsRGF0YS5mdWxsbmFtZSJdLCBbXV1d", "roles", "profile", "groups", "employeeId", "bsn", "email" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   } ],
   "clientScopes" : [ {
@@ -1613,33 +1640,33 @@
         "jsonType.label" : "String"
       }
     }, {
-      "id" : "62422c51-b266-4a6b-b41c-d0376b5b025b",
-      "name" : "person_identifier",
+      "id" : "525e5af5-4bce-495e-85a7-b60329fdbb3a",
+      "name" : "person_pseudo_identifier",
       "protocol" : "openid-connect",
       "protocolMapper" : "oidc-usermodel-attribute-mapper",
       "consentRequired" : false,
       "config" : {
         "introspection.token.claim" : "true",
         "userinfo.token.claim" : "true",
-        "user.attribute" : "person_identifier",
+        "user.attribute" : "person_pseudo_identifier",
         "id.token.claim" : "true",
         "access.token.claim" : "true",
-        "claim.name" : "person_identifier",
+        "claim.name" : "person_pseudo_identifier",
         "jsonType.label" : "String"
       }
     }, {
-      "id" : "c0b87ace-1ba8-466a-a2db-9d58dff0a83b",
-      "name" : "person_identifier_type",
+      "id" : "0ad4e402-12c9-44a2-9487-816a4025e116",
+      "name" : "person_bsn_identifier",
       "protocol" : "openid-connect",
       "protocolMapper" : "oidc-usermodel-attribute-mapper",
       "consentRequired" : false,
       "config" : {
         "introspection.token.claim" : "true",
         "userinfo.token.claim" : "true",
-        "user.attribute" : "person_identifier_type",
+        "user.attribute" : "person_bsn_identifier",
         "id.token.claim" : "true",
         "access.token.claim" : "true",
-        "claim.name" : "person_identifier_type",
+        "claim.name" : "person_bsn_identifier",
         "jsonType.label" : "String"
       }
     }, {

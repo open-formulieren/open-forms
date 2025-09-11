@@ -453,11 +453,62 @@ class EIDASCallbackTests(IntegrationTestsBase):
             submission = Submission.objects.get()
             self.assertTrue(submission.is_authenticated)
 
+    def test_successfully_complete_submission_with_pseudo_login(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_eidas=True)
+
+        form = FormFactory.create(authentication_backend="eidas_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eidas_oidc")
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="eidas-person-pseudo",
+            password="eidas-person-pseudo",
+        )
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+        # assert that we can start a submission
+        with (
+            self.subTest("submission start"),
+            override_settings(
+                ALLOWED_HOSTS=["*"],
+                CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+            ),
+        ):
+            api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+            # make sure csrf cookie is set
+            form_detail_response = self.app.get(api_path)
+            body = {
+                "form": f"http://testserver.com{api_path}",
+                "formUrl": "http://testserver.com/my-form",
+            }
+
+            response = self.app.post_json(
+                reverse("api:submission-list"),
+                body,
+                extra_environ={
+                    "HTTP_X_CSRFTOKEN": form_detail_response.headers["X-CSRFToken"],
+                },
+            )
+
+            self.assertEqual(response.status_code, 201)
+            submission = Submission.objects.get()
+            self.assertTrue(submission.is_authenticated)
+
     def test_failing_claim_verification(self):
         OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eidas=True,
-            options__identity_settings__legal_subject_identifier_claim_path=[
+            options__identity_settings__legal_subject_bsn_identifier_claim_path=[
+                "absent-claim"
+            ],
+            options__identity_settings__legal_subject_pseudo_identifier_claim_path=[
                 "absent-claim"
             ],
         )
@@ -1045,11 +1096,93 @@ class EIDASCompanyCallbackTests(IntegrationTestsBase):
             submission = Submission.objects.get()
             self.assertTrue(submission.is_authenticated)
 
+    def test_successfully_complete_submission_with_pseudo_acting_subject_login(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_eidas_company=True)
+
+        form = FormFactory.create(authentication_backend="eidas_company_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eidas_company_oidc")
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="eidas-company-pseudo",
+            password="eidas-company-pseudo",
+        )
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+        # assert that we can start a submission
+        with (
+            self.subTest("submission start"),
+            override_settings(
+                ALLOWED_HOSTS=["*"],
+                CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+            ),
+        ):
+            api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+            # make sure csrf cookie is set
+            form_detail_response = self.app.get(api_path)
+            body = {
+                "form": f"http://testserver.com{api_path}",
+                "formUrl": "http://testserver.com/my-form",
+            }
+
+            response = self.app.post_json(
+                reverse("api:submission-list"),
+                body,
+                extra_environ={
+                    "HTTP_X_CSRFTOKEN": form_detail_response.headers["X-CSRFToken"],
+                },
+            )
+
+            self.assertEqual(response.status_code, 201)
+            submission = Submission.objects.get()
+            self.assertTrue(submission.is_authenticated)
+
     def test_failing_claim_verification(self):
         OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eidas_company=True,
             options__identity_settings__legal_subject_identifier_claim_path=[
+                "absent-claim"
+            ],
+        )
+
+        form = FormFactory.create(authentication_backend="eidas_company_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eidas_company_oidc")
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="eidas-company",
+            password="eidas-company",
+        )
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        expected_url = furl(url_helper.frontend_start).add(
+            {BACKEND_OUTAGE_RESPONSE_PARAMETER: "eidas_company_oidc"}
+        )
+        self.assertIn("of-auth-problem", callback_response.request.GET)
+        self.assertEqual(callback_response.request.url, str(expected_url))
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
+
+    def test_failure_with_missing_acting_subject_bsn_and_pseudo_identifier_claims(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas_company=True,
+            options__identity_settings__acting_subject_bsn_identifier_claim_path=[
+                "absent-claim"
+            ],
+            options__identity_settings__acting_subject_pseudo_identifier_claim_path=[
                 "absent-claim"
             ],
         )

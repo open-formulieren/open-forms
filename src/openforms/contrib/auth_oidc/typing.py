@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from typing import NotRequired, TypedDict
 
 from mozilla_django_oidc_db.typing import ClaimPath
@@ -33,6 +34,9 @@ class ClaimProcessingInstructions(TypedDict):
     strict_required_claims: list[ClaimPathDetails]
     optional_claims: list[ClaimPathDetails]
     loa_claims: LoaClaimInstructions
+    # after processing, one of the specified claim paths must be present in the
+    # result to be considered valid
+    one_of_required_claims: NotRequired[Collection[ClaimPath]]
 
 
 #
@@ -115,8 +119,8 @@ class EIDASClaims(TypedDict):
     for the source of this structure.
     """
 
-    legal_subject_identifier_claim: str
-    legal_subject_identifier_type_claim: str
+    legal_subject_bsn_identifier_claim: str
+    legal_subject_pseudo_identifier_claim: str
     # *could* be a number if no value mapping is specified and the source claims return
     # numeric values...
     loa_claim: NotRequired[str | int | float]
@@ -136,8 +140,8 @@ class EIDASCompanyClaims(TypedDict):
     # As the Signicat simulator only returns natural person information, we don't exactly
     # know how this is returned.
     legal_subject_identifier_claim: str
-    acting_subject_identifier_claim: str
-    acting_subject_identifier_type_claim: str
+    acting_subject_bsn_identifier_claim: str
+    acting_subject_pseudo_identifier_claim: str
     # *could* be a number if no value mapping is specified and the source claims return
     # numeric values...
     loa_claim: NotRequired[str | int | float]

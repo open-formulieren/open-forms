@@ -97,8 +97,8 @@ class EIDASCitizenConfigCheckTests(OIDCMixin, TestCase):
         # Check that multiple missing fields are reported together
         client.options["identity_settings"].update(
             {
-                "legal_subject_identifier_claim_path": [],
-                "legal_subject_identifier_type_claim_path": [],
+                "legal_subject_bsn_identifier_claim_path": [],
+                "legal_subject_pseudo_identifier_claim_path": [],
             }
         )
         client.save()
@@ -106,7 +106,8 @@ class EIDASCitizenConfigCheckTests(OIDCMixin, TestCase):
         with self.assertRaisesMessage(
             InvalidPluginConfiguration,
             "The eIDAS client identity settings are missing values for the settings: "
-            "legal_subject_identifier_claim_path, legal_subject_identifier_type_claim_path.",
+            "legal_subject_bsn_identifier_claim_path, "
+            "legal_subject_pseudo_identifier_claim_path.",
         ):
             plugin.check_config()
 

@@ -19,8 +19,8 @@ class CitizenAttributes(models.TextChoices):
 
 
 REQUIRED_CITIZEN_CLIENT_IDENTITY_SETTINGS: Collection[str] = (
-    "legal_subject_identifier_claim_path",
-    "legal_subject_identifier_type_claim_path",
+    "legal_subject_bsn_identifier_claim_path",
+    "legal_subject_pseudo_identifier_claim_path",
     "legal_subject_first_name_claim_path",
     "legal_subject_family_name_claim_path",
     "legal_subject_date_of_birth_claim_path",
@@ -47,8 +47,8 @@ class CompanyAttributes(models.TextChoices):
 REQUIRED_COMPANY_CLIENT_IDENTITY_SETTINGS: Collection[str] = (
     "legal_subject_identifier_claim_path",
     "legal_subject_name_claim_path",
-    "acting_subject_identifier_claim_path",
-    "acting_subject_identifier_type_claim_path",
+    "acting_subject_bsn_identifier_claim_path",
+    "acting_subject_pseudo_identifier_claim_path",
     "acting_subject_first_name_claim_path",
     "acting_subject_family_name_claim_path",
     "acting_subject_date_of_birth_claim_path",
