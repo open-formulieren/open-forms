@@ -40,16 +40,11 @@ def get_static_variables(
     if variables_registry is None:
         variables_registry = static_variables_registry
 
-    if is_confirmation_email:
-        variables = [
-            var
-            for var in variables_registry
-            if var.exclude_from_confirmation_email is False
-        ]
-    else:
-        variables = [var for var in variables_registry]
-
     return [
         registered_variable.get_static_variable(submission=submission)
-        for registered_variable in variables
+        for registered_variable in variables_registry
+        if not (
+            is_confirmation_email
+            and registered_variable.exclude_from_confirmation_email
+        )
     ]
