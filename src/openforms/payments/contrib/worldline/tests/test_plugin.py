@@ -956,13 +956,15 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
             payment_url = form.attrs["action"]  # pyright: ignore[reportOptionalMemberAccess]
             # trigger the payment
-            requests.get(
+            response = requests.get(
                 payment_url,
                 {
                     "ec": "",
                     "trxid": 0,
                 },
             )
+
+            self.assertIn("Test title", response.text)
 
             # we need another arbitrary request
             request = factory.get("/foo")
@@ -988,11 +990,3 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         self.assertEqual(payment.status, PaymentStatus.completed)
         self.assertNotEqual(payment.provider_payment_id, "")
         self.assertEqual(submission.payment_user_has_paid, True)
-
-        merchant_client = merchant.get_merchant_client()
-        payments_client = merchant_client.payments()
-        payment_response = payments_client.get_payment(payment.provider_payment_id)
-        self.assertEqual(
-            payment_response.hosted_checkout_specific_output.variant,
-            "SimplifiedCustomPaymentPage",
-        )
