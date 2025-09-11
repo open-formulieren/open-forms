@@ -138,12 +138,11 @@ def _generate_checkout_input(
     payment_plugin: "WorldlinePaymentPlugin",
 ) -> CheckoutInput:
     return_url = payment_plugin.get_return_url(request, payment)
-    input = CheckoutInput(returnUrl=return_url)
 
     if variant := options.get("variant"):
-        input["variant"] = variant
+        return {"returnUrl": return_url, "variant": variant}
 
-    return input
+    return {"returnUrl": return_url}
 
 
 @register("worldline")
