@@ -121,15 +121,6 @@ def logout_submission(submission: Submission, request: AnyRequest) -> None:
             plugin = auth_register[submission.auth_info.plugin]
             plugin.logout(request)
 
-        if submission.is_ready_to_hash_identifying_attributes:
-            if not submission.auth_info.attribute_hashed:
-                submission.auth_info.hash_identifying_attributes()
-
-            if (
-                registrator := submission.registrator
-            ) and not registrator.attribute_hashed:
-                registrator.hash_identifying_attributes()
-
     if FORM_AUTH_SESSION_KEY in request.session:
         del request.session[FORM_AUTH_SESSION_KEY]
 
