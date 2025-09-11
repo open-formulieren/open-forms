@@ -198,6 +198,26 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         payment: SubmissionPayment,
         options: PaymentOptions,
     ) -> HttpResponse:
+        if payment.status == PaymentStatus.completed:
+            token = submission_status_token_generator.make_token(payment.submission)
+            status_url = request.build_absolute_uri(
+                reverse(
+                    "api:submission-status",
+                    kwargs={"uuid": payment.submission.uuid, "token": token},
+                )
+            )
+
+            redirect_url = get_frontend_redirect_url(
+                payment.submission,
+                action="payment",
+                action_params={
+                    "of_payment_status": payment.status,
+                    "of_payment_id": str(payment.uuid),
+                    "of_submission_status": status_url,
+                },
+            )
+            return HttpResponseRedirect(redirect_url)
+
         with structlog.contextvars.bound_contextvars(
             submission_uuid=str(payment.submission.uuid),
             payment_uuid=str(payment.uuid),
@@ -319,6 +339,9 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 plugin="worldline",
             )
             raise
+
+        if payment.status == PaymentStatus.completed:
+            return payment
 
         with structlog.contextvars.bound_contextvars(
             submission_uuid=str(payment.submission.uuid),

@@ -264,7 +264,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         submission.refresh_from_db()
         payment.refresh_from_db()
         self.assertEqual(payment.status, PaymentStatus.completed)
-        self.assertNotEqual(payment.provider_payment_id, "foobar")
+        self.assertEqual(payment.provider_payment_id, "foobar")
         self.assertEqual(submission.payment_user_has_paid, True)
 
     def test_returnmac_mismatch(self):
@@ -650,10 +650,13 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         payment.public_order_id = "2025/OF-UPD749/1"
         payment.save(update_fields=("public_order_id", "status"))
 
+        self.assertEqual(payment.provider_payment_id, "")
+
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
         data = WebhookEventRequestFactory.build(
             payment__status=_WorldlinePaymentStatus.pending_approval,
+            payment__id="12345",
             payment__paymentOutput__references=ReferencesFactory(
                 merchantReference="2025/OF-UPD749/1"
             ),
@@ -676,6 +679,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
         payment.refresh_from_db()
         self.assertEqual(payment.status, PaymentStatus.completed)
+        self.assertEqual(payment.provider_payment_id, "")
 
     def test_webbhook_api_version_mismatch(self):
         webhook_configuration = WorldlineWebhookConfigurationFactory.create()
