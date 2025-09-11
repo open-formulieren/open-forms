@@ -50,11 +50,9 @@ from .constants import (
 )
 from .models import WorldlineMerchant, WorldlineWebhookConfiguration
 from .typing import (
-    AmountOfMoney,
     CheckoutInput,
     Order,
     PaymentOptions,
-    References,
 )
 from .utils import get_webhook_helper
 
@@ -170,7 +168,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         self,
         payment: SubmissionPayment,
         worldline_status: WorldlinePaymentStatus,
-        payment_reference: str,
+        merchant_reference: str,
     ) -> None:
         if payment.status in PAYMENT_STATUS_FINAL:
             # shouldn't happen or race-condition
@@ -178,7 +176,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 "payment_status_final",
                 payment=payment,
                 worldline_status=worldline_status,
-                payment_reference=payment_reference,
+                public_order_id=merchant_reference,
             )
             return
 
@@ -191,7 +189,9 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             .exclude(status__in=PAYMENT_STATUS_FINAL)
             .exclude(status=status)
         )
-        result_count = queryset.update(status=status, public_order_id=payment_reference)
+        result_count = queryset.update(
+            status=status, public_order_id=merchant_reference
+        )
 
         if result_count > 0:
             payment.refresh_from_db()
@@ -225,6 +225,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         with structlog.contextvars.bound_contextvars(
             submission_uuid=str(payment.submission.uuid),
             payment_uuid=str(payment.uuid),
+            public_order_id=payment.public_order_id,
             plugin=self,
             entrypoint="browser",
         ):
@@ -351,7 +352,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         with structlog.contextvars.bound_contextvars(
             submission_uuid=str(payment.submission.uuid),
             payment_uuid=str(payment.uuid),
-            payment_reference=merchant_reference,
+            public_order_id=merchant_reference,
             plugin=self,
             entrypoint="webhook",
         ):

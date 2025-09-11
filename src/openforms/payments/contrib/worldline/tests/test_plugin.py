@@ -352,7 +352,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         submission.refresh_from_db()
         payment.refresh_from_db()
         self.assertEqual(payment.status, PaymentStatus.started)
-        self.assertEqualpayment.provider_payment_id, "")
+        self.assertEqual(payment.provider_payment_id, "")
         self.assertEqual(submission.payment_user_has_paid, False)
 
     def test_no_redirect_url(self):
