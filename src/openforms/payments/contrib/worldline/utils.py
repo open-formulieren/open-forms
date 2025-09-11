@@ -1,5 +1,4 @@
 import structlog
-from onlinepayments.sdk.domain.payment_response import PaymentResponse
 from onlinepayments.sdk.factory import DefaultMarshaller
 from onlinepayments.sdk.webhooks.secret_key_not_available_exception import (
     SecretKeyNotAvailableException,
@@ -29,15 +28,3 @@ class SecretKeyStore(BaseKeyStore):
 def get_webhook_helper() -> WebhooksHelper:
     key_store = SecretKeyStore()
     return WebhooksHelper(DefaultMarshaller.instance(), key_store)
-
-
-def get_merchant_reference(payment_response: PaymentResponse) -> str:
-    merchant_reference = (
-        payment_response.payment_output.references.merchant_reference
-        if payment_response.payment_output
-        and payment_response.payment_output.references
-        else None
-    )
-
-    assert merchant_reference, "Merchant reference not found"
-    return merchant_reference

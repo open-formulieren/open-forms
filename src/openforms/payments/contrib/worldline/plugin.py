@@ -50,12 +50,11 @@ from .constants import (
 )
 from .models import WorldlineMerchant, WorldlineWebhookConfiguration
 from .typing import (
-    AmountOfMoney,
     CheckoutInput,
     Order,
     PaymentOptions,
 )
-from .utils import get_merchant_reference, get_webhook_helper
+from .utils import get_webhook_helper
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -77,10 +76,15 @@ class WorldlineOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializ
 
 
 def _generate_order(payment: SubmissionPayment) -> Order:
-    amount_of_money = AmountOfMoney(
-        currencyCode="EUR", amount=int((payment.amount * 100).to_integral_exact())
-    )
-    return Order(amountOfMoney=amount_of_money)
+    return {
+        "amountOfMoney": {
+            "currencyCode": "EUR",
+            "amount": int((payment.amount * 100).to_integral_exact()),
+        },
+        "references": {
+            "merchantReference": payment.public_order_id,
+        },
+    }
 
 
 def _generate_checkout_input(
@@ -152,13 +156,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         assert valid_options, "Incorrect payment options encountered"
 
         payment.plugin_options = option_serializer.data
-        payment.provider_payment_id = checkout_response.merchant_reference or ""
-        payment.save(
-            update_fields=(
-                "plugin_options",
-                "provider_payment_id",
-            )
-        )
+        payment.save(update_fields=("plugin_options",))
 
         return PaymentInfo(
             type=PaymentRequestType.get,
@@ -170,7 +168,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         self,
         payment: SubmissionPayment,
         worldline_status: WorldlinePaymentStatus,
-        payment_id: str,
+        merchant_reference: str,
     ) -> None:
         if payment.status in PAYMENT_STATUS_FINAL:
             # shouldn't happen or race-condition
@@ -178,7 +176,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 "payment_status_final",
                 payment=payment,
                 worldline_status=worldline_status,
-                payment_id=payment_id,
+                public_order_id=merchant_reference,
             )
             return
 
@@ -191,7 +189,9 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             .exclude(status__in=PAYMENT_STATUS_FINAL)
             .exclude(status=status)
         )
-        result_count = queryset.update(status=status, provider_payment_id=payment_id)
+        result_count = queryset.update(
+            status=status, public_order_id=merchant_reference
+        )
 
         if result_count > 0:
             payment.refresh_from_db()
@@ -202,9 +202,30 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         payment: SubmissionPayment,
         options: PaymentOptions,
     ) -> HttpResponse:
+        if payment.status == PaymentStatus.completed:
+            token = submission_status_token_generator.make_token(payment.submission)
+            status_url = request.build_absolute_uri(
+                reverse(
+                    "api:submission-status",
+                    kwargs={"uuid": payment.submission.uuid, "token": token},
+                )
+            )
+
+            redirect_url = get_frontend_redirect_url(
+                payment.submission,
+                action="payment",
+                action_params={
+                    "of_payment_status": payment.status,
+                    "of_payment_id": str(payment.uuid),
+                    "of_submission_status": status_url,
+                },
+            )
+            return HttpResponseRedirect(redirect_url)
+
         with structlog.contextvars.bound_contextvars(
             submission_uuid=str(payment.submission.uuid),
             payment_uuid=str(payment.uuid),
+            public_order_id=payment.public_order_id,
             plugin=self,
             entrypoint="browser",
         ):
@@ -246,30 +267,22 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
 
             checkout_status = WorldlineHostedCheckoutStatus(response.status)
             payment_data = response.created_payment_output
-            try:
+
+            if payment_data and payment_data.payment:
                 status = WorldlinePaymentStatus(
                     payment_data.payment.status
                     if payment_data and payment_data.payment
                     else None
                 )
-            except ValueError:
+
+                payment.provider_payment_id = payment_data.payment.id
+                payment.save(update_fields=("provider_payment_id",))
+            else:
                 status = WorldlineHostedCheckoutStatus.to_payment_status(
                     checkout_status
                 )
 
-            payment_response = (
-                response.created_payment_output
-                if response.created_payment_output
-                else None
-            )
-
-            assert payment_response and payment_response.payment, (
-                "No payment data found in response"
-            )
-
-            external_payment_id = get_merchant_reference(payment_response.payment)
-
-            self.apply_status(payment, status, external_payment_id)
+            self.apply_status(payment, status, payment.public_order_id)
 
             redirect_url = get_frontend_redirect_url(
                 payment.submission,
@@ -309,25 +322,37 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 }
             )
 
-        merchant_reference = get_merchant_reference(webhook_event.payment)
+        payment_response = webhook_event.payment
+
+        assert payment_response.payment_output, "No payment output found in response"
+        assert payment_response.payment_output.references, (
+            "No payment references found in response"
+        )
+        merchant_reference = (
+            payment_response.payment_output.references.merchant_reference
+        )
+        assert merchant_reference, "Merchant reference not found"
 
         try:
             payment = get_object_or_404(
                 SubmissionPayment,
-                provider_payment_id=merchant_reference,
+                public_order_id=merchant_reference,
             )
         except Http404:
             logger.warning(
                 "unknown_payment",
-                provider_payment_id=merchant_reference,
+                public_order_id=merchant_reference,
                 plugin="worldline",
             )
             raise
 
+        if payment.status == PaymentStatus.completed:
+            return payment
+
         with structlog.contextvars.bound_contextvars(
             submission_uuid=str(payment.submission.uuid),
             payment_uuid=str(payment.uuid),
-            payment_id=payment.provider_payment_id,
+            public_order_id=merchant_reference,
             plugin=self,
             entrypoint="webhook",
         ):
@@ -338,8 +363,15 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             self.apply_status(
                 payment,
                 status,
-                payment.provider_payment_id,
+                merchant_reference,
             )
+
+            # Save the payment ID whenever this was not set yet whenever the user
+            # got redirected. This can happen whenever no payment was created yet
+            # after the user got redirected.
+            if not payment.provider_payment_id:
+                payment.provider_payment_id = webhook_event.payment.id
+                payment.save(update_fields=("provider_payment_id",))
 
             return payment
 

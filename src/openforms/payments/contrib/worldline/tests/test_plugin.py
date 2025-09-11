@@ -165,6 +165,11 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         payment.refresh_from_db()
         self.assertEqual(payment.status, PaymentStatus.completed)
         self.assertTrue(payment.provider_payment_id)
+        self.assertNotEqual(
+            payment.provider_payment_id,
+            payment.public_order_id,
+            "Payment ID should not be equal to payment reference (merchant reference)",
+        )
         self.assertEqual(submission.payment_user_has_paid, True)
 
     def test_completed_payment(self):
@@ -216,6 +221,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         # simulate an already paid payment
         payment.status = PaymentStatus.completed
         payment.provider_payment_id = "foobar"
+        payment.public_order_id = "2025/OF-UPD749/1"
         payment.save()
 
         with self.subTest(
@@ -299,6 +305,10 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         self.assertEqual(payment.plugin_id, "worldline")
         self.assertEqual(payment.status, PaymentStatus.started)
 
+        # match the merchant reference with what is shown in the cassette
+        payment.public_order_id = "2025/OF-KUTK8B/5"
+        payment.save()
+
         with self.subTest(
             "Parse the payment URL from within the initial Worldline page"
         ):
@@ -342,7 +352,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         submission.refresh_from_db()
         payment.refresh_from_db()
         self.assertEqual(payment.status, PaymentStatus.started)
-        self.assertTrue(payment.provider_payment_id)
+        self.assertEqual(payment.provider_payment_id, "")
         self.assertEqual(submission.payment_user_has_paid, False)
 
     def test_no_redirect_url(self):
@@ -541,7 +551,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             form__product__price=Decimal("11.35"),
         )
         payment = SubmissionPaymentFactory.for_submission(
-            submission, provider_payment_id="12345"
+            submission, public_order_id="2025/OF-KUTK8B/5", provider_payment_id="12345"
         )
 
         assert payment.status == PaymentStatus.started
@@ -550,8 +560,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
         data = WebhookEventRequestFactory.build(
             payment__status=_WorldlinePaymentStatus.pending_approval,
+            payment__id="000000850010000188130000200001",  # should be ignored in this scenario
             payment__paymentOutput__references=ReferencesFactory(
-                merchantReference="12345"
+                merchantReference="2025/OF-KUTK8B/5",
             ),
             type="payment.pending_approval",
         )
@@ -572,6 +583,54 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
         payment.refresh_from_db()
         self.assertEqual(payment.status, PaymentStatus.processing)
+        self.assertEqual(payment.public_order_id, "2025/OF-KUTK8B/5")
+        self.assertEqual(payment.provider_payment_id, "12345")
+
+    def test_webhook_no_payment_id(self):
+        webhook_configuration = WorldlineWebhookConfigurationFactory.create()
+        merchant = WorldlineMerchantFactory.create(pspid="psp123")
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__slug="myform",
+            form__payment_backend="worldline",
+            form__payment_backend_options={"merchant": merchant.id},
+            form__product__price=Decimal("11.35"),
+        )
+        payment = SubmissionPaymentFactory.for_submission(
+            submission, provider_payment_id=""
+        )
+
+        assert payment.status == PaymentStatus.started
+        assert not payment.provider_payment_id
+
+        plugin = register["worldline"]
+        webhook_url = plugin.get_webhook_url(factory.get("/foo"))
+        data = WebhookEventRequestFactory.build(
+            payment__status=_WorldlinePaymentStatus.pending_approval,
+            payment__id="000000850010000188130000200001",
+            payment__paymentOutput__references=ReferencesFactory(
+                merchantReference=payment.public_order_id,
+            ),
+            type="payment.pending_approval",
+        )
+
+        response = self.client.post(
+            webhook_url,
+            data=data,
+            content_type="application/json",
+            headers={
+                "X-GCS-KeyId": webhook_configuration.webhook_key_id,
+                "X-GCS-Signature": generate_webhook_signature(
+                    webhook_configuration.webhook_key_secret, data
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.processing)
+        self.assertEqual(payment.provider_payment_id, "000000850010000188130000200001")
 
     def test_webhook_event_completed_payment(self):
         """
@@ -587,16 +646,19 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             form__product__price=Decimal("11.35"),
         )
         payment = SubmissionPaymentFactory.for_submission(submission)
-        payment.provider_payment_id = "12345"
         payment.status = PaymentStatus.completed
-        payment.save(update_fields=("provider_payment_id", "status"))
+        payment.public_order_id = "2025/OF-UPD749/1"
+        payment.save(update_fields=("public_order_id", "status"))
+
+        self.assertEqual(payment.provider_payment_id, "")
 
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
         data = WebhookEventRequestFactory.build(
             payment__status=_WorldlinePaymentStatus.pending_approval,
+            payment__id="12345",
             payment__paymentOutput__references=ReferencesFactory(
-                merchantReference="12345"
+                merchantReference="2025/OF-UPD749/1"
             ),
             type="payment.pending_approval",
         )
@@ -617,6 +679,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
         payment.refresh_from_db()
         self.assertEqual(payment.status, PaymentStatus.completed)
+        self.assertEqual(payment.provider_payment_id, "")
 
     def test_webbhook_api_version_mismatch(self):
         webhook_configuration = WorldlineWebhookConfigurationFactory.create()
@@ -718,7 +781,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             form__product__price=Decimal("11.35"),
         )
         payment = SubmissionPaymentFactory.for_submission(submission)
-        payment.provider_payment_id = "12345"
+        payment.public_order_id = "2025/OF-UPD749/1"
         payment.save(update_fields=("provider_payment_id",))
 
         assert payment.status == PaymentStatus.started
@@ -728,7 +791,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         data = WebhookEventRequestFactory.build(
             payment__status=_WorldlinePaymentStatus.pending_approval,
             payment__paymentOutput__references=ReferencesFactory(
-                merchantReference="12345"
+                merchantReference="2025/OF-UPD749/1"
             ),
             type="payment.pending_approval",
         )

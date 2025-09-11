@@ -10,8 +10,13 @@ class AmountOfMoney(TypedDict):
     amount: int
 
 
+class References(TypedDict):
+    merchantReference: str
+
+
 class Order(TypedDict):
     amountOfMoney: AmountOfMoney
+    references: References
 
 
 class CheckoutInput(TypedDict):
