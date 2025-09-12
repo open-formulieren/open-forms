@@ -173,13 +173,8 @@ class ExportSubmissionStatisticsView(
         return context
 
 
-class FormsField(forms.ModelMultipleChoiceField):
-    def label_from_instance(self, obj):
-        return obj.name
-
-
 class PaymentMigrationForm(forms.Form):
-    forms_to_migrate = FormsField(
+    forms_to_migrate = forms.ModelMultipleChoiceField(
         queryset=Form.objects.filter(payment_backend="ogone-legacy"),
         error_messages={
             "invalid_choice": _(
