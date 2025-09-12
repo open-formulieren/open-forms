@@ -112,6 +112,13 @@ const ACTION_TYPES = [
       defaultMessage: 'Evaluate DMN',
     }),
   ],
+  [
+    'synchronize-variables',
+    defineMessage({
+      description: 'action type "synchronize variables" label',
+      defaultMessage: 'Synchronize variables',
+    }),
+  ],
 ];
 
 // Action types that once they are selected need further configurations.

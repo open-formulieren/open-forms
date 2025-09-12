@@ -199,6 +199,11 @@
     "description": "Objects registration variable mapping, addressNL component: 'options.postcode schema target' label",
     "originalDefault": "Postcode Schema target"
   },
+  "2o0y5J": {
+    "defaultMessage": "Synchronize variables configuration",
+    "description": "Synchronizing variables configuration modal title",
+    "originalDefault": "Synchronize variables configuration"
+  },
   "2uIYst": {
     "defaultMessage": "The process definition for which to start a process instance.",
     "description": "Camunda 'process definition' help text",
@@ -223,6 +228,16 @@
     "defaultMessage": "Add another",
     "description": "Button text to add extra item",
     "originalDefault": "Add another"
+  },
+  "3Wcu+B": {
+    "defaultMessage": "Affixes",
+    "description": "Synchronize action, children component, affixes property label",
+    "originalDefault": "Affixes"
+  },
+  "3Wuy2O": {
+    "defaultMessage": "Property",
+    "description": "Column title for the property that a component is mapped to",
+    "originalDefault": "Property"
   },
   "3ZtB10": {
     "defaultMessage": "Ask statement of truth",
@@ -769,6 +784,11 @@
     "description": "Confirmation Email for cosign Subject label",
     "originalDefault": "Cosign subject"
   },
+  "DI4HoQ": {
+    "defaultMessage": "Synchronize variables configuration:",
+    "description": "Configuration button Synchronize variables label",
+    "originalDefault": "Synchronize variables configuration:"
+  },
   "DJ8XX2": {
     "defaultMessage": "Select a registration backend and click the button to copy the configuration.",
     "description": "Copy Objects API prefill configuration from registration backend help text",
@@ -868,6 +888,11 @@
     "defaultMessage": "in",
     "description": "\"in\" operator description",
     "originalDefault": "in"
+  },
+  "ExqNUS": {
+    "defaultMessage": "(not configured yet or partially configured)",
+    "description": "Synchronize variables not configured yet message",
+    "originalDefault": "(not configured yet or partially configured)"
   },
   "F+UwT0": {
     "defaultMessage": "House letter Schema target",
@@ -1164,6 +1189,11 @@
     "description": "JSON registration options 'add all form variables' label",
     "originalDefault": "Add all form variables"
   },
+  "Isj2k2": {
+    "defaultMessage": "Synchronize variables",
+    "description": "action type \"synchronize variables\" label",
+    "originalDefault": "Synchronize variables"
+  },
   "ItH6EY": {
     "defaultMessage": "Time",
     "description": "data type time",
@@ -1193,6 +1223,11 @@
     "defaultMessage": "Expand/collapse JsonLogic",
     "description": "Expand/collapse logic expression icon title",
     "originalDefault": "Expand/collapse JsonLogic"
+  },
+  "JVr8oA": {
+    "defaultMessage": "No component or property specified (anymore).",
+    "description": "Variables mappings: detected invalid mapping",
+    "originalDefault": "No component or property specified (anymore)."
   },
   "JXcHQ2": {
     "defaultMessage": "Not yet configured",
@@ -1874,6 +1909,11 @@
     "description": "component property \"required\" label",
     "originalDefault": "required"
   },
+  "VZ8Ozt": {
+    "defaultMessage": "Initials",
+    "description": "Synchronize action, children component, initials property label",
+    "originalDefault": "Initials"
+  },
   "Vi0+dd": {
     "defaultMessage": "Indicates whether translations are enabled for this form.",
     "description": "Form translation enabled field help text",
@@ -1973,6 +2013,11 @@
     "defaultMessage": "Basic",
     "description": "Service fetch configuration modal basic fieldset title",
     "originalDefault": "Basic"
+  },
+  "XfxZIE": {
+    "defaultMessage": "Configure",
+    "description": "Button to open Synchronize variables configuration modal",
+    "originalDefault": "Configure"
   },
   "Xg9O5Y": {
     "defaultMessage": "House number Schema target",
@@ -2078,6 +2123,11 @@
     "defaultMessage": "Form JSON schema",
     "description": "Form JSON schema label",
     "originalDefault": "Form JSON schema"
+  },
+  "ZeP+c1": {
+    "defaultMessage": "There are errors in the Synchronize variables configuration.",
+    "description": "Synchronize variables configuration errors message",
+    "originalDefault": "There are errors in the Synchronize variables configuration."
   },
   "ZfLhiZ": {
     "defaultMessage": "Maximum age",
@@ -2408,6 +2458,11 @@
     "defaultMessage": "Pricing logic",
     "description": "Dynamic pricing fieldset title",
     "originalDefault": "Pricing logic"
+  },
+  "fN5j5f": {
+    "defaultMessage": "From variable",
+    "description": "Synchronize variables modal select from variable field label",
+    "originalDefault": "From variable"
   },
   "fQuLvm": {
     "defaultMessage": "Copy configuration from registration backend",
@@ -2859,6 +2914,11 @@
     "description": "Form design tab title",
     "originalDefault": "Steps and fields"
   },
+  "mS22EJ": {
+    "defaultMessage": "Data mappings",
+    "description": "Data mappings title",
+    "originalDefault": "Data mappings"
+  },
   "mWHMvR": {
     "defaultMessage": "Data destination form variable",
     "description": "Family members options: data destination form variable label",
@@ -2963,6 +3023,11 @@
     "defaultMessage": "Save",
     "description": "Save service fetch configuration button label",
     "originalDefault": "Save"
+  },
+  "oR677a": {
+    "defaultMessage": "Last name",
+    "description": "Synchronize action, children component, lastName property label",
+    "originalDefault": "Last name"
   },
   "oVwrVo": {
     "defaultMessage": "Attach files to email",
@@ -3164,6 +3229,11 @@
     "description": "Session expiry notice - API call failed with 401",
     "originalDefault": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
   },
+  "riS49K": {
+    "defaultMessage": "To variable",
+    "description": "Synchronize variables modal select to variable field label",
+    "originalDefault": "To variable"
+  },
   "rkzjK3": {
     "defaultMessage": "JSON Schema target",
     "description": "'JSON Schema target' label",
@@ -3214,6 +3284,11 @@
     "description": "Objects API registration backend: v2 switch warning message",
     "originalDefault": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
   },
+  "sxfcjF": {
+    "defaultMessage": "Identifier variable (BSN)",
+    "description": "Synchronize variables modal select identifierVariable field label",
+    "originalDefault": "Identifier variable (BSN)"
+  },
   "t+J++o": {
     "defaultMessage": "{isReusable, select, true {Reusable step} other {Step}} settings",
     "description": "Form definition module title",
@@ -3228,6 +3303,11 @@
     "defaultMessage": "Are you sure you want to remove this mapping?",
     "description": "Delete confirmation message for variable mapped to case property",
     "originalDefault": "Are you sure you want to remove this mapping?"
+  },
+  "tBGfyb": {
+    "defaultMessage": "BSN",
+    "description": "Synchronize action, children component, bsn property label",
+    "originalDefault": "BSN"
   },
   "tJQoMq": {
     "defaultMessage": "There are errors in the prefill configuration.",
@@ -3298,6 +3378,11 @@
     "defaultMessage": "Path relative to the Service API root.",
     "description": "JSON registration options 'path' helpText",
     "originalDefault": "Path relative to the Service API root."
+  },
+  "uaHUFc": {
+    "defaultMessage": "Date of birth",
+    "description": "Synchronize action, children component, dateOfBirth property label",
+    "originalDefault": "Date of birth"
   },
   "uiliGe": {
     "defaultMessage": "The logic rules you set up here are executed in the order that they are defined. Please consult the <docs>manual</docs> for more information.",
@@ -3388,6 +3473,11 @@
     "defaultMessage": "ID of the drive to use. If left empty, the default drive will be used.",
     "description": "MS Graph registration options 'driveId' help text",
     "originalDefault": "ID of the drive to use. If left empty, the default drive will be used."
+  },
+  "wns9rV": {
+    "defaultMessage": "First names",
+    "description": "Synchronize action, children component, firstNames property label",
+    "originalDefault": "First names"
   },
   "wowXBp": {
     "defaultMessage": "The maximum age used to determine which children will be displayed. Leave blank to show all children.",

@@ -429,6 +429,12 @@
       "value": "Bestemmingspad postcode"
     }
   ],
+  "2o0y5J": [
+    {
+      "type": 0,
+      "value": "Synchronize variables configuration"
+    }
+  ],
   "2sbkGI": [
     {
       "type": 0,
@@ -491,6 +497,18 @@
     {
       "type": 0,
       "value": "Nog één toevoegen"
+    }
+  ],
+  "3Wcu+B": [
+    {
+      "type": 0,
+      "value": "Affixes"
+    }
+  ],
+  "3Wuy2O": [
+    {
+      "type": 0,
+      "value": "Property"
     }
   ],
   "3ZtB10": [
@@ -1838,6 +1856,12 @@
       "value": "Onderwerp (bij mede-ondertekenen)"
     }
   ],
+  "DI4HoQ": [
+    {
+      "type": 0,
+      "value": "Synchronize variables configuration:"
+    }
+  ],
   "DJ8XX2": [
     {
       "type": 0,
@@ -2072,6 +2096,12 @@
     {
       "type": 0,
       "value": "in"
+    }
+  ],
+  "ExqNUS": [
+    {
+      "type": 0,
+      "value": "(not configured yet or partially configured)"
     }
   ],
   "F+UwT0": [
@@ -2536,6 +2566,12 @@
       "value": "Alle formuliervariabelen toevoegen"
     }
   ],
+  "Isj2k2": [
+    {
+      "type": 0,
+      "value": "Synchronize variables"
+    }
+  ],
   "ItH6EY": [
     {
       "type": 0,
@@ -2582,6 +2618,12 @@
     {
       "type": 0,
       "value": "Klap JsonLogic-expressie in/uit"
+    }
+  ],
+  "JVr8oA": [
+    {
+      "type": 0,
+      "value": "No component or property specified (anymore)."
     }
   ],
   "JXcHQ2": [
@@ -3902,6 +3944,12 @@
       "value": "configured"
     }
   ],
+  "VZ8Ozt": [
+    {
+      "type": 0,
+      "value": "Initials"
+    }
+  ],
   "VekFY+": [
     {
       "type": 0,
@@ -4110,6 +4158,12 @@
     {
       "type": 0,
       "value": "Basis"
+    }
+  ],
+  "XfxZIE": [
+    {
+      "type": 0,
+      "value": "Configure"
     }
   ],
   "Xg9O5Y": [
@@ -4375,6 +4429,12 @@
     {
       "type": 0,
       "value": "Formulier-JSON-schema"
+    }
+  ],
+  "ZeP+c1": [
+    {
+      "type": 0,
+      "value": "There are errors in the Synchronize variables configuration."
     }
   ],
   "ZfLhiZ": [
@@ -5189,6 +5249,12 @@
     {
       "type": 0,
       "value": "Prijslogica"
+    }
+  ],
+  "fN5j5f": [
+    {
+      "type": 0,
+      "value": "From variable"
     }
   ],
   "fQuLvm": [
@@ -6129,6 +6195,12 @@
       "value": "Lijn"
     }
   ],
+  "mS22EJ": [
+    {
+      "type": 0,
+      "value": "Data mappings"
+    }
+  ],
   "mWHMvR": [
     {
       "type": 0,
@@ -6325,6 +6397,12 @@
     {
       "type": 0,
       "value": "Minimaal aantal aangevinkte opties (bijv. 1)"
+    }
+  ],
+  "oR677a": [
+    {
+      "type": 0,
+      "value": "Last name"
     }
   ],
   "oVwrVo": [
@@ -6745,6 +6823,12 @@
       "value": "Excuses, we konden deze actie niet uitvoeren omdat u uitgelogd bent. Uw sessie is waarschijnlijk vervallen."
     }
   ],
+  "riS49K": [
+    {
+      "type": 0,
+      "value": "To variable"
+    }
+  ],
   "rkJLBr": [
     {
       "type": 0,
@@ -6881,6 +6965,12 @@
       "value": "optie 1: € 10,99"
     }
   ],
+  "sxfcjF": [
+    {
+      "type": 0,
+      "value": "Identifier variable (BSN)"
+    }
+  ],
   "t+J++o": [
     {
       "options": {
@@ -6915,6 +7005,12 @@
     {
       "type": 0,
       "value": "Ben je zeker dat je deze koppeling wil verwijderen?"
+    }
+  ],
+  "tBGfyb": [
+    {
+      "type": 0,
+      "value": "BSN"
     }
   ],
   "tJQoMq": [
@@ -7049,6 +7145,12 @@
     {
       "type": 0,
       "value": "Fout"
+    }
+  ],
+  "uaHUFc": [
+    {
+      "type": 0,
+      "value": "Date of birth"
     }
   ],
   "uiliGe": [
@@ -7243,6 +7345,12 @@
     {
       "type": 0,
       "value": "ID van de schijf/drive waar bestanden terecht moeten komen. Indien leeg, dan wordt de standaard-drive gebruikt."
+    }
+  ],
+  "wns9rV": [
+    {
+      "type": 0,
+      "value": "First names"
     }
   ],
   "wowXBp": [

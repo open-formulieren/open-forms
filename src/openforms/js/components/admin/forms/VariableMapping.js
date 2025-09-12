@@ -43,6 +43,7 @@ const VariableMappingRow = ({
   variableName,
   propertyName,
   propertyChoices,
+  translatePropertyChoices,
   propertySelectLabel,
   onRemove,
   includeStaticVariables = false,
@@ -92,6 +93,7 @@ const VariableMappingRow = ({
             allowBlank
             disabled={loading}
             choices={propertyChoices}
+            translateChoices={translatePropertyChoices}
             {...propertyProps}
             value={serializedPropertyValue}
             onChange={event => {
@@ -155,6 +157,11 @@ VariableMappingRow.propTypes = {
   propertyChoices: PropTypes.arrayOf(isChoice),
 
   /**
+   * Indicates if choices is a translatable object
+   */
+  translateChoices: PropTypes.bool,
+
+  /**
    * The accessible label for the property dropdown.
    */
   propertySelectLabel: PropTypes.string.isRequired,
@@ -207,6 +214,7 @@ const VariableMapping = ({
   variableName = 'formVariable',
   propertyName,
   propertyChoices,
+  translatePropertyChoices = False,
   propertyHeading,
   propertySelectLabel,
   includeStaticVariables = false,
@@ -252,6 +260,7 @@ const VariableMapping = ({
                   loading={loading}
                   includeStaticVariables={includeStaticVariables}
                   propertyChoices={propertyChoices}
+                  translatePropertyChoices={translatePropertyChoices}
                   variableName={variableName}
                   propertyName={propertyName}
                   propertySelectLabel={propertySelectLabel}
@@ -320,6 +329,11 @@ VariableMapping.propTypes = {
    * JSON-serializable and the label is a string or react-intl formatted message.
    */
   propertyChoices: PropTypes.arrayOf(isChoice),
+
+  /**
+   * Indicates if choices is a translatable object
+   */
+  translateChoices: PropTypes.bool,
 
   /**
    * Heading/label for the property column displaying the property choices.
