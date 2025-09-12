@@ -89,6 +89,22 @@
     }
 },
 {
+    "model": "catalogi.catalogus",
+    "pk": 5,
+    "fields": {
+        "_etag": "e5c3dd7cf6f8b0591418692eb03d25a8",
+        "naam": "Test children",
+        "uuid": "e035387e-6374-4eb9-b3d1-416294402bae",
+        "domein": "CHILD",
+        "rsin": "000000000",
+        "contactpersoon_beheer_naam": "For testing children component",
+        "contactpersoon_beheer_telefoonnummer": "",
+        "contactpersoon_beheer_emailadres": "",
+        "versie": "",
+        "begindatum_versie": null
+    }
+},
+{
     "model": "catalogi.eigenschapspecificatie",
     "pk": 1,
     "fields": {
@@ -385,6 +401,27 @@
     }
 },
 {
+    "model": "catalogi.informatieobjecttype",
+    "pk": 12,
+    "fields": {
+        "_etag": "fd1f74a4b01d22a389a9f812aa09af10",
+        "datum_begin_geldigheid": "2020-06-20",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35",
+        "omschrijving": "Children PDF Informatieobjecttype",
+        "informatieobjectcategorie": "Test category",
+        "trefwoord": "[]",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "omschrijving_generiek_informatieobjecttype": "",
+        "omschrijving_generiek_definitie": "",
+        "omschrijving_generiek_herkomst": "",
+        "omschrijving_generiek_hierarchie": "",
+        "omschrijving_generiek_opmerking": "",
+        "catalogus": 5
+    }
+},
+{
     "model": "catalogi.zaaktypeinformatieobjecttype",
     "pk": 1,
     "fields": {
@@ -444,6 +481,19 @@
         "uuid": "f40fe71e-fe32-48f2-b99f-dbb7cea5d5ab",
         "zaaktype": 8,
         "informatieobjecttype": 11,
+        "volgnummer": 1,
+        "richting": "intern",
+        "statustype": null
+    }
+},
+{
+    "model": "catalogi.zaaktypeinformatieobjecttype",
+    "pk": 7,
+    "fields": {
+        "_etag": "cb512e7acd8f18db8fb5db1447008e6c",
+        "uuid": "5bb2cb63-904f-49c8-bdc9-bdccf5cda875",
+        "zaaktype": 9,
+        "informatieobjecttype": 12,
         "volgnummer": 1,
         "richting": "intern",
         "statustype": null
@@ -660,6 +710,66 @@
     }
 },
 {
+    "model": "catalogi.resultaattype",
+    "pk": 9,
+    "fields": {
+        "_etag": "21250f7731449a0a1b2629a6c5b952e1",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "5cd2d415-885b-4e89-836b-9ba62b33398e",
+        "zaaktype": 9,
+        "omschrijving": "Children found",
+        "resultaattypeomschrijving": "https://selectielijst.openzaak.nl/api/v1/resultaattypeomschrijvingen/7cb315fb-4f7b-4a43-aca1-e4522e4c73b3",
+        "omschrijving_generiek": "Afgehandeld",
+        "selectielijstklasse": "https://selectielijst.openzaak.nl/api/v1/resultaten/afa30940-855b-4a7e-aa21-9e15a8078814",
+        "archiefnominatie": "vernietigen",
+        "archiefactietermijn": "P10Y",
+        "brondatum_archiefprocedure_afleidingswijze": "afgehandeld",
+        "brondatum_archiefprocedure_datumkenmerk": "",
+        "brondatum_archiefprocedure_einddatum_bekend": false,
+        "brondatum_archiefprocedure_objecttype": "",
+        "brondatum_archiefprocedure_registratie": "",
+        "brondatum_archiefprocedure_procestermijn": "P0D",
+        "toelichting": "",
+        "procesobjectaard": "",
+        "indicatie_specifiek": null,
+        "procestermijn": null,
+        "informatieobjecttypen": [],
+        "besluittypen": [],
+        "zaakobjecttypen": []
+    }
+},
+{
+    "model": "catalogi.resultaattype",
+    "pk": 10,
+    "fields": {
+        "_etag": "19915dc249feb5b512c47edc41d0c5ff",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "d9f2fe65-ef85-4cbd-a9b6-e1a17e0d3e5e",
+        "zaaktype": 9,
+        "omschrijving": "Children not found",
+        "resultaattypeomschrijving": "https://selectielijst.openzaak.nl/api/v1/resultaattypeomschrijvingen/ce8cf476-0b59-496f-8eee-957a7c6e2506",
+        "omschrijving_generiek": "Afgebroken",
+        "selectielijstklasse": "https://selectielijst.openzaak.nl/api/v1/resultaten/afa30940-855b-4a7e-aa21-9e15a8078814",
+        "archiefnominatie": "vernietigen",
+        "archiefactietermijn": "P10Y",
+        "brondatum_archiefprocedure_afleidingswijze": "afgehandeld",
+        "brondatum_archiefprocedure_datumkenmerk": "",
+        "brondatum_archiefprocedure_einddatum_bekend": false,
+        "brondatum_archiefprocedure_objecttype": "",
+        "brondatum_archiefprocedure_registratie": "",
+        "brondatum_archiefprocedure_procestermijn": "P0D",
+        "toelichting": "",
+        "procesobjectaard": "",
+        "indicatie_specifiek": null,
+        "procestermijn": null,
+        "informatieobjecttypen": [],
+        "besluittypen": [],
+        "zaakobjecttypen": []
+    }
+},
+{
     "model": "catalogi.roltype",
     "pk": 1,
     "fields": {
@@ -839,6 +949,32 @@
         "omschrijving": "Partner initiator role type",
         "omschrijving_generiek": "initiator",
         "zaaktype": 8
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 17,
+    "fields": {
+        "_etag": "ecc8f9c25558cba8426077c1d1222cae",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "c76d3b20-d42c-4c6e-9837-abb1005bba68",
+        "omschrijving": "Children initiator role type",
+        "omschrijving_generiek": "initiator",
+        "zaaktype": 9
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 18,
+    "fields": {
+        "_etag": "c8835067cb19104da5232c73a1e04977",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "03e330e2-acd6-4e4d-a382-1ed9b71e8a6e",
+        "omschrijving": "Children role type",
+        "omschrijving_generiek": "behandelaar",
+        "zaaktype": 9
     }
 },
 {
@@ -1048,6 +1184,42 @@
         "datum_einde_geldigheid": null,
         "uuid": "3dd9a8f7-c18c-4c89-8b40-e344134cc1e8",
         "zaaktype": 8,
+        "statustype_omschrijving": "Closed",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 2,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 15,
+    "fields": {
+        "_etag": "7c26846570b3ae1ea2cc6cce3e85a065",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "60b6154a-a480-47db-93ab-d8ccc39d4022",
+        "zaaktype": 9,
+        "statustype_omschrijving": "Open",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 1,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 16,
+    "fields": {
+        "_etag": "42de4e9e2843a35bef82cdc044a206c2",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "adcbc040-768d-494a-a619-854f8c2835e8",
+        "zaaktype": 9,
         "statustype_omschrijving": "Closed",
         "statustype_omschrijving_generiek": "",
         "statustypevolgnummer": 2,
@@ -1376,6 +1548,52 @@
         "bronzaaktype_identificatie": "",
         "bronzaaktype_omschrijving": "",
         "catalogus": 4,
+        "deelzaaktypen": []
+    }
+},
+{
+    "model": "catalogi.zaaktype",
+    "pk": 9,
+    "fields": {
+        "_etag": "831261ae7fce8e844eda8eabe537a551",
+        "datum_begin_geldigheid": "2020-06-20",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "a516793a-cb5f-446d-bfa3-56077c1897be",
+        "identificatie": "ZAAKTYPE-2020-0000000002",
+        "zaaktype_omschrijving": "Case type for children component",
+        "zaaktype_omschrijving_generiek": "",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "doel": "Test",
+        "aanleiding": "Test",
+        "toelichting": "",
+        "indicatie_intern_of_extern": "intern",
+        "handeling_initiator": "Request",
+        "onderwerp": "Test",
+        "handeling_behandelaar": "Test",
+        "doorlooptijd_behandeling": "P10Y",
+        "servicenorm_behandeling": "P0D",
+        "opschorting_en_aanhouding_mogelijk": false,
+        "verlenging_mogelijk": false,
+        "verlengingstermijn": null,
+        "trefwoorden": "[]",
+        "publicatie_indicatie": false,
+        "publicatietekst": "",
+        "verantwoordingsrelatie": "[]",
+        "versiedatum": "2020-06-20",
+        "verantwoordelijke": "000000000",
+        "producten_of_diensten": "[]",
+        "selectielijst_procestype": "https://selectielijst.openzaak.nl/api/v1/procestypen/aa8aa2fd-b9c6-4e34-9a6c-58a677f60ea0",
+        "selectielijst_procestype_jaar": 2020,
+        "referentieproces_naam": "Test children process",
+        "referentieproces_link": "",
+        "broncatalogus_url": "",
+        "broncatalogus_domein": "",
+        "broncatalogus_rsin": "",
+        "bronzaaktype_url": "",
+        "bronzaaktype_identificatie": "",
+        "bronzaaktype_omschrijving": "",
+        "catalogus": 5,
         "deelzaaktypen": []
     }
 }
