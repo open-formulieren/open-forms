@@ -209,6 +209,8 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         "locatie": FieldConf(RegistrationAttribute.locatie_coordinaat),
         # Partners
         "partners": RegistrationAttribute.partners,
+        # Children
+        "children": RegistrationAttribute.children,
     }
 
     def pre_register_submission(
@@ -254,14 +256,11 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             assert component is not None
             assert component["type"] == "partners"
 
-            fm_immutable_variable = (
-                FormVariable.objects.filter(
-                    source=FormVariableSources.user_defined,
-                    prefill_plugin="family_members",
-                )
-                .filter(prefill_options__mutable_data_form_variable=component["key"])
-                .first()
-            )
+            fm_immutable_variable = FormVariable.objects.filter(
+                source=FormVariableSources.user_defined,
+                prefill_plugin="family_members",
+                prefill_options__mutable_data_form_variable=component["key"],
+            ).first()
 
             if fm_immutable_variable:
                 if fm_immutable_variable.key in extra_data:
@@ -304,6 +303,93 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 extra_data[to_key] = value
                 del extra_data[from_key]
 
+    def process_children(
+        self,
+        submission: Submission,
+        zaak_data: MutableMapping[str, Any],
+        extra_data: dict[str, Any],
+    ) -> None:
+        # register as zaakbetrokkene
+        if RegistrationAttribute.children in zaak_data:
+            component = get_component(
+                submission,
+                RegistrationAttribute.children,
+                REGISTRATION_ATTRIBUTE,
+            )
+
+            assert component is not None
+            assert component["type"] == "children"
+
+            fm_immutable_variable = FormVariable.objects.filter(
+                source=FormVariableSources.user_defined,
+                prefill_plugin="family_members",
+                form=submission.form,
+                prefill_options__type="children",
+                prefill_options__mutable_data_form_variable=component["key"],
+            ).first()
+
+            if fm_immutable_variable:
+                if fm_immutable_variable.key in extra_data:
+                    del extra_data[fm_immutable_variable.key]
+
+                # keep only the selected ones or all of them if selection is not allowed
+                zaak_data[RegistrationAttribute.children] = [
+                    child
+                    for child in zaak_data[RegistrationAttribute.children]
+                    if child["selected"] or child["selected"] is None
+                ]
+
+                # update the zaak data with the information needed for the xml request
+                for child in zaak_data[RegistrationAttribute.children]:
+                    child.update(
+                        {
+                            "dateOfBirth": child["dateOfBirth"].strftime("%Y%m%d"),
+                            # xml file generation depends on whether the variable was prefilled or not
+                            # (authentiek)
+                            "prefilled": not child["__addedManually"],
+                        }
+                    )
+                    # not useful for registration data
+                    child.pop("dateOfBirthPrecision", None)
+                    child.pop("__id", None)
+                    child.pop("__addedManually", None)
+                    child.pop("selected", None)
+
+        # register as extraElementen
+        else:
+            variables = FormVariable.objects.filter(
+                source=FormVariableSources.user_defined,
+                form=submission.form,
+                prefill_plugin="family_members",
+                prefill_options__type="children",
+            )
+
+            for variable in variables:
+                from_key, to_key = (
+                    variable.key,
+                    variable.prefill_options["mutable_data_form_variable"],
+                )
+                value = extra_data[to_key]
+
+                # keep only the selected ones or all of them if selection is not allowed
+                value = [
+                    child
+                    for child in value
+                    if child["selected"] or child["selected"] is None
+                ]
+
+                # necessary modifications for the registration data
+                for item in value:
+                    item.pop("dateOfBirthPrecision", None)
+                    item.pop("__id", None)
+                    item.pop("__addedManually", None)
+                    item.pop("selected", None)
+
+                    item["dateOfBirth"] = item["dateOfBirth"].isoformat()
+
+                extra_data[to_key] = value
+                extra_data.pop(from_key, None)
+
     def register_submission(
         self, submission: Submission, options: RegistrationOptions
     ) -> dict | None:
@@ -345,9 +431,11 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
 
             extra_data = self.get_extra_data(submission, options)
 
-            # mutate the zaak_data and the extra data for the partners component according
-            # to the type of the registration we want to send (zaakbetrokkene or extraElementen)
+            # mutate the zaak_data and the extra data for the family members components
+            # according to the type of the registration we want to send (zaakbetrokkene
+            # or extraElementen)
             self.process_partners(submission, zaak_data, extra_data)
+            self.process_children(submission, zaak_data, extra_data)
 
             # The extraElement tag of StUF-ZDS expects primitive types
             extra_data = flatten_data(extra_data)
