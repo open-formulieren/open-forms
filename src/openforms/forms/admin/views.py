@@ -246,7 +246,17 @@ class PaymentMigrationForm(forms.Form):
                 worldine_merchant.save()
 
                 form.payment_backend = "worldline"
-                form.payment_backend_options = {"merchant": worldine_merchant.pspid}
+
+                if "com_template" in form.payment_backend_options:
+                    form.payment_backend_options = {
+                        "merchant": worldine_merchant.pspid,
+                        "descriptor_template": form.payment_backend_options[
+                            "com_template"
+                        ],
+                    }
+                else:
+                    form.payment_backend_options = {"merchant": worldine_merchant.pspid}
+
                 form.save()
 
 
