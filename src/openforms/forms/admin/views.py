@@ -217,7 +217,7 @@ class PaymentMigrationForm(forms.Form):
                     "The following forms reference a merchant that is non-existent: %s"
                     "Please select a new merchant for these forms."
                 )
-                % ",".join(str(form.uuid) for form in outdated_forms)
+                % ",".join(str(form.name) for form in outdated_forms)
             )
 
         cleaned_data["merchant_mapping"] = {
