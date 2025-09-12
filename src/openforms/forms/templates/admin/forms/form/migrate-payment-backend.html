@@ -29,8 +29,6 @@
         {% if form.errors %}
             <ul class="errorlist">
                 <li>
-                    {{ form.fields.forms_to_migrate.label }}
-
                     <ul class="errorlist">
                         {% for error in form.errors.values %}
                             <li>{{ error }}</li>
