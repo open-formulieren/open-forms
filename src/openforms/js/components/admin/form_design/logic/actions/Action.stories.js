@@ -291,3 +291,87 @@ export const EvaluateDMNWithInitialErrors = {
     });
   },
 };
+
+export const SynchronizeVariables = {
+  render,
+  name: 'Synchronize children',
+  args: {
+    prefixText: 'Action',
+
+    action: {
+      component: '',
+      variable: '',
+      formStep: '',
+      formStepUuid: '',
+
+      action: {
+        config: {},
+        type: 'synchronize-variables',
+        value: '',
+      },
+    },
+    availableComponents: {
+      children: {
+        key: 'children',
+        type: 'children',
+        label: 'Children',
+      },
+      editgrid: {
+        key: 'editgrid',
+        type: 'editgrid',
+        label: 'Editgrid',
+        components: [
+          {
+            key: 'bsn',
+            type: 'bsn',
+            label: 'BSN',
+          },
+          {
+            key: 'firstNames',
+            type: 'textfield',
+            label: 'First names',
+          },
+        ],
+      },
+      'editgrid.bsn': {
+        key: 'bsn',
+        type: 'bsn',
+        label: 'BSN',
+      },
+      'editgrid.firstNames': {
+        key: 'firstNames',
+        type: 'textfield',
+        label: 'First names',
+      },
+    },
+    availableFormVariables: [
+      {
+        dataFormat: '',
+        dataType: 'array',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        formDefinition: null,
+        initialValue: '',
+        isSensitiveData: false,
+        key: 'children',
+        name: 'children',
+        prefillAttribute: '',
+        prefillPlugin: '',
+        source: 'component',
+      },
+      {
+        dataFormat: '',
+        dataType: 'array',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        formDefinition: null,
+        initialValue: '',
+        isSensitiveData: false,
+        key: 'editgrid',
+        name: 'editgrid',
+        prefillAttribute: '',
+        prefillPlugin: '',
+        source: 'component',
+      },
+    ],
+  },
+  decorators: [FormDecorator],
+};

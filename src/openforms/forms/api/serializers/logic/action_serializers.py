@@ -1,4 +1,5 @@
 import uuid
+from collections import Counter
 from datetime import date
 
 from django.utils.translation import gettext_lazy as _
@@ -65,6 +66,64 @@ class LogicValueActionSerializer(serializers.Serializer):
     )
 
 
+class SynchronizeDataMappingSerializer(serializers.Serializer):
+    property = serializers.CharField(
+        label=_("Property that needs mapping."), required=True
+    )
+    component_key = FormioVariableKeyField(
+        label=_("Key of the component variable."),
+        required=True,
+    )
+
+
+class SynchronizeVariablesActionConfigSerializer(serializers.Serializer):
+    identifier_variable = FormioVariableKeyField(
+        required=True,
+        allow_blank=False,
+        label=_("Key of the form variable that will be used as the identifier (BSN)."),
+    )
+    source_variable = FormioVariableKeyField(
+        label=_("Key of the form variable that will be used as the source."),
+        required=True,
+        allow_blank=False,
+    )
+    source_component_type = serializers.CharField(
+        label=_(
+            "Type of the component that will be used for the available properties in data "
+            "mappings."
+        ),
+        required=True,
+        allow_blank=False,
+    )
+    destination_variable = FormioVariableKeyField(
+        label=_("Key of the form variable that will be used as the destination."),
+        required=True,
+        allow_blank=False,
+    )
+    data_mappings = SynchronizeDataMappingSerializer(
+        label=_("Synchronize variables mapping"),
+        many=True,
+        min_length=1,  # pyright: ignore[reportCallIssue]
+    )
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        mappings = attrs.get("data_mappings")
+
+        counts = Counter(m["component_key"] for m in mappings)
+        duplicates = [key for key, count in counts.items() if count > 1]
+        if duplicates:
+            raise serializers.ValidationError(
+                {"data_mappings": _("A variable cannot be mapped multiple times.")}
+            )
+
+        return attrs
+
+
+class SynchronizeVariablesActionSerializer(serializers.Serializer):
+    config = SynchronizeVariablesActionConfigSerializer(label=_("Configuration"))
+
+
 class LogicFetchActionSerializer(serializers.Serializer):
     value = serializers.JSONField(
         label=_("service_fetch_configuration"),
@@ -128,6 +187,9 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
         str(
             LogicActionTypes.set_registration_backend
         ): LogicSetRegistrationBackendActionSerializer,
+        str(
+            LogicActionTypes.synchronize_variables
+        ): SynchronizeVariablesActionSerializer,
     }
 
 

@@ -8902,6 +8902,7 @@ components:
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicFetchAction'
       - $ref: '#/components/schemas/LogicActionPolymorphicDMNEvaluateAction'
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicSetRegistrationBackendAction'
+      - $ref: '#/components/schemas/LogicActionPolymorphicSynchronizeVariablesAction'
       discriminator:
         propertyName: type
         mapping:
@@ -8913,6 +8914,7 @@ components:
           fetch-from-service: '#/components/schemas/LogicActionPolymorphicLogicFetchAction'
           evaluate-dmn: '#/components/schemas/LogicActionPolymorphicDMNEvaluateAction'
           set-registration-backend: '#/components/schemas/LogicActionPolymorphicLogicSetRegistrationBackendAction'
+          synchronize-variables: '#/components/schemas/LogicActionPolymorphicSynchronizeVariablesAction'
     LogicActionPolymorphicDMNEvaluateAction:
       allOf:
       - $ref: '#/components/schemas/LogicActionPolymorphicShared'
@@ -8972,6 +8974,7 @@ components:
             * `fetch-from-service` - Fetch the value from a service
             * `set-registration-backend` - Set the registration backend to use for the submission
             * `evaluate-dmn` - Evaluate DMN
+            * `synchronize-variables` - Synchronize a variable with another one
       required:
       - type
     LogicActionPolymorphicSharedTypeEnum:
@@ -8984,6 +8987,7 @@ components:
       - fetch-from-service
       - set-registration-backend
       - evaluate-dmn
+      - synchronize-variables
       type: string
       description: |-
         * `step-not-applicable` - Mark the form step as not-applicable
@@ -8994,6 +8998,11 @@ components:
         * `fetch-from-service` - Fetch the value from a service
         * `set-registration-backend` - Set the registration backend to use for the submission
         * `evaluate-dmn` - Evaluate DMN
+        * `synchronize-variables` - Synchronize a variable with another one
+    LogicActionPolymorphicSynchronizeVariablesAction:
+      allOf:
+      - $ref: '#/components/schemas/LogicActionPolymorphicShared'
+      - $ref: '#/components/schemas/SynchronizeVariablesAction'
     LogicComponentAction:
       type: object
       properties:
@@ -10529,6 +10538,58 @@ components:
         * `_save` - Save
         * `_addanother` - Save and add another
         * `_continue` - Save and continue editing
+    SynchronizeDataMapping:
+      type: object
+      properties:
+        property:
+          type: string
+          title: Property that needs mapping.
+        componentKey:
+          type: string
+          title: Key of the component variable.
+          pattern: ^(\w|\w[\w.\-]*\w)$
+      required:
+      - componentKey
+      - property
+    SynchronizeVariablesAction:
+      type: object
+      properties:
+        config:
+          allOf:
+          - $ref: '#/components/schemas/SynchronizeVariablesActionConfig'
+          title: Configuration
+      required:
+      - config
+    SynchronizeVariablesActionConfig:
+      type: object
+      properties:
+        identifierVariable:
+          type: string
+          title: Key of the form variable that will be used as the identifier (BSN).
+          pattern: ^(\w|\w[\w.\-]*\w)$
+        sourceVariable:
+          type: string
+          title: Key of the form variable that will be used as the source.
+          pattern: ^(\w|\w[\w.\-]*\w)$
+        sourceComponentType:
+          type: string
+          title: Type of the component that will be used for the available properties
+            in data mappings.
+        destinationVariable:
+          type: string
+          title: Key of the form variable that will be used as the destination.
+          pattern: ^(\w|\w[\w.\-]*\w)$
+        dataMappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/SynchronizeDataMapping'
+          title: Synchronize variables mapping
+      required:
+      - dataMappings
+      - destinationVariable
+      - identifierVariable
+      - sourceComponentType
+      - sourceVariable
     TargetPaths:
       type: object
       properties:

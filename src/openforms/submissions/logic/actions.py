@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Self, TypedDict
 
@@ -13,6 +14,7 @@ from json_logic import jsonLogic
 
 from openforms.dmn.service import evaluate_dmn
 from openforms.formio.service import FormioConfigurationWrapper, FormioData
+from openforms.formio.typing.custom import ChildProperties
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.typing import DataMapping, JSONObject
@@ -179,6 +181,113 @@ class VariableAction(ActionOperation):
             return {self.variable: jsonLogic(self.value, context.data)}
 
 
+class DataMappingsConfig(TypedDict):
+    property: str
+    component_key: str
+
+
+class DataConfig(TypedDict):
+    source_variable: str
+    source_component_type: str
+    destination_variable: str
+    identifier_variable: str
+    data_mappings: list[DataMappingsConfig]
+
+
+@dataclass
+class SynchronizeVariablesAction(ActionOperation):
+    source_variable: str
+    source_component_type: str
+    destination_variable: str
+    identifier_variable: str
+    data_mappings: list[DataMappingsConfig]
+
+    @classmethod
+    def from_action(cls, action: ActionDict) -> Self:
+        children_config: DataConfig = action["action"]["config"]
+        return cls(**children_config)
+
+    @staticmethod
+    def _map_children_data(
+        source_data: Sequence[ChildProperties],
+        target_data: Sequence[JSONObject],
+        mappings: Sequence[tuple[str, str]],
+        identifier_variable: str,
+    ) -> Sequence[JSONObject]:
+        """
+        Map the children to the target variable.
+
+        Each item in the target is expected to have at least the ``bsn`` property to
+        be able to match child data.
+        """
+        # don't mutate the existing target data, but make a copy to replace it
+        current_data = deepcopy(target_data)
+        result_data_by_identifier = {
+            identifier: child
+            for child in current_data
+            if (identifier := child.get(identifier_variable))
+            and isinstance(identifier, str)
+        }
+
+        # build up the result based on the selected children, but make sure to keep
+        # existing data
+        result: Sequence[JSONObject] = []
+        for child in source_data:
+            # test if the child is unselected - either selection is not enabled which
+            # includes all children ("selected" is None), or it is enabled and then
+            # included children have "selected" set to "True".
+            include_child = child.get("selected") in (None, True)
+            if not include_child:
+                continue
+
+            # okay, the child should be included. Make sure it's present in the
+            # target data. If it already is, keep the existing record as additional
+            # fields may already be set.
+            mapped_item = result_data_by_identifier.get(child["bsn"])
+            if mapped_item is None:
+                mapped_item = {target: child[src] for src, target in mappings}
+            result.append(mapped_item)
+
+        return result
+
+    def _process_for_component_type(self, context: FormioData) -> DataMapping | None:
+        match self.source_component_type:
+            case "children":
+                source_data = context.get(self.source_variable, [])
+                destination_data = context.get(self.destination_variable) or []
+                identifier_variable = context.get(self.identifier_variable) or ""
+                if not (source_data or destination_data):
+                    return None
+
+                # normalize the mapping instructions
+                # tuples of (source, target)
+                mappings: Sequence[tuple[str, str]] = [
+                    (
+                        mapping["property"],
+                        mapping["component_key"].removeprefix(
+                            f"{self.destination_variable}."
+                        ),
+                    )
+                    for mapping in self.data_mappings
+                ]
+
+                return {
+                    self.destination_variable: self._map_children_data(
+                        source_data, destination_data, mappings, identifier_variable
+                    )
+                }
+
+    def eval(
+        self,
+        context: FormioData,
+        submission: Submission,
+    ) -> DataMapping | None:
+        if not self.source_component_type:
+            return None
+
+        return self._process_for_component_type(context)
+
+
 @dataclass
 class ServiceFetchAction(ActionOperation):
     variable: str
@@ -292,6 +401,7 @@ ACTION_TYPE_MAPPING: Mapping[LogicActionTypes, type[ActionOperation]] = {
     LogicActionTypes.step_not_applicable: StepNotApplicableAction,
     LogicActionTypes.step_applicable: StepApplicableAction,
     LogicActionTypes.variable: VariableAction,
+    LogicActionTypes.synchronize_variables: SynchronizeVariablesAction,
     LogicActionTypes.fetch_from_service: ServiceFetchAction,
     LogicActionTypes.evaluate_dmn: EvaluateDMNAction,
     LogicActionTypes.set_registration_backend: SetRegistrationBackendAction,

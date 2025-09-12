@@ -201,6 +201,11 @@
     "description": "Objects registration variable mapping, addressNL component: 'options.postcode schema target' label",
     "originalDefault": "Postcode Schema target"
   },
+  "2o0y5J": {
+    "defaultMessage": "Synchronize variables configuration",
+    "description": "Synchronizing variables configuration modal title",
+    "originalDefault": "Synchronize variables configuration"
+  },
   "2uIYst": {
     "defaultMessage": "De procesdefinitie waarvoor een proces instantie gestart moet worden.",
     "description": "Camunda 'process definition' help text",
@@ -225,6 +230,16 @@
     "defaultMessage": "Nog één toevoegen",
     "description": "Button text to add extra item",
     "originalDefault": "Add another"
+  },
+  "3Wcu+B": {
+    "defaultMessage": "Affixes",
+    "description": "Synchronize action, children component, affixes property label",
+    "originalDefault": "Affixes"
+  },
+  "3Wuy2O": {
+    "defaultMessage": "Property",
+    "description": "Column title for the property that a component is mapped to",
+    "originalDefault": "Property"
   },
   "3ZtB10": {
     "defaultMessage": "Vraag verklaring invullen naar waarheid",
@@ -777,6 +792,11 @@
     "description": "Confirmation Email for cosign Subject label",
     "originalDefault": "Cosign subject"
   },
+  "DI4HoQ": {
+    "defaultMessage": "Synchronize variables configuration:",
+    "description": "Configuration button Synchronize variables label",
+    "originalDefault": "Synchronize variables configuration:"
+  },
   "DJ8XX2": {
     "defaultMessage": "Kies een registratiepluginoptie en klik op de knop om de instellingen over te nemen.",
     "description": "Copy Objects API prefill configuration from registration backend help text",
@@ -879,6 +899,11 @@
     "description": "\"in\" operator description",
     "isTranslated": true,
     "originalDefault": "in"
+  },
+  "ExqNUS": {
+    "defaultMessage": "(not configured yet or partially configured)",
+    "description": "Synchronize variables not configured yet message",
+    "originalDefault": "(not configured yet or partially configured)"
   },
   "F+UwT0": {
     "defaultMessage": "Bestemmingspad huisletter",
@@ -1176,6 +1201,11 @@
     "description": "JSON registration options 'add all form variables' label",
     "originalDefault": "Add all form variables"
   },
+  "Isj2k2": {
+    "defaultMessage": "Synchronize variables",
+    "description": "action type \"synchronize variables\" label",
+    "originalDefault": "Synchronize variables"
+  },
   "ItH6EY": {
     "defaultMessage": "Tijd (time)",
     "description": "data type time",
@@ -1205,6 +1235,11 @@
     "defaultMessage": "Klap JsonLogic-expressie in/uit",
     "description": "Expand/collapse logic expression icon title",
     "originalDefault": "Expand/collapse JsonLogic"
+  },
+  "JVr8oA": {
+    "defaultMessage": "No component or property specified (anymore).",
+    "description": "Variables mappings: detected invalid mapping",
+    "originalDefault": "No component or property specified (anymore)."
   },
   "JXcHQ2": {
     "defaultMessage": "(nog niet ingesteld)",
@@ -1893,6 +1928,11 @@
     "description": "component property \"required\" label",
     "originalDefault": "required"
   },
+  "VZ8Ozt": {
+    "defaultMessage": "Initials",
+    "description": "Synchronize action, children component, initials property label",
+    "originalDefault": "Initials"
+  },
   "Vi0+dd": {
     "defaultMessage": "Schakel taalkeuze in of uit voor dit formulier.",
     "description": "Form translation enabled field help text",
@@ -1994,6 +2034,11 @@
     "defaultMessage": "Basis",
     "description": "Service fetch configuration modal basic fieldset title",
     "originalDefault": "Basic"
+  },
+  "XfxZIE": {
+    "defaultMessage": "Configure",
+    "description": "Button to open Synchronize variables configuration modal",
+    "originalDefault": "Configure"
   },
   "Xg9O5Y": {
     "defaultMessage": "Bestemmingspad huisnummer",
@@ -2099,6 +2144,11 @@
     "defaultMessage": "Formulier-JSON-schema",
     "description": "Form JSON schema label",
     "originalDefault": "Form JSON schema"
+  },
+  "ZeP+c1": {
+    "defaultMessage": "There are errors in the Synchronize variables configuration.",
+    "description": "Synchronize variables configuration errors message",
+    "originalDefault": "There are errors in the Synchronize variables configuration."
   },
   "ZfLhiZ": {
     "defaultMessage": "Maximale leeftijd",
@@ -2431,6 +2481,11 @@
     "defaultMessage": "Prijslogica",
     "description": "Dynamic pricing fieldset title",
     "originalDefault": "Pricing logic"
+  },
+  "fN5j5f": {
+    "defaultMessage": "From variable",
+    "description": "Synchronize variables modal select from variable field label",
+    "originalDefault": "From variable"
   },
   "fQuLvm": {
     "defaultMessage": "Registratie-instellingen overnemen",
@@ -2883,6 +2938,11 @@
     "description": "Form design tab title",
     "originalDefault": "Steps and fields"
   },
+  "mS22EJ": {
+    "defaultMessage": "Data mappings",
+    "description": "Data mappings title",
+    "originalDefault": "Data mappings"
+  },
   "mWHMvR": {
     "defaultMessage": "Bestemmings-variabele",
     "description": "Family members options: data destination form variable label",
@@ -2987,6 +3047,11 @@
     "defaultMessage": "Opslaan",
     "description": "Save service fetch configuration button label",
     "originalDefault": "Save"
+  },
+  "oR677a": {
+    "defaultMessage": "Last name",
+    "description": "Synchronize action, children component, lastName property label",
+    "originalDefault": "Last name"
   },
   "oVwrVo": {
     "defaultMessage": "Bijlagen invoegen",
@@ -3189,6 +3254,11 @@
     "description": "Session expiry notice - API call failed with 401",
     "originalDefault": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
   },
+  "riS49K": {
+    "defaultMessage": "To variable",
+    "description": "Synchronize variables modal select to variable field label",
+    "originalDefault": "To variable"
+  },
   "rkzjK3": {
     "defaultMessage": "Bestemmingspad",
     "description": "'JSON Schema target' label",
@@ -3239,6 +3309,11 @@
     "description": "Objects API registration backend: v2 switch warning message",
     "originalDefault": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
   },
+  "sxfcjF": {
+    "defaultMessage": "Identifier variable (BSN)",
+    "description": "Synchronize variables modal select identifierVariable field label",
+    "originalDefault": "Identifier variable (BSN)"
+  },
   "t+J++o": {
     "defaultMessage": "{isReusable, select, true {Herbruikbare stapinstellingen} other {Stapinstellingen}}",
     "description": "Form definition module title",
@@ -3253,6 +3328,11 @@
     "defaultMessage": "Ben je zeker dat je deze koppeling wil verwijderen?",
     "description": "Delete confirmation message for variable mapped to case property",
     "originalDefault": "Are you sure you want to remove this mapping?"
+  },
+  "tBGfyb": {
+    "defaultMessage": "BSN",
+    "description": "Synchronize action, children component, bsn property label",
+    "originalDefault": "BSN"
   },
   "tJQoMq": {
     "defaultMessage": "De prefill-instellingen zijn niet geldig.",
@@ -3323,6 +3403,11 @@
     "defaultMessage": "Pad relatief aan de Service API basisurl.",
     "description": "JSON registration options 'path' helpText",
     "originalDefault": "Path relative to the Service API root."
+  },
+  "uaHUFc": {
+    "defaultMessage": "Date of birth",
+    "description": "Synchronize action, children component, dateOfBirth property label",
+    "originalDefault": "Date of birth"
   },
   "uiliGe": {
     "defaultMessage": "De logicaregels die u hier definieert worden uitgevoerd in de volgorde zoals hier weergegeven. U vindt meer informatie in de <docs>handleiding</docs>.",
@@ -3413,6 +3498,11 @@
     "defaultMessage": "ID van de schijf/drive waar bestanden terecht moeten komen. Indien leeg, dan wordt de standaard-drive gebruikt.",
     "description": "MS Graph registration options 'driveId' help text",
     "originalDefault": "ID of the drive to use. If left empty, the default drive will be used."
+  },
+  "wns9rV": {
+    "defaultMessage": "First names",
+    "description": "Synchronize action, children component, firstNames property label",
+    "originalDefault": "First names"
   },
   "wowXBp": {
     "defaultMessage": "De maximale leeftijd die wordt gebruikt om te bepalen welke kinderen worden weergegeven. Laat het veld leeg om alle kinderen weer te geven.",

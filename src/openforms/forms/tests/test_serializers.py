@@ -9,19 +9,21 @@ from hypothesis.extra.django import TestCase as HypothesisTestCase
 from openforms.accounts.tests.factories import UserFactory
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.config.models.config import GlobalConfiguration
-from openforms.forms.api.datastructures import FormVariableWrapper
-from openforms.forms.api.serializers import FormSerializer
-from openforms.forms.api.serializers.logic.action_serializers import (
+from openforms.tests.search_strategies import json_primitives
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+
+from ..api.datastructures import FormVariableWrapper
+from ..api.serializers import FormSerializer
+from ..api.serializers.logic.action_serializers import (
     LogicComponentActionSerializer,
+    SynchronizeVariablesActionConfigSerializer,
 )
-from openforms.forms.tests.factories import (
+from .factories import (
     FormFactory,
     FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.tests.search_strategies import json_primitives
-from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 
 class LogicComponentActionSerializerPropertyTest(HypothesisTestCase):
@@ -352,3 +354,49 @@ class FormSerializerTest(TestCase):
             data = FormSerializer(instance=form, context=context).data
 
             self.assertTrue(data["submission_limit_reached"])
+
+
+class SynchronizeVariablesActionConfigSerializerTest(TestCase):
+    def test_valid_mappings(self):
+        data = {
+            "source_variable": "source",
+            "source_component_type": "children",
+            "destination_variable": "destination",
+            "identifier_variable": "bsn",
+            "data_mappings": [
+                {"component_key": "key1", "property": "value1"},
+                {"component_key": "key2", "property": "value2"},
+            ],
+        }
+        serializer = SynchronizeVariablesActionConfigSerializer(data=data)
+
+        self.assertTrue(serializer.is_valid())
+
+    def test_no_mappings_with_source_and_destination(self):
+        data = {
+            "source_variable": "source",
+            "source_component_type": "children",
+            "destination_variable": "destination",
+            "identifier_variable": "bsn",
+            "data_mappings": [],
+        }
+        serializer = SynchronizeVariablesActionConfigSerializer(data=data)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("data_mappings", serializer.errors)
+
+    def test_duplicate_mappings(self):
+        data = {
+            "source_variable": "source",
+            "destination_variable": "destination",
+            "source_component_type": "children",
+            "identifier_variable": "bsn",
+            "data_mappings": [
+                {"component_key": "key1", "property": "value1"},
+                {"component_key": "key1", "property": "value2"},
+            ],
+        }
+        serializer = SynchronizeVariablesActionConfigSerializer(data=data)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("data_mappings", serializer.errors)

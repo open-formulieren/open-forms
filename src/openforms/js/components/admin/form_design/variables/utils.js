@@ -288,4 +288,5 @@ export {
   getVariableSourceLabel,
   groupVariablesBySource,
   variableHasErrors,
+  makeNewVariableFromComponent,
 };

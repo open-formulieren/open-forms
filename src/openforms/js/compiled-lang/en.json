@@ -435,6 +435,12 @@
       "value": "Postcode Schema target"
     }
   ],
+  "2o0y5J": [
+    {
+      "type": 0,
+      "value": "Synchronize variables configuration"
+    }
+  ],
   "2sbkGI": [
     {
       "type": 0,
@@ -497,6 +503,18 @@
     {
       "type": 0,
       "value": "Add another"
+    }
+  ],
+  "3Wcu+B": [
+    {
+      "type": 0,
+      "value": "Affixes"
+    }
+  ],
+  "3Wuy2O": [
+    {
+      "type": 0,
+      "value": "Property"
     }
   ],
   "3ZtB10": [
@@ -1835,6 +1853,12 @@
       "value": "Cosign subject"
     }
   ],
+  "DI4HoQ": [
+    {
+      "type": 0,
+      "value": "Synchronize variables configuration:"
+    }
+  ],
   "DJ8XX2": [
     {
       "type": 0,
@@ -2069,6 +2093,12 @@
     {
       "type": 0,
       "value": "in"
+    }
+  ],
+  "ExqNUS": [
+    {
+      "type": 0,
+      "value": "(not configured yet or partially configured)"
     }
   ],
   "F+UwT0": [
@@ -2533,6 +2563,12 @@
       "value": "Add all form variables"
     }
   ],
+  "Isj2k2": [
+    {
+      "type": 0,
+      "value": "Synchronize variables"
+    }
+  ],
   "ItH6EY": [
     {
       "type": 0,
@@ -2579,6 +2615,12 @@
     {
       "type": 0,
       "value": "Expand/collapse JsonLogic"
+    }
+  ],
+  "JVr8oA": [
+    {
+      "type": 0,
+      "value": "No component or property specified (anymore)."
     }
   ],
   "JXcHQ2": [
@@ -3915,6 +3957,12 @@
       "value": "configured"
     }
   ],
+  "VZ8Ozt": [
+    {
+      "type": 0,
+      "value": "Initials"
+    }
+  ],
   "VekFY+": [
     {
       "type": 0,
@@ -4123,6 +4171,12 @@
     {
       "type": 0,
       "value": "Basic"
+    }
+  ],
+  "XfxZIE": [
+    {
+      "type": 0,
+      "value": "Configure"
     }
   ],
   "Xg9O5Y": [
@@ -4387,6 +4441,12 @@
     {
       "type": 0,
       "value": "Form JSON schema"
+    }
+  ],
+  "ZeP+c1": [
+    {
+      "type": 0,
+      "value": "There are errors in the Synchronize variables configuration."
     }
   ],
   "ZfLhiZ": [
@@ -5209,6 +5269,12 @@
     {
       "type": 0,
       "value": "Pricing logic"
+    }
+  ],
+  "fN5j5f": [
+    {
+      "type": 0,
+      "value": "From variable"
     }
   ],
   "fQuLvm": [
@@ -6155,6 +6221,12 @@
       "value": "Line"
     }
   ],
+  "mS22EJ": [
+    {
+      "type": 0,
+      "value": "Data mappings"
+    }
+  ],
   "mWHMvR": [
     {
       "type": 0,
@@ -6351,6 +6423,12 @@
     {
       "type": 0,
       "value": "Minimum selected checkboxes (e.g. 1)"
+    }
+  ],
+  "oR677a": [
+    {
+      "type": 0,
+      "value": "Last name"
     }
   ],
   "oVwrVo": [
@@ -6777,6 +6855,12 @@
       "value": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
     }
   ],
+  "riS49K": [
+    {
+      "type": 0,
+      "value": "To variable"
+    }
+  ],
   "rkJLBr": [
     {
       "type": 0,
@@ -6913,6 +6997,12 @@
       "value": "option 1: € 10,99"
     }
   ],
+  "sxfcjF": [
+    {
+      "type": 0,
+      "value": "Identifier variable (BSN)"
+    }
+  ],
   "t+J++o": [
     {
       "options": {
@@ -6957,6 +7047,12 @@
     {
       "type": 0,
       "value": "Are you sure you want to remove this mapping?"
+    }
+  ],
+  "tBGfyb": [
+    {
+      "type": 0,
+      "value": "BSN"
     }
   ],
   "tJQoMq": [
@@ -7091,6 +7187,12 @@
     {
       "type": 0,
       "value": "Error"
+    }
+  ],
+  "uaHUFc": [
+    {
+      "type": 0,
+      "value": "Date of birth"
     }
   ],
   "uiliGe": [
@@ -7285,6 +7387,12 @@
     {
       "type": 0,
       "value": "ID of the drive to use. If left empty, the default drive will be used."
+    }
+  ],
+  "wns9rV": [
+    {
+      "type": 0,
+      "value": "First names"
     }
   ],
   "wowXBp": [
