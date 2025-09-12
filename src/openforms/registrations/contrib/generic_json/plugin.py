@@ -381,6 +381,22 @@ def process_component(
                 partner.pop("dateOfBirthPrecision", None)
                 partner.pop("__addedManually", None)
 
+        case {"type": "children"}:
+            children = values[key]
+            assert isinstance(children, list)
+
+            for child in children:
+                assert isinstance(child, dict)
+
+                # these are not relevant (at least for now)
+                child.pop("affixes", None)
+                child.pop("initials", None)
+                child.pop("lastName", None)
+                child.pop("dateOfBirthPrecision", None)
+                child.pop("__id", None)
+                child.pop("__addedManually", None)
+                child.pop("selected", None)
+
         case _:
             pass
 
