@@ -214,7 +214,7 @@ const VariableMapping = ({
   variableName = 'formVariable',
   propertyName,
   propertyChoices,
-  translatePropertyChoices = False,
+  translatePropertyChoices = false,
   propertyHeading,
   propertySelectLabel,
   includeStaticVariables = false,
