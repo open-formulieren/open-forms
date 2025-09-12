@@ -47,3 +47,6 @@ class RegistrationAttribute(models.TextChoices):
 
     # Partners
     partners = "partners", _("Partners")
+
+    # Children
+    children = "children", _("Children")

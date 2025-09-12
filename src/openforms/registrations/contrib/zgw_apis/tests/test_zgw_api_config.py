@@ -329,6 +329,8 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         self.install_mocks(m)
 
@@ -374,6 +376,8 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
 
         self.install_mocks(m)
@@ -471,6 +475,8 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         self.install_mocks(m)
 

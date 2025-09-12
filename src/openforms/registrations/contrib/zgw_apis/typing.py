@@ -43,6 +43,8 @@ class RegistrationOptions(TypedDict):
     medewerker_roltype: NotRequired[str]
     partners_roltype: str
     partners_description: str
+    children_roltype: str
+    children_description: str
     objects_api_group: ObjectsAPIGroupConfig | None
     objecttype: NotRequired[str]
     objecttype_version: NotRequired[int]

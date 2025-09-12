@@ -1,4 +1,5 @@
 import {useField} from 'formik';
+import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
@@ -32,4 +33,31 @@ const PartnersDescription = () => {
 
 PartnersDescription.propTypes = {};
 
-export default PartnersDescription;
+const ChildrenDescription = () => {
+  const [fieldProps] = useField('childrenDescription');
+  return (
+    <FormRow>
+      <Field
+        name="childrenDescription"
+        label={
+          <FormattedMessage
+            description="ZGW APIs registration options 'childrenDescription' label"
+            defaultMessage="Children description"
+          />
+        }
+        helpText={
+          <FormattedMessage
+            description="ZGW APIs registration options 'childrenDescription' help text"
+            defaultMessage="The description that will be used in children registration."
+          />
+        }
+      >
+        <TextInput id="id_childrenDescription" {...fieldProps} />
+      </Field>
+    </FormRow>
+  );
+};
+
+ChildrenDescription.propTypes = {};
+
+export {ChildrenDescription, PartnersDescription};
