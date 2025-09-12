@@ -212,7 +212,7 @@ class PaymentMigrationForm(forms.Form):
                 outdated_forms.append(merchants[merchant_id])
 
         if outdated_forms:
-            raise ValidationError(
+            raise forms.ValidationError(
                 _(
                     "The following forms reference a merchant that is non-existent: %s"
                     "Please select a new merchant for these forms."
