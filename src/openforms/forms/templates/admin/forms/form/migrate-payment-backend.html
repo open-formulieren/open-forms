@@ -1,18 +1,24 @@
 {% extends "admin/base_site.html" %}
 {% load static i18n django_admin_index %}
 
-{% block extrastyle %}{{ block.super }}
-<link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static "bundles/core-css.css" %}">
+    <link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">
+    {{ block.super }}
 {% endblock %}
 
-{% block nav-global %}{% include "django_admin_index/includes/app_list.html" %}{% endblock nav-global %}
+{% block bodyclass %}ogone-migration-page{% endblock %}
+
+{% block nav-global %}
+    {% include "django_admin_index/includes/app_list.html" %}
+{% endblock nav-global %}
 
 {% block breadcrumbs %}
-<div class="breadcrumbs">
-<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-&rsaquo; <a href="{% url 'admin:forms_form_changelist' %}">{% trans 'Forms' %}</a>
-&rsaquo; {% trans 'Migrate payment backends for forms' %}
-</div>
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+        &rsaquo; <a href="{% url 'admin:forms_form_changelist' %}">{% trans 'Forms' %}</a>
+        &rsaquo; {% trans 'Migrate payment backends for forms' %}
+    </div>
 {% endblock %}
 
 {% block title %} {% trans "Migrate payment backends for forms" %} {{ block.super }} {% endblock %}
