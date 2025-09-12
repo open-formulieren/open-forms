@@ -6,10 +6,17 @@ from django.template.defaultfilters import date as fmt_date, time as fmt_time
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
+from geo_visualization import generate_map_image_with_geojson
 from openforms.api.geojson import LineStringGeometry, PointGeometry, PolygonGeometry
+from openforms.config.models import MapTileLayer
 
 from ..typing import AddressNLComponent, Component, MapComponent
 from .base import FormatterBase
+
+MAP_IMAGE_SIZE = (400, 300)  # width and height in number of pixels
+# With the above image size, this zoom level gives sufficient map context around a point
+# to draw
+MAX_ZOOM_LEVEL = 12
 
 
 class DateFormatter(FormatterBase):
@@ -27,11 +34,29 @@ type MapValue = PointGeometry | LineStringGeometry | PolygonGeometry
 
 class MapFormatter(FormatterBase):
     def format(self, component: MapComponent, value: MapValue) -> str:
-        # use a comma here since its a single data element
-        if coordinates := value.get("coordinates"):
-            return ", ".join(str(x) for x in coordinates)
-        else:
-            return ""
+        # Will be an empty string if `value` was empty
+        coordinates = ", ".join(str(x) for x in value.get("coordinates", []))
+
+        if not self.as_html or not coordinates:
+            return coordinates
+
+        # Note that "brt" is a default fixture from default_map_tile_layers.json
+        tile_layer = MapTileLayer.objects.get(
+            identifier=component.get("tileLayerIdentifier", "brt")
+        )
+        image = generate_map_image_with_geojson(
+            value, tile_layer.url, MAP_IMAGE_SIZE, MAX_ZOOM_LEVEL
+        )
+
+        # Fallback to the coordinates if it couldn't be loaded
+        if image is None:
+            return coordinates
+
+        return format_html(
+            '<img src="data:image/png;base64,{image}" alt="{text}" style="max-width: 100%;"/>',
+            image=image,
+            text=coordinates,
+        )
 
 
 class AddressValue(TypedDict):
