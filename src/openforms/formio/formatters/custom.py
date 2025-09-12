@@ -6,9 +6,9 @@ from django.template.defaultfilters import date as fmt_date, time as fmt_time
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
+from geo_visualization import generate_map_image_with_geojson
 from openforms.api.geojson import LineStringGeometry, PointGeometry, PolygonGeometry
 from openforms.config.models import MapTileLayer
-from openforms.utils.map import generate_map_image_with_geojson
 
 from ..typing import AddressNLComponent, Component, MapComponent
 from .base import FormatterBase

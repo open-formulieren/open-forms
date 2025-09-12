@@ -3,9 +3,8 @@ from io import BytesIO
 
 from shapely.geometry import shape
 
-from openforms.api.geojson import LineStringGeometry, PointGeometry, PolygonGeometry
-
 from .constants import ZOOM_LEVEL_TO_RESOLUTION
+from .typing import GeoJson
 from .utils import find_maximum_zoom, geojson_to_rd
 from .wmts_draw import draw_geometry_on_map
 from .wmts_map_generator import generate_map_image
@@ -13,17 +12,14 @@ from .wmts_map_generator import generate_map_image
 __all__ = ["generate_map_image_with_geojson"]
 
 
-type GEOJSON = PointGeometry | LineStringGeometry | PolygonGeometry
-
-
 def generate_map_image_with_geojson(
-    geojson: GEOJSON,
+    geojson: GeoJson,
     url_template: str,
     image_size: tuple[int, int],
     max_zoom: int = max(ZOOM_LEVEL_TO_RESOLUTION),
 ) -> str | None:
     """
-    Generate a map image with a geojson shape drawn onto it.
+    Generate a WMTS map image with a geojson shape drawn onto it.
 
     :param geojson: The geojson shape to draw.
     :param url_template: URL template to load tiles from. This URL should be
@@ -37,12 +33,12 @@ def generate_map_image_with_geojson(
     geometry_rd = geojson_to_rd(shape(geojson))
 
     zoom = find_maximum_zoom(
-        geometry=geometry_rd, max_zoom=max_zoom, image_size=image_size
+        geometry_rd=geometry_rd, max_zoom=max_zoom, image_size=image_size
     )
 
     map_img = generate_map_image(
         url_template=url_template,
-        center=geometry_rd.centroid,
+        center_rd=geometry_rd.centroid,
         zoom=zoom,
         img_size=image_size,
     )

@@ -24,7 +24,7 @@ def geojson_to_rd(geometry: BaseGeometry) -> BaseGeometry:
 
 
 def find_maximum_zoom(
-    geometry: BaseGeometry,
+    geometry_rd: BaseGeometry,
     image_size: tuple[int, int],
     max_zoom: int = max(ZOOM_LEVEL_TO_RESOLUTION),
     min_zoom: int = min(ZOOM_LEVEL_TO_RESOLUTION),
@@ -34,7 +34,7 @@ def find_maximum_zoom(
     Find the maximum zoom level for which the geometry shape fits within the specified
     image size.
 
-    :param geometry: The shape that should be drawn on the map in RD coordinates.
+    :param geometry_rd: The shape that should be drawn on the map in RD coordinates.
     :param image_size: The desired image size in pixels (width, height).
     :param max_zoom: The maximum zoom level.
     :param min_zoom: The minimum zoom level.
@@ -42,7 +42,7 @@ def find_maximum_zoom(
       enlarge the shape to ensure there is some margin near the edges.
     :return: Best zoom level.
     """
-    min_x, min_y, max_x, max_y = geometry.bounds
+    min_x, min_y, max_x, max_y = geometry_rd.bounds
     geometry_w_rd = (max_x - min_x) * padding
     geometry_h_rd = (max_y - min_y) * padding
     img_w_px, img_h_px = image_size

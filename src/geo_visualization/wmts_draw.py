@@ -12,7 +12,7 @@ LINE_WIDTH = 3
 
 
 def convert_geometry_rd_to_pixels(
-    geometry: BaseGeometry, zoom: int, image_size: tuple[int, int]
+    geometry_rd: BaseGeometry, zoom: int, image_size: tuple[int, int]
 ) -> BaseGeometry:
     """
     Convert a geometry shape in RD coordinates to pixel coordinates, by:
@@ -22,12 +22,12 @@ def convert_geometry_rd_to_pixels(
         specified zoom level;
      3. adding this pixel distance to the coordinates of the center of the image.
 
-    :param geometry: Shape to convert in RD coordinates.
+    :param geometry_rd: Shape to convert in RD coordinates.
     :param zoom: Zoom level.
     :param image_size: Image size in pixels.
     :return: Shape in pixel coordinates.
     """
-    geom_center_x, geom_center_y = geometry.centroid.coords[0]
+    geom_center_x, geom_center_y = geometry_rd.centroid.coords[0]
 
     w, h = image_size
     res = ZOOM_LEVEL_TO_RESOLUTION[zoom]
@@ -37,7 +37,9 @@ def convert_geometry_rd_to_pixels(
         dy = (geom_center_y - y) / res  # Y-axis reversed
         return w / 2 + dx, h / 2 + dy
 
-    return transform(geometry, project_rd_to_pixel, include_z=False, interleaved=False)
+    return transform(
+        geometry_rd, project_rd_to_pixel, include_z=False, interleaved=False
+    )
 
 
 def draw_geometry_on_map(

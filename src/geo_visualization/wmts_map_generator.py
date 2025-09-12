@@ -134,7 +134,7 @@ def construct_image_from_tiles(
 @lru_cache(maxsize=32)
 def generate_map_image(
     url_template: str,
-    center: Point,
+    center_rd: Point,
     zoom: int,
     img_size: tuple[int, int],
 ) -> Image.Image | None:
@@ -144,12 +144,12 @@ def generate_map_image(
     :param url_template: URL template to load tiles from. This URL should be
       formattable x, y, and z parameters. For example:
       https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/standaard/EPSG:28992/{z}/{x}/{y}.png
-    :param center: The center of the image, should be in RD coordinates.
+    :param center_rd: The center of the image, should be in RD coordinates.
     :param zoom: The desired zoom level.
     :param img_size: The desired image size in pixels (width, height).
     :return: WMTS map image or ``None`` if the image could not be constructed.
     """
-    x_rd, y_rd = center.coords[0]
+    x_rd, y_rd = center_rd.coords[0]
 
     # Determine on which tile coordinate the center point lies
     res = convert_rd_coordinate_to_tile(x_rd, y_rd, zoom)
