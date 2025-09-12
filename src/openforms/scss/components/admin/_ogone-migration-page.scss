@@ -1,0 +1,18 @@
+.ogone-migration-page {
+  & form .cancel-link,
+  #content-main .cancel-link {
+    vertical-align: middle;
+    height: 0.9375rem;
+    line-height: 0.9375rem;
+    border-radius: 4px;
+    padding: 10px 15px;
+    color: var(--button-fg);
+    background: var(--close-button-bg);
+    margin: 0 5px 0 0;
+    text-decoration: none;
+
+    &:hover {
+      background: var(--close-button-hover-bg);
+    }
+  }
+}

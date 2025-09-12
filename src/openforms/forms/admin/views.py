@@ -9,6 +9,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.postgres.forms import SimpleArrayField
+from django.db import transaction
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -23,6 +24,10 @@ from privates.storages import private_media_storage
 from rest_framework.exceptions import ValidationError
 
 from openforms.logging import logevent
+from openforms.payments.contrib.ogone.constants import OgoneEndpoints
+from openforms.payments.contrib.ogone.models import OgoneMerchant
+from openforms.payments.contrib.worldline.constants import WorldlineEndpoints
+from openforms.payments.contrib.worldline.models import WorldlineMerchant
 
 from ..forms import ExportStatisticsForm
 from ..forms.form import FormImportForm
@@ -166,3 +171,100 @@ class ExportSubmissionStatisticsView(
             }
         )
         return context
+
+
+class PaymentMigrationForm(forms.Form):
+    forms_to_migrate = forms.ModelMultipleChoiceField(
+        queryset=Form.objects.filter(payment_backend="ogone-legacy"),
+        error_messages={
+            "invalid_choice": _(
+                "The selected form(s) cannot be migrated to the Worldline payment backend."
+                " Please verify the selected forms have the ogone-legacy payment backend"
+                " configured."
+            ),
+        },
+        label=_("Forms"),
+    )
+
+    def clean(self) -> dict:
+        cleaned_data = super().clean()
+        forms_to_migrate = cleaned_data.get("forms_to_migrate", [])
+
+        merchants: dict[int, Form] = {
+            form.payment_backend_options["merchant_id"]: form
+            for form in forms_to_migrate
+            if "merchant_id" in form.payment_backend_options
+        }
+
+        found_merchants: dict[int, OgoneMerchant] = {
+            merchant.pk: merchant
+            for merchant in OgoneMerchant.objects.filter(id__in=list(merchants.keys()))
+        }
+        outdated_forms: list[Form] = []
+
+        for merchant_id in merchants:
+            if merchant_id not in found_merchants:
+                outdated_forms.append(merchants[merchant_id])
+
+        if outdated_forms:
+            raise forms.ValidationError(
+                _(
+                    "The following forms reference a merchant that is non-existent: %s"
+                    "Please select a new merchant for these forms."
+                )
+                % ",".join(str(form.name) for form in outdated_forms)
+            )
+
+        cleaned_data["merchant_mapping"] = {
+            form.id: found_merchants[form.payment_backend_options["merchant_id"]]
+            for form in forms_to_migrate
+        }
+
+        return cleaned_data
+
+    def save(self, **kwargs) -> None:
+        with transaction.atomic():
+            for form in self.cleaned_data["forms_to_migrate"]:
+                ogone_merchant = self.cleaned_data["merchant_mapping"][form.id]
+                worldine_merchant, __ = WorldlineMerchant.objects.get_or_create(
+                    pspid=ogone_merchant.pspid,
+                )
+
+                worldine_merchant.label = ogone_merchant.label
+                worldine_merchant.endpoint = (
+                    WorldlineEndpoints.live
+                    if ogone_merchant.endpoint == OgoneEndpoints.live
+                    else WorldlineEndpoints.test
+                )
+                worldine_merchant.api_key = ogone_merchant.api_key
+                worldine_merchant.api_secret = ogone_merchant.api_secret
+                worldine_merchant.save()
+
+                form.payment_backend = "worldline"
+
+                if "com_template" in form.payment_backend_options:
+                    form.payment_backend_options = {
+                        "merchant": worldine_merchant.pspid,
+                        "descriptor_template": form.payment_backend_options[
+                            "com_template"
+                        ],
+                    }
+                else:
+                    form.payment_backend_options = {"merchant": worldine_merchant.pspid}
+
+                form.save()
+
+
+class PaymentMigrationView(FormView):
+    form_class = PaymentMigrationForm
+    template_name = "admin/forms/form/migrate-payment-backend.html"
+    success_url = reverse_lazy("admin:forms_form_changelist")
+
+    def form_valid(self, form):
+        form.save()
+
+        messages.success(
+            self.request,
+            _("%s forms were migrated.") % len(form.cleaned_data["forms_to_migrate"]),
+        )
+        return super().form_valid(form)
