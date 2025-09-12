@@ -2,12 +2,11 @@ from unittest import TestCase
 
 from shapely.geometry import shape
 
-from openforms.api.geojson import PolygonGeometry
+from ..typing import PolygonGeometry
+from ..utils import find_maximum_zoom, geojson_to_rd
 
-from ..map.utils import find_maximum_zoom, geojson_to_rd
 
-
-class MapTests(TestCase):
+class WMTSMapTests(TestCase):
     def test_find_maximum_zoom_uses_fallback(self):
         # Note that this shape is half the size of the Netherlands
         value: PolygonGeometry = {
