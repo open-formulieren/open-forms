@@ -209,6 +209,12 @@
       "value": "Form configuration"
     }
   ],
+  "0eRdLf": [
+    {
+      "type": 0,
+      "value": "Layers"
+    }
+  ],
   "0gbtNe": [
     {
       "type": 0,
@@ -819,6 +825,12 @@
       "value": "Stay logged in"
     }
   ],
+  "6jI29r": [
+    {
+      "type": 0,
+      "value": "The overlay is used to show additional map information on top of the map background. This uses tile layers as information source."
+    }
+  ],
   "6jv6nd": [
     {
       "type": 0,
@@ -853,6 +865,12 @@
     {
       "type": 0,
       "value": "Previous text"
+    }
+  ],
+  "74r2X8": [
+    {
+      "type": 0,
+      "value": "Add another overlay"
     }
   ],
   "7AQfXl": [
@@ -3053,6 +3071,12 @@
       "value": "Registration"
     }
   ],
+  "OFlBqy": [
+    {
+      "type": 0,
+      "value": "Overlays"
+    }
+  ],
   "OX8wxE": [
     {
       "type": 0,
@@ -3317,12 +3341,6 @@
     {
       "type": 0,
       "value": "StUF-ZDS name"
-    }
-  ],
-  "Qd9qN8": [
-    {
-      "type": 0,
-      "value": "Tile layer"
     }
   ],
   "Qjl92W": [
@@ -3745,6 +3763,12 @@
       "value": "Plugin(s)"
     }
   ],
+  "UDHbKX": [
+    {
+      "type": 0,
+      "value": "Label"
+    }
+  ],
   "UGLnLd": [
     {
       "type": 0,
@@ -3829,6 +3853,12 @@
     {
       "type": 0,
       "value": "If the postcode and house number are entered this field will autofill with the city"
+    }
+  ],
+  "V6JFeE": [
+    {
+      "type": 0,
+      "value": "Move down"
     }
   ],
   "VMMOA0": [
@@ -4973,6 +5003,12 @@
       "value": "Name of the product request type. It is available in the JSON template as the 'productaanvraag_type' variable."
     }
   ],
+  "eEqSUK": [
+    {
+      "type": 0,
+      "value": "Layers"
+    }
+  ],
   "eF9O7c": [
     {
       "type": 0,
@@ -5157,6 +5193,12 @@
       "value": "The property that gets compared with the identifier (e.g. BSN/KVK) of the authenticated user to verify ownership of the object being updated. This is important to prevent malicious users modifying information of other people than themselves."
     }
   ],
+  "fB4Vug": [
+    {
+      "type": 0,
+      "value": "Background"
+    }
+  ],
   "fLCWjk": [
     {
       "type": 0,
@@ -5215,6 +5257,12 @@
     {
       "type": 0,
       "value": "Information object type"
+    }
+  ],
+  "faAkZs": [
+    {
+      "type": 0,
+      "value": "Remove overlay"
     }
   ],
   "fagx6e": [
@@ -6377,6 +6425,12 @@
       "value": "No advanced configuration is available for this form."
     }
   ],
+  "p/KSh+": [
+    {
+      "type": 0,
+      "value": "Move up"
+    }
+  ],
   "p18yml": [
     {
       "type": 0,
@@ -6887,6 +6941,12 @@
       "value": " settings"
     }
   ],
+  "t10YHv": [
+    {
+      "type": 0,
+      "value": "Tile layer"
+    }
+  ],
   "t5fg/K": [
     {
       "type": 0,
@@ -7293,12 +7353,6 @@
       "value": "Translation enabled"
     }
   ],
-  "xbUkMg": [
-    {
-      "type": 0,
-      "value": "The tile layer is responsible for showing the map background. This effects the map style at particular coordinates and zoom levels."
-    }
-  ],
   "xcp+LU": [
     {
       "type": 0,
@@ -7309,6 +7363,16 @@
     {
       "type": 0,
       "value": "Generate JSON schema"
+    }
+  ],
+  "xrfkiI": [
+    {
+      "type": 0,
+      "value": "Overlay: "
+    },
+    {
+      "type": 1,
+      "value": "overlayName"
     }
   ],
   "xxVNeU": [
@@ -7397,6 +7461,12 @@
     {
       "type": 0,
       "value": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners."
+    }
+  ],
+  "yQ7wJc": [
+    {
+      "type": 0,
+      "value": "This field is used to alter the map component background. This effects the map style at particular coordinates and zoom levels."
     }
   ],
   "yQUV3M": [
