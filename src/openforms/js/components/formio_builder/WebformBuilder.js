@@ -18,6 +18,7 @@ import jsonScriptToVar from 'utils/json-script';
 import {sanitizeHTML} from 'utils/sanitize';
 import {currentTheme} from 'utils/theme';
 
+import {getMapOverlayTileLayers} from './mapLayers';
 import {
   getPrefillAttributes,
   getPrefillPlugins,
@@ -168,6 +169,7 @@ class WebformBuilder extends WebformBuilderFormio {
             theme={currentTheme.getValue()}
             richTextColors={RICH_TEXT_COLORS}
             getMapTileLayers={async () => MAP_TILE_LAYERS}
+            getMapOverlayTileLayers={getMapOverlayTileLayers}
             getFormComponents={() => this.webform.form.components}
             getValidatorPlugins={getValidatorPlugins}
             getRegistrationAttributes={getRegistrationAttributes}

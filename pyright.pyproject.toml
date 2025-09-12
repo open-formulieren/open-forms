@@ -28,6 +28,7 @@ include = [
     "src/openforms/appointments/models.py",
     # Config app
     "src/openforms/config/forms.py",
+    "src/openforms/config/api/",
     # Formio tooling
     "src/openforms/formio/serializers.py",
     "src/openforms/formio/service.py",

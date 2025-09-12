@@ -17,6 +17,7 @@ from .digest import (
     collect_failed_registrations,
     collect_invalid_certificates,
     collect_invalid_logic_rules,
+    collect_invalid_map_component_overlays,
     collect_invalid_registration_backends,
 )
 from .utils import send_mail_html
@@ -37,6 +38,7 @@ class Digest:
         expired_or_near_expiry_reference_lists_data = (
             collect_expired_or_near_expiry_reference_lists_data()
         )
+        invalid_map_component_overlays = collect_invalid_map_component_overlays()
 
         return {
             "failed_emails": failed_emails,
@@ -47,6 +49,7 @@ class Digest:
             "invalid_registration_backends": invalid_registration_backends,
             "invalid_logic_rules": invalid_logic_rules,
             "expired_or_near_expiry_reference_lists_data": expired_or_near_expiry_reference_lists_data,
+            "invalid_map_component_overlays": invalid_map_component_overlays,
         }
 
     def render(self) -> str:

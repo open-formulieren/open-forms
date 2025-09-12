@@ -1,4 +1,5 @@
 import re
+from collections.abc import Mapping
 from copy import deepcopy
 from datetime import datetime
 from typing import Protocol
@@ -20,7 +21,8 @@ from openforms.api.geojson import (
 )
 from openforms.authentication.service import AuthAttribute
 from openforms.config.constants import FamilyMembersDataAPIChoices
-from openforms.config.models import GlobalConfiguration, MapTileLayer
+from openforms.config.models import GlobalConfiguration, MapTileLayer, MapWMSTileLayer
+from openforms.formio.typing.map import Overlay
 from openforms.forms.models import FormVariable
 from openforms.prefill.contrib.family_members.plugin import (
     PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
@@ -243,6 +245,27 @@ class Map(BasePlugin[MapComponent]):
             if tile_layer is not None:
                 # Add the tile layer url information
                 component["tileLayerUrl"] = tile_layer.url
+
+        if overlays := component.get("overlays", []):
+            # inject the map layer URLs for the SDK
+            wms_uuids = (
+                overlay["uuid"] for overlay in overlays if overlay["type"] == "wms"
+            )
+            wms_layers: Mapping[str, str] = {
+                str(uuid): str(url)
+                for (uuid, url) in MapWMSTileLayer.objects.filter(
+                    uuid__in=wms_uuids
+                ).values_list("uuid", "url")
+            }
+
+            updated_overlays: list[Overlay] = [
+                {**overlay, "url": wms_layer_url}
+                for overlay in overlays
+                # only keep overlays that don't have stale UUID references
+                if (wms_layer_url := wms_layers.get(overlay["uuid"]))
+            ]
+
+            component["overlays"] = updated_overlays
 
     @staticmethod
     def rewrite_for_request(component: MapComponent, request: Request):

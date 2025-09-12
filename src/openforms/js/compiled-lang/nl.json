@@ -209,6 +209,12 @@
       "value": "Instellingen"
     }
   ],
+  "0eRdLf": [
+    {
+      "type": 0,
+      "value": "Layers"
+    }
+  ],
   "0gbtNe": [
     {
       "type": 0,
@@ -819,6 +825,12 @@
       "value": "Ingelogd blijven"
     }
   ],
+  "6jI29r": [
+    {
+      "type": 0,
+      "value": "The overlay is used to show additional map information on top of the map background. This uses tile layers as information source."
+    }
+  ],
   "6jv6nd": [
     {
       "type": 0,
@@ -853,6 +865,12 @@
     {
       "type": 0,
       "value": "'Vorige' tekst"
+    }
+  ],
+  "74r2X8": [
+    {
+      "type": 0,
+      "value": "Add another overlay"
     }
   ],
   "7AQfXl": [
@@ -3074,6 +3092,12 @@
       "value": "Registratie"
     }
   ],
+  "OFlBqy": [
+    {
+      "type": 0,
+      "value": "Overlays"
+    }
+  ],
   "OX8wxE": [
     {
       "type": 0,
@@ -3334,12 +3358,6 @@
     {
       "type": 0,
       "value": "StUF-ZDS-naam"
-    }
-  ],
-  "Qd9qN8": [
-    {
-      "type": 0,
-      "value": "Kaartlaag"
     }
   ],
   "Qjl92W": [
@@ -3762,6 +3780,12 @@
       "value": "Plugin(s)"
     }
   ],
+  "UDHbKX": [
+    {
+      "type": 0,
+      "value": "Label"
+    }
+  ],
   "UGLnLd": [
     {
       "type": 0,
@@ -3846,6 +3870,12 @@
     {
       "type": 0,
       "value": "Indien de postcode en huisnummer ingevuld zijn, dan wordt automatisch de stad ingevuld."
+    }
+  ],
+  "V6JFeE": [
+    {
+      "type": 0,
+      "value": "Move down"
     }
   ],
   "VMMOA0": [
@@ -4995,6 +5025,12 @@
       "value": "Naam van het productaanvraagtype. Deze naam is in het JSON-inhoudsjabloon beschikbaar als de 'productaanvraag_type' variabele."
     }
   ],
+  "eEqSUK": [
+    {
+      "type": 0,
+      "value": "Layers"
+    }
+  ],
   "eF9O7c": [
     {
       "type": 0,
@@ -5179,6 +5215,12 @@
       "value": "Het attribuut dat vergeleken wordt met de identificatiewaarde (bijv. BSN/KVK-nummer) van de ingelogde gebruiker om de eigenaar van het object dat bijgewerkt wordt te controleren. Dit is belangrijk om te voorkomen dat kwaadwillenden gegevens van anderen bijwerken in plaast van zichzelf."
     }
   ],
+  "fB4Vug": [
+    {
+      "type": 0,
+      "value": "Background"
+    }
+  ],
   "fLCWjk": [
     {
       "type": 0,
@@ -5237,6 +5279,12 @@
     {
       "type": 0,
       "value": "Informatieobjecttype"
+    }
+  ],
+  "faAkZs": [
+    {
+      "type": 0,
+      "value": "Remove overlay"
     }
   ],
   "fagx6e": [
@@ -6399,6 +6447,12 @@
       "value": "Er zijn geen relevante geavanceerde instellingen."
     }
   ],
+  "p/KSh+": [
+    {
+      "type": 0,
+      "value": "Move up"
+    }
+  ],
   "p18yml": [
     {
       "type": 0,
@@ -6905,6 +6959,12 @@
       "value": "isReusable"
     }
   ],
+  "t10YHv": [
+    {
+      "type": 0,
+      "value": "Tile layer"
+    }
+  ],
   "t5fg/K": [
     {
       "type": 0,
@@ -7311,12 +7371,6 @@
       "value": "Vertalingen ingeschakeld"
     }
   ],
-  "xbUkMg": [
-    {
-      "type": 0,
-      "value": "De kaartlaag bepaalt de achtergrond van het kaartmateriaal voor verschillende coördinaten en zoomniveaus."
-    }
-  ],
   "xcp+LU": [
     {
       "type": 0,
@@ -7327,6 +7381,16 @@
     {
       "type": 0,
       "value": "Genereer JSON-schema"
+    }
+  ],
+  "xrfkiI": [
+    {
+      "type": 0,
+      "value": "Overlay: "
+    },
+    {
+      "type": 1,
+      "value": "overlayName"
     }
   ],
   "xxVNeU": [
@@ -7415,6 +7479,12 @@
     {
       "type": 0,
       "value": "Omschrijving van het ROLTYPE voor de registratie van de partners (als betrokkene) van de burger die het formulier invult."
+    }
+  ],
+  "yQ7wJc": [
+    {
+      "type": 0,
+      "value": "This field is used to alter the map component background. This effects the map style at particular coordinates and zoom levels."
     }
   ],
   "yQUV3M": [

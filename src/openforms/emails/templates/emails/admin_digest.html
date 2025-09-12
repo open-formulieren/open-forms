@@ -35,8 +35,8 @@
                     </a>
                 </p>
                 {% if registration.has_errors %}
-                    <i>{% trans "Consider enabling outgoing request logs from the configuration in order to investigate the network traffic." %}</i>       
-                {% endif %} 
+                    <i>{% trans "Consider enabling outgoing request logs from the configuration in order to investigate the network traffic." %}</i>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>
@@ -47,18 +47,18 @@
     <ul>
         {% for failed_plugin in failed_prefill_plugins %}
             <li>
-                
+
                 <p>
                     {% blocktranslate with name=failed_plugin.plugin_label counter=failed_plugin.failed_submissions_counter initial_failure_at=failed_plugin.initial_failure_at|time:"TIME_FORMAT" last_failure_at=failed_plugin.last_failure_at|time:"TIME_FORMAT" forms=failed_plugin.form_names|join:"," trimmed %}
                         '{{ name }}' plugin has failed {{ counter }} time(s) between {{ initial_failure_at }} and {{ last_failure_at }} in the following forms: {{ forms }}
                     {% endblocktranslate %}
                 </p>
-                
+
                 <p><a href="{{ failed_plugin.admin_link }}">{% trans "View logs" %}</a></p>
-                
+
                 {% if failed_plugin.has_errors %}
-                    <i>{% trans "Consider enabling outgoing request logs from the configuration in order to investigate the network traffic." %}</i>       
-                {% endif %} 
+                    <i>{% trans "Consider enabling outgoing request logs from the configuration in order to investigate the network traffic." %}</i>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>
@@ -172,7 +172,7 @@
                         </p>
                         <i>{{ exc_message }}</i>
                     {% endblocktranslate %}
-                
+
                 {% else %}
                     <!-- Expiring tables -->
                     {% if service.tables %}
@@ -189,13 +189,13 @@
                                             {% blocktranslate with table_name=table.name time_left=table.expires_on|timeuntil trimmed %}
                                                 Table '{{ table_name }}' will expire in {{ time_left }}.
                                             {% endblocktranslate %}
-                                        {% endif %}                           
+                                        {% endif %}
                                     </p>
                                 </li>
                             {% endfor %}
                         </ul>
                     {% endif %}
-                    
+
                     <!-- Expiring items -->
                     {% if service.table_items %}
                         <h4>{% trans "Items" %}</h4>
@@ -211,7 +211,7 @@
                                             {% blocktranslate with item_name=item.name time_left=item.expires_on|timeuntil trimmed %}
                                                 Item '{{ item_name }}' will expire in {{ time_left }}.
                                             {% endblocktranslate %}
-                                        {% endif %} 
+                                        {% endif %}
                                     </p>
                                 </li>
                             {% endfor %}
@@ -219,6 +219,28 @@
                     {% endif %}
                     <p><a href="{{ service.general_config_admin_link }}">{% trans "View general configuration for the service mentioned above" %}</a></p>
                 {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if invalid_map_component_overlays %}
+    <h5>{% trans "Invalid map component overlays" %}</h5>
+    <ul>
+        {% for map_component_overlay in invalid_map_component_overlays %}
+            <li>
+                <p>
+                    {% blocktranslate with component_name=map_component_overlay.component_name overlay_name=map_component_overlay.overlay_name message=map_component_overlay.exception_message trimmed %}
+                        Overlay '{{ overlay_name }}' of the map component '{{ component_name }}' is invalid.<br>
+                        ({{ message }})<br>
+                    {% endblocktranslate %}
+                </p>
+                <p>
+                    {% blocktranslate with form_name=map_component_overlay.form_name trimmed %}
+                        This affects form '{{ form_name }}'.
+                    {% endblocktranslate %}
+                </p>
+                <p><a href="{{ map_component_overlay.admin_link }}">{% trans "View form" %}</a></p>
             </li>
         {% endfor %}
     </ul>

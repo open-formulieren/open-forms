@@ -160,6 +160,10 @@
             ],
             [
                 "config",
+                "mapwmstilelayer"
+            ],
+            [
+                "config",
                 "theme"
             ],
             [
