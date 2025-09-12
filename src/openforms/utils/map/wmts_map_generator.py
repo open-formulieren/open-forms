@@ -5,13 +5,13 @@ The Amsterdam Signal WMTS generator was used as an inspiration:
 https://github.com/Amsterdam/signals/blob/main/app/signals/apps/services/domain/wmts_map_generator.py
 """
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import lru_cache
 from io import BytesIO
 from math import ceil, modf
 
-import requests
 from PIL import Image
-from requests import RequestException
+from requests import RequestException, Session
 from shapely.geometry import Point
 
 from .constants import ORIGIN_X, ORIGIN_Y, TILE_SIZE
@@ -73,10 +73,6 @@ def construct_image_from_tiles(
     """
     Load tiles with the specified WMTS url template, and construct an image.
 
-    TODO: make asynchronous if we need large images sizes. Note that for images of
-     size 400 by 300 px (which is the current size in the map formatter), loading times
-     are below 0.5 sec.
-
     :param url_template: URL template to load tiles from. This URL should be
       formattable x, y, and z parameters. For example:
       https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/standaard/EPSG:28992/{z}/{x}/{y}.png
@@ -102,20 +98,35 @@ def construct_image_from_tiles(
     tiles_x = range(x_tile_center - n_tiles_left, x_tile_center + n_tiles_right + 1)
     tiles_y = range(y_tile_center - n_tiles_top, y_tile_center + n_tiles_bottom + 1)
 
-    img = Image.new("RGBA", (n_tiles_x * TILE_SIZE, n_tiles_y * TILE_SIZE), 0)
-    for i, tile_x in enumerate(tiles_x):
-        for j, tile_y in enumerate(tiles_y):
-            url = url_template.format(z=zoom_level, x=tile_x, y=tile_y)
-            try:
-                res = requests.get(url)
-                res.raise_for_status()
-            except RequestException:
-                return None
+    # Initiate a session because we are making multiple requests to the same endpoint
+    session = Session()
 
-            # The location of where the upper left corner of the tile image should
-            # be pasted on the total image.
-            offset = (i * TILE_SIZE, j * TILE_SIZE)
-            img.paste(Image.open(BytesIO(res.content)), offset)
+    def fetch_tile(url_: str, offset_: tuple[int, int]):
+        try:
+            res = session.get(url_)
+            res.raise_for_status()
+        except RequestException:
+            return None
+
+        return Image.open(BytesIO(res.content)), offset_
+
+    img = Image.new("RGBA", (n_tiles_x * TILE_SIZE, n_tiles_y * TILE_SIZE), 0)
+
+    tasks = []
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        for i, tile_x in enumerate(tiles_x):
+            for j, tile_y in enumerate(tiles_y):
+                url = url_template.format(z=zoom_level, x=tile_x, y=tile_y)
+                # The location of where the upper left corner of the tile image should
+                # be pasted on the total image.
+                offset = (i * TILE_SIZE, j * TILE_SIZE)
+                tasks.append(executor.submit(fetch_tile, url, offset))
+
+        for future in as_completed(tasks):
+            # Return no image is one of the tiles couldn't be loaded
+            if (result := future.result()) is None:
+                return None
+            img.paste(*result)
 
     return img
 
