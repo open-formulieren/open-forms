@@ -1,4 +1,4 @@
-from typing import NotRequired
+from typing import Literal, NotRequired, TypedDict
 
 from .base import Component
 from .dates import DatePickerConfig, DatePickerCustomOptions
@@ -26,3 +26,14 @@ class MapComponent(Component):
 
 class ChildrenComponent(Component):
     enableSelection: bool
+
+
+class ChildProperties(TypedDict):
+    bsn: str
+    first_names: str
+    initials: str
+    affixes: str
+    last_name: str
+    date_of_birth: str
+    date_of_birth_precision: Literal["date", "year_month", "year"] | None
+    selected: NotRequired[bool]

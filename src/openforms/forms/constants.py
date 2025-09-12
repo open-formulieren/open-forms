@@ -21,6 +21,10 @@ class LogicActionTypes(models.TextChoices):
         _("Set the registration backend to use for the submission"),
     )
     evaluate_dmn = "evaluate-dmn", _("Evaluate DMN")
+    synchronize_variables = (
+        "synchronize-variables",
+        _("Synchronize a variable with another one"),
+    )
 
     @classmethod
     def get_label(cls, value: str) -> str:

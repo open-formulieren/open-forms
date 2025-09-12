@@ -763,3 +763,507 @@ class VariableModificationTests(TestCase):
         variables_state = submission.load_submission_value_variables_state()
 
         self.assertEqual(str(variables_state.variables["date"].value), "2025-07-06")
+
+    def test_children_synchronization_not_allowing_selection(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "enableSelection": False,
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "editgrid",
+                        "components": [
+                            {"type": "bsn", "key": "bsn"},
+                            {"type": "textfield", "key": "childName"},
+                            {"type": "textfield", "key": "affixes"},
+                        ],
+                    }
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "synchronize-variables",
+                        "config": {
+                            "source_variable": "children",
+                            "source_component_type": "children",
+                            "destination_variable": "editgrid",
+                            "identifier_variable": "bsn",
+                            "data_mappings": [
+                                {
+                                    "property": "bsn",
+                                    "component_key": "bsn",
+                                },
+                                {
+                                    "property": "firstNames",
+                                    "component_key": "childName",
+                                },
+                                {
+                                    "property": "affixes",
+                                    "component_key": "affixes",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={
+                "children": [
+                    {
+                        "bsn": "999970409",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__addedManually": False,
+                        "__id": "07375aec-739c-4aa7-bbca-083b617248de",
+                    },
+                    {
+                        "bsn": "999970161",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Peet",
+                        "dateOfBirth": "2018-12-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__addedManually": False,
+                        "__id": "735ea17c-58a7-4676-94fc-cf2bb4263330",
+                    },
+                    {
+                        "bsn": "999970173",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pelle",
+                        "dateOfBirth": "2017-09-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__addedManually": False,
+                        "__id": "92188604-3924-439a-995b-6ab9c2ed77ae",
+                    },
+                ]
+            },
+        )
+        # Step being edited
+        submission_step2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+            data={},
+        )
+        evaluate_form_logic(submission, submission_step2)
+
+        variables_state = submission.load_submission_value_variables_state()
+        variable = variables_state.variables["editgrid"]
+
+        self.assertEqual(
+            variable.value,
+            [
+                {"bsn": "999970409", "childName": "Pero", "affixes": "van"},
+                {"bsn": "999970161", "childName": "Peet", "affixes": "van"},
+                {"bsn": "999970173", "childName": "Pelle", "affixes": "van"},
+            ],
+        )
+
+    def test_children_synchronization_with_no_destination_data(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "enableSelection": True,
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "editgrid",
+                        "components": [
+                            {"type": "bsn", "key": "bsn"},
+                            {"type": "textfield", "key": "childName"},
+                        ],
+                    }
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "synchronize-variables",
+                        "config": {
+                            "source_variable": "children",
+                            "source_component_type": "children",
+                            "destination_variable": "editgrid",
+                            "identifier_variable": "bsn",
+                            "data_mappings": [
+                                {
+                                    "property": "bsn",
+                                    "component_key": "bsn",
+                                },
+                                {
+                                    "property": "firstNames",
+                                    "component_key": "childName",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={
+                "children": [
+                    {
+                        "bsn": "999970409",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": False,
+                        "__addedManually": False,
+                        "__id": "07375aec-739c-4aa7-bbca-083b617248de",
+                    },
+                    {
+                        "bsn": "999970161",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Peet",
+                        "dateOfBirth": "2018-12-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": True,
+                        "__addedManually": False,
+                        "__id": "735ea17c-58a7-4676-94fc-cf2bb4263330",
+                    },
+                    {
+                        "bsn": "999970173",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pelle",
+                        "dateOfBirth": "2017-09-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": True,
+                        "__addedManually": False,
+                        "__id": "92188604-3924-439a-995b-6ab9c2ed77ae",
+                    },
+                ]
+            },
+        )
+        # Step being edited
+        submission_step2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+            data={},
+        )
+        evaluate_form_logic(submission, submission_step2)
+
+        variables_state = submission.load_submission_value_variables_state()
+        variable = variables_state.variables["editgrid"]
+
+        self.assertEqual(
+            variable.value,
+            [
+                {"bsn": "999970161", "childName": "Peet"},
+                {"bsn": "999970173", "childName": "Pelle"},
+            ],
+        )
+
+    def test_children_synchronization_with_destination_data_update(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "enableSelection": True,
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "editgrid",
+                        "components": [
+                            {"type": "bsn", "key": "bsn"},
+                            {"type": "textfield", "key": "childName"},
+                        ],
+                    }
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "synchronize-variables",
+                        "config": {
+                            "source_variable": "children",
+                            "source_component_type": "children",
+                            "destination_variable": "editgrid",
+                            "identifier_variable": "bsn",
+                            "data_mappings": [
+                                {
+                                    "property": "bsn",
+                                    "component_key": "bsn",
+                                },
+                                {
+                                    "property": "firstNames",
+                                    "component_key": "childName",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={
+                "children": [
+                    {
+                        "bsn": "999970409",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": True,
+                        "__addedManually": False,
+                        "__id": "07375aec-739c-4aa7-bbca-083b617248de",
+                    },
+                    {
+                        "bsn": "999970161",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Peet",
+                        "dateOfBirth": "2018-12-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": True,
+                        "__addedManually": False,
+                        "__id": "735ea17c-58a7-4676-94fc-cf2bb4263330",
+                    },
+                    {
+                        "bsn": "999970173",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pelle",
+                        "dateOfBirth": "2017-09-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": False,
+                        "__addedManually": False,
+                        "__id": "92188604-3924-439a-995b-6ab9c2ed77ae",
+                    },
+                ]
+            },
+        )
+        # Step being edited
+        # We already have data and we modify the selected children of the previous step
+        submission_step2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+            data={
+                "editgrid": [
+                    {"bsn": "999970409", "childName": "Pero"},
+                    {"bsn": "999970173", "childName": "Pelle"},
+                ]
+            },
+        )
+        evaluate_form_logic(submission, submission_step2)
+
+        variables_state = submission.load_submission_value_variables_state()
+        variable = variables_state.variables["editgrid"]
+
+        self.assertEqual(
+            variable.value,
+            [
+                {"bsn": "999970409", "childName": "Pero"},
+                {"bsn": "999970161", "childName": "Peet"},
+            ],
+        )
+
+    def test_children_synchronization_with_no_destination_and_source_data(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "enableSelection": True,
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "editgrid",
+                        "components": [
+                            {"type": "bsn", "key": "bsn"},
+                            {"type": "textfield", "key": "childName"},
+                        ],
+                    }
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "synchronize-variables",
+                        "config": {
+                            "source_variable": "children",
+                            "source_component_type": "children",
+                            "destination_variable": "editgrid",
+                            "identifier_variable": "bsn",
+                            "data_mappings": [
+                                {
+                                    "property": "bsn",
+                                    "component_key": "bsn",
+                                },
+                                {
+                                    "property": "firstNames",
+                                    "component_key": "childName",
+                                },
+                            ],
+                        },
+                    },
+                },
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"children": []},
+        )
+        # Step being edited
+        # We already have data and we modify the selected children of the previous step
+        submission_step2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+            data={},
+        )
+        evaluate_form_logic(submission, submission_step2)
+
+        variables_state = submission.load_submission_value_variables_state()
+        variable = variables_state.variables["editgrid"]
+
+        self.assertIsNone(variable.value)
