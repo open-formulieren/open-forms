@@ -319,6 +319,30 @@ class TestImportView(WebTest):
 class TestMigrationForm(WebTest):
     csrf_checks = False
 
+    def test_confirmation_page(self):
+        user = SuperUserFactory.create()
+        ogone_merchant = OgoneMerchantFactory(
+            label="Merchant Y", pspid="merchant-y", endpoint_preset=OgoneEndpoints.test
+        )
+        FormFactory(
+            name="Ogone form 1",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": ogone_merchant.pk},
+        )
+
+        response = self.app.post(
+            reverse("admin:forms_form_changelist"),
+            {
+                "action": "migrate_to_worldline",
+                "select_across": "0",
+                "index": "0",
+                "_selected_action": "1",
+            },
+            user=user,
+        )
+
+        self.assertEqual(response.status_code, 200)
+
     def test_single_form(self):
         user = SuperUserFactory.create()
         ogone_merchant = OgoneMerchantFactory(
