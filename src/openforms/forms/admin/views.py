@@ -184,6 +184,8 @@ class PaymentMigrationForm(forms.Form):
         error_messages={
             "invalid_choice": _(
                 "The selected form(s) cannot be migrated to the Worldline payment backend."
+                " Please verify the selected forms have the ogone-legacy payment backend"
+                " configured."
             ),
         },
         label=_("Forms"),
