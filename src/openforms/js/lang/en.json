@@ -1844,6 +1844,11 @@
     "description": "Family members filters: include deceased label",
     "originalDefault": "Include deceased"
   },
+  "UZk0+O": {
+    "defaultMessage": "Children roltype",
+    "description": "ZGW-APIs registration options 'childrenRoltype' label",
+    "originalDefault": "Children roltype"
+  },
   "Uq9Hbx": {
     "defaultMessage": "-",
     "description": "Registration summary no registration backend fallback message",
@@ -3039,6 +3044,11 @@
     "description": "JSON editor: 'value' header label",
     "originalDefault": "Value"
   },
+  "pbA2dt": {
+    "defaultMessage": "The description that will be used in children registration.",
+    "description": "ZGW APIs registration options 'childrenDescription' help text",
+    "originalDefault": "The description that will be used in children registration."
+  },
   "piUWzT": {
     "defaultMessage": "Select registration backend",
     "description": "Registration backend label",
@@ -3213,6 +3223,11 @@
     "defaultMessage": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?",
     "description": "Objects API registration backend: v2 switch warning message",
     "originalDefault": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
+  },
+  "t+B+/4": {
+    "defaultMessage": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with children.",
+    "description": "ZGW-APIs registration options 'childrenRoltype' help text",
+    "originalDefault": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with children."
   },
   "t+J++o": {
     "defaultMessage": "{isReusable, select, true {Reusable step} other {Step}} settings",
@@ -3498,6 +3513,11 @@
     "defaultMessage": "(unset)",
     "description": "JSON variable type unset representation",
     "originalDefault": "(unset)"
+  },
+  "ydnh2t": {
+    "defaultMessage": "Children description",
+    "description": "ZGW APIs registration options 'childrenDescription' label",
+    "originalDefault": "Children description"
   },
   "z0FW+t": {
     "defaultMessage": "Field name",

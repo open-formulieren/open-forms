@@ -5,6 +5,7 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
+  ChildrenDescription,
   ConfidentialityLevel,
   OrganisationRSIN,
   PartnersDescription,
@@ -27,6 +28,8 @@ const OptionalOptionsFieldset = ({confidentialityLevelChoices, catalogueUrl}) =>
         'medewerkerRoltype',
         'partnersRoltype',
         'partnersDescription',
+        'childrenRoltype',
+        'childrenDescription',
         'productUrl',
       ]}
     >
@@ -54,6 +57,7 @@ const OptionalOptionsFieldset = ({confidentialityLevelChoices, catalogueUrl}) =>
       </ErrorBoundary>
 
       <PartnersDescription />
+      <ChildrenDescription />
 
       <ErrorBoundary
         errorMessage={
