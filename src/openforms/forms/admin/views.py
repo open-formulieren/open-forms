@@ -193,11 +193,11 @@ class PaymentMigrationForm(forms.Form):
 
     def clean(self) -> dict:
         cleaned_data = super().clean()
-        forms = cleaned_data.get("forms_to_migrate", [])
+        forms_to_migrate = cleaned_data.get("forms_to_migrate", [])
 
         merchants: dict[int, Form] = {
             form.payment_backend_options["merchant_id"]: form
-            for form in forms
+            for form in forms_to_migrate
             if "merchant_id" in form.payment_backend_options
         }
 
@@ -222,7 +222,7 @@ class PaymentMigrationForm(forms.Form):
 
         cleaned_data["merchant_mapping"] = {
             form.id: found_merchants[form.payment_backend_options["merchant_id"]]
-            for form in forms
+            for form in forms_to_migrate
         }
 
         return cleaned_data
