@@ -12,7 +12,6 @@ from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInli
 
 from openforms.api.utils import underscore_to_camel
 from openforms.emails.models import ConfirmationEmailTemplate
-from openforms.payments.contrib.ogone.models import OgoneMerchant
 from openforms.registrations.admin import RegistrationBackendFieldMixin
 from openforms.typing import StrOrPromise
 from openforms.utils.expressions import FirstNotBlank
