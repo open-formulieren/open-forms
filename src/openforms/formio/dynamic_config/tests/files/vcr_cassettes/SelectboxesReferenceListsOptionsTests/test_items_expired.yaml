@@ -22,10 +22,11 @@ interactions:
       Content-Length:
       - '232'
       Content-Security-Policy:
-      - 'base-uri ''self''; object-src ''none''; style-src ''self'' ''unsafe-inline''
-        fonts.googleapis.com; font-src ''self'' fonts.gstatic.com; frame-src ''self'';
-        worker-src ''self'' blob:; frame-ancestors ''none''; script-src ''self'' ''unsafe-inline'';
-        default-src ''self''; form-action ''self''; img-src ''self'' data: cdn.redoc.ly'
+      - 'font-src ''self'' fonts.gstatic.com; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly;
+        base-uri ''self''; script-src ''self'' ''unsafe-inline''; frame-ancestors
+        ''none''; frame-src ''self''; form-action ''self''; default-src ''self'';
+        object-src ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -66,10 +67,11 @@ interactions:
       Content-Length:
       - '225'
       Content-Security-Policy:
-      - 'base-uri ''self''; object-src ''none''; style-src ''self'' ''unsafe-inline''
-        fonts.googleapis.com; font-src ''self'' fonts.gstatic.com; frame-src ''self'';
-        worker-src ''self'' blob:; frame-ancestors ''none''; script-src ''self'' ''unsafe-inline'';
-        default-src ''self''; form-action ''self''; img-src ''self'' data: cdn.redoc.ly'
+      - 'font-src ''self'' fonts.gstatic.com; worker-src ''self'' blob:; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly;
+        base-uri ''self''; script-src ''self'' ''unsafe-inline''; frame-ancestors
+        ''none''; frame-src ''self''; form-action ''self''; default-src ''self'';
+        object-src ''none'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:

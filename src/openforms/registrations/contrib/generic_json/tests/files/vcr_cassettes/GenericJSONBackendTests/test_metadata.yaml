@@ -6,12 +6,11 @@ interactions:
       "Version 1.0", "registration_timestamp": "2025-01-30T13:05:00Z"}, "metadata_schema":
       {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
       "properties": {"auth_type": {"title": "Authentication type", "type": "string",
-      "enum": ["bsn", "kvk", "pseudo", "employee_id", "national_id", ""]}, "public_reference":
-      {"title": "Public reference", "type": "string"}, "form_version": {"title": "Form
-      version", "type": "string"}, "registration_timestamp": {"title": "Registration
-      timestamp", "type": "string", "format": "date-time"}}, "required": ["auth_type",
-      "public_reference", "form_version", "registration_timestamp"], "additionalProperties":
-      false}}'
+      "enum": ["bsn", "kvk", "pseudo", "employee_id", ""]}, "public_reference": {"title":
+      "Public reference", "type": "string"}, "form_version": {"title": "Form version",
+      "type": "string"}, "registration_timestamp": {"title": "Registration timestamp",
+      "type": "string", "format": "date-time"}}, "required": ["auth_type", "public_reference",
+      "form_version", "registration_timestamp"], "additionalProperties": false}}'
     headers:
       Accept:
       - '*/*'
@@ -22,7 +21,7 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '924'
+      - '909'
       User-Agent:
       - python-requests/2.32.4
       content-type:
@@ -37,28 +36,28 @@ interactions:
         {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
         \     \"additionalProperties\": false,\n      \"properties\": {\n        \"auth_type\":
         {\n          \"enum\": [\n            \"bsn\",\n            \"kvk\",\n            \"pseudo\",\n
-        \           \"employee_id\",\n            \"national_id\",\n            \"\"\n
-        \         ],\n          \"title\": \"Authentication type\",\n          \"type\":
-        \"string\"\n        },\n        \"form_version\": {\n          \"title\":
-        \"Form version\",\n          \"type\": \"string\"\n        },\n        \"public_reference\":
-        {\n          \"title\": \"Public reference\",\n          \"type\": \"string\"\n
-        \       },\n        \"registration_timestamp\": {\n          \"format\": \"date-time\",\n
-        \         \"title\": \"Registration timestamp\",\n          \"type\": \"string\"\n
-        \       }\n      },\n      \"required\": [\n        \"auth_type\",\n        \"public_reference\",\n
-        \       \"form_version\",\n        \"registration_timestamp\"\n      ],\n
-        \     \"type\": \"object\"\n    },\n    \"values\": {},\n    \"values_schema\":
-        {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
-        \     \"additionalProperties\": false,\n      \"properties\": {},\n      \"required\":
-        [],\n      \"type\": \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
+        \           \"employee_id\",\n            \"\"\n          ],\n          \"title\":
+        \"Authentication type\",\n          \"type\": \"string\"\n        },\n        \"form_version\":
+        {\n          \"title\": \"Form version\",\n          \"type\": \"string\"\n
+        \       },\n        \"public_reference\": {\n          \"title\": \"Public
+        reference\",\n          \"type\": \"string\"\n        },\n        \"registration_timestamp\":
+        {\n          \"format\": \"date-time\",\n          \"title\": \"Registration
+        timestamp\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+        [\n        \"auth_type\",\n        \"public_reference\",\n        \"form_version\",\n
+        \       \"registration_timestamp\"\n      ],\n      \"type\": \"object\"\n
+        \   },\n    \"values\": {},\n    \"values_schema\": {\n      \"$schema\":
+        \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
+        false,\n      \"properties\": {},\n      \"required\": [],\n      \"type\":
+        \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
     headers:
       Connection:
       - close
       Content-Length:
-      - '1395'
+      - '1368'
       Content-Type:
       - application/json
       Date:
-      - Mon, 18 Aug 2025 12:43:11 GMT
+      - Tue, 23 Sep 2025 08:35:37 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.11
     status:
