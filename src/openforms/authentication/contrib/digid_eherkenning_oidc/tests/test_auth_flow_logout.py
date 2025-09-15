@@ -143,8 +143,7 @@ class DigiDLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
     )
     def test_logout_after_form_submission(self):
         """
-        if the form has oidc-digid authentication and the user has submitted it
-        when they should be automatically logged out from IdP
+        Assert that the user is logged out from the OpenID identity provider on submission completion.
         """
         OFOIDCClientFactory.create(with_keycloak_provider=True, with_digid=True)
         form = FormFactory.create(authentication_backend="digid_oidc")
