@@ -6,6 +6,148 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.0-alpha.1 (2025-09-?)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+.. warning:: This release allows administrators to enable the new *experimental*
+   form renderer. The new renderer is not feature complete and is very likely
+   to contain bugs. You should not enable this in production.
+
+.. note:: This release contains the ``report_duplication_merchant_pspids.py`` script.
+   This script allows administrators to detect Ogone merchants that have the same
+   ``PSPID`` value. As support for Ogone legacy will end at the end of 2025, this script
+   allows administrators to prepare for the migration to Worldline merchants, which will
+   not allow multiple merchants with the same ``PSPID`` value.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/report_duplication_merchant_pspids.py
+
+Upgrade procedure
+-----------------
+
+To upgrade to 3.3, please:
+
+* ⚠️ Ensure you upgrade to Open Forms 3.2.x before upgrading to the 3.3 release series.
+* ⚠️ Plan an upgrade window to address the warnings below.
+
+.. warning:: Schedule the upgrade for off-peak hours. Some of the database migrations
+   need to lock the entire table and/or can take a long time depending on the amount of
+   data. Some benchmarks on one million of rows in the submission variables table
+   (~ 120K submissions) showed a migration time of around 20 seconds, so anywhere
+   between 10 seconds - 5 minutes can be expected as a normal completion time depending
+   on your data and available resources for the database.
+
+.. warning::
+
+    In this release, we reworked the internal data type information. To ensure submitted
+    data of existing submissions is formatted correctly, submitted variables need to be
+    processed. Note that we include this script instead of a data migration, so it can be
+    run separately, as it can take up to an hour to complete the entire operation for large
+    environments.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/fix_submission_value_variable_missing_fields.py
+
+.. warning::
+
+    For the email and confirmation templates, and the registration backends, we changed
+    the way that the data is generated. In case of key conflicts between static, component,
+    and user-defined variables, the static variables will take precedence. Previously, the
+    component and user-defined variables would override the static variables. Our validation
+    guards against the use of keys that are already present in the static variables, but this
+    does not cover old forms and newly-added static variables.
+
+Detailed changes
+----------------
+
+**New features**
+
+* [:backend:`5268`] Updated the registration plugins to support the children component.
+* [:backend:`5095`] Logout DigiD via OIDC session after form submission.
+* [:backend:`4951`] Added a visual image of the chosen map location in the submission PDF.
+* [:backend:`5269`] Added custom logic action ``ActionSynchronizeVariable`` which
+  maps data from one variable to another.
+* [:backend:`5575`] Added support for WMS tile layers in the map component, along
+  with import/export functionality.
+* [:backend:`5479`] Replaced the usage of the ``subject_identifier_claim``
+  and ``subject_identifier_type_claim`` claims with explicit bsn and pseudo fields for the
+  eIDAS plugin.
+* [:backend:`5574`] Added the ``exclude_from_confirmation_email`` option to static variables
+  which allows certain static variables to not show up in the confirmation email.
+* [:backend:`5060`] Added support for Redis Sentinel in Celery and updated Redis documentation
+  with examples.
+* [:backend:`5419`] Added prefill plugins for the new Yivi and eIDAS authentication backends.
+* [:backend:`5515`] Added a UUID field, which is automatically generated, to the
+  Yivi attribute group which will be used as identifier. The Yivi attribute groups can now
+  also be imported and-or exported. See the updated documentation for more information.
+* [:backend:`5253`] Added more default map tile layers.
+* [:backend:`5251`] The identifier field from the map tile layer is now automatically
+  populated from it's label value.
+
+* [:backend:`4879`] Updated support for the Worldline payment provider:
+    - Support for Worldline's ``variant`` and ``descriptor`` fields. Note that the
+      value for the ``descriptor`` is only visible through the Backoffice at the time of writing.
+    - The merchant reference is now generated through Open Forms.
+    - Added a report script to detect duplicate Ogone merchants.
+    - Moved the location in the admin of the feedback URL's used for the Worldline
+      payment webhooks to the merchant detail page and the webhook configuration page.
+    - Added a data migration to migrate Ogone merchants and the Worldline
+      webhook configuration (transition) to Worldline merchants and the Worldline webhook configuration.
+    - Added an admin action to migrate Ogone payment forms to the Worldline payment backend.
+
+* [:backend:`5133`] Added a feature flag to enable the new *experimental* renderer.
+* [:backend:`5544`] Added documentation and examples on how to collect Flower metrics.
+
+* [:backend:`5513`] Updated the OTel documentation and added various examples:
+  - Basic nginx metrics.
+  - PostgreSQL metrics.
+  - Redis metrics.
+  - Added OTel instrumented docker image.
+
+* [:backend:`3999`] Updated Open Telemetry support. The following metrics
+  were added:
+
+    - Attachment uploads.
+    - Report attachments.
+    - Form counts by type.
+    - Component type usage per type and form.
+    - Appointment plugin usage counts.
+    - Authentication plugin usage.
+    - DMN plugin usage.
+    - Payment plugin usage.
+    - Prefill plugin usage.
+    - Registration plugin usage.
+    - Validations plugin usage.
+    - Global plugin usage.
+
+**Bugfixes**
+
+* [:backend:`5464`] Fixed a crash that occurred when incomplete options were used in JSON schema generation.
+* [:backend:`5605`] Fixed missing default value for DigiD ``loa`` causing a crash when trying to  login.
+* [:backend:`5572`] Fixed a crash in the StUF-ZDS registration plugin when another
+  form has family member components in its configuration.
+* [:backend:`5557`] Fixed uploaded filename sanitization.
+* [:backend:`5439`] Removed warning message for deprecated feature to retrieve
+  location via text fields.
+
+**Project maintenance**
+
+* Updated the documentation regarding the used SOAP operations for the StUF-ZDS plugin.
+* Updated backend dependencies:
+
+  - Bumped Redis to version 8 for CI builds and the docker-compose setup.
+  - Bumped zgw-consumers to version 1.0.
+  - Bumped @open-formulieren/formio-builder to 0.43.0.
+  - Bumped mozilla-django-oidc-db to 0.25.1.
+  - Bumped django-digid-eherkenning to 0.24.0.
+
+
 3.2.4 (2025-09-10)
 ==================
 
