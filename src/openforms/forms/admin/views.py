@@ -232,8 +232,8 @@ class PaymentMigrationView(PermissionRequiredMixin, FormView):
             unmigrated_forms
         )
         if success_count > 0:
-            message = _("{succes_count} forms were migrated.").format(
-                succes_count=success_count
+            message = _("{success_count} forms were migrated.").format(
+                success_count=success_count
             )
             messages.success(self.request, message)
         return super().form_valid(form)
