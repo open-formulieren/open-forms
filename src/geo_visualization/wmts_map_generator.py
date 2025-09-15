@@ -125,11 +125,13 @@ def construct_image_from_tiles(
                 tasks.append(executor.submit(fetch_tile, url, offset))
 
         for future in as_completed(tasks):
-            # Return no image is one of the tiles couldn't be loaded
+            # Return no image if one of the tiles couldn't be loaded
             if (result := future.result()) is None:
+                session.close()
                 return None
             img.paste(*result)
 
+    session.close()
     return img
 
 

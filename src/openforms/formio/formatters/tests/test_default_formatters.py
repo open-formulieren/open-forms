@@ -3,6 +3,7 @@ from datetime import date, datetime, time
 from pathlib import Path
 from unittest.mock import patch
 
+from django.core.cache import cache
 from django.test import SimpleTestCase, TestCase
 from django.utils.translation import gettext_lazy as _
 
@@ -203,6 +204,13 @@ class DefaultFormatterTestCase(SimpleTestCase):
 class MapFormatterTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = FILES_DIR
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cache.clear()
+        cls.addClassCleanup(cache.clear)
+
     def test_point(self):
         component: MapComponent = {
             "type": "map",
@@ -291,3 +299,36 @@ class MapFormatterTests(OFVCRMixin, TestCase):
         formatted_value = format_value(component, value, as_html=True)
 
         self.assertEqual(formatted_value, "5.291105, 52.132714")
+
+    def test_with_overlays(self):
+        component: MapComponent = {
+            "type": "map",
+            "key": "map",
+            "label": "Map",
+            "useConfigDefaultMapSettings": True,
+            "interactions": {"marker": True, "polygon": False, "polyline": False},
+            "overlays": [
+                {
+                    "uuid": "f20448c3-a8cb-471c-bfcc-78a6c22d0ae6",
+                    "url": "https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?request=getCapabilities&service=WMS",
+                    "label": "Grondwaterspiegeldiepte layer",
+                    "type": "wms",
+                    "layers": ["bro-grondwaterspiegeldieptemetingen-GHG"],
+                },
+                {
+                    "uuid": "931f18f0-cedc-453b-a2d5-a2c1ff9df523",
+                    "url": "https://service.pdok.nl/lv/bag/wms/v2_0?request=getCapabilities&service=WMS",
+                    "label": "BAG Pand and Verblijfsobject layer",
+                    "type": "wms",
+                    "layers": ["pand", "verblijfsobject"],
+                },
+            ],
+        }
+
+        value: PointGeometry = {"type": "Point", "coordinates": (5.291105, 52.132714)}
+
+        formatted_value = format_value(component, value, as_html=True)
+        with open(FILES_DIR / "map_with_overlays.html") as f:
+            expected = f.read()
+
+        self.assertHTMLEqual(formatted_value, expected)

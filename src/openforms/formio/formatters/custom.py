@@ -36,6 +36,7 @@ class MapFormatter(FormatterBase):
     def format(self, component: MapComponent, value: MapValue) -> str:
         # Will be an empty string if `value` was empty
         coordinates = ", ".join(str(x) for x in value.get("coordinates", []))
+        overlays = component.get("overlays")
 
         if not self.as_html or not coordinates:
             return coordinates
@@ -45,7 +46,7 @@ class MapFormatter(FormatterBase):
             identifier=component.get("tileLayerIdentifier", "brt")
         )
         image = generate_map_image_with_geojson(
-            value, tile_layer.url, MAP_IMAGE_SIZE, MAX_ZOOM_LEVEL
+            value, tile_layer.url, MAP_IMAGE_SIZE, overlays, MAX_ZOOM_LEVEL
         )
 
         # Fallback to the coordinates if it couldn't be loaded
