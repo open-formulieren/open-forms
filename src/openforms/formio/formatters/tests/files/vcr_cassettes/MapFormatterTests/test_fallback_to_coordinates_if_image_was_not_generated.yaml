@@ -1,0 +1,46 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/fake_layer/EPSG:28992/12/2017/2059.png
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n<!DOCTYPE html PUBLIC
+        \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n         \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html
+        xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n <head>\n
+        \ <title>404 Not Found</title>\n </head>\n <body>\n  <h1>404 Not Found</h1>\n
+        </body>\n</html>\n"
+    headers:
+      Access-Control-Allow-Headers:
+      - Content-Type
+      Access-Control-Allow-Method:
+      - GET,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - public, max-age=3600, no-transform
+      Content-Length:
+      - '341'
+      Content-Type:
+      - text/html
+      Date:
+      - Mon, 15 Sep 2025 07:37:45 GMT
+      Referrer-Policy:
+      - origin
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 404
+      message: Not Found
+version: 1
