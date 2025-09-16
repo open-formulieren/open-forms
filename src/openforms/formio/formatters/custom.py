@@ -46,7 +46,11 @@ class MapFormatter(FormatterBase):
             identifier=component.get("tileLayerIdentifier", "brt")
         )
         image = generate_map_image_with_geojson(
-            value, tile_layer.url, MAP_IMAGE_SIZE, overlays, MAX_ZOOM_LEVEL
+            value,
+            tile_layer.url,
+            MAP_IMAGE_SIZE,
+            overlays,  # pyright: ignore[reportArgumentType]
+            MAX_ZOOM_LEVEL,
         )
 
         # Fallback to the coordinates if it couldn't be loaded
