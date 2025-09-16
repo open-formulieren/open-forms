@@ -18,6 +18,7 @@ from openforms.submissions.signals import (
 from .constants import FORM_AUTH_SESSION_KEY, REGISTRATOR_SUBJECT_SESSION_KEY
 from .registry import register
 from .utils import (
+    logout_submission,
     remove_auth_info_from_session,
     store_auth_details,
     store_registrator_details,
@@ -124,7 +125,7 @@ def set_auth_attribute_on_session(
 
 
 @receiver(
-    [submission_complete, authentication_logout],
+    authentication_logout,
     dispatch_uid="auth.clean_submission_auth",
 )
 def clean_submission_auth(sender, request: Request, **kwargs):
@@ -133,6 +134,11 @@ def clean_submission_auth(sender, request: Request, **kwargs):
 
     if REGISTRATOR_SUBJECT_SESSION_KEY in request.session:
         del request.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+
+
+@receiver(submission_complete, dispatch_uid="auth.logout_after_submission")
+def logout_after_submission(sender, instance: Submission, request: Request, **kwargs):
+    logout_submission(submission=instance, request=request)
 
 
 @receiver(submission_cosigned, dispatch_uid="auth.set_submission_form_auth")

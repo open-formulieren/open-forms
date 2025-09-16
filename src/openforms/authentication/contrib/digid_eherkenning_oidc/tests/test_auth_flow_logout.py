@@ -29,9 +29,12 @@ OpenID Provider (OP)
 
 import uuid
 
+from django.test import override_settings, tag
+
 from django_webtest import DjangoTestApp
 from furl import furl
 from requests import Session
+from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
 from openforms.authentication.registry import register as auth_register
@@ -132,6 +135,65 @@ class DigiDLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
             raise self.failureException(
                 "Logout with empty session unexpectedly crashed"
             ) from exc
+
+    @tag("gh-5095")
+    @override_settings(
+        ALLOWED_HOSTS=["*"],
+        CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+    )
+    def test_logout_after_form_submission(self):
+        """
+        Assert that the user is logged out from the OpenID identity provider on submission completion.
+        """
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_digid=True)
+        form = FormFactory.create(authentication_backend="digid_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
+        # use shared session
+        session = Session()
+        self.addCleanup(session.close)
+
+        # 1. start authentication in the form
+        start_response = self.app.get(start_url)
+        redirect_uri = keycloak_login(start_response["Location"], session=session)
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+        self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+        assert OIDC_ID_TOKEN_SESSION_KEY in self.app.session
+
+        # 2. submit the form
+        api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        # make sure csrf cookie is set
+        form_detail_response = self.app.get(api_path)
+        body = {
+            "form": f"http://testserver.com{api_path}",
+            "formUrl": "http://testserver.com/my-form",
+        }
+
+        submission_response = self.app.post_json(
+            reverse("api:submission-list"),
+            body,
+            extra_environ={
+                "HTTP_X_CSRFTOKEN": form_detail_response.headers["X-CSRFToken"],
+            },
+        )
+        self.assertEqual(submission_response.status_code, 201)
+
+        # 3. complete submission
+        response = self.app.post_json(
+            reverse(
+                "api:submission-complete",
+                kwargs={"uuid": submission_response.json["id"]},
+            ),
+            {"privacy_policy_accepted": True},
+            extra_environ={
+                "HTTP_X_CSRFTOKEN": form_detail_response.headers["X-CSRFToken"],
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # assert that the user is logged out
+        self.assertNotLoggedInToKeycloak(session, start_url)
+        self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
 
 
 class EHerkenningLogoutTests(LogoutTestsMixin, IntegrationTestsBase):

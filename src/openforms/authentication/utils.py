@@ -7,7 +7,11 @@ from openforms.forms.models import Form
 from openforms.submissions.models import Submission
 from openforms.typing import AnyRequest
 
-from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from .constants import (
+    FORM_AUTH_SESSION_KEY,
+    REGISTRATOR_SUBJECT_SESSION_KEY,
+    AuthAttribute,
+)
 from .models import AuthInfo, RegistratorInfo
 from .registry import register as auth_register
 from .typing import BaseAuth, FormAuth
@@ -105,3 +109,20 @@ def get_cosign_login_url(request: Request, form: Form, plugin_id: str) -> str:
 def remove_auth_info_from_session(request: AnyRequest) -> None:
     if FORM_AUTH_SESSION_KEY in request.session:
         del request.session[FORM_AUTH_SESSION_KEY]
+
+
+def logout_submission(submission: Submission, request: AnyRequest) -> None:
+    from openforms.submissions.utils import remove_submission_from_session
+
+    remove_submission_from_session(submission, request.session)
+
+    if submission.is_authenticated:
+        if submission.auth_info.plugin in auth_register:
+            plugin = auth_register[submission.auth_info.plugin]
+            plugin.logout(request)
+
+    if FORM_AUTH_SESSION_KEY in request.session:
+        del request.session[FORM_AUTH_SESSION_KEY]
+
+    if REGISTRATOR_SUBJECT_SESSION_KEY in request.session:
+        del request.session[REGISTRATOR_SUBJECT_SESSION_KEY]

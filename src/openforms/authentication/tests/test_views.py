@@ -670,6 +670,10 @@ class LogoutTestViewTests(TestCase):
             "attribute": "bsn",
             "value": "123456782",
         }
+        session[REGISTRATOR_SUBJECT_SESSION_KEY] = {
+            "attribute": AuthAttribute.bsn,
+            "value": "123456782",
+        }
         session.save()
 
         with patch(
@@ -685,3 +689,4 @@ class LogoutTestViewTests(TestCase):
             fetch_redirect_response=False,
         )
         self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
+        self.assertNotIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.client.session)

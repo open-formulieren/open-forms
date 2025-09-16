@@ -79,7 +79,7 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
 
         # call the endpoint
         url = reverse("api:submission-logout", kwargs={"uuid": login_submission.uuid})
-        with patch("openforms.authentication.api.views.register", register):
+        with patch("openforms.authentication.utils.auth_register", register):
             response = self.client.delete(url)
 
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
