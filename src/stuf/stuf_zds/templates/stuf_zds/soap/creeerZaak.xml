@@ -168,6 +168,7 @@
         </ZKN:heeftAlsOverigBetrokkene>
         {% endif %}
         {% include "stuf_zds/soap/includes/partners.xml" %}
+        {% include "stuf_zds/soap/includes/children.xml" %}
         {% if zds_zaaktype_status_code or zds_zaaktype_status_omschrijving %}
             <ZKN:heeft StUF:entiteittype="ZAKSTT" StUF:verwerkingssoort="T">
                 <ZKN:gerelateerde StUF:entiteittype="STT" StUF:verwerkingssoort="I">
