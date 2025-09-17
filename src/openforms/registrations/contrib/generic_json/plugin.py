@@ -193,6 +193,12 @@ class GenericJSONRegistration(BasePlugin):
                         child_schema,
                         options,
                     )
+            case {"type": "partners"}:
+                assert isinstance(schema["items"], dict)
+                _properties = schema["items"]["properties"]
+                assert isinstance(_properties, dict)
+
+                _properties["firstNames"] = {"type": "string"}
 
             case {"type": "children"}:
                 assert isinstance(schema["items"], dict)
@@ -390,7 +396,6 @@ def process_component(
                 assert isinstance(partner, dict)
 
                 # these are not relevant (at least for now)
-                partner.pop("firstNames", None)
                 partner.pop("dateOfBirthPrecision", None)
                 partner.pop("__addedManually", None)
 

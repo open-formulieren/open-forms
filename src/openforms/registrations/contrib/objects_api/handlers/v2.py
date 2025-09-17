@@ -168,7 +168,6 @@ def process_mapped_variable(
                 partner["dateOfBirth"] = partner["dateOfBirth"].isoformat()
 
                 # these are not relevant for the object (at least for now)
-                partner.pop("firstNames", None)
                 partner.pop("dateOfBirthPrecision", None)
                 partner.pop("__addedManually", None)
         case {"type": "children"}:

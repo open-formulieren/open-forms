@@ -731,6 +731,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                         "initials": "A.M.P.",
                         "affixes": "",
                         "lastName": "Jansma",
+                        "firstNames": "Anna Maria Petra",
                         "dateOfBirth": "1945-04-18",
                     },
                     {
@@ -738,6 +739,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                         "initials": "T.s.p.",
                         "affixes": "",
                         "lastName": "Test",
+                        "firstNames": "Test second partner",
                         "dateOfBirth": "1945-04-18",
                     },
                 ]
