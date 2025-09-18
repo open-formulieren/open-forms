@@ -1,6 +1,8 @@
+import datetime
 import json
 from base64 import b64decode
 from pathlib import Path
+from uuid import uuid4
 
 from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase, tag
@@ -17,6 +19,7 @@ from openforms.submissions.tests.factories import (
     FormVariableFactory,
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
+    SubmissionValueVariableFactory,
 )
 from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
@@ -1743,6 +1746,1072 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 }
             },
             "required": ["partners"],
+            "type": "object",
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
+    def test_children_components_schema_with_selection_disabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "children",
+                    "type": "children",
+                    "enableSelection": False,
+                }
+            ],
+            completed=True,
+            submitted_data={
+                "children": [
+                    {
+                        "bsn": "999970100",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Olle",
+                        "dateOfBirth": datetime.date(2022, 2, 2),
+                        "dateOfBirthPrecision": "date",
+                        "__id": str(uuid4()),
+                        "__addedManually": False,
+                        "selected": None,
+                    },
+                    {
+                        "bsn": "999970112",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Onne",
+                        "dateOfBirth": datetime.date(2022, 2, 2),
+                        "dateOfBirthPrecision": "date",
+                        "__id": str(uuid4()),
+                        "__addedManually": False,
+                        "selected": None,
+                    },
+                ],
+            },
+            bsn="999970094",
+            with_public_registration_reference=True,
+        )
+
+        SubmissionValueVariableFactory.create(
+            key="childrenImmutable",
+            submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="Children immutable",
+            form_variable__data_type="array",
+            value=[
+                {
+                    "bsn": "999970100",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Olle",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+                {
+                    "bsn": "999970112",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Onne",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+            ],
+        )
+
+        options: GenericJSONOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["children", "childrenImmutable"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+        json_plugin = GenericJSONRegistration("json_registration_plugin")
+
+        expected_values = {
+            "children": [
+                {
+                    "affixes": "",
+                    "bsn": "999970100",
+                    "dateOfBirth": "2022-02-02",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+                {
+                    "affixes": "",
+                    "bsn": "999970112",
+                    "dateOfBirth": "2022-02-02",
+                    "firstNames": "Onne",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+            ],
+            "childrenImmutable": [
+                {
+                    "affixes": "",
+                    "bsn": "999970100",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+                {
+                    "affixes": "",
+                    "bsn": "999970112",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Onne",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+            ],
+        }
+
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "children": {
+                    "items": {
+                        "additionalProperties": False,
+                        "properties": {
+                            "affixes": {"type": "string"},
+                            "bsn": {
+                                "format": "nl-bsn",
+                                "pattern": "^\\d{9}$",
+                                "type": "string",
+                            },
+                            "dateOfBirth": {"format": "date", "type": "string"},
+                            "firstNames": {"type": "string"},
+                            "initials": {"type": "string"},
+                            "lastName": {"type": "string"},
+                        },
+                        "required": ["bsn"],
+                        "type": "object",
+                    },
+                    "title": "Children",
+                    "type": "array",
+                },
+                "childrenImmutable": {"title": "Children immutable", "type": "array"},
+            },
+            "required": ["children", "childrenImmutable"],
+            "type": "object",
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
+    def test_children_components_schema_with_selection_enabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "children",
+                    "type": "children",
+                    "enableSelection": True,
+                }
+            ],
+            completed=True,
+            submitted_data={
+                "children": [
+                    {
+                        "bsn": "999970100",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Olle",
+                        "dateOfBirth": datetime.date(2022, 2, 2),
+                        "dateOfBirthPrecision": "date",
+                        "__id": str(uuid4()),
+                        "__addedManually": False,
+                        "selected": True,
+                    },
+                    {
+                        "bsn": "999970112",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Onne",
+                        "dateOfBirth": datetime.date(2022, 2, 2),
+                        "dateOfBirthPrecision": "date",
+                        "__id": str(uuid4()),
+                        "__addedManually": False,
+                        "selected": False,
+                    },
+                ]
+            },
+            bsn="999970094",
+            with_public_registration_reference=True,
+        )
+
+        SubmissionValueVariableFactory.create(
+            key="childrenImmutable",
+            submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="Children immutable",
+            form_variable__data_type="array",
+            value=[
+                {
+                    "bsn": "999970100",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Olle",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+                {
+                    "bsn": "999970112",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Onne",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+            ],
+        )
+
+        options: GenericJSONOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["children", "childrenImmutable"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+        json_plugin = GenericJSONRegistration("json_registration_plugin")
+
+        expected_values = {
+            "children": [
+                {
+                    "affixes": "",
+                    "bsn": "999970100",
+                    "dateOfBirth": "2022-02-02",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+            ],
+            "childrenImmutable": [
+                {
+                    "affixes": "",
+                    "bsn": "999970100",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+                {
+                    "affixes": "",
+                    "bsn": "999970112",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Onne",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+            ],
+        }
+
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "children": {
+                    "items": {
+                        "additionalProperties": False,
+                        "properties": {
+                            "affixes": {"type": "string"},
+                            "bsn": {
+                                "format": "nl-bsn",
+                                "pattern": "^\\d{9}$",
+                                "type": "string",
+                            },
+                            "dateOfBirth": {"format": "date", "type": "string"},
+                            "firstNames": {"type": "string"},
+                            "initials": {"type": "string"},
+                            "lastName": {"type": "string"},
+                        },
+                        "required": ["bsn"],
+                        "type": "object",
+                    },
+                    "title": "Children",
+                    "type": "array",
+                },
+                "childrenImmutable": {"title": "Children immutable", "type": "array"},
+            },
+            "required": ["children", "childrenImmutable"],
+            "type": "object",
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
+    def test_children_components_schema_with_added_manually_and_selection_enabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "children",
+                    "type": "children",
+                    "enableSelection": True,
+                },
+                {
+                    "key": "extraChildDetails",
+                    "type": "editgrid",
+                    "components": [
+                        {"type": "bsn", "key": "bsn"},
+                        {
+                            "type": "textfield",
+                            "key": "childName",
+                            "label": "Child name",
+                        },
+                    ],
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "children": [
+                    {
+                        "bsn": "999970100",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Olle",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": True,
+                        "__addedManually": True,
+                        "__id": str(uuid4()),
+                    },
+                    {
+                        "bsn": "999970112",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Onne",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": False,
+                        "__addedManually": True,
+                        "__id": str(uuid4()),
+                    },
+                ],
+                "extraChildDetails": [
+                    {"bsn": "999970100", "firstNames": "Olle"},
+                ],
+            },
+            bsn="999970094",
+            with_public_registration_reference=True,
+        )
+
+        SubmissionValueVariableFactory.create(
+            key="childrenImmutable",
+            submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="Children immutable",
+            form_variable__data_type="array",
+            value=[
+                {
+                    "bsn": "999970100",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Olle",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+                {
+                    "bsn": "999970112",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Onne",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+            ],
+        )
+
+        options: GenericJSONOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["children", "extraChildDetails", "childrenImmutable"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+        json_plugin = GenericJSONRegistration("json_registration_plugin")
+
+        expected_values = {
+            "children": [
+                {
+                    "affixes": "",
+                    "bsn": "999970100",
+                    "dateOfBirth": "2022-02-02",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+            ],
+            "childrenImmutable": [
+                {
+                    "affixes": "",
+                    "bsn": "999970100",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+                {
+                    "affixes": "",
+                    "bsn": "999970112",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Onne",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+            ],
+            "extraChildDetails": [
+                {"bsn": "999970100", "firstNames": "Olle"},
+            ],
+        }
+
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "children": {
+                    "items": {
+                        "additionalProperties": False,
+                        "properties": {
+                            "affixes": {"type": "string"},
+                            "bsn": {
+                                "format": "nl-bsn",
+                                "pattern": "^\\d{9}$",
+                                "type": "string",
+                            },
+                            "dateOfBirth": {"format": "date", "type": "string"},
+                            "firstNames": {"type": "string"},
+                            "initials": {"type": "string"},
+                            "lastName": {"type": "string"},
+                        },
+                        "required": ["bsn"],
+                        "type": "object",
+                    },
+                    "title": "Children",
+                    "type": "array",
+                },
+                "childrenImmutable": {"title": "Children immutable", "type": "array"},
+                "extraChildDetails": {
+                    "items": {
+                        "additionalProperties": False,
+                        "properties": {
+                            "bsn": {
+                                "format": "nl-bsn",
+                                "pattern": "^\\d{9}$",
+                                "title": "BSN",
+                                "type": "string",
+                            },
+                            "childName": {"title": "Child name", "type": "string"},
+                        },
+                        "required": ["bsn", "childName"],
+                        "type": "object",
+                    },
+                    "title": "Extrachilddetails",
+                    "type": "array",
+                },
+            },
+            "required": ["children", "extraChildDetails", "childrenImmutable"],
+            "type": "object",
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
+    def test_children_components_schema_with_added_manually_and_selection_disabled(
+        self,
+    ):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "children",
+                    "type": "children",
+                    "enableSelection": False,
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "children": [
+                    {
+                        "bsn": "999970100",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Olle",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__addedManually": True,
+                        "__id": str(uuid4()),
+                    },
+                    {
+                        "bsn": "999970112",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Onne",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__addedManually": True,
+                        "__id": str(uuid4()),
+                    },
+                ],
+            },
+            bsn="999970094",
+            with_public_registration_reference=True,
+        )
+
+        SubmissionValueVariableFactory.create(
+            key="childrenImmutable",
+            submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="Children immutable",
+            form_variable__data_type="array",
+            value=[
+                {
+                    "bsn": "999970100",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Olle",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+                {
+                    "bsn": "999970112",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Onne",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+            ],
+        )
+
+        options: GenericJSONOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["children", "childrenImmutable"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+        json_plugin = GenericJSONRegistration("json_registration_plugin")
+
+        expected_values = {
+            "children": [
+                {
+                    "bsn": "999970100",
+                    "affixes": "",
+                    "dateOfBirth": "2022-02-02",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+                {
+                    "bsn": "999970112",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Onne",
+                    "dateOfBirth": "2022-02-02",
+                },
+            ],
+            "childrenImmutable": [
+                {
+                    "affixes": "",
+                    "bsn": "999970100",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+                {
+                    "affixes": "",
+                    "bsn": "999970112",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Onne",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+            ],
+        }
+
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "children": {
+                    "items": {
+                        "additionalProperties": False,
+                        "properties": {
+                            "affixes": {"type": "string"},
+                            "bsn": {
+                                "format": "nl-bsn",
+                                "pattern": "^\\d{9}$",
+                                "type": "string",
+                            },
+                            "dateOfBirth": {"format": "date", "type": "string"},
+                            "firstNames": {"type": "string"},
+                            "initials": {"type": "string"},
+                            "lastName": {"type": "string"},
+                        },
+                        "required": ["bsn"],
+                        "type": "object",
+                    },
+                    "title": "Children",
+                    "type": "array",
+                },
+                "childrenImmutable": {"title": "Children immutable", "type": "array"},
+            },
+            "required": ["children", "childrenImmutable"],
+            "type": "object",
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
+    def test_children_components_schema_with_two_steps_and_selection_disabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "children",
+                    "type": "children",
+                    "enableSelection": False,
+                },
+                {
+                    "key": "extraChildDetails",
+                    "type": "editgrid",
+                    "components": [
+                        {"type": "bsn", "key": "bsn"},
+                        {
+                            "type": "textfield",
+                            "key": "childName",
+                            "label": "Child name",
+                        },
+                    ],
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "children": [
+                    {
+                        "bsn": "999970100",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Olle",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__addedManually": False,
+                        "__id": str(uuid4()),
+                    },
+                    {
+                        "bsn": "999970112",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Onne",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__addedManually": False,
+                        "__id": str(uuid4()),
+                    },
+                ],
+                "extraChildDetails": [
+                    {"bsn": "999970100", "firstNames": "Olle"},
+                    {"bsn": "999970112", "firstNames": "Onne"},
+                ],
+            },
+            bsn="999970094",
+            with_public_registration_reference=True,
+        )
+
+        SubmissionValueVariableFactory.create(
+            key="childrenImmutable",
+            submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="Children immutable",
+            form_variable__data_type="array",
+            value=[
+                {
+                    "bsn": "999970100",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Olle",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+                {
+                    "bsn": "999970112",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Onne",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+            ],
+        )
+
+        options: GenericJSONOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["children", "extraChildDetails", "childrenImmutable"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+        json_plugin = GenericJSONRegistration("json_registration_plugin")
+
+        expected_values = {
+            "children": [
+                {
+                    "affixes": "",
+                    "bsn": "999970100",
+                    "dateOfBirth": "2022-02-02",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+                {
+                    "affixes": "",
+                    "bsn": "999970112",
+                    "dateOfBirth": "2022-02-02",
+                    "firstNames": "Onne",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+            ],
+            "childrenImmutable": [
+                {
+                    "affixes": "",
+                    "bsn": "999970100",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+                {
+                    "affixes": "",
+                    "bsn": "999970112",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Onne",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+            ],
+            "extraChildDetails": [
+                {"bsn": "999970100", "firstNames": "Olle"},
+                {"bsn": "999970112", "firstNames": "Onne"},
+            ],
+        }
+
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "children": {
+                    "items": {
+                        "additionalProperties": False,
+                        "properties": {
+                            "affixes": {"type": "string"},
+                            "bsn": {
+                                "format": "nl-bsn",
+                                "pattern": "^\\d{9}$",
+                                "type": "string",
+                            },
+                            "dateOfBirth": {"format": "date", "type": "string"},
+                            "firstNames": {"type": "string"},
+                            "initials": {"type": "string"},
+                            "lastName": {"type": "string"},
+                        },
+                        "required": ["bsn"],
+                        "type": "object",
+                    },
+                    "title": "Children",
+                    "type": "array",
+                },
+                "childrenImmutable": {"title": "Children immutable", "type": "array"},
+                "extraChildDetails": {
+                    "items": {
+                        "additionalProperties": False,
+                        "properties": {
+                            "bsn": {
+                                "format": "nl-bsn",
+                                "pattern": "^\\d{9}$",
+                                "title": "BSN",
+                                "type": "string",
+                            },
+                            "childName": {"title": "Child name", "type": "string"},
+                        },
+                        "required": ["bsn", "childName"],
+                        "type": "object",
+                    },
+                    "title": "Extrachilddetails",
+                    "type": "array",
+                },
+            },
+            "required": ["children", "extraChildDetails", "childrenImmutable"],
+            "type": "object",
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
+    def test_children_components_schema_with_two_steps_and_selection_enabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "children",
+                    "type": "children",
+                    "enableSelection": True,
+                },
+                {
+                    "key": "extraChildDetails",
+                    "type": "editgrid",
+                    "components": [
+                        {"type": "bsn", "key": "bsn"},
+                        {
+                            "type": "textfield",
+                            "key": "childName",
+                            "label": "Child name",
+                        },
+                    ],
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "children": [
+                    {
+                        "bsn": "999970100",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Olle",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": True,
+                        "__addedManually": False,
+                        "__id": str(uuid4()),
+                    },
+                    {
+                        "bsn": "999970112",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Onne",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": False,
+                        "__addedManually": False,
+                        "__id": str(uuid4()),
+                    },
+                ],
+                "extraChildDetails": [
+                    {"bsn": "999970100", "firstNames": "Olle"},
+                ],
+            },
+            bsn="999970094",
+            with_public_registration_reference=True,
+        )
+
+        SubmissionValueVariableFactory.create(
+            key="childrenImmutable",
+            submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="Children immutable",
+            form_variable__data_type="array",
+            value=[
+                {
+                    "bsn": "999970100",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Olle",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+                {
+                    "bsn": "999970112",
+                    "affixes": "",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                    "firstNames": "Onne",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                },
+            ],
+        )
+
+        options: GenericJSONOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["children", "extraChildDetails", "childrenImmutable"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+        json_plugin = GenericJSONRegistration("json_registration_plugin")
+
+        expected_values = {
+            "children": [
+                {
+                    "affixes": "",
+                    "bsn": "999970100",
+                    "dateOfBirth": "2022-02-02",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+            ],
+            "childrenImmutable": [
+                {
+                    "affixes": "",
+                    "bsn": "999970100",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Olle",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+                {
+                    "affixes": "",
+                    "bsn": "999970112",
+                    "dateOfBirth": "2022-02-02",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Onne",
+                    "initials": "O.",
+                    "lastName": "Oostingh",
+                },
+            ],
+            "extraChildDetails": [
+                {"bsn": "999970100", "firstNames": "Olle"},
+            ],
+        }
+
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "children": {
+                    "items": {
+                        "additionalProperties": False,
+                        "properties": {
+                            "affixes": {"type": "string"},
+                            "bsn": {
+                                "format": "nl-bsn",
+                                "pattern": "^\\d{9}$",
+                                "type": "string",
+                            },
+                            "dateOfBirth": {"format": "date", "type": "string"},
+                            "firstNames": {"type": "string"},
+                            "initials": {"type": "string"},
+                            "lastName": {"type": "string"},
+                        },
+                        "required": ["bsn"],
+                        "type": "object",
+                    },
+                    "title": "Children",
+                    "type": "array",
+                },
+                "childrenImmutable": {"title": "Children immutable", "type": "array"},
+                "extraChildDetails": {
+                    "items": {
+                        "additionalProperties": False,
+                        "properties": {
+                            "bsn": {
+                                "format": "nl-bsn",
+                                "pattern": "^\\d{9}$",
+                                "title": "BSN",
+                                "type": "string",
+                            },
+                            "childName": {"title": "Child name", "type": "string"},
+                        },
+                        "required": ["bsn", "childName"],
+                        "type": "object",
+                    },
+                    "title": "Extrachilddetails",
+                    "type": "array",
+                },
+            },
+            "required": ["children", "extraChildDetails", "childrenImmutable"],
             "type": "object",
         }
 

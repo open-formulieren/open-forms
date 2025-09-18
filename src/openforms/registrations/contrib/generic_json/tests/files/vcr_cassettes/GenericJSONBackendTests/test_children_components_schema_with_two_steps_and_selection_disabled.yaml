@@ -1,0 +1,106 @@
+interactions:
+- request:
+    body: '{"values": {"children": [{"bsn": "999970100", "affixes": "", "initials":
+      "O.", "lastName": "Oostingh", "firstNames": "Olle", "dateOfBirth": "2022-02-02"},
+      {"bsn": "999970112", "affixes": "", "initials": "O.", "lastName": "Oostingh",
+      "firstNames": "Onne", "dateOfBirth": "2022-02-02"}], "extraChildDetails": [{"bsn":
+      "999970100", "firstNames": "Olle"}, {"bsn": "999970112", "firstNames": "Onne"}],
+      "childrenImmutable": [{"bsn": "999970100", "affixes": "", "initials": "O.",
+      "lastName": "Oostingh", "firstNames": "Olle", "dateOfBirth": "2022-02-02", "dateOfBirthPrecision":
+      "date"}, {"bsn": "999970112", "affixes": "", "initials": "O.", "lastName": "Oostingh",
+      "firstNames": "Onne", "dateOfBirth": "2022-02-02", "dateOfBirthPrecision": "date"}]},
+      "values_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {"children": {"title": "Children", "type": "array",
+      "items": {"type": "object", "required": ["bsn"], "properties": {"bsn": {"type":
+      "string", "pattern": "^\\d{9}$", "format": "nl-bsn"}, "firstNames": {"type":
+      "string"}, "dateOfBirth": {"type": "string", "format": "date"}, "affixes": {"type":
+      "string"}, "initials": {"type": "string"}, "lastName": {"type": "string"}},
+      "additionalProperties": false}}, "extraChildDetails": {"title": "Extrachilddetails",
+      "type": "array", "items": {"type": "object", "properties": {"bsn": {"title":
+      "BSN", "type": "string", "pattern": "^\\d{9}$", "format": "nl-bsn"}, "childName":
+      {"title": "Child name", "type": "string"}}, "required": ["bsn", "childName"],
+      "additionalProperties": false}}, "childrenImmutable": {"type": "array", "title":
+      "Children immutable"}}, "required": ["children", "extraChildDetails", "childrenImmutable"],
+      "additionalProperties": false}, "metadata": {}, "metadata_schema": {"$schema":
+      "https://json-schema.org/draft/2020-12/schema", "type": "object", "properties":
+      {}, "required": [], "additionalProperties": false}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTgxODAzMjcsImV4cCI6MTc1ODIyMzUyNywiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.J7nmywQfG7KxLi50At-a_ofxg92uiUEMm96AQmw-Jgw
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1928'
+      User-Agent:
+      - python-requests/2.32.4
+      content-type:
+      - application/json
+    method: POST
+    uri: http://localhost/json_plugin
+  response:
+    body:
+      string: "{\n  \"data\": {\n    \"metadata\": {},\n    \"metadata_schema\": {\n
+        \     \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
+        false,\n      \"properties\": {},\n      \"required\": [],\n      \"type\":
+        \"object\"\n    },\n    \"values\": {\n      \"children\": [\n        {\n
+        \         \"affixes\": \"\",\n          \"bsn\": \"999970100\",\n          \"dateOfBirth\":
+        \"2022-02-02\",\n          \"firstNames\": \"Olle\",\n          \"initials\":
+        \"O.\",\n          \"lastName\": \"Oostingh\"\n        },\n        {\n          \"affixes\":
+        \"\",\n          \"bsn\": \"999970112\",\n          \"dateOfBirth\": \"2022-02-02\",\n
+        \         \"firstNames\": \"Onne\",\n          \"initials\": \"O.\",\n          \"lastName\":
+        \"Oostingh\"\n        }\n      ],\n      \"childrenImmutable\": [\n        {\n
+        \         \"affixes\": \"\",\n          \"bsn\": \"999970100\",\n          \"dateOfBirth\":
+        \"2022-02-02\",\n          \"dateOfBirthPrecision\": \"date\",\n          \"firstNames\":
+        \"Olle\",\n          \"initials\": \"O.\",\n          \"lastName\": \"Oostingh\"\n
+        \       },\n        {\n          \"affixes\": \"\",\n          \"bsn\": \"999970112\",\n
+        \         \"dateOfBirth\": \"2022-02-02\",\n          \"dateOfBirthPrecision\":
+        \"date\",\n          \"firstNames\": \"Onne\",\n          \"initials\": \"O.\",\n
+        \         \"lastName\": \"Oostingh\"\n        }\n      ],\n      \"extraChildDetails\":
+        [\n        {\n          \"bsn\": \"999970100\",\n          \"firstNames\":
+        \"Olle\"\n        },\n        {\n          \"bsn\": \"999970112\",\n          \"firstNames\":
+        \"Onne\"\n        }\n      ]\n    },\n    \"values_schema\": {\n      \"$schema\":
+        \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
+        false,\n      \"properties\": {\n        \"children\": {\n          \"items\":
+        {\n            \"additionalProperties\": false,\n            \"properties\":
+        {\n              \"affixes\": {\n                \"type\": \"string\"\n              },\n
+        \             \"bsn\": {\n                \"format\": \"nl-bsn\",\n                \"pattern\":
+        \"^\\\\d{9}$\",\n                \"type\": \"string\"\n              },\n
+        \             \"dateOfBirth\": {\n                \"format\": \"date\",\n
+        \               \"type\": \"string\"\n              },\n              \"firstNames\":
+        {\n                \"type\": \"string\"\n              },\n              \"initials\":
+        {\n                \"type\": \"string\"\n              },\n              \"lastName\":
+        {\n                \"type\": \"string\"\n              }\n            },\n
+        \           \"required\": [\n              \"bsn\"\n            ],\n            \"type\":
+        \"object\"\n          },\n          \"title\": \"Children\",\n          \"type\":
+        \"array\"\n        },\n        \"childrenImmutable\": {\n          \"title\":
+        \"Children immutable\",\n          \"type\": \"array\"\n        },\n        \"extraChildDetails\":
+        {\n          \"items\": {\n            \"additionalProperties\": false,\n
+        \           \"properties\": {\n              \"bsn\": {\n                \"format\":
+        \"nl-bsn\",\n                \"pattern\": \"^\\\\d{9}$\",\n                \"title\":
+        \"BSN\",\n                \"type\": \"string\"\n              },\n              \"childName\":
+        {\n                \"title\": \"Child name\",\n                \"type\": \"string\"\n
+        \             }\n            },\n            \"required\": [\n              \"bsn\",\n
+        \             \"childName\"\n            ],\n            \"type\": \"object\"\n
+        \         },\n          \"title\": \"Extrachilddetails\",\n          \"type\":
+        \"array\"\n        }\n      },\n      \"required\": [\n        \"children\",\n
+        \       \"extraChildDetails\",\n        \"childrenImmutable\"\n      ],\n
+        \     \"type\": \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '3393'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 18 Sep 2025 07:25:27 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.10
+    status:
+      code: 201
+      message: CREATED
+version: 1
