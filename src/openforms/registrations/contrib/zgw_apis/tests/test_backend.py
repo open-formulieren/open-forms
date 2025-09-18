@@ -5,6 +5,7 @@ from decimal import Decimal
 from pathlib import Path
 from unittest import expectedFailure
 from unittest.mock import patch
+from uuid import uuid4
 
 from django.test import TestCase, override_settings, tag
 
@@ -232,6 +233,8 @@ class ZGWBackendTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         self.install_mocks(m)
         m.get(
@@ -309,6 +312,8 @@ class ZGWBackendTests(TestCase):
             "objects_api_group": None,
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         self.install_mocks(m)
 
@@ -366,6 +371,8 @@ class ZGWBackendTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         self.install_mocks(m)
         roltypen_url = furl("https://catalogus.nl/api/v1/roltypen").set(
@@ -443,6 +450,8 @@ class ZGWBackendTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         self.install_mocks(m)
         m.patch(
@@ -534,6 +543,8 @@ class ZGWBackendTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
@@ -646,6 +657,8 @@ class ZGWBackendTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         self.install_mocks(m)
 
@@ -723,6 +736,8 @@ class ZGWBackendTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         self.install_mocks(m)
 
@@ -781,6 +796,8 @@ class ZGWBackendTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         self.install_mocks(m)
 
@@ -882,6 +899,8 @@ class ZGWBackendTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
@@ -1105,6 +1124,8 @@ class ZGWBackendTests(TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         self.install_mocks(m)
 
@@ -1385,6 +1406,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
 
         plugin = ZGWRegistration("zgw")
@@ -1573,6 +1596,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "product_url": "",
             "partners_description": "",
             "partners_roltype": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -1686,6 +1711,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -1765,6 +1792,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "objects_api_group": None,
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
 
         plugin = ZGWRegistration("zgw")
@@ -1854,6 +1883,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "objects_api_group": None,
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         plugin = ZGWRegistration("zgw")
 
@@ -1910,6 +1941,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "objects_api_group": None,
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         plugin = ZGWRegistration("zgw")
 
@@ -1959,6 +1992,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         plugin = ZGWRegistration("zgw")
         client = get_zaken_client(self.zgw_group)
@@ -2016,7 +2051,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             bsn="123456782",
             completed=True,
             # Pin to a known case type version (2024-10-31)
-            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -2036,6 +2071,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "objects_api_group": None,
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         client = get_zaken_client(self.zgw_group)
         self.addCleanup(client.close)
@@ -2104,7 +2141,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             bsn="123456782",
             completed=True,
             # Pin to a known case type version (2024-10-31)
-            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -2124,6 +2161,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "objects_api_group": None,
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         client = get_zaken_client(self.zgw_group)
         self.addCleanup(client.close)
@@ -2188,6 +2227,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -2261,6 +2302,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -2318,6 +2361,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         plugin = ZGWRegistration("zgw")
 
@@ -2361,6 +2406,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "product_url": "",
             "partners_roltype": "",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -2402,7 +2449,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             ],
             auth_info__value="000009921",
             auth_info__attribute=AuthAttribute.bsn,
-            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
         )
         FormVariableFactory.create(
             key="partners_immutable",
@@ -2430,6 +2477,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "objects_api_group": None,
             "partners_roltype": "Partner role type",
             "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
         }
 
         prefill_variables(submission)
@@ -2490,6 +2539,546 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "voornamen": "Test second partner",
                 "geslachtsaanduiding": "",
                 "geboortedatum": "1945-04-18",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+
+    @patch(
+        "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+        return_value=HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="http://localhost:5010/haalcentraal/api/brp/"
+            ),
+            brp_personen_version=BRPVersions.v20,
+        ),
+    )
+    @patch(
+        "openforms.config.models.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
+        ),
+    )
+    def test_submission_with_children_component_and_selection_disabled(self, m, n):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "children",
+                    "type": "children",
+                    "enableSelection": False,
+                    "registration": {
+                        "attribute": RegistrationAttribute.children,
+                    },
+                }
+            ],
+            auth_info__value="999970094",
+            auth_info__attribute=AuthAttribute.bsn,
+            completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin=FM_PLUGIN_IDENTIFIER,
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "CHILD",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZAAKTYPE-2020-0000000002",
+            "document_type_description": "Children PDF Informatieobjecttype",
+            "zaaktype": f"{catalogi_root}zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35",
+            "product_url": "",
+            "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "Children role type",
+            "children_description": "",
+        }
+
+        prefill_variables(submission)
+
+        # the submitted data needs extra handling because frontend adds some extra field
+        # to it which is not happenning here, so we have to update it manually in order
+        # to mimic the frontend behaviour
+        children_data = submission.data["children"]
+        assert isinstance(children_data, list)
+
+        for child in children_data:
+            assert isinstance(child, dict)
+            child.update(
+                {
+                    "selected": None,
+                    "__id": str(uuid4()),
+                    "__addedManually": False,
+                }
+            )
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # perform the actual registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(len(result["intermediate"]["child_rol"]), 2)
+        self.assertEqual(
+            result["intermediate"]["initiator_rol"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "999970094",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "",
+                "voornamen": "",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+        self.assertEqual(
+            result["intermediate"]["child_rol"]["1"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "999970100",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "Oostingh",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "O.",
+                "voornamen": "Olle",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "2022-02-02",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+        self.assertEqual(
+            result["intermediate"]["child_rol"]["2"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "999970112",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "Oostingh",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "O.",
+                "voornamen": "Onne",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "2022-02-02",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+
+    @patch(
+        "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+        return_value=HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="http://localhost:5010/haalcentraal/api/brp/"
+            ),
+            brp_personen_version=BRPVersions.v20,
+        ),
+    )
+    @patch(
+        "openforms.config.models.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
+        ),
+    )
+    def test_submission_with_children_component_and_selection_enabled(self, m, n):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "children",
+                    "type": "children",
+                    "enableSelection": True,
+                    "registration": {
+                        "attribute": RegistrationAttribute.children,
+                    },
+                }
+            ],
+            auth_info__value="999970094",
+            auth_info__attribute=AuthAttribute.bsn,
+            completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin=FM_PLUGIN_IDENTIFIER,
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "CHILD",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZAAKTYPE-2020-0000000002",
+            "document_type_description": "Children PDF Informatieobjecttype",
+            "zaaktype": f"{catalogi_root}zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35",
+            "product_url": "",
+            "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "Children role type",
+            "children_description": "",
+        }
+
+        prefill_variables(submission)
+
+        # the submitted data needs extra handling because frontend adds some extra field
+        # to it which is not happenning here, so we have to update it manually in order
+        # to mimic the frontend behaviour
+        children_data = submission.data["children"]
+        assert isinstance(children_data, list)
+        assert isinstance(children_data[0], dict)
+        assert isinstance(children_data[1], dict)
+        children_data[0].update(
+            {
+                "selected": True,
+                "__id": str(uuid4()),
+                "__addedManually": False,
+            }
+        )
+        children_data[1].update(
+            {
+                "selected": False,
+                "__id": str(uuid4()),
+                "__addedManually": False,
+            }
+        )
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # perform the actual registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(len(result["intermediate"]["child_rol"]), 1)
+        self.assertEqual(
+            result["intermediate"]["initiator_rol"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "999970094",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "",
+                "voornamen": "",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+        self.assertEqual(
+            result["intermediate"]["child_rol"]["1"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "999970100",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "Oostingh",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "O.",
+                "voornamen": "Olle",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "2022-02-02",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+
+    def test_submission_with_manually_added_children_and_selection_enabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "children",
+                    "type": "children",
+                    "enableSelection": True,
+                    "registration": {
+                        "attribute": RegistrationAttribute.children,
+                    },
+                }
+            ],
+            auth_info__value="123456782",
+            auth_info__attribute=AuthAttribute.bsn,
+            completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+            submitted_data={
+                "children": [
+                    {
+                        "bsn": "999970409",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": True,
+                        "__id": str(uuid4()),
+                        "__addedManually": True,
+                    },
+                    {
+                        "bsn": "999970161",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Peet",
+                        "dateOfBirth": "2018-12-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": False,
+                        "__id": str(uuid4()),
+                        "__addedManually": True,
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin=FM_PLUGIN_IDENTIFIER,
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "CHILD",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZAAKTYPE-2020-0000000002",
+            "document_type_description": "Children PDF Informatieobjecttype",
+            "zaaktype": f"{catalogi_root}zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35",
+            "product_url": "",
+            "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "Children role type",
+            "children_description": "",
+        }
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # perform the actual registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(len(result["intermediate"]["child_rol"]), 1)
+        self.assertEqual(
+            result["intermediate"]["initiator_rol"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "123456782",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "",
+                "voornamen": "",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+        self.assertEqual(
+            result["intermediate"]["child_rol"]["1"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "999970409",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "Paassen",
+                "voorvoegselGeslachtsnaam": "van",
+                "voorletters": "P.",
+                "voornamen": "Pero",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "2023-02-01",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+
+    def test_submission_with_manually_added_children_and_selection_disabled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "children",
+                    "type": "children",
+                    "enableSelection": False,
+                    "registration": {
+                        "attribute": RegistrationAttribute.children,
+                    },
+                }
+            ],
+            auth_info__value="123456782",
+            auth_info__attribute=AuthAttribute.bsn,
+            completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+            submitted_data={
+                "children": [
+                    {
+                        "bsn": "999970409",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__id": str(uuid4()),
+                        "__addedManually": True,
+                    },
+                    {
+                        "bsn": "999970161",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Peet",
+                        "dateOfBirth": "2018-12-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__id": str(uuid4()),
+                        "__addedManually": True,
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin=FM_PLUGIN_IDENTIFIER,
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "CHILD",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZAAKTYPE-2020-0000000002",
+            "document_type_description": "Children PDF Informatieobjecttype",
+            "zaaktype": f"{catalogi_root}zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35",
+            "product_url": "",
+            "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "Children role type",
+            "children_description": "",
+        }
+
+        # the submitted data needs extra handling because frontend adds some extra field
+        # to it which is not happenning here, so we have to update it manually in order
+        # to mimic the frontend behaviour
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # perform the actual registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(len(result["intermediate"]["child_rol"]), 2)
+        self.assertEqual(
+            result["intermediate"]["initiator_rol"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "123456782",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "",
+                "voornamen": "",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+        self.assertEqual(
+            result["intermediate"]["child_rol"]["1"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "999970409",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "Paassen",
+                "voorvoegselGeslachtsnaam": "van",
+                "voorletters": "P.",
+                "voornamen": "Pero",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "2023-02-01",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+        self.assertEqual(
+            result["intermediate"]["child_rol"]["2"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "999970161",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "Paassen",
+                "voorvoegselGeslachtsnaam": "van",
+                "voorletters": "P.",
+                "voornamen": "Peet",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "2018-12-01",
                 "verblijfsadres": None,
                 "subVerblijfBuitenland": None,
             },

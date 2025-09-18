@@ -3835,6 +3835,12 @@
       "value": "Include deceased"
     }
   ],
+  "UZk0+O": [
+    {
+      "type": 0,
+      "value": "Children roltype"
+    }
+  ],
   "UlVtQd": [
     {
       "type": 0,
@@ -6641,6 +6647,12 @@
       "value": "code"
     }
   ],
+  "pbA2dt": [
+    {
+      "type": 0,
+      "value": "The description that will be used in children registration."
+    }
+  ],
   "pdmkVe": [
     {
       "type": 0,
@@ -7001,6 +7013,12 @@
     {
       "type": 0,
       "value": "Identifier variable (BSN)"
+    }
+  ],
+  "t+B+/4": [
+    {
+      "type": 0,
+      "value": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with children."
     }
   ],
   "t+J++o": [
@@ -7611,6 +7629,12 @@
     {
       "type": 0,
       "value": "(unset)"
+    }
+  ],
+  "ydnh2t": [
+    {
+      "type": 0,
+      "value": "Children description"
     }
   ],
   "yrz/oC": [

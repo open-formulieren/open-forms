@@ -152,6 +152,22 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "Description (omschrijving) that will be used in the partners registration."
         ),
     )
+    children_roltype = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default="",
+        help_text=_(
+            "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with children."
+        ),
+    )
+    children_description = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default="",
+        help_text=_(
+            "Description (omschrijving) that will be used in the children registration."
+        ),
+    )
 
     # Objects API
     objects_api_group = SlugRelatedAsChoicesField(
@@ -344,7 +360,7 @@ def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
         _validate_case_type_properties(
             client, attrs, iter_case_type_versions=iter_case_type_versions
         )
-        _validate_medewerker_and_partners_roltype(
+        _validate_medewerker_and_family_members_roltype(
             client, attrs, iter_case_type_versions=iter_case_type_versions
         )
 
@@ -567,19 +583,21 @@ def _validate_case_type_properties(
         )
 
 
-def _validate_medewerker_and_partners_roltype(
+def _validate_medewerker_and_family_members_roltype(
     client: CatalogiClient,
     attrs: RegistrationOptions,
     iter_case_type_versions: CaseTypeVersionsIterator | None,
 ) -> None:
     medewerker_description = attrs.get("medewerker_roltype")
     partners_description = attrs.get("partners_roltype")
+    children_description = attrs.get("children_roltype")
 
-    if not medewerker_description and not partners_description:
+    if not any((medewerker_description, partners_description, children_description)):
         return
 
     medewerker_roltypen = []
     partners_roltypen = []
+    children_roltypen = []
     if case_type_identification := attrs["case_type_identification"]:
         assert iter_case_type_versions is not None
         for version in iter_case_type_versions(case_type_identification):
@@ -595,7 +613,13 @@ def _validate_medewerker_and_partners_roltype(
                     matcher=omschrijving_matcher(partners_description),
                 )
 
-            if medewerker_roltypen and partners_roltypen:
+            if children_description:
+                children_roltypen += client.list_roltypen(
+                    zaaktype=version["url"],
+                    matcher=omschrijving_matcher(children_description),
+                )
+
+            if medewerker_roltypen and partners_roltypen and children_roltypen:
                 break
 
     else:  # DeprecationWarning
@@ -609,6 +633,11 @@ def _validate_medewerker_and_partners_roltype(
                 zaaktype=attrs["zaaktype"],
                 matcher=omschrijving_matcher(partners_description),
             )
+        if children_description:
+            children_roltypen += client.list_roltypen(
+                zaaktype=attrs["zaaktype"],
+                matcher=omschrijving_matcher(children_description),
+            )
 
     error_message = _(
         "Could not find a roltype with this description related to the zaaktype."
@@ -618,6 +647,7 @@ def _validate_medewerker_and_partners_roltype(
         for field_name, roltypen in {
             "medewerker_roltype": medewerker_roltypen,
             "partners_roltype": partners_roltypen,
+            "children_roltype": children_roltypen,
         }.items()
         if not roltypen and attrs.get(field_name)
     ]

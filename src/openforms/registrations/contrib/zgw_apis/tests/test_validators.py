@@ -230,7 +230,8 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
             "medewerker_roltype": "Absent roltype",
-            "partners_roltype": "Invalid roltype",
+            "partners_roltype": "Invalid partners roltype",
+            "children_roltype": "Invalid children roltype",
             "objects_api_group": None,
         }
 
@@ -240,6 +241,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         self.assertFalse(is_valid)
         self.assertIn("medewerker_roltype", serializer.errors)
         self.assertIn("partners_roltype", serializer.errors)
+        self.assertIn("children_roltype", serializer.errors)
         self.assertEqual(
             "Could not find a roltype with this description related to the zaaktype.",
             serializer.errors["medewerker_roltype"][0],
@@ -247,6 +249,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         self.assertEqual(
             "Could not find a roltype with this description related to the zaaktype.",
             serializer.errors["partners_roltype"][0],
+        )
+        self.assertEqual(
+            "Could not find a roltype with this description related to the zaaktype.",
+            serializer.errors["children_roltype"][0],
         )
 
     def test_roltype_omschrijving_validated_against_case_type_identification(
@@ -265,29 +271,70 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             ),
             "objects_api_group": None,
             "partners_description": "",
+            "children_desription": "",
         }
 
-        with self.subTest("no medewerker and no partners description"):
-            serializer = ZaakOptionsSerializer(data=base)
-            is_valid = serializer.is_valid()
-
-            self.assertTrue(is_valid)
-
-        with self.subTest("no medewerker and partners description"):
-            data = {**base, "partners_roltype": "Partner role type"}
+        with self.subTest("medewerker:yes, partners:yes, children:yes"):
+            data = {
+                **base,
+                "catalogue": {
+                    "domain": "CHILD",
+                    "rsin": "000000000",
+                },
+                "case_type_identification": "ZAAKTYPE-2020-0000000002",
+                "informatieobjecttype": (
+                    "http://localhost:8003/catalogi/api/v1/"
+                    "informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35"
+                ),
+                "medewerker_roltype": "Children role type",
+                "partners_roltype": "Children role type",
+                "children_roltype": "Children role type",
+            }
             serializer = ZaakOptionsSerializer(data=data)
             is_valid = serializer.is_valid()
 
             self.assertTrue(is_valid)
 
-        with self.subTest("medewerker and no partners description"):
+        with self.subTest("medewerker:no, partners:no, children:no"):
+            serializer = ZaakOptionsSerializer(data=base)
+            is_valid = serializer.is_valid()
+
+            self.assertTrue(is_valid)
+
+        with self.subTest("medewerker:yes, partners:no, children:no"):
             data = {**base, "medewerker_roltype": "Partner role type"}
             serializer = ZaakOptionsSerializer(data=data)
             is_valid = serializer.is_valid()
 
             self.assertTrue(is_valid)
 
-        with self.subTest("medewerker and partners description"):
+        with self.subTest("medewerker:no, partners:yes, children:no"):
+            data = {**base, "partners_roltype": "Partner role type"}
+            serializer = ZaakOptionsSerializer(data=data)
+            is_valid = serializer.is_valid()
+
+            self.assertTrue(is_valid)
+
+        with self.subTest("medewerker:no, partners:no, children:yes"):
+            data = {
+                **base,
+                "catalogue": {
+                    "domain": "CHILD",
+                    "rsin": "000000000",
+                },
+                "case_type_identification": "ZAAKTYPE-2020-0000000002",
+                "informatieobjecttype": (
+                    "http://localhost:8003/catalogi/api/v1/"
+                    "informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35"
+                ),
+                "children_roltype": "Children role type",
+            }
+            serializer = ZaakOptionsSerializer(data=data)
+            is_valid = serializer.is_valid()
+
+            self.assertTrue(is_valid)
+
+        with self.subTest("medewerker:yes, partners:yes, children:no"):
             data = {
                 **base,
                 "medewerker_roltype": "Partner role type",
@@ -299,15 +346,30 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             self.assertTrue(is_valid)
 
         with self.subTest("invalid roltype"):
-            data = {**base, "partners_roltype": "Invalid roltype"}
+            data = {
+                **base,
+                "medewerker_roltype": "Invalid roltype",
+                "partners_roltype": "Invalid roltype",
+                "children_roltype": "Invalid roltype",
+            }
             serializer = ZaakOptionsSerializer(data=data)
             is_valid = serializer.is_valid()
 
             self.assertFalse(is_valid)
+            self.assertIn("medewerker_roltype", serializer.errors)
             self.assertIn("partners_roltype", serializer.errors)
+            self.assertIn("children_roltype", serializer.errors)
+            self.assertEqual(
+                "Could not find a roltype with this description related to the zaaktype.",
+                serializer.errors["medewerker_roltype"][0],
+            )
             self.assertEqual(
                 "Could not find a roltype with this description related to the zaaktype.",
                 serializer.errors["partners_roltype"][0],
+            )
+            self.assertEqual(
+                "Could not find a roltype with this description related to the zaaktype.",
+                serializer.errors["children_roltype"][0],
             )
 
     def test_medewerker_roltype_omschrijving_validated_against_case_type_identification(

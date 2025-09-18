@@ -212,8 +212,9 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         "betrokkeneIdentificatie.inpBsn": FieldConf(
             submission_auth_info_attribute="bsn"
         ),
-        # Partners
+        # Family members
         "partners": RegistrationAttribute.partners,
+        "children": RegistrationAttribute.children,
     }
 
     zaak_mapping = {
@@ -308,10 +309,16 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             submission, self.rol_mapping, REGISTRATION_ATTRIBUTE
         )
 
+        # family members
         partners_rol_data = {}
         if RegistrationAttribute.partners in initiator_rol_data:
             partners_rol_data = initiator_rol_data.pop(
                 RegistrationAttribute.partners, []
+            )
+        children_rol_data = {}
+        if RegistrationAttribute.children in initiator_rol_data:
+            children_rol_data = initiator_rol_data.pop(
+                RegistrationAttribute.children, []
             )
 
         betrokkene_identificatie = initiator_rol_data.get("betrokkeneIdentificatie", {})
@@ -408,7 +415,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             )
 
             # We may have multiple roles that need to be created, for now this is needed
-            # for custom partners component
+            # for custom partners and children components
             partners_rollen = []
             if partners_rol_data:
                 for index, data in enumerate(partners_rol_data):
@@ -436,7 +443,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                         }
                     )
 
-                    rol = execute_unless_result_exists(
+                    partner_rol = execute_unless_result_exists(
                         partial(
                             zaken_client.create_rol,
                             catalogi_client=catalogi_client,
@@ -446,7 +453,49 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                         submission,
                         f"intermediate.partner_rol.{index + 1}",
                     )
-                    partners_rollen.append(rol)
+                    partners_rollen.append(partner_rol)
+
+            children_rollen = []
+            if children_rol_data:
+                for index, data in enumerate(children_rol_data):
+                    if data.get("selected") not in (None, True):
+                        continue
+
+                    children_roltype_omschrijving = options["children_roltype"]
+                    children_description = options["children_description"]
+                    roltypen = catalogi_client.list_roltypen(
+                        zaaktype=zaak["zaaktype"],
+                        matcher=omschrijving_matcher(children_roltype_omschrijving),
+                    )
+                    roltype = roltypen[0]
+
+                    data.update(
+                        {
+                            "roltype": roltype["url"],
+                            "betrokkeneType": "natuurlijk_persoon",
+                            "betrokkeneIdentificatie": {
+                                "inpBsn": data.get("bsn"),
+                                "voorvoegselGeslachtsnaam": data.get("affixes"),
+                                "voorletters": data.get("initials"),
+                                "geslachtsnaam": data.get("lastName"),
+                                "voornamen": data.get("firstNames"),
+                                "geboortedatum": data.get("dateOfBirth").isoformat(),
+                                "roltoelichting": children_description,
+                            },
+                        }
+                    )
+
+                    child_rol = execute_unless_result_exists(
+                        partial(
+                            zaken_client.create_rol,
+                            catalogi_client=catalogi_client,
+                            zaak=zaak,
+                            betrokkene=data,
+                        ),
+                        submission,
+                        f"intermediate.child_rol.{index + 1}",
+                    )
+                    children_rollen.append(child_rol)
 
             medewerker_rol: dict[str, Any] | None = None
             if submission.has_registrator:
@@ -566,6 +615,8 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
         if partners_rol_data:
             result["partners_rollen"] = partners_rollen
+        if children_rol_data:
+            result["children_rollen"] = children_rollen
 
         # Register submission to Objects API if configured
         if (
