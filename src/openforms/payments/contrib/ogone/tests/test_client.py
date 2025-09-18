@@ -28,8 +28,8 @@ class OgoneClientTest(OFVCRMixin, TestCase):
         client = OgoneClient(self.merchant)
 
         info = client.get_payment_info(
-            "xyz2024/OF-123456/987654321",
-            1000,
+            "2024/OF-5HEBWV/84",
+            5000,
             "http://foo.bar/return?bazz=buzz",
             RETURN_ACTION_PARAM,
         )
@@ -57,8 +57,8 @@ class OgoneClientTest(OFVCRMixin, TestCase):
         client = OgoneClient(self.merchant)
 
         info = client.get_payment_info(
-            "xyz2024/OF-123456/987654321",
-            1000,
+            "2024/OF-5HEBWV/84",
+            5000,
             "http://foo.bar/return?bazz=buzz",
             RETURN_ACTION_PARAM,
             title="läääääääääääääämp! " * 10,  # 190 chars
