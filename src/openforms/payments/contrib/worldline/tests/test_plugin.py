@@ -896,7 +896,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         response_data = response.json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
-            "Unknown webhook event encountered",
+            _("Unknown webhook event encountered"),
             response_data["invalidParams"][0]["reason"],
         )
 
