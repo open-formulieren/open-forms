@@ -188,7 +188,6 @@ class DataMappingsConfig(TypedDict):
 
 class DataConfig(TypedDict):
     source_variable: str
-    source_component_type: str
     destination_variable: str
     identifier_variable: str
     data_mappings: list[DataMappingsConfig]
@@ -197,7 +196,6 @@ class DataConfig(TypedDict):
 @dataclass
 class SynchronizeVariablesAction(ActionOperation):
     source_variable: str
-    source_component_type: str
     destination_variable: str
     identifier_variable: str
     data_mappings: list[DataMappingsConfig]
@@ -250,8 +248,10 @@ class SynchronizeVariablesAction(ActionOperation):
 
         return result
 
-    def _process_for_component_type(self, context: FormioData) -> DataMapping | None:
-        match self.source_component_type:
+    def _process_for_component_type(
+        self, context: FormioData, component_type: str
+    ) -> DataMapping | None:
+        match component_type:
             case "children":
                 source_data = context.get(self.source_variable, [])
                 destination_data = context.get(self.destination_variable) or []
@@ -282,10 +282,16 @@ class SynchronizeVariablesAction(ActionOperation):
         context: FormioData,
         submission: Submission,
     ) -> DataMapping | None:
-        if not self.source_component_type:
+        component_type = next(
+            component["type"]
+            for component in submission.form.iter_components()
+            if component["key"] == self.source_variable
+        )
+
+        if not component_type:
             return None
 
-        return self._process_for_component_type(context)
+        return self._process_for_component_type(context, component_type)
 
 
 @dataclass

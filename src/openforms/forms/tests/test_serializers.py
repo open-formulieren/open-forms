@@ -360,11 +360,10 @@ class SynchronizeVariablesActionConfigSerializerTest(TestCase):
     def test_valid_mappings(self):
         data = {
             "source_variable": "source",
-            "source_component_type": "children",
             "destination_variable": "destination",
             "identifier_variable": "bsn",
             "data_mappings": [
-                {"component_key": "key1", "property": "value1"},
+                {"component_key": "bsn", "property": "value1"},
                 {"component_key": "key2", "property": "value2"},
             ],
         }
@@ -372,10 +371,9 @@ class SynchronizeVariablesActionConfigSerializerTest(TestCase):
 
         self.assertTrue(serializer.is_valid())
 
-    def test_no_mappings_with_source_and_destination(self):
+    def test_no_mappings_defined(self):
         data = {
             "source_variable": "source",
-            "source_component_type": "children",
             "destination_variable": "destination",
             "identifier_variable": "bsn",
             "data_mappings": [],
@@ -389,10 +387,24 @@ class SynchronizeVariablesActionConfigSerializerTest(TestCase):
         data = {
             "source_variable": "source",
             "destination_variable": "destination",
+            "identifier_variable": "bsn",
+            "data_mappings": [
+                {"component_key": "bsn", "property": "value1"},
+                {"component_key": "bsn", "property": "value2"},
+            ],
+        }
+        serializer = SynchronizeVariablesActionConfigSerializer(data=data)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("data_mappings", serializer.errors)
+
+    def test_no_mapping_for_the_identifier(self):
+        data = {
+            "source_variable": "source",
+            "destination_variable": "destination",
             "source_component_type": "children",
             "identifier_variable": "bsn",
             "data_mappings": [
-                {"component_key": "key1", "property": "value1"},
                 {"component_key": "key1", "property": "value2"},
             ],
         }
