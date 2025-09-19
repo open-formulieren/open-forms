@@ -161,6 +161,29 @@
     }
 },
 {
+    "model": "core.objecttype",
+    "pk": 8,
+    "fields": {
+        "uuid": "db4e8653-1f84-4df7-82bd-96787c52b298",
+        "name": "Children",
+        "name_plural": "Children",
+        "description": "",
+        "data_classification": "open",
+        "maintainer_organization": "",
+        "maintainer_department": "",
+        "contact_person": "",
+        "contact_email": "",
+        "source": "",
+        "update_frequency": "unknown",
+        "provider_organization": "",
+        "documentation_url": "",
+        "labels": {},
+        "created_at": "2025-09-15",
+        "modified_at": "2025-09-15",
+        "allow_geometry": true
+    }
+},
+{
     "model": "core.objectversion",
     "pk": 1,
     "fields": {
@@ -525,6 +548,73 @@
                         "additionalProperties": false
                     },
                     "title": "Partners"
+                }
+            },
+            "additionalProperties": false
+        },
+        "status": "published"
+    }
+},
+{
+    "model": "core.objectversion",
+    "pk": 11,
+    "fields": {
+        "object_type": 8,
+        "version": 1,
+        "created_at": "2025-09-15",
+        "modified_at": "2025-09-15",
+        "published_at": "2025-09-15",
+        "json_schema": {
+            "$id": "https://example.com/children.schema.json",
+            "type": "object",
+            "title": "Children",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "required": [
+                "children"
+            ],
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "bsn"
+                        ],
+                        "properties": {
+                            "bsn": {
+                                "type": "string",
+                                "format": "nl-bsn",
+                                "pattern": "^\\d{9}$"
+                            },
+                            "affixes": {
+                                "type": "string"
+                            },
+                            "initials": {
+                                "type": "string"
+                            },
+                            "lastName": {
+                                "type": "string"
+                            },
+                            "firstNames": {
+                                "type": "string"
+                            },
+                            "dateOfBirth": {
+                                "type": "string",
+                                "format": "date"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "title": "Children"
+                },
+                "extraDetails": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
                 }
             },
             "additionalProperties": false
