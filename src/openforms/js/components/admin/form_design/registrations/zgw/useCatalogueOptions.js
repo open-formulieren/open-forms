@@ -21,6 +21,7 @@ const useCatalogueOptions = () => {
       documentTypeDescription = '',
       medewerkerRoltype = '',
       partnersRoltype = '',
+      childrenRoltype = '',
       productUrl = '',
     },
     setFieldValue,
@@ -72,7 +73,7 @@ const useCatalogueOptions = () => {
     }
   }, [setFieldValue, previousCaseTypeIdentification, caseTypeIdentification, productUrl]);
 
-  // 4. Clear medewerker roltype when case type changes
+  // 4. Clear roltypen when case type changes
   useUpdateEffect(() => {
     const caseTypeChanged = caseTypeIdentification !== previousCaseTypeIdentification;
     if (previousCaseTypeIdentification && caseTypeChanged) {
@@ -82,6 +83,9 @@ const useCatalogueOptions = () => {
       if (partnersRoltype) {
         setFieldValue('partnersRoltype', '');
       }
+      if (childrenRoltype) {
+        setFieldValue('childrenRoltype', '');
+      }
     }
   }, [
     setFieldValue,
@@ -89,6 +93,7 @@ const useCatalogueOptions = () => {
     caseTypeIdentification,
     medewerkerRoltype,
     partnersRoltype,
+    childrenRoltype,
   ]);
 
   return {

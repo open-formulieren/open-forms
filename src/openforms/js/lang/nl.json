@@ -1897,6 +1897,11 @@
     "description": "Family members filters: include deceased label",
     "originalDefault": "Include deceased"
   },
+  "UZk0+O": {
+    "defaultMessage": "Children roltype",
+    "description": "ZGW-APIs registration options 'childrenRoltype' label",
+    "originalDefault": "Children roltype"
+  },
   "Uq9Hbx": {
     "defaultMessage": "-",
     "description": "Registration summary no registration backend fallback message",
@@ -3128,6 +3133,11 @@
     "description": "JSON editor: 'value' header label",
     "originalDefault": "Value"
   },
+  "pbA2dt": {
+    "defaultMessage": "The description that will be used in children registration.",
+    "description": "ZGW APIs registration options 'childrenDescription' help text",
+    "originalDefault": "The description that will be used in children registration."
+  },
   "piUWzT": {
     "defaultMessage": "Registratiemethode",
     "description": "Registration backend label",
@@ -3313,6 +3323,11 @@
     "defaultMessage": "Identifier variable (BSN)",
     "description": "Synchronize variables modal select identifierVariable field label",
     "originalDefault": "Identifier variable (BSN)"
+  },
+  "t+B+/4": {
+    "defaultMessage": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with children.",
+    "description": "ZGW-APIs registration options 'childrenRoltype' help text",
+    "originalDefault": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with children."
   },
   "t+J++o": {
     "defaultMessage": "{isReusable, select, true {Herbruikbare stapinstellingen} other {Stapinstellingen}}",
@@ -3616,6 +3631,11 @@
     "defaultMessage": "(niet ingesteld)",
     "description": "JSON variable type unset representation",
     "originalDefault": "(unset)"
+  },
+  "ydnh2t": {
+    "defaultMessage": "Children description",
+    "description": "ZGW APIs registration options 'childrenDescription' label",
+    "originalDefault": "Children description"
   },
   "z0FW+t": {
     "defaultMessage": "Veldnaam",

@@ -9,6 +9,7 @@ import {TextInput} from 'components/admin/forms/Inputs';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
 import {getAvailableRoleTypes} from '../utils';
+import {ChildrenDescription, PartnersDescription} from './FamilyMembersDescription';
 
 // Components
 
@@ -20,13 +21,19 @@ const MedewerkerRoltypeLegacy = () => {
   return <TextInput id="id_medewerkerRoltype" {...fieldProps} />;
 };
 
-const MedewerkerRoltypeSelect = ({roltypes, loading, zgwApiGroup, caseTypeIdentification}) => {
-  const [, , fieldHelpers] = useField('medewerkerRoltype');
+const RoltypeSelect = ({
+  roltypeTypeName,
+  roltypes,
+  loading,
+  zgwApiGroup,
+  caseTypeIdentification,
+}) => {
+  const [, , fieldHelpers] = useField(roltypeTypeName);
   const {setValue} = fieldHelpers;
 
   return (
     <ReactSelect
-      name="medewerkerRoltype"
+      name={roltypeTypeName}
       options={roltypes}
       isLoading={loading}
       isDisabled={!zgwApiGroup || !caseTypeIdentification}
@@ -39,31 +46,12 @@ const MedewerkerRoltypeSelect = ({roltypes, loading, zgwApiGroup, caseTypeIdenti
   );
 };
 
-MedewerkerRoltypeSelect.propTypes = {
-  catalogueUrl: PropTypes.string,
-};
-
-const PartnersRoltypeSelect = ({roltypes, loading, zgwApiGroup, caseTypeIdentification}) => {
-  const [, , fieldHelpers] = useField('partnersRoltype');
-  const {setValue} = fieldHelpers;
-
-  return (
-    <ReactSelect
-      name="partnersRoltype"
-      options={roltypes}
-      isLoading={loading}
-      isDisabled={!zgwApiGroup || !caseTypeIdentification}
-      required={false}
-      isClearable
-      onChange={selectedOption => {
-        setValue(selectedOption ? selectedOption.value : '');
-      }}
-    />
-  );
-};
-
-PartnersRoltypeSelect.propTypes = {
-  catalogueUrl: PropTypes.string,
+RoltypeSelect.propTypes = {
+  roltypeTypeName: PropTypes.string,
+  roltypes: PropTypes.arrayOf(PropTypes.object),
+  loading: PropTypes.bool,
+  zgwApiGroup: PropTypes.number,
+  caseTypeIdentification: PropTypes.string,
 };
 
 const RoltypeFields = ({catalogueUrl = ''}) => {
@@ -106,7 +94,8 @@ const RoltypeFields = ({catalogueUrl = ''}) => {
           {renderLegacy ? (
             <MedewerkerRoltypeLegacy />
           ) : (
-            <MedewerkerRoltypeSelect
+            <RoltypeSelect
+              roltypeTypeName="medewerkerRoltype"
               roltypes={roleTypes}
               loading={loading}
               zgwApiGroup={zgwApiGroup}
@@ -133,7 +122,8 @@ const RoltypeFields = ({catalogueUrl = ''}) => {
           }
           noManageChildProps
         >
-          <PartnersRoltypeSelect
+          <RoltypeSelect
+            roltypeTypeName="partnersRoltype"
             roltypes={roleTypes}
             loading={loading}
             zgwApiGroup={zgwApiGroup}
@@ -141,6 +131,35 @@ const RoltypeFields = ({catalogueUrl = ''}) => {
           />
         </Field>
       </FormRow>
+      <PartnersDescription />
+      <FormRow>
+        <Field
+          name="childrenRoltype"
+          label={
+            <FormattedMessage
+              description="ZGW-APIs registration options 'childrenRoltype' label"
+              defaultMessage="Children roltype"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              description="ZGW-APIs registration options 'childrenRoltype' help text"
+              defaultMessage={`Description (omschrijving) of the ROLTYPE to use for citizens
+                filling in a form with children.`}
+            />
+          }
+          noManageChildProps
+        >
+          <RoltypeSelect
+            roltypeTypeName="childrenRoltype"
+            roltypes={roleTypes}
+            loading={loading}
+            zgwApiGroup={zgwApiGroup}
+            caseTypeIdentification={caseTypeIdentification}
+          />
+        </Field>
+      </FormRow>
+      <ChildrenDescription />
     </>
   );
 };

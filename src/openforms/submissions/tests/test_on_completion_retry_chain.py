@@ -288,6 +288,8 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
                 "product_url": "http://example.com",
                 "partners_description": "",
                 "partners_roltype": "",
+                "children_description": "",
+                "children_roltype": "",
             },
         )
         self.assertNotEqual(submission.last_register_date, original_register_date)
