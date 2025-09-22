@@ -109,7 +109,6 @@ const ActionSynchronizeVariables = ({action, errors, onChange}) => {
 
   const config = {
     sourceVariable: '',
-    sourceComponentType: '',
     destinationVariable: '',
     identifierVariable: '',
     dataMappings: [],
