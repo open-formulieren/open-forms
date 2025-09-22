@@ -194,6 +194,19 @@ class GenericJSONRegistration(BasePlugin):
                         options,
                     )
 
+            case {"type": "children"}:
+                assert isinstance(schema["items"], dict)
+                _properties = schema["items"]["properties"]
+                assert isinstance(_properties, dict)
+
+                _properties.update(
+                    {
+                        "affixes": {"type": "string"},
+                        "initials": {"type": "string"},
+                        "lastName": {"type": "string"},
+                    }
+                )
+
             case _:
                 pass
 
@@ -380,6 +393,26 @@ def process_component(
                 partner.pop("firstNames", None)
                 partner.pop("dateOfBirthPrecision", None)
                 partner.pop("__addedManually", None)
+
+        case {"type": "children"}:
+            children = values[key]
+            assert isinstance(children, list)
+
+            updated = []
+            for child in children:
+                assert isinstance(child, dict)
+                if child.get("selected") not in (None, True):
+                    continue
+
+                # not relevant properties
+                child.pop("dateOfBirthPrecision", None)
+                child.pop("__id", None)
+                child.pop("__addedManually", None)
+                child.pop("selected", None)
+
+                updated.append(child)
+
+            values[key] = updated
 
         case _:
             pass
