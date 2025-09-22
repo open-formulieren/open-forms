@@ -33,7 +33,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Mon, 22 Sep 2025 15:21:00 GMT
+      - Mon, 22 Sep 2025 15:21:02 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -61,23 +61,23 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions
+    uri: http://localhost:8001/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298/versions
   response:
     body:
-      string: '{"count":1,"next":null,"previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions/1","version":1,"objectType":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","status":"draft","jsonSchema":{"type":"object"},"createdAt":"2024-07-22","modifiedAt":"2024-07-22","publishedAt":null}]}'
+      string: '{"count":1,"next":null,"previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298/versions/1","version":1,"objectType":"http://objecttypes-web:8000/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298","status":"published","jsonSchema":{"$id":"https://example.com/children.schema.json","type":"object","title":"Children","$schema":"https://json-schema.org/draft/2020-12/schema","required":["children"],"properties":{"children":{"type":"array","items":{"type":"object","required":["bsn"],"properties":{"bsn":{"type":"string","format":"nl-bsn","pattern":"^\\d{9}$"},"affixes":{"type":"string"},"initials":{"type":"string"},"lastName":{"type":"string"},"firstNames":{"type":"string"},"dateOfBirth":{"type":"string","format":"date"}},"additionalProperties":false},"title":"Children"},"extraDetails":{"type":"array","items":{"type":"object","additionalProperties":{"type":"string"}}}},"additionalProperties":false},"createdAt":"2025-09-15","modifiedAt":"2025-09-15","publishedAt":"2025-09-15"}]}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Connection:
       - keep-alive
       Content-Length:
-      - '385'
+      - '1053'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Mon, 22 Sep 2025 15:21:00 GMT
+      - Mon, 22 Sep 2025 15:21:02 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -88,6 +88,52 @@ interactions:
       - nosniff
       X-Frame-Options:
       - DENY
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999970094"],
+      "fields": ["kinderen.burgerservicenummer", "kinderen.naam.voornamen", "kinderen.naam.voorletters",
+      "kinderen.naam.voorvoegsel", "kinderen.naam.geslachtsnaam", "kinderen.geboorte.datum"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3MTA4NTU2MzQsImV4cCI6MTcxMDg5ODgzNCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.t6t4_Vm4NTG31vOVdyHgoT9gnEzD4lqld4dDmB7IHQc
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.4
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"kinderen":[{"burgerservicenummer":"999970100","naam":{"voornamen":"Olle","geslachtsnaam":"Oostingh","voorletters":"O."},"geboorte":{"datum":{"type":"Datum","datum":"2022-02-02","langFormaat":"2
+        februari 2022"}}},{"burgerservicenummer":"999970112","naam":{"voornamen":"Onne","geslachtsnaam":"Oostingh","voorletters":"O."},"geboorte":{"datum":{"type":"Datum","datum":"2022-02-02","langFormaat":"2
+        februari 2022"}}}]}]}'
+    headers:
+      Content-Length:
+      - '472'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 22 Sep 2025 15:21:01 GMT
+      Server:
+      - Kestrel
     status:
       code: 200
       message: OK
