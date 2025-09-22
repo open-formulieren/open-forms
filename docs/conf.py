@@ -127,6 +127,7 @@ linkcheck_ignore = [
     # our changelog generates many such links that slow down the link checks :)
     r"https://github.com/open-formulieren/open-forms/issues/[0-9]+",
     r"https://www\.gnu\.org/software/gettext/",
+    r"https://(www\.)?npmjs\.com.*",  # IP/UA blocking...
 ]
 
 linkcheck_anchors_ignore_for_url = [
