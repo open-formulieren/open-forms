@@ -1,0 +1,653 @@
+interactions:
+- request:
+    body: SAMLRequest=PHNhbWxwOkF1dGhuUmVxdWVzdCB4bWxuczpzYW1scD0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOnByb3RvY29sIiB4bWxuczpzYW1sPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXNzZXJ0aW9uIiBJRD0iT05FTE9HSU5fMTIzNDU2IiBWZXJzaW9uPSIyLjAiIElzc3VlSW5zdGFudD0iMjAyNS0wOS0yMlQxMDozNDoxNFoiIERlc3RpbmF0aW9uPSJodHRwczovL21heWtpbi5wcmUuaWUwMS5zaWduaWNhdC5wcm8vYnJva2VyL3NwL3NhbWwvbG9naW4iIFByb3RvY29sQmluZGluZz0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOmJpbmRpbmdzOkhUVFAtQXJ0aWZhY3QiIEFzc2VydGlvbkNvbnN1bWVyU2VydmljZVVSTD0iaHR0cHM6Ly9zaGFya2JhaXQuZXhhbXBsZS5jb20vZGlnaWQvYWNzLyI%2BCiAgICA8c2FtbDpJc3N1ZXI%2BaHR0cHM6Ly9sb2NhbGhvc3Q6ODAwMDwvc2FtbDpJc3N1ZXI%2BCiAgICAgPGRzOlNpZ25hdHVyZSB4bWxuczpkcz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnIyI%2BCjxkczpTaWduZWRJbmZvPgo8ZHM6Q2Fub25pY2FsaXphdGlvbk1ldGhvZCBBbGdvcml0aG09Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvMTAveG1sLWV4Yy1jMTRuIyIvPgo8ZHM6U2lnbmF0dXJlTWV0aG9kIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxkc2lnLW1vcmUjcnNhLXNoYTI1NiIvPgo8ZHM6UmVmZXJlbmNlIFVSST0iI09ORUxPR0lOXzEyMzQ1NiI%2BCjxkczpUcmFuc2Zvcm1zPgo8ZHM6VHJhbnNmb3JtIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnI2VudmVsb3BlZC1zaWduYXR1cmUiLz4KPGRzOlRyYW5zZm9ybSBBbGdvcml0aG09Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvMTAveG1sLWV4Yy1jMTRuIyIvPgo8L2RzOlRyYW5zZm9ybXM%2BCjxkczpEaWdlc3RNZXRob2QgQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGVuYyNzaGEyNTYiLz4KPGRzOkRpZ2VzdFZhbHVlPjVlYVJvWWlrbTZDRXBYRFF2Ymc4RTVOdXRwaDhnRmZYRkd1STZKQ0FSUWc9PC9kczpEaWdlc3RWYWx1ZT4KPC9kczpSZWZlcmVuY2U%2BCjwvZHM6U2lnbmVkSW5mbz4KPGRzOlNpZ25hdHVyZVZhbHVlPld6NTl4cVduN0xQQVdDR01SdzBHSUJEZmpTWHQvSy93K1ZwWDJYYks3dUYvd2FkQ0tjZk1uTGI3andKNllwdWsKeisva2lyRzlJRTNHMXdtNVovaHB1WFVwNHlBbUh5ZzJkNktodDNYc1FTNEpheEdzeDBtZzNJLzdqLy9wbHNKawo1QUpKV0FycEU1OHhIb0J3YXBiSENoeVBQZUV4TGZLbVlyOWYzRUp6Y3ZXenBLZTVlaExQaWhCR0tGSXFBSURZCjdpdDZqdDJhZU5BL0JlVW9qVzJicW1vdDZCR3hCcGkwRU5PT0ZxWkRrY1BLRXYyNXpTejJGV2NMMW1ER2ZUQTMKTTFYWndTRUpJN1FSaWN6ZVQzNlJnbGtiVHZsS1hXcGZMSVpobTNRYjdwUjViMk9sVDExT2pOTjlIV2l0LzEzVwpucENsNmRNV0FHc0pwR3E3eXhYdHdpeHhQT3dLQm1aVE5WdEl0MzJHVHRoS2ZtajA4UXRWaFVYd2tlb01Tc3BiCjAwaVovVEE5LzlKdHRvUStBS0NCOUN4NHJhZFNEd29FR2JjUkVQM0NrajV5bVRERFd0QXhmYS8zRlVpdytaS0cKdDJCVTJiZElZcGsxci8vV01mdnNOMHFNRXJaRmlTekJhR0ZyVitsNDBNN2E3Qkk3SmVpbVdIRkJxeTZ4OUkybwpIczJoQys5N3l0ampENTFCSDg0L3dEWFQyTlF5Mzk1OHZPcXBNc3dLcG1paFM3MjRLcEFiL3ppSXJPRjZ1UzBxCjBEUHhqMGt3WnFtenhla0w4Z21nc3IrNXd1WWNrSjNSV1JTdHZOM3FkWGxYT08wWDlJeGJzRDk0c05jYnRmOWoKVytRaEl2VmRUQldoVk9qdmVGZndKbXMzREJReWlGWEJUZThjTWFWN05LRT08L2RzOlNpZ25hdHVyZVZhbHVlPgo8ZHM6S2V5SW5mbz4KPGRzOlg1MDlEYXRhPgo8ZHM6WDUwOUNlcnRpZmljYXRlPk1JSUZmekNDQTJlZ0F3SUJBZ0lVQ0pVbTUwOEIwVDFRSEl1MTRqM2YzY1FSd3lvd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1R6RUxNQWtHQTFVRUJoTUNUa3d4RmpBVUJnTlZCQWdNRFU1dmIzSmtMVWh2Ykd4aGJtUXhEekFOQmdOVgpCQW9NQmsxaGVXdHBiakVYTUJVR0ExVUVBd3dPYkc5allXeG9iM04wT2pnd01EQXdIaGNOTWpRd056QTFNVE0wCk9URTJXaGNOTWpjd05qQTFNVE0wT1RFMldqQlBNUXN3Q1FZRFZRUUdFd0pPVERFV01CUUdBMVVFQ0F3TlRtOXYKY21RdFNHOXNiR0Z1WkRFUE1BMEdBMVVFQ2d3R1RXRjVhMmx1TVJjd0ZRWURWUVFEREE1c2IyTmhiR2h2YzNRNgpPREF3TURDQ0FpSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnSVBBRENDQWdvQ2dnSUJBS2pIUUNOaldDaEQvMS94CndURGRaSHVqR2N0M3VEYmxKUWM1dk9OU2xTVmZ5M1JXSm9oTGI3aS9mZGVBSDk4b3hVMll1SXVmSlFRRUZXVDQKaGYrMEp0WXFYOHlpM0s2Wm1kcjNPcnVJckNMZ2xFZURkSlpFYnpOTXhSdkM3aWZKVnp6ZHpzai83Uzc4OUlDRwppN05vU2t4YklYdC9ibm1uK0Q5c3pGMzNtUXFGeUhBWkxOWEdVTjY1d2Qza1lrUFZhQ29oblorN25rSE5pck5zCmRnRytHZUQyblo2VmorOHZkcmlFRnpZT0JqR2dVdEQzSVB6Wi84dnpqUncraTNQZWRwSUNQZTNFK2pOc1BRU0EKSkNRR3pzZ2EzUUpOaDBmbW1peUlsZjcwczd0d1VmazBobkh6V09HZkUya1hwazJaZmdUdXBqRGQ1YXhOVjBIVQo4bHZJcnIrMDRGc3JqSUJVK2tJaUhWdndCL1NiSXJLY2g4WmdLeEFCL0VrdHIzaHk5ZW1TRVd2dWVmRGtlcG4yCjRQOFlJcDBrcklwR2ZhcEJGSVVsWjRQamFxMkxZMnFvS1E0NU96dEZQd0RjK3FOWm1tZ3JpVkNuK0JyT2dGdDgKWjRhR3hkZS9nVExVKzFaaXpIN2dKNTNjOGNBS3R0QzFoeWsxWjNtTHhZOVJuYTcxbzA0RzQyRXdJeTE1QW9mSgpOR2IwUmh2Zk5sVGVhY1lSWldIL1FoKzB5RU43Q1NOVjBKMEZpUVorMUZGZ1EzaHVtenlPNDVMYTdYK3hINHBPCmVjdFFyMG9SU3d5ODRXWndqWm5nSjVHUGhRZU1ibnRoTjYrYVdpa1lvaHJPVG03MmRGV1p6WXNvK3RWMmZBb1EKRTluS01sa0tWWUpLQ3d3QWRvSnhIM2VYNnBDN0FnTUJBQUdqVXpCUk1CMEdBMVVkRGdRV0JCVEliOFVwZmw0QQo4Sk9WZFVERVZ4SU5KZk9nWmpBZkJnTlZIU01FR0RBV2dCVEliOFVwZmw0QThKT1ZkVURFVnhJTkpmT2daakFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUEwR0NTcUdTSWIzRFFFQkN3VUFBNElDQVFBanRsQTNUbjFSVU94QTd4c2oKVUphODUvc1Q2TjRDMnN3RXFmREhRMDl4S1pybGF2cnRxa0VXdWFhRU1FUFFwYWxKejJ5R1FkT2NtbFVvSmVPVAptekFPSWJHS1V1b0craW5kOWZUS3l3bGdwZTBEalpSVFRzMWpTN0kyUHNnUXYxQjYzR0tZL1V3K2N4b01RRlU3CmhxWlZ1d0JsVS9hQ1RwWmgvZEJhVkdaZjBhaENVOHpVNjdzQ0QwZVVnQytORTBqQW9vYytOUEkzUnk2aDZaK08KcVNwbE1jRUQra0tPMklSU04yNmxkSW8xcXR5Vm41ckQwQ1NEUldueUQ0M0lpdFNJUmZZd3NQNURZekpjL1lBRwplbVVYdUlXbU1wU3oxRGVCelMzeEZwK2tOSzBrWldLTjV0YnlvL1lQdTJLTWpncDhmd2pYQ0hkdW9IaFVrSWFsClQ0MUNQc1I4ZmFnMGc0c1lHelFmL2dsSEdGZXpxS3cwajBvSUdjSXAvWmJKZmc4bXVIK0Z4QkYxZmtSMU9MNnIKNHhSQ3hPSXhQZnZjWjFQam4yYSsvVG5pS0hYUytTVllJTkFJR1NldytRK2RzakpCTVN3UUR6anV5dzB6VWpKagpOSFVwTnlQOVF3azA5N25VTlptT2wvS1pMYk8xdEVxRE1MTUd6TnVuVTRXUE4zNUhqY0krb0JKc1dEcE9UR3JRCmpvWUNQenpTeDFMaHJSeHpFU3dqd21QaTZhamhzT3FwemJWYVRHRXJFMUdzc3JGV1BEekl4eGJVS3dCNnhmMTgKWTJYSG9FUk9wZ2tZNENTYzRjRHFvY1hWT1VQSWZ0UGF2TklQd3FhZStjRmRTZ292aTdtMGFqT011QTB0emN6MgpPWUVPSHFXcm1XbUFDdXl1YkRwc2N2MG8vQT09CjwvZHM6WDUwOUNlcnRpZmljYXRlPgo8L2RzOlg1MDlEYXRhPgo8L2RzOktleUluZm8%2BCjwvZHM6U2lnbmF0dXJlPjxzYW1scDpSZXF1ZXN0ZWRBdXRobkNvbnRleHQgQ29tcGFyaXNvbj0ibWluaW11bSI%2BPHNhbWw6QXV0aG5Db250ZXh0Q2xhc3NSZWY%2BdXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOmFjOmNsYXNzZXM6UGFzc3dvcmRQcm90ZWN0ZWRUcmFuc3BvcnQ8L3NhbWw6QXV0aG5Db250ZXh0Q2xhc3NSZWY%2BICAgIDwvc2FtbHA6UmVxdWVzdGVkQXV0aG5Db250ZXh0Pgo8L3NhbWxwOkF1dGhuUmVxdWVzdD4%3D&RelayState=%2Fauth%2Fslurm%2Fdigid%2Freturn%3Fnext%3Dhttp%253A%252F%252Ftestserver%252Fslurm%252F
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '5598'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://maykin.pre.ie01.signicat.pro/broker/sp/saml/login
+  response:
+    body:
+      string: ''
+    headers:
+      cache-control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      content-language:
+      - en
+      content-length:
+      - '0'
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' https://cdn.connectis.io; style-src
+        ''self'' https://cdn.connectis.io; font-src ''self'' data: https://cdn.connectis.io;
+        frame-src ''none''; img-src ''self'' data: https://cdn.connectis.io https://qrcode.idin.nl;
+        navigate-to https:; form-action ''self'' https:; frame-ancestors ''none'';
+        base-uri ''self''; upgrade-insecure-requests ; connect-src ''self'''
+      date:
+      - Mon, 22 Sep 2025 10:34:14 GMT
+      expires:
+      - '0'
+      location:
+      - https://maykin.pre.ie01.signicat.pro/broker/select/authn
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      set-cookie:
+      - SESSION=MjUzOThiMGQtM2VlYS00YWM2LTgwNDItNmM0OWVkZGY5ZWJj; Path=/broker; Secure;
+        HttpOnly; SameSite=None
+      strict-transport-security:
+      - max-age=63072000
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - '0'
+    status:
+      code: 302
+      message: Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Cookie:
+      - SESSION=MjUzOThiMGQtM2VlYS00YWM2LTgwNDItNmM0OWVkZGY5ZWJj
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://maykin.pre.ie01.signicat.pro/broker/select/authn
+  response:
+    body:
+      string: "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>Select identity
+        provider</title>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\"
+        content=\"width=device-width, initial-scale=1\" />\n    <link\n      rel=\"shortcut
+        icon\"\n      href=\"/broker/images/favicon.png\"\n    />\n    <link\n      rel=\"stylesheet\"\n
+        \     type=\"text/css\"\n      href=\"/broker/css/connection-list.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      type=\"text/css\"\n      href=\"/broker/css/logo.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/material-icons.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/open-sans.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/mabry.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.css\"\n
+        \   />\n    \n    <script\n      type=\"text/javascript\"\n      src=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.js\"\n
+        \   ></script>\n    <script\n      type=\"text/javascript\"\n      src=\"https://cdn.connectis.io/styling/1.1.10/assets/js/disable-submit-button.js\"\n
+        \   ></script>\n  </head>\n  <body class=\"mdc-typography\">\n    <div class=\"app-background\"></div>\n
+        \   <div class=\"mdc-drawer-app-content\">\n      <header class=\"mdc-top-app-bar
+        mdc-top-app-bar--fixed\">\n        <div class=\"mdc-top-app-bar__row\">\n
+        \         <section\n            class=\"mdc-top-app-bar__section mdc-top-app-bar__section--align-end\"\n
+        \         ><div>\n    <div class=\"mdc-menu-surface--anchor cng-menu mr-4\">\n
+        \     <button class=\"mdc-button cng-menu__button profile-button\">\n        <span
+        class=\"mdc-button__ripple\"></span>\n        <i class=\"material-icons mdc-button__icon\">language</i>\n
+        \       <span class=\"mdc-button__label\"\n          >en</span\n        >\n
+        \     </button>\n      <div class=\"mdc-menu mdc-menu-surface cng-menu__menu\">\n
+        \       <div\n          class=\"mdc-list\"\n          id=\"language-select\"\n
+        \         role=\"menu\"\n          aria-hidden=\"true\"\n          aria-orientation=\"vertical\"\n
+        \         tabindex=\"-1\"\n          data-mdc-auto-init=\"MDCList\"\n        >\n
+        \         <a href=\"?lang=en\" role=\"menuitem\" class=\"mdc-list-item\">\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/en.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> English </span>\n
+        \         </a>\n          <a href=\"?lang=nl\" class=\"mdc-list-item\" role=\"menuitem\">\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/nl.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> Nederlands
+        </span>\n          </a>\n        </div>\n      </div>\n    </div>\n  </div></section>\n
+        \       </div>\n      </header>\n      <main class=\"page-content\">\n        <div
+        class=\"mdc-layout-grid\">\n          <div class=\"mdc-layout-grid__inner\">\n
+        \           <div class=\"mdc-card cng-small-card--centered\">\n              <div
+        class=\"cng-card__primary\">\n                <div class=\"logo-container
+        primary-logo mb-4\"></div>\n                <h1\n                  class=\"mdc-typography--headline5
+        text-center my-0\"\n                >Select identity provider</h1>\n              </div>\n
+        \             <div class=\"cng-card__divider\"></div>\n              \n              <div
+        class=\"cng-card__secondary\">\n                \n                \n                <nav
+        class=\"mdc-list connection-list\">\n                  <a\n                    class=\"mdc-list-item\"\n
+        \                   href=\"?connectionId=https://broker-a.yiviconnect.nl/auth/saml\"\n
+        \                 >\n                    <span class=\"mdc-list-item__graphic\">\n
+        \                     <img src=\"https://cdn.connectis.io/eids-logos/yivi.svg\"
+        alt=\"\" />\n                    </span>\n                    <span\n                      class=\"mdc-list-item__text\"\n
+        \                   >Yivi</span>\n                  </a><a\n                    class=\"mdc-list-item\"\n
+        \                   href=\"?connectionId=simulator\"\n                  >\n
+        \                   <span class=\"mdc-list-item__graphic\">\n                      <img
+        src=\"https://cdn.connectis.io/eids-logos/simulator.svg\" alt=\"\" />\n                    </span>\n
+        \                   <span\n                      class=\"mdc-list-item__text\"\n
+        \                   >simulator</span>\n                  </a>\n                </nav>\n
+        \               <div class=\"mdc-card__actions cng-card__actions-align-end\">\n
+        \                 <a\n                    href=\"/broker/select/authn/cancel\"\n
+        \                   class=\"mdc-button mdc-card__action mdc-card__action--button
+        mdc-button--outlined\"\n                  >\n                    <div class=\"mdc-button__ripple\"></div>\n
+        \                   <span\n                      class=\"mdc-button__label\"\n
+        \                     >Cancel</span\n                    >\n                  </a>\n
+        \               </div>\n              </div>\n            </div>\n          </div>\n
+        \       </div>\n      </main>\n    </div>\n  </body>\n</html>\n"
+    headers:
+      cache-control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      content-language:
+      - en
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' https://cdn.connectis.io; style-src
+        ''self'' https://cdn.connectis.io; font-src ''self'' data: https://cdn.connectis.io;
+        frame-src ''none''; img-src ''self'' data: https://cdn.connectis.io https://qrcode.idin.nl;
+        navigate-to https:; form-action ''self'' https:; frame-ancestors ''none'';
+        base-uri ''self''; upgrade-insecure-requests ; connect-src ''self'''
+      content-type:
+      - text/html;charset=UTF-8
+      date:
+      - Mon, 22 Sep 2025 10:34:14 GMT
+      expires:
+      - '0'
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      strict-transport-security:
+      - max-age=63072000
+      transfer-encoding:
+      - chunked
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Cookie:
+      - SESSION=MjUzOThiMGQtM2VlYS00YWM2LTgwNDItNmM0OWVkZGY5ZWJj
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://maykin.pre.ie01.signicat.pro/broker/select/authn?connectionId=simulator
+  response:
+    body:
+      string: ''
+    headers:
+      cache-control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      content-language:
+      - en
+      content-length:
+      - '0'
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' https://cdn.connectis.io; style-src
+        ''self'' https://cdn.connectis.io; font-src ''self'' data: https://cdn.connectis.io;
+        frame-src ''none''; img-src ''self'' data: https://cdn.connectis.io https://qrcode.idin.nl;
+        navigate-to https:; form-action ''self'' https:; frame-ancestors ''none'';
+        base-uri ''self''; upgrade-insecure-requests ; connect-src ''self'''
+      date:
+      - Mon, 22 Sep 2025 10:34:15 GMT
+      expires:
+      - '0'
+      location:
+      - https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/selection
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      set-cookie:
+      - SESSION=NzZhZGViNDUtM2I4OC00NGE4LWJlOGEtZWUyZTUzYjU2OWRm; Path=/broker; Secure;
+        HttpOnly; SameSite=None
+      strict-transport-security:
+      - max-age=63072000
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - '0'
+    status:
+      code: 302
+      message: Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Cookie:
+      - SESSION=NzZhZGViNDUtM2I4OC00NGE4LWJlOGEtZWUyZTUzYjU2OWRm
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/selection
+  response:
+    body:
+      string: "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>Select simulator</title>\n
+        \   <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width,
+        initial-scale=1\" />\n    <link rel=\"shortcut icon\" href=\"/broker/images/favicon.png\"
+        />\n    <link\n      rel=\"stylesheet\"\n      type=\"text/css\"\n      href=\"/broker/css/logo.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/material-icons.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/open-sans.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/mabry.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.css\"\n
+        \   />\n    \n    <script\n      type=\"text/javascript\"\n      src=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.js\"\n
+        \   ></script>\n    <script\n      type=\"text/javascript\"\n      src=\"https://cdn.connectis.io/styling/1.1.10/assets/js/disable-submit-button.js\"\n
+        \   ></script>\n  </head>\n  <body class=\"mdc-typography\">\n    <div class=\"app-background\"></div>\n
+        \   <div class=\"mdc-drawer-app-content\">\n      <header class=\"mdc-top-app-bar
+        mdc-top-app-bar--fixed\">\n        <div class=\"mdc-top-app-bar__row\">\n
+        \         <section\n            class=\"mdc-top-app-bar__section mdc-top-app-bar__section--align-end\"\n
+        \         ><div>\n    <div class=\"mdc-menu-surface--anchor cng-menu mr-4\">\n
+        \     <button class=\"mdc-button cng-menu__button profile-button\">\n        <span
+        class=\"mdc-button__ripple\"></span>\n        <i class=\"material-icons mdc-button__icon\">language</i>\n
+        \       <span class=\"mdc-button__label\"\n          >en</span\n        >\n
+        \     </button>\n      <div class=\"mdc-menu mdc-menu-surface cng-menu__menu\">\n
+        \       <div\n          class=\"mdc-list\"\n          id=\"language-select\"\n
+        \         role=\"menu\"\n          aria-hidden=\"true\"\n          aria-orientation=\"vertical\"\n
+        \         tabindex=\"-1\"\n          data-mdc-auto-init=\"MDCList\"\n        >\n
+        \         <a href=\"?lang=en\" role=\"menuitem\" class=\"mdc-list-item\">\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/en.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> English </span>\n
+        \         </a>\n          <a href=\"?lang=nl\" class=\"mdc-list-item\" role=\"menuitem\">\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/nl.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> Nederlands
+        </span>\n          </a>\n        </div>\n      </div>\n    </div>\n  </div></section>\n
+        \       </div>\n      </header>\n      <main class=\"page-content\">\n        <div
+        class=\"mdc-layout-grid\">\n          <div class=\"mdc-layout-grid__inner\">\n
+        \           <div class=\"mdc-card cng-small-card--centered\">\n              <form
+        method=\"post\">\n                <div class=\"cng-card__primary\">\n                  <div
+        class=\"logo-container primary-logo mb-4\"></div>\n                  <div\n
+        \                   class=\"mdc-typography--headline5 text-center\"\n                  >Select
+        simulator</div>\n                </div>\n                <div class=\"cng-card__divider\"></div>\n
+        \               <div class=\"cng-card__secondary\">\n                  <nav
+        class=\"mdc-list connection-list\">\n                    <a\n                      class=\"mdc-list-item
+        my-2\"\n                      href=\"authenticate/custom\"\n                      data-test=\"selection-custom\"\n
+        \                   >\n                      <span class=\"mdc-list-item__graphic\">\n
+        \                       <img src=\"/broker/connection/simulator.svg\" />\n
+        \                     </span>\n                      <span\n                        class=\"mdc-list-item__text\"\n
+        \                     >Custom</span>\n                    </a>\n\n                    <a\n
+        \                     class=\"mdc-list-item my-2\"\n                      href=\"authenticate/digid\"\n
+        \                   >\n                      <span class=\"mdc-list-item__graphic\">\n
+        \                       <img\n                          width=\"50px\"\n                          src=\"/broker/connection/digid.svg\"\n
+        \                       />\n                      </span>\n                      <span\n
+        \                       class=\"mdc-list-item__text\"\n                      >DigiD</span>\n
+        \                   </a>\n                    <a\n                      class=\"mdc-list-item
+        my-2\"\n                      href=\"authenticate/digid-cc\"\n                    >\n
+        \                     <span class=\"mdc-list-item__graphic\">\n                        <img\n
+        \                         width=\"50px\"\n                          src=\"/broker/connection/digid.svg\"\n
+        \                       />\n                      </span>\n                      <span\n
+        \                       class=\"mdc-list-item__text\"\n                      >DigiD
+        CombiConnect</span>\n                    </a>\n\n                    <a\n
+        \                     class=\"mdc-list-item my-2\"\n                      href=\"authenticate/eherkenning\"\n
+        \                   >\n                      <span class=\"mdc-list-item__graphic\">\n
+        \                       <img src=\"/broker/connection/eherkenning.svg\" />\n
+        \                     </span>\n                      <span\n                        class=\"mdc-list-item__text\"\n
+        \                     >eHerkenning</span>\n                    </a>\n\n                    <a\n
+        \                     class=\"mdc-list-item my-2\"\n                      href=\"authenticate/eidas\"\n
+        \                   >\n                      <span class=\"mdc-list-item__graphic\">\n
+        \                       <img\n                          width=\"50px\"\n                          src=\"/broker/connection/eidas.svg\"\n
+        \                       />\n                      </span>\n                      <span\n
+        \                       class=\"mdc-list-item__text\"\n                      >eIDAS</span>\n
+        \                   </a>\n\n                    <a\n                      class=\"mdc-list-item
+        my-2\"\n                      href=\"authenticate/idin\"\n                      data-test=\"selection-idin\"\n
+        \                   >\n                      <span class=\"mdc-list-item__graphic\">\n
+        \                       <img\n                          width=\"50px\"\n                          src=\"/broker/connection/idin.svg\"\n
+        \                       />\n                      </span>\n                      <span\n
+        \                       class=\"mdc-list-item__text\"\n                      >iDIN</span>\n
+        \                   </a>\n                    \n                    \n                  </nav>\n
+        \               </div>\n                <div class=\"mdc-card__actions cng-card__actions-align-end\">\n
+        \                 <div class=\"mdc-card__action-buttons\">\n                    <a\n
+        \                     href=\"/broker/authn/simulator/cancel\"\n                      class=\"mdc-button
+        mdc-card__action mdc-card__action--button mdc-button--outlined\"\n                    >\n
+        \                     <div class=\"mdc-button__ripple\"></div>\n                      <span\n
+        \                       class=\"mdc-button__label\"\n                        >Cancel</span\n
+        \                     >\n                    </a>\n                  </div>\n
+        \               </div>\n              </form>\n            </div>\n          </div>\n
+        \       </div>\n      </main>\n    </div>\n  </body>\n</html>\n"
+    headers:
+      cache-control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      content-language:
+      - en
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' https://cdn.connectis.io; style-src
+        ''self'' https://cdn.connectis.io; font-src ''self'' data: https://cdn.connectis.io;
+        frame-src ''none''; img-src ''self'' data: https://cdn.connectis.io https://qrcode.idin.nl;
+        navigate-to https:; form-action ''self'' https:; frame-ancestors ''none'';
+        base-uri ''self''; upgrade-insecure-requests ; connect-src ''self'''
+      content-type:
+      - text/html;charset=UTF-8
+      date:
+      - Mon, 22 Sep 2025 10:34:15 GMT
+      expires:
+      - '0'
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      strict-transport-security:
+      - max-age=63072000
+      transfer-encoding:
+      - chunked
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Cookie:
+      - SESSION=NzZhZGViNDUtM2I4OC00NGE4LWJlOGEtZWUyZTUzYjU2OWRm
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/authenticate/digid
+  response:
+    body:
+      string: "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <title>Signicat
+        DigiD simulator</title>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\"
+        content=\"width=device-width, initial-scale=1\" />\n    <link rel=\"shortcut
+        icon\" href=\"/broker/images/favicon.png\" />\n    <link\n      rel=\"stylesheet\"\n
+        \     href=\"/broker/css/authn-simulator-digid.css\"\n    />\n    <link\n
+        \     rel=\"stylesheet\"\n      type=\"text/css\"\n      href=\"/broker/css/logo.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/material-icons.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/open-sans.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/mabry.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.css\"\n
+        \   />\n    \n    <script\n      type=\"text/javascript\"\n      src=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.js\"\n
+        \   ></script>\n    <script\n      type=\"text/javascript\"\n      src=\"https://cdn.connectis.io/styling/1.1.10/assets/js/disable-submit-button.js\"\n
+        \   ></script>\n  </head>\n  <body class=\"mdc-typography\">\n    <div class=\"app-background\"></div>\n
+        \   <div class=\"mdc-drawer-app-content\">\n      <header class=\"mdc-top-app-bar
+        mdc-top-app-bar--fixed\">\n        <div class=\"mdc-top-app-bar__row\">\n
+        \         <section\n            class=\"mdc-top-app-bar__section mdc-top-app-bar__section--align-end\"\n
+        \         ><div>\n    <div class=\"mdc-menu-surface--anchor cng-menu mr-4\">\n
+        \     <button class=\"mdc-button cng-menu__button profile-button\">\n        <span
+        class=\"mdc-button__ripple\"></span>\n        <i class=\"material-icons mdc-button__icon\">language</i>\n
+        \       <span class=\"mdc-button__label\"\n          >en</span\n        >\n
+        \     </button>\n      <div class=\"mdc-menu mdc-menu-surface cng-menu__menu\">\n
+        \       <div\n          class=\"mdc-list\"\n          id=\"language-select\"\n
+        \         role=\"menu\"\n          aria-hidden=\"true\"\n          aria-orientation=\"vertical\"\n
+        \         tabindex=\"-1\"\n          data-mdc-auto-init=\"MDCList\"\n        >\n
+        \         <a href=\"?lang=en\" role=\"menuitem\" class=\"mdc-list-item\">\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/en.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> English </span>\n
+        \         </a>\n          <a href=\"?lang=nl\" class=\"mdc-list-item\" role=\"menuitem\">\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/nl.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> Nederlands
+        </span>\n          </a>\n        </div>\n      </div>\n    </div>\n  </div></section>\n
+        \       </div>\n      </header>\n      <main class=\"page-content\">\n        <div
+        class=\"mdc-layout-grid\">\n          <div class=\"mdc-layout-grid__inner\">\n
+        \           <form\n              method=\"post\"\n              class=\"mdc-card
+        cng-small-card--centered\"\n              id=\"submitform\"\n            >\n
+        \             <img\n                alt=\"Logo DigiD\"\n                class=\"digid-logo\"\n
+        \               src=\"/broker/connection/digid.svg\"\n              />\n              <div
+        class=\"cng-card__secondary\">\n                <h2\n                  class=\"orange_heading\"\n
+        \               >Signicat DigiD simulator</h2>\n                <fieldset
+        class=\"form__item\">\n                  <label\n                    class=\"form__item__label\"\n
+        \                   for=\"name\"\n                    >BSN (sole proprietor):</label\n
+        \                 >\n                  <input\n                    autocapitalize=\"none\"\n
+        \                   hide_required_indicator=\"true\"\n                    autocomplete=\"off\"\n
+        \                   spellcheck=\"false\"\n                    type=\"text\"\n
+        \                   name=\"bsn\"\n                    value=\"900026236\"\n
+        \                   id=\"name\"\n                    required\n                  />\n
+        \               </fieldset>\n                <fieldset class=\"form__item\">\n
+        \                 <label\n                    class=\"form__item__label\"\n
+        \                   for=\"loa\"\n                  >Level of assurance:</label>\n
+        \                 <select\n                    class=\"form__item__field\"\n
+        \                   name=\"loa\"\n                    id=\"loa\"\n                    required\n
+        \                 >\n                    <option\n                      value=\"loa2\"\n
+        \                   >Basic</option>\n                    <option\n                      selected\n
+        \                     value=\"loa2plus\"\n                    >Middle</option>\n
+        \                   <option\n                      value=\"loa3\"\n                    >Substantial</option>\n
+        \                   <option\n                      value=\"loa4\"\n                    >High</option>\n
+        \                 </select>\n                </fieldset>\n              </div>\n
+        \             <div class=\"cng-card__secondary actions\">\n                <a\n
+        \                 css_type=\"button\"\n                  class=\"actions__left--button\"\n
+        \                 href=\"/broker/authn/simulator/cancel\"\n                >\n
+        \                 <span class=\"material-icons\">keyboard_arrow_left</span>\n\n
+        \                 <span>Cancel</span>\n                </a>\n                <button\n
+        \                 type=\"submit\"\n                  class=\"actions__right--button
+        primary--button\"\n                  id=\"send\"\n                  data-test=\"send-button\"\n
+        \               >\n                  <span>Send</span>\n                  <span
+        class=\"material-icons\">keyboard_arrow_right</span>\n                </button>\n
+        \               <a\n                  css_type=\"button\"\n                  class=\"actions__left--button\"\n
+        \                 href=\"/broker/authn/simulator/error\"\n                >\n
+        \                 <span>Error</span>\n                  <span class=\"material-icons\">keyboard_arrow_right</span>\n
+        \               </a>\n              </div>\n              <div class=\"bld-footer-ribbon\"></div>\n
+        \           </form>\n          </div>\n        </div>\n      </main>\n    </div>\n
+        \ </body>\n</html>\n"
+    headers:
+      cache-control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      content-language:
+      - en
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' https://cdn.connectis.io; style-src
+        ''self'' https://cdn.connectis.io; font-src ''self'' data: https://cdn.connectis.io;
+        frame-src ''none''; img-src ''self'' data: https://cdn.connectis.io https://qrcode.idin.nl;
+        navigate-to https:; form-action ''self'' https:; frame-ancestors ''none'';
+        base-uri ''self''; upgrade-insecure-requests ; connect-src ''self'''
+      content-type:
+      - text/html;charset=UTF-8
+      date:
+      - Mon, 22 Sep 2025 10:34:15 GMT
+      expires:
+      - '0'
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      strict-transport-security:
+      - max-age=63072000
+      transfer-encoding:
+      - chunked
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: bsn=900026236&loa=loa2plus
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '26'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - SESSION=NzZhZGViNDUtM2I4OC00NGE4LWJlOGEtZWUyZTUzYjU2OWRm
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/authenticate/digid
+  response:
+    body:
+      string: "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\"
+        />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"
+        />\n    <link rel=\"shortcut icon\" href=\"/broker/images/favicon.png\" />\n
+        \   <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/material-icons.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/open-sans.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/mabry.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.css\"\n
+        \   />\n    \n    <script\n      type=\"text/javascript\"\n      src=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.js\"\n
+        \   ></script>\n    <title>Error</title>\n  </head>\n  <body class=\"mdc-typography\">\n
+        \   <div class=\"app-background\"></div>\n    <div class=\"mdc-drawer-app-content\">\n
+        \     <header class=\"mdc-top-app-bar mdc-top-app-bar--fixed\">\n        <div
+        class=\"mdc-top-app-bar__row\">\n          <section\n            class=\"mdc-top-app-bar__section
+        mdc-top-app-bar__section--align-end\"\n          ><div>\n    <div class=\"mdc-menu-surface--anchor
+        cng-menu mr-4\">\n      <button class=\"mdc-button cng-menu__button profile-button\">\n
+        \       <span class=\"mdc-button__ripple\"></span>\n        <i class=\"material-icons
+        mdc-button__icon\">language</i>\n        <span class=\"mdc-button__label\"\n
+        \         >en</span\n        >\n      </button>\n      <div class=\"mdc-menu
+        mdc-menu-surface cng-menu__menu\">\n        <div\n          class=\"mdc-list\"\n
+        \         id=\"language-select\"\n          role=\"menu\"\n          aria-hidden=\"true\"\n
+        \         aria-orientation=\"vertical\"\n          tabindex=\"-1\"\n          data-mdc-auto-init=\"MDCList\"\n
+        \       >\n          <a href=\"?lang=en\" role=\"menuitem\" class=\"mdc-list-item\">\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/en.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> English </span>\n
+        \         </a>\n          <a href=\"?lang=nl\" class=\"mdc-list-item\" role=\"menuitem\">\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/nl.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> Nederlands
+        </span>\n          </a>\n        </div>\n      </div>\n    </div>\n  </div></section>\n
+        \       </div>\n      </header>\n      <main class=\"page-content\">\n        <div
+        class=\"mdc-layout-grid\">\n          <div class=\"mdc-layout-grid__inner\">\n
+        \           <div class=\"mdc-card cng-small-card--centered\">\n              <div
+        class=\"cng-card__primary\">\n                <div class=\"logo-container
+        primary-logo mb-4\"></div>\n                <div\n                  class=\"mdc-typography--headline5
+        text-center\"\n                >Something went wrong</div>\n              </div>\n
+        \             <div class=\"cng-card__divider\"></div>\n              <div
+        class=\"cng-card__secondary\">\n                <div class=\"mdc-data-table
+        cng-full-width\">\n                  <table\n                    class=\"mdc-data-table__table\"\n
+        \                   data-mdc-auto-init=\"MDCDataTable\"\n                  >\n
+        \                   <tbody class=\"mdc-data-table__content\">\n                      <tr
+        class=\"mdc-data-table__row\" aria-selected=\"false\">\n                        <td\n
+        \                         class=\"mdc-data-table__cell\"\n                        >Code</td>\n
+        \                       <td\n                          class=\"mdc-data-table__cell\"\n
+        \                       >42d31895-f623-4702-a6d9-4792069f14cd</td>\n                      </tr>\n
+        \                     <tr class=\"mdc-data-table__row\" aria-selected=\"false\">\n
+        \                       <td\n                          class=\"mdc-data-table__cell\"\n
+        \                       >Time</td>\n                        <td\n                          class=\"mdc-data-table__cell\"\n
+        \                       >22-09-2025 10:34 UTC</td>\n                      </tr>\n
+        \                   </tbody>\n                  </table>\n                </div>\n
+        \             </div>\n              <div\n                class=\"mdc-card__actions
+        cng-card__actions-align-end\"\n              >\n                <a\n                  href=\"https://localhost:8000\"\n
+        \                 class=\"mdc-button mdc-card__action--button mdc-button--unelevated\"\n
+        \               >\n                  <div class=\"mdc-button__ripple\"></div>\n
+        \                 <span\n                    class=\"mdc-button__label\"\n
+        \                   >Login again</span\n                  >\n                </a>\n
+        \             </div>\n            </div>\n          </div>\n        </div>\n
+        \     </main>\n    </div>\n  </body>\n</html>\n"
+    headers:
+      cache-control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      content-language:
+      - en
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' https://cdn.connectis.io; style-src
+        ''self'' https://cdn.connectis.io; font-src ''self'' data: https://cdn.connectis.io;
+        frame-src ''none''; img-src ''self'' data: https://cdn.connectis.io https://qrcode.idin.nl;
+        navigate-to https:; form-action ''self'' https:; frame-ancestors ''none'';
+        base-uri ''self''; upgrade-insecure-requests ; connect-src ''self'''
+      content-type:
+      - text/html;charset=UTF-8
+      date:
+      - Mon, 22 Sep 2025 10:34:16 GMT
+      expires:
+      - '0'
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      set-cookie:
+      - SESSION=MDBiOTI3ZGItYmJlOC00Mjg4LWIxOGMtNjgyZDBlYjhjMDc5; Path=/broker; Secure;
+        HttpOnly; SameSite=None
+      strict-transport-security:
+      - max-age=63072000
+      transfer-encoding:
+      - chunked
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - '0'
+    status:
+      code: 500
+      message: Internal Server Error
+version: 1
