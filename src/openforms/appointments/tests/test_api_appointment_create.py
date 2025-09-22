@@ -5,8 +5,6 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
-from hypothesis import given
-from hypothesis.extra.django import TestCase as HypothesisTestCase
 from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
@@ -16,7 +14,6 @@ from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from openforms.tests.search_strategies import json_values
 
 from ..models import Appointment, AppointmentsConfig
 
@@ -241,9 +238,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
-class AppointmentCreateInvalidPermissionsTests(
-    SubmissionsMixin, APITestCase, HypothesisTestCase
-):
+class AppointmentCreateInvalidPermissionsTests(SubmissionsMixin, APITestCase):
     def test_no_submission_in_session(self):
         submission = SubmissionFactory.create(form__is_appointment_form=True)
         submission_url = reverse(
@@ -282,11 +277,13 @@ class AppointmentCreateInvalidPermissionsTests(
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    @given(json_values())
-    def test_invalid_submission_url_in_request_body(self, submission_url):
-        response = self.client.post(ENDPOINT, {"submission": submission_url})
+    def test_invalid_submission_url_in_request_body(self):
+        invalid_values = (False, True, 3.14, None, "", {"foo": "bar"}, ["nope"])
+        for value in invalid_values:
+            with self.subTest(value=value):
+                response = self.client.post(ENDPOINT, {"submission": value})
 
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+                self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_no_submission_allowed_on_form(self):
         submission = SubmissionFactory.create(
