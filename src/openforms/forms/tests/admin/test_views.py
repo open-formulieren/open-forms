@@ -6,6 +6,7 @@ from zipfile import ZipFile
 from django.core.files import File
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
@@ -19,6 +20,8 @@ from openforms.accounts.tests.factories import (
 from openforms.forms.admin.tasks import process_forms_export
 from openforms.forms.models.form import FormsExport
 from openforms.forms.tests.factories import FormFactory
+from openforms.payments.contrib.ogone.constants import OgoneEndpoints
+from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.utils.urls import build_absolute_uri
 
 
@@ -304,4 +307,300 @@ class TestImportView(WebTest):
         self.assertEqual(
             "Form successfully imported!",
             messages[0].message,
+        )
+
+
+@disable_admin_mfa()
+class TestMigrationForm(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.admin_user = StaffUserFactory.create(user_permissions=["forms.change_form"])
+
+    def test_not_superuser_cant_access(self):
+        user = UserFactory.create(is_staff=False, is_superuser=False)
+        ogone_merchant = OgoneMerchantFactory.create()
+        form_to_migrate = FormFactory.create(
+            name="Ogone form 1",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": ogone_merchant.pk},
+        )
+
+        self.client.force_login(user)
+        redirect = self.client.post(
+            reverse("admin:forms_payment_migration"),
+            {"forms_to_migrate": [form_to_migrate.pk]},
+            user=user,
+        )
+
+        redirect_url = (
+            f"{reverse('admin:login')}?next={reverse('admin:forms_payment_migration')}"
+        )
+        self.assertRedirects(
+            redirect,
+            redirect_url,
+            fetch_redirect_response=False,
+            target_status_code=302,
+        )
+        form_to_migrate.refresh_from_db()
+        self.assertEqual(form_to_migrate.payment_backend, "ogone-legacy")
+        self.assertEqual(
+            form_to_migrate.payment_backend_options, {"merchant_id": ogone_merchant.pk}
+        )
+
+    def test_staff_user_without_change_form_permissions_has_no_access(self):
+        user = StaffUserFactory.create(user_permissions=[])
+        ogone_merchant = OgoneMerchantFactory.create()
+        form_to_migrate = FormFactory.create(
+            name="Ogone form 1",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": ogone_merchant.pk},
+        )
+
+        self.client.force_login(user)
+        response = self.client.post(
+            reverse("admin:forms_payment_migration"),
+            {"forms_to_migrate": [form_to_migrate.pk]},
+            user=user,
+            expect_errors=True,
+        )
+
+        self.assertEqual(response.status_code, 403)
+        form_to_migrate.refresh_from_db()
+        self.assertEqual(form_to_migrate.payment_backend, "ogone-legacy")
+        self.assertEqual(
+            form_to_migrate.payment_backend_options, {"merchant_id": ogone_merchant.pk}
+        )
+
+    def test_confirmation_page_shows_forms_to_migrate(self):
+        ogone_merchant = OgoneMerchantFactory.create(
+            label="Merchant Y", pspid="merchant-y", endpoint_preset=OgoneEndpoints.test
+        )
+        form_to_migrate = FormFactory.create(
+            name="Ogone form 1",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": ogone_merchant.pk},
+        )
+        unrelated_merchant = OgoneMerchantFactory.create()
+        unrelated_form = FormFactory.create(
+            name="Ogone form 2",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": unrelated_merchant.pk},
+        )
+
+        self.client.force_login(self.admin_user)
+        # Because the form entries in the admin overview are rendered through javascript
+        # we post directly to the overview page.
+        response = self.client.post(
+            reverse("admin:forms_form_changelist"),
+            {
+                "action": "migrate_to_worldline",
+                "select_across": "0",
+                "index": "0",
+                "_selected_action": str(form_to_migrate.pk),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, form_to_migrate.name)
+        self.assertNotContains(response, unrelated_form.name)
+
+    def test_migrate_single_form(self):
+        ogone_merchant = OgoneMerchantFactory.create(
+            label="Merchant Y", pspid="merchant-y", endpoint_preset=OgoneEndpoints.test
+        )
+        form_to_migrate = FormFactory.create(
+            name="Ogone form 1",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": ogone_merchant.pk},
+        )
+
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("admin:forms_payment_migration"),
+            {"forms_to_migrate": [form_to_migrate.pk]},
+        )
+
+        self.assertRedirects(response, reverse("admin:forms_form_changelist"))
+        form_to_migrate.refresh_from_db()
+        self.assertEqual(form_to_migrate.payment_backend, "worldline")
+        self.assertEqual(
+            form_to_migrate.payment_backend_options, {"merchant": "merchant-y"}
+        )
+
+    def test_migrate_multiple_forms(self):
+        ogone_merchant_1 = OgoneMerchantFactory.create(
+            label="Merchant Y", pspid="merchant-y", endpoint_preset=OgoneEndpoints.test
+        )
+        form_to_migrate_1 = FormFactory.create(
+            name="Ogone form 1",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": ogone_merchant_1.pk},
+        )
+        ogone_merchant_2 = OgoneMerchantFactory.create(
+            label="Merchant Z", pspid="merchant-z", endpoint_preset=OgoneEndpoints.live
+        )
+        form_to_migrate_2 = FormFactory.create(
+            name="Ogone form 2",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": ogone_merchant_2.pk},
+        )
+
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("admin:forms_payment_migration"),
+            {"forms_to_migrate": [form_to_migrate_1.pk, form_to_migrate_2.pk]},
+        )
+
+        self.assertRedirects(response, reverse("admin:forms_form_changelist"))
+        form_to_migrate_1.refresh_from_db()
+        form_to_migrate_2.refresh_from_db()
+        self.assertEqual(form_to_migrate_1.payment_backend, "worldline")
+        self.assertEqual(
+            form_to_migrate_1.payment_backend_options, {"merchant": "merchant-y"}
+        )
+        self.assertEqual(form_to_migrate_2.payment_backend, "worldline")
+        self.assertEqual(
+            form_to_migrate_2.payment_backend_options, {"merchant": "merchant-z"}
+        )
+
+    def test_migrate_form_non_existent_merchant(self):
+        ogone_merchant_1 = OgoneMerchantFactory.create(
+            label="Merchant Y", pspid="merchant-y", endpoint_preset=OgoneEndpoints.test
+        )
+        form_to_migrate_1 = FormFactory.create(
+            name="Ogone form 1",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": ogone_merchant_1.pk},
+        )
+        form_to_migrate_2 = FormFactory.create(
+            name="Ogone form 2",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": 1000000000},
+        )
+
+        self.client.force_login(self.admin_user)
+        redirect = self.client.post(
+            reverse("admin:forms_payment_migration"),
+            {"forms_to_migrate": [form_to_migrate_1.pk, form_to_migrate_2.pk]},
+        )
+
+        self.assertRedirects(
+            redirect,
+            reverse("admin:forms_form_changelist"),
+            fetch_redirect_response=False,
+        )
+
+        response = self.client.get(redirect.url)
+        self.assertContains(
+            response, _("The following forms reference a merchant that is non-existent")
+        )
+        self.assertContains(
+            response, _("{success_count} forms were migrated.").format(success_count=1)
+        )
+        form_to_migrate_1.refresh_from_db()
+        form_to_migrate_2.refresh_from_db()
+        self.assertEqual(form_to_migrate_1.payment_backend, "worldline")
+        self.assertEqual(
+            form_to_migrate_1.payment_backend_options,
+            {"merchant": ogone_merchant_1.pspid},
+        )
+        self.assertEqual(form_to_migrate_2.payment_backend, "ogone-legacy")
+        self.assertEqual(
+            form_to_migrate_2.payment_backend_options,
+            {"merchant_id": 1000000000},
+        )
+
+    def test_migrate_form_migrate_com_attribute(self):
+        ogone_merchant_1 = OgoneMerchantFactory.create(
+            label="Merchant Y", pspid="merchant-y", endpoint_preset=OgoneEndpoints.test
+        )
+        form_to_migrate_1 = FormFactory.create(
+            name="Ogone form 1",
+            payment_backend="ogone-legacy",
+            payment_backend_options={
+                "merchant_id": ogone_merchant_1.pk,
+                "com_template": "{{ foo }}",
+            },
+        )
+        ogone_merchant_2 = OgoneMerchantFactory.create(
+            label="Merchant Z", pspid="merchant-z", endpoint_preset=OgoneEndpoints.live
+        )
+        form_to_migrate_2 = FormFactory.create(
+            name="Ogone form 2",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": ogone_merchant_2.pk},
+        )
+
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("admin:forms_payment_migration"),
+            {"forms_to_migrate": [form_to_migrate_1.pk, form_to_migrate_2.pk]},
+        )
+
+        self.assertRedirects(response, reverse("admin:forms_form_changelist"))
+        form_to_migrate_1.refresh_from_db()
+        form_to_migrate_2.refresh_from_db()
+        self.assertEqual(form_to_migrate_1.payment_backend, "worldline")
+        self.assertEqual(
+            form_to_migrate_1.payment_backend_options,
+            {"merchant": "merchant-y", "descriptor_template": "{{ foo }}"},
+        )
+        self.assertEqual(form_to_migrate_2.payment_backend, "worldline")
+        self.assertEqual(
+            form_to_migrate_2.payment_backend_options, {"merchant": "merchant-z"}
+        )
+
+    def test_migrate_non_payment_form(self):
+        form_to_migrate = FormFactory.create(
+            name="Contact form",
+            payment_backend="",
+            payment_backend_options={},
+        )
+
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("admin:forms_payment_migration"),
+            {"forms_to_migrate": [form_to_migrate.pk]},
+        )
+
+        self.assertContains(
+            response,
+            _(
+                "Please verify the selected forms have the ogone-legacy payment backend configured."
+            ),
+        )
+        form_to_migrate.refresh_from_db()
+        self.assertEqual(form_to_migrate.payment_backend, "")
+        self.assertEqual(form_to_migrate.payment_backend_options, {})
+
+    def test_migrate_only_failing_forms(self):
+        form_to_migrate_1 = FormFactory.create(
+            name="Ogone form 1",
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": 1000000000},
+        )
+
+        self.client.force_login(self.admin_user)
+        redirect = self.client.post(
+            reverse("admin:forms_payment_migration"),
+            {"forms_to_migrate": [form_to_migrate_1.pk]},
+        )
+
+        self.assertRedirects(
+            redirect,
+            reverse("admin:forms_form_changelist"),
+            fetch_redirect_response=False,
+        )
+        response = self.client.get(redirect.url)
+        self.assertContains(
+            response, _("The following forms reference a merchant that is non-existent")
+        )
+        self.assertNotContains(response, _("forms were migrated."))
+        form_to_migrate_1.refresh_from_db()
+        self.assertEqual(form_to_migrate_1.payment_backend, "ogone-legacy")
+        self.assertEqual(
+            form_to_migrate_1.payment_backend_options,
+            {"merchant_id": 1000000000},
         )

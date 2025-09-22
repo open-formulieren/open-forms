@@ -9,6 +9,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.postgres.forms import SimpleArrayField
+from django.db import transaction
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -23,6 +24,7 @@ from privates.storages import private_media_storage
 from rest_framework.exceptions import ValidationError
 
 from openforms.logging import logevent
+from openforms.payments.contrib.ogone.models import OgoneMerchant
 
 from ..forms import ExportStatisticsForm
 from ..forms.form import FormImportForm
@@ -166,3 +168,72 @@ class ExportSubmissionStatisticsView(
             }
         )
         return context
+
+
+class PaymentMigrationForm(forms.Form):
+    forms_to_migrate = forms.ModelMultipleChoiceField(
+        queryset=Form.objects.filter(payment_backend="ogone-legacy"),
+        error_messages={
+            "invalid_choice": _(
+                "The selected form(s) cannot be migrated to the Worldline payment backend."
+                " Please verify the selected forms have the ogone-legacy payment backend"
+                " configured."
+            ),
+        },
+        label=_("Forms"),
+    )
+
+
+def _migrate_form(form: Form) -> bool:
+    ogone_merchant_id = form.payment_backend_options["merchant_id"]
+
+    try:
+        ogone_merchant = OgoneMerchant.objects.get(pk=ogone_merchant_id)
+    except OgoneMerchant.DoesNotExist:
+        return False
+
+    form.payment_backend = "worldline"
+    if "com_template" in form.payment_backend_options:
+        form.payment_backend_options = {
+            "merchant": ogone_merchant.pspid,
+            "descriptor_template": form.payment_backend_options["com_template"],
+        }
+    else:
+        form.payment_backend_options = {"merchant": ogone_merchant.pspid}
+
+    form.save()
+
+    return True
+
+
+class PaymentMigrationView(PermissionRequiredMixin, FormView):
+    form_class = PaymentMigrationForm
+    template_name = "admin/forms/form/migrate-payment-backend.html"
+    permission_required = "forms.change_form"
+    success_url = reverse_lazy("admin:forms_form_changelist")
+
+    def form_valid(self, form):
+        unmigrated_forms = []
+
+        with transaction.atomic():
+            for form_to_migrate in form.cleaned_data["forms_to_migrate"]:
+                if not _migrate_form(form_to_migrate):
+                    unmigrated_forms.append(form_to_migrate)
+
+        if unmigrated_forms:
+            message = _(
+                "The following forms reference a merchant that is non-existent: {form_ids}"
+                "Please select a new merchant for these forms."
+            ).format(form_ids=",".join(str(form.name) for form in unmigrated_forms))
+
+            messages.warning(self.request, message)
+
+        success_count = len(form.cleaned_data["forms_to_migrate"]) - len(
+            unmigrated_forms
+        )
+        if success_count > 0:
+            message = _("{succes_count} forms were migrated.").format(
+                succes_count=success_count
+            )
+            messages.success(self.request, message)
+        return super().form_valid(form)
