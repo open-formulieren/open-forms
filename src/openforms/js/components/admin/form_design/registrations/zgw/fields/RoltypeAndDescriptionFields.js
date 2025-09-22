@@ -9,6 +9,7 @@ import {TextInput} from 'components/admin/forms/Inputs';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
 import {getAvailableRoleTypes} from '../utils';
+import {ChildrenDescription, PartnersDescription} from './FamilyMembersDescription';
 
 // Components
 
@@ -130,6 +131,7 @@ const RoltypeFields = ({catalogueUrl = ''}) => {
           />
         </Field>
       </FormRow>
+      <PartnersDescription />
       <FormRow>
         <Field
           name="childrenRoltype"
@@ -157,6 +159,7 @@ const RoltypeFields = ({catalogueUrl = ''}) => {
           />
         </Field>
       </FormRow>
+      <ChildrenDescription />
     </>
   );
 };
