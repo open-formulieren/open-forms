@@ -17,48 +17,36 @@ a *Worldline Webhook configuration* in the admin interface.
 
     * **Label**: *Fill in a human readable label*, for example: ``My Worldline``
     * **PSPID**: *Your Worldline PSPID*
-    * **Hash algorithm**: SHA-512
 
-4. In another browser tab or window, open the Worldline Backoffice to configure the Worldline
-   aspects.
+4. Next, in another browser tab or window, head to Worldline's Merchant Portal
+   and click on **Developers** > **Payment API** in the sidebar on the left.
 
-5. In the Worldline Backoffice, navigate to **Configuration** > **Technical Configuration**
-   > **Global security parameters**
-
-6. Fill out the following values:
-
-    * **Hash algorithm**: SHA-512
-    * **Character encoding**: UTF-8
-
-7. Next, head to Worldline's Merchant Portal and click on **Developers** > **Payment API** in the sidebar
-   on the left.
-
-8. Generate the following values:
+5. Generate the following values:
 
     * **API Key ID**
     * **Secret API Key**
 
-9. Copy the **API Key** and **Secret API Key** into the corresponding fields in
-   the **Worldline Merchant** that was created in step 3.
+6. Copy the **API Key** and **Secret API Key** into the corresponding fields in
+   the **Worldline Merchant** that was accessed in the Open Forms admin in step 3.
 
-10. Save the changes and verify that all configuration is correct.
+7. Save the changes and verify that all configuration is correct.
 
-11. The previous steps configured the redirect flow between Open Forms and Worldline,
+8. The previous steps configured the redirect flow between Open Forms and Worldline,
     the following steps will configure the webhook integration. Nagivate in the
     Worldline Merchant Portal sidebar to: **Developer** > **Webhooks**
 
-12. Generate webhook credentials by clicking on the **Generate webhook keys**
-    and save the **Webhook ID** and **Secret webhook key** values somewhere safe.
+9. Generate webhook credentials by clicking on the **Generate webhook keys**
+   and save the **Webhook ID** and **Secret webhook key** values somewhere safe.
 
-13. Head back to the Open Forms admin and navigate to **Configuration** > **Worldline webhook configuration**.
+10. Head back to the Open Forms admin and navigate to **Configuration** > **Worldline webhook configuration**.
 
-14. Copy the **Webhook ID** from step 12 into the **Webhook Key ID** form field and the **Secret webhook key**
+11. Copy the **Webhook ID** from step 12 into the **Webhook Key ID** form field and the **Secret webhook key**
     into the **Webhook Key Secret** form field.
 
-15. Copy the **Feedback url** from the webhook configuration page.
+12. Copy the **Feedback url** from the webhook configuration page.
 
-16. Save the changes.
+13. Save the changes.
 
-17. Head back to Worldline's Merchant Portal and navigate to the **Webhooks** section
-    (see step 11). Click on the **Add webhook endpoint button** and fill in the
-    **Feedback url** that was copied in step 15 and click **Confirm**.
+14. Head back to Worldline's Merchant Portal and navigate to the **Webhooks** section
+    (see step 8). Click on the **Add webhook endpoint button** and fill in the
+    **Feedback url** that was copied in step 12 and click **Confirm**.
