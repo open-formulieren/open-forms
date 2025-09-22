@@ -22,7 +22,6 @@ from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.forms.tests.factories import (
     FormFactory,
-    FormLogicFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -4472,33 +4471,6 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             },
         )
 
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger=True,
-            actions=[
-                {
-                    "action": {
-                        "type": "synchronize-children",
-                        "config": {
-                            "source_variable": "children",
-                            "destination_variable": "extraChildDetails",
-                            "identifier_variable": "bsn",
-                            "children_mappings": [
-                                {
-                                    "property": "bsn",
-                                    "component_key": "bsn",
-                                },
-                                {
-                                    "property": "firstNames",
-                                    "component_key": "childName",
-                                },
-                            ],
-                        },
-                    },
-                },
-            ],
-        )
-
         submission = SubmissionFactory.create(
             form=form,
             auth_info__attribute=AuthAttribute.bsn,
@@ -4632,33 +4604,6 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                 "min_age": None,
                 "max_age": None,
             },
-        )
-
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger=True,
-            actions=[
-                {
-                    "action": {
-                        "type": "synchronize-children",
-                        "config": {
-                            "source_variable": "childrenKey",
-                            "destination_variable": "extraChildDetails",
-                            "identifier_variable": "bsn",
-                            "children_mappings": [
-                                {
-                                    "property": "bsn",
-                                    "component_key": "bsn",
-                                },
-                                {
-                                    "property": "firstNames",
-                                    "component_key": "childName",
-                                },
-                            ],
-                        },
-                    },
-                },
-            ],
         )
 
         submission = SubmissionFactory.create(
