@@ -18,14 +18,15 @@
     </ns:gelijk>
     <ns:scope>
         <ns:object StUF:entiteittype="NPS">
+            <ns:inp.bsn xsi:nil="true"/>
             <ns:inp.heeftAlsEchtgenootPartner StUF:entiteittype="NPSNPSHUW">
                 <ns:gerelateerde StUF:entiteittype="NPS">
                     <ns:inp.bsn xsi:nil="true" />
-                    <ns:voornamen xsi:nil="true" />
-                    <ns:voorletters xsi:nil="true" />
-                    <ns:voorvoegselGeslachtsnaam xsi:nil="true" />
-                    <ns:geslachtsnaam xsi:nil="true" />
-                    <ns:geboortedatum xsi:nil="true" />
+                    <ns:geslachtsnaam xsi:nil="true"/>
+                    <ns:voorvoegselGeslachtsnaam xsi:nil="true"/>
+                    <ns:voorletters xsi:nil="true"/>
+                    <ns:voornamen xsi:nil="true"/>
+                    <ns:geboortedatum xsi:nil="true"/>
                 </ns:gerelateerde>
             </ns:inp.heeftAlsEchtgenootPartner>
         </ns:object>

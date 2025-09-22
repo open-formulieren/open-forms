@@ -5,6 +5,8 @@ from django.utils import timezone
 
 from lxml.etree import XMLParser, fromstring as _fromstring
 
+from openforms.utils.date import format_date_value
+
 from .typing import StufBgIncompleteDateType
 
 TIMEZONE_AMS = ZoneInfo("Europe/Amsterdam")
@@ -24,7 +26,9 @@ def normalize_date_of_birth(date_input: str | StufBgIncompleteDateType) -> str:
     "V": full date
     """
     if isinstance(date_input, str):
-        return date_input
+        # the date coming from the stuf_bg is of type '20200909' so we have to make it an
+        # iso-8601 type
+        return format_date_value(date_input)
 
     date_text = date_input.get("#text")
     return date_text if date_text else ""
