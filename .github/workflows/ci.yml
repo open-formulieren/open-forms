@@ -16,7 +16,6 @@ on:
 env:
   IMAGE_NAME: openformulieren/open-forms
   DJANGO_SETTINGS_MODULE: openforms.conf.ci
-  HYPOTHESIS_PROFILE: ci
   CAMUNDA_API_BASE_URL: http://localhost:8080/engine-rest/
   CAMUNDA_USER: demo
   CAMUNDA_PASSWORD: demo
