@@ -190,5 +190,5 @@ def setup_hypothesis():  # pragma: no cover
     except ImportError:
         return
 
-    settings.register_profile("ci", deadline=500)
+    settings.register_profile("ci", deadline=1000)
     settings.load_profile(os.getenv("HYPOTHESIS_PROFILE", "default"))
