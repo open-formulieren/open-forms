@@ -389,7 +389,7 @@ django-stubs-ext==5.0.2
     # via
     #   -r requirements/type-checking.in
     #   django-stubs
-django-timeline-logger==4.0.0
+django-timeline-logger==5.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

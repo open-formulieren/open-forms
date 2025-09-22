@@ -4,7 +4,6 @@ from collections.abc import Iterator, Sequence
 from typing import TYPE_CHECKING, ClassVar
 
 from django.contrib import admin
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.template.defaultfilters import capfirst
 from django.urls import reverse
@@ -12,6 +11,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext, gettext_lazy as _
 
+from timeline_logger.manager import TimelineLogManager
 from timeline_logger.models import TimelineLog
 
 from openforms.formio.typing import Component
@@ -21,11 +21,6 @@ from .constants import TimelineLogTags
 
 
 class TimelineLogProxyQueryset(models.QuerySet["TimelineLogProxy"]):
-    # vendored from https://github.com/maykinmedia/django-timeline-logger/pull/32/files
-    def for_object(self, obj: models.Model):
-        content_type = ContentType.objects.get_for_model(obj)
-        return self.filter(content_type=content_type, object_id=obj.pk)
-
     def filter_event(self, event: str):
         return self.filter(extra_data__log_event=event)
 
@@ -36,9 +31,11 @@ class TimelineLogProxyQueryset(models.QuerySet["TimelineLogProxy"]):
         return self.exclude(extra_data__contains={tag: True})
 
 
-if TYPE_CHECKING:
+class TimelineLogProxyManager(
+    TimelineLogManager.from_queryset(TimelineLogProxyQueryset)
+):
+    if TYPE_CHECKING:
 
-    class TimelineLogProxyManager(models.Manager["TimelineLogProxy"]):
         def for_object(self, obj: models.Model) -> TimelineLogProxyQueryset: ...
         def filter_event(self, event: str) -> TimelineLogProxyQueryset: ...
         def has_tag(self, tag: str) -> TimelineLogProxyQueryset: ...
@@ -49,9 +46,9 @@ class TimelineLogProxy(TimelineLog):
     content_type_id: int
     user_id: int | None
 
-    objects = TimelineLogProxyQueryset.as_manager()  # pyright: ignore
-    if TYPE_CHECKING:
-        objects: ClassVar[TimelineLogProxyManager]  # pyright: ignore[reportIncompatibleVariableOverride]
+    objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
+        TimelineLogProxyManager
+    ] = TimelineLogProxyManager()
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         proxy = True

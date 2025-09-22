@@ -230,7 +230,7 @@ django-solo==2.3.0
     #   zgw-consumers
 django-structlog==9.1.1
     # via -r requirements/base.in
-django-timeline-logger==4.0.0
+django-timeline-logger==5.0.0
     # via -r requirements/base.in
 django-tinymce==4.1.0
     # via -r requirements/base.in
