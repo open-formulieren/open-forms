@@ -54,6 +54,15 @@
     }
 },
 {
+    "model": "core.objecttype",
+    "pk": 7,
+    "fields": {
+        "service": 1,
+        "uuid": "db4e8653-1f84-4df7-82bd-96787c52b298",
+        "_name": "Children"
+    }
+},
+{
     "model": "token.tokenauth",
     "pk": 1,
     "fields": {
@@ -129,6 +138,17 @@
     "fields": {
         "token_auth": 1,
         "object_type": 6,
+        "mode": "read_and_write",
+        "use_fields": false,
+        "fields": null
+    }
+},
+{
+    "model": "token.permission",
+    "pk": 7,
+    "fields": {
+        "token_auth": 1,
+        "object_type": 7,
         "mode": "read_and_write",
         "use_fields": false,
         "fields": null

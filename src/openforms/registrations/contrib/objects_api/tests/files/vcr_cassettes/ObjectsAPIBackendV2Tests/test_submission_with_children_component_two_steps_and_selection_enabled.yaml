@@ -33,7 +33,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Sep 2025 14:07:42 GMT
+      - Fri, 19 Sep 2025 14:07:43 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -61,23 +61,23 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions
+    uri: http://localhost:8001/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298/versions
   response:
     body:
-      string: '{"count":1,"next":null,"previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions/1","version":1,"objectType":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","status":"draft","jsonSchema":{"type":"object"},"createdAt":"2024-07-22","modifiedAt":"2024-07-22","publishedAt":null}]}'
+      string: '{"count":1,"next":null,"previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298/versions/1","version":1,"objectType":"http://objecttypes-web:8000/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298","status":"published","jsonSchema":{"$id":"https://example.com/children.schema.json","type":"object","title":"Children","$schema":"https://json-schema.org/draft/2020-12/schema","required":["children"],"properties":{"children":{"type":"array","items":{"type":"object","required":["bsn"],"properties":{"bsn":{"type":"string","format":"nl-bsn","pattern":"^\\d{9}$"},"affixes":{"type":"string"},"initials":{"type":"string"},"lastName":{"type":"string"},"firstNames":{"type":"string"},"dateOfBirth":{"type":"string","format":"date"}},"additionalProperties":false},"title":"Children"},"extraDetails":{"type":"array","items":{"type":"object","additionalProperties":{"type":"string"}}}},"additionalProperties":false},"createdAt":"2025-09-15","modifiedAt":"2025-09-15","publishedAt":"2025-09-15"}]}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Connection:
       - keep-alive
       Content-Length:
-      - '385'
+      - '1053'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Sep 2025 14:07:42 GMT
+      - Fri, 19 Sep 2025 14:07:43 GMT
       Referrer-Policy:
       - same-origin
       Server:

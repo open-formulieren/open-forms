@@ -171,6 +171,32 @@ def process_mapped_variable(
                 partner.pop("firstNames", None)
                 partner.pop("dateOfBirthPrecision", None)
                 partner.pop("__addedManually", None)
+        case {"type": "children"}:
+            assert isinstance(value, list)
+
+            # these are not relevant for the object
+            need_removal = (
+                "dateOfBirthPrecision",
+                "__id",
+                "selected",
+                "__addedManually",
+            )
+
+            updated = []
+            for child in value:
+                assert isinstance(child, dict)
+                if child.get("selected") not in (None, True):
+                    continue
+
+                assert isinstance(child["dateOfBirth"], date)
+                child["dateOfBirth"] = child["dateOfBirth"].isoformat()
+
+                for attribute in need_removal:
+                    child.pop(attribute, None)
+
+                updated.append(child)
+
+            value = updated
 
         # not a component or standard behaviour where no transformation is necessary
         case None | _:
