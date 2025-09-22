@@ -1716,6 +1716,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "affixes": "",
                     "initials": "P.",
                     "lastName": "Pauw",
+                    "firstNames": "Pia",
                     "dateOfBirth": "1989-04-01",
                 }
             ]
@@ -1735,6 +1736,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                                 "type": "string",
                             },
                             "dateOfBirth": {"format": "date", "type": "string"},
+                            "firstNames": {"type": "string"},
                             "initials": {"type": "string"},
                             "lastName": {"type": "string"},
                         },
