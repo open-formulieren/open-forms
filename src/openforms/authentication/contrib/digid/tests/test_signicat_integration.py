@@ -381,7 +381,6 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         self.assertFalse(auth_response.ok)
 
     def test_raising_loa_requirements_fails_in_flight_authentications(self):
-        session: requests.Session = requests.session()
         form_step = FormStepFactory.create(
             form__slug="slurm",
             form__authentication_backend=PLUGIN_ID,
@@ -406,59 +405,65 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
             },
         )
 
-        our_faux_redirect = self.client.get(resume_path, follow=True)
-        sim_method, sim_action_url, sim_form = _do_signicat_login(
-            session, our_faux_redirect
-        )
-        # copy for later
-        sim_method_2, sim_action_url_2, sim_form_2 = (
-            sim_method,
-            sim_action_url,
-            sim_form,
-        )
+        with requests.Session() as session:
+            our_faux_redirect = self.client.get(resume_path, follow=True)
+            sim_method, sim_action_url, sim_form = _do_signicat_login(
+                session, our_faux_redirect
+            )
+            # copy for later
+            sim_method_2, sim_action_url_2, sim_form_2 = (
+                sim_method,
+                sim_action_url,
+                sim_form,
+            )
 
-        # select substantial LOA
-        sim_form["loa"] = "loa3"
-        auth_response = session.request(
-            sim_method, sim_action_url, data=sim_form, allow_redirects=False
-        )
+            # select substantial LOA
+            sim_form["loa"] = "loa3"
+            auth_response = session.request(
+                sim_method, sim_action_url, data=sim_form, allow_redirects=False
+            )
 
-        # redirect back to our acs
-        self.assertEqual(auth_response.status_code, 302)
-        acs_url = furl(auth_response.headers["location"])
+            # redirect back to our acs
+            self.assertEqual(auth_response.status_code, 302)
+            acs_url = furl(auth_response.headers["location"])
 
-        self.assertEqual(acs_url.scheme, "https")
-        self.assertEqual(acs_url.netloc, "localhost:8000")
+            self.assertEqual(acs_url.scheme, "https")
+            self.assertEqual(acs_url.netloc, "localhost:8000")
 
-        # prep the url for django testclient consumption
-        acs_url.remove(netloc=True, scheme=True)
+            # prep the url for django testclient consumption
+            acs_url.remove(netloc=True, scheme=True)
 
-        # but in the meanwhile the form designer goes all-in
-        auth_backend.options["loa"] = DigiDAssuranceLevels.high
-        form.save()
-        clear_caches()
+            # but in the meanwhile the form designer goes all-in
+            auth_backend.options["loa"] = DigiDAssuranceLevels.high
+            form.save()
+            clear_caches()
 
-        acs_response = self.client.get(acs_url.url, follow=True)
-        assert acs_response.status_code == 200
-        # we are not not logged in
-        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
-        # and are redirected back to the broker
-        # do the JS submit to get redirected to signicat broker
-        method_2, redirect_url_2, form_values_2 = _parse_form(acs_response)
-        self.assertTrue(
-            session.request(method_2, redirect_url_2, data=form_values_2).ok
-        )
+            acs_response = self.client.get(acs_url.url, follow=True)
+            assert acs_response.status_code == 200
+            # we are not not logged in
+            self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
 
-        sim_response_2 = session.get(
-            str(SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid")
-        )
-        self.assertTrue(sim_response_2.ok)
+        # create a separate session, since Signicat seems to remember the original login,
+        # resulting in being redirected immediately to https://localhost:8000 which doesn't
+        # resolve of course
+        with requests.Session() as session2:
+            # and are redirected back to the broker
+            # do the JS submit to get redirected to signicat broker
+            method_2, redirect_url_2, form_values_2 = _parse_form(acs_response)
+            self.assertTrue(
+                session2.request(method_2, redirect_url_2, data=form_values_2).ok
+            )
 
-        # select substantial LOA
-        sim_form_2["loa"] = "loa4"
-        auth_response_2 = session.request(
-            sim_method_2, sim_action_url_2, data=sim_form_2, allow_redirects=False
-        )
+            sim_response_2 = session2.get(
+                str(SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid")
+            )
+            self.assertTrue(sim_response_2.ok)
+
+            # select substantial LOA
+            sim_form_2["loa"] = "loa4"
+            auth_response_2 = session2.request(
+                sim_method_2, sim_action_url_2, data=sim_form_2, allow_redirects=False
+            )
 
         # redirect back to our acs
         self.assertEqual(auth_response_2.status_code, 302)
