@@ -456,7 +456,7 @@ class Form(models.Model):
                     if backend.backend in registration_register
                     else _("{backend} (invalid)").format(backend=backend.name)
                 )
-                for backend in self.registration_backends.all()
+                for backend in self.registration_backends.order_by("name", "key")
             )
             or "-"
         )
