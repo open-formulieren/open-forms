@@ -31,8 +31,10 @@ assignees: sergei-maertens
   - Forms
     - [ ] `openforms.forms.tests.test_import_export`
     - [ ] `openforms.forms.tests.e2e_tests.test_registration_backend_conf`
+    - [ ] `openforms.formio.formatters.tests.test_default_formatters`
   - Payment plugins
     - [ ] Ogone legacy: `openforms.payments.contrib.ogone.tests.test_client`
+    - [ ] Worldline: `openforms.payments.contrib.worldline.tests.test_plugin`
   - Prefill
     - [ ] Objects API: `openforms.prefill.contrib.objects_api`
     - Suwinet: `openforms.prefill.contrib.suwinet` (testenv access has been retracted and won't be
@@ -46,7 +48,7 @@ assignees: sergei-maertens
     - [ ] Objects API: `openforms.registrations.contrib.objects_api`
     - [ ] ZGW APIs: `openforms.registrations.contrib.zgw_apis`
     - [ ] StUF_ZDS APIs: `openforms.registrations.contrib.stuf_zds.tests.test_backend`
-    - [ ] Generic JSON: `openforms.registration.contrib.generic_json.tests.test_backend`
+    - [ ] Generic JSON: `openforms.registrations.contrib.generic_json.tests.test_backend`
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations
