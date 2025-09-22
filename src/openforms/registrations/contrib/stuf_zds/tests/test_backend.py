@@ -3,6 +3,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
+from uuid import uuid4
 
 from django.test import override_settings, tag
 
@@ -19,7 +20,11 @@ from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
-from openforms.forms.tests.factories import FormVariableFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormStepFactory,
+    FormVariableFactory,
+)
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
@@ -29,6 +34,8 @@ from openforms.submissions.tasks import on_post_submission_event, pre_registrati
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
+    SubmissionReportFactory,
+    SubmissionStepFactory,
     SubmissionValueVariableFactory,
 )
 from openforms.utils.tests.vcr import OFVCRMixin
@@ -3578,17 +3585,43 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
 
         self.assertSoapXMLCommon(xml_doc)
 
-        partners_paths = {
-            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": 2,
-            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": 2,
-            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": 2,
-            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": 2,
-            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": 2,
-            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": 2,
-        }
+        # make sure two partners are present
+        self.assertXPathCount(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+            2,
+        )
 
-        for path, count in partners_paths.items():
-            self.assertXPathCount(xml_doc, path, count)
+        # assert all the expected properties are present
+        self.assertXPathContainsDict(
+            xml_doc,
+            {
+                # initiator
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "000009921",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                # partners
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": [
+                    "999995182",
+                    "123456782",
+                ],
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": [
+                    "J"
+                ],
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": [
+                    "Anna Maria Petra",
+                    "Test second partner",
+                ],
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": [
+                    "A.M.P.",
+                    "T.s.p.",
+                ],
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": [
+                    "Jansma",
+                    "Test",
+                ],
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "19450418",
+            },
+        )
 
         # make sure that nothing is registered as extraElement
         self.assertXPathNotExists(
@@ -3814,6 +3847,1275 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.affixes']": "",
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.lastName']": "Test",
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.dateOfBirth']": "1945-04-18",
+            },
+        )
+
+
+class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
+    VCR_TEST_FILES = TESTS_DIR / "files"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+        cls.zds_service = StufServiceFactory.create(
+            soap_service__url="http://localhost/stuf-zds"
+        )
+        config = StufZDSConfig.get_solo()
+        config.service = cls.zds_service
+        config.zaakbetrokkene_children_omschrijving = "A description"
+        config.save()
+        cls.addClassCleanup(StufZDSConfig.clear_cache)
+
+        cls.options: RegistrationOptions = {
+            "zds_zaaktype_code": "foo",
+            "zds_documenttype_omschrijving_inzending": "foo",
+            "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
+        }
+
+        hc_config = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="http://localhost:5010/haalcentraal/api/brp/"
+            ),
+            brp_personen_version=BRPVersions.v20,
+        )
+        hc_config_patcher = patch(
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+            return_value=hc_config,
+        )
+
+        global_config = GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
+        )
+        global_config_patcher = patch(
+            "openforms.config.models.GlobalConfiguration.get_solo",
+            return_value=global_config,
+        )
+
+        hc_config = hc_config_patcher.start()
+        global_config = global_config_patcher.start()
+        cls.addClassCleanup(hc_config_patcher.stop)
+        cls.addClassCleanup(global_config_patcher.stop)
+
+    def test_create_zaak_with_one_form_step_and_children_as_betrokkene(self):
+        """
+        Input
+
+        - Form step 1: children component
+        - Children data: prefilled
+        - Registration type: betrokkene
+        - Children selection: disabled
+        """
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "childrenKey",
+                    "type": "children",
+                    "label": "Children",
+                    "enableSelection": False,
+                    "registration": {"attribute": RegistrationAttribute.children},
+                },
+            ],
+            form__name="my-form",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="000009969",
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "childrenKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        prefill_variables(submission)
+
+        # the submitted data needs extra handling because frontend adds some extra field
+        # to it which is not happenning here, so we have to update it manually in order
+        # to mimic the frontend behaviour
+        childrenKey_data = submission.data["childrenKey"]
+        assert isinstance(childrenKey_data, list)
+
+        for child in childrenKey_data:
+            assert isinstance(child, dict)
+            child.update(
+                {
+                    "selected": None,
+                    "__id": str(uuid4()),
+                    "__addedManually": False,
+                }
+            )
+
+        self.plugin.register_submission(submission, self.options)
+        stuf_request = self.cassette.requests[1]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        # make sure one child is present
+        self.assertXPathCount(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+            1,
+        )
+        # assert all the expected properties are present
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                # initiator
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "000009969",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                # child
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "999993677",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Truus",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "T.",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Wiel",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorvoegselGeslachtsnaam": "van der",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "19600912",
+            },
+        )
+
+        # make sure that nothing is registered as extraElement
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.bsn']",
+        )
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='children_immutable.0.bsn']",
+        )
+
+    def test_create_zaak_with_one_form_step_and_enabled_children_selection(
+        self,
+    ):
+        """
+        Input
+
+        - Form step 1: children component
+        - Children data: prefilled
+        - Registration type: betrokkene
+        - Children selection: enabled
+        """
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "childrenKey",
+                    "type": "children",
+                    "label": "Children",
+                    "enableSelection": True,
+                    "registration": {"attribute": RegistrationAttribute.children},
+                },
+            ],
+            form__name="my-form",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="999970094",
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "childrenKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        prefill_variables(submission)
+
+        # the submitted data needs extra handling because frontend adds some extra field
+        # to it which is not happenning here, so we have to update it manually in order
+        # to mimic the frontend behaviour
+        childrenKey_data = submission.data["childrenKey"]
+        assert isinstance(childrenKey_data, list)
+        assert isinstance(childrenKey_data[0], dict)
+        assert isinstance(childrenKey_data[1], dict)
+
+        childrenKey_data[0].update(
+            {
+                "selected": True,
+                "__id": str(uuid4()),
+                "__addedManually": False,
+            }
+        )
+        childrenKey_data[1].update(
+            {
+                "selected": False,
+                "__id": str(uuid4()),
+                "__addedManually": False,
+            }
+        )
+
+        self.plugin.register_submission(submission, self.options)
+        stuf_request = self.cassette.requests[1]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        # make sure one child is present
+        self.assertXPathCount(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+            1,
+        )
+        # assert all the expected properties are present
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                # initiator
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "999970094",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                # child
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "999970100",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Olle",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "O.",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Oostingh",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20220202",
+            },
+        )
+
+        # make sure that nothing is registered as extraElement
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.bsn']",
+        )
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='children_immutable.0.bsn']",
+        )
+
+    def test_create_zaak_with_one_form_step_enabled_selection_and_manually_added_children(
+        self,
+    ):
+        """
+        Input
+
+        - Form step 1: children component
+        - Children data: manually added
+        - Registration type: betrokkene
+        - Children selection: enabled
+        """
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "childrenKey",
+                    "type": "children",
+                    "label": "Children",
+                    "enableSelection": True,
+                    "registration": {"attribute": RegistrationAttribute.children},
+                },
+            ],
+            form__name="my-form",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="123456782",
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+            # apart from the extra frontend properties we have to mimic the manually added
+            # children, that's why we pass the submitted data we get from the frontend
+            submitted_data={
+                "childrenKey": [
+                    {
+                        "bsn": "999970409",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": True,
+                        "__id": str(uuid4()),
+                        "__addedManually": True,
+                    },
+                    {
+                        "bsn": "999970161",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Peet",
+                        "dateOfBirth": "2018-12-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": False,
+                        "__id": str(uuid4()),
+                        "__addedManually": True,
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "childrenKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        self.plugin.register_submission(submission, self.options)
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+
+        # make sure one child is present
+        self.assertXPathCount(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+            1,
+        )
+        # assert all the expected properties are present
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                # initiator
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "123456782",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                # child
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "999970409",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "N",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Pero",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "P.",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Paassen",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorvoegselGeslachtsnaam": "van",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20230201",
+            },
+        )
+
+        # make sure that nothing is registered as extraElement
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.bsn']",
+        )
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='children_immutable.0.bsn']",
+        )
+
+    def test_create_zaak_with_one_form_step_disabled_selection_and_manually_added_children(
+        self,
+    ):
+        """
+        Input
+
+        - Form step 1: children component
+        - Children data: manually added
+        - Registration type: betrokkene
+        - Children selection: disabled
+        """
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "childrenKey",
+                    "type": "children",
+                    "label": "Children",
+                    "enableSelection": False,
+                    "registration": {"attribute": RegistrationAttribute.children},
+                },
+            ],
+            form__name="my-form",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="123456782",
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+            # apart from the extra frontend properties we have to mimic the manually added
+            # children, that's why we pass the submitted data we get from the frontend
+            submitted_data={
+                "childrenKey": [
+                    {
+                        "bsn": "999970409",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__id": str(uuid4()),
+                        "__addedManually": True,
+                    },
+                    {
+                        "bsn": "999970161",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Peet",
+                        "dateOfBirth": "2018-12-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__id": str(uuid4()),
+                        "__addedManually": True,
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "childrenKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        self.plugin.register_submission(submission, self.options)
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+
+        # make sure two children are present
+        self.assertXPathCount(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+            2,
+        )
+
+        # assert all the expected properties are present
+        self.assertXPathContainsDict(
+            xml_doc,
+            {
+                # initiator
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "123456782",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                # children
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": [
+                    "999970409",
+                    "999970161",
+                ],
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": [
+                    "N"
+                ],
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": [
+                    "Pero",
+                    "Peet",
+                ],
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "P.",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Paassen",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorvoegselGeslachtsnaam": "van",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20181201",
+            },
+        )
+
+        # make sure that nothing is registered as extraElement
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.bsn']",
+        )
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='children_immutable.0.bsn']",
+        )
+
+    def test_create_zaak_with_one_form_step_and_children_as_extraelementen(self):
+        """
+        Input
+
+        - Form step 1: children component
+        - Children data: prefilled
+        - Registration type: extraElementen
+        - Children selection: disabled
+        """
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "childrenKey",
+                    "type": "children",
+                    "label": "Children",
+                    "enableSelection": False,
+                },
+            ],
+            form__name="my-form",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="000009969",
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "childrenKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        prefill_variables(submission)
+
+        # the submitted data needs extra handling because frontend adds some extra field
+        # to it which is not happenning here, so we have to update it manually in order
+        # to mimic the frontend behaviour
+        childrenKey_data = submission.data["childrenKey"]
+        assert isinstance(childrenKey_data, list)
+
+        for child in childrenKey_data:
+            assert isinstance(child, dict)
+            child.update(
+                {
+                    "selected": None,
+                    "__id": str(uuid4()),
+                    "__addedManually": False,
+                }
+            )
+
+        self.plugin.register_submission(submission, self.options)
+        stuf_request = self.cassette.requests[1]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.bsn']": "999993677",
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.firstNames']": "Truus",
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.initials']": "T.",
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.affixes']": "van der",
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.lastName']": "Wiel",
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.dateOfBirth']": "1960-09-12",
+            },
+        )
+
+        # make sure that nothing is registered as zaakbetrokkene
+        self.assertXPathNotExists(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+        )
+
+    def test_create_zaak_with_two_form_steps_and_children_as_betrokkene(self):
+        """
+        Input
+
+        - Form step 1: children component
+        - Form step 2: editgrid component
+        - Children data: prefilled
+        - Registration type: betrokkene for children and extraElementen for editgrid
+        - Children selection: disabled
+        """
+
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "label": "Children",
+                        "enableSelection": False,
+                        "registration": {"attribute": RegistrationAttribute.children},
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "extraChildDetails",
+                        "components": [
+                            {"type": "bsn", "key": "bsn", "label": "BSN"},
+                            {
+                                "type": "textfield",
+                                "key": "childName",
+                                "label": "Child name",
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        submission = SubmissionFactory.create(
+            form=form,
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="000009969",
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={
+                "children": [
+                    {
+                        "bsn": "999993677",
+                        "affixes": "van der",
+                        "initials": "T.",
+                        "lastName": "Wiel",
+                        "firstNames": "Truus",
+                        "dateOfBirth": "1960-09-12",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__addedManually": False,
+                        "__id": str(uuid4()),
+                    }
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step2,
+            data={"extraChildDetails": [{"bsn": "999993677", "childName": "Truus"}]},
+        )
+
+        SubmissionReportFactory.create(submission=submission)
+
+        self.plugin.register_submission(submission, self.options)
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+
+        # assert children component of the first step (betrokkene)
+        # make sure one child is present
+        self.assertXPathCount(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+            1,
+        )
+        # assert all the expected properties are present
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                # initiator
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "000009969",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                # child
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "999993677",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Truus",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "T.",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Wiel",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorvoegselGeslachtsnaam": "van der",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "19600912",
+            },
+        )
+
+        # assert editgrid component of the second step (extraElementen)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.0.bsn']": "999993677",
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.0.childName']": "Truus",
+            },
+        )
+
+    def test_create_zaak_with_two_form_steps_and_children_as_extraElementen(self):
+        """
+        Input
+
+        - Form step 1: children component
+        - Form step 2: editgrid component
+        - Children data: prefilled
+        - Registration type: extraElementen for children and editgrid
+        - Children selection: disabled
+        """
+
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "childrenKey",
+                        "label": "Children",
+                        "enableSelection": False,
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "extraChildDetails",
+                        "components": [
+                            {"type": "bsn", "key": "bsn", "label": "BSN"},
+                            {
+                                "type": "textfield",
+                                "key": "childName",
+                                "label": "Child name",
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+        # not used, just for consistency-we do not use the prefill for the children here
+        # because we have to inject the results in the submission steps
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "childrenKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        submission = SubmissionFactory.create(
+            form=form,
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="000009969",
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={
+                "childrenKey": [
+                    {
+                        "bsn": "999993677",
+                        "affixes": "van der",
+                        "initials": "T.",
+                        "lastName": "Wiel",
+                        "firstNames": "Truus",
+                        "dateOfBirth": "1960-09-12",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__addedManually": False,
+                        "__id": str(uuid4()),
+                    }
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step2,
+            data={"extraChildDetails": [{"bsn": "999993677", "childName": "Truus"}]},
+        )
+
+        SubmissionReportFactory.create(submission=submission)
+
+        self.plugin.register_submission(submission, self.options)
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                # assert children component
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.initials']": "T.",
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.affixes']": "van der",
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.lastName']": "Wiel",
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.dateOfBirth']": "1960-09-12",
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.0.bsn']": "999993677",
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.0.childName']": "Truus",
+                # assert editgrid component
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.bsn']": "999993677",
+                "//stuf:extraElementen/stuf:extraElement[@naam='childrenKey.0.firstNames']": "Truus",
+            },
+        )
+
+    def test_create_zaak_with_two_form_steps_and_enabled_children_selection(
+        self,
+    ):
+        """
+        Input
+
+        - Form step 1: children component
+        - Form step 2: editgrid component
+        - Children data: prefilled
+        - Registration type: betrokkene for children and extraElementen for editgrid
+        - Children selection: enabled
+        """
+
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "label": "Children",
+                        "enableSelection": True,
+                        "registration": {"attribute": RegistrationAttribute.children},
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "extraChildDetails",
+                        "components": [
+                            {"type": "bsn", "key": "bsn", "label": "BSN"},
+                            {
+                                "type": "textfield",
+                                "key": "childName",
+                                "label": "Child name",
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        submission = SubmissionFactory.create(
+            form=form,
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="999970094",
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={
+                "children": [
+                    {
+                        "bsn": "999970100",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Olle",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": True,
+                        "__addedManually": False,
+                        "__id": str(uuid4()),
+                    },
+                    {
+                        "bsn": "999970112",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Onne",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": False,
+                        "__addedManually": False,
+                        "__id": str(uuid4()),
+                    },
+                ],
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step2,
+            data={"extraChildDetails": [{"bsn": "999970100", "childName": "Olle"}]},
+        )
+
+        SubmissionReportFactory.create(submission=submission)
+
+        self.plugin.register_submission(submission, self.options)
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+
+        # assert children component of the first step (betrokkene)
+        # make sure one child is present
+        self.assertXPathCount(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+            1,
+        )
+        # assert all the expected properties are present
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                # initiator
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "999970094",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                # child
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "999970100",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Olle",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "O.",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Oostingh",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20220202",
+            },
+        )
+
+        # assert editgrid component of the second step (extraElementen)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.0.bsn']": "999970100",
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.0.childName']": "Olle",
+            },
+        )
+
+    def test_create_zaak_with_two_form_steps_enabled_selection_and_manually_added_children(
+        self,
+    ):
+        """
+        Input
+
+        - Form step 1: children component
+        - Form step 2: editgrid component
+        - Children data: manually added
+        - Registration type: betrokkene for children and extraElementen for editgrid
+        - Children selection: enabled
+        """
+
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "label": "Children",
+                        "enableSelection": True,
+                        "registration": {"attribute": RegistrationAttribute.children},
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "extraChildDetails",
+                        "components": [
+                            {"type": "bsn", "key": "bsn", "label": "BSN"},
+                            {
+                                "type": "textfield",
+                                "key": "childName",
+                                "label": "Child name",
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        submission = SubmissionFactory.create(
+            form=form,
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="999970094",
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={
+                "children": [
+                    {
+                        "bsn": "999970100",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Olle",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": True,
+                        "__addedManually": True,
+                        "__id": str(uuid4()),
+                    },
+                    {
+                        "bsn": "999970112",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Onne",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": False,
+                        "__addedManually": True,
+                        "__id": str(uuid4()),
+                    },
+                ],
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step2,
+            data={"extraChildDetails": [{"bsn": "999970100", "childName": "Olle"}]},
+        )
+
+        SubmissionReportFactory.create(submission=submission)
+
+        self.plugin.register_submission(submission, self.options)
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+
+        # assert children component of the first step (betrokkene)
+        # make sure one child is present
+        self.assertXPathCount(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+            1,
+        )
+        # assert all the expected properties are present
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                # initiator
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "999970094",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                # child
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "999970100",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "N",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Olle",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "O.",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Oostingh",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20220202",
+            },
+        )
+
+        # assert editgrid component of the second step (extraElementen)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.0.bsn']": "999970100",
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.0.childName']": "Olle",
+            },
+        )
+
+    def test_create_zaak_with_two_form_steps_disabled_selection_and_manually_added_children(
+        self,
+    ):
+        """
+        Input
+
+        - Form step 1: children component
+        - Form step 2: editgrid component
+        - Children data: manually added
+        - Registration type: betrokkene for children and extraElementen for editgrid
+        - Children selection: disabled
+        """
+
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "label": "Children",
+                        "enableSelection": False,
+                        "registration": {"attribute": RegistrationAttribute.children},
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "extraChildDetails",
+                        "components": [
+                            {"type": "bsn", "key": "bsn", "label": "BSN"},
+                            {
+                                "type": "textfield",
+                                "key": "childName",
+                                "label": "Child name",
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="children_immutable",
+            form=form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        submission = SubmissionFactory.create(
+            form=form,
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="999970094",
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={
+                "children": [
+                    {
+                        "bsn": "999970100",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Olle",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__addedManually": True,
+                        "__id": str(uuid4()),
+                    },
+                    {
+                        "bsn": "999970112",
+                        "affixes": "",
+                        "initials": "O.",
+                        "lastName": "Oostingh",
+                        "firstNames": "Onne",
+                        "dateOfBirth": "2022-02-02",
+                        "dateOfBirthPrecision": "date",
+                        "selected": None,
+                        "__addedManually": True,
+                        "__id": str(uuid4()),
+                    },
+                ],
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step2,
+            data={
+                "extraChildDetails": [
+                    {"bsn": "999970100", "childName": "Olle"},
+                    {"bsn": "999970112", "childName": "Onne"},
+                ]
+            },
+        )
+
+        SubmissionReportFactory.create(submission=submission)
+
+        self.plugin.register_submission(submission, self.options)
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+
+        # make sure two children are present
+        self.assertXPathCount(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+            2,
+        )
+
+        # assert all the expected properties are present
+        self.assertXPathContainsDict(
+            xml_doc,
+            {
+                # initiator
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "999970094",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "J",
+                # children
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": [
+                    "999970100",
+                    "999970112",
+                ],
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": [
+                    "N"
+                ],
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": [
+                    "Olle",
+                    "Onne",
+                ],
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "O.",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Oostingh",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20220202",
+            },
+        )
+
+        # assert editgrid component of the second step (extraElementen)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.0.bsn']": "999970100",
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.0.childName']": "Olle",
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.1.bsn']": "999970112",
+                "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.1.childName']": "Onne",
             },
         )
 
