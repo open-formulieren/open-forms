@@ -45,22 +45,17 @@ const IdentifierVariable = () => {
 
   const onIdentifierVariableChange = e => {
     const {name, value} = e.target;
-    let updated;
-    if (identifierInMappings) {
-      updated = dataMappings;
-    } else {
-      updated = [
-        ...dataMappings,
-        {
-          componentKey: bsnRelevantComponents[0].key,
-          property: 'bsn',
-          value,
-        },
-      ];
-    }
-
     setFieldValue(name, value);
-    setFieldValue('dataMappings', updated);
+
+    if (identifierInMappings) return;
+    if (!bsnRelevantComponents.length) return; // edge case if no bsn components are found
+
+    const bsnMapping = {
+      componentKey: bsnRelevantComponents[0].key,
+      property: 'bsn',
+      value,
+    };
+    setFieldValue('dataMappings', [bsnMapping, ...dataMappings]);
   };
 
   return (

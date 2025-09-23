@@ -282,15 +282,11 @@ class SynchronizeVariablesAction(ActionOperation):
         context: FormioData,
         submission: Submission,
     ) -> DataMapping | None:
-        component_type = next(
-            component["type"]
-            for component in submission.form.iter_components()
-            if component["key"] == self.source_variable
-        )
-
-        if not component_type:
+        configuration = submission.total_configuration_wrapper
+        if self.source_variable not in configuration:
             return None
 
+        component_type = configuration[self.source_variable]["type"]
         return self._process_for_component_type(context, component_type)
 
 

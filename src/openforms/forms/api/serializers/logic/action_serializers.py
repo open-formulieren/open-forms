@@ -102,7 +102,7 @@ class SynchronizeVariablesActionConfigSerializer(serializers.Serializer):
         attrs = super().validate(attrs)
         mappings = attrs.get("data_mappings")
         mappings_component_keys = [m["component_key"] for m in mappings]
-        identifier_key = attrs.get("identifier_variable")
+        identifier_key = attrs["identifier_variable"]
 
         counts = Counter(mappings_component_keys)
         duplicates = [key for key, count in counts.items() if count > 1]
