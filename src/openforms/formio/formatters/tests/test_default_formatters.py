@@ -1,3 +1,4 @@
+import os
 from datetime import date, datetime, time
 from pathlib import Path
 from unittest.mock import patch
@@ -198,6 +199,7 @@ class DefaultFormatterTestCase(SimpleTestCase):
             )
 
 
+@patch.dict(os.environ, {"_MAP_GENERATION_MAX_WORKERS": "1"})
 class MapFormatterTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = FILES_DIR
 
@@ -268,12 +270,6 @@ class MapFormatterTests(OFVCRMixin, TestCase):
 
         self.assertHTMLEqual(formatted_value, expected)
 
-    # Note: the default image size is 400 by 300 px, which requires 4 tiles to construct
-    # (with 256 by 256 tile size). Because threading is applied to fetch the tiles in
-    # parallel, the first tile to fetch is not always the same tile. This can cause the
-    # test to fail because no matching URL can be found in the VCR cassettes.
-    # Therefore, use a small image size to guarantee we only have to fetch one tile.
-    @patch("openforms.formio.formatters.custom.MAP_IMAGE_SIZE", (40, 30))
     def test_fallback_to_coordinates_if_image_was_not_generated(self):
         component: MapComponent = {
             "type": "map",
