@@ -494,7 +494,11 @@ class TestMigrationForm(TestCase):
 
         response = self.client.get(redirect.url)
         self.assertContains(
-            response, _("The following forms reference a merchant that is non-existent")
+            response,
+            _(
+                "The following forms reference a merchant that is non-existent: {form_ids}"
+                "Please select a new merchant for these forms."
+            ).format(form_ids=",".join((form_to_migrate_2.name,))),
         )
         self.assertContains(
             response, _("{success_count} forms were migrated.").format(success_count=1)
@@ -568,7 +572,9 @@ class TestMigrationForm(TestCase):
         self.assertContains(
             response,
             _(
-                "Please verify the selected forms have the ogone-legacy payment backend configured."
+                "The selected form(s) cannot be migrated to the Worldline payment backend."
+                " Please verify the selected forms have the ogone-legacy payment backend"
+                " configured."
             ),
         )
         form_to_migrate.refresh_from_db()
@@ -595,7 +601,11 @@ class TestMigrationForm(TestCase):
         )
         response = self.client.get(redirect.url)
         self.assertContains(
-            response, _("The following forms reference a merchant that is non-existent")
+            response,
+            _(
+                "The following forms reference a merchant that is non-existent: {form_ids}"
+                "Please select a new merchant for these forms."
+            ).format(form_ids=",".join((form_to_migrate_1.name,))),
         )
         self.assertNotContains(response, _("forms were migrated."))
         form_to_migrate_1.refresh_from_db()

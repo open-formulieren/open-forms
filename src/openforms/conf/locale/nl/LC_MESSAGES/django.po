@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-23 14:09+0200\n"
+"POT-Creation-Date: 2025-09-23 15:22+0200\n"
 "PO-Revision-Date: 2025-09-15 16:01+0200\n"
 "Last-Translator:   <sonny@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -5164,8 +5164,8 @@ msgid ""
 "configured."
 msgstr ""
 "Een of meerdere formulieren konden niet gemigreerd worden naar de Worldline "
-"betalingsprovider. Controleer dat de geselecteerde formulieren de Ogone Backend"
-"geconfigueerd hebben."
+"betalingsprovider. Controleer dat de geselecteerde formulieren de Ogone "
+"Backend geconfigueerd hebben."
 
 #: openforms/forms/admin/views.py:183
 #: openforms/forms/forms/form_statistics.py:72
@@ -5181,13 +5181,12 @@ msgid ""
 "The following forms reference a merchant that is non-existent: {form_ids}"
 "Please select a new merchant for these forms."
 msgstr ""
-"De volgende formulieren refereren naar een merchant die niet bestaat: {form_ids}. "
-"Selecteer een nieuwe merchant voor deze formulieren."
+"De volgende formulieren refereren naar een merchant die niet bestaat: "
+"{form_ids}. Selecteer een nieuwe merchant voor deze formulieren."
 
 #: openforms/forms/admin/views.py:235
-#, python-brace-format
-msgid "{succes_count} forms were migrated."
-msgstr "{succes_count} formulieren zijn gemigreerd."
+msgid "{success_count} forms were migrated."
+msgstr "{success_count} formulieren zijn gemigreerd."
 
 #: openforms/forms/api/filters.py:23
 msgid "UUID of the form the definition is used in."
@@ -7133,7 +7132,8 @@ msgid ""
 "                "
 msgstr ""
 "\n"
-"                Bevestig dat de onderstaande formulieren gemigreerd moeten worden\n"
+"                Bevestig dat de onderstaande formulieren gemigreerd moeten "
+"worden\n"
 "                naar de Worldline betalingsprovider backend:\n"
 "                 "
 

@@ -1848,7 +1848,7 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
                 form_name=form.name,
                 component_name="map",
                 overlay_name="My first overlay",
-                exception_message="Invalid UUID",
+                exception_message=_("Invalid UUID"),
             ),
             invalid_map_component_overlays[0],
         )
@@ -1904,7 +1904,7 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
                 form_name=form.name,
                 component_name="map",
                 overlay_name="My first overlay",
-                exception_message="Overlay url returned an error",
+                exception_message=_("Overlay url returned an error"),
             ),
             invalid_map_component_overlays[0],
         )
@@ -1947,6 +1947,7 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
         # Collect invalid map component overlays
         invalid_map_component_overlays = collect_invalid_map_component_overlays()
 
+        invalid_layers = ("another-unknown-layer", "unknown-layer")
         self.assertEqual(len(invalid_map_component_overlays), 2)
         self.assertEqual(
             InvalidMapComponentOverlay(
@@ -1954,7 +1955,9 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
                 form_name=form.name,
                 component_name="map",
                 overlay_name="My first overlay",
-                exception_message="Overlay uses unavailable layers: another-unknown-layer, unknown-layer",
+                exception_message=_("Overlay uses unavailable layers: {layers}").format(
+                    layers=", ".join(sorted(invalid_layers))
+                ),
             ),
             invalid_map_component_overlays[0],
         )
@@ -1964,7 +1967,9 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
                 form_name=form.name,
                 component_name="map",
                 overlay_name="My second overlay",
-                exception_message="Overlay uses unavailable layers: a-third-unknown-layer",
+                exception_message=_("Overlay uses unavailable layers: {layers}").format(
+                    layers=", ".join(("a-third-unknown-layer",))
+                ),
             ),
             invalid_map_component_overlays[1],
         )
