@@ -2,8 +2,8 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2025-09-18", "startdatum": "2025-09-18", "productenOfDiensten":
-      [], "omschrijving": "Form 023", "toelichting": "Aangemaakt door Open Formulieren",
+      "registratiedatum": "2025-09-22", "startdatum": "2025-09-22", "productenOfDiensten":
+      [], "omschrijving": "Form 008", "toelichting": "Aangemaakt door Open Formulieren",
       "betalingsindicatie": "nvt", "vertrouwelijkheidaanduiding": "openbaar"}'
     headers:
       Accept:
@@ -13,7 +13,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODE3Nzc2MywiZXhwIjoxNzU4MjIwOTYzLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.Y3ZCBE0LYWlap_iG-kmmM4aDq_Jt6oCS9PwzzOxj_qA
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODU2NzY4OSwiZXhwIjoxNzU4NjEwODg5LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.149DVmhORNo72g2v-oQVG6ZY-yIyORdR44WPmrZJGx4
       Connection:
       - keep-alive
       Content-Crs:
@@ -28,8 +28,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/b5b89f37-6857-4b46-bd44-a704f677afa7","uuid":"b5b89f37-6857-4b46-bd44-a704f677afa7","identificatie":"ZAAK-2025-0000000341","bronorganisatie":"000000000","omschrijving":"Form
-        023","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2025-09-18","verantwoordelijkeOrganisatie":"000000000","startdatum":"2025-09-18","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"openbaar","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/c305a149-5d64-4115-bae6-74e81197d971","uuid":"c305a149-5d64-4115-bae6-74e81197d971","identificatie":"ZAAK-2025-0000000102","bronorganisatie":"000000000","omschrijving":"Form
+        008","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2025-09-22","verantwoordelijkeOrganisatie":"000000000","startdatum":"2025-09-22","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"openbaar","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -45,7 +45,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/b5b89f37-6857-4b46-bd44-a704f677afa7
+      - http://localhost:8003/zaken/api/v1/zaken/c305a149-5d64-4115-bae6-74e81197d971
       Referrer-Policy:
       - same-origin
       Vary:
@@ -59,9 +59,9 @@ interactions:
       message: Created
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-      "bronorganisatie": "000000000", "creatiedatum": "2025-09-18", "titel": "Form
-      023", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf", "inhoud":
-      "", "status": "definitief", "bestandsnaam": "open-forms-Form 023.pdf", "ontvangstdatum":
+      "bronorganisatie": "000000000", "creatiedatum": "2025-09-22", "titel": "Form
+      008", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf", "inhoud":
+      "", "status": "definitief", "bestandsnaam": "open-forms-Form 008.pdf", "ontvangstdatum":
       null, "beschrijving": "Ingezonden formulier", "indicatieGebruiksrecht": false,
       "bestandsomvang": 0, "vertrouwelijkheidaanduiding": "openbaar"}'
     headers:
@@ -70,7 +70,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODE3Nzc2MywiZXhwIjoxNzU4MjIwOTYzLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.Y3ZCBE0LYWlap_iG-kmmM4aDq_Jt6oCS9PwzzOxj_qA
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODU2NzY4OSwiZXhwIjoxNzU4NjEwODg5LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.149DVmhORNo72g2v-oQVG6ZY-yIyORdR44WPmrZJGx4
       Connection:
       - keep-alive
       Content-Length:
@@ -83,9 +83,9 @@ interactions:
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/82721dad-312d-4aa9-94fb-2015108eb145","identificatie":"DOCUMENT-2025-0000000367","bronorganisatie":"000000000","creatiedatum":"2025-09-18","titel":"Form
-        023","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2025-09-18T06:42:43.954092Z","bestandsnaam":"open-forms-Form
-        023.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/82721dad-312d-4aa9-94fb-2015108eb145/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a42aa987-a149-4d20-9a5a-c056a0469eae","identificatie":"DOCUMENT-2025-0000000261","bronorganisatie":"000000000","creatiedatum":"2025-09-22","titel":"Form
+        008","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2025-09-22T19:01:30.035856Z","bestandsnaam":"open-forms-Form
+        008.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a42aa987-a149-4d20-9a5a-c056a0469eae/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
         formulier","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
@@ -99,7 +99,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/82721dad-312d-4aa9-94fb-2015108eb145
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a42aa987-a149-4d20-9a5a-c056a0469eae
       Referrer-Policy:
       - same-origin
       Vary:
@@ -112,15 +112,15 @@ interactions:
       code: 201
       message: Created
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/b5b89f37-6857-4b46-bd44-a704f677afa7",
-      "informatieobject": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/82721dad-312d-4aa9-94fb-2015108eb145"}'
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/c305a149-5d64-4115-bae6-74e81197d971",
+      "informatieobject": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a42aa987-a149-4d20-9a5a-c056a0469eae"}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODE3Nzc2MywiZXhwIjoxNzU4MjIwOTYzLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.Y3ZCBE0LYWlap_iG-kmmM4aDq_Jt6oCS9PwzzOxj_qA
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODU2NzY4OSwiZXhwIjoxNzU4NjEwODg5LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.149DVmhORNo72g2v-oQVG6ZY-yIyORdR44WPmrZJGx4
       Connection:
       - keep-alive
       Content-Length:
@@ -133,8 +133,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaakinformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/d192b47e-6423-4f36-a303-a8c35ce5c455","uuid":"d192b47e-6423-4f36-a303-a8c35ce5c455","informatieobject":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/82721dad-312d-4aa9-94fb-2015108eb145","zaak":"http://localhost:8003/zaken/api/v1/zaken/b5b89f37-6857-4b46-bd44-a704f677afa7","aardRelatieWeergave":"Hoort
-        bij, omgekeerd: kent","titel":"","beschrijving":"","registratiedatum":"2025-09-18T06:42:44.052541Z","vernietigingsdatum":null,"status":null}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/06b67f3c-85c7-47f4-9304-793fcb99e3ac","uuid":"06b67f3c-85c7-47f4-9304-793fcb99e3ac","informatieobject":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a42aa987-a149-4d20-9a5a-c056a0469eae","zaak":"http://localhost:8003/zaken/api/v1/zaken/c305a149-5d64-4115-bae6-74e81197d971","aardRelatieWeergave":"Hoort
+        bij, omgekeerd: kent","titel":"","beschrijving":"","registratiedatum":"2025-09-22T19:01:30.129947Z","vernietigingsdatum":null,"status":null}'
     headers:
       API-version:
       - 1.5.1
@@ -147,7 +147,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/d192b47e-6423-4f36-a303-a8c35ce5c455
+      - http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/06b67f3c-85c7-47f4-9304-793fcb99e3ac
       Referrer-Policy:
       - same-origin
       Vary:
@@ -167,7 +167,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODE3Nzc2MywiZXhwIjoxNzU4MjIwOTYzLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.Y3ZCBE0LYWlap_iG-kmmM4aDq_Jt6oCS9PwzzOxj_qA
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODU2NzY4OSwiZXhwIjoxNzU4NjEwODg5LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.149DVmhORNo72g2v-oQVG6ZY-yIyORdR44WPmrZJGx4
       Connection:
       - keep-alive
       User-Agent:
@@ -200,7 +200,7 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/b5b89f37-6857-4b46-bd44-a704f677afa7",
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/c305a149-5d64-4115-bae6-74e81197d971",
       "betrokkeneType": "vestiging", "roltype": "http://localhost:8003/catalogi/api/v1/roltypen/43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b",
       "roltoelichting": "inzender formulier", "indicatieMachtiging": "", "betrokkeneIdentificatie":
       {"verblijfsadres": {"wplWoonplaatsNaam": "Ketnet", "aoaPostcode": "1000 AA",
@@ -213,7 +213,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODE3Nzc2MywiZXhwIjoxNzU4MjIwOTYzLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.Y3ZCBE0LYWlap_iG-kmmM4aDq_Jt6oCS9PwzzOxj_qA
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODU2NzY4OSwiZXhwIjoxNzU4NjEwODg5LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.149DVmhORNo72g2v-oQVG6ZY-yIyORdR44WPmrZJGx4
       Connection:
       - keep-alive
       Content-Length:
@@ -226,8 +226,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/rollen
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/rollen/1b9812bd-8223-40ac-a987-1ccd6dbe4eca","uuid":"1b9812bd-8223-40ac-a987-1ccd6dbe4eca","zaak":"http://localhost:8003/zaken/api/v1/zaken/b5b89f37-6857-4b46-bd44-a704f677afa7","betrokkene":"","betrokkeneType":"vestiging","afwijkendeNaamBetrokkene":"","roltype":"http://localhost:8003/catalogi/api/v1/roltypen/43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b","omschrijving":"Initiator","omschrijvingGeneriek":"initiator","roltoelichting":"inzender
-        formulier","registratiedatum":"2025-09-18T06:42:44.180218Z","indicatieMachtiging":"","contactpersoonRol":{"emailadres":"","functie":"","telefoonnummer":"","naam":""},"statussen":[],"betrokkeneIdentificatie":{"vestigingsNummer":"87654321","handelsnaam":["ACME"],"verblijfsadres":{"aoaIdentificatie":"OFWORKAROUND","wplWoonplaatsNaam":"Ketnet","gorOpenbareRuimteNaam":"Samsonweg","aoaPostcode":"1000
+      string: '{"url":"http://localhost:8003/zaken/api/v1/rollen/fd57f74e-ccdc-41ea-a611-81189a7892e3","uuid":"fd57f74e-ccdc-41ea-a611-81189a7892e3","zaak":"http://localhost:8003/zaken/api/v1/zaken/c305a149-5d64-4115-bae6-74e81197d971","betrokkene":"","betrokkeneType":"vestiging","afwijkendeNaamBetrokkene":"","roltype":"http://localhost:8003/catalogi/api/v1/roltypen/43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b","omschrijving":"Initiator","omschrijvingGeneriek":"initiator","roltoelichting":"inzender
+        formulier","registratiedatum":"2025-09-22T19:01:30.251799Z","indicatieMachtiging":"","contactpersoonRol":{"emailadres":"","functie":"","telefoonnummer":"","naam":""},"statussen":[],"betrokkeneIdentificatie":{"vestigingsNummer":"87654321","handelsnaam":["ACME"],"verblijfsadres":{"aoaIdentificatie":"OFWORKAROUND","wplWoonplaatsNaam":"Ketnet","gorOpenbareRuimteNaam":"Samsonweg","aoaPostcode":"1000
         AA","aoaHuisnummer":101,"aoaHuisletter":"","aoaHuisnummertoevoeging":"","inpLocatiebeschrijving":""},"subVerblijfBuitenland":null,"kvkNummer":"12345678"}}'
     headers:
       API-version:
@@ -241,7 +241,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/rollen/1b9812bd-8223-40ac-a987-1ccd6dbe4eca
+      - http://localhost:8003/zaken/api/v1/rollen/fd57f74e-ccdc-41ea-a611-81189a7892e3
       Referrer-Policy:
       - same-origin
       Vary:
@@ -261,7 +261,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODE3Nzc2MywiZXhwIjoxNzU4MjIwOTYzLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.Y3ZCBE0LYWlap_iG-kmmM4aDq_Jt6oCS9PwzzOxj_qA
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODU2NzY4OSwiZXhwIjoxNzU4NjEwODg5LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.149DVmhORNo72g2v-oQVG6ZY-yIyORdR44WPmrZJGx4
       Connection:
       - keep-alive
       User-Agent:
@@ -294,9 +294,9 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/b5b89f37-6857-4b46-bd44-a704f677afa7",
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/c305a149-5d64-4115-bae6-74e81197d971",
       "statustype": "http://localhost:8003/catalogi/api/v1/statustypen/6443ac1a-04a1-4335-9db2-5f3c998dbb34",
-      "datumStatusGezet": "2025-09-18T06:42:44.264134+00:00", "statustoelichting":
+      "datumStatusGezet": "2025-09-22T19:01:30.329823+00:00", "statustoelichting":
       ""}'
     headers:
       Accept:
@@ -304,7 +304,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODE3Nzc2MywiZXhwIjoxNzU4MjIwOTYzLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.Y3ZCBE0LYWlap_iG-kmmM4aDq_Jt6oCS9PwzzOxj_qA
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODU2NzY4OSwiZXhwIjoxNzU4NjEwODg5LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.149DVmhORNo72g2v-oQVG6ZY-yIyORdR44WPmrZJGx4
       Connection:
       - keep-alive
       Content-Length:
@@ -317,7 +317,7 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/statussen
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/statussen/2cd2d991-ef06-4339-87f6-3d83829c1df4","uuid":"2cd2d991-ef06-4339-87f6-3d83829c1df4","zaak":"http://localhost:8003/zaken/api/v1/zaken/b5b89f37-6857-4b46-bd44-a704f677afa7","statustype":"http://localhost:8003/catalogi/api/v1/statustypen/6443ac1a-04a1-4335-9db2-5f3c998dbb34","datumStatusGezet":"2025-09-18T06:42:44.264134Z","statustoelichting":"","indicatieLaatstGezetteStatus":true,"gezetdoor":null,"zaakinformatieobjecten":[]}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/statussen/d001bd13-4138-4b3e-bf88-ffcddb55ff9c","uuid":"d001bd13-4138-4b3e-bf88-ffcddb55ff9c","zaak":"http://localhost:8003/zaken/api/v1/zaken/c305a149-5d64-4115-bae6-74e81197d971","statustype":"http://localhost:8003/catalogi/api/v1/statustypen/6443ac1a-04a1-4335-9db2-5f3c998dbb34","datumStatusGezet":"2025-09-22T19:01:30.329823Z","statustoelichting":"","indicatieLaatstGezetteStatus":true,"gezetdoor":null,"zaakinformatieobjecten":[]}'
     headers:
       API-version:
       - 1.5.1
@@ -330,7 +330,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/statussen/2cd2d991-ef06-4339-87f6-3d83829c1df4
+      - http://localhost:8003/zaken/api/v1/statussen/d001bd13-4138-4b3e-bf88-ffcddb55ff9c
       Referrer-Policy:
       - same-origin
       Vary:
@@ -350,17 +350,17 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODE3Nzc2NCwiZXhwIjoxNzU4MjIwOTY0LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.1Guco82RlcJj5WTRtazeqVNwnS3J5fTqmZbJeoBkK3o
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODU2NzY5MCwiZXhwIjoxNzU4NjEwODkwLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.XlUEKBonjGqPszhHsk8nfiTCpCaw0xUyoe8XAEXA0UU
       Connection:
       - keep-alive
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: http://localhost:8003/zaken/api/v1/rollen/1b9812bd-8223-40ac-a987-1ccd6dbe4eca
+    uri: http://localhost:8003/zaken/api/v1/rollen/fd57f74e-ccdc-41ea-a611-81189a7892e3
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/rollen/1b9812bd-8223-40ac-a987-1ccd6dbe4eca","uuid":"1b9812bd-8223-40ac-a987-1ccd6dbe4eca","zaak":"http://localhost:8003/zaken/api/v1/zaken/b5b89f37-6857-4b46-bd44-a704f677afa7","betrokkene":"","betrokkeneType":"vestiging","afwijkendeNaamBetrokkene":"","roltype":"http://localhost:8003/catalogi/api/v1/roltypen/43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b","omschrijving":"Initiator","omschrijvingGeneriek":"initiator","roltoelichting":"inzender
-        formulier","registratiedatum":"2025-09-18T06:42:44.180218Z","indicatieMachtiging":"","contactpersoonRol":{"emailadres":"","functie":"","telefoonnummer":"","naam":""},"statussen":[],"betrokkeneIdentificatie":{"vestigingsNummer":"87654321","handelsnaam":["ACME"],"verblijfsadres":{"aoaIdentificatie":"OFWORKAROUND","wplWoonplaatsNaam":"Ketnet","gorOpenbareRuimteNaam":"Samsonweg","aoaPostcode":"1000
+      string: '{"url":"http://localhost:8003/zaken/api/v1/rollen/fd57f74e-ccdc-41ea-a611-81189a7892e3","uuid":"fd57f74e-ccdc-41ea-a611-81189a7892e3","zaak":"http://localhost:8003/zaken/api/v1/zaken/c305a149-5d64-4115-bae6-74e81197d971","betrokkene":"","betrokkeneType":"vestiging","afwijkendeNaamBetrokkene":"","roltype":"http://localhost:8003/catalogi/api/v1/roltypen/43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b","omschrijving":"Initiator","omschrijvingGeneriek":"initiator","roltoelichting":"inzender
+        formulier","registratiedatum":"2025-09-22T19:01:30.251799Z","indicatieMachtiging":"","contactpersoonRol":{"emailadres":"","functie":"","telefoonnummer":"","naam":""},"statussen":[],"betrokkeneIdentificatie":{"vestigingsNummer":"87654321","handelsnaam":["ACME"],"verblijfsadres":{"aoaIdentificatie":"OFWORKAROUND","wplWoonplaatsNaam":"Ketnet","gorOpenbareRuimteNaam":"Samsonweg","aoaPostcode":"1000
         AA","aoaHuisnummer":101,"aoaHuisletter":"","aoaHuisnummertoevoeging":"","inpLocatiebeschrijving":""},"subVerblijfBuitenland":null,"kvkNummer":"12345678"}}'
     headers:
       API-version:
@@ -374,7 +374,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"14cc5ab9c12bc0d925dc6c2970a1529e"'
+      - '"e80b4ed461be50c995907c7cfaa84377"'
       Referrer-Policy:
       - same-origin
       Vary:

@@ -5,6 +5,7 @@ The Amsterdam Signal WMTS generator was used as an inspiration:
 https://github.com/Amsterdam/signals/blob/main/app/signals/apps/services/domain/wmts_map_generator.py
 """
 
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import lru_cache
 from io import BytesIO
@@ -113,7 +114,8 @@ def construct_image_from_tiles(
     img = Image.new("RGBA", (n_tiles_x * TILE_SIZE, n_tiles_y * TILE_SIZE), 0)
 
     tasks = []
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    num_workers = int(os.getenv("_MAP_GENERATION_MAX_WORKERS", default="4"))
+    with ThreadPoolExecutor(max_workers=num_workers) as executor:
         for i, tile_x in enumerate(tiles_x):
             for j, tile_y in enumerate(tiles_y):
                 url = url_template.format(z=zoom_level, x=tile_x, y=tile_y)

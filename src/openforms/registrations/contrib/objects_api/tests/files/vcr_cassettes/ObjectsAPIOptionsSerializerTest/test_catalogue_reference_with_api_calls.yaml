@@ -7,7 +7,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1NTUxNzYxMSwiZXhwIjoxNzU1NTYwODExLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.IkRKTaWzasweOjxWlcU6uPHZmdBOykj0aY3cVINxm1w
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODAxODM3OCwiZXhwIjoxNzU4MDYxNTc4LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.BMAhfvvrF2A2gzX7Mm1nW5ytkZs8hLcj57F4HGi8bI4
       Connection:
       - keep-alive
       User-Agent:
@@ -75,11 +75,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Mon, 18 Aug 2025 11:46:52 GMT
+      - Tue, 16 Sep 2025 10:26:18 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.0
+      - nginx/1.27.5
       Vary:
       - origin
       X-Content-Type-Options:
@@ -125,11 +125,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Mon, 18 Aug 2025 11:46:52 GMT
+      - Tue, 16 Sep 2025 10:26:18 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.0
+      - nginx/1.27.5
       Vary:
       - origin
       X-Content-Type-Options:
@@ -147,7 +147,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1NTUxNzYxMiwiZXhwIjoxNzU1NTYwODEyLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.3gFd0GoooxCFh6XwxAQIxCvF0A2Wq3U2Nz4McRvrN9Q
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODAxODM3OCwiZXhwIjoxNzU4MDYxNTc4LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.BMAhfvvrF2A2gzX7Mm1nW5ytkZs8hLcj57F4HGi8bI4
       Connection:
       - keep-alive
       User-Agent:

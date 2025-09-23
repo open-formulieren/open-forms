@@ -30,11 +30,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Sep 2025 14:07:44 GMT
+      - Mon, 22 Sep 2025 15:21:03 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.4
+      - nginx/1.29.0
       Vary:
       - origin
       X-Content-Type-Options:
@@ -68,7 +68,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/1f84bb19-d97f-4d1c-b36c-8092f2e7eee7","uuid":"1f84bb19-d97f-4d1c-b36c-8092f2e7eee7","type":"http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","record":{"index":1,"typeVersion":1,"data":{"single_file":""},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2025-09-19","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/c82c2b2c-5cfe-4083-9f8f-5857f0eb9b07","uuid":"c82c2b2c-5cfe-4083-9f8f-5857f0eb9b07","type":"http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","record":{"index":1,"typeVersion":1,"data":{"single_file":""},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2025-09-22","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -83,13 +83,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Sep 2025 14:07:44 GMT
+      - Mon, 22 Sep 2025 15:21:03 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/1f84bb19-d97f-4d1c-b36c-8092f2e7eee7
+      - http://localhost:8002/api/v2/objects/c82c2b2c-5cfe-4083-9f8f-5857f0eb9b07
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.4
+      - nginx/1.29.0
       Vary:
       - origin
       X-Content-Type-Options:

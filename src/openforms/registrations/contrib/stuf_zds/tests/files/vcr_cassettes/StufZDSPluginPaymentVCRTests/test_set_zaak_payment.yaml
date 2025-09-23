@@ -6,12 +6,12 @@ interactions:
       \       \n\n<ZKN:zakLk01 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
       \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Lk01</StUF:berichtcode>\n
       \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-5</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-5</StUF:applicatie>\n<StUF:administratie>zender_administratie-5</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-5</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-5</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-5</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-5</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-5</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>84051c2e-2b03-41ae-9682-c3c8bf12d5e8</StUF:referentienummer>\n<StUF:tijdstipBericht>20250819141158</StUF:tijdstipBericht>\n\n
+      \   <StUF:organisatie>ontvanger_organisatie-5</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-5</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-5</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-5</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>12587597-46f3-42bb-8ec6-921bca67b237</StUF:referentienummer>\n<StUF:tijdstipBericht>20250918082555</StUF:tijdstipBericht>\n\n
       \       <StUF:entiteittype>ZAK</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
       \   <ZKN:parameters>\n        <StUF:mutatiesoort>W</StUF:mutatiesoort>\n        <StUF:indicatorOvername>V</StUF:indicatorOvername>\n
       \   </ZKN:parameters>\n    <ZKN:object StUF:verwerkingssoort=\"W\" StUF:entiteittype=\"ZAK\">\n
       \       <ZKN:identificatie>1234</ZKN:identificatie>\n        <ZKN:betalingsIndicatie>Geheel</ZKN:betalingsIndicatie>\n
-      \       <ZKN:laatsteBetaaldatum>20250819</ZKN:laatsteBetaaldatum>\n        <StUF:extraElementen>\n\n<StUF:extraElement
+      \       <ZKN:laatsteBetaaldatum>20250918</ZKN:laatsteBetaaldatum>\n        <StUF:extraElementen>\n\n<StUF:extraElement
       naam=\"language_code\">en</StUF:extraElement>\n\n<StUF:extraElement naam=\"payment_completed\">true</StUF:extraElement>\n\n<StUF:extraElement
       naam=\"payment_amount\">40.0</StUF:extraElement>\n\n<StUF:extraElement naam=\"payment_public_order_ids.0\">foo</StUF:extraElement>\n\n<StUF:extraElement
       naam=\"payment_public_order_ids.1\">bar</StUF:extraElement>\n\n<StUF:extraElement
@@ -59,7 +59,7 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Tue, 19 Aug 2025 14:11:58 GMT
+      - Thu, 18 Sep 2025 08:25:55 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.11
     status:

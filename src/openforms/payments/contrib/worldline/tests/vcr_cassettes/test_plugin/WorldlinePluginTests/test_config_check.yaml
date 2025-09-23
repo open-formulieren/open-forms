@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Thu, 11 Sep 2025 12:16:46 GMT
+      - Thu, 18 Sep 2025 10:30:59 GMT
       User-Agent:
       - python-requests/2.32.4
       X-GCS-ServerMetaInfo:
@@ -30,17 +30,17 @@ interactions:
         data: https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
         https://devicefingerprint.pay.checkout.worldline-solutions.com; style-src
         ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
-        https://devicefingerprint.pay.checkout.worldline-solutions.com ''nonce-ZSv2H+0Q1kA='';
+        https://devicefingerprint.pay.checkout.worldline-solutions.com ''nonce-gcx6MiaJA0U='';
         style-src-attr ''unsafe-inline''; script-src ''self'' https://assets.test.cdn.v-psp.com
         https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com
-        ''nonce-ZSv2H+0Q1kA=''; object-src ''none'';'
+        ''nonce-gcx6MiaJA0U=''; object-src ''none'';'
       content-type:
       - application/json; charset=utf-8
       correlation-id:
-      - 5f699bfa-19ed-4d69-a123-5db31b3d5370
-      - 5f699bfa-19ed-4d69-a123-5db31b3d5370
+      - c9920765-cea4-4a8d-bdbd-a4a45d2280b5
+      - c9920765-cea4-4a8d-bdbd-a4a45d2280b5
       date:
-      - Thu, 11 Sep 2025 12:16:45 GMT
+      - Thu, 18 Sep 2025 10:30:59 GMT
       strict-transport-security:
       - max-age=16000000; includeSubDomains; preload;
     status:
@@ -56,7 +56,7 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Thu, 11 Sep 2025 12:16:46 GMT
+      - Thu, 18 Sep 2025 10:30:59 GMT
       User-Agent:
       - python-requests/2.32.4
       X-GCS-ServerMetaInfo:
@@ -65,7 +65,7 @@ interactions:
     uri: https://payment.preprod.direct.worldline-solutions.com/v2/dummy/services/testconnection
   response:
     body:
-      string: "{\r\n  \"errorId\": \"bbba05b7-6eff-47d0-ac6b-e7c7e93f0f2a\",\r\n  \"errors\":
+      string: "{\r\n  \"errorId\": \"574a4546-3909-49b3-a6dd-5938b838e2b0\",\r\n  \"errors\":
         [\r\n    {\r\n      \"code\": \"9007\",\r\n      \"id\": \"ACCESS_TO_MERCHANT_NOT_ALLOWED\",\r\n
         \     \"category\": \"DIRECT_PLATFORM_ERROR\",\r\n      \"message\": \"ACCESS_TO_MERCHANT_NOT_ALLOWED\",\r\n
         \     \"httpStatusCode\": 403\r\n    }\r\n  ],\r\n  \"status\": 403\r\n}"
@@ -73,10 +73,10 @@ interactions:
       content-type:
       - application/json
       correlation-id:
-      - bbba05b7-6eff-47d0-ac6b-e7c7e93f0f2a
-      - bbba05b7-6eff-47d0-ac6b-e7c7e93f0f2a
+      - 574a4546-3909-49b3-a6dd-5938b838e2b0
+      - 574a4546-3909-49b3-a6dd-5938b838e2b0
       date:
-      - Thu, 11 Sep 2025 12:16:46 GMT
+      - Thu, 18 Sep 2025 10:30:59 GMT
       strict-transport-security:
       - max-age=16000000; includeSubDomains; preload;
       transfer-encoding:

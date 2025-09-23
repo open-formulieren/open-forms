@@ -7,7 +7,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1NTUxNzYxMiwiZXhwIjoxNzU1NTYwODEyLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.3gFd0GoooxCFh6XwxAQIxCvF0A2Wq3U2Nz4McRvrN9Q
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODAxODM3OCwiZXhwIjoxNzU4MDYxNTc4LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.BMAhfvvrF2A2gzX7Mm1nW5ytkZs8hLcj57F4HGi8bI4
       Connection:
       - keep-alive
       User-Agent:
@@ -17,7 +17,7 @@ interactions:
   response:
     body:
       string: '{"type":"http://localhost:8003/ref/fouten/NotFound/","code":"not_found","title":"Niet
-        gevonden.","status":404,"detail":"Niet gevonden.","instance":"urn:uuid:f4062438-15ac-4a5c-bd78-05891e350358"}'
+        gevonden.","status":404,"detail":"Niet gevonden.","instance":"urn:uuid:a07fe154-d874-4d50-ad08-4a7c4206e2e4"}'
     headers:
       API-version:
       - 1.3.1
