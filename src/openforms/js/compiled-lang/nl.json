@@ -438,7 +438,7 @@
   "2o0y5J": [
     {
       "type": 0,
-      "value": "Synchroniseer variabele configuratie"
+      "value": "Variabelesynchronisatie instellen"
     }
   ],
   "2sbkGI": [
@@ -508,13 +508,13 @@
   "3Wcu+B": [
     {
       "type": 0,
-      "value": "Affixen"
+      "value": "Tussenvoegsel"
     }
   ],
   "3Wuy2O": [
     {
       "type": 0,
-      "value": "Eigenschap"
+      "value": "Attribuut"
     }
   ],
   "3ZtB10": [
@@ -1412,7 +1412,7 @@
   "AzBz1q": [
     {
       "type": 0,
-      "value": "Schakel de EXPERIMENTELE nieuwe renderer in. Disclaimer: de nieuwe renderer is niet functie compleet and bevat hoogstwaarschijnlijk bugs. Het wordt aangeraden deze optie niet in productie omgevingen in te schakelen."
+      "value": "Schakel de EXPERIMENTELE nieuwe renderer in. Merk op: nog niet alle functionaliteiten zijn beschikbaar in de nieuwe renderer én er zijn hoogstwaarschijnlijk bugs. Schakel dit niet in op een productie-omgeving."
     }
   ],
   "B/A1Bk": [
@@ -1546,7 +1546,21 @@
   "Bp3X7R": [
     {
       "type": 0,
-      "value": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Worldline kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te    koppelen. Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de 'public_reference' sjabloonvariabele (gebruik de expressie {{ public_reference }}). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt. Merk op dat het resultaat op 32 karakters afgekapt wordt en enkel alfanumerieke tekens toegestaan zijn."
+      "value": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Worldline kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen. Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de 'public_reference' sjabloonvariabele (gebruik de expressie "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ public_reference }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt. Merk op dat het resultaat op 32 karakters afgekapt wordt en enkel alfanumerieke tekens toegestaan zijn."
     }
   ],
   "BqA9of": [
@@ -1652,7 +1666,7 @@
   "COscBI": [
     {
       "type": 0,
-      "value": "Beschikbare attributen gebaseerd op de geconfigureerde Yivi authenticatie instellingen. De identifier attributen staan vast maar de overige attributen komen uit de geconfigueerde attribuut groepen."
+      "value": "Beschikbare attributen op basis van de ingestelde Yivi-inlogopties. De identificerende attributen liggen vast maar de overige attributen komen uit de ingestelde attribuutgroepen."
     }
   ],
   "CRN74c": [
@@ -1829,7 +1843,7 @@
   "DI4HoQ": [
     {
       "type": 0,
-      "value": "Synchronizeer variabele configuratie:"
+      "value": "Variabelesynchronisatie:"
     }
   ],
   "DJ8XX2": [
@@ -2071,7 +2085,7 @@
   "ExqNUS": [
     {
       "type": 0,
-      "value": "(nog niet geconfigureerd of gedeeltelijk geconfigureerd)"
+      "value": "(nog niet ingesteld)"
     }
   ],
   "F+UwT0": [
@@ -2539,7 +2553,7 @@
   "Isj2k2": [
     {
       "type": 0,
-      "value": "Synchronizeer variabelen"
+      "value": "Synchroniseer variabelen"
     }
   ],
   "ItH6EY": [
@@ -2593,7 +2607,7 @@
   "JVr8oA": [
     {
       "type": 0,
-      "value": "Geen component of eigenschap (meer) gespecificeerd."
+      "value": "Component of attribuut ontbreekt."
     }
   ],
   "JXcHQ2": [
@@ -3029,7 +3043,7 @@
   "NqShTs": [
     {
       "type": 0,
-      "value": "Experimentele functies"
+      "value": "Experimentele functionaliteit"
     }
   ],
   "NrF5vy": [
@@ -4151,7 +4165,7 @@
   "XfxZIE": [
     {
       "type": 0,
-      "value": "Configureren"
+      "value": "Instellen"
     }
   ],
   "Xg9O5Y": [
@@ -4422,7 +4436,7 @@
   "ZeP+c1": [
     {
       "type": 0,
-      "value": "Er zijn errors opgetreden bij het onderdeel Synchroniseer variabelen configuratie."
+      "value": "De variabelesynchronisatie-instellingen zijn niet geldig."
     }
   ],
   "ZfLhiZ": [
@@ -4504,7 +4518,7 @@
     },
     {
       "type": 0,
-      "value": "\" gebruikt een prefill welke een van de \""
+      "value": "\" gebruikt een prefill die (één van) de \""
     },
     {
       "type": 1,
@@ -4512,7 +4526,7 @@
     },
     {
       "type": 0,
-      "value": "\" inlog opties vereist. Selecteer een inlog optie of verwijder de prefillplugin."
+      "value": "\" inlogoptie(s) nodig heeft. Gebruik één of meerdere van deze inlogopties of verwijder de prefill-plugin."
     }
   ],
   "af22yB": [
@@ -4734,7 +4748,7 @@
     },
     {
       "type": 0,
-      "value": " gebruikt een van de \""
+      "value": " heeft (één van) de \""
     },
     {
       "type": 1,
@@ -4742,7 +4756,7 @@
     },
     {
       "type": 0,
-      "value": "\" attributen. Selecteer een of meerdere authenticatieplugins welke deze attributen verstrekken."
+      "value": "\" attribu(u)t(en) nodig. Gebruik één of meerdere inlogopties die dit attribuut aanbieden."
     }
   ],
   "cK2O6E": [
@@ -5254,7 +5268,7 @@
   "fN5j5f": [
     {
       "type": 0,
-      "value": "Van variabelen"
+      "value": "Van variabele"
     }
   ],
   "fQuLvm": [
@@ -5754,7 +5768,7 @@
   "jHW6p5": [
     {
       "type": 0,
-      "value": "Inschakelen nieuwe renderer"
+      "value": "Gebruik nieuwe renderer"
     }
   ],
   "jLg5l6": [
@@ -6120,7 +6134,7 @@
   "lZw4g0": [
     {
       "type": 0,
-      "value": "Naam van het sjabloon dat gebruikt zou moeten worden gedurende het betaalproces. Dit kan gevonden worden onder het \"Variant name\" veld in het onderdeel \"Branding\"."
+      "value": "Naam van het sjabloon dat gebruikt zou moeten worden gedurende het betaalproces. Dit kan (in Wordline) gevonden worden onder het \"Variant name\" veld in het onderdeel \"Branding\"."
     }
   ],
   "lcR5L6": [
@@ -6204,7 +6218,7 @@
   "mS22EJ": [
     {
       "type": 0,
-      "value": "Data mappings"
+      "value": "Variabelekoppelingen"
     }
   ],
   "mWHMvR": [
@@ -6986,7 +7000,7 @@
   "sxfcjF": [
     {
       "type": 0,
-      "value": "Identifier variabele (BSN)"
+      "value": "Identificatievariabele (BSN)"
     }
   ],
   "t+B+/4": [
@@ -7716,7 +7730,7 @@
     },
     {
       "type": 0,
-      "value": " vereist een van de \""
+      "value": " heeft één van de \""
     },
     {
       "type": 1,
@@ -7724,7 +7738,7 @@
     },
     {
       "type": 0,
-      "value": "\" inlog opties. Selecteer een van deze opties of verwijder de prefillplugin."
+      "value": "\" inlogopties nodig. Selecteer één van deze opties of verwijder de prefill-plugin."
     }
   ],
   "zqnTBZ": [

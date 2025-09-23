@@ -202,7 +202,7 @@
     "originalDefault": "Postcode Schema target"
   },
   "2o0y5J": {
-    "defaultMessage": "Synchroniseer variabele configuratie",
+    "defaultMessage": "Variabelesynchronisatie instellen",
     "description": "Synchronizing variables configuration modal title",
     "originalDefault": "Synchronize variables configuration"
   },
@@ -232,12 +232,12 @@
     "originalDefault": "Add another"
   },
   "3Wcu+B": {
-    "defaultMessage": "Affixen",
+    "defaultMessage": "Tussenvoegsel",
     "description": "Synchronize action, children component, affixes property label",
     "originalDefault": "Affixes"
   },
   "3Wuy2O": {
-    "defaultMessage": "Eigenschap",
+    "defaultMessage": "Attribuut",
     "description": "Column title for the property that a component is mapped to",
     "originalDefault": "Property"
   },
@@ -623,7 +623,7 @@
     "originalDefault": "Confirm"
   },
   "AzBz1q": {
-    "defaultMessage": "Schakel de EXPERIMENTELE nieuwe renderer in. Disclaimer: de nieuwe renderer is niet functie compleet and bevat hoogstwaarschijnlijk bugs. Het wordt aangeraden deze optie niet in productie omgevingen in te schakelen.",
+    "defaultMessage": "Schakel de EXPERIMENTELE nieuwe renderer in. Merk op: nog niet alle functionaliteiten zijn beschikbaar in de nieuwe renderer én er zijn hoogstwaarschijnlijk bugs. Schakel dit niet in op een productie-omgeving.",
     "description": "New renderer enabled feature flag help text",
     "originalDefault": "Enable the EXPERIMENTAL new renderer. Disclaimer: the new renderer is not feature complete and is very likely to contain bugs. You should not enable this in production."
   },
@@ -678,7 +678,7 @@
     "originalDefault": "Save changes"
   },
   "Bp3X7R": {
-    "defaultMessage": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Worldline kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te    koppelen. Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de 'public_reference' sjabloonvariabele (gebruik de expressie '{{ public_reference }}'). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt. Merk op dat het resultaat op 32 karakters afgekapt wordt en enkel alfanumerieke tekens toegestaan zijn.",
+    "defaultMessage": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Worldline kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen. Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de 'public_reference' sjabloonvariabele (gebruik de expressie <code>'{{' public_reference '}}'</code>). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt. Merk op dat het resultaat op 32 karakters afgekapt wordt en enkel alfanumerieke tekens toegestaan zijn.",
     "description": "Worldline payment options 'descriptorTemplate' help text",
     "originalDefault": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 32 characters."
   },
@@ -724,7 +724,7 @@
     "originalDefault": "Delete"
   },
   "COscBI": {
-    "defaultMessage": "Beschikbare attributen gebaseerd op de geconfigureerde Yivi authenticatie instellingen. De identifier attributen staan vast maar de overige attributen komen uit de geconfigueerde attribuut groepen.",
+    "defaultMessage": "Beschikbare attributen op basis van de ingestelde Yivi-inlogopties. De identificerende attributen liggen vast maar de overige attributen komen uit de ingestelde attribuutgroepen.",
     "description": "Yivi prefill attribute help text",
     "originalDefault": "Available attributes based on the configured Yivi authentication plugin options. The identifier attributes are fixed, while the remaining attributes are taken from the configured attribute groups."
   },
@@ -794,7 +794,7 @@
     "originalDefault": "Cosign subject"
   },
   "DI4HoQ": {
-    "defaultMessage": "Synchronizeer variabele configuratie:",
+    "defaultMessage": "Variabelesynchronisatie:",
     "description": "Configuration button Synchronize variables label",
     "originalDefault": "Synchronize variables configuration:"
   },
@@ -902,7 +902,7 @@
     "originalDefault": "in"
   },
   "ExqNUS": {
-    "defaultMessage": "(nog niet geconfigureerd of gedeeltelijk geconfigureerd)",
+    "defaultMessage": "(nog niet ingesteld)",
     "description": "Synchronize variables not configured yet message",
     "originalDefault": "(not configured yet or partially configured)"
   },
@@ -1203,7 +1203,7 @@
     "originalDefault": "Add all form variables"
   },
   "Isj2k2": {
-    "defaultMessage": "Synchronizeer variabelen",
+    "defaultMessage": "Synchroniseer variabelen",
     "description": "action type \"synchronize variables\" label",
     "originalDefault": "Synchronize variables"
   },
@@ -1238,7 +1238,7 @@
     "originalDefault": "Expand/collapse JsonLogic"
   },
   "JVr8oA": {
-    "defaultMessage": "Geen component of eigenschap (meer) gespecificeerd.",
+    "defaultMessage": "Component of attribuut ontbreekt.",
     "description": "Variables mappings: detected invalid mapping",
     "originalDefault": "No component or property specified (anymore)."
   },
@@ -1509,7 +1509,7 @@
     "originalDefault": "Case type API resource URL in the Catalogi API."
   },
   "NqShTs": {
-    "defaultMessage": "Experimentele functies",
+    "defaultMessage": "Experimentele functionaliteit",
     "description": "Form feature flags fieldset title",
     "originalDefault": "Experimental features"
   },
@@ -2042,7 +2042,7 @@
     "originalDefault": "Basic"
   },
   "XfxZIE": {
-    "defaultMessage": "Configureren",
+    "defaultMessage": "Instellen",
     "description": "Button to open Synchronize variables configuration modal",
     "originalDefault": "Configure"
   },
@@ -2152,7 +2152,7 @@
     "originalDefault": "Form JSON schema"
   },
   "ZeP+c1": {
-    "defaultMessage": "Er zijn errors opgetreden bij het onderdeel Synchroniseer variabelen configuratie.",
+    "defaultMessage": "De variabelesynchronisatie-instellingen zijn niet geldig.",
     "description": "Synchronize variables configuration errors message",
     "originalDefault": "There are errors in the Synchronize variables configuration."
   },
@@ -2197,7 +2197,7 @@
     "originalDefault": "Login required?"
   },
   "adFa0X": {
-    "defaultMessage": "Component \"{label}\" gebruikt een prefill welke een van de \"{requiredPlugin}\" inlog opties vereist. Selecteer een inlog optie of verwijder de prefillplugin.",
+    "defaultMessage": "Component \"{label}\" gebruikt een prefill die (één van) de \"{requiredPlugin}\" inlogoptie(s) nodig heeft. Gebruik één of meerdere van deze inlogopties of verwijder de prefill-plugin.",
     "description": "Prefill plugin requires unavailable auth plugin warning",
     "originalDefault": "Component \"{label}\" uses a prefill that requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin."
   },
@@ -2298,7 +2298,7 @@
     "originalDefault": "(complex value)"
   },
   "cJnFcK": {
-    "defaultMessage": "{plugin} gebruikt een van de \"{requiredAuthAttribute}\" attributen. Selecteer een of meerdere authenticatieplugins welke deze attributen verstrekken.",
+    "defaultMessage": "{plugin} heeft (één van) de \"{requiredAuthAttribute}\" attribu(u)t(en) nodig. Gebruik één of meerdere inlogopties die dit attribuut aanbieden.",
     "description": "Prefill plugin requires unavailable auth attribute warning",
     "originalDefault": "{plugin} requires one of the \"{requiredAuthAttribute}\" attributes. Please select one or more authentication plugins that provide such an attribute."
   },
@@ -2489,7 +2489,7 @@
     "originalDefault": "Pricing logic"
   },
   "fN5j5f": {
-    "defaultMessage": "Van variabelen",
+    "defaultMessage": "Van variabele",
     "description": "Synchronize variables modal select from variable field label",
     "originalDefault": "From variable"
   },
@@ -2750,7 +2750,7 @@
     "originalDefault": "Submission report PDF informatieobjecttype"
   },
   "jHW6p5": {
-    "defaultMessage": "Inschakelen nieuwe renderer",
+    "defaultMessage": "Gebruik nieuwe renderer",
     "description": "New renderer enabled feature flag label",
     "originalDefault": "Enable new renderer"
   },
@@ -2900,7 +2900,7 @@
     "originalDefault": "The path of the folder where folders containing Open-Forms related documents will be created. You can use the expressions <code>'{{' year '}}'</code>, <code>'{{' month '}}'</code> and <code>'{{' day '}}'</code>. The path must start with <code>/</code>."
   },
   "lZw4g0": {
-    "defaultMessage": "Naam van het sjabloon dat gebruikt zou moeten worden gedurende het betaalproces. Dit kan gevonden worden onder het \"Variant name\" veld in het onderdeel \"Branding\".",
+    "defaultMessage": "Naam van het sjabloon dat gebruikt zou moeten worden gedurende het betaalproces. Dit kan (in Wordline) gevonden worden onder het \"Variant name\" veld in het onderdeel \"Branding\".",
     "description": "Worldline payment options 'variant' help text",
     "originalDefault": "Which template variant should be used for payments related to this form. This can be found under the \"Variant name\" field in the \"Branding\" section."
   },
@@ -2945,9 +2945,8 @@
     "originalDefault": "Steps and fields"
   },
   "mS22EJ": {
-    "defaultMessage": "Data mappings",
+    "defaultMessage": "Variabelekoppelingen",
     "description": "Data mappings title",
-    "isTranslated": true,
     "originalDefault": "Data mappings"
   },
   "mWHMvR": {
@@ -3322,7 +3321,7 @@
     "originalDefault": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
   },
   "sxfcjF": {
-    "defaultMessage": "Identifier variabele (BSN)",
+    "defaultMessage": "Identificatievariabele (BSN)",
     "description": "Synchronize variables modal select identifierVariable field label",
     "originalDefault": "Identifier variable (BSN)"
   },
@@ -3686,7 +3685,7 @@
     "originalDefault": "Plugin configuration: Ogone legacy"
   },
   "zhPXHY": {
-    "defaultMessage": "{plugin} vereist een van de \"{requiredPlugin}\" inlog opties. Selecteer een van deze opties of verwijder de prefillplugin.",
+    "defaultMessage": "{plugin} heeft één van de \"{requiredPlugin}\" inlogopties nodig. Selecteer één van deze opties of verwijder de prefill-plugin.",
     "description": "Prefill plugin requires unavailable auth plugin warning",
     "originalDefault": "{plugin} requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin."
   },
