@@ -50,3 +50,10 @@ a *Worldline Webhook configuration* in the admin interface.
 14. Head back to Worldline's Merchant Portal and navigate to the **Webhooks** section
     (see step 8). Click on the **Add webhook endpoint button** and fill in the
     **Feedback url** that was copied in step 12 and click **Confirm**.
+
+Now that a **Worldline Merchant** is configured and the **Worldline webhook configuration** is set up,
+it is possible to select the Worldline payment backend under the **Payment provider** subsection in the
+**Product & payment** tab. In addition to selecting the merchant, there are also fields to configure the
+payments description (only shown in the Backoffice, in the Ogone configuration known as the **COM parameter**)
+and the template that should be used during the payment process, which is what the **variant** field is for (
+this is the alternative to the **TITLE parameter** field for the Ogone payment backend).
