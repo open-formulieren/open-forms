@@ -11,21 +11,6 @@ Changelog
 
 This is an alpha release, meaning it is not finished yet or suitable for production use.
 
-.. warning:: This release allows administrators to enable the new *experimental*
-   form renderer. The new renderer is not feature complete and is very likely
-   to contain bugs. You should not enable this in production.
-
-.. note:: This release contains the ``report_duplication_merchant_pspids.py`` script.
-   This script allows administrators to detect Ogone merchants that have the same
-   ``PSPID`` value. As support for Ogone legacy will end at the end of 2025, this script
-   allows administrators to prepare for the migration to Worldline merchants, which will
-   not allow multiple merchants with the same ``PSPID`` value.
-
-    .. code-block:: bash
-
-        # in the container via ``docker exec`` or ``kubectl exec``:
-        python /app/bin/report_duplication_merchant_pspids.py
-
 Upgrade procedure
 -----------------
 
@@ -33,6 +18,9 @@ To upgrade to 3.3, please:
 
 * ⚠️ Ensure you upgrade to Open Forms 3.2.x before upgrading to the 3.3 release series.
 * ⚠️ Plan an upgrade window to address the warnings below.
+* ⚠️ An automatic Ogone-to-Wordline merchant migration requires unique merchant PSPIDs. This is
+  automatically verified *before* performing the upgrade, but ideally you should run the check script of
+  older patch versions in preparation.
 
 .. warning:: Schedule the upgrade for off-peak hours. Some of the database migrations
    need to lock the entire table and/or can take a long time depending on the amount of
@@ -68,68 +56,47 @@ Detailed changes
 
 **New features**
 
-* [:backend:`5268`] Updated the registration plugins to support the children component.
-* [:backend:`5095`] Logout DigiD via OIDC session after form submission.
-* [:backend:`4951`] Added a visual image of the chosen map location in the submission PDF.
-* [:backend:`5269`] Added custom logic action ``ActionSynchronizeVariable`` which
-  maps data from one variable to another.
+* [:backend:`5268`] The registration plugins now support the ``children`` component type.
+* [:backend:`5095`] When authenticated via OpenID Connect (DigiD, eHerkenning, organization), upon
+  submission completion you are now logged out at the identity provider.
+* [:backend:`4951`] The map component in the summary PDF is now an image instead of the textual location
+  coordinates.
+* [:backend:`5269`] You can now use the ``children`` component data as source data for a
+  repeating group to provide additional information with the new "synchronize variables" logic
+  action type.
 * [:backend:`5575`] Added support for WMS tile layers in the map component, along
   with import/export functionality.
-* [:backend:`5479`] Replaced the usage of the ``subject_identifier_claim``
-  and ``subject_identifier_type_claim`` claims with explicit bsn and pseudo fields for the
-  eIDAS plugin.
-* [:backend:`5574`] Added the ``exclude_from_confirmation_email`` option to static variables
-  which allows certain static variables to not show up in the confirmation email.
-* [:backend:`5060`] Added support for Redis Sentinel in Celery and updated Redis documentation
-  with examples.
+* [:backend:`5479`] The eIDAS (via OIDC) configuration is now simplified - you can specify
+  which claims can contain a BSN and/or Pseudo ID.
+* [:backend:`5060`] Redis Sentinel is now supported as high availability strategy for the background
+  jobs message broker.
 * [:backend:`5419`] Added prefill plugins for the new Yivi and eIDAS authentication backends.
-* [:backend:`5515`] Added a UUID field, which is automatically generated, to the
-  Yivi attribute group which will be used as identifier. The Yivi attribute groups can now
-  also be imported and-or exported. See the updated documentation for more information.
-* [:backend:`5253`] Added more default map tile layers.
-* [:backend:`5251`] The identifier field from the map tile layer is now automatically
-  populated from it's label value.
+* [:backend:`5515`] Yivi Attribute groups now have a system-generated unique identifier.
+* [:backend:`5515`] You can now export and import Yivi attribute groups.
+* [:backend:`5253`] The BRT (grey, pastel, water) background tile layers are now available by
+  default in an Open Forms instance.
+* [:backend:`5251`] The identifier field from the map background tile layer is now automatically
+  populated from its label.
 
-* [:backend:`4879`] Updated support for the Worldline payment provider:
-    - Support for Worldline's ``variant`` and ``descriptor`` fields. Note that the
-      value for the ``descriptor`` is only visible through the Backoffice at the time of writing.
-    - The merchant reference is now generated through Open Forms.
-    - Added a report script to detect duplicate Ogone merchants.
+* [:backend:`4879`] Finished the support for Worldline as payment provider:
+    - Support for Worldline's ``variant`` and ``descriptor`` fields.
+    - The merchant reference is generated by Open Forms, similar to the Ogone plugin.
+    - Ogone merchants are automatically migrated where possible.
+    - Webhook configuration (if configured in a older patch release) is automatically migrated.
     - Moved the location in the admin of the feedback URL's used for the Worldline
-      payment webhooks to the merchant detail page and the webhook configuration page.
-    - Added a data migration to migrate Ogone merchants and the Worldline
-      webhook configuration (transition) to Worldline merchants and the Worldline webhook configuration.
-    - Added an admin action to migrate Ogone payment forms to the Worldline payment backend.
+      payment webhooks to the webhook configuration page.
+    - Added a bulk action to migrate forms from Ogone to Wordline.
 
 * [:backend:`5133`] Added a feature flag to enable the new *experimental* renderer.
-* [:backend:`5544`] Added documentation and examples on how to collect Flower metrics.
-
-* [:backend:`5513`] Updated the OTel documentation and added various examples:
-  - Basic nginx metrics.
-  - PostgreSQL metrics.
-  - Redis metrics.
-  - Added OTel instrumented docker image.
-
-* [:backend:`3999`] Updated Open Telemetry support. The following metrics
-  were added:
-
-    - Attachment uploads.
-    - Report attachments.
-    - Form counts by type.
-    - Component type usage per type and form.
-    - Appointment plugin usage counts.
-    - Authentication plugin usage.
-    - DMN plugin usage.
-    - Payment plugin usage.
-    - Prefill plugin usage.
-    - Registration plugin usage.
-    - Validations plugin usage.
-    - Global plugin usage.
+* [:backend:`3999`] Added support for Open Telemetry metrics. All available metrics and details can be
+  found in the "Observability" documentation.
 
 **Bugfixes**
 
+* [:backend:`5574`] Authentication-related static variables are no longer exposed to the
+  confirmation email context.
 * [:backend:`5464`] Fixed a crash that occurred when incomplete options were used in JSON schema generation.
-* [:backend:`5605`] Fixed missing default value for DigiD ``loa`` causing a crash when trying to  login.
+* [:backend:`5605`] Fixed missing default value for DigiD ``loa`` causing a crash when trying to login.
 * [:backend:`5572`] Fixed a crash in the StUF-ZDS registration plugin when another
   form has family member components in its configuration.
 * [:backend:`5557`] Fixed uploaded filename sanitization.
@@ -138,15 +105,20 @@ Detailed changes
 
 **Project maintenance**
 
+* [:backend:`5513`] Updated the OTel documentation and added various examples:
+    - Basic nginx metrics and traces.
+    - PostgreSQL metrics.
+    - Redis metrics.
+
+* [:backend:`5544`] Added documentation and examples on how to collect Flower metrics.
 * Updated the documentation regarding the used SOAP operations for the StUF-ZDS plugin.
 * Updated backend dependencies:
-
   - Bumped Redis to version 8 for CI builds and the docker-compose setup.
   - Bumped zgw-consumers to version 1.0.
   - Bumped @open-formulieren/formio-builder to 0.43.0.
   - Bumped mozilla-django-oidc-db to 0.25.1.
   - Bumped django-digid-eherkenning to 0.24.0.
-
+  - Upgraded to Django security release 4.2.24.
 
 3.2.4 (2025-09-10)
 ==================
