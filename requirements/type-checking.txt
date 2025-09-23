@@ -539,7 +539,7 @@ humanize==3.14.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   flower
-hypothesis==6.84.3
+hypothesis==6.140.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

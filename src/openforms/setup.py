@@ -56,7 +56,6 @@ def setup_env():
 
     setup_otel()
     structlog.contextvars.bind_contextvars(source="app")
-    setup_hypothesis()
     load_self_signed_certs()
     monkeypatch_requests()
     monkeypatch_mozilla_django_oidc_get_from_settings()
@@ -176,19 +175,3 @@ def monkeypatch_json_logic():
         return _original_get_date(arg, *extra)
 
     operations["date"] = patched_get_date
-
-
-def setup_hypothesis():  # pragma: no cover
-    """
-    Set up a hypothesis profile for different environments.
-
-    In production-like environments, the dependency is not installed so this codepath
-    shortcuts.
-    """
-    try:
-        from hypothesis import settings
-    except ImportError:
-        return
-
-    settings.register_profile("ci", deadline=500)
-    settings.load_profile(os.getenv("HYPOTHESIS_PROFILE", "default"))
