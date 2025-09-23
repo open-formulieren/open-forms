@@ -1,0 +1,16 @@
+import {ArgTypes, Canvas, Meta, Story} from '@storybook/blocks';
+
+import * as SynchronizeVariablesActionConfigStories from './SynchronizeVariablesActionConfig.stories';
+import {SynchronizeVariablesActionConfig} from './SynchronizeVariablesConfigModal';
+
+<Meta of={SynchronizeVariablesActionConfigStories} />
+
+# Configuration for the SynchronizeVariables action
+
+<Canvas>
+  <Story of={SynchronizeVariablesActionConfigStories.Empty} />
+</Canvas>
+
+## Props
+
+<ArgTypes of={SynchronizeVariablesActionConfig} />

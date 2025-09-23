@@ -87,14 +87,6 @@ class SynchronizeVariablesActionConfigSerializer(serializers.Serializer):
         required=True,
         allow_blank=False,
     )
-    source_component_type = serializers.CharField(
-        label=_(
-            "Type of the component that will be used for the available properties in data "
-            "mappings."
-        ),
-        required=True,
-        allow_blank=False,
-    )
     destination_variable = FormioVariableKeyField(
         label=_("Key of the form variable that will be used as the destination."),
         required=True,
@@ -109,12 +101,23 @@ class SynchronizeVariablesActionConfigSerializer(serializers.Serializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
         mappings = attrs.get("data_mappings")
+        mappings_component_keys = [m["component_key"] for m in mappings]
+        identifier_key = attrs["identifier_variable"]
 
-        counts = Counter(m["component_key"] for m in mappings)
+        counts = Counter(mappings_component_keys)
         duplicates = [key for key, count in counts.items() if count > 1]
         if duplicates:
             raise serializers.ValidationError(
                 {"data_mappings": _("A variable cannot be mapped multiple times.")}
+            )
+
+        if identifier_key not in mappings_component_keys:
+            raise serializers.ValidationError(
+                {
+                    "data_mappings": _(
+                        "No mapping for the identifier variable was found."
+                    )
+                }
             )
 
         return attrs

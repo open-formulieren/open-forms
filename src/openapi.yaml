@@ -10571,10 +10571,6 @@ components:
           type: string
           title: Key of the form variable that will be used as the source.
           pattern: ^(\w|\w[\w.\-]*\w)$
-        sourceComponentType:
-          type: string
-          title: Type of the component that will be used for the available properties
-            in data mappings.
         destinationVariable:
           type: string
           title: Key of the form variable that will be used as the destination.
@@ -10588,7 +10584,6 @@ components:
       - dataMappings
       - destinationVariable
       - identifierVariable
-      - sourceComponentType
       - sourceVariable
     TargetPaths:
       type: object

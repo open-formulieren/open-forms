@@ -816,7 +816,6 @@ class VariableModificationTests(TestCase):
                         "type": "synchronize-variables",
                         "config": {
                             "source_variable": "children",
-                            "source_component_type": "children",
                             "destination_variable": "editgrid",
                             "identifier_variable": "bsn",
                             "data_mappings": [
@@ -955,7 +954,6 @@ class VariableModificationTests(TestCase):
                         "type": "synchronize-variables",
                         "config": {
                             "source_variable": "children",
-                            "source_component_type": "children",
                             "destination_variable": "editgrid",
                             "identifier_variable": "bsn",
                             "data_mappings": [
@@ -1089,7 +1087,6 @@ class VariableModificationTests(TestCase):
                         "type": "synchronize-variables",
                         "config": {
                             "source_variable": "children",
-                            "source_component_type": "children",
                             "destination_variable": "editgrid",
                             "identifier_variable": "bsn",
                             "data_mappings": [
@@ -1229,7 +1226,6 @@ class VariableModificationTests(TestCase):
                         "type": "synchronize-variables",
                         "config": {
                             "source_variable": "children",
-                            "source_component_type": "children",
                             "destination_variable": "editgrid",
                             "identifier_variable": "bsn",
                             "data_mappings": [

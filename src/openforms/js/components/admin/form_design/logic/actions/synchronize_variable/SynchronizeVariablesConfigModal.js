@@ -20,22 +20,43 @@ const IdentifierVariable = () => {
   const {components, ...formContext} = useContext(FormContext);
 
   const {
-    values: {destinationVariable, identifierVariable},
+    values: {destinationVariable, identifierVariable, dataMappings},
     getFieldProps,
+    setFieldValue,
   } = useFormikContext();
 
   // Filter the components according to their type (we only want the BSN) and only the
   // nested ones of the destination variable. We create an array of fake variables for
   // them in order to make them available via the formContext in the dropdown.
-  const relevantComponents = Object.entries(components).filter(([objKey, _]) =>
-    objKey.startsWith(destinationVariable)
+  const relevantComponents = Object.entries(components)
+    .filter(([objKey, _]) => objKey.startsWith(destinationVariable))
+    .map(([_, componentConfig]) => componentConfig);
+
+  const bsnRelevantComponents = relevantComponents.filter(compConfig => compConfig.type === 'bsn');
+  const bsnRelevantComponentsKeys = bsnRelevantComponents.map(component => component.key);
+
+  const identifierInMappings = dataMappings.some(mapping =>
+    bsnRelevantComponentsKeys.includes(mapping.componentKey)
   );
-  const bsnRelevantComponents = relevantComponents.filter(
-    ([, compConfig]) => compConfig.type === 'bsn'
-  );
-  const bsnFakeVariables = bsnRelevantComponents.map(([_, initialCompConfig]) =>
+
+  const bsnFakeVariables = bsnRelevantComponents.map(initialCompConfig =>
     makeNewVariableFromComponent(initialCompConfig, undefined)
   );
+
+  const onIdentifierVariableChange = e => {
+    const {name, value} = e.target;
+    setFieldValue(name, value);
+
+    if (identifierInMappings) return;
+    if (!bsnRelevantComponents.length) return; // edge case if no bsn components are found
+
+    const bsnMapping = {
+      componentKey: bsnRelevantComponents[0].key,
+      property: 'bsn',
+      value,
+    };
+    setFieldValue('dataMappings', [bsnMapping, ...dataMappings]);
+  };
 
   return (
     // use a new Form Context and let only the nested editgrid bsn components be available
@@ -53,9 +74,10 @@ const IdentifierVariable = () => {
           required
         >
           <VariableSelection
+            {...getFieldProps('identifierVariable')}
             name="identifierVariable"
             value={identifierVariable}
-            {...getFieldProps('identifierVariable')}
+            onChange={onIdentifierVariableChange}
           />
         </Field>
       </FormRow>
@@ -67,7 +89,7 @@ const ManageDataMappings = ({errors}) => {
   const intl = useIntl();
 
   const {
-    values: {destinationVariable, sourceComponentType},
+    values: {destinationVariable},
   } = useFormikContext();
   const {components, ...formContext} = useContext(FormContext);
 
@@ -201,7 +223,6 @@ const SynchronizeVariablesActionConfig = ({initialValues, onSave, errors = {}}) 
                         const value = e.target.value;
                         const sourceComponent = components[value];
                         setFieldValue('sourceVariable', value);
-                        setFieldValue('sourceComponentType', sourceComponent.type);
                       }}
                     />
                   </Field>
