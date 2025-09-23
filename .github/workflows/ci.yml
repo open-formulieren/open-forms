@@ -20,6 +20,7 @@ env:
   CAMUNDA_USER: demo
   CAMUNDA_PASSWORD: demo
   TEST_REPORT_RANDOM_STATE: 'true'
+  OTEL_SERVICE_NAME: openforms-ci
 
 jobs:
 
