@@ -48,9 +48,7 @@ class TemporaryFileUploadView(GenericAPIView):
     renderer_classes = [CamelCaseJSONRenderer]
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(
-            data=request.data,
-        )
+        serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response(
                 serializer.errors,
@@ -64,12 +62,18 @@ class TemporaryFileUploadView(GenericAPIView):
         # trim name part if necessary but keep the extension
         name, ext = os.path.splitext(file.name)
         name = name[: 255 - len(ext)] + ext
+        match mime_type := file.content_type:
+            # mime type + extension validation was performed in the serializer
+            case "application/octet-stream" if ext == ".msg":
+                mime_type = "application/vnd.ms-outlook"
+            case _:
+                pass
 
         upload = TemporaryFileUpload.objects.create(
             submission=submission,
             content=file,
             file_name=name,
-            content_type=clean_mime_type(file.content_type),
+            content_type=clean_mime_type(mime_type),
             file_size=file.size,
         )
         return Response(
