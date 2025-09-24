@@ -1,6 +1,12 @@
+from collections.abc import Sequence
 from typing import Literal, TypedDict
 
 type Coordinates = tuple[float, float]
+
+type SupportedCrs = Literal["EPSG:28992"]
+"""
+Coordinate reference systems that we support.
+"""
 
 
 class PointGeometry(TypedDict):
@@ -19,3 +25,9 @@ class PolygonGeometry(TypedDict):
 
 
 type GeoJson = PointGeometry | LineStringGeometry | PolygonGeometry
+
+
+class Overlay(TypedDict):
+    type: Literal["wms", "wfs"]
+    url: str
+    layers: Sequence[str]

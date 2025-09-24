@@ -19,7 +19,10 @@ def geojson_to_rd(geometry: BaseGeometry) -> BaseGeometry:
     """
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:28992", always_xy=True)
     return shapely_transform(
-        geometry, transformer.transform, include_z=False, interleaved=False
+        geometry,
+        transformer.transform,  # type: ignore
+        include_z=False,
+        interleaved=False,
     )
 
 

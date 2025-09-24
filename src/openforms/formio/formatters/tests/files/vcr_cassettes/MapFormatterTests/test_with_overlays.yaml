@@ -266,7 +266,7 @@ interactions:
       Content-Type:
       - image/png
       Date:
-      - Wed, 24 Sep 2025 15:06:14 GMT
+      - Wed, 24 Sep 2025 14:54:00 GMT
       Etag:
       - f2584d5bc32c9203320c9f76e833448e
       Last-Modified:
@@ -617,7 +617,7 @@ interactions:
       Content-Type:
       - image/png
       Date:
-      - Wed, 24 Sep 2025 15:06:15 GMT
+      - Wed, 24 Sep 2025 14:54:00 GMT
       Etag:
       - 2cdccc0bf4890a440aa3ea14b2fbb516
       Last-Modified:
@@ -1023,7 +1023,7 @@ interactions:
       Content-Type:
       - image/png
       Date:
-      - Wed, 24 Sep 2025 15:06:14 GMT
+      - Wed, 24 Sep 2025 14:54:00 GMT
       Etag:
       - 6462ddec4631cdea4408b6ea41c6bd0c
       Last-Modified:
@@ -1343,7 +1343,7 @@ interactions:
       Content-Type:
       - image/png
       Date:
-      - Wed, 24 Sep 2025 15:06:15 GMT
+      - Wed, 24 Sep 2025 14:54:00 GMT
       Etag:
       - 8a5af2ff56596cb438040b305b3c9972
       Last-Modified:
@@ -1682,7 +1682,7 @@ interactions:
       Content-Type:
       - image/png
       Date:
-      - Wed, 24 Sep 2025 15:06:15 GMT
+      - Wed, 24 Sep 2025 14:53:59 GMT
       Etag:
       - 4f32f1071cc88de19fe41f4b5aa7f98b
       Last-Modified:
@@ -2096,11 +2096,631 @@ interactions:
       Content-Type:
       - image/png
       Date:
-      - Wed, 24 Sep 2025 15:06:15 GMT
+      - Wed, 24 Sep 2025 14:54:00 GMT
       Etag:
       - fcb1a454504cc66d12993dbe3ffe7c0e
       Last-Modified:
       - Thu, 05 Jun 2025 11:42:03 GMT
+      Referrer-Policy:
+      - origin
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?service=WMS&request=GetCapabilities
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<WMS_Capabilities xmlns=\"http://www.opengis.net/wms\"
+        xmlns:sld=\"http://www.opengis.net/sld\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:inspire_common=\"http://inspire.ec.europa.eu/schemas/common/1.0\"
+        xmlns:inspire_vs=\"http://inspire.ec.europa.eu/schemas/inspire_vs/1.0\" version=\"1.3.0\"
+        xsi:schemaLocation=\"http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd
+        http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd
+        http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd\">\n\t<Service>\n\t\t<Name>WMS</Name>\n\t\t<Title>BRO
+        Model Grondwaterspiegeldiepte (WDM) WMS</Title>\n\t\t<Abstract>Het grondwaterspiegeldieptemodel
+        maakt deel uit van de Basisregistratieondergrond (BRO). Het bestaat uit een
+        aantal grondwaterkarakteristieken die samen de langjarig gemiddelde fluctuatiedieptes
+        van de grondwaterspiegel weergegeven. Deze statistieken zijn de gemiddelde
+        kleinste grondwaterspiegeldiepte (GHG), de gemiddelde grootste grondwaterspiegeldiepte
+        (GLG), en de daarvan afgeleide grondwatertrap (Gt). De grondwatertrap maakte
+        tot voor kort deel uit van een ander registratieobject, te weten de Bodemkaart
+        van Nederland schaal 1:50000. Voor onder meer ecologische toepassingen is
+        ook de gemiddelde voorjaarsgrondwaterspiegeldiepte (GVG) aan het grondwaterspiegeldieptemodel
+        toegevoegd.</Abstract>\n\t\t<KeywordList>\n\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t<Keyword>infoMapAccessService</Keyword>\n\t\t</KeywordList>\n\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://www.pdok.nl\"/>\n\t\t<ContactInformation>\n\t\t\t<ContactPersonPrimary>\n\t\t\t\t<ContactPerson>KlantContactCenter
+        PDOK</ContactPerson>\n\t\t\t\t<ContactOrganization>PDOK</ContactOrganization>\n\t\t\t</ContactPersonPrimary>\n\t\t\t<ContactPosition>pointOfContact</ContactPosition>\n\t\t\t<ContactAddress>\n\t\t\t\t<AddressType>Work</AddressType>\n\t\t\t\t<Address/>\n\t\t\t\t<City>Apeldoorn</City>\n\t\t\t\t<StateOrProvince/>\n\t\t\t\t<PostCode/>\n\t\t\t\t<Country>Netherlands</Country>\n\t\t\t</ContactAddress>\n\t\t\t<ContactVoiceTelephone/>\n\t\t\t<ContactFacsimileTelephone/>\n\t\t\t<ContactElectronicMailAddress>BeheerPDOK@kadaster.nl</ContactElectronicMailAddress>\n\t\t</ContactInformation>\n\t\t<Fees>NONE</Fees>\n\t\t<AccessConstraints>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</AccessConstraints>\n\t\t<MaxWidth>4000</MaxWidth>\n\t\t<MaxHeight>4000</MaxHeight>\n\t</Service>\n\t<Capability>\n\t\t<Request>\n\t\t\t<GetCapabilities>\n\t\t\t\t<Format>text/xml</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetCapabilities>\n\t\t\t<GetMap>\n\t\t\t\t<Format>image/png</Format>\n\t\t\t\t<Format>image/jpeg</Format>\n\t\t\t\t<Format>image/png;
+        mode=8bit</Format>\n\t\t\t\t<Format>image/vnd.jpeg-png</Format>\n\t\t\t\t<Format>image/vnd.jpeg-png8</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t\t<Post>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0\"/>\n\t\t\t\t\t\t</Post>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetMap>\n\t\t\t<GetFeatureInfo>\n\t\t\t\t<Format>application/json</Format>\n\t\t\t\t<Format>application/json;
+        subtype=geojson</Format>\n\t\t\t\t<Format>application/vnd.ogc.gml</Format>\n\t\t\t\t<Format>text/html</Format>\n\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t<Format>text/xml</Format>\n\t\t\t\t<Format>text/xml;
+        subtype=gml/3.1.1</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t\t<Post>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0\"/>\n\t\t\t\t\t\t</Post>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetFeatureInfo>\n\t\t</Request>\n\t\t<Exception>\n\t\t\t<Format>XML</Format>\n\t\t\t<Format>INIMAGE</Format>\n\t\t\t<Format>BLANK</Format>\n\t\t</Exception>\n\t\t<inspire_vs:ExtendedCapabilities>\n\t\t\t<inspire_common:MetadataUrl>\n\t\t\t\t<inspire_common:URL>https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=757a7c50-540d-4105-9135-73f09f700743</inspire_common:URL>\n\t\t\t\t<inspire_common:MediaType>application/vnd.ogc.csw.GetRecordByIdResponse_xml</inspire_common:MediaType>\n\t\t\t</inspire_common:MetadataUrl>\n\t\t\t<inspire_common:SupportedLanguages>\n\t\t\t\t<inspire_common:DefaultLanguage>\n\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t</inspire_common:DefaultLanguage>\n\t\t\t\t<inspire_common:SupportedLanguage>\n\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t</inspire_common:SupportedLanguage>\n\t\t\t</inspire_common:SupportedLanguages>\n\t\t\t<inspire_common:ResponseLanguage>\n\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t</inspire_common:ResponseLanguage>\n\t\t</inspire_vs:ExtendedCapabilities>\n\t\t<Layer
+        queryable=\"1\">\n\t\t\t<Title>BRO Model Grondwaterspiegeldiepte (WDM) WMS</Title>\n\t\t\t<Abstract>Het
+        grondwaterspiegeldieptemodel maakt deel uit van de Basisregistratieondergrond
+        (BRO). Het bestaat uit een aantal grondwaterkarakteristieken die samen de
+        langjarig gemiddelde fluctuatiedieptes van de grondwaterspiegel weergegeven.
+        Deze statistieken zijn de gemiddelde kleinste grondwaterspiegeldiepte (GHG),
+        de gemiddelde grootste grondwaterspiegeldiepte (GLG), en de daarvan afgeleide
+        grondwatertrap (Gt). De grondwatertrap maakte tot voor kort deel uit van een
+        ander registratieobject, te weten de Bodemkaart van Nederland schaal 1:50000.
+        Voor onder meer ecologische toepassingen is ook de gemiddelde voorjaarsgrondwaterspiegeldiepte
+        (GVG) aan het grondwaterspiegeldieptemodel toegevoegd.</Abstract>\n\t\t\t<KeywordList>\n\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t</KeywordList>\n\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t<CRS>CRS:84</CRS>\n\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t</EX_GeographicBoundingBox>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldieptemetingen</Title>\n\t\t\t\t<Abstract>Om het model voor
+        de fluctuatie van de grondwaterspiegeldiepte te genereren worden in het voorjaar
+        en najaar veldmetingen uitgevoerd om de diepte van de grondwaterspiegel te
+        meten. De metingen worden uitgevoerd in een tijdelijk boorgat waarin alleen
+        de diepte wordt gemeten nadat in het gat het grondwaterniveau stabiel is.
+        Het is een puntenbestand met de locatie, datum en de diepte in cm onder maaiveld.
+        Het grondwaterspiegeldieptemodel maakt deel uit van de Basisregistratieondergrond
+        (BRO). Het bestaat uit een aantal grondwaterkarakteristieken die samen de
+        langjarig gemiddelde fluctuatiedieptes van de grondwaterspiegel weergegeven.
+        Deze statistieken zijn de gemiddelde kleinste grondwaterspiegeldiepte (GHG),
+        de gemiddelde grootste grondwaterspiegeldiepte (GLG), en de daarvan afgeleide
+        grondwatertrap (Gt). De grondwatertrap maakte tot voor kort deel uit van een
+        ander registratieobject, te weten de Bodemkaart van Nederland schaal 1:50000.
+        Voor onder meer ecologische toepassingen is ook de gemiddelde voorjaarsgrondwaterspiegeldiepte
+        (GVG) aan het grondwaterspiegeldieptemodel toegevoegd.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>observations</Name>\n\t\t\t\t\t<Title>Observations</Title>\n\t\t\t\t\t<LegendURL
+        width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen/observations.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GHG</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldiepte GHG</Title>\n\t\t\t\t<Abstract>Het grondwaterspiegeldieptemodel
+        maakt deel uit van de Basisregistratieondergrond (BRO). Het bestaat uit een
+        aantal grondwaterkarakteristieken die samen de langjarig gemiddelde fluctuatiedieptes
+        van de grondwaterspiegel weergegeven. E\xE9n van die karakteristieken in het
+        grondwaterspiegeldieptemodel is \u2018Gemiddelde Hoogste Grondwaterspiegeldiepte
+        (GHG). Deze laag bevat de waarden hiervoor in cm onder maaiveld.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>mediaan</Name>\n\t\t\t\t\t<Title>GHG
+        Mediaan</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GHG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GLG</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldiepte GLG</Title>\n\t\t\t\t<Abstract>Het grondwaterspiegeldieptemodel
+        maakt deel uit van de Basisregistratieondergrond (BRO). Het bestaat uit een
+        aantal grondwaterkarakteristieken die samen de langjarig gemiddelde fluctuatiedieptes
+        van de grondwaterspiegel weergegeven. E\xE9n van die karakteristieken in het
+        grondwaterspiegeldieptemodel is \u2018Gemiddelde Laagste Grondwaterspiegeldiepte
+        (GLG). Deze laag bevat de waarden hiervoor in cm onder maaiveld.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>mediaan</Name>\n\t\t\t\t\t<Title>GLG
+        Mediaan</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GLG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GVG</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldiepte GVG</Title>\n\t\t\t\t<Abstract>Het grondwaterspiegeldieptemodel
+        maakt deel uit van de Basisregistratieondergrond (BRO). Het bestaat uit een
+        aantal grondwaterkarakteristieken die samen de langjarig gemiddelde fluctuatiedieptes
+        van de grondwaterspiegel weergegeven. E\xE9n van die karakteristieken in het
+        grondwaterspiegeldieptemodel is \u2018Gemiddelde Voorjaars Grondwaterspiegeldiepte
+        (GVG). Voor onder meer ecologische toepassingen is ook de gemiddelde voorjaarsgrondwaterspiegeldiepte
+        (GVG) aan het grondwaterspiegeldieptemodel toegevoegd. Deze laag bevat de
+        waarden hiervoor in cm onder maaiveld.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>mediaan</Name>\n\t\t\t\t\t<Title>GVG
+        Mediaan</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GVG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GT</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldiepte Grondwatertrappen Gt</Title>\n\t\t\t\t<Abstract>Het
+        grondwaterspiegeldieptemodel maakt deel uit van de Basisregistratieondergrond
+        (BRO). Het bestaat uit een aantal grondwaterkarakteristieken die samen de
+        langjarig gemiddelde fluctuatiedieptes van de grondwaterspiegel weergegeven.
+        Deze statistieken zijn de gemiddelde kleinste grondwaterspiegeldiepte (GHG),
+        de gemiddelde grootste grondwaterspiegeldiepte (GLG), en de daarvan afgeleide
+        grondwatertrap (Gt). Meer informatie en de voor deze afleiding gebruikte indeling
+        in klassen is te vinden in tabel 1 van het \u2018Scopedocument Model grondwaterspiegeldiepte
+        1.0\u2019 [https://www.bro-productomgeving.nl/bpo/latest/modellen/model-grondwaterspiegeldiepte-wdm/wdm-scopedocument].
+        De grondwatertrap maakte eerder deel uit van een ander registratieobject,
+        te weten de Bodemkaart van Nederland schaal 1:50000, maar voor opname in de
+        BRO is besloten deze te scheiden.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>gt-mediane-gxg</Name>\n\t\t\t\t\t<Title>GT
+        Mediane GXG</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GT/gt-mediane-gxg.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldiepte-modeldocumentatie</Name>\n\t\t\t\t<Title>BRO
+        Grondwaterspiegeldiepte modeldocumentatie</Title>\n\t\t\t\t<Abstract>Voor
+        de realisatie van het grondwaterspiegeldieptemodel wordt een onderscheid gemaakt
+        in hoog Nederland, waar vrij afwaterende systemen overheersen en laag Nederland,
+        waar de grondwaterspiegeldiepte wordt bepaald door peilbeheer. Deze laag in
+        de dataset bevat voor iedere locatie de referentie naar de documentatie waarin
+        dit verder beschreven is.</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-59188.44333693248\" miny=\"304984.64144318487\"
+        maxx=\"308126.88473339565\" maxy=\"858328.516489961\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"bzk\">\n\t\t\t\t\t<OnlineResource xlink:href=\"https://info@bro.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"bzk\">b756dabe-a331-42cd-b45e-f61828ee4534</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>references</Name>\n\t\t\t\t\t<Title>References</Title>\n\t\t\t\t\t<LegendURL
+        width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldiepte-modeldocumentatie/references.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t</Layer>\n\t</Capability>\n</WMS_Capabilities>"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Headers:
+      - Content-Type
+      Access-Control-Allow-Method:
+      - GET, POST, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - public, max-age=3600, no-transform
+      Content-Length:
+      - '28385'
+      Content-Type:
+      - text/xml; charset=UTF-8
+      Date:
+      - Wed, 24 Sep 2025 14:54:00 GMT
+      Referrer-Policy:
+      - origin
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?service=WMS&request=GetMap&crs=EPSG%3A28992&layers=bro-grondwaterspiegeldieptemetingen-GHG&styles=&format=image%2Fpng&transparent=True&version=1.3.0&bbox=148252.2748967932%2C460379.6283949845%2C148588.2748967932%2C460631.6283949845&width=400&height=300
+  response:
+    body:
+      string: !!binary |
+        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
+        RU5ErkJggg==
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Headers:
+      - Content-Type
+      Access-Control-Allow-Method:
+      - GET, POST, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - public, max-age=3600, no-transform
+      Content-Length:
+      - '3370'
+      Content-Type:
+      - image/png
+      Date:
+      - Wed, 24 Sep 2025 14:54:00 GMT
+      Referrer-Policy:
+      - origin
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://service.pdok.nl/lv/bag/wms/v2_0?service=WMS&request=GetCapabilities
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<WMS_Capabilities xmlns=\"http://www.opengis.net/wms\"
+        xmlns:sld=\"http://www.opengis.net/sld\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:inspire_common=\"http://inspire.ec.europa.eu/schemas/common/1.0\"
+        xmlns:inspire_vs=\"http://inspire.ec.europa.eu/schemas/inspire_vs/1.0\" version=\"1.3.0\"
+        xsi:schemaLocation=\"http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd
+        http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd
+        http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd\">\n\t<Service>\n\t\t<Name>WMS</Name>\n\t\t<Title>BAG
+        WMS</Title>\n\t\t<Abstract>Deze service wordt dagelijks geactualiseerd. De
+        gegevens bestaan uit BAG-panden, een deelselectie van BAG-gegevens van deze
+        panden en de verblijfsobjecten die zich hierin bevinden. De ligplaatsen en
+        standplaatsen zijn hierin ook opgenomen met een deelselectie van BAG-gegevens.
+        Nummeraanduidingen (en de bijhorende Nummeraanduidingidentificaties) worden
+        in de WFS niet opgenomen als een losstaand object. De gegevens van de nummeraanduidingen
+        zijn in deze services onderdeel van de adresseerbare objecten. Hierbij wordt
+        alleen het hoofdadres opgenomen. Objecten met meerdere adressen (hoofd- en
+        nevenadressen) zijn dus niet compleet. Dit betekent dat niet alle BAG adressen
+        zijn opgenomen. Als u behoefte heeft aan de volledige BAG gegevens adviseren
+        wij u gebruik te maken van andere BAG producten. De BAG API Individuele bevragingen
+        https://www.kadaster.nl/zakelijk/producten/adressen-en-gebouwen/bag-api-individuele-bevragingen
+        bevat alle BAG gegevens. Dit geldt ook voor de BAG viewer https://bagviewer.kadaster.nl/lvbag/bag-viewer/
+        en het BAG 2.0 Extract https://www.kadaster.nl/zakelijk/producten/adressen-en-gebouwen/bag-2.0-extract.
+        Als u wilt nagaan welk BAG product het beste aansluit bij uw behoefte, raadpleeg
+        dan de beslisboom voor BAG 2.0 producten: https://www.kadaster.nl/-/beslisboom-bag-2.0-producten.</Abstract>\n\t\t<KeywordList>\n\t\t\t<Keyword>BAG</Keyword>\n\t\t\t<Keyword>adres</Keyword>\n\t\t\t<Keyword>gebouw</Keyword>\n\t\t\t<Keyword>pand</Keyword>\n\t\t\t<Keyword>verblijfsobject</Keyword>\n\t\t\t<Keyword>ligplaats</Keyword>\n\t\t\t<Keyword>standplaats</Keyword>\n\t\t\t<Keyword>nummeraanduiding</Keyword>\n\t\t\t<Keyword>woonplaats</Keyword>\n\t\t\t<Keyword>infoMapAccessService</Keyword>\n\t\t\t<Keyword>HVD</Keyword>\n\t\t\t<Keyword>Geospatiale
+        data</Keyword>\n\t\t</KeywordList>\n\t\t<OnlineResource xmlns:xlink=\"http://www.w3.org/1999/xlink\"
+        xlink:href=\"https://www.pdok.nl\"/>\n\t\t<ContactInformation>\n\t\t\t<ContactPersonPrimary>\n\t\t\t\t<ContactPerson>KlantContactCenter
+        PDOK</ContactPerson>\n\t\t\t\t<ContactOrganization>PDOK</ContactOrganization>\n\t\t\t</ContactPersonPrimary>\n\t\t\t<ContactPosition>pointOfContact</ContactPosition>\n\t\t\t<ContactAddress>\n\t\t\t\t<AddressType>Work</AddressType>\n\t\t\t\t<Address/>\n\t\t\t\t<City>Apeldoorn</City>\n\t\t\t\t<StateOrProvince/>\n\t\t\t\t<PostCode/>\n\t\t\t\t<Country>Netherlands</Country>\n\t\t\t</ContactAddress>\n\t\t\t<ContactVoiceTelephone/>\n\t\t\t<ContactFacsimileTelephone/>\n\t\t\t<ContactElectronicMailAddress>BeheerPDOK@kadaster.nl</ContactElectronicMailAddress>\n\t\t</ContactInformation>\n\t\t<Fees>NONE</Fees>\n\t\t<AccessConstraints>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</AccessConstraints>\n\t\t<MaxWidth>4000</MaxWidth>\n\t\t<MaxHeight>4000</MaxHeight>\n\t</Service>\n\t<Capability>\n\t\t<Request>\n\t\t\t<GetCapabilities>\n\t\t\t\t<Format>text/xml</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetCapabilities>\n\t\t\t<GetMap>\n\t\t\t\t<Format>image/png</Format>\n\t\t\t\t<Format>image/jpeg</Format>\n\t\t\t\t<Format>image/png;
+        mode=8bit</Format>\n\t\t\t\t<Format>image/vnd.jpeg-png</Format>\n\t\t\t\t<Format>image/vnd.jpeg-png8</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t\t<Post>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0\"/>\n\t\t\t\t\t\t</Post>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetMap>\n\t\t\t<GetFeatureInfo>\n\t\t\t\t<Format>application/json</Format>\n\t\t\t\t<Format>application/json;
+        subtype=geojson</Format>\n\t\t\t\t<Format>application/vnd.ogc.gml</Format>\n\t\t\t\t<Format>text/html</Format>\n\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t<Format>text/xml</Format>\n\t\t\t\t<Format>text/xml;
+        subtype=gml/3.1.1</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t\t<Post>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0\"/>\n\t\t\t\t\t\t</Post>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetFeatureInfo>\n\t\t</Request>\n\t\t<Exception>\n\t\t\t<Format>XML</Format>\n\t\t\t<Format>INIMAGE</Format>\n\t\t\t<Format>BLANK</Format>\n\t\t</Exception>\n\t\t<inspire_vs:ExtendedCapabilities>\n\t\t\t<inspire_common:MetadataUrl>\n\t\t\t\t<inspire_common:URL>https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=9e2e977a-16a6-42a4-a208-c4f70704f383</inspire_common:URL>\n\t\t\t\t<inspire_common:MediaType>application/vnd.ogc.csw.GetRecordByIdResponse_xml</inspire_common:MediaType>\n\t\t\t</inspire_common:MetadataUrl>\n\t\t\t<inspire_common:SupportedLanguages>\n\t\t\t\t<inspire_common:DefaultLanguage>\n\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t</inspire_common:DefaultLanguage>\n\t\t\t\t<inspire_common:SupportedLanguage>\n\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t</inspire_common:SupportedLanguage>\n\t\t\t</inspire_common:SupportedLanguages>\n\t\t\t<inspire_common:ResponseLanguage>\n\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t</inspire_common:ResponseLanguage>\n\t\t</inspire_vs:ExtendedCapabilities>\n\t\t<Layer
+        queryable=\"1\">\n\t\t\t<Title>BAG WMS</Title>\n\t\t\t<Abstract>Deze service
+        wordt dagelijks geactualiseerd. De gegevens bestaan uit BAG-panden, een deelselectie
+        van BAG-gegevens van deze panden en de verblijfsobjecten die zich hierin bevinden.
+        De ligplaatsen en standplaatsen zijn hierin ook opgenomen met een deelselectie
+        van BAG-gegevens. Nummeraanduidingen (en de bijhorende Nummeraanduidingidentificaties)
+        worden in de WFS niet opgenomen als een losstaand object. De gegevens van
+        de nummeraanduidingen zijn in deze services onderdeel van de adresseerbare
+        objecten. Hierbij wordt alleen het hoofdadres opgenomen. Objecten met meerdere
+        adressen (hoofd- en nevenadressen) zijn dus niet compleet. Dit betekent dat
+        niet alle BAG adressen zijn opgenomen. Als u behoefte heeft aan de volledige
+        BAG gegevens adviseren wij u gebruik te maken van andere BAG producten. De
+        BAG API Individuele bevragingen https://www.kadaster.nl/zakelijk/producten/adressen-en-gebouwen/bag-api-individuele-bevragingen
+        bevat alle BAG gegevens. Dit geldt ook voor de BAG viewer https://bagviewer.kadaster.nl/lvbag/bag-viewer/
+        en het BAG 2.0 Extract https://www.kadaster.nl/zakelijk/producten/adressen-en-gebouwen/bag-2.0-extract.
+        Als u wilt nagaan welk BAG product het beste aansluit bij uw behoefte, raadpleeg
+        dan de beslisboom voor BAG 2.0 producten: https://www.kadaster.nl/-/beslisboom-bag-2.0-producten.</Abstract>\n\t\t\t<KeywordList>\n\t\t\t\t<Keyword>BAG</Keyword>\n\t\t\t\t<Keyword>adres</Keyword>\n\t\t\t\t<Keyword>gebouw</Keyword>\n\t\t\t\t<Keyword>pand</Keyword>\n\t\t\t\t<Keyword>verblijfsobject</Keyword>\n\t\t\t\t<Keyword>ligplaats</Keyword>\n\t\t\t\t<Keyword>standplaats</Keyword>\n\t\t\t\t<Keyword>nummeraanduiding</Keyword>\n\t\t\t\t<Keyword>woonplaats</Keyword>\n\t\t\t\t<Keyword>infoMapAccessService</Keyword>\n\t\t\t\t<Keyword>HVD</Keyword>\n\t\t\t\t<Keyword>Geospatiale
+        data</Keyword>\n\t\t\t</KeywordList>\n\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t<CRS>CRS:84</CRS>\n\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t</EX_GeographicBoundingBox>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-25000\" miny=\"250000\" maxx=\"280000\" maxy=\"860000\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>pand</Name>\n\t\t\t\t<Title>Pand</Title>\n\t\t\t\t<Abstract>pand</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>pand</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-25000\" miny=\"250000\" maxx=\"280000\" maxy=\"860000\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"Kadaster\">\n\t\t\t\t\t<OnlineResource xlink:href=\"http://www.kadaster.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"Kadaster\">1fa33d90-79cb-11e2-b92a-0800200c9a66</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=aa3b5e6e-7baa-40c0-8972-3353e927ec2f\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>bag:pand</Name>\n\t\t\t\t\t<Title>Bag:pand</Title>\n\t\t\t\t\t<LegendURL
+        width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0/legend/pand/bag:pand.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>bag:pand_gefilterd</Name>\n\t\t\t\t\t<Title>Bag:pand
+        gefilterd</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0/legend/pand/bag:pand_gefilterd.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>bag:pand_status</Name>\n\t\t\t\t\t<Title>Bag:pand
+        status</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0/legend/pand/bag:pand_status.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t\t<MaxScaleDenominator>8000</MaxScaleDenominator>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>ligplaats</Name>\n\t\t\t\t<Title>Ligplaats</Title>\n\t\t\t\t<Abstract>ligplaats</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>ligplaats</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-25000\" miny=\"250000\" maxx=\"280000\" maxy=\"860000\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"Kadaster\">\n\t\t\t\t\t<OnlineResource xlink:href=\"http://www.kadaster.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"Kadaster\">1fa33d90-79cb-11e2-b92a-0800200c9a66</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=aa3b5e6e-7baa-40c0-8972-3353e927ec2f\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>bag:ligplaats</Name>\n\t\t\t\t\t<Title>Bag:ligplaats</Title>\n\t\t\t\t\t<LegendURL
+        width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0/legend/ligplaats/bag:ligplaats.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t\t<MaxScaleDenominator>8000</MaxScaleDenominator>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>standplaats</Name>\n\t\t\t\t<Title>Standplaats</Title>\n\t\t\t\t<Abstract>standplaats</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>standplaats</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-25000\" miny=\"250000\" maxx=\"280000\" maxy=\"860000\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"Kadaster\">\n\t\t\t\t\t<OnlineResource xlink:href=\"http://www.kadaster.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"Kadaster\">1fa33d90-79cb-11e2-b92a-0800200c9a66</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=aa3b5e6e-7baa-40c0-8972-3353e927ec2f\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>bag:standplaats</Name>\n\t\t\t\t\t<Title>Bag:standplaats</Title>\n\t\t\t\t\t<LegendURL
+        width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0/legend/standplaats/bag:standplaats.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t\t<MaxScaleDenominator>8000</MaxScaleDenominator>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>verblijfsobject</Name>\n\t\t\t\t<Title>Verblijfsobject</Title>\n\t\t\t\t<Abstract>verblijfsobject</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>Verblijfsobject</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-25000\" miny=\"250000\" maxx=\"280000\" maxy=\"860000\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"Kadaster\">\n\t\t\t\t\t<OnlineResource xlink:href=\"http://www.kadaster.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"Kadaster\">1fa33d90-79cb-11e2-b92a-0800200c9a66</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=aa3b5e6e-7baa-40c0-8972-3353e927ec2f\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>bag:verblijfsobject</Name>\n\t\t\t\t\t<Title>Bag:verblijfsobject</Title>\n\t\t\t\t\t<LegendURL
+        width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0/legend/verblijfsobject/bag:verblijfsobject.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>bag:verblijfsobject_alt</Name>\n\t\t\t\t\t<Title>Bag:verblijfsobject
+        alt</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0/legend/verblijfsobject/bag:verblijfsobject_alt.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>bag:verblijfsobject_status</Name>\n\t\t\t\t\t<Title>Bag:verblijfsobject
+        status</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0/legend/verblijfsobject/bag:verblijfsobject_status.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t\t<MaxScaleDenominator>8000</MaxScaleDenominator>\n\t\t\t</Layer>\n\t\t\t<Layer
+        queryable=\"1\">\n\t\t\t\t<Name>woonplaats</Name>\n\t\t\t\t<Title>Woonplaats</Title>\n\t\t\t\t<Abstract>woonplaats</Abstract>\n\t\t\t\t<KeywordList>\n\t\t\t\t\t<Keyword>woonplaats</Keyword>\n\t\t\t\t</KeywordList>\n\t\t\t\t<CRS>EPSG:28992</CRS>\n\t\t\t\t<CRS>EPSG:25831</CRS>\n\t\t\t\t<CRS>EPSG:25832</CRS>\n\t\t\t\t<CRS>EPSG:3034</CRS>\n\t\t\t\t<CRS>EPSG:3035</CRS>\n\t\t\t\t<CRS>EPSG:3857</CRS>\n\t\t\t\t<CRS>EPSG:4258</CRS>\n\t\t\t\t<CRS>EPSG:4326</CRS>\n\t\t\t\t<CRS>CRS:84</CRS>\n\t\t\t\t<EX_GeographicBoundingBox>\n\t\t\t\t\t<westBoundLongitude>2.52713</westBoundLongitude>\n\t\t\t\t\t<eastBoundLongitude>7.37403</eastBoundLongitude>\n\t\t\t\t\t<southBoundLatitude>50.2129</southBoundLatitude>\n\t\t\t\t\t<northBoundLatitude>55.7212</northBoundLatitude>\n\t\t\t\t</EX_GeographicBoundingBox>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:28992\" minx=\"-25000\" miny=\"250000\" maxx=\"280000\" maxy=\"860000\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25831\" minx=\"-470271\" miny=\"5.56231e+06\" maxx=\"795163\" maxy=\"6.18197e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:25832\" minx=\"62461.6\" miny=\"5.56555e+06\" maxx=\"397827\" maxy=\"6.19042e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3034\" minx=\"2.61336e+06\" miny=\"3.509e+06\" maxx=\"3.22007e+06\"
+        maxy=\"3.84003e+06\"/>\n\t\t\t\t<BoundingBox CRS=\"EPSG:3035\" minx=\"3.01676e+06\"
+        miny=\"3.81264e+06\" maxx=\"3.64485e+06\" maxy=\"4.15586e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:3857\" minx=\"281318\" miny=\"6.48322e+06\" maxx=\"820873\" maxy=\"7.50311e+06\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4258\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"EPSG:4326\" minx=\"50.2129\" miny=\"2.52713\" maxx=\"55.7212\" maxy=\"7.37403\"/>\n\t\t\t\t<BoundingBox
+        CRS=\"CRS:84\" minx=\"2.52713\" miny=\"50.2129\" maxx=\"7.37403\" maxy=\"55.7212\"/>\n\t\t\t\t<AuthorityURL
+        name=\"Kadaster\">\n\t\t\t\t\t<OnlineResource xlink:href=\"http://www.kadaster.nl\"/>\n\t\t\t\t</AuthorityURL>\n\t\t\t\t<Identifier
+        authority=\"Kadaster\">1fa33d90-79cb-11e2-b92a-0800200c9a66</Identifier>\n\t\t\t\t<MetadataURL
+        type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=aa3b5e6e-7baa-40c0-8972-3353e927ec2f\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>bag:woonplaats</Name>\n\t\t\t\t\t<Title>Bag:woonplaats</Title>\n\t\t\t\t\t<LegendURL
+        width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/lv/bag/wms/v2_0/legend/woonplaats/bag:woonplaats.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t</Layer>\n\t</Capability>\n</WMS_Capabilities>"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Headers:
+      - Content-Type
+      Access-Control-Allow-Method:
+      - GET, POST, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - public, max-age=3600, no-transform
+      Content-Length:
+      - '23975'
+      Content-Type:
+      - text/xml; charset=UTF-8
+      Date:
+      - Wed, 24 Sep 2025 14:54:00 GMT
+      Referrer-Policy:
+      - origin
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://service.pdok.nl/lv/bag/wms/v2_0?service=WMS&request=GetMap&crs=EPSG%3A28992&layers=pand%2Cverblijfsobject&styles=&format=image%2Fpng&transparent=True&version=1.3.0&bbox=148252.2748967932%2C460379.6283949845%2C148588.2748967932%2C460631.6283949845&width=400&height=300
+  response:
+    body:
+      string: !!binary |
+        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
+        AABJRU5ErkJggg==
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Headers:
+      - Content-Type
+      Access-Control-Allow-Method:
+      - GET, POST, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - public, max-age=3600, no-transform
+      Content-Length:
+      - '1720'
+      Content-Type:
+      - image/png
+      Date:
+      - Wed, 24 Sep 2025 14:54:00 GMT
       Referrer-Policy:
       - origin
       Strict-Transport-Security:

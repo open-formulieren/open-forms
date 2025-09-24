@@ -1,10 +1,12 @@
 from base64 import b64encode
+from collections.abc import Collection
 from io import BytesIO
 
 from shapely.geometry import shape
 
 from .constants import ZOOM_LEVEL_TO_RESOLUTION
-from .typing import GeoJson
+from .overlays_draw import draw_overlays_on_map
+from .typing import GeoJson, Overlay
 from .utils import find_maximum_zoom, geojson_to_rd
 from .wmts_draw import draw_geometry_on_map
 from .wmts_map_generator import generate_map_image
@@ -16,6 +18,7 @@ def generate_map_image_with_geojson(
     geojson: GeoJson,
     url_template: str,
     image_size: tuple[int, int],
+    overlays: Collection[Overlay] | None = None,
     max_zoom: int = max(ZOOM_LEVEL_TO_RESOLUTION),
 ) -> str | None:
     """
@@ -26,11 +29,12 @@ def generate_map_image_with_geojson(
       formattable with x, y, and z parameters. For example:
       https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/standaard/EPSG:28992/{z}/{x}/{y}.png
     :param image_size: Image size in pixels (width, height).
+    :param overlays: Overlays to draw (optional).
     :param max_zoom: Maximum zoom level to use.
     :return: Image of the map in png format, encoded using base64. ``None`` if it could
       not be loaded.
     """
-    geometry_rd = geojson_to_rd(shape(geojson))
+    geometry_rd = geojson_to_rd(shape(geojson))  # pyright: ignore[reportArgumentType]
 
     zoom = find_maximum_zoom(
         geometry_rd=geometry_rd, max_zoom=max_zoom, image_size=image_size
@@ -45,6 +49,14 @@ def generate_map_image_with_geojson(
 
     if map_img is None:
         return None
+
+    if overlays:
+        draw_overlays_on_map(
+            image=map_img,
+            overlays=overlays,
+            center_rd=geometry_rd.centroid,
+            zoom=zoom,
+        )
 
     img_with_shape = draw_geometry_on_map(
         image=map_img,
