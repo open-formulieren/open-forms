@@ -1,11 +1,11 @@
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-                  xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310" xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
-                  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml">
+<soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310" xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml">
     <soapenv:Header/>
     <soapenv:Body>
         <ns:npsLa01>
             <ns:stuurgegevens>
-                <StUF:berichtcode>?</StUF:berichtcode>
+                <StUF:berichtcode>La01</StUF:berichtcode>
                 <!--Optional:-->
                 <StUF:zender>
                     <!--Optional:-->
@@ -32,14 +32,12 @@
                 <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
                 <!--Optional:-->
                 <StUF:crossRefnummer>?</StUF:crossRefnummer>
-                <StUF:entiteittype>?</StUF:entiteittype>
+                <StUF:entiteittype>NPS</StUF:entiteittype>
             </ns:stuurgegevens>
             <ns:parameters>
-                <StUF:indicatorVervolgvraag>?</StUF:indicatorVervolgvraag>
+                <StUF:indicatorVervolgvraag>false</StUF:indicatorVervolgvraag>
                 <!--Optional:-->
                 <StUF:indicatorAfnemerIndicatie>false</StUF:indicatorAfnemerIndicatie>
-                <!--Optional:-->
-                <StUF:aantalVoorkomens>?</StUF:aantalVoorkomens>
             </ns:parameters>
             <!--Zero or more repetitions:-->
             <ns:melding>?</ns:melding>
@@ -60,7 +58,7 @@
                             <!--Optional:-->
                             <ns:voornamen>Bolly</ns:voornamen>
                             <!--Optional:-->
-                            <ns:geboortedatum>1999-06-15</ns:geboortedatum>
+                            <ns:geboortedatum>19990615</ns:geboortedatum>
                             <!--Optional:-->
                             <ns:inp.geboorteplaats>Amsterdam</ns:inp.geboorteplaats>
                             <!--Optional:-->
@@ -80,7 +78,7 @@
                             <!--Optional:-->
                             <ns:voornamen>Billy</ns:voornamen>
                             <!--Optional:-->
-                            <ns:geboortedatum>1998-07-16</ns:geboortedatum>
+                            <ns:geboortedatum>19980716</ns:geboortedatum>
                             <!--Optional:-->
                             <ns:inp.geboorteplaats>Amsterdam</ns:inp.geboorteplaats>
                             <!--Optional:-->
@@ -120,11 +118,11 @@
                             <!--Optional:-->
                             <ns:voornamen>Other</ns:voornamen>
                             <!--Optional:-->
-                            <ns:geboortedatum>1998-07-16</ns:geboortedatum>
+                            <ns:geboortedatum>19980716</ns:geboortedatum>
                             <!--Optional:-->
                             <ns:inp.geboorteplaats>Amsterdam</ns:inp.geboorteplaats>
                             <!--Optional:-->
-                            <ns:overlijdensdatum>2023-01-08</ns:overlijdensdatum>
+                            <ns:overlijdensdatum>20230108</ns:overlijdensdatum>
                         </ns:gerelateerde>
                     </ns:inp.heeftAlsKinderen>
 

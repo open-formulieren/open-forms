@@ -17,16 +17,17 @@
         <ns:inp.bsn>{{ bsn }}</ns:inp.bsn>
     </ns:gelijk>
     <ns:scope>
-        <ns:inp.heeftAlsKinderen StUF:entiteittype="NPSNPSKND">
-            <ns:gerelateerde StUF:entiteittype="NPS">
-                <ns:inp.bsn xsi:nil="true" />
-                <ns:voornamen xsi:nil="true" />
-                <ns:voorletters xsi:nil="true" />
-                <ns:voorvoegselGeslachtsnaam xsi:nil="true" />
-                <ns:geslachtsnaam xsi:nil="true" />
-                <ns:geboortedatum xsi:nil="true" />
-            </ns:gerelateerde>
-        </ns:inp.heeftAlsKinderen>
+        <ns:object StUF:entiteittype="NPS">
+            <ns:inp.heeftAlsKinderen StUF:entiteittype="NPSNPSKND">
+                <ns:gerelateerde StUF:entiteittype="NPS">
+                    <ns:inp.bsn xsi:nil="true" />
+                    <ns:geslachtsnaam xsi:nil="true"/>
+                    <ns:voorvoegselGeslachtsnaam xsi:nil="true"/>
+                    <ns:voorletters xsi:nil="true"/>
+                    <ns:voornamen xsi:nil="true"/>
+                    <ns:geboortedatum xsi:nil="true"/>
+                </ns:gerelateerde>
+            </ns:inp.heeftAlsKinderen>
         </ns:object>
     </ns:scope>
 </ns:npsLv01>{% endblock %}
