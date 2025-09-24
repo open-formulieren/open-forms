@@ -184,6 +184,24 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             status_code=status.HTTP_400_BAD_REQUEST,
         )
 
+    @tag("gh-5507")
+    def test_msg_mimetype_override(self):
+        self._add_submission_to_session(self.submission)
+        url = reverse("api:formio:temporary-file-upload")
+        with open(Path(TEST_FILES, "sample.msg"), "rb") as f:
+            file = SimpleUploadedFile(
+                "sample.msg", f.read(), content_type="application/octet-stream"
+            )
+
+        response = self.client.post(
+            url, {"file": file, "submission": self.submission_url}, format="multipart"
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        response_data = response.json()
+        upload = temporary_upload_from_url(response_data["url"])
+        self.assertEqual(upload.content_type, "application/vnd.ms-outlook")
+
     @override_settings(MAX_FILE_UPLOAD_SIZE=10)  # only allow 10 bytes upload size
     def test_upload_too_large(self):
         self._add_submission_to_session(self.submission)
