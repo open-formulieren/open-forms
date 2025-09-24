@@ -99,10 +99,7 @@ def construct_image_from_tiles(
     tiles_x = range(x_tile_center - n_tiles_left, x_tile_center + n_tiles_right + 1)
     tiles_y = range(y_tile_center - n_tiles_top, y_tile_center + n_tiles_bottom + 1)
 
-    # Initiate a session because we are making multiple requests to the same endpoint
-    session = Session()
-
-    def fetch_tile(url_: str, offset_: tuple[int, int]):
+    def fetch_tile(session: Session, url_: str, offset_: tuple[int, int]):
         try:
             res = session.get(url_)
             res.raise_for_status()
@@ -115,23 +112,24 @@ def construct_image_from_tiles(
 
     tasks = []
     num_workers = int(os.getenv("_MAP_GENERATION_MAX_WORKERS", default="4"))
-    with ThreadPoolExecutor(max_workers=num_workers) as executor:
+    with (
+        ThreadPoolExecutor(max_workers=num_workers) as executor,
+        Session() as session,
+    ):
         for i, tile_x in enumerate(tiles_x):
             for j, tile_y in enumerate(tiles_y):
                 url = url_template.format(z=zoom_level, x=tile_x, y=tile_y)
                 # The location of where the upper left corner of the tile image should
                 # be pasted on the total image.
                 offset = (i * TILE_SIZE, j * TILE_SIZE)
-                tasks.append(executor.submit(fetch_tile, url, offset))
+                tasks.append(executor.submit(fetch_tile, session, url, offset))
 
         for future in as_completed(tasks):
             # Return no image if one of the tiles couldn't be loaded
             if (result := future.result()) is None:
-                session.close()
                 return None
             img.paste(*result)
 
-    session.close()
     return img
 
 
