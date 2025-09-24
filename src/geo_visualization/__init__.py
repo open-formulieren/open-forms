@@ -34,7 +34,7 @@ def generate_map_image_with_geojson(
     :return: Image of the map in png format, encoded using base64. ``None`` if it could
       not be loaded.
     """
-    geometry_rd = geojson_to_rd(shape(geojson))
+    geometry_rd = geojson_to_rd(shape(geojson))  # pyright: ignore[reportArgumentType]
 
     zoom = find_maximum_zoom(
         geometry_rd=geometry_rd, max_zoom=max_zoom, image_size=image_size

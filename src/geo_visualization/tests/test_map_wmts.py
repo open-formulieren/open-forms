@@ -21,7 +21,7 @@ class WMTSMapTests(TestCase):
             ],
         }
 
-        geometry = geojson_to_rd(shape(value))
+        geometry = geojson_to_rd(shape(value))  # pyright: ignore[reportArgumentType]
         # We would need the lowest possible zoom level to fit this shape, so by setting
         # a custom minimum zoom, we ensure this value is used as a fallback
         zoom = find_maximum_zoom(geometry, (400, 300), min_zoom=5)

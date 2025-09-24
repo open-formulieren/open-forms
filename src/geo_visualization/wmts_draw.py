@@ -1,7 +1,5 @@
-from typing import assert_never
-
 from PIL import Image, ImageDraw
-from shapely import transform
+from shapely import Polygon, transform
 from shapely.geometry.base import BaseGeometry
 
 from .constants import ZOOM_LEVEL_TO_RESOLUTION
@@ -38,7 +36,10 @@ def convert_geometry_rd_to_pixels(
         return w / 2 + dx, h / 2 + dy
 
     return transform(
-        geometry_rd, project_rd_to_pixel, include_z=False, interleaved=False
+        geometry_rd,
+        project_rd_to_pixel,  # type: ignore
+        include_z=False,
+        interleaved=False,
     )
 
 
@@ -71,7 +72,7 @@ def draw_geometry_on_map(
         image = image.resize(new_size)
         geometry_px = transform(
             geometry_px,
-            lambda x, y: (x * upscaling_factor, y * upscaling_factor),
+            lambda x, y: (x * upscaling_factor, y * upscaling_factor),  # type: ignore
             include_z=False,
             interleaved=False,
         )
@@ -96,6 +97,7 @@ def draw_geometry_on_map(
         case "Polygon":
             overlay = Image.new("RGBA", image.size)
             draw = ImageDraw.Draw(overlay)
+            assert isinstance(geometry_px, Polygon)
             draw.polygon(
                 list(geometry_px.exterior.coords),
                 outline=SHAPE_COLOUR,
@@ -104,6 +106,8 @@ def draw_geometry_on_map(
             )
             image = Image.alpha_composite(image, overlay)
         case _:  # pragma: no cover
-            assert_never(geometry_px.geom_type)
+            raise RuntimeError(
+                f"Geometry type {geometry_px.geom_type} is not supported"
+            )
 
     return image.resize(original_size, Image.Resampling.HAMMING)

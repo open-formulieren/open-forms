@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Literal, TypedDict
 
 type Coordinates = tuple[float, float]
@@ -29,4 +30,4 @@ type GeoJson = PointGeometry | LineStringGeometry | PolygonGeometry
 class Overlay(TypedDict):
     type: Literal["wms", "wfs"]
     url: str
-    layers: list[str]
+    layers: Sequence[str]
