@@ -76,7 +76,7 @@ class FormJsonSchemaAPITests(APITestCase):
             form=form,
             options={
                 "version": 2,
-                "objects_api_group": objects_api_group.identifier,
+                "objects_api_group": objects_api_group.pk,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 3,
                 "transform_to_list": [],
@@ -154,7 +154,7 @@ class FormJsonSchemaAPITests(APITestCase):
             name="Objects API",
             backend="objects_api",
             options={
-                "objects_api_group": objects_api_group.identifier,
+                "objects_api_group": objects_api_group.pk,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 3,
             },
@@ -383,7 +383,7 @@ class FormJsonSchemaAPITests(APITestCase):
             backend="objects_api",
             form=form,
             options={
-                "objects_api_group": objects_api_group.identifier,
+                "objects_api_group": objects_api_group.pk,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 3,
                 "version": 2,
