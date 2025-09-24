@@ -1,10 +1,15 @@
+from functools import lru_cache
 from pathlib import Path
 from unittest.mock import patch
 
+from django.conf import settings
+from django.template import loader
 from django.test import TestCase
+from django.utils import timezone
 
 import requests_mock
 from freezegun import freeze_time
+from lxml import etree
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.constants import AuthAttribute
@@ -16,11 +21,11 @@ from openforms.forms.tests.factories import FormVariableFactory
 from openforms.logging.tests.utils import disable_timelinelog
 from openforms.prefill.service import prefill_variables
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.template import render_from_string
 from openforms.utils.tests.vcr import OFVCRMixin
 from stuf.constants import EndpointType
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
+from stuf.xml import fromstring
 
 from ....registry import register
 from ..plugin import PLUGIN_IDENTIFIER
@@ -306,6 +311,53 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         )
 
 
+PATH_XSDS = (Path(settings.BASE_DIR) / "src" / "stuf" / "stuf_bg" / "xsd").resolve()
+STUF_BG_XSD = PATH_XSDS / "bg0310" / "vraagAntwoord" / "bg0310_namespace.xsd"
+
+
+def _extract_soap_body(full_doc: str | bytes):
+    doc = fromstring(full_doc)
+    soap_body = doc.xpath(
+        "soapenv:Body",
+        namespaces={"soapenv": "http://www.w3.org/2003/05/soap-envelope"},
+    )[0].getchildren()[0]
+    return soap_body
+
+
+@lru_cache
+def _stuf_bg_xmlschema_doc():
+    # don't add the etree.XMLSchema construction to this; it's an object
+    # that contains state like error_log
+
+    with STUF_BG_XSD.open("r") as infile:
+        return etree.parse(infile)
+
+
+def _stuf_bg_response(service, soap_response_template):
+    response_body = bytes(
+        loader.render_to_string(
+            f"family_members/tests/responses/{soap_response_template}",
+            context={
+                "referentienummer": "38151851-0fe9-4463-ba39-416042b8f406",
+                "tijdstip_bericht": timezone.now().strftime("%Y%m%d%H%M%S"),
+                "zender_organisatie": service.ontvanger_organisatie,
+                "zender_applicatie": service.ontvanger_applicatie,
+                "zender_administratie": service.ontvanger_administratie,
+                "zender_gebruiker": service.ontvanger_gebruiker,
+                "ontvanger_organisatie": service.zender_organisatie,
+                "ontvanger_applicatie": service.zender_applicatie,
+                "ontvanger_administratie": service.zender_administratie,
+                "ontvanger_gebruiker": service.zender_gebruiker,
+            },
+        ),
+        encoding="utf-8",
+    )
+    # assert this mocked response is valid
+    xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
+    xmlschema.assert_(_extract_soap_body(response_body))
+    return response_body
+
+
 @disable_timelinelog()
 class FamilyMembersPrefillPluginStufBgTests(TestCase):
     def setUp(self):
@@ -355,17 +407,20 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             },
         )
 
-        soap_response_template = (TEST_FILES / "stuf_bg_one_partner.xml").read_text()
-        response_content = render_from_string(soap_response_template, {}).encode(
-            "utf-8"
-        )
-
         with requests_mock.Mocker() as m:
             m.post(
                 self.stuf_bg_service.get_endpoint(type=EndpointType.vrije_berichten),
-                content=response_content,
+                content=_stuf_bg_response(
+                    self.stuf_bg_service, "stuf_bg_one_partner.xml"
+                ),
             )
             prefill_variables(submission=submission)
+
+        # validate request
+        xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
+        request_body = m.last_request.body
+        soap_body = _extract_soap_body(request_body)
+        xmlschema.assert_(soap_body)
 
         state = submission.load_submission_value_variables_state()
 
@@ -413,16 +468,18 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             },
         )
 
-        soap_response_template = (TEST_FILES / "stuf_bg_children.xml").read_text()
-        response_content = render_from_string(soap_response_template, {}).encode(
-            "utf-8"
-        )
         with requests_mock.Mocker() as m:
             m.post(
                 self.stuf_bg_service.get_endpoint(type=EndpointType.vrije_berichten),
-                content=response_content,
+                content=_stuf_bg_response(self.stuf_bg_service, "stuf_bg_children.xml"),
             )
             prefill_variables(submission=submission)
+
+        # validate request
+        xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
+        request_body = m.last_request.body
+        soap_body = _extract_soap_body(request_body)
+        xmlschema.assert_(soap_body)
 
         state = submission.load_submission_value_variables_state()
         expected_data = [
@@ -497,16 +554,18 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             },
         )
 
-        soap_response_template = (TEST_FILES / "stuf_bg_children.xml").read_text()
-        response_content = render_from_string(soap_response_template, {}).encode(
-            "utf-8"
-        )
         with requests_mock.Mocker() as m:
             m.post(
                 self.stuf_bg_service.get_endpoint(type=EndpointType.vrije_berichten),
-                content=response_content,
+                content=_stuf_bg_response(self.stuf_bg_service, "stuf_bg_children.xml"),
             )
             prefill_variables(submission=submission)
+
+        # validate request
+        xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
+        request_body = m.last_request.body
+        soap_body = _extract_soap_body(request_body)
+        xmlschema.assert_(soap_body)
 
         state = submission.load_submission_value_variables_state()
 
@@ -579,18 +638,21 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             },
         )
 
-        soap_response_template = (
-            TEST_FILES / "stuf_bg_children_incomplete_date_of_birth.xml"
-        ).read_text()
-        response_content = render_from_string(soap_response_template, {}).encode(
-            "utf-8"
-        )
         with requests_mock.Mocker() as m:
             m.post(
                 self.stuf_bg_service.get_endpoint(type=EndpointType.vrije_berichten),
-                content=response_content,
+                content=_stuf_bg_response(
+                    self.stuf_bg_service,
+                    "stuf_bg_children_incomplete_date_of_birth.xml",
+                ),
             )
             prefill_variables(submission=submission)
+
+        # validate request
+        xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
+        request_body = m.last_request.body
+        soap_body = _extract_soap_body(request_body)
+        xmlschema.assert_(soap_body)
 
         state = submission.load_submission_value_variables_state()
 
@@ -619,7 +681,7 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
                 "initials": "K",
                 "affixes": "van",
                 "lastName": "Doe",
-                "dateOfBirth": "1985-03",
+                "dateOfBirth": "198503",
                 "deceased": False,
             },
             {
@@ -670,19 +732,21 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             },
         )
 
-        soap_response_template = (
-            TEST_FILES / "stuf_bg_children_incomplete_date_of_birth.xml"
-        ).read_text()
-        response_content = render_from_string(soap_response_template, {}).encode(
-            "utf-8"
-        )
-
-        with requests_mock.Mocker() as m, freeze_time("2025-04-25T18:00:00+01:00"):
+        with requests_mock.Mocker() as m:
             m.post(
                 self.stuf_bg_service.get_endpoint(type=EndpointType.vrije_berichten),
-                content=response_content,
+                content=_stuf_bg_response(
+                    self.stuf_bg_service,
+                    "stuf_bg_children_incomplete_date_of_birth.xml",
+                ),
             )
             prefill_variables(submission=submission)
+
+        # validate request
+        xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
+        request_body = m.last_request.body
+        soap_body = _extract_soap_body(request_body)
+        xmlschema.assert_(soap_body)
 
         state = submission.load_submission_value_variables_state()
 
