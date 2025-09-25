@@ -8,5 +8,5 @@ export const getMapOverlayTileLayers = async () => {
     ...MAP_WMS_LAYERS.map(layer => ({...layer, type: 'wms'})),
     ...MAP_WFS_LAYERS.map(layer => ({...layer, type: 'wfs'})),
   ];
-  return layers.sort((layerA, layerB) => layerA.name.toLocaleCompare(layerB.name));
+  return layers.sort((layerA, layerB) => layerA.name.localeCompare(layerB.name));
 };
