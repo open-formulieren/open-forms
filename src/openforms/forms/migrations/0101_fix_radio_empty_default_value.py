@@ -2,12 +2,12 @@
 
 from django.db import migrations
 
-from openforms.forms.migration_operations import ConvertComponentsOperation
-
 
 class Migration(migrations.Migration):
     dependencies = [
         ("forms", "0100_add_interaction_config_to_map_component"),
     ]
 
-    operations = [ConvertComponentsOperation("radio", "fix_empty_default_value")]
+    # ConvertComponentsOperatoin removed, as it's guaranteed to have been executed in
+    # OF 3.2.x
+    operations = []
