@@ -4,7 +4,6 @@ import functools
 import uuid
 
 import django.core.validators
-import django.db.migrations.operations.special
 from django.db import migrations, models
 
 import autoslug.fields
