@@ -6,6 +6,245 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.0 "Donders mooi" (2025-09-?)
+================================
+
+Open Forms 3.3.0 is a feature release.
+
+.. epigraph::
+
+   Donders mooi – an expression from the Twents dialect for ‘very beautiful’. This name is a reference
+   to the origin of Open Formulieren by Dimpact and we thereby emphasize the cooperation
+   with this partnership, located in Enschede, the biggest city of Twente.
+
+This contains the changes from the alpha releases and fixes applied until the stable version.
+BEFORE upgrading to 3.3.0, please read the release notes carefully and review the following
+instructions.
+
+Upgrade procedure
+-----------------
+
+To upgrade to 3.3, please:
+
+* ⚠️ Ensure you upgrade to Open Forms 3.2.x before upgrading to the 3.3 release series.
+* ⚠️ Plan an upgrade window to address the warnings below.
+* ⚠️ An automatic Ogone-to-Wordline merchant migration requires unique merchant PSPIDs. This is
+  automatically verified *before* performing the upgrade, but ideally you should run the check script of
+  older patch versions in preparation.
+
+.. warning:: The Open Telemetry SDK is enabled by default. If you don't have an endpoint to send system
+    telemetry to, update your deployment code to disable it by setting the environment variable
+    ``OTEL_SDK_DISABLED=true``.
+
+    If you don't do this, warnings will be emitted to the container logs. The application will continue to work
+    as usual.
+
+.. warning:: Schedule the upgrade for off-peak hours. Some of the database migrations
+   need to lock the entire table and/or can take a long time depending on the amount of
+   data. Some benchmarks on one million of rows in the submission variables table
+   (~ 120K submissions) showed a migration time of around 20 seconds, so anywhere
+   between 10 seconds - 5 minutes can be expected as a normal completion time depending
+   on your data and available resources for the database.
+
+.. warning::
+
+    In this release, we reworked the internal data type information. To ensure submitted
+    data of existing submissions is formatted correctly, submitted variables need to be
+    processed. Note that we include this script instead of a data migration, so it can be
+    run separately, as it can take up to an hour to complete the entire operation for large
+    environments.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/fix_submission_value_variable_missing_fields.py
+
+.. warning::
+
+    For the email and confirmation templates, and the registration backends, we changed
+    the way that the data is generated. In case of key conflicts between static, component,
+    and user-defined variables, the static variables will take precedence. Previously, the
+    component and user-defined variables would override the static variables. Our validation
+    guards against the use of keys that are already present in the static variables, but this
+    does not cover old forms and newly-added static variables.
+
+Major features
+--------------
+
+**💳 Worldline (Ogone replacement) support**
+
+We implemented support for the Worldline payment provider as the Ogone Legacy payment provider
+is being sunset on December 31st 2025 by Worldline.
+
+We've provided automatic migrations as much as possible, and you can prepare for the migration as
+of Open Forms 3.2.3 or 3.1.8. The documentation contains further details.
+
+**🗺️ Map layers and advanced interactions**
+
+You can now define your own overlay layers for the map component, e.g. to show BAG location on
+top of the map base layer.
+
+Additionally, the submission PDF now contains an equivalent image of the map instead of the raw
+coordinates, including any defined overlays.
+
+**🚸 Children component with prefill**
+
+The previous minor release already introduced support for the partners component and this release adds
+support for the new children component. Like the partners component, information like initials, last name, BSN and
+date of birth of a child can be shown or provided.
+
+This component also supports being prefilled through the family members prefill plugin, introduced in the previous
+minor release and completes the support for the family members plugin.
+
+**📈 Added application metrics**
+
+We've built further on the previous observability improvements. Now metrics are emitted by
+the application (for example the duration of HTTP requests, active requests, but also amount of forms,
+submissions and user attachment metadata).
+
+These metrics are exported using the Open Telemetry standard and can be incorporated in your existing
+monitoring and visualization infrastructure.
+
+Detailed changes
+----------------
+
+**New features**
+
+* [:backend:`4480`] Improved the background/overlay layers in the map component:
+
+  * [:backend:`5253`] The BRT (grey, pastel, water) background tile layers are now available by
+    default in an Open Forms instance.
+  * [:backend:`5251`] The identifier field from the map background tile layer is now automatically
+    populated from its label.
+  * [:backend:`4951`] The map component in the summary PDF is now an image instead of the textual location
+    coordinates.
+  * [:backend:`5618`] Added support for WMS on map image in submission pdf.
+
+* [:backend:`5359`] Added support for the children component:
+
+  * [:sdk:`825`] Added children component and updated email digest.
+  * [:backend:`5268`] The registration plugins now support the ``children`` component type.
+  * [:backend:`5269`] You can now use the ``children`` component data as source data for a
+    repeating group to provide additional information with the new "synchronize variables" logic
+    action type.
+
+* [:backend:`4879`] Added support for Worldline as payment provider:
+
+  - Support for Worldline's ``variant`` and ``descriptor`` fields.
+  - The merchant reference is generated by Open Forms, similar to the Ogone plugin.
+  - Ogone merchants are automatically migrated where possible.
+  - Webhook configuration (if configured in a older patch release) is automatically migrated.
+  - Added a bulk action to migrate forms from Ogone to Wordline.
+
+* [:backend:`5478`] Added additional Yivi documentation.
+* [:backend:`5428`] Updated the eIDAS (OIDC) LoA-Levels.
+* [:backend:`5515`] Yivi Attribute groups now have a system-generated unique identifier.
+* [:backend:`5515`] You can now export and import Yivi attribute groups.
+* [:backend:`5479`] The eIDAS (via OIDC) configuration is now simplified - you can specify
+  which claims can contain a BSN and/or Pseudo ID.
+* [:backend:`5419`] Added prefill plugins for the new Yivi and eIDAS authentication backends.
+
+* [:backend:`3999`] Added support for Open Telemetry metrics. All available metrics and details can be
+  found in the "Observability" documentation.
+
+* [:backend:`5095`] When authenticated via OpenID Connect (DigiD, eHerkenning, organization), upon
+  submission completion you are now logged out at the identity provider.
+* [:backend:`5133`] Added a feature flag to enable the new *experimental* renderer.
+* [:backend:`5268`] Added "Partners Roltype" and "Partners omschrijving" registration
+  configuration options for the ZGW APIs and StUF-ZDS registration plugins.
+* [:backend:`5060`] Redis Sentinel is now supported as high availability strategy for the background
+  jobs message broker.
+* [:backend:`2324`] Reworked part of the logic engine in preparation of further
+  performance improvements, so that we can correctly reason about variable data types.
+* [:backend:`5382`] Forms now have an internal remarks field.
+
+**Bugfixes**
+
+* [:backend:`5225`] Fixed formio date and datetime components not having localized placeholders.
+* [:backend:`5615`] Fixed the ZGW API's registration reporting as failure when case properties are used.
+* [:backend:`5507`] Fixed mimetype detection for .msg files.
+* [:backend:`5624`] Fixed broken StUF-BG request for children (family members) prefill request.
+* [:backend:`5574`] Authentication-related static variables are no longer exposed to the
+  confirmation email context.
+* [:backend:`5464`] Fixed a crash that occurred when incomplete options were used in JSON schema generation.
+* [:backend:`5605`] Fixed missing default value for DigiD ``loa`` causing a crash when trying to login.
+* [:backend:`5572`] Fixed a crash in the StUF-ZDS registration plugin when another
+  form has family member components in its configuration.
+* [:backend:`5557`] Fixed uploaded filename sanitization.
+* [:backend:`5439`] Removed warning message for deprecated feature to retrieve
+  location via text fields.
+* [:backend:`5384`] Fixed form export references to Objects API groups which can be
+  provisioned through setup-configuration.
+* [:backend:`5527`] Fixed all step data being returned during logic check of saved
+  submission step instead of only the data that has changed.
+* [:backend:`5475`] Fixed Yivi claims with periods not being usable in logic.
+* [:backend:`5271`] Fixed false positives being reported in the digest email when you
+  have logic rules that use the ``reduce`` operation.
+* [:backend:`5481`] Fixed user defined variables not being queried based on the form of
+  the current submission.
+* [:backend:`5471`] Fixed BRP "doelbinding" advanced options not becoming available
+  when using family members components.
+* [:backend:`5340`] Fixed error handling during the validation of registration backends.
+* [:backend:`5454`] Fixed Piwik Pro debug mode no longer working.
+* [:backend:`5413`] Fixed uploading filenames with soft-hyphens not passing form validation.
+* Fixed a crash when rendering e-mail HTML where links (anchor tags) contain bold or
+  italic formatting elements.
+
+**Project maintenance**
+
+* Added a progressbar to the data backfill upgrade script.
+* Added reusable github actions for i18n checks.
+* Cleaned up and squashed migrations where possible.
+* [:backend:`5325`] Update family members example in manual.
+
+* [:backend:`5513`] Updated the OTel documentation and added various examples:
+
+  - Basic nginx metrics and traces.
+  - PostgreSQL metrics.
+  - Redis metrics.
+
+* [:backend:`5544`] Added documentation and examples on how to collect Flower metrics.
+* Updated the documentation regarding the used SOAP operations for the StUF-ZDS plugin.
+
+* Updated frontend dependencies:
+
+  - Bumped @open-formulieren/formio-builder to 0.45.0.
+
+* Updated backend dependencies:
+
+  * Bumped Redis to version 8 for CI builds and the docker-compose setup.
+  * Bumped zgw-consumers to version 1.0.
+  * Upgraded to Django security release 4.2.24.
+  * [:backend:`5356`, :backend:`5131`] Upgraded django-digid-eherkenning from 0.22.1 to 0.24.0.
+  * [:backend:`5131`] Upgraded mozilla-django-oidc-db from 0.22.0 to 0.25.0.
+  * [:backend:`5131`] Upgraded django-setup-configuration from 0.6.0 to 0.8.2.
+
+* It's now possible to serve static assets with the reverse proxy (nginx) instead of the
+  application server (uwsgi) through the ``STATIC_ROOT_VOLUME`` environment variable.
+  Check the ``docker-compose.yml`` for a sample setup.
+* Addressed some more test flakiness.
+* [:backend:`5331`] Enabled extra type checking and fixed several type checking errors.
+* Changed some primary key fields to bigint for tables that are frequently inserted into.
+* Applied several best practices to the ``uwsgi`` configuration.
+* Added CI check to detect missing frontend translations.
+* Removed obsolete Ansible deployment example.
+* [:backend:`5447`] Added an upgrade check to require version 3.2.0 before upgrading to
+  3.3.0.
+* Removed unused validation code.
+* Enabled django-specific linter rules and fixed the violations.
+
+* Replaced several code components with maykin-common dependency equivalent.
+
+  * PDF generation
+  * Admin env info
+  * Server error page
+  * System checks
+  * Schema hook
+  * Admin MFA integration
+  * Admin index integration
+
+* Removed the obsoleted form price logic model.
+
 3.3.0-alpha.1 (2025-09-24)
 ==========================
 

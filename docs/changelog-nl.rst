@@ -9,6 +9,261 @@ Changelog (NL)
     This is the Dutch version of the changelog. The English version can be
     found :ref:`here <changelog>`.
 
+3.3.0 "Donders mooi" (2025-09-?)
+================================
+
+Open Forms 3.3.0 is een feature release.
+
+.. epigraph::
+
+   Donders mooi – een uitdrukking uit het Twents dialect voor ‘enorm mooi’. Met deze naam
+   verwijzen we naar de oorsprong van Open Formulieren bij Dimpact en benadrukken we
+   de samenwerking met dit samenwerkingsverband, dat gevestigd is in Enschede, de grootste
+   stad van Twente.
+
+Deze release bevat wijzigingen van de alpha-versies en oplossingen tot aan de
+stabiele versie. Lees de release-opmerkingen aandachtig voor het upgraden naar versie 3.3.0
+en volg de instructies zoals hieronder beschreven:
+
+Update-procedure
+-----------------
+
+Om naar 3.3.0 te upgraden, let dan op:
+
+* ⚠️ Zorg dat de huidige versie 3.2.x is. We raden altijd de meest recente patch
+  release aan, op het moment van schrijven is dit 3.2.4.
+
+* ⚠️ Plan een upgrade tijdslot in om de onderstaande waarschuwingen te doorlopen.
+
+* ⚠️ Een automatische Ogone-to-Wordline merchant migratie vereist unieke merchant PSPIDs. Dit wordt
+  automatisch gecontroleerd *vóór* het uitvoeren van de upgrade, maar er wordt aangeradeom om het check script in
+  oudere patch versies uit te voeren ter voorbereiding.
+
+.. warning:: De Open Telemetry SDK is standaard ingeschakeld. Als er geen endpoints zijn geconfigureerd
+   om systeem telemetrie naar te versturen, wordt aangeraden om de deployment aan te passen als volgt:
+   `OTEL_SDK_DISABLED=true``.
+
+   Als de genoemde situatie het geval is en er niet geconfigureerd wordt zoals aangegeven,
+   zullen er waarschuwing uitgezonden worden in de logs van de container. De applicatie zal echter werken
+   zoals gewoonlijk.
+
+.. warning:: Plan de upgrade in in daluren. Sommige database migraties zullen volledige
+   tabellen locken en/of kunnen een lange tijd in beslag nemen afhankelijk van de hoeveelheid aan data.
+   Sommige benchmarks waarbij een miljoen rijen in de inzendingen variabele tabel (~ 120k inzendingen)
+   aanwezig zijn toonde een migrate tijd van ongeveer 20 seconden. Een migratie tijdslot van
+   ongeveer 10 seconden - 5 minuten is te verwachten afhankelijk van de hoeveelheid aanwezige data
+   en de beschikbare middelen voor de database.
+
+.. warning::
+
+   In deze release, hebben we de interne data type informatie herzien. Om te verzekeren
+   dat de data van de huidige inzendingen op een correcte manier zijn geformatteerd, zullen de
+   ingezonden variabelen verwerkt worden. We hebben hiervoor een apart script toegevoegd inplaats
+   van een data migratie, zodat het apart uitgevoerd kan worden, omdat het tot een uur kan duren
+   voordat de operatie voltooid kan worden voor grotere omgevingen.
+
+   .. code-block:: bash
+
+       # in de container via ``docker exec`` of ``kubectl exec``:
+       python /app/bin/fix_submission_value_variable_missing_fields.py
+
+.. warning::
+
+    Voor de email en bevestigings sjablonen, en de registratiebackends, is de manier
+    waarop data gegenereerd wordt herzien. In het geval van conflicterende variabelen,
+    statisch, component en gebruikersvariabelen, zullen de statische variabelen voorgaan.
+    Voorheen zouden de component en gebruikersvariabelen voorgaan op de statische variabelen.
+    Validatie zal ervoor zorgen dat het niet mogelijk is om variabelen toe te voegen die al voorkomen
+    in de statische variabelen. Dit is echter niet toepasbaar op oudere formulieren en nieuwe statische
+    variabelen.
+
+Belangrijkste verbeteringen
+---------------------------
+
+**💳 Worldline (vervanging voor Ogone) ondersteuning**
+
+Ondersteuning voor de Worldline betalingsprovider is toegevoegd. De ondersteuning
+voor de Ogone Legacy betalingsprovider zal stop gezet worden na 31 december 2025 door Worldline.
+
+Er zijn automatische migraties toegevoegd die zoveel mogelijkheid voor handen nemen voor
+het overstappen van betalingsprovider. De migratie kan vanaf Open Formulieren versie 3.2.3 of 3.1.8
+voorbereid worden. De documentatie bevat hiervoor meer informatie.
+
+**🗺️ Map achtergrondlagen en geavanceerde interacties**
+
+Het is nu mogelijk om eigen achtergrondlagen te definieren, om o.a. BAG locaties te tonen
+bovenop de basis kaartlaag.
+
+Daarnaast wordt er nu een afbeelding getoond, inclusief de eigen gedefinieerde achtergrondlagen,
+in de inzendings-PDF in plaats van de letterlijke weergave van de coordinaten.
+
+**🚸 Kinderen-component met prefill**
+
+De voorgaande minor release had al ondersteuning toegevoegd voor het partners-component,
+deze release voegt ondersteuning toe voor het nieuwe kinderen-component. Zoals het partners-component,
+kan bij het nieuwe kinderen-component informatie zoals initialen, achternaam, BSN en
+geboortedatum van een kind opgeslagen of getoond worden.
+
+Dit component ondersteund ook de mogelijkheid om geprefilled te worden door de familieleden-prefillplugin,
+geintroduceerd in de voorgaande minor release. Deze nieuwe functionaliteit maakt de ondersteuning voor
+de familieleden-plugin compleet.
+
+**📈 Applicatie statistieken**
+
+Er is verder gebouwd aan de voorgaande observatie verbeteringen. Er worden nu statistieken
+uitgezonden door de applicatie (o.a duratie van HTTP verzoeken, active verzoeken, maar ook het
+aantal formulieren, inzendingen en gebruikersbijlage metadata).
+
+Deze statistieken worden uitgezonden via de Open Telemetry standaard en zouden geintegreerd
+kunnen worden in bestaande monitoring en visualatie infrastructuur.
+
+Gedetaileerde wijzigingen
+-------------------------
+
+**Nieuwe fucnties**
+
+* [:backend:`4480`] Verbeterde ondersteuning voor achtergrond-/tegellagen in het kaartcomponent:
+
+  * [:backend:`5253`] De BRT (grey, pastel, water) achtergrond-/tegellagen zijn nu
+    standaard beschikbaar in een Open Formulieren installatie.
+  * [:backend:`5251`] Het identificatie-veld van de kaart achtergrond-/tegellagen wordt
+    nu automatisch ingevuld op basis van het label.
+  * [:backend:`4951`] Het kaartcomponent in de samenvatting-PDF is nu een afbeelding in plaats
+    van een tekstuele weergave.
+  * [:backend:`5618`] Ondersteuning voor WMS op kaart afbeelding in de samenvatting-PDF.
+
+* [:backend:`5359`] Ondersteuning voor het kinderen-component:
+
+  * [:sdk:`825`] Kinderen-component toegevoegd en de digest-email bijgewerkt.
+  * [:backend:`5268`] Registratieplugins ondersteunen nu het ``children`` component type.
+  * [:backend:`5269`] Het is nu mogelijk om het ``children`` component data als databron te gebruiken
+    voor een herhalende groep om additionele informatie aan te leveren met de nieuwe
+    "Synchroniseer variabelen" logica actie type.
+
+* [:backend:`4879`] Ondersteuning voor de Worldline betalingsprovider:
+
+  - Ondersteuning voor Worldline's ``variant`` and ``descriptor`` velden.
+  - De merchant reference is gegenereerd door Open Formulieren, vergelijkbaar met de Ogone plugin.
+  - Ogone merchants worden automatisch gemigreerd waar mogelijk.
+  - Webhook configuratie (indien geconfigureerd in een oudere patch release) wordt
+    automatisch gemigreerd.
+  - Een "bulk actie" toegevoegd voor het migreren van formulieren van Ogone naar Wordline.
+
+* [:backend:`5478`] Additionele Yivi documentation toegevoegd.
+* [:backend:`5428`] eIDAS (OIDC) LoA-Levels bijgewerkt.
+* [:backend:`5515`] Yivi Attribuut groepen hebben nu een systeem-gegenereerde unieke identificatie.
+* [:backend:`5515`] Het is nu mogelijk om Yivi attribuut groepen te exporteren en importeren.
+* [:backend:`5479`] De eIDAS (via OIDC) configuratie is nu vergemakkelijkt - het is nu mogelijk
+  om te kiezen welke claims een BSN en/of Pseudo ID bevatten.
+* [:backend:`5419`] Prefill plugins toegevoegd voor de nieuwe Yivi and eIDAS authenticatiebackends.
+
+* [:backend:`3999`] Ondersteuning voor Open Telemetry statistieken. Alle beschikbare statistieken
+  en details zijn te vinden in de "Observability" documentatie.
+
+* [:backend:`5095`] Indien er geauthenticeerd is via OpenID Connect (DigiD, eHerkenning, organization),
+  zal bij het voltooien van een inzending de gebruiker uitgelogd worden bij de identity provider.
+* [:backend:`5133`] Optie toegevoegd om de nieuwe *experimentele* renderer in te schakelen.
+* [:backend:`5268`] "Partners Roltype" en "Partners omschrijving" registratie-instellingen
+  toegevoegd voor de ZGW APIs en StUF-ZDS registratieplugins.
+* [:backend:`5060`] Redis Sentinel wordt nu ondersteund als high availability strategy voor de background
+  jobs message broker.
+* [:backend:`2324`] Een onderdeel is herzien van de formulierlogica in ter voorbereiding van
+  prestatie verbeteringen, zodat er op correcte wijze geredeneerd kan worden over variabele data typen.
+* [:backend:`5382`] Formulieren hebben nu een interne opmerkingen veld.
+
+**Bugfixes**
+
+* [:backend:`5225`] Formio datum-componenten met niet gelokaliseerde aanduidingen zijn opgelost.
+* [:backend:`5615`] ZGW API's registraties welke als foutief gekenmerkt waren bij het gebruik
+  van zaakeigenschappen zijn opgelost.
+* [:backend:`5507`] Mimetype detectie voor .msg bestanden opgelost.
+* [:backend:`5624`] Incorrecte StUF-BG verzoeken voor kind (familieleden) prefill verzoeken opgelost.
+* [:backend:`5574`] Authenticatie gerelateerde statische variabelen worden zijn niet meer bescikbaar
+  voor de samenvatting-PDF context.
+* [:backend:`5464`] Een crash opgelost waarbij incomplete opties gebruikt werden bij het
+  genereren van het JSON-schema.
+* [:backend:`5605`] Een crash opgelost bij het gebruik van een ontbrekende standaardwaarde
+  voor de DigiD ``loa`` tijdens het inloggen.
+* [:backend:`5572`] Een crash opgelost in de StUF-ZDS registratieplugin wanneer een ander
+  formulier het familieleden-plugin geconfigureerd had.
+* [:backend:`5557`] Geuploade bestandsnaam verwerking opgelost.
+* [:backend:`5439`] Waarschuwings melding verwijderd voor verouderde functie om
+  locatie op te halen op basis van tekstvelden.
+* [:backend:`5384`] Formulier export referenties naar Objecten API groepen welke
+  geconfigureerd worden via setup-configuration opgelost.
+* [:backend:`5527`] Het ontvangen van alle stap-data tijdens de logica controle van de
+  opgeslagen inzendings-stap inplaats van de gewijzigde stap-data opgelost.
+* [:backend:`5475`] Yivi claims met punten die niet gebruikt konden worden in de logica opgelost.
+* [:backend:`5271`] False positieve die gerapporteerd werden in de digest-email bij het gebruik van
+  logicaregels die gebruik maakte van de ``reduce`` operatie opgelost.
+* [:backend:`5481`] Gebruikersvariabelen die niet doorzocht werden op basis van het formulier
+  van de inzending opgelost.
+* [:backend:`5471`] Het niet tonen van geavanceerde opties voor de BRP "doelbinding" bij het gebruik
+  van familieleden-plugin opgelost.
+* [:backend:`5340`] Error verwerking tijdens validatie bij registratiebackends opgelost.
+* [:backend:`5454`] Het niet functioneren van de Piwik Pro debug mode opgelost.
+* [:backend:`5413`] Uploaden van bestandsnamen met soft-hyphens welke niet de validatie
+  doorkwamen opgelost.
+* Een crash opgelost bij het weergeven van e-mail HTML links welke dichtgedrukte of
+  cursieve elementen bevatten.
+
+**Projectonderhoud**
+
+* Een voortgangsbalk toegevoegd aan de data backfill upgrade script.
+* Herbruikbare github actions toegevoegd voor i18n checks.
+* Migraties opgeschoond en samengevoegd waar mogelijk.
+* [:backend:`5325`] Familieleden voorbeeld in documentatie bijgewerkt.
+
+* [:backend:`5513`] De OTel documentatie bijgewerkt met verschillende voorbeelden:
+
+  - Nginx statistieken en traces.
+  - PostgreSQL statistieken.
+  - Redis statistieken.
+
+* [:backend:`5544`] Documentatie en voorbeelden toegevoegd over het verzamelen van
+  Flower statistieken.
+* Documentatie bijgewerkt over de gebruikte SOAP operations voor rde StUF-ZDS plugin.
+
+* Frontend dependencies bijgewerkt:
+
+  - @open-formulieren/formio-builder naar 0.45.0.
+
+* Backend dependencies bijgewerkt:
+
+  * Redis naar versie 8 bijgewerkt voor CI builds en de docker-compose configuratie.
+  * zgw-consumers naar versie 1.0.
+  * Django naar security release 4.2.24.
+  * [:backend:`5356`, :backend:`5131`] django-digid-eherkenning van 0.22.1 naar 0.24.0.
+  * [:backend:`5131`] mozilla-django-oidc-db van 0.22.0 naar 0.25.0.
+  * [:backend:`5131`] django-setup-configuration van 0.6.0 naar 0.8.2.
+
+* Het is nu mogelijk om static assets te gebruiken met een reverse proxy (nginx) inplaats
+  van de applicatieserver (uwsgi) door de ``STATIC_ROOT_VOLUME`` environment variabelen.
+  Controleer de ``docker-compose.yml`` voor een voorbeeld configuratie.
+* Een aanta willekeurig falen van tests geaddreseerd.
+* [:backend:`5331`] Extra type checking ingeschakeld en verschillende type checking
+  errors verholpen.
+* Een aantal primary key velden naar bigint gemigreerd voor tabellen welke vaak gebruikt worden voor nieuwe regels/waarden.
+* Verschillende best practices toegepast op de ``uwsgi`` configuratie.
+* CI check toegevoegd om ontbrekende frontend vertalingen te detecteren.
+* Verouderde Ansible deployment voorbeeld verwijderd.
+* [:backend:`5447`] Een upgrade check toegevoegd voor het vereisen van verrsie 3.2.0
+  voor het upgraden naar versie 3.3.0.
+* Ongebruikte validatie code verwijderd.
+* Django specifieke linter regels ingeschakeld en de foutmeldingen hiervan opgelost.
+
+* Verschillende code componenten vervangen met de maykin-common equivalenten.
+
+  * PDF generatie
+  * Admin env info
+  * Server error pagina
+  * Systeem checks
+  * Schema hook
+  * Admin MFA integratie
+  * Admin index integratie
+
+* Verouderde formulieren prijs logica model verwijderd.
+
 3.2.0 "Nimma" (2025-07-11)
 ==========================
 
