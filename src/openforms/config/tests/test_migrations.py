@@ -3,8 +3,8 @@ from openforms.utils.tests.test_migrations import TestMigrations
 
 
 class FamilyMembersDataApiMigrationTest(TestMigrations):
-    migrate_from = "0058_alter_globalconfiguration_referentielijsten_services_to_reference_lists_services"
-    migrate_to = "0060_copy_family_members_data_api"
+    migrate_from = "0055_v270_to_v300"
+    migrate_to = "0056_v300_to_v330"
     app = "config"
 
     def setUpBeforeMigration(self, apps):

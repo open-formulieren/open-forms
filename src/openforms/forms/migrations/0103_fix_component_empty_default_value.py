@@ -2,25 +2,12 @@
 
 from django.db import migrations
 
-from openforms.forms.migration_operations import ConvertComponentsOperation
-
 
 class Migration(migrations.Migration):
     dependencies = [
         ("forms", "0102_execute_fix_scripts"),
     ]
 
-    operations = [
-        ConvertComponentsOperation("textfield", "fix_empty_default_value"),
-        ConvertComponentsOperation("email", "fix_empty_default_value"),
-        ConvertComponentsOperation("time", "fix_empty_default_value"),
-        ConvertComponentsOperation("phoneNumber", "fix_empty_default_value"),
-        ConvertComponentsOperation("textarea", "fix_empty_default_value"),
-        ConvertComponentsOperation("radio", "fix_empty_default_value"),
-        ConvertComponentsOperation("checkbox", "fix_empty_default_value"),
-        ConvertComponentsOperation("iban", "fix_empty_default_value"),
-        ConvertComponentsOperation("licenseplate", "fix_empty_default_value"),
-        ConvertComponentsOperation("editgrid", "fix_empty_default_value"),
-        ConvertComponentsOperation("signature", "fix_empty_default_value"),
-        ConvertComponentsOperation("file", "fix_default_value"),
-    ]
+    # ConvertComponentsOperation's are removed, as they're guaranteed to have been
+    # executed in OF 3.2.x
+    operations = []

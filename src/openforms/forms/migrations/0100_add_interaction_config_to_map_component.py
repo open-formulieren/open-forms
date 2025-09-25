@@ -2,14 +2,12 @@
 
 from django.db import migrations
 
-from openforms.forms.migration_operations import ConvertComponentsOperation
-
 
 class Migration(migrations.Migration):
     dependencies = [
         ("forms", "0099_formsubmissionstatisticsv2_delete_formstatistics"),
     ]
 
-    operations = [
-        ConvertComponentsOperation("map", "ensure_map_has_interactions"),
-    ]
+    # ConvertComponentsOperation removed, as it's guaranteed to have been executed in
+    # OF 3.2.x
+    operations = []

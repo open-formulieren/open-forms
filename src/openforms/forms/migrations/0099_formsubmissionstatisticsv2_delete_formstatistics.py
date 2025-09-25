@@ -5,7 +5,6 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("logging", "0003_backfill_submission_log_records"),
         ("forms", "0098_v270_to_v300"),
     ]
 
