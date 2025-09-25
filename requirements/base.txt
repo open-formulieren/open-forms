@@ -240,7 +240,7 @@ django-two-factor-auth==1.16.0
     # via maykin-2fa
 django-upgrade-check==1.0.0
     # via -r requirements/base.in
-django-yubin==2.0.4
+django-yubin==2.0.6
     # via -r requirements/base.in
 djangorestframework==3.15.2
     # via

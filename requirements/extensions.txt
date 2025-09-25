@@ -379,7 +379,7 @@ django-upgrade-check==1.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-yubin==2.0.4
+django-yubin==2.0.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

@@ -79,24 +79,3 @@ def send_email_digest() -> None:
         settings.DEFAULT_FROM_EMAIL,
         recipients,
     )
-
-
-@app.task()
-def delete_old_emails(days=90):
-    """
-    Delete emails created before `days` days (default 90).
-
-    Override for django_yubin.tasks.delete_old_emails which caused memory issues while
-    using the DatabaseStorageBackend because the email data and attachments would be loaded.
-    """
-
-    from django_yubin.models import Message
-
-    cutoff_date = timezone.now() - timedelta(days)
-    deleted = (
-        Message.objects.defer("_message_data")
-        .filter(date_created__lt=cutoff_date)
-        .delete()
-    )
-
-    return deleted, cutoff_date

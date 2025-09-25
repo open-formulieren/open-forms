@@ -4,7 +4,6 @@ from unittest.mock import patch
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.core.files import File
-from django.core.mail import send_mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -36,7 +35,7 @@ from openforms.submissions.models.submission import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..tasks import delete_old_emails, send_email_digest
+from ..tasks import send_email_digest
 
 TEST_FILES = Path(__file__).parent / "data"
 
@@ -302,43 +301,6 @@ class EmailDigestTaskIntegrationTests(TestCase):
                 f"Logic rule for variable 'foo' is invalid in form '{form.admin_name}'.",
                 sent_email.body,
             )
-
-
-@override_settings(EMAIL_BACKEND="django_yubin.backends.QueuedEmailBackend")
-class DeleteOldEmailsTaskIntegrationTests(TestCase):
-    def test_old_message_is_deleted(self):
-        with freeze_time("2021-01-01"):
-            send_mail(
-                subject="Test Subject",
-                message="This is a test message.",
-                from_email="test@example.com",
-                recipient_list=["recipient@example.com"],
-            )
-
-        self.assertEqual(Message.objects.count(), 1)
-
-        with freeze_time("2021-05-01"):
-            deleted, _ = delete_old_emails()
-        self.assertEqual(
-            deleted, (2, {"django_yubin.Log": 1, "django_yubin.Message": 1})
-        )
-        self.assertEqual(Message.objects.count(), 0)
-
-    def test_message_later_than_cutoff_date_is_not_deleted(self):
-        with freeze_time("2021-01-01"):
-            send_mail(
-                subject="Test Subject",
-                message="This is a test message.",
-                from_email="test@example.com",
-                recipient_list=["recipient@example.com"],
-            )
-
-        self.assertEqual(Message.objects.count(), 1)
-
-        with freeze_time("2021-01-05"):
-            deleted, _ = delete_old_emails(10)
-        self.assertEqual(deleted, (0, {}))
-        self.assertEqual(Message.objects.count(), 1)
 
 
 @override_settings(LANGUAGE_CODE="en")
