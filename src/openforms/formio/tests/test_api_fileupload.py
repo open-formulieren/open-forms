@@ -188,10 +188,11 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
     def test_msg_mimetype_override(self):
         self._add_submission_to_session(self.submission)
         url = reverse("api:formio:temporary-file-upload")
-        with open(Path(TEST_FILES, "sample.msg"), "rb") as f:
-            file = SimpleUploadedFile(
-                "sample.msg", f.read(), content_type="application/octet-stream"
-            )
+        file = SimpleUploadedFile(
+            "sample.msg",
+            (TEST_FILES / "sample.msg").read_bytes(),
+            content_type="application/octet-stream",
+        )
 
         response = self.client.post(
             url, {"file": file, "submission": self.submission_url}, format="multipart"
