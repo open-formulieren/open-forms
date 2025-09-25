@@ -393,7 +393,7 @@ django-upgrade-check==1.0.0
     #   -r requirements/base.txt
 django-webtest==1.9.7
     # via -r requirements/test-tools.in
-django-yubin==2.0.4
+django-yubin==2.0.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

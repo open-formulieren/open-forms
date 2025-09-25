@@ -832,7 +832,7 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(hour=0, minute=0, day_of_week="*"),
     },
     "delete-old-emails": {
-        "task": "openforms.emails.tasks.delete_old_emails",
+        "task": "django_yubin.tasks.delete_old_emails",
         "schedule": crontab(hour=0, minute=0, day_of_week="*"),
     },
     "update-saml-digid-eherkenning": {
