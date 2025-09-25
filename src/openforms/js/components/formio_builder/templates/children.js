@@ -1,14 +1,48 @@
 const TEMPLATE = `
 <div ref="children">
-  <label for="bsn">BSN:</label>
-  <input type="text" name="bsn" id="bsn" disabled class="form-control"/>
 
-  <label for="first-names">Firstnames:</label>
-  <input type="text" name="first-names" id="first-names" disabled class="form-control"/>
+  <table class="table">
+    <thead>
+      <tr>
+        {% if (ctx.component.enableSelection) { %}
+          <th scope="col"></th>
+        {% } %}
+        <th scope="col">
+          {{ ctx.t('BSN') }}
+        </th>
+        <th scope="col">
+          {{ ctx.t('Firstnames') }}
+        </th>
+        <th scope="col">
+          {{ ctx.t('Date of birth') }}
+        </th>
+      </tr>
+    </thead>
 
-  <label for="date-of-birth">Date of birth:</label>
-  <input type="text" name="date-of-birth" id="date-of-birth" disabled class="form-control"/>
-</div>
+    <tbody>
+      <tr>
+        {% if (ctx.component.enableSelection) { %}
+          <th scope="row">
+            <input type="checkbox">
+          </th>
+        {% } %}
+        <td>XXXXXX123</td>
+        <td>Alice</td>
+        <td>2000-01-01</td>
+      </tr>
+      <tr>
+        {% if (ctx.component.enableSelection) { %}
+          <th scope="row">
+            <input type="checkbox">
+          </th>
+        {% } %}
+        <td>XXXXXX456</td>
+        <td>Bob</td>
+        <td>2003-10-16</td>
+      </tr>
+    </tbody>
+
+  </table>
 `;
 
 export default TEMPLATE;

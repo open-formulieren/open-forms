@@ -408,5 +408,12 @@
   "You must select at least {{minCount}} items.": "Zorg dat dit veld {{minCount}} of meer opties aangevinkt heeft.",
   "Soft required errors": "Foutmeldingen aangeraden velden",
   "Empty fields": "Velden zonder antwoord",
+  "Firstnames": "Voornamen",
+  "Date of birth": "Geboortedatum",
+  "Initials": "Voorletters",
+  "Affixes": "Tussenvoegsel",
+  "Lastname": "Achternaam",
+  "Children": "Kinderen",
+  "Partners": "Partners",
   "": ""
 }

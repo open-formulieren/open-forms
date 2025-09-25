@@ -1,83 +1,131 @@
 .. _examples_family_members_prefill:
 
-=========================================================
-Form with Family members prefill plugin (Family members)
-=========================================================
+========================================
+Formulier met vooringevulde familieleden
+========================================
 
-In this example we create a form which is going to be used to retrieve and prefill
-personal data from several sources. For now, we support `Haal Centraal BRP bevragen API`_ 
-(Version 2) `StUF-BG`_ (version 3.1).
+In dit voorbeeld maken we een formulier met twee stappen waarbij persoonsgegevens van
+partner(s) en kinderen vooringevuld worden (stap 1). In stap 2 kan je extra
+gegevens opgeven voor de (geselecteerde) kinderen.
 
-.. _`Haal Centraal BRP bevragen API`: https://github.com/VNG-Realisatie/Haal-Centraal-BRP-bevragen
-.. _`StUF-BG`: https://vng-realisatie.github.io/StUF-BG/
+In dit voorbeeld gaan we er van uit dat u een
+:ref:`eenvoudig formulier <example_simple_form>` kan maken.
 
+.. seealso:: De :ref:`technische configuratie <configuration_prefill_family_members>` moet
+   gedaan zijn om dit na te kunnen bouwen.
 
-Create the form
-================
+Formulier aanmaken
+==================
 
-The steps below describe one form which will retrieve data for both the "partners" and the
-"children" of a person. You can adapt this according to your needs and you can configure it
-to work for either the "partners" or the "children" for example (configuring only 2 
-variables each time).
+Formulierstappen
+----------------
 
-**Partners**
+We bouwen eerst de formulierstappen waar vooringevulde gegevens terecht zullen komen.
 
-#. Create a form and select **Demo BSN** login options for the form authentication methods.
-    
-    .. image:: _assets/family_members_form_authentication.png
-       :alt: Screenshot of form authentication.
+#. Maak een nieuw formulier aan:
 
-#. Add a component **partners** from the special fields and configure it according to your
-   needs. This will automatically create a form variable which will be used to store the
-   (updated) data during the submission.
-#. Create a user defined variable with the name **partners-configuration** and data type ``string``.
-   This variable will hold all the necessary configuration for the plugin and the retrieved
-   data, but it **should not be modified**, it's meant to be immutable.
-#. Click the pencil icon in the "Prefill" column of the **partners-configuration** variable. 
-   You can now set the options.
+    * Naam: Familieleden
+    * Bij *Inloggen* > *Authenticatiemethode*: vink één van de (demo) DigiD
+      inlogopties aan.
 
-    * In the **Plugin** select "Family members". There are now extra options in the modal.
-    * For **Type** select partners.
-    * For **Data destination form variable**, select the variable that was created by the
-      component's creation (**partners**)
-    * Click "Save" to save the settings.
+#. Navigeer naar de tab *Stappen en velden* en voeg een nieuwe stap toe. Kies
+   *Maak een nieuwe formulierdefinitie*:
 
-      *The above configuration should resemble the screenshot below*:
+    * **Naam**: Partner en kinderen
+    * Vink **Vereist authenticatie** aan.
 
-        .. image:: _assets/family_members_partners_configuration.png
-          :alt: Screenshot of mutable variable for partners.
+#. Klap vervolgens de "Speciale velden" open en voeg een Partners-component toe:
 
-#. Make sure you have the following variables summary:
+    * **Label**: Partners
 
-    .. image:: _assets/family_members_partners_summary.png
-      :alt: Screenshot of variables summary.
+#. Voeg hierna een Kinderen-component toe:
 
-#. Save the form.
+    * **Label**: Kinderen
+    * Vink **Schakel selectie in** aan, zodat de eindgebruiker een deel van de opgehaalde
+      kinderen kan selecteren.
 
-**Children**
+#. Voeg nog een nieuwe stap toe. Kies opnieuw voor *Maak een nieuwe formulierdefinitie*:
 
-#. Repeat steps 2 and 3 from above to add the necessary variables, but this time select
-   the component **children** and **children-configuration** for the user defined variable's name.
-#. Click the pencil icon in the "Prefill" column of the **children-configuration** variable. 
-   You can now set the options.
+    * **Naam**: Extra informatie
 
-    * In the **Plugin** select "Family members". There are now extra options in the modal.
-    * For **Type** select children.
-    * For **Data destination form variable**, select the variable that was created by the
-      component's creation (**children**)
-    * Apply any filters that you desire. By default all the children will be retrieved if
-      you do not specify/modify any of the available filters.
-    * Click "Save" to save the settings.
+#. Klap vervolgens de "Speciale velden" open en voeg een Herhalende groep-component toe:
 
-      *The above configuration should resemble the screenshot below*:
+    * **Label**: Extra kindgegevens
+    * **Groepslabel**: Kind
 
-        .. image:: _assets/family_members_children_configuration.png
-          :alt: Screenshot of mutable variable for children.
+#. Sleep een BSN-component uit *speciale velden* in de herhalende groep:
 
-#. Make sure you have the following variables summary:
+    * **Label**: BSN kind
 
-    .. image:: _assets/family_members_partners_children_summary.png
-      :alt: Screenshot of variables summary.
+#. Sleep een tekstveld uit *formuliervelden* in de herhalende groep:
 
-#. Save the form.
+    * **Label**: Naam
 
+#. Voeg een Radio-component toe aan de herhalende groep:
+
+    * **Label**: Zwemdiploma
+    * **Keuzeopties**: voeg de opties "Geen", "Zwemdiploma A", "Zwemdiploma B" en
+      "Zwemdiploma C" toe.
+
+Pre-fill
+--------
+
+Nu stellen we het voorinvullen in zodat de formulierstappen de partner- en kindgegevens
+van de ingelogde persoon uit de BRP ingevuld worden.
+
+#. Navigeer naar de tab *Variabelen*, en daarbinnen naar de tab *Gebruikersvariabelen*.
+
+#. Voeg een variabele toe met de naam "Partners prefill" en datatype ``Lijst (array)``.
+
+#. Klik op het potlood-icoontje aan in de kolom "Prefill" van de gebruikersvariabele. Je
+   kan nu de opties instellen:
+
+    * **Plugin**: Familieleden
+    * **Type**: Partners
+    * **Bestemmingsvariabele**: Partners (de formuliercomponent).
+
+   Sla de instellingen op.
+
+#. Voeg nog een variabele toe, nu met de naam "Kinderen prefill" en opnieuw datatype
+   ``Lijst (array)``.
+
+#. Klik op het potlood-icoontje aan in de kolom "Prefill" van de gebruikersvariabele. Je
+   kan nu de opties instellen:
+
+    * **Plugin**: Familieleden
+    * **Type**: Kinderen
+    * **Bestemmingsvariabele**: Kinderen (de formuliercomponent).
+    * Indien gewenst kan je nog extra filters instellen.
+
+   Sla de instellingen op.
+
+Logica
+------
+
+Tot slot is er een logicaregel nodig om de geselecteerde kinderen (stap 1) in de
+herhalende groep (stap 2) met extra gegevens weg te schrijven.
+
+#. Navigeer naar de tab *Logica*.
+
+#. Voeg een logicaregel toe, en kies voor "Geavanceerd". Als trigger vul je ``true`` in,
+   zodat de regel altijd geëvalueerd wordt.
+
+#. Voeg een actie toe, kies voor *Synchroniseer variabelen* en klik de *Instellen* knop
+   aan.
+
+#. Stel de actie in:
+
+    * **Van variabele**: Kinderen (formuliercomponent in de stap "Partner en kinderen")
+    * **Naar variabele**: Extra kindgegevens (herhalende groep in de stap "Extra informatie")
+    * **Identificatievariabele**: BSN Kind
+
+   In de variabelekoppelingen is nu automatisch de BSN-koppeling toegevoegd.
+
+   Voeg nog een variabelekoppeling toe:
+
+    * **Formuliervariabele**: Naam
+    * **Attribuut**: Voornamen
+
+   Sla de instellingen op.
+
+#. Sla nu het formulier op - het is nu klaar om uit te voeren!

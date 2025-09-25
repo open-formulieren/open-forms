@@ -255,7 +255,6 @@ class SynchronizeVariablesAction(ActionOperation):
             case "children":
                 source_data = context.get(self.source_variable, [])
                 destination_data = context.get(self.destination_variable) or []
-                identifier_variable = context.get(self.identifier_variable) or ""
                 if not (source_data or destination_data):
                     return None
 
@@ -273,7 +272,10 @@ class SynchronizeVariablesAction(ActionOperation):
 
                 return {
                     self.destination_variable: self._map_children_data(
-                        source_data, destination_data, mappings, identifier_variable
+                        source_data,
+                        destination_data,
+                        mappings,
+                        self.identifier_variable,
                     )
                 }
 
