@@ -42,5 +42,7 @@
   "You must select at least {{minCount}} items.": "Ensure this field has at least {{minCount}} checked options.",
   "Empty fields": "Fields without a value",
   "Invalid Postcode": "The submitted value does not match the postcode pattern: 1234 AB",
+  "Multiple children share the same BSN number": "Multiple children share the same BSN number",
+  "Are you sure you want to remove child with BSN: '{{bsn}}'?": "Are you sure you want to remove child with BSN: '{{bsn}}'?",
   "": ""
 }

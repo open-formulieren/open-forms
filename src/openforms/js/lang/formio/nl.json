@@ -415,5 +415,7 @@
   "Lastname": "Achternaam",
   "Children": "Kinderen",
   "Partners": "Partners",
+  "Multiple children share the same BSN number": "Er zijn meerdere kinderen met hetzelfde BSN. Zorg dt deze uniek zijn.",
+  "Are you sure you want to remove child with BSN: '{{bsn}}'?": "Ben je zeker dat je het kind met BSN '{{ bsn }}' wil verwijderen?",
   "": ""
 }
