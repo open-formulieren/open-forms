@@ -74,6 +74,9 @@ class OgoneMerchant(models.Model):
     def endpoint(self):
         return self.endpoint_custom or self.endpoint_preset
 
+    def __str__(self):
+        return self.label
+
     def clean(self):
         super().clean()
         if not self.endpoint_custom and not self.endpoint_preset:
