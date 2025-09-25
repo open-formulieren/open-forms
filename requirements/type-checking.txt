@@ -1239,6 +1239,10 @@ tornado==6.5
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   flower
+tqdm==4.67.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 types-beautifulsoup4==4.12.0.20240511
     # via types-lxml
 types-html5lib==1.1.11.20240228

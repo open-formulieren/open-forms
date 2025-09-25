@@ -1045,6 +1045,10 @@ tornado==6.5
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   flower
+tqdm==4.67.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 typing-extensions==4.12.2
     # via
     #   -c requirements/base.txt

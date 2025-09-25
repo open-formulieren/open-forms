@@ -1294,6 +1294,10 @@ tornado==6.5
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   flower
+tqdm==4.67.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 types-requests==2.32.4.20250611
     # via
     #   -c requirements/ci.txt

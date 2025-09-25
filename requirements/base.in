@@ -32,6 +32,7 @@ semantic-version
 schwifty
 shapely  # map geometry shapes
 tabulate
+tqdm
 typing-extensions
 weasyprint
 zeep
