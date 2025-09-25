@@ -1315,6 +1315,12 @@
       "value": "Display main website link"
     }
   ],
+  "AAKF9b": [
+    {
+      "type": 0,
+      "value": "Optionally specify an alternative background layer for the map component. This affects the map style at particular coordinates and zoom levels."
+    }
+  ],
   "AClYLf": [
     {
       "type": 0,
@@ -7587,12 +7593,6 @@
     {
       "type": 0,
       "value": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners."
-    }
-  ],
-  "yQ7wJc": [
-    {
-      "type": 0,
-      "value": "This field is used to alter the map component background. This effects the map style at particular coordinates and zoom levels."
     }
   ],
   "yQUV3M": [

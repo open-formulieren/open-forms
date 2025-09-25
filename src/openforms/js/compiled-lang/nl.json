@@ -212,7 +212,7 @@
   "0eRdLf": [
     {
       "type": 0,
-      "value": "Layers"
+      "value": "Kaartlagen"
     }
   ],
   "0gbtNe": [
@@ -260,7 +260,7 @@
   "1U0I5C": [
     {
       "type": 0,
-      "value": "Firstnames"
+      "value": "Voornamen"
     }
   ],
   "1Vvryq": [
@@ -846,7 +846,7 @@
   "6jI29r": [
     {
       "type": 0,
-      "value": "The overlay is used to show additional map information on top of the map background. This uses tile layers as information source."
+      "value": "De kaartlaag toon extra informatie bovenop de achtergrondlaag. De opties komen uit de ingestelde kaartlagen in de beheeromgeving."
     }
   ],
   "6jv6nd": [
@@ -888,7 +888,7 @@
   "74r2X8": [
     {
       "type": 0,
-      "value": "Add another overlay"
+      "value": "Voeg nog een laag toe"
     }
   ],
   "7AQfXl": [
@@ -900,7 +900,7 @@
   "7E8B/6": [
     {
       "type": 0,
-      "value": "Enable selection"
+      "value": "Schakel selectie in"
     }
   ],
   "7F64bK": [
@@ -1164,7 +1164,7 @@
   "96yhxP": [
     {
       "type": 0,
-      "value": "Date of birth"
+      "value": "Geboortedatum"
     }
   ],
   "9AQi2/": [
@@ -1317,6 +1317,12 @@
     {
       "type": 0,
       "value": "Link naar hoofdwebsite weergeven"
+    }
+  ],
+  "AAKF9b": [
+    {
+      "type": 0,
+      "value": "Stel (niet verplicht) een alternatieve achtergrond in. Dit bepaalt de kaartstijl (al dan niet afhankelijk van het zoomniveau)."
     }
   ],
   "AClYLf": [
@@ -3103,7 +3109,7 @@
   "OFlBqy": [
     {
       "type": 0,
-      "value": "Overlays"
+      "value": "Kaartlagen"
     }
   ],
   "OX8wxE": [
@@ -3889,7 +3895,7 @@
   "V6JFeE": [
     {
       "type": 0,
-      "value": "Move down"
+      "value": "Omlaag"
     }
   ],
   "VMMOA0": [
@@ -5030,7 +5036,7 @@
   "e09gXO": [
     {
       "type": 0,
-      "value": "Allow the selection of specific children that are retrieved from the external source for further processing."
+      "value": "Laat de gebruiker toe om (een deel van) de opgehaalde resultaten te selecteren. Enkel de geselecteerde opties worden dan verwerkt."
     }
   ],
   "eAmrdi": [
@@ -5060,7 +5066,7 @@
   "eEqSUK": [
     {
       "type": 0,
-      "value": "Layers"
+      "value": "Kaartlagen"
     }
   ],
   "eF9O7c": [
@@ -5250,7 +5256,7 @@
   "fB4Vug": [
     {
       "type": 0,
-      "value": "Background"
+      "value": "Achtergrond"
     }
   ],
   "fLCWjk": [
@@ -5322,7 +5328,7 @@
   "faAkZs": [
     {
       "type": 0,
-      "value": "Remove overlay"
+      "value": "Verwijder kaartlaag"
     }
   ],
   "fagx6e": [
@@ -6500,7 +6506,7 @@
   "p/KSh+": [
     {
       "type": 0,
-      "value": "Move up"
+      "value": "Omhoog"
     }
   ],
   "p18yml": [
@@ -7036,7 +7042,7 @@
   "t10YHv": [
     {
       "type": 0,
-      "value": "Tile layer"
+      "value": "Laag"
     }
   ],
   "t5fg/K": [
@@ -7478,7 +7484,7 @@
   "xrfkiI": [
     {
       "type": 0,
-      "value": "Overlay: "
+      "value": "Laag: "
     },
     {
       "type": 1,
@@ -7571,12 +7577,6 @@
     {
       "type": 0,
       "value": "Omschrijving van het ROLTYPE voor de registratie van de partners (als betrokkene) van de burger die het formulier invult."
-    }
-  ],
-  "yQ7wJc": [
-    {
-      "type": 0,
-      "value": "This field is used to alter the map component background. This effects the map style at particular coordinates and zoom levels."
     }
   ],
   "yQUV3M": [
