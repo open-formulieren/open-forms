@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 09:52+0200\n"
+"POT-Creation-Date: 2025-09-30 15:13+0200\n"
 "PO-Revision-Date: 2025-09-15 16:01+0200\n"
 "Last-Translator:   <sonny@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -61,7 +61,7 @@ msgstr "Een gebruiker met deze gebruikersnaam bestaat al."
 msgid "first name"
 msgstr "voornaam"
 
-#: openforms/accounts/models.py:40 openforms/formio/components/custom.py:690
+#: openforms/accounts/models.py:40 openforms/formio/components/custom.py:696
 msgid "last name"
 msgstr "achternaam"
 
@@ -1049,7 +1049,7 @@ msgid "Email address"
 msgstr "e-mailadres"
 
 #: openforms/appointments/contrib/jcc/constants.py:45
-#: openforms/formio/rendering/default.py:392 stuf/stuf_bg/constants.py:29
+#: openforms/formio/rendering/default.py:431 stuf/stuf_bg/constants.py:29
 msgid "Initials"
 msgstr "Initialen"
 
@@ -1524,8 +1524,8 @@ msgstr "Authenticatiemodule"
 #: openforms/authentication/constants.py:34
 #: openforms/authentication/constants.py:38
 #: openforms/authentication/contrib/demo/plugin.py:32
-#: openforms/formio/rendering/default.py:387
-#: openforms/formio/rendering/default.py:489 stuf/stuf_bg/constants.py:26
+#: openforms/formio/rendering/default.py:426
+#: openforms/formio/rendering/default.py:557 stuf/stuf_bg/constants.py:26
 msgid "BSN"
 msgstr "BSN"
 
@@ -2691,7 +2691,7 @@ msgid "House number to use in search"
 msgstr "Huisnummer om naar te zoeken"
 
 #: openforms/contrib/kadaster/api/serializers.py:18
-#: openforms/formio/components/custom.py:539
+#: openforms/formio/components/custom.py:545
 msgid "street name"
 msgstr "straatnaam"
 
@@ -2700,7 +2700,7 @@ msgid "Found street name"
 msgstr "Gevonden straatnaam"
 
 #: openforms/contrib/kadaster/api/serializers.py:20
-#: openforms/formio/components/custom.py:545
+#: openforms/formio/components/custom.py:551
 msgid "city"
 msgstr "stad"
 
@@ -2709,12 +2709,12 @@ msgid "Found city"
 msgstr "Gevonden stad"
 
 #: openforms/contrib/kadaster/api/serializers.py:22
-#: openforms/formio/components/custom.py:551
+#: openforms/formio/components/custom.py:557
 msgid "city and street name secret"
 msgstr "gedeeld geheim straatnaam en stad"
 
 #: openforms/contrib/kadaster/api/serializers.py:23
-#: openforms/formio/components/custom.py:552
+#: openforms/formio/components/custom.py:558
 msgid "Secret for the combination of city and street name"
 msgstr "Gedeeld geheim voor de combinatie van stad en straatnaam"
 
@@ -4688,107 +4688,115 @@ msgstr ""
 msgid "Formio integration"
 msgstr "Form.io-integratie"
 
-#: openforms/formio/components/custom.py:360
-#: openforms/formio/components/custom.py:1017
+#: openforms/formio/components/custom.py:108
+msgid "dd-mm-yyyy"
+msgstr "dd-mm-jjjj"
+
+#: openforms/formio/components/custom.py:199
+msgid "dd-mm-yyyy HH:mm"
+msgstr "dd-mm-jjjj HH:mm"
+
+#: openforms/formio/components/custom.py:366
+#: openforms/formio/components/custom.py:1023
 #: openforms/formio/components/vanilla.py:120
 #: openforms/formio/components/vanilla.py:341
 msgid "This value does not match the required pattern."
 msgstr "De waarde komt niet overeen met het verwachte patroon."
 
-#: openforms/formio/components/custom.py:428
+#: openforms/formio/components/custom.py:434
 msgid "Selecting family members is currently not available."
 msgstr "Het selecteren van gezinsleden is momenteel niet beschikbaar."
 
-#: openforms/formio/components/custom.py:540
+#: openforms/formio/components/custom.py:546
 msgid "Derived street name"
 msgstr "Afgeleide straatnaam"
 
-#: openforms/formio/components/custom.py:546
+#: openforms/formio/components/custom.py:552
 msgid "Derived city"
 msgstr "Afgeleide stad"
 
-#: openforms/formio/components/custom.py:568
+#: openforms/formio/components/custom.py:574
 msgid "City does not match the specified pattern."
 msgstr "De stad komt niet overeen met het verwachtte patroon."
 
-#: openforms/formio/components/custom.py:580
+#: openforms/formio/components/custom.py:586
 msgid "Postcode does not match the specified pattern."
 msgstr "De postcode komt niet overeen met het verwachtte patroon."
 
-#: openforms/formio/components/custom.py:607
+#: openforms/formio/components/custom.py:613
 msgid "Invalid secret city - street name combination"
 msgstr "Ongeldige waarde voor sleutel voor de stad/straat-combinatie."
 
-#: openforms/formio/components/custom.py:674
-#: openforms/formio/components/custom.py:796
+#: openforms/formio/components/custom.py:680
+#: openforms/formio/components/custom.py:802
 msgid "bsn"
 msgstr "BSN"
 
-#: openforms/formio/components/custom.py:676
+#: openforms/formio/components/custom.py:682
 msgid "The BSN of the partner"
 msgstr "Het BSN van de partner"
 
-#: openforms/formio/components/custom.py:680
+#: openforms/formio/components/custom.py:686
 msgid "initials"
 msgstr "Initialen"
 
-#: openforms/formio/components/custom.py:681
+#: openforms/formio/components/custom.py:687
 msgid "The initials of the partner"
 msgstr "De initialen van de partner"
 
-#: openforms/formio/components/custom.py:685
+#: openforms/formio/components/custom.py:691
 msgid "affixes"
 msgstr "voorvoegsels"
 
-#: openforms/formio/components/custom.py:686
+#: openforms/formio/components/custom.py:692
 msgid "The affixes of the partner"
 msgstr "De voorvoegsels van de partner"
 
-#: openforms/formio/components/custom.py:691
+#: openforms/formio/components/custom.py:697
 msgid "The last name of the partner"
 msgstr "Achternaam van de partner"
 
-#: openforms/formio/components/custom.py:695
-#: openforms/formio/components/custom.py:807
+#: openforms/formio/components/custom.py:701
+#: openforms/formio/components/custom.py:813
 msgid "date of birth"
 msgstr "Geboortedatum"
 
-#: openforms/formio/components/custom.py:696
+#: openforms/formio/components/custom.py:702
 msgid "The date of birth of the partner"
 msgstr "De geboortedatum van de partner"
 
-#: openforms/formio/components/custom.py:756
-#: openforms/formio/components/custom.py:894
+#: openforms/formio/components/custom.py:762
+#: openforms/formio/components/custom.py:900
 msgid "The family members prefill data may not be altered."
 msgstr "Je mag de familieleden prefill-gegevens niet wijzigen."
 
-#: openforms/formio/components/custom.py:798
+#: openforms/formio/components/custom.py:804
 msgid "The BSN of the child"
 msgstr "Het BSN van het kind"
 
-#: openforms/formio/components/custom.py:802
+#: openforms/formio/components/custom.py:808
 msgid "firstNames"
 msgstr "voornamen"
 
-#: openforms/formio/components/custom.py:803
+#: openforms/formio/components/custom.py:809
 msgid "The first names of the child"
 msgstr "De voornamen  van het kind"
 
-#: openforms/formio/components/custom.py:808
+#: openforms/formio/components/custom.py:814
 msgid "The date of birth of the child"
 msgstr "De geboortedatum van het kind"
 
-#: openforms/formio/components/custom.py:811
+#: openforms/formio/components/custom.py:817
 msgid "selected"
 msgstr "geselecteerd"
 
-#: openforms/formio/components/custom.py:814
+#: openforms/formio/components/custom.py:820
 msgid "Whether the child is selected by the user or not for further processing"
 msgstr ""
 "Ongeacht of het kind is geselecteerd door de gebruiker voor verdere "
 "behandeling"
 
-#: openforms/formio/components/custom.py:883
+#: openforms/formio/components/custom.py:889
 msgid "Invalid data."
 msgstr "Incorrecte data."
 
@@ -4958,26 +4966,28 @@ msgstr "Weergeven in bevestigingsmail"
 msgid "Item"
 msgstr "Item"
 
-#: openforms/formio/rendering/default.py:397
+#: openforms/formio/rendering/default.py:411
+msgid "Partner"
+msgstr "Partner"
+
+#: openforms/formio/rendering/default.py:436
 msgid "Affixes"
 msgstr "Voorvoegsels"
 
-#: openforms/formio/rendering/default.py:402
+#: openforms/formio/rendering/default.py:441
 msgid "Lastname"
 msgstr "Achternaam"
 
-#: openforms/formio/rendering/default.py:407
-#: openforms/formio/rendering/default.py:499 stuf/stuf_bg/constants.py:50
+#: openforms/formio/rendering/default.py:446
+#: openforms/formio/rendering/default.py:567 stuf/stuf_bg/constants.py:50
 msgid "Date of birth"
 msgstr "Geboortedatum"
 
-#: openforms/formio/rendering/default.py:420
-#: openforms/formio/rendering/default.py:512
-#, python-brace-format
-msgid "{label} {counter}"
-msgstr "{label} {counter}"
+#: openforms/formio/rendering/default.py:542
+msgid "Child"
+msgstr "Kind"
 
-#: openforms/formio/rendering/default.py:494
+#: openforms/formio/rendering/default.py:562
 msgid "Firstnames"
 msgstr "Voornamen"
 
@@ -15219,6 +15229,10 @@ msgstr ""
 #: openforms/config/templatetags/privacy_policy.py:19
 msgid "privacy policy"
 msgstr "privacybeleid"
+
+#, python-brace-format
+#~ msgid "{label} {counter}"
+#~ msgstr "{label} {counter}"
 
 #~ msgid ""
 #~ "This endpoint is used for server-to-server calls. Depending on the "
