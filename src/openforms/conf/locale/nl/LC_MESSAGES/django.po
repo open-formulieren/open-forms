@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-23 15:22+0200\n"
+"POT-Creation-Date: 2025-09-25 14:28+0200\n"
 "PO-Revision-Date: 2025-09-15 16:01+0200\n"
 "Last-Translator:   <sonny@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -5185,6 +5185,7 @@ msgstr ""
 "{form_ids}. Selecteer een nieuwe merchant voor deze formulieren."
 
 #: openforms/forms/admin/views.py:235
+#, python-brace-format
 msgid "{success_count} forms were migrated."
 msgstr "{success_count} formulieren zijn gemigreerd."
 
@@ -7279,46 +7280,46 @@ msgstr "Kaping"
 msgid "Submission lifecycle"
 msgstr "Inzendingslevenscyclus"
 
-#: openforms/logging/models.py:58
+#: openforms/logging/models.py:55
 msgid "timeline log entry"
 msgstr "tijdlijn logboekvermelding"
 
-#: openforms/logging/models.py:59
+#: openforms/logging/models.py:56
 msgid "timeline log entries"
 msgstr "tijdlijn logboekvermeldingen "
 
-#: openforms/logging/models.py:88
+#: openforms/logging/models.py:85
 #, python-brace-format
 msgid "Staff user {user}"
 msgstr "Beheerder {user}"
 
-#: openforms/logging/models.py:93
+#: openforms/logging/models.py:90
 #, python-brace-format
 msgid "Authenticated via plugin {auth}"
 msgstr "Geauthenticeerd via plugin {auth}"
 
-#: openforms/logging/models.py:94
+#: openforms/logging/models.py:91
 msgid "Anonymous user"
 msgstr "Anonieme gebruiker"
 
-#: openforms/logging/models.py:121 openforms/logging/models.py:157
-#: openforms/logging/models.py:166
+#: openforms/logging/models.py:118 openforms/logging/models.py:154
+#: openforms/logging/models.py:163
 msgid "(unknown)"
 msgstr "(onbekend)"
 
-#: openforms/logging/models.py:187
+#: openforms/logging/models.py:184
 msgid "content object"
 msgstr "object"
 
-#: openforms/logging/models.py:194
+#: openforms/logging/models.py:191
 msgid "message"
 msgstr "bericht"
 
-#: openforms/logging/models.py:220
+#: openforms/logging/models.py:217
 msgid "avg timeline log entry"
 msgstr "AVG logboekvermelding"
 
-#: openforms/logging/models.py:221
+#: openforms/logging/models.py:218
 msgid "avg timeline log entries"
 msgstr "AVG logboekvermeldingen "
 

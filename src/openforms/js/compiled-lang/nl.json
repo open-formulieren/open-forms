@@ -3827,7 +3827,7 @@
   "UZk0+O": [
     {
       "type": 0,
-      "value": "Children roltype"
+      "value": "Kinderen roltype"
     }
   ],
   "UlVtQd": [
@@ -6644,7 +6644,7 @@
   "pbA2dt": [
     {
       "type": 0,
-      "value": "The description that will be used in children registration."
+      "value": "De omschrijving welke gebruikt zal worden in de kinderen-registratie."
     }
   ],
   "pdmkVe": [
@@ -7012,7 +7012,7 @@
   "t+B+/4": [
     {
       "type": 0,
-      "value": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with children."
+      "value": "Omschrijving van het ROLTYPE voor de registratie van de kinderen van de burger die het formulier invult."
     }
   ],
   "t+J++o": [
@@ -7618,7 +7618,7 @@
   "ydnh2t": [
     {
       "type": 0,
-      "value": "Children description"
+      "value": "Kinderen omschrijving"
     }
   ],
   "yrz/oC": [
