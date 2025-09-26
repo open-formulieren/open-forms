@@ -43,6 +43,7 @@ const TEMPLATE = `
     </tbody>
 
   </table>
+</div>
 `;
 
 export default TEMPLATE;
