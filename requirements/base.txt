@@ -621,6 +621,8 @@ tinycss2==1.1.0
     #   weasyprint
 tornado==6.5
     # via flower
+tqdm==4.67.1
+    # via -r requirements/base.in
 typing-extensions==4.12.2
     # via
     #   -r requirements/base.in

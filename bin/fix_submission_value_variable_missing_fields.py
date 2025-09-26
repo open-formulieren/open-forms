@@ -14,6 +14,8 @@ from pathlib import Path
 
 import django
 
+from tqdm import tqdm
+
 SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
 
@@ -37,18 +39,23 @@ def add_missing_fields_to_existing_submission_value_variables() -> None:
     from openforms.submissions.models import SubmissionStep, SubmissionValueVariable
     from openforms.variables.constants import FormVariableSources
 
-    step_iterator = (
-        SubmissionStep.objects.select_related(
-            "form_step__form_definition", "submission", "submission__form"
-        )
-        .order_by("submission")
-        .iterator()
-    )
+    queryset = SubmissionStep.objects.select_related(
+        "form_step__form_definition", "submission", "submission__form"
+    ).order_by("submission")
+
     # Note that we update the variables per submission because of performance reasons,
     # and to be able to run this script in batches. Only variables with an empty
     # configuration are selected, so running it again will not process the variables
     # multiple times.
-    for submission, step_group in groupby(step_iterator, key=lambda x: x.submission):
+    for submission, step_group in tqdm(
+        groupby(queryset.iterator(), key=lambda x: x.submission),
+        desc="Submission steps processed",
+        total=queryset.count(),
+        dynamic_ncols=True,
+        mininterval=0.5,
+        disable=None,
+        unit="step",
+    ):
         variables_to_update = []
 
         components_in_submission = set()
