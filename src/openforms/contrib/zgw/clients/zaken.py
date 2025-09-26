@@ -159,7 +159,7 @@ class ZakenClient(LoggingMixin, NLXClient):
         }
         endpoint = furl(zaak_url) / "zaakeigenschappen"
 
-        response = self.post(endpoint, json=data)
+        response = self.post(endpoint.url, json=data)
         response.raise_for_status()
 
         return response.json()
