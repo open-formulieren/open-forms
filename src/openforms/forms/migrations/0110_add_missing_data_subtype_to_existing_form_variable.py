@@ -3,6 +3,8 @@
 from django.db import migrations
 from django.db.migrations.state import StateApps
 
+from tqdm import tqdm
+
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.utils import get_component_data_subtype, get_component_datatype
 from openforms.variables.constants import FormVariableDataTypes
@@ -12,7 +14,14 @@ def add_data_subtype_to_existing_form_variables(apps: StateApps, _):
     FormVariable = apps.get_model("forms", "FormVariable")
     FormDefinition = apps.get_model("forms", "FormDefinition")
 
-    for form_definition in FormDefinition.objects.iterator():
+    qs = FormDefinition.objects.all()
+    for form_definition in tqdm(
+        qs.iterator(),
+        total=qs.count(),
+        dynamic_ncols=True,
+        disable=None,
+        unit="form def",
+    ):
         wrapper = FormioConfigurationWrapper(form_definition.configuration)
 
         variables_to_update = []
