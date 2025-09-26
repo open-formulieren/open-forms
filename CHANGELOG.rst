@@ -41,23 +41,37 @@ To upgrade to 3.3, please:
 
 .. warning:: Schedule the upgrade for off-peak hours. Some of the database migrations
    need to lock the entire table and/or can take a long time depending on the amount of
-   data. Some benchmarks on one million of rows in the submission variables table
-   (~ 120K submissions) showed a migration time of around 20 seconds, so anywhere
-   between 10 seconds - 5 minutes can be expected as a normal completion time depending
-   on your data and available resources for the database.
+   data. We ran some benchmarks to get an idea of the duration.
+
+   ============================================================= ============== ========
+   Resource(s)                                                   Num records    Duration
+   ============================================================= ============== ========
+   Email messages + logs                                         50,000         ~30s
+   Submissions, submission variables                             150,000        ~2s
+   Submissions, submission variables                             13,600,000     ~10min
+   Authentication infos                                          1,500          ~0.1s
+   Authentication infos                                          230,000        ~2s
+   ============================================================= ============== ========
 
 .. warning::
 
     In this release, we reworked the internal data type information. To ensure submitted
-    data of existing submissions is formatted correctly, submitted variables need to be
+    data of existing submissions is formatted correctly, the matching variables need to be
     processed. Note that we include this script instead of a data migration, so it can be
-    run separately, as it can take up to an hour to complete the entire operation for large
-    environments.
+    run separately as it takes quite some time for large environments.
 
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
         python /app/bin/fix_submission_value_variable_missing_fields.py
+
+    See our benchmarks to get an indication of the execution time:
+
+    ====================== ========
+    Number of submissions  Duration
+    ====================== ========
+    7,000                  3.5min
+    ====================== ========
 
 .. warning::
 
