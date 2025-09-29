@@ -46,9 +46,6 @@ which is located at ``http://localhost:8000/admin/rosetta``. You can filter on u
 and add a translation. Make sure to also filter on 'fuzzy' and check if the generated translations
 make sense. Adjust them if needed and deselect the fuzzy checkbox when they are checked.
 
-You can use the script ``python ./bin/find_untranslated_js.py`` to scan for (likely)
-missing JS translations.
-
 Note that the translations in ``src/openforms/js/lang/formio/[locale].json`` cannot be
 automatically extracted and requires tedious manual checking and adding translations.
 

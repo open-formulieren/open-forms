@@ -70,9 +70,6 @@ Cheat sheet:
 * Backend: ``./bin/makemessages_js.sh`` and ``./bin/compilemessages_js.sh``
 * Libraries: ``./bin/makemessages.sh`` and ``npm run compilemessages``
 
-There is also a ``bin/find_untranslated_js.py`` script to point out potentially missed
-translations, as the JSON file format is not too friendly to keep track of everything.
-
 **.editorconfig**
 
 Indent sizes and other code formatting rules are specified in the ``.editorconfig`` file,
