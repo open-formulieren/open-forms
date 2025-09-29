@@ -98,8 +98,7 @@ class WorldlineOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializ
             "particular process or form. You can include all form variables (using "
             "their keys) and the 'public_reference' variable (using expression "
             "'{{ public_reference }}'). If unspecified, a default description is used. "
-            "Note that the length of the result is capped to 32 characters and only "
-            "alpha-numeric characters are allowed."
+            "Note that the length of the result is capped to 32 characters."
         ),
     )
     _checkoutDetails = CheckoutSerializer(required=False)
