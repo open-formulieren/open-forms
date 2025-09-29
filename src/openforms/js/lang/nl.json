@@ -678,7 +678,7 @@
     "originalDefault": "Save changes"
   },
   "Bp3X7R": {
-    "defaultMessage": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Worldline kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen. Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de 'public_reference' sjabloonvariabele (gebruik de expressie <code>'{{' public_reference '}}'</code>). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt. Merk op dat het resultaat op 32 karakters afgekapt wordt en enkel alfanumerieke tekens toegestaan zijn.",
+    "defaultMessage": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Worldline kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen. Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de 'public_reference' sjabloonvariabele (gebruik de expressie <code>'{{' public_reference '}}'</code>). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt. Merk op dat het resultaat op 32 karakters afgekapt wordt.",
     "description": "Worldline payment options 'descriptorTemplate' help text",
     "originalDefault": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 32 characters."
   },
