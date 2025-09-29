@@ -184,28 +184,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: open-formulieren/actions/check-message-extraction@v1
         with:
-          node-version-file: '.nvmrc'
-          cache: npm
+          paths: src/openforms/js/{compiled-lang,lang}
+          extraction-command: ./bin/compilemessages_js.sh
+          compilation-command: ./bin/compilemessages_js.sh
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Extract messages and check for changes
-        run: |
-          ./bin/makemessages_js.sh
-          ./bin/compilemessages_js.sh
-          git diff --exit-code src/openforms/js/{compiled-lang,lang}
-
-      - name: Write failure markdown
-        if: ${{ failure() }}
-        run: |
-          first_changed_file=$(git diff --name-only --diff-filter=M src/openforms/js/{compiled-lang,lang} | head -n 1)
-          first_lineno=$(git diff -U0 $first_changed_file | grep '^@@' | head -1 | sed -E 's/.*\+([0-9]+).*/\1/')
-          echo "::error file=$first_changed_file,line=$first_lineno,title=Outdated::There are changes detected in the i18n messages"
-          echo 'Please make sure to extract and compile messages locally commit the changes.' >> $GITHUB_STEP_SUMMARY
-        shell: bash
+      # Only actually does anything in release/* branches or for pushed tags
+      - uses: open-formulieren/actions/check-missing-translations@v1
+        with:
+          messages-path: src/openforms/js/lang
+          locales: nl
 
   e2etests:
     runs-on: ubuntu-24.04

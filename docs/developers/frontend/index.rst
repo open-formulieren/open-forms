@@ -75,7 +75,6 @@ Message extraction and distribution
 Libraries must provide the necessary shell scripts to correctly extract messages:
 
 * ``bin/makemessages.sh``: script to extract messages from code for all supported locales
-* ``bin/find_untranslated_messages.py``: script to assist in finding untranslated messages
 * ``npm run compilemessages``: optional but recommended - script to compile the messages for react-intl
 
 The convention for libraries is to distribute the (uncompiled) messages in the NPM
