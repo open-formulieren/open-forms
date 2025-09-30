@@ -411,6 +411,12 @@
       "value": "Cancel"
     }
   ],
+  "2gs8pJ": [
+    {
+      "type": 0,
+      "value": "The map configuration is not valid, so we can't show a preview. Fix the validation errors in the component configuration."
+    }
+  ],
   "2k+Mca": [
     {
       "type": 0,
@@ -2251,6 +2257,28 @@
       "value": "No form variable specified (anymore)."
     }
   ],
+  "GDWp6v": [
+    {
+      "type": 0,
+      "value": "Value in whole numbers, between "
+    },
+    {
+      "type": 1,
+      "value": "minZoom"
+    },
+    {
+      "type": 0,
+      "value": " and "
+    },
+    {
+      "type": 1,
+      "value": "maxZoom"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "GFXEAX": [
     {
       "type": 0,
@@ -2739,6 +2767,12 @@
       "value": "Size (mobile)"
     }
   ],
+  "KMs17v": [
+    {
+      "type": 0,
+      "value": "Unfortunately something went wrong!"
+    }
+  ],
   "KYTAJZ": [
     {
       "type": 0,
@@ -2785,6 +2819,12 @@
     {
       "type": 0,
       "value": "Document types (legacy)"
+    }
+  ],
+  "KvSkZT": [
+    {
+      "type": 0,
+      "value": "Oops!"
     }
   ],
   "KwatvH": [

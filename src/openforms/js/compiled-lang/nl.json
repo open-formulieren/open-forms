@@ -411,6 +411,12 @@
       "value": "Annuleren"
     }
   ],
+  "2gs8pJ": [
+    {
+      "type": 0,
+      "value": "De instellingen van de kaartcomponent zijn ongeldig. Los de validatiefouten op om een voorvertoning te zien."
+    }
+  ],
   "2k+Mca": [
     {
       "type": 0,
@@ -2238,6 +2244,28 @@
       "value": "Formuliervariabele ontbreekt."
     }
   ],
+  "GDWp6v": [
+    {
+      "type": 0,
+      "value": "Waarde in gehele getallen, tussen "
+    },
+    {
+      "type": 1,
+      "value": "minZoom"
+    },
+    {
+      "type": 0,
+      "value": " en "
+    },
+    {
+      "type": 1,
+      "value": "maxZoom"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "GFXEAX": [
     {
       "type": 0,
@@ -2726,6 +2754,12 @@
       "value": "Grootte (mobiel)"
     }
   ],
+  "KMs17v": [
+    {
+      "type": 0,
+      "value": "Er ging helaas iets fout!"
+    }
+  ],
   "KYTAJZ": [
     {
       "type": 0,
@@ -2772,6 +2806,12 @@
     {
       "type": 0,
       "value": "Documenttypen (oud)"
+    }
+  ],
+  "KvSkZT": [
+    {
+      "type": 0,
+      "value": "Oeps!"
     }
   ],
   "KwatvH": [
