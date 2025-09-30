@@ -1,5 +1,4 @@
 from collections.abc import Callable, Iterator
-from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Literal, NotRequired, TypedDict
 
@@ -7,12 +6,12 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils.html import format_html_join
 from django.utils.safestring import SafeString, mark_safe
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from furl import furl
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
-from openforms.formio.typing import ChildrenComponent, Component
+from openforms.formio.typing import Component
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.utils.urls import build_absolute_uri
 
@@ -362,7 +361,7 @@ class PartnerValue(TypedDict):
 
 @register("partners")
 class PartnersNode(ComponentNode):
-    layout_modifier: str = "partners"
+    layout_modifier: str = "editgrid"  # apply similar styling to edit grid
 
     @property
     def display_value(self) -> str | list[PartnerValue]:
@@ -386,13 +385,7 @@ class PartnersNode(ComponentNode):
 
             yield PartnersGroupNode(
                 step_data=self.step_data,
-                component={
-                    "type": "component_label",
-                    "key": "component_label",
-                    "label": _("{label} {counter}").format(
-                        label=self.component["label"], counter=node_index + 1
-                    ),
-                },
+                component=self.component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 group_index=node_index,
@@ -404,8 +397,7 @@ class PartnersNode(ComponentNode):
 @dataclass
 class PartnersGroupNode(ComponentNode):
     group_index: int = 0
-    layout_modifier: str = "partners-group"
-    default_label: str = _("Partner")
+    layout_modifier: str = "editgrid-group"  # apply similar styling to edit grid
 
     @property
     def value(self) -> Any:
@@ -414,7 +406,9 @@ class PartnersGroupNode(ComponentNode):
         return ""
 
     def __post_init__(self):
-        self._base_label = self.component.get("groupLabel", self.default_label)
+        # XXX: groupLabel is currently not (yet) an option in the formio-builder/types.
+        # This mimicks the interface of edit grid.
+        self._base_label = self.component.get("groupLabel") or _("Partner")
 
     def apply_to_labels(self, f: Callable[[str], str]) -> None:
         super().apply_to_labels(f)
@@ -429,27 +423,27 @@ class PartnersGroupNode(ComponentNode):
             {
                 "type": "bsn",
                 "key": "bsn",
-                "label": _("BSN"),
+                "label": gettext("BSN"),
             },
             {
                 "type": "textfield",
                 "key": "initials",
-                "label": _("Initials"),
+                "label": gettext("Initials"),
             },
             {
                 "type": "textfield",
                 "key": "affixes",
-                "label": _("Affixes"),
+                "label": gettext("Affixes"),
             },
             {
                 "type": "textfield",
                 "key": "lastName",
-                "label": _("Lastname"),
+                "label": gettext("Lastname"),
             },
             {
                 "type": "date",
                 "key": "dateOfBirth",
-                "label": _("Date of birth"),
+                "label": gettext("Date of birth"),
             },
         ]
 
@@ -477,24 +471,19 @@ class ChildValue(TypedDict):
 
 @register("children")
 class ChildrenNode(ComponentNode):
-    layout_modifier: str = "children"
+    layout_modifier: str = "editgrid"  # apply similar styling to edit grid
 
     @property
     def value(self) -> Any:
-        self.component: ChildrenComponent
-        value = self.step_data[self.path or self.key]
+        value = super().value
+        if value is None:
+            return None
         assert isinstance(value, list)
-
-        if not self.component.get("enableSelection"):
-            return value
-
-        selected_children = []
-        for child in value:
-            assert isinstance(child, dict)
-            if child.get("selected"):
-                selected_children.append(child)
-
-        return selected_children
+        selection_enabled = bool(self.component.get("enableSelection"))
+        selected_children = (
+            child for child in value if (not selection_enabled or child.get("selected"))
+        )
+        return list(selected_children)
 
     @property
     def display_value(self) -> str | list[ChildValue]:
@@ -511,37 +500,35 @@ class ChildrenNode(ComponentNode):
         if self.mode == RenderModes.export:
             return
 
-        repeats = len(self.value) if self.value else 0
+        # loop over the raw values, but only keep the selected values from self.value
+        raw_value = super().value or []
+        value = self.value or []
 
-        # generate nodes only for the selected children
-        step_data_copy = deepcopy(self.step_data)
-        step_data_copy[self.key] = self.value
+        label_index: int = 0
+        for node_index, item in enumerate(raw_value):
+            # skip over de-selected children
+            if item not in value:
+                continue
 
-        for node_index in range(repeats):
             path = f"{self.path}.{self.key}" if self.path else self.key
-
             yield ChildrenGroupNode(
-                step_data=step_data_copy,
-                component={
-                    "type": "component_label",
-                    "key": "component_label",
-                    "label": _("{label} {counter}").format(
-                        label=self.component["label"], counter=node_index + 1
-                    ),
-                },
+                step_data=self.step_data,
+                component=self.component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 group_index=node_index,
+                label_index=label_index,
                 path=path,
                 parent_node=self,
             )
+            label_index += 1
 
 
 @dataclass
 class ChildrenGroupNode(ComponentNode):
     group_index: int = 0
-    layout_modifier: str = "children-group"
-    default_label: str = _("Child")
+    label_index: int = 0
+    layout_modifier: str = "editgrid-group"  # apply similar styling to edit grid
 
     @property
     def value(self) -> Any:
@@ -550,7 +537,9 @@ class ChildrenGroupNode(ComponentNode):
         return ""
 
     def __post_init__(self):
-        self._base_label = self.component.get("groupLabel", self.default_label)
+        # XXX: groupLabel is currently not (yet) an option in the formio-builder/types.
+        # This mimicks the interface of edit grid.
+        self._base_label = self.component.get("groupLabel") or _("Child")
 
     def apply_to_labels(self, f: Callable[[str], str]) -> None:
         super().apply_to_labels(f)
@@ -558,24 +547,24 @@ class ChildrenGroupNode(ComponentNode):
 
     @property
     def label(self) -> str:
-        return f"{self._base_label} {self.group_index + 1}"
+        return f"{self._base_label} {self.label_index + 1}"
 
     def get_children(self) -> Iterator[ComponentNode]:
         components: list[Component] = [
             {
                 "type": "bsn",
                 "key": "bsn",
-                "label": _("BSN"),
+                "label": gettext("BSN"),
             },
             {
                 "type": "textfield",
                 "key": "firstNames",
-                "label": _("Firstnames"),
+                "label": gettext("Firstnames"),
             },
             {
                 "type": "date",
                 "key": "dateOfBirth",
-                "label": _("Date of birth"),
+                "label": gettext("Date of birth"),
             },
         ]
 
