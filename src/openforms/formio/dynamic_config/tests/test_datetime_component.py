@@ -104,6 +104,18 @@ class DynamicDatetimeConfigurationTests(TestCase):
             "2022-09-12T16:07:00+02:00",
         )
 
+    @override_settings(LANGUAGE_CODE="en")
+    def test_datetime_placeholder(self):
+        component: DatetimeComponent = {
+            "type": "datetime",
+            "key": "aDatetime",
+            "label": "Datetime",
+        }
+
+        new_component = self._get_dynamic_config(component, {})
+
+        self.assertEqual(new_component["placeholder"], "dd-mm-yyyy HH:mm")
+
     @freeze_time("2022-10-03T12:00:00Z")
     def test_relative_to_variable_blank_delta(self):
         component: DatetimeComponent = {
