@@ -104,6 +104,9 @@ class Date(BasePlugin[DateComponent]):
         """
         mutate_min_max_validation(component, data)
 
+        # inject the translated placeholder for the formio DateField component
+        component["placeholder"] = _("dd-mm-yyyy")
+
     def build_serializer_field(
         self, component: DateComponent
     ) -> FormioDateField | serializers.ListField:
@@ -191,6 +194,9 @@ class Datetime(BasePlugin):
         Implement the behaviour for our custom datetime component options.
         """
         mutate_min_max_validation(component, data)
+
+        # inject the translated placeholder for the formio DateTimeField component
+        component["placeholder"] = _("dd-mm-yyyy HH:mm")
 
     def build_serializer_field(
         self, component: DateComponent

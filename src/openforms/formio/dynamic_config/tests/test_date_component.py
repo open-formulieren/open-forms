@@ -1,7 +1,7 @@
 from copy import deepcopy
 from datetime import datetime
 
-from django.test import TestCase, tag
+from django.test import TestCase, override_settings, tag
 from django.utils import timezone
 
 from freezegun import freeze_time
@@ -47,6 +47,18 @@ class DynamicDateConfigurationTests(TestCase):
         self.assertEqual(
             new_component["datePicker"]["maxDate"], "2022-09-08T00:00:00+02:00"
         )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_date_placeholder(self):
+        component: DateComponent = {
+            "type": "date",
+            "key": "aDate",
+            "label": "Date",
+        }
+
+        new_component = self._get_dynamic_config(component, {})
+
+        self.assertEqual(new_component["placeholder"], "dd-mm-yyyy")
 
     def test_min_max_date_fixed_value(self):
         component: DateComponent = {
