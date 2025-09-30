@@ -1,4 +1,5 @@
 from collections.abc import Callable, Iterator
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Literal, NotRequired, TypedDict
 
@@ -361,10 +362,7 @@ class PartnerValue(TypedDict):
 
 @register("partners")
 class PartnersNode(ComponentNode):
-    @property
-    def value(self) -> Any:
-        value = self.step_data[self.path or self.key]
-        return value
+    layout_modifier: str = "partners"
 
     @property
     def display_value(self) -> str | list[PartnerValue]:
@@ -372,14 +370,61 @@ class PartnersNode(ComponentNode):
         if self.mode == RenderModes.export:
             return self.value
 
+        # this does not show the object (list of objects/partners) in the (pdf) summary
         assert isinstance(self.value, list)
+        return ""
 
+    def get_children(self) -> Iterator[ComponentNode]:
+        # during exports, treat the entire partners group as a single component/column
+        if self.mode == RenderModes.export:
+            return
+
+        repeats = len(self.value) if self.value else 0
+
+        for node_index in range(repeats):
+            path = f"{self.path}.{self.key}" if self.path else self.key
+
+            yield PartnersGroupNode(
+                step_data=self.step_data,
+                component={
+                    "type": "component_label",
+                    "key": "component_label",
+                    "label": _("{label} {counter}").format(
+                        label=self.component["label"], counter=node_index + 1
+                    ),
+                },
+                renderer=self.renderer,
+                depth=self.depth + 1,
+                group_index=node_index,
+                path=path,
+                parent_node=self,
+            )
+
+
+@dataclass
+class PartnersGroupNode(ComponentNode):
+    group_index: int = 0
+    layout_modifier: str = "partners-group"
+    default_label: str = _("Partner")
+
+    @property
+    def value(self) -> Any:
         # return nothing - we produce "virtual" child components that result in the actual
         # key/value output
         return ""
 
+    def __post_init__(self):
+        self._base_label = self.component.get("groupLabel", self.default_label)
+
+    def apply_to_labels(self, f: Callable[[str], str]) -> None:
+        super().apply_to_labels(f)
+        self._base_label = f(self._base_label)
+
+    @property
+    def label(self) -> str:
+        return f"{self._base_label} {self.group_index + 1}"
+
     def get_children(self) -> Iterator[ComponentNode]:
-        repeats = len(self.value) if self.value else 0
         components: list[Component] = [
             {
                 "type": "bsn",
@@ -408,34 +453,15 @@ class PartnersNode(ComponentNode):
             },
         ]
 
-        for node_index in range(repeats):
-            # the following custom node is the way/workaround to manage to have a type of
-            # label component on the form summary. This may cause problems in the future
-            # in case we introduce a component with the same name.
+        for component in components:
             yield ComponentNode.build_node(
                 step_data=self.step_data,
-                component={
-                    "type": "component_label",
-                    "key": "component_label",
-                    "label": _("{label} {counter}").format(
-                        label=self.component["label"], counter=node_index + 1
-                    ),
-                },
+                component=component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
-                path=f"{self.key}.{node_index}",
+                path=f"{self.path}.{self.group_index}",
                 parent_node=self,
             )
-
-            for component in components:
-                yield ComponentNode.build_node(
-                    step_data=self.step_data,
-                    component=component,
-                    renderer=self.renderer,
-                    depth=self.depth + 1,
-                    path=f"{self.key}.{node_index}",
-                    parent_node=self,
-                )
 
 
 class ChildValue(TypedDict):
@@ -451,6 +477,8 @@ class ChildValue(TypedDict):
 
 @register("children")
 class ChildrenNode(ComponentNode):
+    layout_modifier: str = "children"
+
     @property
     def value(self) -> Any:
         self.component: ChildrenComponent
@@ -474,14 +502,65 @@ class ChildrenNode(ComponentNode):
         if self.mode == RenderModes.export:
             return self.value
 
+        # this does not show the object (list of objects/children) in the (pdf) summary
         assert isinstance(self.value, list)
+        return ""
 
+    def get_children(self) -> Iterator[ComponentNode]:
+        # during exports, treat the entire children group as a single component/column
+        if self.mode == RenderModes.export:
+            return
+
+        repeats = len(self.value) if self.value else 0
+
+        # generate nodes only for the selected children
+        step_data_copy = deepcopy(self.step_data)
+        step_data_copy[self.key] = self.value
+
+        for node_index in range(repeats):
+            path = f"{self.path}.{self.key}" if self.path else self.key
+
+            yield ChildrenGroupNode(
+                step_data=step_data_copy,
+                component={
+                    "type": "component_label",
+                    "key": "component_label",
+                    "label": _("{label} {counter}").format(
+                        label=self.component["label"], counter=node_index + 1
+                    ),
+                },
+                renderer=self.renderer,
+                depth=self.depth + 1,
+                group_index=node_index,
+                path=path,
+                parent_node=self,
+            )
+
+
+@dataclass
+class ChildrenGroupNode(ComponentNode):
+    group_index: int = 0
+    layout_modifier: str = "children-group"
+    default_label: str = _("Child")
+
+    @property
+    def value(self) -> Any:
         # return nothing - we produce "virtual" child components that result in the actual
         # key/value output
         return ""
 
+    def __post_init__(self):
+        self._base_label = self.component.get("groupLabel", self.default_label)
+
+    def apply_to_labels(self, f: Callable[[str], str]) -> None:
+        super().apply_to_labels(f)
+        self._base_label = f(self._base_label)
+
+    @property
+    def label(self) -> str:
+        return f"{self._base_label} {self.group_index + 1}"
+
     def get_children(self) -> Iterator[ComponentNode]:
-        repeats = len(self.value) if self.value else 0
         components: list[Component] = [
             {
                 "type": "bsn",
@@ -500,31 +579,12 @@ class ChildrenNode(ComponentNode):
             },
         ]
 
-        for node_index in range(repeats):
-            # the following custom node is the way/workaround to manage to have a type of
-            # label component on the form summary. This may cause problems in the future
-            # in case we introduce a component with the same name.
+        for component in components:
             yield ComponentNode.build_node(
                 step_data=self.step_data,
-                component={
-                    "type": "component_label",
-                    "key": "component_label",
-                    "label": _("{label} {counter}").format(
-                        label=self.component["label"], counter=node_index + 1
-                    ),
-                },
+                component=component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
-                path=f"{self.key}.{node_index}",
+                path=f"{self.path}.{self.group_index}",
                 parent_node=self,
             )
-
-            for component in components:
-                yield ComponentNode.build_node(
-                    step_data=self.step_data,
-                    component=component,
-                    renderer=self.renderer,
-                    depth=self.depth + 1,
-                    path=f"{self.key}.{node_index}",
-                    parent_node=self,
-                )
