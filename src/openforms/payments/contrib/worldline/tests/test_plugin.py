@@ -990,3 +990,87 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         self.assertEqual(payment.status, PaymentStatus.completed)
         self.assertNotEqual(payment.provider_payment_id, "")
         self.assertEqual(submission.payment_user_has_paid, True)
+
+    def test_custom_descriptor_allowed_characters(self):
+        merchant = WorldlineMerchantFactory.create(
+            pspid=PSPID,
+            api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
+            api_secret=os.getenv("WORLDLINE_API_SECRET", "placeholder_api_secret"),
+        )
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__slug="myform",
+            form__payment_backend="worldline",
+            form__payment_backend_options={
+                "merchant": merchant.pspid,
+                "descriptor_template": "1a-*_^~` {{ public_reference }}",
+            },
+            form__product__price=Decimal("11.35"),
+            form_url="http://foo.bar",
+        )
+
+        assert submission.payment_required
+        assert not submission.payment_user_has_paid
+
+        plugin = register["worldline"]
+        # we need an arbitrary request
+        request = factory.get("/foo")
+        # start url
+        url = plugin.get_start_url(request, submission)
+
+        # good
+        response = self.app.post(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        data = response.json
+        self.assertEqual(data["type"], "get")
+        self.assertEqual(data["data"], {})
+        self.assertTrue(data["url"].startswith(merchant.endpoint))
+
+        payment = submission.payments.get()
+        self.assertEqual(payment.plugin_id, "worldline")
+        self.assertEqual(payment.status, PaymentStatus.started)
+
+        with self.subTest(
+            "Parse the payment URL from within the initial Worldline page"
+        ):
+            response = requests.get(data["url"])
+            soup = BeautifulSoup(response.content, features="lxml")
+            form = soup.select_one("form[name=redirectForm]")
+
+            self.assertIsInstance(form, Tag)
+
+            payment_url = form.attrs["action"]  # pyright: ignore[reportOptionalMemberAccess]
+            # trigger the payment
+            requests.get(
+                payment_url,
+                {
+                    "ec": "",
+                    "trxid": 0,
+                },
+            )
+
+            # we need another arbitrary request
+            request = factory.get("/foo")
+            redirect_url = "{redirect_url}?{query_params}".format(
+                redirect_url=plugin.get_return_url(request, payment),
+                query_params=urlencode(
+                    {
+                        "RETURNMAC": payment.plugin_options["_checkoutDetails"][
+                            "RETURNMAC"
+                        ],
+                        "hostedCheckoutId": payment.plugin_options["_checkoutDetails"][
+                            "hostedCheckoutId"
+                        ],
+                    },
+                    doseq=True,
+                ),
+            )
+
+        response = self.app.get(redirect_url)
+
+        submission.refresh_from_db()
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.completed)
+        self.assertEqual(submission.payment_user_has_paid, True)
