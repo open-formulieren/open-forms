@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-23 15:22+0200\n"
+"POT-Creation-Date: 2025-09-30 09:52+0200\n"
 "PO-Revision-Date: 2025-09-15 16:01+0200\n"
 "Last-Translator:   <sonny@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -1123,7 +1123,7 @@ msgstr "Ongeldig antwoord: {exception}"
 #: openforms/forms/api/serializers/logic/action_serializers.py:127
 #: openforms/forms/api/serializers/logic/action_serializers.py:164
 #: openforms/payments/contrib/ogone/plugin.py:246
-#: openforms/payments/contrib/worldline/plugin.py:474
+#: openforms/payments/contrib/worldline/plugin.py:473
 #: openforms/prefill/contrib/haalcentraal_brp/plugin.py:186
 #: openforms/prefill/contrib/kvk/plugin.py:134
 #: openforms/prefill/contrib/stufbg/plugin.py:220
@@ -2138,7 +2138,7 @@ msgstr "Authenticatiedetails"
 #: openforms/authentication/models.py:414 openforms/emails/constants.py:16
 #: openforms/formio/api/serializers.py:33
 #: openforms/payments/contrib/ogone/plugin.py:96
-#: openforms/payments/contrib/worldline/plugin.py:110
+#: openforms/payments/contrib/worldline/plugin.py:109
 #: openforms/submissions/api/serializers.py:595
 msgid "Submission"
 msgstr "Inzending"
@@ -5185,6 +5185,7 @@ msgstr ""
 "{form_ids}. Selecteer een nieuwe merchant voor deze formulieren."
 
 #: openforms/forms/admin/views.py:235
+#, python-brace-format
 msgid "{success_count} forms were migrated."
 msgstr "{success_count} formulieren zijn gemigreerd."
 
@@ -7279,46 +7280,46 @@ msgstr "Kaping"
 msgid "Submission lifecycle"
 msgstr "Inzendingslevenscyclus"
 
-#: openforms/logging/models.py:58
+#: openforms/logging/models.py:55
 msgid "timeline log entry"
 msgstr "tijdlijn logboekvermelding"
 
-#: openforms/logging/models.py:59
+#: openforms/logging/models.py:56
 msgid "timeline log entries"
 msgstr "tijdlijn logboekvermeldingen "
 
-#: openforms/logging/models.py:88
+#: openforms/logging/models.py:85
 #, python-brace-format
 msgid "Staff user {user}"
 msgstr "Beheerder {user}"
 
-#: openforms/logging/models.py:93
+#: openforms/logging/models.py:90
 #, python-brace-format
 msgid "Authenticated via plugin {auth}"
 msgstr "Geauthenticeerd via plugin {auth}"
 
-#: openforms/logging/models.py:94
+#: openforms/logging/models.py:91
 msgid "Anonymous user"
 msgstr "Anonieme gebruiker"
 
-#: openforms/logging/models.py:121 openforms/logging/models.py:157
-#: openforms/logging/models.py:166
+#: openforms/logging/models.py:118 openforms/logging/models.py:154
+#: openforms/logging/models.py:163
 msgid "(unknown)"
 msgstr "(onbekend)"
 
-#: openforms/logging/models.py:187
+#: openforms/logging/models.py:184
 msgid "content object"
 msgstr "object"
 
-#: openforms/logging/models.py:194
+#: openforms/logging/models.py:191
 msgid "message"
 msgstr "bericht"
 
-#: openforms/logging/models.py:220
+#: openforms/logging/models.py:217
 msgid "avg timeline log entry"
 msgstr "AVG logboekvermelding"
 
-#: openforms/logging/models.py:221
+#: openforms/logging/models.py:218
 msgid "avg timeline log entries"
 msgstr "AVG logboekvermeldingen "
 
@@ -8122,8 +8123,7 @@ msgid ""
 "particular process or form. You can include all form variables (using their "
 "keys) and the 'public_reference' variable (using expression "
 "'{{ public_reference }}'). If unspecified, a default description is used. "
-"Note that the length of the result is capped to 32 characters and only alpha-"
-"numeric characters are allowed."
+"Note that the length of the result is capped to 32 characters."
 msgstr ""
 "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij "
 "Worldline kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te "
@@ -8131,22 +8131,21 @@ msgstr ""
 "variabelesleutel als naam) en de 'public_reference' sjabloonvariabele "
 "(gebruik de expressie '{{ public_reference }}'). Indien geen sjabloon "
 "opgegeven is, dan wordt een standaardomschrijving gebruikt. Merk op dat het "
-"resultaat op 32 karakters afgekapt wordt en enkel alfanumerieke tekens "
-"toegestaan zijn."
+"resultaat op 32 karakters afgekapt wordt."
 
-#: openforms/payments/contrib/worldline/plugin.py:149
+#: openforms/payments/contrib/worldline/plugin.py:148
 msgid "Wordline"
 msgstr "Wordline"
 
-#: openforms/payments/contrib/worldline/plugin.py:370
+#: openforms/payments/contrib/worldline/plugin.py:369
 msgid "Unknown webhook event encountered"
 msgstr "Onbekend webhook-event tegengekomen"
 
-#: openforms/payments/contrib/worldline/plugin.py:438
+#: openforms/payments/contrib/worldline/plugin.py:437
 msgid "Add merchant"
 msgstr "Merchant toevoegen"
 
-#: openforms/payments/contrib/worldline/plugin.py:454
+#: openforms/payments/contrib/worldline/plugin.py:453
 msgid "Configure webhooks"
 msgstr "Webhooks instellen"
 
