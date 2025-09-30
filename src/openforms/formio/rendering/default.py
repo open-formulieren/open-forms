@@ -6,12 +6,12 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils.html import format_html_join
 from django.utils.safestring import SafeString, mark_safe
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from furl import furl
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
-from openforms.formio.typing import ChildrenComponent, Component
+from openforms.formio.typing import Component
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.utils.urls import build_absolute_uri
 
@@ -361,10 +361,7 @@ class PartnerValue(TypedDict):
 
 @register("partners")
 class PartnersNode(ComponentNode):
-    @property
-    def value(self) -> Any:
-        value = self.step_data[self.path or self.key]
-        return value
+    layout_modifier: str = "editgrid"  # apply similar styling to edit grid
 
     @property
     def display_value(self) -> str | list[PartnerValue]:
@@ -372,70 +369,93 @@ class PartnersNode(ComponentNode):
         if self.mode == RenderModes.export:
             return self.value
 
+        # this does not show the object (list of objects/partners) in the (pdf) summary
         assert isinstance(self.value, list)
+        return ""
 
+    def get_children(self) -> Iterator[ComponentNode]:
+        # during exports, treat the entire partners group as a single component/column
+        if self.mode == RenderModes.export:
+            return
+
+        repeats = len(self.value) if self.value else 0
+
+        for node_index in range(repeats):
+            path = f"{self.path}.{self.key}" if self.path else self.key
+
+            yield PartnersGroupNode(
+                step_data=self.step_data,
+                component=self.component,
+                renderer=self.renderer,
+                depth=self.depth + 1,
+                group_index=node_index,
+                path=path,
+                parent_node=self,
+            )
+
+
+@dataclass
+class PartnersGroupNode(ComponentNode):
+    group_index: int = 0
+    layout_modifier: str = "editgrid-group"  # apply similar styling to edit grid
+
+    @property
+    def value(self) -> Any:
         # return nothing - we produce "virtual" child components that result in the actual
         # key/value output
         return ""
 
+    def __post_init__(self):
+        # XXX: groupLabel is currently not (yet) an option in the formio-builder/types.
+        # This mimicks the interface of edit grid.
+        self._base_label = self.component.get("groupLabel") or _("Partner")
+
+    def apply_to_labels(self, f: Callable[[str], str]) -> None:
+        super().apply_to_labels(f)
+        self._base_label = f(self._base_label)
+
+    @property
+    def label(self) -> str:
+        return f"{self._base_label} {self.group_index + 1}"
+
     def get_children(self) -> Iterator[ComponentNode]:
-        repeats = len(self.value) if self.value else 0
         components: list[Component] = [
             {
                 "type": "bsn",
                 "key": "bsn",
-                "label": _("BSN"),
+                "label": gettext("BSN"),
             },
             {
                 "type": "textfield",
                 "key": "initials",
-                "label": _("Initials"),
+                "label": gettext("Initials"),
             },
             {
                 "type": "textfield",
                 "key": "affixes",
-                "label": _("Affixes"),
+                "label": gettext("Affixes"),
             },
             {
                 "type": "textfield",
                 "key": "lastName",
-                "label": _("Lastname"),
+                "label": gettext("Lastname"),
             },
             {
                 "type": "date",
                 "key": "dateOfBirth",
-                "label": _("Date of birth"),
+                "label": gettext("Date of birth"),
             },
         ]
 
-        for node_index in range(repeats):
-            # the following custom node is the way/workaround to manage to have a type of
-            # label component on the form summary. This may cause problems in the future
-            # in case we introduce a component with the same name.
+        for component in components:
             yield ComponentNode.build_node(
                 step_data=self.step_data,
-                component={
-                    "type": "component_label",
-                    "key": "component_label",
-                    "label": _("{label} {counter}").format(
-                        label=self.component["label"], counter=node_index + 1
-                    ),
-                },
+                component=component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
-                path=f"{self.key}.{node_index}",
+                path=f"{self.path}.{self.group_index}",
                 parent_node=self,
             )
-
-            for component in components:
-                yield ComponentNode.build_node(
-                    step_data=self.step_data,
-                    component=component,
-                    renderer=self.renderer,
-                    depth=self.depth + 1,
-                    path=f"{self.key}.{node_index}",
-                    parent_node=self,
-                )
 
 
 class ChildValue(TypedDict):
@@ -451,22 +471,19 @@ class ChildValue(TypedDict):
 
 @register("children")
 class ChildrenNode(ComponentNode):
+    layout_modifier: str = "editgrid"  # apply similar styling to edit grid
+
     @property
     def value(self) -> Any:
-        self.component: ChildrenComponent
-        value = self.step_data[self.path or self.key]
+        value = super().value
+        if value is None:
+            return None
         assert isinstance(value, list)
-
-        if not self.component.get("enableSelection"):
-            return value
-
-        selected_children = []
-        for child in value:
-            assert isinstance(child, dict)
-            if child.get("selected"):
-                selected_children.append(child)
-
-        return selected_children
+        selection_enabled = bool(self.component.get("enableSelection"))
+        selected_children = (
+            child for child in value if (not selection_enabled or child.get("selected"))
+        )
+        return list(selected_children)
 
     @property
     def display_value(self) -> str | list[ChildValue]:
@@ -474,57 +491,89 @@ class ChildrenNode(ComponentNode):
         if self.mode == RenderModes.export:
             return self.value
 
+        # this does not show the object (list of objects/children) in the (pdf) summary
         assert isinstance(self.value, list)
+        return ""
 
+    def get_children(self) -> Iterator[ComponentNode]:
+        # during exports, treat the entire children group as a single component/column
+        if self.mode == RenderModes.export:
+            return
+
+        # loop over the raw values, but only keep the selected values from self.value
+        raw_value = super().value or []
+        value = self.value or []
+
+        label_index: int = 0
+        for node_index, item in enumerate(raw_value):
+            # skip over de-selected children
+            if item not in value:
+                continue
+
+            path = f"{self.path}.{self.key}" if self.path else self.key
+            yield ChildrenGroupNode(
+                step_data=self.step_data,
+                component=self.component,
+                renderer=self.renderer,
+                depth=self.depth + 1,
+                group_index=node_index,
+                label_index=label_index,
+                path=path,
+                parent_node=self,
+            )
+            label_index += 1
+
+
+@dataclass
+class ChildrenGroupNode(ComponentNode):
+    group_index: int = 0
+    label_index: int = 0
+    layout_modifier: str = "editgrid-group"  # apply similar styling to edit grid
+
+    @property
+    def value(self) -> Any:
         # return nothing - we produce "virtual" child components that result in the actual
         # key/value output
         return ""
 
+    def __post_init__(self):
+        # XXX: groupLabel is currently not (yet) an option in the formio-builder/types.
+        # This mimicks the interface of edit grid.
+        self._base_label = self.component.get("groupLabel") or _("Child")
+
+    def apply_to_labels(self, f: Callable[[str], str]) -> None:
+        super().apply_to_labels(f)
+        self._base_label = f(self._base_label)
+
+    @property
+    def label(self) -> str:
+        return f"{self._base_label} {self.label_index + 1}"
+
     def get_children(self) -> Iterator[ComponentNode]:
-        repeats = len(self.value) if self.value else 0
         components: list[Component] = [
             {
                 "type": "bsn",
                 "key": "bsn",
-                "label": _("BSN"),
+                "label": gettext("BSN"),
             },
             {
                 "type": "textfield",
                 "key": "firstNames",
-                "label": _("Firstnames"),
+                "label": gettext("Firstnames"),
             },
             {
                 "type": "date",
                 "key": "dateOfBirth",
-                "label": _("Date of birth"),
+                "label": gettext("Date of birth"),
             },
         ]
 
-        for node_index in range(repeats):
-            # the following custom node is the way/workaround to manage to have a type of
-            # label component on the form summary. This may cause problems in the future
-            # in case we introduce a component with the same name.
+        for component in components:
             yield ComponentNode.build_node(
                 step_data=self.step_data,
-                component={
-                    "type": "component_label",
-                    "key": "component_label",
-                    "label": _("{label} {counter}").format(
-                        label=self.component["label"], counter=node_index + 1
-                    ),
-                },
+                component=component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
-                path=f"{self.key}.{node_index}",
+                path=f"{self.path}.{self.group_index}",
                 parent_node=self,
             )
-
-            for component in components:
-                yield ComponentNode.build_node(
-                    step_data=self.step_data,
-                    component=component,
-                    renderer=self.renderer,
-                    depth=self.depth + 1,
-                    path=f"{self.key}.{node_index}",
-                    parent_node=self,
-                )
