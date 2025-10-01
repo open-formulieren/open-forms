@@ -271,10 +271,25 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         new_configuration = evaluate_form_logic(instance.submission, instance)
         # update the config for serialization
         instance.form_step.form_definition.configuration = new_configuration
+
         representation = super().to_representation(instance)
 
-        if self.context.get("unsaved_data_only", False):
-            representation["data"] = instance.unsaved_data
+        # Serialize the data to JSON. We can't use a generic JSON encoder here, because
+        # we need context from the variable
+        data = (
+            instance.unsaved_data
+            if self.context.get("unsaved_data_only", False)
+            else instance.data
+        )
+        serialized_data = FormioData()
+        state = instance.submission.load_submission_value_variables_state()
+        variables = state.get_variables_in_submission_step(instance)
+        for key, variable in variables.items():
+            if key not in data:
+                continue
+            serialized_data[key] = variable.to_json(data[key])
+
+        representation["data"] = serialized_data.data
 
         return representation
 

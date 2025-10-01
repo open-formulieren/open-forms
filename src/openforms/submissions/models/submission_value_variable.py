@@ -22,7 +22,13 @@ from openforms.formio.utils import (
     iter_components,
 )
 from openforms.forms.models.form_variable import FormVariable
-from openforms.typing import JSONEncodable, JSONObject, JSONSerializable, VariableValue
+from openforms.typing import (
+    JSONEncodable,
+    JSONObject,
+    JSONSerializable,
+    JSONValue,
+    VariableValue,
+)
 from openforms.utils.date import format_date_value, parse_datetime, parse_time
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.service import VariablesRegistry, get_static_variables
@@ -417,10 +423,96 @@ class SubmissionValueVariable(models.Model):
     def __str__(self):
         return _("Submission value variable {key}").format(key=self.key)
 
+    def save(self, *args, **kwargs):
+        self.value = self.to_json(self.value)
+        super().save(*args, **kwargs)
+
+    def to_json(self, value: VariableValue | object = empty) -> JSONValue:
+        """
+        Serialize a value into the JSON type, using the data type information.
+
+        :param value: Variable value to serialize. If empty, ``self.value`` is used.
+        """
+        if value is empty:
+            value = self.value
+
+        if not self.data_subtype:
+            return self._value_to_json(value, self.data_type, self.configuration)
+        else:
+            assert self.data_type == FormVariableDataTypes.array
+            return [
+                self._value_to_json(v, self.data_subtype, self.configuration)
+                for v in value
+            ]
+
+    def _value_to_json(
+        self,
+        value: VariableValue,
+        data_type: str,
+        configuration: Component | None = None,
+    ) -> VariableValue:
+        if data_type in (
+            FormVariableDataTypes.string,
+            FormVariableDataTypes.boolean,
+            FormVariableDataTypes.object,
+            FormVariableDataTypes.int,
+            FormVariableDataTypes.float,
+            FormVariableDataTypes.array,
+        ):
+            return value
+
+        if data_type in (
+            FormVariableDataTypes.date,
+            FormVariableDataTypes.time,
+            FormVariableDataTypes.datetime,
+        ):
+            if isinstance(value, str):
+                return value
+            if value is None:
+                return ""
+            return value.isoformat()
+
+        if value and data_type == FormVariableDataTypes.partners:
+            value["dateOfBirth"] = self._value_to_json(
+                value["dateOfBirth"], FormVariableDataTypes.date
+            )
+            return value
+
+        if value and data_type == FormVariableDataTypes.children:
+            value["dateOfBirth"] = self._value_to_json(
+                value["dateOfBirth"], FormVariableDataTypes.date
+            )
+            return value
+
+        if value and data_type == FormVariableDataTypes.editgrid:
+            value = FormioData(value)
+            for child_component in iter_components(configuration):
+                child_key = child_component["key"]
+                if (child_value := value.get(child_key, empty)) is empty:
+                    continue
+
+                data_type = get_component_datatype(child_component)
+                data_subtype = get_component_data_subtype(child_component)
+
+                if not data_subtype:
+                    value[child_key] = self._value_to_json(
+                        child_value, data_type, child_component
+                    )
+                else:
+                    assert data_type == FormVariableDataTypes.array
+                    value[child_key] = [
+                        self._value_to_json(v, data_subtype, child_component)
+                        for v in child_value
+                    ]
+
+            return value.data
+
+        return value
+
     def to_python(self, value: VariableValue | object = empty) -> VariableValue:
         """
         Deserialize a value into the appropriate python type, using the data type
-        information from the related form variable.
+        information.
 
         TODO: for dates/datetimes, we rely on our django settings for timezone
         information, however - formio submission does send the user's configured
@@ -451,6 +543,9 @@ class SubmissionValueVariable(models.Model):
         data_type: str,
         configuration: Component | None = None,
     ) -> VariableValue:
+        if value is None:
+            return None
+
         if data_type in (
             FormVariableDataTypes.string,
             FormVariableDataTypes.boolean,
@@ -461,7 +556,10 @@ class SubmissionValueVariable(models.Model):
         ):
             return value
 
-        if value and data_type == FormVariableDataTypes.date:
+        if data_type == FormVariableDataTypes.date:
+            if value == "":
+                return None
+
             if isinstance(value, date):
                 return value
             formatted_date = format_date_value(value)
@@ -478,7 +576,10 @@ class SubmissionValueVariable(models.Model):
                 return maybe_naive_datetime.date()
             return timezone.make_aware(maybe_naive_datetime).date()
 
-        if value and data_type == FormVariableDataTypes.datetime:
+        if data_type == FormVariableDataTypes.datetime:
+            if value == "":
+                return None
+
             if isinstance(value, datetime):
                 return value
             maybe_naive_datetime = parse_datetime(value)
@@ -489,7 +590,10 @@ class SubmissionValueVariable(models.Model):
                 return maybe_naive_datetime
             return timezone.make_aware(maybe_naive_datetime)
 
-        if value and data_type == FormVariableDataTypes.time:
+        if data_type == FormVariableDataTypes.time:
+            if value == "":
+                return None
+
             if isinstance(value, time):
                 return value
             return parse_time(value)
