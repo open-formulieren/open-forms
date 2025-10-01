@@ -19,6 +19,7 @@ from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
+from ...exceptions import PrefillSkippedException
 from ...registry import register
 from .constants import AttributesV1, AttributesV2
 
@@ -117,7 +118,7 @@ class HaalCentraalPrefill(BasePlugin):
         try:
             client = get_brp_client(submission=submission)
         except NoServiceConfigured:
-            return {}
+            raise PrefillSkippedException()
 
         if not (bsn_value := cls.get_identifier_value(submission, identifier_role)):
             logger.info(
@@ -125,7 +126,7 @@ class HaalCentraalPrefill(BasePlugin):
                 submission_uuid=str(submission.uuid),
                 plugin=cls,
             )
-            return {}
+            raise PrefillSkippedException()
 
         with client:
             return cls._get_values_for_bsn(client, bsn_value, attributes)
