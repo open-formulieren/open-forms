@@ -177,7 +177,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         "betrokkeneIdentificatie.voorvoegselGeslachtsnaam": RegistrationAttribute.initiator_tussenvoegsel,
         "betrokkeneIdentificatie.geboortedatum": FieldConf(
             RegistrationAttribute.initiator_geboortedatum,
-            transform=lambda date: date.isoformat(),
+            transform=lambda date: date.isoformat() if date else "",
         ),
         "betrokkeneIdentificatie.geslachtsaanduiding": FieldConf(
             RegistrationAttribute.initiator_geslachtsaanduiding,

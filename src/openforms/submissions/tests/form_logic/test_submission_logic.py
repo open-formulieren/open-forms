@@ -1075,7 +1075,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         # Note that this doesn't make the problem go away 100% - you will get an
         # additional check if the minute value changes, but that should settle after one
         # extra logic check.
-        self.assertEqual(new_value, "2024-03-18T07:31:00Z")
+        self.assertEqual(new_value, "2024-03-18T07:31:00+00:00")
 
     def test_component_value_set_to_today(self):
         form = FormFactory.create(

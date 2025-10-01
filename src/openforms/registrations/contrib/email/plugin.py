@@ -84,7 +84,7 @@ class EmailRegistration(BasePlugin[Options]):
 
                     # do not validate that the values are emails, if they're wrong values,
                     # we want to see this in error monitoring.
-                    recipients = variable_value
+                    recipients = variable_value  # pyright: ignore[reportAssignmentType]
                     log.info("recipients_resolved", recipients=recipients)
 
         return recipients
