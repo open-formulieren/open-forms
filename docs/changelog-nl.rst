@@ -49,23 +49,38 @@ Om naar 3.3.0 te upgraden, let dan op:
 
 .. warning:: Plan de upgrade in in daluren. Sommige database migraties zullen volledige
    tabellen locken en/of kunnen een lange tijd in beslag nemen afhankelijk van de hoeveelheid aan data.
-   Sommige benchmarks waarbij een miljoen rijen in de inzendingen variabele tabel (~ 120k inzendingen)
-   aanwezig zijn toonde een migrate tijd van ongeveer 20 seconden. Een migratie tijdslot van
-   ongeveer 10 seconden - 5 minuten is te verwachten afhankelijk van de hoeveelheid aanwezige data
-   en de beschikbare middelen voor de database.
+   Er zijn verschillende benchmarks uitgevoerd om een idee te krijgen van de duur.
+
+   ============================================================= ============== ========
+   Resource(s)                                                   Aantal records Duur
+   ============================================================= ============== ========
+   Emailberichten + logs                                          50.000         ~30s
+   Inzendingen, inzendingsvariabelen                              150.000        ~2s
+   Inzendingen, inzendingsvariabelen                              13.600.000     ~10min
+   Authenticatie-infos                                            1.500          ~0,1s
+   Authenticatie-infos                                            230.000        ~2s
+   ============================================================= ============== ========
 
 .. warning::
 
-   In deze release, hebben we de interne data type informatie herzien. Om te verzekeren
-   dat de data van de huidige inzendingen op een correcte manier zijn geformatteerd, zullen de
-   ingezonden variabelen verwerkt worden. We hebben hiervoor een apart script toegevoegd inplaats
-   van een data migratie, zodat het apart uitgevoerd kan worden, omdat het tot een uur kan duren
-   voordat de operatie voltooid kan worden voor grotere omgevingen.
+   In deze release, hebben we de interne datatype-informatie herzien. Om te borgen
+   dat de invoergegevens van bestaande inzendingen correct weergegeven worden, moeten de
+   overeenkomstige variabelen bijgewerkt worden. We hebben hiervoor een los script voorzien,
+   zodat het apart uitgevoerd kan worden. Op grote omgevingen kan de uitvoering van dit script
+   lang duren.
 
    .. code-block:: bash
 
        # in de container via ``docker exec`` of ``kubectl exec``:
        python /app/bin/fix_submission_value_variable_missing_fields.py
+
+    Zie onze benchmarks om een indicatie te krijgen van de doorlooptijd:
+
+    ====================== ========
+    Aantal inzendingen     Duur
+    ====================== ========
+    7.000                  3,5min
+    ====================== ========
 
 .. warning::
 
