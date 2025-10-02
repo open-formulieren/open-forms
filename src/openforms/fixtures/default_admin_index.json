@@ -160,6 +160,10 @@
             ],
             [
                 "config",
+                "mapwfstilelayer"
+            ],
+            [
+                "config",
                 "mapwmstilelayer"
             ],
             [
