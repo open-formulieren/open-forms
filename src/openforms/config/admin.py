@@ -14,11 +14,12 @@ from .models import (
     CSPSetting,
     GlobalConfiguration,
     MapTileLayer,
+    MapWFSTileLayer,
     MapWMSTileLayer,
     RichTextColor,
     Theme,
 )
-from .resources import MapWMSTileLayerResource
+from .resources import MapWFSTileLayerResource, MapWMSTileLayerResource
 
 
 @admin.register(GlobalConfiguration)
@@ -262,6 +263,15 @@ class MapWMSTileLayerAdmin(ImportExportModelAdmin):
 
     # Import and export options:
     resource_classes = (MapWMSTileLayerResource,)
+
+
+@admin.register(MapWFSTileLayer)
+class MapWFSTileLayerAdmin(ImportExportModelAdmin):
+    list_display = ("name", "url", "uuid")
+    search_fields = ("name", "uuid")
+
+    # Import and export options:
+    resource_classes = (MapWFSTileLayerResource,)
 
 
 @admin.register(CSPSetting)
