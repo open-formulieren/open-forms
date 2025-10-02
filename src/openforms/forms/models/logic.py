@@ -91,3 +91,8 @@ class FormLogic(OrderedModel):
 
             action.rule = self
             yield action
+
+    @property
+    def components_in_hidden_actions(self) -> set[str]:
+        """Set of components for which an action changes the "hidden" property."""
+        return {action.component for action in self.hidden_actions}

@@ -124,7 +124,9 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         component: ComponentT,
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
+        *,
         parent_hidden: bool,
+        ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
     ) -> None:
         """
