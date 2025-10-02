@@ -1,8 +1,7 @@
 import re
-from collections.abc import Mapping
 from copy import deepcopy
 from datetime import datetime
-from typing import Protocol
+from typing import Protocol, cast
 
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.utils import timezone
@@ -21,7 +20,12 @@ from openforms.api.geojson import (
 )
 from openforms.authentication.service import AuthAttribute
 from openforms.config.constants import FamilyMembersDataAPIChoices
-from openforms.config.models import GlobalConfiguration, MapTileLayer, MapWMSTileLayer
+from openforms.config.models import (
+    GlobalConfiguration,
+    MapTileLayer,
+    MapWFSTileLayer,
+    MapWMSTileLayer,
+)
 from openforms.formio.typing.map import Overlay
 from openforms.forms.models import FormVariable
 from openforms.prefill.contrib.family_members.plugin import (
@@ -254,21 +258,32 @@ class Map(BasePlugin[MapComponent]):
 
         if overlays := component.get("overlays", []):
             # inject the map layer URLs for the SDK
-            wms_uuids = (
+            def get_layers(
+                model: type[MapWMSTileLayer | MapWFSTileLayer], uuids: list[str]
+            ) -> dict[str, str]:
+                return {
+                    str(uuid): str(url)
+                    for (uuid, url) in model.objects.filter(uuid__in=uuids).values_list(
+                        "uuid", "url"
+                    )
+                }
+
+            wms_uuids = [
                 overlay["uuid"] for overlay in overlays if overlay["type"] == "wms"
-            )
-            wms_layers: Mapping[str, str] = {
-                str(uuid): str(url)
-                for (uuid, url) in MapWMSTileLayer.objects.filter(
-                    uuid__in=wms_uuids
-                ).values_list("uuid", "url")
+            ]
+            wfs_uuids = [
+                overlay["uuid"] for overlay in overlays if overlay["type"] == "wfs"
+            ]
+
+            all_layers = {
+                **get_layers(MapWMSTileLayer, wms_uuids),
+                **get_layers(MapWFSTileLayer, wfs_uuids),
             }
 
             updated_overlays: list[Overlay] = [
-                {**overlay, "url": wms_layer_url}
+                cast(Overlay, {**overlay, "url": all_layers[overlay["uuid"]]})
                 for overlay in overlays
-                # only keep overlays that don't have stale UUID references
-                if (wms_layer_url := wms_layers.get(overlay["uuid"]))
+                if overlay["uuid"] in all_layers
             ]
 
             component["overlays"] = updated_overlays

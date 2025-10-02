@@ -31,3 +31,11 @@ class MapWMSTileLayerFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = "config.MapWMSTileLayer"
+
+
+class MapWFSTileLayerFactory(factory.django.DjangoModelFactory):
+    url = factory.Sequence(lambda n: f"http://example-{n}.com")
+    name = factory.Faker("word")
+
+    class Meta:
+        model = "config.MapWFSTileLayer"
