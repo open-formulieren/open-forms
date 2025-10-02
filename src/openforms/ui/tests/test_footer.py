@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
 
@@ -21,7 +22,7 @@ class FooterTest(WebTest):
         self.assertEqual(200, response.status_code)
 
         footer_node = response.html.find("footer")
-        link_node = footer_node.find("a")
+        link_node = footer_node.find("a", text=_("Privacy policy"))
 
         self.assertIsNotNone(link_node)
         self.assertEqual(link_node.attrs["href"], "http://example-policy.com")
