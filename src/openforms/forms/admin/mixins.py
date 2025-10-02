@@ -8,6 +8,7 @@ from openforms.config.constants import UploadFileType
 from openforms.config.models import (
     GlobalConfiguration,
     MapTileLayer,
+    MapWFSTileLayer,
     MapWMSTileLayer,
     RichTextColor,
 )
@@ -26,8 +27,12 @@ def get_map_tile_layers():
     return list(MapTileLayer.objects.values("identifier", "url", "label"))
 
 
-def get_wms_layers():
+def get_map_wms_layers():
     return list(MapWMSTileLayer.objects.values("uuid", "name", "url"))
+
+
+def get_map_wfs_layers():
+    return list(MapWFSTileLayer.objects.values("uuid", "name", "url"))
 
 
 class FormioConfigMixin:
@@ -40,7 +45,8 @@ class FormioConfigMixin:
                 "required_default": config.form_fields_required_default,
                 "rich_text_colors": get_rich_text_colors(),
                 "map_tile_layers": get_map_tile_layers(),
-                "wms_layers": get_wms_layers(),
+                "map_wms_layers": get_map_wms_layers(),
+                "map_wfs_layers": get_map_wfs_layers(),
                 "upload_filetypes": [
                     {"label": label, "value": value}
                     for value, label in UploadFileType.choices
