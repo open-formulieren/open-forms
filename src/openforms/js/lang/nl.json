@@ -1899,7 +1899,7 @@
     "originalDefault": "Include deceased"
   },
   "UZk0+O": {
-    "defaultMessage": "Children roltype",
+    "defaultMessage": "Kinderen-roltype",
     "description": "ZGW-APIs registration options 'childrenRoltype' label",
     "originalDefault": "Children roltype"
   },
@@ -3135,7 +3135,7 @@
     "originalDefault": "Value"
   },
   "pbA2dt": {
-    "defaultMessage": "The description that will be used in children registration.",
+    "defaultMessage": "De omschrijving die gebruikt wordt voor het registreren van kinderen (als betrokkene).",
     "description": "ZGW APIs registration options 'childrenDescription' help text",
     "originalDefault": "The description that will be used in children registration."
   },
@@ -3326,7 +3326,7 @@
     "originalDefault": "Identifier variable (BSN)"
   },
   "t+B+/4": {
-    "defaultMessage": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with children.",
+    "defaultMessage": "Omschrijving van het ROLTYPE voor de registratie van de kinderen (als betrokkene) van de burger die het formulier invult.",
     "description": "ZGW-APIs registration options 'childrenRoltype' help text",
     "originalDefault": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with children."
   },
@@ -3635,7 +3635,7 @@
     "originalDefault": "(unset)"
   },
   "ydnh2t": {
-    "defaultMessage": "Children description",
+    "defaultMessage": "Kinderen-omschrijving",
     "description": "ZGW APIs registration options 'childrenDescription' label",
     "originalDefault": "Children description"
   },

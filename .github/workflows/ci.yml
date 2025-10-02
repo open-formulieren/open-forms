@@ -456,7 +456,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        start: ['3.0.1']
+        start: ['3.2.4']
 
     steps:
       - uses: actions/checkout@v4
@@ -483,7 +483,7 @@ jobs:
           docker compose run -e RELEASE=${RELEASE} web \
             /app/bin/test_fix_scripts.sh
         env:
-          RELEASE: '3.3.0-alpha.1'
+          RELEASE: '3.3.0'
           # ensure local image gets used
           TAG: ${{ needs.docker_build_setup.outputs.version }}
 
