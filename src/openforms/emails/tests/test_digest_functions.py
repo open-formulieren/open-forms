@@ -16,7 +16,10 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration
-from openforms.config.tests.factories import MapWMSTileLayerFactory
+from openforms.config.tests.factories import (
+    MapWFSTileLayerFactory,
+    MapWMSTileLayerFactory,
+)
 from openforms.contrib.brk.models import BRKConfig
 from openforms.contrib.brk.tests.base import BRK_SERVICE, INVALID_BRK_SERVICE
 from openforms.contrib.haal_centraal.constants import BRPVersions
@@ -1743,8 +1746,14 @@ class ReferencelistExpiredDataTests(TestCase):
 
 
 class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
-    v111_EXAMPLE = "https://schemas.opengis.net/wms/1.1.1/capabilities_1_1_1.xml"
-    v130_EXAMPLE = "https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?request=GetCapabilities&service=WMS"
+    VCR_TEST_FILES = TEST_FILES
+
+    WMS_v111_EXAMPLE = "https://schemas.opengis.net/wms/1.1.1/capabilities_1_1_1.xml"
+    WMS_v130_EXAMPLE = "https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?request=GetCapabilities&service=WMS"
+    WFS_v110_EXAMPLE = (
+        "https://schemas.opengis.net/wfs/1.1.0/examples/WFS_Capabilities_Sample.xml"
+    )
+    WFS_v200_EXAMPLE = "https://service.pdok.nl/rws/nwbwegen/wfs/v1_0?request=GetCapabilities&service=WFS"
 
     def test_valid_map_component_without_overlays(self):
         FormFactory.create(
@@ -1770,8 +1779,8 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
         self.assertEqual(len(invalid_map_component_overlays), 0)
 
     def test_valid_map_component_with_wms_overlays(self):
-        v130_wms_layer = MapWMSTileLayerFactory.create(url=self.v130_EXAMPLE)
-        v110_wms_layer = MapWMSTileLayerFactory.create(url=self.v111_EXAMPLE)
+        v130_wms_layer = MapWMSTileLayerFactory.create(url=self.WMS_v130_EXAMPLE)
+        v110_wms_layer = MapWMSTileLayerFactory.create(url=self.WMS_v111_EXAMPLE)
         FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
@@ -1909,8 +1918,8 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
             invalid_map_component_overlays[0],
         )
 
-    def test_invalid_map_component_with_multiple_unknown_overlays_layers(self):
-        wms_layer = MapWMSTileLayerFactory.create(url=self.v130_EXAMPLE)
+    def test_invalid_map_component_with_multiple_unknown_wms_overlays_layers(self):
+        wms_layer = MapWMSTileLayerFactory.create(url=self.WMS_v130_EXAMPLE)
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
@@ -1934,6 +1943,211 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
                             {
                                 "type": "wms",
                                 "uuid": str(wms_layer.uuid),
+                                "label": "My second overlay",
+                                # Layer isn't present in XML
+                                "layers": ["a-third-unknown-layer"],
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+
+        # Collect invalid map component overlays
+        invalid_map_component_overlays = collect_invalid_map_component_overlays()
+
+        invalid_layers = ("another-unknown-layer", "unknown-layer")
+        self.assertEqual(len(invalid_map_component_overlays), 2)
+        self.assertEqual(
+            InvalidMapComponentOverlay(
+                form_id=form.id,
+                form_name=form.name,
+                component_name="map",
+                overlay_name="My first overlay",
+                exception_message=_("Overlay uses unavailable layers: {layers}").format(
+                    layers=", ".join(sorted(invalid_layers))
+                ),
+            ),
+            invalid_map_component_overlays[0],
+        )
+        self.assertEqual(
+            InvalidMapComponentOverlay(
+                form_id=form.id,
+                form_name=form.name,
+                component_name="map",
+                overlay_name="My second overlay",
+                exception_message=_("Overlay uses unavailable layers: {layers}").format(
+                    layers=", ".join(("a-third-unknown-layer",))
+                ),
+            ),
+            invalid_map_component_overlays[1],
+        )
+
+    def test_valid_map_component_with_wfs_overlays(self):
+        v200_wfs_layer = MapWFSTileLayerFactory.create(url=self.WFS_v200_EXAMPLE)
+        v110_wfs_layer = MapWFSTileLayerFactory.create(url=self.WFS_v110_EXAMPLE)
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "map",
+                        "key": "map",
+                        "defaultZoom": 3,
+                        "initialCenter": {
+                            "lat": 43.23,
+                            "lng": 41.23,
+                        },
+                        "overlays": [
+                            {
+                                "type": "wfs",
+                                "uuid": str(v200_wfs_layer.uuid),
+                                "label": "My first overlay",
+                                # Layers WFS_v200_EXAMPLE
+                                "layers": ["nwbwegen:wegvakken"],
+                            },
+                            {
+                                "type": "wfs",
+                                "uuid": str(v110_wfs_layer.uuid),
+                                "label": "My second overlay",
+                                # Layers from WFS_v110_EXAMPLE
+                                "layers": ["bo:WoodsType"],
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+
+        # Collect invalid map component overlays
+        invalid_map_component_overlays = collect_invalid_map_component_overlays()
+
+        self.assertEqual(len(invalid_map_component_overlays), 0)
+
+    def test_invalid_map_component_with_unknown_wfs_overlay(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "map",
+                        "key": "map",
+                        "defaultZoom": 3,
+                        "initialCenter": {
+                            "lat": 43.23,
+                            "lng": 41.23,
+                        },
+                        "overlays": [
+                            {
+                                "type": "wfs",
+                                # Unknown tile layer uuid
+                                "uuid": "ca0fd363-917a-41cd-ad93-2c5ae99d82d9",
+                                "label": "My first overlay",
+                                # Layers WFS_v200_EXAMPLE
+                                "layers": ["nwbwegen:wegvakken"],
+                            }
+                        ],
+                    }
+                ]
+            },
+        )
+
+        # Collect invalid map component overlays
+        invalid_map_component_overlays = collect_invalid_map_component_overlays()
+
+        self.assertEqual(len(invalid_map_component_overlays), 1)
+        self.assertEqual(
+            InvalidMapComponentOverlay(
+                form_id=form.id,
+                form_name=form.name,
+                component_name="map",
+                overlay_name="My first overlay",
+                exception_message=_("Invalid UUID"),
+            ),
+            invalid_map_component_overlays[0],
+        )
+
+        with self.subTest("Link to affected form"):
+            # Link to form
+            form_relative_admin_url = reverse(
+                "admin:forms_form_change", kwargs={"object_id": form.id}
+            )
+            absolute_uri_to_form = build_absolute_uri(form_relative_admin_url)
+            self.assertEqual(
+                absolute_uri_to_form,
+                invalid_map_component_overlays[0].admin_link,
+            )
+
+    def test_invalid_map_component_with_unreachable_wfs_overlay_url(self):
+        # domain does not exist
+        wfs_layer = MapWFSTileLayerFactory.create(url="http://bad-host:9999/fake-wfs")
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "map",
+                        "key": "map",
+                        "defaultZoom": 3,
+                        "initialCenter": {
+                            "lat": 43.23,
+                            "lng": 41.23,
+                        },
+                        "overlays": [
+                            {
+                                "type": "wfs",
+                                "uuid": str(wfs_layer.uuid),
+                                "label": "My first overlay",
+                                # Layers WFS_v200_EXAMPLE
+                                "layers": ["nwbwegen:wegvakken"],
+                            }
+                        ],
+                    }
+                ]
+            },
+        )
+
+        # Collect invalid map component overlays
+        with self.vcr_raises():
+            invalid_map_component_overlays = collect_invalid_map_component_overlays()
+
+        self.assertEqual(len(invalid_map_component_overlays), 1)
+        self.assertEqual(
+            InvalidMapComponentOverlay(
+                form_id=form.id,
+                form_name=form.name,
+                component_name="map",
+                overlay_name="My first overlay",
+                exception_message=_("Overlay url returned an error"),
+            ),
+            invalid_map_component_overlays[0],
+        )
+
+    def test_invalid_map_component_with_multiple_unknown_wfs_overlays_layers(self):
+        wfs_layer = MapWFSTileLayerFactory.create(url=self.WFS_v200_EXAMPLE)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "map",
+                        "key": "map",
+                        "defaultZoom": 3,
+                        "initialCenter": {
+                            "lat": 43.23,
+                            "lng": 41.23,
+                        },
+                        "overlays": [
+                            {
+                                "type": "wfs",
+                                "uuid": str(wfs_layer.uuid),
+                                "label": "My first overlay",
+                                # Layers aren't present in XML
+                                "layers": ["unknown-layer", "another-unknown-layer"],
+                            },
+                            {
+                                "type": "wfs",
+                                "uuid": str(wfs_layer.uuid),
                                 "label": "My second overlay",
                                 # Layer isn't present in XML
                                 "layers": ["a-third-unknown-layer"],
