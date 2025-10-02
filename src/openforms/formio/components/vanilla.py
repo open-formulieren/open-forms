@@ -1133,7 +1133,9 @@ class EditGrid(BasePlugin[EditGridComponent]):
         component: EditGridComponent,
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
+        *,
         parent_hidden: bool,
+        ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
     ):
         key = component["key"]
@@ -1146,6 +1148,13 @@ class EditGrid(BasePlugin[EditGridComponent]):
             get_evaluation_data if get_evaluation_data else lambda x: x
         )
 
+        # If the hidden property of the parent should be ignored, so should it for its
+        # children.
+        components_to_ignore_hidden = (
+            set(child["key"] for child in component["components"])
+            if ignore_hidden_property
+            else None
+        )
         edit_grid_data_new = []
         for item_data in edit_grid_data:
             # For evaluation of the conditionals, we only care about the current item,
@@ -1161,6 +1170,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
                 wrapper,
                 parent_hidden=parent_hidden,
                 get_evaluation_data=get_evaluation_data,
+                components_to_ignore_hidden=components_to_ignore_hidden,
             )
             edit_grid_data_new.append(item_data)
 
@@ -1174,16 +1184,28 @@ class Columns(BasePlugin[ColumnsComponent]):
         component: ColumnsComponent,
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
+        *,
         parent_hidden: bool,
+        ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
+        **kwargs,
     ):
         for column in component["columns"]:
+            # If the hidden property of the parent should be ignored, so should it for
+            # its children.
+            components_to_ignore_hidden = (
+                set(child["key"] for child in column["components"])
+                if ignore_hidden_property
+                else None
+            )
+
             process_visibility(
                 column,
                 data,
                 wrapper,
                 parent_hidden=parent_hidden,
                 get_evaluation_data=get_evaluation_data,
+                components_to_ignore_hidden=components_to_ignore_hidden,
             )
 
 
@@ -1194,9 +1216,19 @@ class Fieldset(BasePlugin[FieldsetComponent]):
         component: FieldsetComponent,
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
+        *,
         parent_hidden: bool,
+        ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
     ):
+        # If the hidden property of the parent should be ignored, so should it for
+        # its children.
+        components_to_ignore_hidden = (
+            set(child["key"] for child in component["components"])
+            if ignore_hidden_property
+            else None
+        )
+
         # We need to process the children, so we just pass the component as the
         # configuration.
         process_visibility(
@@ -1205,4 +1237,5 @@ class Fieldset(BasePlugin[FieldsetComponent]):
             wrapper,
             parent_hidden=parent_hidden,
             get_evaluation_data=get_evaluation_data,
+            components_to_ignore_hidden=components_to_ignore_hidden,
         )
