@@ -298,3 +298,19 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         submission.refresh_from_db()
         self.assertEqual(submission.finalised_registration_backend_key, "")
+
+    def test_submission_cannot_be_suspended_when_already_completed(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form, completed=True)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step, data={"foo": "bar"}
+        )
+
+        self._add_submission_to_session(submission)
+
+        # Suspend the submission
+        endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
+        response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
