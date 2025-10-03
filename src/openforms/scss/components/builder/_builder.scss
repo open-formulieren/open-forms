@@ -128,7 +128,14 @@ div.flatpickr-calendar.open {
 .component-preview {
   .col-form-label {
     @include ellipsis;
-    max-width: 100%;
+    max-inline-size: 100%;
+
+    // don't do this in the modal preview
+    @at-root .formio-dialog.component-settings & {
+      max-inline-size: unset;
+      white-space: normal;
+      overflow: unset;
+    }
   }
 
   ul.list-group {
