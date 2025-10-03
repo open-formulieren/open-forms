@@ -180,8 +180,13 @@ class SubmissionStep(models.Model):  # noqa: DJ008
     def completed(self) -> bool:
         # TODO: should check that all the data for the form definition is present?
         # and validates?
-        # For now - if it's been saved, we assume that was because it was completed
-        return bool(self.pk and self.data is not None)
+        # For now - if it's been saved, we assume that was because it was completed or it
+        # was suspended. We do not want to always mark a submission step as completed
+        # because this gives the ability to the user to navigate to the next step even if
+        # the current one is not completed.
+        return bool(
+            self.pk and self.data is not None and self.submission.suspended_on is None
+        )
 
     @property
     def can_submit(self) -> bool:
