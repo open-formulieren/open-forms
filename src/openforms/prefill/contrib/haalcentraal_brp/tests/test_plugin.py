@@ -14,6 +14,7 @@ from openforms.pre_requests.registry import Registry
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ....constants import IdentifierRoles
+from ....exceptions import PrefillSkippedException
 from ..constants import AttributesV1 as DefaultAttributes
 from ..plugin import (
     PLUGIN_IDENTIFIER,
@@ -126,12 +127,11 @@ class HaalCentraalPluginTests:
         assert not submission.is_authenticated
         plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
 
-        values = plugin.get_prefill_values(
-            submission,
-            attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
-        )
-
-        self.assertEqual(values, {})  # pyright: ignore[reportAttributeAccessIssue]
+        with self.assertRaises(PrefillSkippedException):  # pyright: ignore[reportAttributeAccessIssue]
+            plugin.get_prefill_values(
+                submission,
+                attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
+            )
 
     def test_prefill_values_for_gemachtigde_by_bsn(self):
         Attributes = get_attributes_cls()
@@ -322,18 +322,16 @@ class HaalCentraalEmptyConfigTests(TestCase):
             submission = SubmissionFactory.build()
             assert not submission.is_authenticated
 
-            values = plugin.get_prefill_values(
-                submission, attributes=[str(Attributes.naam_voornamen)]
-            )
-
-            self.assertEqual(values, {})
+            with self.assertRaises(PrefillSkippedException):
+                plugin.get_prefill_values(
+                    submission, attributes=[str(Attributes.naam_voornamen)]
+                )
 
         with self.subTest("authenticated submission"):
             submission = SubmissionFactory.create(auth_info__value="999990676")
             assert submission.is_authenticated
 
-            values = plugin.get_prefill_values(
-                submission, attributes=[str(Attributes.naam_voornamen)]
-            )
-
-            self.assertEqual(values, {})
+            with self.assertRaises(PrefillSkippedException):
+                plugin.get_prefill_values(
+                    submission, attributes=[str(Attributes.naam_voornamen)]
+                )

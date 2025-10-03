@@ -13,6 +13,7 @@ from suwinet.models import SuwinetConfig
 
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
+from ...exceptions import PrefillSkippedException
 from ...registry import register
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -54,7 +55,7 @@ class SuwinetPrefill(BasePlugin):
             (client := _get_client())
             and (bsn := cls.get_identifier_value(submission, identifier_role))
         ):
-            return {}
+            raise PrefillSkippedException()
 
         def get_value(attr: str) -> JSONObject | None:
             service_name, operation = attr.split(".")

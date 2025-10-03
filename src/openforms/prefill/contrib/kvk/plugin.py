@@ -16,6 +16,7 @@ from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
+from ...exceptions import PrefillSkippedException
 from ...registry import register
 from .constants import Attributes
 
@@ -64,13 +65,15 @@ class KVK_KVKNumberPrefill(BasePlugin):
     ) -> dict[str, Any]:
         # check if submission was logged in with the identifier we're interested
         if not (kvk_value := cls.get_identifier_value(submission, identifier_role)):
-            return {}
+            raise PrefillSkippedException()
 
         try:
             with get_kvk_profile_client() as client:
                 result = client.get_profile(kvk_value)
-        except (RequestException, NoServiceConfigured):
-            return {}
+        except NoServiceConfigured:
+            raise PrefillSkippedException()
+        except RequestException as exc:
+            raise exc
 
         cls.modify_result(result)
 
