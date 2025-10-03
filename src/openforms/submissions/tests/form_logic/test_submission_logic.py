@@ -1,5 +1,4 @@
 import json
-from unittest import expectedFailure
 
 from django.db import connection
 from django.test import override_settings, tag
@@ -879,7 +878,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             self.assertEqual(data["step"]["data"], {"textfield1": ""})
 
     @tag("gh-2409")
-    @expectedFailure
     def test_component_values_hidden_fieldset_used_in_subsequent_logic(self):
         """
         Test that values that should be cleared can be used safely in other logic rules.
@@ -923,7 +921,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             json_logic_trigger={"==": [{"var": "radio"}, "show"]},
             actions=[
                 {
-                    "component": "fieldSet",
+                    "component": "fieldset",
                     "action": {
                         "type": "property",
                         "property": {
@@ -970,7 +968,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
-        self.assertEqual(data["step"]["data"], {})
+        self.assertEqual(data["step"]["data"], {"textfield": ""})
 
     @tag("gh-2827")
     def test_component_value_set_to_now(self):
