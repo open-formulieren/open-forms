@@ -428,7 +428,7 @@ class SubmissionViewSet(
         """
         submission = self.get_object()
 
-        if not submission.form.suspension_allowed:
+        if not submission.suspension_allowed:
             raise PermissionDenied(_("Suspending this form is not allowed."))
 
         serializer = SubmissionSuspensionSerializer(

@@ -503,6 +503,10 @@ class Submission(models.Model):
         # success is set if it succeeded or there was no registration backend configured
         return self.registration_status == RegistrationStatuses.success
 
+    @property
+    def suspension_allowed(self) -> bool:
+        return self.form.suspension_allowed and not self.is_completed
+
     @transaction.atomic()
     def remove_sensitive_data(self):
         from .submission_files import SubmissionFileAttachment
