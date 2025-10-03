@@ -102,10 +102,10 @@ def process_mapped_variable(
     match component:
         case {"type": "date" | "datetime" | "time", "multiple": True}:
             assert isinstance(value, list)
-            value = [v.isoformat() for v in value]  # pyright: ignore[reportAttributeAccessIssue, reportOptionalMemberAccess]
+            value = [v.isoformat() if value else "" for v in value]  # pyright: ignore[reportAttributeAccessIssue, reportOptionalMemberAccess]
         case {"type": "date" | "datetime" | "time"}:
-            assert isinstance(value, date | time | datetime)
-            value = value.isoformat()
+            assert isinstance(value, date | time | datetime | None)
+            value = value.isoformat() if value else ""
         case {"type": "addressNL"}:
             assert isinstance(value, dict)
             value = value.copy()
@@ -164,7 +164,6 @@ def process_mapped_variable(
             for partner in value:
                 assert isinstance(partner, dict)
                 assert isinstance(partner["dateOfBirth"], date)
-
                 partner["dateOfBirth"] = partner["dateOfBirth"].isoformat()
 
                 # these are not relevant for the object (at least for now)

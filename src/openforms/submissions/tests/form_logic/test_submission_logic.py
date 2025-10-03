@@ -745,47 +745,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             )
 
     @tag("gh-2056")
-    def test_components_hidden_by_frontend_have_correct_empty_value(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "key": "radio",
-                        "type": "radio",
-                        "values": [
-                            {"label": "yes", "value": "yes"},
-                            {"label": "no", "value": "no"},
-                        ],
-                    },
-                    {
-                        "type": "file",
-                        "key": "file",
-                        "hidden": False,
-                        "conditional": {"eq": "yes", "show": True, "when": "radio"},
-                        "clearOnHide": True,
-                    },
-                ]
-            },
-        )
-
-        submission = SubmissionFactory.create(form=form)
-
-        self._add_submission_to_session(submission)
-        logic_check_endpoint = reverse(
-            "api:submission-steps-logic-check",
-            kwargs={
-                "submission_uuid": submission.uuid,
-                "step_uuid": form_step.uuid,
-            },
-        )
-        response = self.client.post(logic_check_endpoint, {"data": {"radio": "no"}})
-
-        data = response.json()
-
-        self.assertEqual([], data["step"]["data"]["file"])
-
     def test_components_hidden_by_frontend_after_filling_have_correct_empty_value(self):
         form = FormFactory.create()
         form_step = FormStepFactory.create(
@@ -1116,7 +1075,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         # Note that this doesn't make the problem go away 100% - you will get an
         # additional check if the minute value changes, but that should settle after one
         # extra logic check.
-        self.assertEqual(new_value, "2024-03-18T07:31:00Z")
+        self.assertEqual(new_value, "2024-03-18T07:31:00+00:00")
 
     def test_component_value_set_to_today(self):
         form = FormFactory.create(

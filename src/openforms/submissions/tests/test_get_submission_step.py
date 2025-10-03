@@ -745,3 +745,45 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             },
         ]
         self.assertEqual(components, expected)
+
+    def test_empty_values_for_date_related_components(self):
+        """
+        Ensure empty values of date-related components are properly serialized
+        (we convert them to ``None`` in our Python type domain).
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "date",
+                    "key": "date",
+                    "label": "Date",
+                },
+                {
+                    "type": "time",
+                    "key": "time",
+                    "label": "Datetime",
+                },
+                {
+                    "type": "datetime",
+                    "key": "datetime",
+                    "label": "Datetime",
+                },
+            ],
+            submitted_data={"date": "", "time": "", "datetime": ""},
+        )
+        step = submission.form.formstep_set.get()
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.get(endpoint)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["data"],
+            {"date": "", "time": "", "datetime": ""},
+        )

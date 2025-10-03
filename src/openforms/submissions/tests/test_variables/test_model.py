@@ -127,6 +127,14 @@ class SubmissionValueVariableModelTests(TestCase):
                 date_value_multiple, [date(2025, 7, 15), date(2025, 7, 16)]
             )
 
+        with self.subTest("date empty"):
+            date_var_empty = SubmissionValueVariableFactory.create(
+                value="",
+                data_type=FormVariableDataTypes.date,
+            )
+
+            self.assertIsNone(date_var_empty.to_python())
+
         with self.subTest("datetime 1"):
             date_var3 = SubmissionValueVariableFactory.create(
                 value="2022-09-13T11:10:45+02:00",
@@ -174,6 +182,14 @@ class SubmissionValueVariableModelTests(TestCase):
                 ],
             )
 
+        with self.subTest("datetime empty"):
+            datetime_var_empty = SubmissionValueVariableFactory.create(
+                value="",
+                data_type=FormVariableDataTypes.datetime,
+            )
+
+            self.assertIsNone(datetime_var_empty.to_python())
+
         with self.subTest("time"):
             time_var = SubmissionValueVariableFactory.create(
                 value="11:15",
@@ -219,6 +235,14 @@ class SubmissionValueVariableModelTests(TestCase):
 
             time_value_multiple = time_var_multiple.to_python()
             self.assertEqual(time_value_multiple, [time(12, 34), time(20, 42)])
+
+        with self.subTest("time empty"):
+            time_var_empty = SubmissionValueVariableFactory.create(
+                value="",
+                data_type=FormVariableDataTypes.time,
+            )
+
+            self.assertIsNone(time_var_empty.to_python())
 
         with self.subTest("partners"):
             partners_var = SubmissionValueVariableFactory.create(
@@ -408,3 +432,49 @@ class SubmissionValueVariableModelTests(TestCase):
         stored = SubmissionValueVariable.objects.get(key=variable1.key)
 
         self.assertEqual(stored.value, 1337)
+
+    def test_empty_value_of_date_related_components_is_serialized_before_saving(self):
+        """
+        Ensure that we save an empty string as an empty value for date-related
+        components (we use ``None`` in our Python type domain).
+        """
+        for data_type in (
+            FormVariableDataTypes.date,
+            FormVariableDataTypes.time,
+            FormVariableDataTypes.datetime,
+        ):
+            with self.subTest(data_type):
+                variable = SubmissionValueVariableFactory.create(
+                    value=None, data_type=data_type
+                )
+
+                stored = SubmissionValueVariable.objects.get(key=variable.key)
+                self.assertEqual(stored.value, "")
+
+        with self.subTest("editgrid"):
+            variable = SubmissionValueVariableFactory.create(
+                value=[{"date": None, "time": [None]}],
+                data_type=FormVariableDataTypes.array,
+                data_subtype=FormVariableDataTypes.editgrid,
+                configuration={
+                    "type": "editgrid",
+                    "key": "editgrid",
+                    "label": "Editgrid",
+                    "components": [
+                        {
+                            "type": "date",
+                            "key": "date",
+                            "label": "Date",
+                        },
+                        {
+                            "type": "time",
+                            "key": "time",
+                            "label": "Time",
+                            "multiple": True,
+                        },
+                    ],
+                },
+            )
+
+            stored = SubmissionValueVariable.objects.get(key=variable.key)
+            self.assertEqual(stored.value, [{"date": "", "time": [""]}])
