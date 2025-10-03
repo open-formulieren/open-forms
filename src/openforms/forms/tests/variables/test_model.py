@@ -556,6 +556,12 @@ class FormVariableManagerTests(TestCase):
                         "label": "Some selectboxes",
                         "defaultValue": {"foo": True},
                     },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "multiple": False,
+                    },
                 ]
             }
         )
@@ -569,7 +575,7 @@ class FormVariableManagerTests(TestCase):
             FormVariable.objects.synchronize_for(fd)
 
             form_variables = FormVariable.objects.all()
-            self.assertEqual(len(form_variables), 2 + 2)  # 2 for each form (step)
+            self.assertEqual(len(form_variables), 6)  # 2 for each form (step)
             step1_variables = {
                 variable.key: variable
                 for variable in form_variables
@@ -600,6 +606,7 @@ class FormVariableManagerTests(TestCase):
                     self.assertEqual(
                         date_variable.data_type, FormVariableDataTypes.date
                     )
+                    self.assertEqual(date_variable.data_subtype, "")
                     self.assertEqual(date_variable.data_format, "")
                     self.assertTrue(date_variable.is_sensitive_data)
                     self.assertEqual(date_variable.initial_value, "2025-01-01")
@@ -621,9 +628,32 @@ class FormVariableManagerTests(TestCase):
                     self.assertEqual(
                         date_variable.data_type, FormVariableDataTypes.object
                     )
+                    self.assertEqual(date_variable.data_subtype, "")
                     self.assertEqual(date_variable.data_format, "")
                     self.assertFalse(date_variable.is_sensitive_data)
                     self.assertEqual(date_variable.initial_value, {"foo": True})
+
+                with self.subTest("textfield variable"):
+                    textfield_variable = container["textfield"]
+                    self.assertEqual(textfield_variable.form_definition, fd)
+                    self.assertEqual(textfield_variable.name, "Textfield")
+                    self.assertEqual(
+                        textfield_variable.source, FormVariableSources.component
+                    )
+                    self.assertIsNone(textfield_variable.service_fetch_configuration)
+                    self.assertEqual(textfield_variable.prefill_plugin, "")
+                    self.assertEqual(textfield_variable.prefill_attribute, "")
+                    self.assertEqual(
+                        textfield_variable.prefill_identifier_role, IdentifierRoles.main
+                    )
+                    self.assertEqual(textfield_variable.prefill_options, {})
+                    self.assertEqual(
+                        textfield_variable.data_type, FormVariableDataTypes.string
+                    )
+                    self.assertEqual(textfield_variable.data_subtype, "")
+                    self.assertEqual(textfield_variable.data_format, "")
+                    self.assertFalse(textfield_variable.is_sensitive_data)
+                    self.assertIsNone(textfield_variable.initial_value)
 
         # update some components, remove one and add a new one
         with self.subTest("update form definition"):
@@ -651,6 +681,13 @@ class FormVariableManagerTests(TestCase):
                             },
                         ],
                     },
+                    # updated multiple property
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "multiple": True,
+                    },
                 ]
             }
             fd.save()
@@ -658,7 +695,7 @@ class FormVariableManagerTests(TestCase):
             FormVariable.objects.synchronize_for(fd)
 
             form_variables = FormVariable.objects.all()
-            self.assertEqual(len(form_variables), 2 + 2)  # 2 for each form (step)
+            self.assertEqual(len(form_variables), 6)  # 2 for each form (step)
             step1_variables = {
                 variable.key: variable
                 for variable in form_variables
@@ -712,3 +749,27 @@ class FormVariableManagerTests(TestCase):
                     self.assertEqual(date_variable.data_format, "")
                     self.assertFalse(date_variable.is_sensitive_data)
                     self.assertIsNone(date_variable.initial_value)
+
+                with self.subTest("textfield variable"):
+                    textfield_variable = container["textfield"]
+                    self.assertEqual(textfield_variable.form_definition, fd)
+                    self.assertEqual(textfield_variable.name, "Textfield")
+                    self.assertEqual(
+                        textfield_variable.source, FormVariableSources.component
+                    )
+                    self.assertIsNone(textfield_variable.service_fetch_configuration)
+                    self.assertEqual(textfield_variable.prefill_plugin, "")
+                    self.assertEqual(textfield_variable.prefill_attribute, "")
+                    self.assertEqual(
+                        textfield_variable.prefill_identifier_role, IdentifierRoles.main
+                    )
+                    self.assertEqual(textfield_variable.prefill_options, {})
+                    self.assertEqual(
+                        textfield_variable.data_type, FormVariableDataTypes.array
+                    )
+                    self.assertEqual(
+                        textfield_variable.data_subtype, FormVariableDataTypes.string
+                    )
+                    self.assertEqual(textfield_variable.data_format, "")
+                    self.assertFalse(textfield_variable.is_sensitive_data)
+                    self.assertEqual(textfield_variable.initial_value, [])

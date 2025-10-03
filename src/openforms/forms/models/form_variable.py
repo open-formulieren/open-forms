@@ -50,6 +50,7 @@ UPSERT_ATTRIBUTES_TO_COMPARE: tuple[str, ...] = (
     "name",
     "is_sensitive_data",
     "data_type",
+    "data_subtype",
     "initial_value",
 )
 
