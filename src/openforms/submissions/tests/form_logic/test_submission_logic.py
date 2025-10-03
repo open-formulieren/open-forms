@@ -1,5 +1,4 @@
 import json
-from unittest import expectedFailure
 
 from django.db import connection
 from django.test import override_settings, tag
@@ -878,14 +877,10 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             data = response.json()
             self.assertEqual(data["step"]["data"], {"textfield1": ""})
 
-    @tag("gh-2409")
-    @expectedFailure
+    @tag("gh-2409", "gh-5134")
     def test_component_values_hidden_fieldset_used_in_subsequent_logic(self):
         """
         Test that values that should be cleared can be used safely in other logic rules.
-
-        This is expected to fail until #2409 has been implemented which re-organizes
-        the logic evaluation.
         """
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -923,7 +918,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             json_logic_trigger={"==": [{"var": "radio"}, "show"]},
             actions=[
                 {
-                    "component": "fieldSet",
+                    "component": "fieldset",
                     "action": {
                         "type": "property",
                         "property": {
@@ -958,6 +953,13 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             },
         )
 
+        # This request body is possible if we assume the initial value of the radio
+        # button is "show" (causing the textfield to be visible) and the user has
+        # entered the value "foo" in the textfield. Then we assert that an empty value
+        # for the textfield is present in the response, and there is no value present
+        # for "calculatedResult", because the textfield was cleared.
+        # See https://github.com/open-formulieren/open-forms/pull/5674#discussion_r2413450813
+        # for more details
         response = self.client.post(
             logic_check_endpoint,
             {
@@ -970,7 +972,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
-        self.assertEqual(data["step"]["data"], {})
+        self.assertEqual(data["step"]["data"], {"textfield": ""})
 
     @tag("gh-2827")
     def test_component_value_set_to_now(self):
