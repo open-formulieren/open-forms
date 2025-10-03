@@ -148,6 +148,8 @@ def process_visibility(
         # Need to check whether the component is present in the data because layout
         # components have no value
         if hidden and clear_on_hide and key in data:
+            # TODO-5134: these should be in Python types (None for date-related
+            #  components)
             data[key] = get_component_empty_value(component)
 
         # Apply the visibility to children components, if applicable

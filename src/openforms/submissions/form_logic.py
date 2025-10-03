@@ -122,6 +122,7 @@ def evaluate_form_logic(
     # 6.1 If the action type is to set a variable, update the data. This happens inside
     # of iter_evaluate_rules. This is the ONLY operation that is allowed to execute
     # while we're looping through the rules.
+    # TODO-5134: remove data_diff as it's no longer used
     data_diff = FormioData()
     with elasticapm.capture_span(
         name="collect_logic_operations", span_type="app.submissions.logic"
