@@ -628,32 +628,6 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/config/privacy-policy-info:
-    get:
-      operationId: config_privacy_policy_info_retrieve
-      summary: Privacybeleid informatie
-      tags:
-      - config
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
-      deprecated: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PrivacyPolicyInfo'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
   /api/v2/dmn/decision-definitions:
     get:
       operationId: dmn_decision_definitions_list
@@ -9867,19 +9841,6 @@ components:
       required:
       - jsonSchema
       - targetPath
-    PrivacyPolicyInfo:
-      type: object
-      properties:
-        requiresPrivacyConsent:
-          type: boolean
-          description: Of de gebruiker akkoord moet gaan met het privacybeleid voordat
-            hij een formulier indient.
-        privacyLabel:
-          type: string
-          description: Het opgemaakte label dat naast het selectievakje moet worden
-            getoond wanneer de gebruiker wordt gevraagd akkoord te gaan met het privacybeleid.
-      required:
-      - requiresPrivacyConsent
     ProcessDefinition:
       type: object
       properties:

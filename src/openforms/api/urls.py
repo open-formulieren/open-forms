@@ -99,7 +99,6 @@ urlpatterns = [
             [
                 path("ping", PingView.as_view(), name="ping"),
                 path("submissions/", include("openforms.submissions.api.urls")),
-                path("config/", include("openforms.config.api.urls")),
                 path("analytics/", include("openforms.analytics_tools.api.urls")),
                 path("forms-import", FormsImportAPIView.as_view(), name="forms-import"),
                 path("prefill/", include("openforms.prefill.api.urls")),
