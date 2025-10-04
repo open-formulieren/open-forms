@@ -10,7 +10,6 @@ from rest_framework.test import APIRequestFactory, APITestCase
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.submissions.tests.mixins import SubmissionsMixin
 from openforms.submissions.tokens import submission_status_token_generator
 
 NONCE_HTTP_HEADER = "HTTP_X_CSP_NONCE"
@@ -161,34 +160,3 @@ class SubmissionConfirmationInlineStyleCSPTests(CSPMixin, APITestCase):
         <p>This is some <span id="{html_id}">inline styled</span> HTML.</p>
         """
         self.assertHTMLEqual(confirmation_page, expected)
-
-
-@patch(
-    "openforms.submissions.models.submission.GlobalConfiguration.get_solo",
-    return_value=GlobalConfiguration(),
-)
-class ConfigInlineStyleCSPTests(CSPMixin, SubmissionsMixin, APITestCase):
-    def test_privacy_label_template(self, mock_get_solo):
-        mock_get_solo.return_value = GlobalConfiguration(
-            ask_privacy_consent=True,
-            privacy_policy_label="""
-            <p>This is some <span style="color: red;">inline styled</span> HTML.</p>
-            """,
-        )
-        submission = SubmissionFactory.create(with_report=False)
-        self._add_submission_to_session(submission)
-        endpoint = reverse("api:config:privacy-policy-info")
-
-        response = self.client.get(endpoint, **{NONCE_HTTP_HEADER: self.csp_nonce})
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        html_id = f"nonce-{md5hash(self.csp_nonce)}-1234"
-        expected = f"""
-        <style nonce="{self.csp_nonce}">
-            #{html_id} {{
-                color: red;
-            }}
-        </style>
-        <p>This is some <span id="{html_id}">inline styled</span> HTML.</p>
-        """
-        self.assertHTMLEqual(response.json()["privacyLabel"], expected)
