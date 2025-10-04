@@ -59,7 +59,7 @@ assignees: sergei-maertens
 - [ ] Bump API version number
   - [ ] Version bump
   - [ ] Regenerate API spec (`./bin/generate_oas.sh`)
-  - [ ] Update READMEs with release dates + links
+  - [ ] Update `docs/developers/versioning` with release dates + links
 - [ ] Update the `upgrade_simulation` CI job matrix
 - [ ] Bump version number (including package-lock.json)
 - [ ] Update changelog

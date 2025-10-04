@@ -43,10 +43,8 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    ================ =================== ===================
    SDK version      minimum API version maximum API version
    ================ =================== ===================
+   3.3.0            3.1.0               n/a
    3.2.0            3.1.0               n/a
-   3.1.0            3.1.0               n/a
-   3.0.0            3.0.0               n/a
-   2.4.0            2.8.0               2.8.x
    ================ =================== ===================
 
 End-of-life versions are not listed in this table.
@@ -74,21 +72,23 @@ Version         Release date    API specification
 ==============  ==============  =============================
 latest          n/a             `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml>`__,
                                 `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml>`__
+3.3.0           2025-10-02      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.3.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.3.0/src/openapi.yaml>`__
 3.2.0           2025-07-11      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.2.0/src/openapi.yaml>`__,
                                 `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.2.0/src/openapi.yaml>`__
-3.1.0           2025-03-31      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.1.0/src/openapi.yaml>`__,
-                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.1.0/src/openapi.yaml>`__
-3.0.0           2025-01-09      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.0.0/src/openapi.yaml>`__,
-                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.0.0/src/openapi.yaml>`__
 ==============  ==============  =============================
 
-See: `All versions and changes <https://github.com/open-formulieren/open-forms/blob/master/CHANGELOG.rst>`_
+See: :ref:`All versions and changes <changelog>`.
 
 **Unsupported versions**
 
 ==============  ==============  =============================
 Version         Release date    API specification
 ==============  ==============  =============================
+3.1.0           2025-03-31      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.1.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.1.0/src/openapi.yaml>`__
+3.0.0           2025-01-09      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.0.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/3.0.0/src/openapi.yaml>`__
 2.8.0           2024-09-27      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.8.0/src/openapi.yaml>`__,
                                 `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.8.0/src/openapi.yaml>`__
 2.7.0           2024-07-09      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.7.0/src/openapi.yaml>`__,
@@ -151,10 +151,8 @@ backend version.
    =============== =============
    Backend version API version
    =============== =============
+   3.3.x           3.3.y
    3.2.x           3.2.y
-   3.1.x           3.1.y
-   3.0.x           3.0.y
-   2.8.x           2.8.y
    =============== =============
 
 End-of-life versions are not listed in this table.
