@@ -8,6 +8,7 @@ from rest_framework import serializers
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
+from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.formio.service import (
     FormioConfigurationWrapper,
@@ -29,6 +30,7 @@ from openforms.submissions.tests.factories import (
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..contrib.demo.plugin import DemoPrefill
+from ..exceptions import PrefillSkipped
 from ..service import prefill_variables
 from .utils import get_test_register
 
@@ -267,6 +269,28 @@ class OwnershipCheckFailsPlugin(DemoPrefill):
         return {options["var_key"]: options["var_value"]}
 
 
+@prefill_from_options_register("prefill-skipped")
+class PrefillSkippedPlugin(DemoPrefill):
+    options = OptionsSerializer
+
+    @classmethod
+    def get_prefill_values_from_options(
+        cls, submission: Submission, options, submission_value_variable
+    ):
+        raise PrefillSkipped("Prefill was skipped")
+
+
+@prefill_from_options_register("generic-exception")
+class GenericExceptionPlugin(DemoPrefill):
+    options = OptionsSerializer
+
+    @classmethod
+    def get_prefill_values_from_options(
+        cls, submission: Submission, options, submission_value_variable
+    ):
+        raise Exception("Generic exception")
+
+
 class PrefillVariablesFromOptionsTests(TestCase):
     @patch(
         "openforms.prefill.service.fetch_prefill_values_from_options",
@@ -481,6 +505,106 @@ class PrefillVariablesFromOptionsTests(TestCase):
 
         variables_state = submission.load_submission_value_variables_state()
         self.assertEqual(variables_state.get_data()["voornamen"], "foo, bar")
+
+    @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
+    def test_plugin_not_enabled(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(
+            plugin_configuration={"prefill": {"demo": {"enabled": False}}}
+        )
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
+                        "inputMask": "9999 AA",
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(form=form, key="voornamen", user_defined=True)
+        FormVariableFactory.create(
+            form=form,
+            key="prefillData",
+            user_defined=True,
+            prefill_plugin="demo",
+            prefill_options={
+                "var_key": "voornamen",
+                "var_value": "foo, bar",
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+
+        prefill_variables(submission=submission, register=prefill_from_options_register)
+
+        variables_state = submission.load_submission_value_variables_state()
+
+        self.assertEqual(variables_state.get_data(), {})
+
+    def test_prefill_skipped_exception(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
+                        "inputMask": "9999 AA",
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(form=form, key="voornamen", user_defined=True)
+        FormVariableFactory.create(
+            form=form,
+            key="prefillData",
+            user_defined=True,
+            prefill_plugin="prefill-skipped",
+            prefill_options={
+                "var_key": "voornamen",
+                "var_value": "foo, bar",
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+
+        prefill_variables(submission=submission, register=prefill_from_options_register)
+
+        variables_state = submission.load_submission_value_variables_state()
+
+        self.assertEqual(variables_state.get_data(), {})
+
+    def test_prefill_generic_exception(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
+                        "inputMask": "9999 AA",
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(form=form, key="voornamen", user_defined=True)
+        FormVariableFactory.create(
+            form=form,
+            key="prefillData",
+            user_defined=True,
+            prefill_plugin="generic-exception",
+            prefill_options={
+                "var_key": "voornamen",
+                "var_value": "foo, bar",
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+
+        prefill_variables(submission=submission, register=prefill_from_options_register)
+
+        variables_state = submission.load_submission_value_variables_state()
+
+        self.assertEqual(variables_state.get_data(), {})
 
 
 class PrefillVariablesTransactionTests(TransactionTestCase):

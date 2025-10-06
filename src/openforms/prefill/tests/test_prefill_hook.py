@@ -21,6 +21,7 @@ from openforms.typing import JSONEncodable
 from ..base import BasePlugin
 from ..constants import IdentifierRoles
 from ..contrib.demo.plugin import DemoPrefill
+from ..exceptions import PrefillSkipped
 from ..registry import Registry, register as prefill_register
 from ..service import inject_prefill, prefill_variables
 from .utils import get_test_register
@@ -650,3 +651,75 @@ class PrefillHookTests(TransactionTestCase):
         )
 
         self.assertFalse(TimelineLogProxy.objects.exists())
+
+    def test_prefill_skipped_exception(self):
+        components: Sequence[Component] = [
+            {
+                "key": "mainPersonName",
+                "type": "textfield",
+                "label": "mainPersonName",
+                "prefill": {
+                    "plugin": "demo",
+                    "attribute": "naam.voornamen",
+                    "identifierRole": IdentifierRoles.main,
+                },
+            },
+        ]
+        submission = SubmissionFactory.from_components(components_list=components)
+        register = Registry()
+
+        @register("demo")
+        class PrefillSkippedPlugin(DemoPrefill):
+            requires_auth = (AuthAttribute.bsn,)
+
+            @classmethod
+            def get_prefill_values(
+                cls, submission, attributes, identifier_role=IdentifierRoles.main
+            ):
+                raise PrefillSkipped("Prefill was skipped")
+
+        new_configuration = apply_prefill(
+            configuration={"components": components},
+            submission=submission,
+            register=register,
+        )
+
+        field = new_configuration["components"][0]
+        assert "defaultValue" in field
+        self.assertIsNone(field["defaultValue"])
+
+    def test_prefill_generic_exception(self):
+        components: Sequence[Component] = [
+            {
+                "key": "mainPersonName",
+                "type": "textfield",
+                "label": "mainPersonName",
+                "prefill": {
+                    "plugin": "demo",
+                    "attribute": "naam.voornamen",
+                    "identifierRole": IdentifierRoles.main,
+                },
+            },
+        ]
+        submission = SubmissionFactory.from_components(components_list=components)
+        register = Registry()
+
+        @register("demo")
+        class PrefillGenericExceptionPlugin(DemoPrefill):
+            requires_auth = (AuthAttribute.bsn,)
+
+            @classmethod
+            def get_prefill_values(
+                cls, submission, attributes, identifier_role=IdentifierRoles.main
+            ):
+                raise Exception("Generic exception")
+
+        new_configuration = apply_prefill(
+            configuration={"components": components},
+            submission=submission,
+            register=register,
+        )
+
+        field = new_configuration["components"][0]
+        assert "defaultValue" in field
+        self.assertIsNone(field["defaultValue"])
