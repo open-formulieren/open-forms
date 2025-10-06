@@ -19,6 +19,7 @@ from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
+from ...exceptions import PrefillSkipped
 from ...registry import register
 from .constants import AttributesV1, AttributesV2
 
@@ -125,7 +126,7 @@ class HaalCentraalPrefill(BasePlugin):
                 submission_uuid=str(submission.uuid),
                 plugin=cls,
             )
-            return {}
+            raise PrefillSkipped("No BSN available.")
 
         with client:
             return cls._get_values_for_bsn(client, bsn_value, attributes)

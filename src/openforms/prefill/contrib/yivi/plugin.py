@@ -15,6 +15,7 @@ from openforms.submissions.models import Submission
 from openforms.typing import JSONEncodable, JSONObject
 
 from ...base import BasePlugin
+from ...exceptions import PrefillSkipped
 from ...registry import register
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -47,7 +48,7 @@ class YiviPrefill(BasePlugin[YiviOptions]):
         identifier_role: IdentifierRoles = IdentifierRoles.main,
     ) -> dict[str, JSONEncodable]:
         if identifier_role != IdentifierRoles.main:
-            return {}
+            raise PrefillSkipped("Skipping prefill for non-main identifier role.")
 
         glom_spec: dict[str, str | Coalesce] = {}
 

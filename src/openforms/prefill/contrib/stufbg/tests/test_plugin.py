@@ -19,6 +19,7 @@ from stuf.stuf_bg.tests.utils import (
 )
 from stuf.tests.factories import StufServiceFactory
 
+from ....exceptions import PrefillSkipped
 from ..plugin import StufBgPrefill
 
 
@@ -199,9 +200,8 @@ class StufBgPrefillTests(TestCase):
 
         assert not submission.is_authenticated
 
-        values = self.plugin.get_prefill_values(submission, attributes)
-
-        self.assertEqual(values, {})
+        with self.assertRaises(PrefillSkipped):
+            self.plugin.get_prefill_values(submission, attributes)
 
     def test_prefill_values_for_gemachtigde_by_bsn(self):
         client_patcher = mock_stufbg_client("StufBgResponse.xml")

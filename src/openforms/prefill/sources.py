@@ -16,6 +16,7 @@ from openforms.typing import JSONEncodable
 
 from .base import BasePlugin
 from .constants import IdentifierRoles
+from .exceptions import PrefillSkipped
 from .registry import Registry
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -70,6 +71,9 @@ def fetch_prefill_values_from_attribute(
         log.debug("prefill.plugin.lookup_attributes", attributes=attributes)
         try:
             values = plugin.get_prefill_values(submission, attributes, identifier_role)
+        except PrefillSkipped:
+            log.info("prefill.plugin.skipped")
+            values = {}
         except Exception as e:
             log.exception("prefill.plugin.retrieve_failure")
             logevent.prefill_retrieve_failure(submission, plugin, e)
@@ -168,6 +172,9 @@ def fetch_prefill_values_from_options(
             new_values = plugin.get_prefill_values_from_options(
                 submission, plugin_options, variable
             )
+        except PrefillSkipped:
+            log.info("prefill.plugin.skipped")
+            values = {}
         except Exception as exc:
             log.exception("prefill.plugin.retrieve_failure")
             logevent.prefill_retrieve_failure(submission, plugin, exc)

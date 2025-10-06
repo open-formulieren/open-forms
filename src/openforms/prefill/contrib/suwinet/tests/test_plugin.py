@@ -5,6 +5,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from suwinet.tests.factories import SuwinetConfigFactory
 from suwinet.tests.test_client import SuwinetTestCase
 
+from ....exceptions import PrefillSkipped
 from ..plugin import IdentifierRoles, SuwinetPrefill
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -160,10 +161,8 @@ class SuwinetPrefillTests(SuwinetTestCase):
         plugin = SuwinetPrefill(identifier="suwinet")
         submission = SubmissionFactory.create()
 
-        values = plugin.get_prefill_values(
-            submission, ["KadasterDossierGSD.PersoonsInfo"]
-        )
-        self.assertEqual(values, {})
+        with self.assertRaises(PrefillSkipped):
+            plugin.get_prefill_values(submission, ["KadasterDossierGSD.PersoonsInfo"])
 
     def test_failed_respones(self):
         # My close friend, good ol' Policy Falsified
