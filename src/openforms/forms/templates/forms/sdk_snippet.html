@@ -10,6 +10,7 @@
     data-base-path="{% if base_path %}{{ base_path }}{% else %}{% url 'forms:form-detail' slug=form.slug %}{% endif %}"
     data-csp-nonce="{{ request.csp_nonce }}"
     data-back-to-top-text="{% trans 'Back to top' %}"
+    data-back-to-top-ref="{{ div_id }}"
     {% if sdk_sentry_dsn %}data-sentry-dsn{% endif %}
     {% if sdk_sentry_env %}data-sentry-env{% endif %}
 ></div>
@@ -29,6 +30,7 @@
     {% endif %}
     const CSPNonce = '{{ request.csp_nonce|escapejs }}';
     const backToTopText = '{% trans "Back to top" %}';
+    const backToTopRef = '{{ div_id }}';
     {% if sdk_sentry_dsn %}const sentryDSN = '{% filter escapejs %}{{ sdk_sentry_dsn }}{% endfilter %}';{% endif %}
     {% if sdk_sentry_env %}const sentryEnv = '{% filter escapejs %}{{ sdk_sentry_env }}{% endfilter %}';{% endif %}
     const form = new OpenForms.OpenForm(
@@ -39,6 +41,7 @@
             basePath,
             CSPNonce,
             backToTopText,
+            backToTopRef,
             {% if sdk_sentry_dsn %}sentryDSN,{% endif %}
             {% if sdk_sentry_env %}sentryEnv,{% endif %}
             languageSelectorTarget: '#react-portal--language-selection',

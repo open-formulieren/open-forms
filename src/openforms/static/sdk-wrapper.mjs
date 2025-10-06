@@ -17,6 +17,7 @@ const initializeSDK = async node => {
     basePath,
     cspNonce,
     backToTopText,
+    backToTopRef,
     sentryDsn = '',
     sentryEnv = '',
   } = node.dataset;
@@ -29,6 +30,7 @@ const initializeSDK = async node => {
     basePath,
     CSPNonce: cspNonce,
     backToTopText,
+    backToTopRef,
     onLanguageChange: (newLanguageCode, initialDataReference) => {
         // URL handling in JS requires a proper base since you can't just feed `foo` or `/foo`
         // to the constructor. We only extract the pathname + query string again at the end.
