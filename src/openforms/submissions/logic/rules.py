@@ -191,6 +191,7 @@ def handle_clear_on_hide(
         # Process the visibility of the component. We want to process the component
         # itself, not try to iterate over its children, so we create a 'fake'
         # configuration.
-        process_visibility(
-            {"components": [component]}, data, configuration, parent_hidden=True
-        )
+        # Note that we cannot pass ``parent_hidden=True`` here, and skip conditional
+        # evaluation (like in ``PropertyAction.eval``), because a component can be
+        # affected by a simple conditional which makes it visible.
+        process_visibility({"components": [component]}, data, configuration)

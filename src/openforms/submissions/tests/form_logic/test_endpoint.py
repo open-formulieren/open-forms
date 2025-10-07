@@ -748,3 +748,86 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 response.json()["step"]["data"],
                 {"textfieldStep2": ""},
             )
+
+    def test_clear_on_hide_behaviour_with_conditional_and_logic_rule(self):
+        """
+        Ensure that a field which is hidden by default, and affected by both a
+        conditional and a logic rule, is not cleared.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "alienCheckbox",
+                    "type": "checkbox",
+                    "label": "I am an alien",
+                },
+                {
+                    "key": "questionCheckbox",
+                    "type": "checkbox",
+                    "label": "I want to answer the following question",
+                },
+                {
+                    "key": "textfield",
+                    "type": "textfield",
+                    "label": "What do you think about clear on hide?",
+                    "clearOnHide": True,
+                    "hidden": True,
+                    "conditional": {
+                        "show": True,
+                        "when": "questionCheckbox",
+                        "eq": True,
+                    },
+                },
+            ]
+        )
+
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "alienCheckbox"}, True]},
+            actions=[
+                {
+                    "component": "questionCheckbox",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                },
+                {
+                    "component": "textfield",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                },
+            ],
+        )
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": submission.submissionstep_set.first().form_step.uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        # Note: we need to make sure we hit the code path for the case the logic rule is
+        # not triggered
+        response = self.client.post(
+            endpoint,
+            data={
+                "data": {
+                    "alienCheckbox": False,
+                    "questionCheckbox": True,
+                    "textfield": "Clear on hide is amazing",
+                },
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Ensure that nothing is cleared
+        self.assertEqual(response.json()["step"]["data"], {})
