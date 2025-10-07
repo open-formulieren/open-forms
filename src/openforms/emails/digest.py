@@ -3,6 +3,7 @@ from collections import defaultdict
 from collections.abc import Collection, Iterable, Iterator, MutableMapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from io import BytesIO
 from itertools import chain, groupby
 from typing import assert_never
 
@@ -720,41 +721,46 @@ class TileLayer:
         self.session.__exit__(*args)
 
     def _get_layer_names(
-        self, root: type[_Element] | None, layer_type: OverlayType
+        self,
+        root: type[_Element] | None,
+        namespaces: dict[str, str],
+        layer_type: OverlayType,
     ) -> list[_Element] | None:
         match layer_type:
             case "wms":
-                return self._get_wms_layer_names(root)
+                return self._get_wms_layer_names(root, namespaces)
             case "wfs":
-                return self._get_wfs_layer_names(root)
+                return self._get_wfs_layer_names(root, namespaces)
             case _:
                 assert_never(layer_type)
 
     @staticmethod
-    def _get_wms_layer_names(root: type[_Element] | None) -> list[_Element] | None:
-        # Try with common wms standard namespace first (used in WMS 1.3.0)
-        return root.findall(
-            ".//wms:Layer/wms:Name",
-            namespaces={"wms": "http://www.opengis.net/wms"},
+    def _get_wms_layer_names(
+        root: type[_Element] | None, namespaces: dict[str, str]
+    ) -> list[_Element] | None:
+        if "wms" in namespaces:
+            # Try with common wms standard namespace first (used in WMS 1.3.0)
+            return root.findall(
+                path=".//wms:Layer/wms:Name",
+                namespaces=namespaces,
+            )
+        else:
             # Fallback to no namespace (for WMS 1.1.1)
-        ) or root.findall(".//Layer/Name")
+            return root.findall(path=".//Layer/Name")
 
     @staticmethod
-    def _get_wfs_layer_names(root: type[_Element] | None) -> list[_Element] | None:
-        # Try with common wfs standard namespace for WFS 2.0
-        return (
-            root.findall(
-                ".//wfs:FeatureType/wfs:Name",
-                namespaces={"wfs": "http://www.opengis.net/wfs/2.0"},
+    def _get_wfs_layer_names(
+        root: type[_Element] | None, namespaces: dict[str, str]
+    ) -> list[_Element] | None:
+        if "wfs" in namespaces:
+            # Try with wfs namespace
+            return root.findall(
+                path=".//wfs:FeatureType/wfs:Name",
+                namespaces=namespaces,
             )
-            # Fallback to common namespace for WFS 1.x
-            or root.findall(
-                ".//wfs:FeatureType/wfs:Name",
-                namespaces={"wfs": "http://www.opengis.net/wfs"},
-            )
-            # Fallback to wfs without common namespaces
-            or root.findall(".//FeatureType/Name")
-        )
+        else:
+            # Fallback to wfs without namespaces
+            return root.findall(path=".//FeatureType/Name")
 
     def _get_layer_names_from_cache(
         self, layer_url: str, layer_type: OverlayType
@@ -781,6 +787,16 @@ class TileLayer:
             case _:
                 assert_never(layer_type)
 
+    @staticmethod
+    def _extract_namespaces(xml_bytes: bytes, default: str) -> dict[str, str]:
+        """Extract all namespace prefixes and URIs from an XML document."""
+        namespaces = {}
+        for event, elem in etree.iterparse(BytesIO(xml_bytes), events=("start-ns",)):
+            prefix, uri = elem
+            namespaces[prefix if prefix else default] = uri
+
+        return namespaces
+
     def get_layer_names(
         self, layer_url: str, layer_type: OverlayType
     ) -> Collection[str]:
@@ -796,7 +812,8 @@ class TileLayer:
                 cache_result = exc
             else:
                 root = etree.fromstring(response.content)
-                names = self._get_layer_names(root, layer_type)
+                namespaces = self._extract_namespaces(response.content, layer_type)
+                names = self._get_layer_names(root, namespaces, layer_type)
 
                 cache_result = set(
                     element.text.strip() for element in names if element.text
