@@ -1156,14 +1156,18 @@ class EditGrid(BasePlugin[EditGridComponent]):
             else None
         )
         edit_grid_data_new = []
-        for item_data in edit_grid_data:
-            # For evaluation of the conditionals, we only care about the current item,
-            # so we set it to the editgrid data directly
-            def get_evaluation_data(item_data_: FormioData) -> FormioData:
-                inner_evaluation_data = deepcopy(data)
-                inner_evaluation_data[key] = item_data_
-                return outer_get_evaluation_data(inner_evaluation_data)
 
+        # For evaluation of the conditionals, we only care about the current item, so we
+        # set it to the editgrid data directly. Note that we can create a copy of the
+        # complete context just once, because components inside an editgrid item cannot
+        # affect components outside the editgrid.
+        inner_evaluation_data = deepcopy(data)
+
+        def get_evaluation_data(item_data_: FormioData) -> FormioData:
+            inner_evaluation_data[key] = item_data_
+            return outer_get_evaluation_data(inner_evaluation_data)
+
+        for item_data in edit_grid_data:
             process_visibility(
                 component,
                 item_data,
@@ -1188,7 +1192,6 @@ class Columns(BasePlugin[ColumnsComponent]):
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
-        **kwargs,
     ):
         for column in component["columns"]:
             # If the hidden property of the parent should be ignored, so should it for
