@@ -16,6 +16,7 @@ from stuf.stuf_bg.models import StufBGConfig
 
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
+from ...exceptions import PrefillSkipped
 from ...registry import register
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -172,7 +173,7 @@ class StufBgPrefill(BasePlugin):
                 submission_uuid=str(submission.uuid),
                 plugin=cls,
             )
-            return {}
+            raise PrefillSkipped("Missing BSN.")
 
         return cls._get_values_for_bsn(bsn_value, attributes)
 

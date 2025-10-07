@@ -13,6 +13,7 @@ from suwinet.models import SuwinetConfig
 
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
+from ...exceptions import PrefillSkipped
 from ...registry import register
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -50,11 +51,11 @@ class SuwinetPrefill(BasePlugin):
         attributes: list[str],
         identifier_role: IdentifierRoles = IdentifierRoles.main,
     ) -> dict[str, JSONEncodable]:
-        if not (
-            (client := _get_client())
-            and (bsn := cls.get_identifier_value(submission, identifier_role))
-        ):
+        if not (client := _get_client()):
             return {}
+
+        if not (bsn := cls.get_identifier_value(submission, identifier_role)):
+            raise PrefillSkipped("Missing BSN.")
 
         def get_value(attr: str) -> JSONObject | None:
             service_name, operation = attr.split(".")

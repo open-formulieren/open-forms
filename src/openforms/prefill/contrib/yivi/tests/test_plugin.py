@@ -7,6 +7,7 @@ from openforms.authentication.contrib.yivi_oidc.constants import (
 from openforms.prefill.constants import IdentifierRoles
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ....exceptions import PrefillSkipped
 from ..plugin import YiviPrefill
 
 
@@ -203,14 +204,13 @@ class YiviPluginTests(TestCase):
             },
         )
 
-        values = plugin.get_prefill_values(
-            submission,
-            attributes=[
-                f"_internal.{AuthAttribute.bsn}",
-                "irma.gemeente.personalData.firstName",
-                "irma.gemeente.personalData.__missing__",
-            ],
-            identifier_role=IdentifierRoles.authorizee,
-        )
-
-        self.assertEqual(values, {})
+        with self.assertRaises(PrefillSkipped):
+            plugin.get_prefill_values(
+                submission,
+                attributes=[
+                    f"_internal.{AuthAttribute.bsn}",
+                    "irma.gemeente.personalData.firstName",
+                    "irma.gemeente.personalData.__missing__",
+                ],
+                identifier_role=IdentifierRoles.authorizee,
+            )

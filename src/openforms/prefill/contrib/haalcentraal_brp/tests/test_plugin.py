@@ -14,6 +14,7 @@ from openforms.pre_requests.registry import Registry
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ....constants import IdentifierRoles
+from ....exceptions import PrefillSkipped
 from ..constants import AttributesV1 as DefaultAttributes
 from ..plugin import (
     PLUGIN_IDENTIFIER,
@@ -126,12 +127,11 @@ class HaalCentraalPluginTests:
         assert not submission.is_authenticated
         plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
 
-        values = plugin.get_prefill_values(
-            submission,
-            attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
-        )
-
-        self.assertEqual(values, {})  # pyright: ignore[reportAttributeAccessIssue]
+        with self.assertRaises(PrefillSkipped):  # pyright: ignore[reportAttributeAccessIssue]
+            plugin.get_prefill_values(
+                submission,
+                attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
+            )
 
     def test_prefill_values_for_gemachtigde_by_bsn(self):
         Attributes = get_attributes_cls()

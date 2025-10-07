@@ -20,6 +20,7 @@ from openforms.typing import JSONEncodable, JSONObject
 from stuf.stuf_bg.checks import check_config as check_stuf_bg_config
 
 from ...base import BasePlugin
+from ...exceptions import PrefillSkipped
 from ...registry import register
 from .config import FamilyMembersOptionsSerializer
 from .haal_centraal import get_data_from_haal_centraal
@@ -71,7 +72,7 @@ class FamilyMembersPrefill(BasePlugin[FamilyMemberOptions]):
         if not submission.is_authenticated or not (
             cls.requires_auth and submission.auth_info.attribute in cls.requires_auth
         ):
-            return {}
+            raise PrefillSkipped("Authentication details are missing.")
 
         assert submission_value_variable.form_variable
         initial_data_form_variable = submission_value_variable.form_variable.key

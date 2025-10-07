@@ -7,6 +7,7 @@ from openforms.contrib.haal_centraal.clients.brp import NaturalPersonDetails
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 
+from ...exceptions import PrefillSkipped
 from .constants import FamilyMembersTypeChoices
 from .filters import filter_members_by_age
 from .typing import FamilyMemberOptions
@@ -23,7 +24,7 @@ def get_data_from_haal_centraal(
         logger.warning(
             "unsupported_version", plugin_id="haal_centraal", version=BRPVersions.v13
         )
-        return []
+        raise PrefillSkipped("Unsupported Haal Centraal BRP Personen version.")
 
     with get_brp_client() as client:
         match options["type"]:

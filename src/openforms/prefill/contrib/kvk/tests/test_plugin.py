@@ -8,6 +8,7 @@ from openforms.authentication.tests.factories import AuthInfoFactory
 from openforms.contrib.kvk.tests.base import KVKTestMixin, load_json_mock
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ....exceptions import PrefillSkipped
 from ..constants import Attributes
 from ..plugin import KVK_KVKNumberPrefill
 
@@ -49,12 +50,11 @@ class KVKPrefillTests(KVKTestMixin, TestCase):
         submission = SubmissionFactory.create()
         assert not submission.is_authenticated
 
-        values = plugin.get_prefill_values(
-            submission,
-            [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
-        )
-        expected = {}
-        self.assertEqual(values, expected)
+        with self.assertRaises(PrefillSkipped):
+            plugin.get_prefill_values(
+                submission,
+                [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
+            )
 
     @requests_mock.Mocker()
     def test_get_prefill_values_vve(self, m):
@@ -92,12 +92,12 @@ class KVKPrefillTests(KVKTestMixin, TestCase):
             value="69599084", plugin="kvk", attribute=AuthAttribute.kvk
         )
         submission = SubmissionFactory.create(auth_info=auth_info)
-        values = plugin.get_prefill_values(
-            submission,
-            [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
-        )
-        expected = {}
-        self.assertEqual(values, expected)
+
+        with self.assertRaises(PrefillSkipped):
+            plugin.get_prefill_values(
+                submission,
+                [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
+            )
 
     @requests_mock.Mocker()
     def test_get_prefill_values_500(self, m):
@@ -111,12 +111,12 @@ class KVKPrefillTests(KVKTestMixin, TestCase):
             value="69599084", plugin="kvk", attribute=AuthAttribute.kvk
         )
         submission = SubmissionFactory.create(auth_info=auth_info)
-        values = plugin.get_prefill_values(
-            submission,
-            [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
-        )
-        expected = {}
-        self.assertEqual(values, expected)
+
+        with self.assertRaises(PrefillSkipped):
+            plugin.get_prefill_values(
+                submission,
+                [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
+            )
 
     def test_get_available_attributes(self):
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
