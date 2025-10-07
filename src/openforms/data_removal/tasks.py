@@ -1,7 +1,8 @@
 import itertools
 from datetime import timedelta
 
-from django.db.models import F
+from django.db.models import F, Q
+from django.utils import timezone
 
 import structlog
 
@@ -26,11 +27,20 @@ def delete_submissions():
         "removal_method": RemovalMethods.delete_permanently,
         "time_since_creation__gt": TIME_SINCE_CREATION_DELTA,
     }
+    # we want to keep the submissions which have an appointment connected and it's still
+    # valid. This keeps the cancel endpoint available until the expiry date.
+    future_appointments_filter = Q(
+        form__is_appointment=True, appointment__datetime__gte=timezone.now()
+    )
 
     successful_submissions_to_delete = base_qs.annotate_removal_fields(
         "successful_submissions_removal_limit",
         method_field="successful_submissions_removal_method",
-    ).filter(**filters, stage=Stages.successfully_completed)
+    ).filter(
+        Q(**filters) & ~future_appointments_filter,
+        stage=Stages.successfully_completed,
+    )
+
     log.info(
         "delete_submissions",
         kind="successful",
@@ -63,6 +73,7 @@ def delete_submissions():
     other_submissions_to_delete = Submission.objects.annotate_removal_fields(
         "all_submissions_removal_limit"
     ).filter(
+        ~future_appointments_filter,
         time_since_creation__gt=TIME_SINCE_CREATION_DELTA,
     )
     log.info(
