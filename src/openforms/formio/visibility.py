@@ -1,11 +1,11 @@
 from collections.abc import Callable
 
-from openforms.typing import JSONObject, VariableValue
+from openforms.typing import JSONObject, JSONValue, VariableValue
 
 from .datastructures import FormioConfiguration, FormioConfigurationWrapper, FormioData
 from .registry import ComponentRegistry, register
 from .typing import Column, Component, ConditionalCompareValue
-from .utils import get_component_empty_value
+from .utils import get_component_empty_value as _get_component_empty_value
 
 
 def get_conditional(
@@ -102,6 +102,12 @@ def is_hidden(
     # Note that we return whether the component is hidden, not shown, so we invert the
     # return value
     return not show if triggered else show
+
+
+def get_component_empty_value(component: Component) -> JSONValue:
+    if component["type"] in ("date", "time", "datetime"):
+        return None
+    return _get_component_empty_value(component)
 
 
 def process_visibility(
