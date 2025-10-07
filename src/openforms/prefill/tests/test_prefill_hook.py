@@ -686,7 +686,7 @@ class PrefillHookTests(TransactionTestCase):
 
         field = new_configuration["components"][0]
         assert "defaultValue" in field
-        self.assertIsNone(field["defaultValue"])
+        self.assertEqual(field["defaultValue"], "")
 
     def test_prefill_generic_exception(self):
         components: Sequence[Component] = [
@@ -722,4 +722,4 @@ class PrefillHookTests(TransactionTestCase):
 
         field = new_configuration["components"][0]
         assert "defaultValue" in field
-        self.assertIsNone(field["defaultValue"])
+        self.assertEqual(field["defaultValue"], "")
