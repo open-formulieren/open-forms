@@ -115,7 +115,7 @@ def iter_evaluate_rules(
     data: FormioData,
     configuration: FormioConfigurationWrapper,
     submission: Submission,
-) -> Iterator[tuple[ActionOperation, dict]]:
+) -> Iterator[ActionOperation]:
     """
     Iterate over the rules and evaluate the trigger, yielding action operations and
     mutations.
@@ -130,8 +130,7 @@ def iter_evaluate_rules(
       all variables present in the :class:`SubmissionValueVariableState`. This data
       structure is updated after every mutation.
     :arg submission: Submission instance.
-    :returns: An iterator yielding :class:`ActionOperation` instances and the performed
-      mutations as native Python objects.
+    :returns: An iterator yielding :class:`ActionOperation` instances.
     """
     state = submission.load_submission_value_variables_state()
     for rule in rules:
@@ -158,10 +157,8 @@ def iter_evaluate_rules(
                         for key, value in mutations.items()
                     }
                     data.update(mutations_python)
-                else:
-                    mutations_python = {}
 
-                yield operation, mutations_python
+                yield operation
 
 
 def handle_clear_on_hide(

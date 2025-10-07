@@ -122,19 +122,16 @@ def evaluate_form_logic(
     # 6.1 If the action type is to set a variable, update the data. This happens inside
     # of iter_evaluate_rules. This is the ONLY operation that is allowed to execute
     # while we're looping through the rules.
-    data_diff = FormioData()
     with elasticapm.capture_span(
         name="collect_logic_operations", span_type="app.submissions.logic"
     ):
-        for operation, mutations in iter_evaluate_rules(
+        for operation in iter_evaluate_rules(
             rules,
             data_for_evaluation,
             config_wrapper,
             submission=submission,
         ):
             mutation_operations.append(operation)
-            if mutations:
-                data_diff.update(mutations)
 
     # 7. Apply the dynamic configuration
 
@@ -169,11 +166,6 @@ def evaluate_form_logic(
     relevant_variables = submission_variables_state.get_variables_in_submission_step(
         step, include_unsaved=True
     )
-
-    # NOTE: we cannot use `data_diff` as it might contain mutations that are equal to
-    # the original value of the variable. For example, when the same variable was
-    # changed by two separate logic actions back to its original value, it would show
-    # up in the `data_diff` but it shouldn't be returned (set to `SubmissionStep.data`)
     updated_step_data = FormioData()
     for key, variable in relevant_variables.items():
         if not variable.form_variable or initial_data[key] != data_for_evaluation[key]:
@@ -236,15 +228,12 @@ def check_submission_logic(
     )
 
     mutation_operations: list[ActionOperation] = []
-    data_diff = FormioData({})
-    for operation, mutations in iter_evaluate_rules(
+    for operation in iter_evaluate_rules(
         rules, data_for_evaluation, submission.total_configuration_wrapper, submission
     ):
         mutation_operations.append(operation)
-        if mutations:
-            data_diff.update(mutations)
 
-    submission_variables_state.set_values(data_diff)
+    submission_variables_state.set_values(data_for_evaluation)
 
     # we loop over all steps because we have validations that ensure unique component
     # keys across multiple steps for the whole form.
