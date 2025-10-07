@@ -143,14 +143,15 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
         with self.assertRaises(PermissionDenied):
             prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_unsaved=True)
 
         self.assertEqual(TimelineLogProxy.objects.count(), 1)
         logs = TimelineLogProxy.objects.get()
 
         self.assertEqual(logs.extra_data["log_event"], "prefill_retrieve_failure")
         self.assertEqual(logs.extra_data["plugin_id"], "objects_api")
-        self.assertIsNone(state.variables["lastName"].value)
-        self.assertIsNone(state.variables["age"].value)
+        self.assertEqual(data["lastName"], "")
+        self.assertEqual(data["age"], "")
 
     def test_prefill_values_when_reference_returns_empty_values(self):
         # We manually create the objects instance as if it was created upfront by some external party
@@ -197,6 +198,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
 
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_unsaved=True)
 
         self.assertEqual(TimelineLogProxy.objects.count(), 2)
         ownership_check_log, prefill_log = TimelineLogProxy.objects.all()
@@ -208,5 +210,5 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
         self.assertEqual(ownership_check_log.extra_data["plugin_id"], "objects_api")
         self.assertEqual(prefill_log.extra_data["log_event"], "prefill_retrieve_empty")
         self.assertEqual(prefill_log.extra_data["plugin_id"], "objects_api")
-        self.assertIsNone(state.variables["lastName"].value)
-        self.assertIsNone(state.variables["age"].value)
+        self.assertEqual(data["lastName"], "")
+        self.assertEqual(data["age"], "")
