@@ -118,6 +118,15 @@ Available options
     combination with ``sentryDSN``. Defaults to an empty string. Should be filled if
     ``sentryDSN`` is used but it's not required.
 
+``backToTopText``:
+    The text for "Back to top" button shown in the form navigation. Defaults to an
+    empty string. Should be filled if "Back to top" button is used.
+
+``backToTopRef``:
+    The id of an HTML element, which is a destination of the "Back to top" button
+    in the form navigation. Defaults to an empty string. Should be filled if "Back to top"
+    button is used.
+
 Content Security Policy (CSP)
 -----------------------------
 
