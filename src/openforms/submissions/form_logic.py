@@ -196,7 +196,11 @@ def evaluate_conditional_logic(
       property is ignored in determining whether the component is hidden.
     """
     initial_data = None
+    _loop_count = 0
     while initial_data != data:
+        if _loop_count >= 50:  # pragma: nocover
+            raise RuntimeError("Potential infinite loop stopped!")
+        _loop_count += 1
         initial_data = deepcopy(data)
         process_visibility(
             configuration,
