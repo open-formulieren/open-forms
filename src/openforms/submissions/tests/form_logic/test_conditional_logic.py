@@ -613,3 +613,47 @@ class ConditionalLogicTests(TestCase):
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(data["file"], [])
         self.assertEqual(step.unsaved_data, {})
+
+    def test_non_registered_components(self):
+        """
+        Ensure conditional logic evaluation does not crash when non-registered
+        components are used
+        """
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "6ea64a10-7f04-470b-b3e1-2a247771ad74",
+                    "key": "nonRegisteredComponentTrigger",
+                    "label": "Non-registered trigger",
+                },
+                {
+                    "type": "6ea64a10-7f04-470b-b3e1-2a247771ad74",
+                    "key": "nonRegisteredComponentFollower",
+                    "hidden": False,
+                    "conditional": {
+                        "show": False,
+                        "when": "nonRegisteredComponentTrigger",
+                        "eq": "hide",
+                    },
+                    "clearOnHide": True,
+                },
+            ],
+            submitted_data={
+                "nonRegisteredComponentTrigger": "hide",
+                "nonRegisteredComponentFollower": "clear me",
+            },
+        )
+        step = submission.submissionstep_set.first()
+
+        evaluate_form_logic(submission, step)
+
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
+        self.assertEqual(
+            data,
+            {
+                "nonRegisteredComponentTrigger": "hide",
+                "nonRegisteredComponentFollower": "",
+            },
+        )
+        self.assertEqual(step.unsaved_data, {})

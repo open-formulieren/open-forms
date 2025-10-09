@@ -1,10 +1,9 @@
-from collections.abc import Callable
 from typing import Protocol
 
-from openforms.typing import JSONObject, JSONValue, VariableValue
+from openforms.typing import JSONObject, JSONValue
 
 from .datastructures import FormioConfiguration, FormioConfigurationWrapper, FormioData
-from .registry import ComponentRegistry, register
+from .registry import register
 from .typing import Column, Component, ConditionalCompareValue
 from .utils import get_component_empty_value as _get_component_empty_value
 
@@ -33,39 +32,6 @@ def get_conditional(
         return None
 
     return show, when, eq
-
-
-def test_conditional(
-    component: Component,
-    value: VariableValue,
-    compare_value: VariableValue,
-    _register: ComponentRegistry | None = None,
-) -> bool:
-    """Evaluate a conditional.
-
-    :param component: Component to evaluate.
-    :param value: Value to evaluate.
-    :param compare_value: Value to compare - should be fetched from the conditional in
-      the component configuration.
-    :return: Whether the conditional was triggered.
-    """
-    registry = _register or register
-
-    plugin = registry[component["type"]]
-
-    # First, see if the component has a custom test conditional
-    if (
-        triggered := plugin.test_conditional(component, value, compare_value)
-    ) is not None:
-        return triggered
-
-    # If it does not have one, default to a membership test if the component is
-    # configured as multiple, or a direct comparison otherwise
-    if component.get("multiple", False):
-        assert isinstance(value, list)
-        return compare_value in value
-    else:
-        return value == compare_value
 
 
 def is_hidden(
@@ -101,7 +67,7 @@ def is_hidden(
     trigger_component_value = data.get(trigger_component_key, None)
     trigger_component = configuration[trigger_component_key]
 
-    triggered = test_conditional(
+    triggered = register.test_conditional(
         trigger_component, trigger_component_value, compare_value
     )
 
@@ -167,7 +133,7 @@ def process_visibility(
             data[key] = get_component_empty_value(component)
 
         # Apply the visibility to children components, if applicable
-        apply_visibility(
+        register.apply_visibility(
             component,
             data,
             wrapper,
@@ -175,30 +141,3 @@ def process_visibility(
             ignore_hidden_property=ignore_hidden_property,
             get_evaluation_data=get_evaluation_data,
         )
-
-
-def apply_visibility(
-    component: Component,
-    data: FormioData,
-    wrapper: FormioConfigurationWrapper,
-    *,
-    parent_hidden: bool,
-    ignore_hidden_property: bool,
-    get_evaluation_data: Callable | None = None,
-    _register: ComponentRegistry | None = None,
-):
-    registry = _register or register
-
-    match component["type"]:
-        case "softRequiredErrors":
-            pass
-        case _:
-            plugin = registry[component["type"]]
-            plugin.apply_visibility(
-                component,
-                data,
-                wrapper,
-                parent_hidden=parent_hidden,
-                ignore_hidden_property=ignore_hidden_property,
-                get_evaluation_data=get_evaluation_data,
-            )
