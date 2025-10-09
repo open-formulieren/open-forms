@@ -120,8 +120,7 @@ def evaluate_form_logic(
     mutation_operations = []
 
     # 6.1 If the action type is to set a variable, update the data. This happens inside
-    # of iter_evaluate_rules. This is the ONLY operation that is allowed to execute
-    # while we're looping through the rules.
+    # of iter_evaluate_rules.
     with elasticapm.capture_span(
         name="collect_logic_operations", span_type="app.submissions.logic"
     ):

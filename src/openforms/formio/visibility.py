@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import Protocol
 
 from openforms.typing import JSONObject, JSONValue, VariableValue
 
@@ -6,6 +7,11 @@ from .datastructures import FormioConfiguration, FormioConfigurationWrapper, For
 from .registry import ComponentRegistry, register
 from .typing import Column, Component, ConditionalCompareValue
 from .utils import get_component_empty_value as _get_component_empty_value
+
+
+class GetEvaluationData(Protocol):
+    def __call__(self, data: FormioData) -> FormioData:
+        """Get evaluation data context."""
 
 
 def get_conditional(
@@ -116,7 +122,7 @@ def process_visibility(
     wrapper: FormioConfigurationWrapper,
     *,
     parent_hidden: bool = False,
-    get_evaluation_data: Callable | None = None,
+    get_evaluation_data: GetEvaluationData | None = None,
     components_to_ignore_hidden: set[str] | None = None,
 ) -> None:
     """
@@ -155,6 +161,9 @@ def process_visibility(
         # Need to check whether the component is present in the data because layout
         # components have no value
         if hidden and clear_on_hide and key in data:
+            # NOTE - formio.js (and our own renderer) *delete* the key entirely from the
+            # data instead, while we assign the empty value to ensure every variable is
+            # always present in the submission data
             data[key] = get_component_empty_value(component)
 
         # Apply the visibility to children components, if applicable

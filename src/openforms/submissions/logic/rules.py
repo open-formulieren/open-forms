@@ -147,7 +147,7 @@ def iter_evaluate_rules(
             # as components can be hidden by default and shown when a logic rule is
             # triggered
             if not triggered:
-                handle_clear_on_hide(rule, data, configuration)
+                _handle_clear_on_hide(rule, data, configuration)
                 continue
 
             for operation in rule.action_operations:
@@ -161,7 +161,7 @@ def iter_evaluate_rules(
                 yield operation
 
 
-def handle_clear_on_hide(
+def _handle_clear_on_hide(
     rule: FormLogic, data: FormioData, configuration: FormioConfigurationWrapper
 ):
     """
