@@ -20,6 +20,7 @@ local.py
 # tests and test assets
 src/**/tests/**
 
+src/openforms/static/sdk
 src/openforms/static/bundles
 /log/
 /static/
