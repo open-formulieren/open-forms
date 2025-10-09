@@ -6,6 +6,29 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.2.5 (2025-10-09)
+==================
+
+Regular bugfix release.
+
+* [:backend:`5615`] Fixed the ZGW API's registration reporting as failure when case
+  properties are used.
+* Fixed Ogone Legacy merchant ID labels not being displayed in dropdown.
+* [:backend:`5507`] Fixed mimetype detection for .msg files.
+* [:backend:`5624`] Fixed broken StUF-BG request for children (family members)
+  prefill request.
+* [:backend:`5464`] Fixed a crash that occurred when incomplete options were used in
+  JSON schema generation.
+
+3.1.9 (2025-10-06)
+==================
+
+Final bugfix release in the ``3.1.x`` series.
+
+* [:backend:`5615`] Fixed the ZGW API's registration reporting as failure when case properties are used.
+* Fixed Ogone Legacy merchant ID labels not being displayed in dropdown.
+* [:backend:`5507`] Fixed mimetype detection for .msg files.
+
 3.3.0 "Donders mooi" (2025-10-02)
 =================================
 
