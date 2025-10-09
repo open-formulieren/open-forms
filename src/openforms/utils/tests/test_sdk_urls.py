@@ -21,7 +21,7 @@ class StableSDKUrlTests(TestCase):
 
             self.assertRedirects(
                 js_response,
-                f"{base}1.2.3/open-forms-sdk.js",
+                f"{base}1.2.3/bundles/open-forms-sdk.js",
                 fetch_redirect_response=False,
             )
 
@@ -31,7 +31,7 @@ class StableSDKUrlTests(TestCase):
 
             self.assertRedirects(
                 js_response,
-                f"{base}1.2.3/open-forms-sdk.mjs",
+                f"{base}1.2.3/bundles/open-forms-sdk.mjs",
                 fetch_redirect_response=False,
             )
 
@@ -41,7 +41,7 @@ class StableSDKUrlTests(TestCase):
 
             self.assertRedirects(
                 css_response,
-                f"{base}1.2.3/open-forms-sdk.css",
+                f"{base}1.2.3/bundles/open-forms-sdk.css",
                 fetch_redirect_response=False,
             )
 

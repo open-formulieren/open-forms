@@ -11,6 +11,8 @@ def sdk_urls(request):
     if settings.SDK_RELEASE != "latest":
         sdk_path /= settings.SDK_RELEASE
 
+    sdk_path /= "bundles"
+
     css_path = str(sdk_path / "open-forms-sdk.css")
     umd_bundle_path = str(sdk_path / "open-forms-sdk.js")
     esm_bundle_path = str(sdk_path / "open-forms-sdk.mjs")

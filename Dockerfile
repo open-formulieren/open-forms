@@ -142,7 +142,7 @@ ENV DJANGO_SETTINGS_MODULE=openforms.conf.docker PYTHONOPTIMIZE=1
 ARG EXTENSIONS=''
 ENV OPEN_FORMS_EXTENSIONS=${EXTENSIONS}
 
-ARG SECRET_KEY=dummy
+ARG SECRET_KEY=dummy OTEL_SDK_DISABLED=true
 
 LABEL org.label-schema.vcs-ref=$COMMIT_HASH \
       org.label-schema.vcs-url="https://github.com/open-formulieren/open-forms" \

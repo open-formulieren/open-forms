@@ -166,8 +166,8 @@ this particular SDK build for local backend dev and testing.
       npm install
       npm run build
 
-   This produces the production build artifacts in the ``dist`` folder, it should contain
-   ``open-forms-sdk.js`` and ``open-forms-sdk.css`` files.
+   This produces the production build artifacts in the ``dist/bundles`` folder, it should
+   contain ``open-forms-sdk.mjs`` and ``open-forms-sdk.css`` files.
 
 2. Next, symlink this so it gets picked up by Django's staticfiles:
 
