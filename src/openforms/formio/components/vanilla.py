@@ -5,7 +5,8 @@ Custom component types (defined by us or third parties) need to be organized in 
 adjacent custom.py module.
 """
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
+from copy import deepcopy
 from datetime import time
 from typing import TYPE_CHECKING, Any
 
@@ -30,6 +31,7 @@ from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
+from openforms.submissions.form_logic import process_visibility
 from openforms.submissions.models import EmailVerification
 from openforms.typing import JSONObject
 from openforms.utils.json_schema import to_multiple
@@ -37,7 +39,7 @@ from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
 
 from ..api.validators import MimeTypeValidator
-from ..datastructures import FormioData
+from ..datastructures import FormioConfigurationWrapper, FormioData
 from ..dynamic_config.dynamic_options import add_options_to_config
 from ..formatters.formio import (
     CheckboxFormatter,
@@ -59,9 +61,11 @@ from ..registry import BasePlugin, register
 from ..serializers import build_serializer
 from ..service import as_json_schema
 from ..typing import (
+    ColumnsComponent,
     Component,
     ContentComponent,
     EditGridComponent,
+    FieldsetComponent,
     FileComponent,
     RadioComponent,
     SelectBoxesComponent,
@@ -757,6 +761,18 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
 
         return base
 
+    @staticmethod
+    def test_conditional(
+        component: SelectComponent, value: dict[str, str], compare_value: str
+    ) -> bool:
+        # Selectboxes need some special attention as we need to check whether the
+        # value corresponding to the key ``compare_value`` is set to ``True`` in the
+        # dictionary.
+        # NOTE: the previous implementation defaulted to the direct comparison, but
+        # this is not useful for selectboxes components, because a user can only set
+        # a single compare value, not an object.
+        return value.get(compare_value, False)
+
 
 @register("select")
 class Select(BasePlugin[SelectComponent]):
@@ -1111,3 +1127,118 @@ class EditGrid(BasePlugin[EditGridComponent]):
             base["maxItems"] = max_length
 
         return base
+
+    @staticmethod
+    def apply_visibility(
+        component: EditGridComponent,
+        data: FormioData,
+        wrapper: FormioConfigurationWrapper,
+        *,
+        parent_hidden: bool,
+        ignore_hidden_property: bool,
+        get_evaluation_data: Callable | None = None,
+    ):
+        key = component["key"]
+        # We only need to process children if the value was not already cleared.
+        if not (edit_grid_data := data[key]):
+            return
+
+        # We might be dealing with nested editgrids
+        outer_get_evaluation_data = (
+            get_evaluation_data if get_evaluation_data else lambda x: x
+        )
+
+        # If the hidden property of the parent should be ignored, so should it for its
+        # children.
+        components_to_ignore_hidden = (
+            set(child["key"] for child in component["components"])
+            if ignore_hidden_property
+            else None
+        )
+        edit_grid_data_new = []
+
+        # For evaluation of the conditionals, we only care about the current item, so we
+        # set it to the editgrid data directly. Note that we can create a copy of the
+        # complete context just once, because components inside an editgrid item cannot
+        # affect components outside the editgrid.
+        inner_evaluation_data = deepcopy(data)
+
+        def get_evaluation_data(item_data_: FormioData) -> FormioData:
+            inner_evaluation_data[key] = item_data_
+            return outer_get_evaluation_data(inner_evaluation_data)
+
+        for item_data in edit_grid_data:
+            process_visibility(
+                component,
+                item_data,
+                wrapper,
+                parent_hidden=parent_hidden,
+                get_evaluation_data=get_evaluation_data,
+                components_to_ignore_hidden=components_to_ignore_hidden,
+            )
+            edit_grid_data_new.append(item_data)
+
+        data[key] = edit_grid_data_new
+
+
+@register("columns")
+class Columns(BasePlugin[ColumnsComponent]):
+    @staticmethod
+    def apply_visibility(
+        component: ColumnsComponent,
+        data: FormioData,
+        wrapper: FormioConfigurationWrapper,
+        *,
+        parent_hidden: bool,
+        ignore_hidden_property: bool,
+        get_evaluation_data: Callable | None = None,
+    ):
+        for column in component["columns"]:
+            # If the hidden property of the parent should be ignored, so should it for
+            # its children.
+            components_to_ignore_hidden = (
+                set(child["key"] for child in column["components"])
+                if ignore_hidden_property
+                else None
+            )
+
+            process_visibility(
+                column,
+                data,
+                wrapper,
+                parent_hidden=parent_hidden,
+                get_evaluation_data=get_evaluation_data,
+                components_to_ignore_hidden=components_to_ignore_hidden,
+            )
+
+
+@register("fieldset")
+class Fieldset(BasePlugin[FieldsetComponent]):
+    @staticmethod
+    def apply_visibility(
+        component: FieldsetComponent,
+        data: FormioData,
+        wrapper: FormioConfigurationWrapper,
+        *,
+        parent_hidden: bool,
+        ignore_hidden_property: bool,
+        get_evaluation_data: Callable | None = None,
+    ):
+        # If the hidden property of the parent should be ignored, so should it for
+        # its children.
+        components_to_ignore_hidden = (
+            set(child["key"] for child in component["components"])
+            if ignore_hidden_property
+            else None
+        )
+
+        # We need to process the children, so we just pass the component as the
+        # configuration.
+        process_visibility(
+            component,
+            data,
+            wrapper,
+            parent_hidden=parent_hidden,
+            get_evaluation_data=get_evaluation_data,
+            components_to_ignore_hidden=components_to_ignore_hidden,
+        )

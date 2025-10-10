@@ -21,6 +21,8 @@ from ..mixins import SubmissionsMixin
 
 
 class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
+    maxDiff = None
+
     def test_update_not_applicable_steps(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -249,7 +251,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 {"type": "time", "key": "time"},
                 {"type": "date", "key": "date"},
                 {"type": "datetime", "key": "datetime"},
-                {"type": "string", "key": "result"},
+                {"type": "textfield", "key": "result"},
                 {"type": "date", "key": "resultDate"},
                 {"type": "datetime", "key": "resultDatetime"},
             ]
@@ -402,4 +404,430 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         response = self.client.post(endpoint, data={"data": {"textfield": "bar"}})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # No changes during logic evaluation, so the returned data should be empty
+        self.assertEqual(response.json()["step"]["data"], {})
+
+    def test_clear_on_hide_behaviour(self):
+        """
+        Test clear-on-hide behaviour in two ways:
+          1. Components that are shown by default and get hidden when a logic rule
+             triggers
+          2. Components that are hidden by default and get shown when a logic rule
+             triggers (key contains "Inverted"). This means they become hidden again
+             when a logic rule DOESN'T trigger.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "checkbox",
+                    "type": "checkbox",
+                    "label": "Checkbox",
+                },
+                {
+                    "key": "textfield",
+                    "type": "textfield",
+                    "label": "Textfield",
+                    "clearOnHide": True,
+                    "hidden": False,
+                },
+                {
+                    "key": "textfieldInverted",
+                    "type": "textfield",
+                    "label": "Textfield Inverted",
+                    "clearOnHide": True,
+                    "hidden": True,
+                },
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                    "clearOnHide": True,
+                    "hidden": False,
+                },
+                {
+                    "key": "dateInverted",
+                    "type": "date",
+                    "label": "Date Inverted",
+                    "clearOnHide": True,
+                    "hidden": True,
+                },
+                {
+                    "key": "fieldset",
+                    "type": "fieldset",
+                    "label": "Fieldset",
+                    "clearOnHide": True,
+                    "hidden": False,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInFieldset",
+                            "label": "Textfield in Fieldset",
+                            "clearOnHide": True,
+                        },
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInFieldsetWithoutClearOnHide",
+                            "label": "Textfield in Fieldset w/o clearOnHide",
+                            "clearOnHide": False,
+                        },
+                    ],
+                },
+                {
+                    "key": "fieldsetInverted",
+                    "type": "fieldset",
+                    "label": "FieldsetInverted",
+                    "clearOnHide": True,
+                    "hidden": True,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInInvertedFieldset",
+                            "label": "Textfield in inverted Fieldset",
+                            "clearOnHide": True,
+                        },
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInInvertedFieldsetWithoutClearOnHide",
+                            "label": "Textfield in inverted Fieldset w/o clearOnHide",
+                            "clearOnHide": False,
+                        },
+                    ],
+                },
+                {
+                    "key": "editgrid",
+                    "type": "editgrid",
+                    "label": "Editgrid",
+                    "clearOnHide": True,
+                    "hidden": False,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInEditgrid",
+                            "label": "Textfield in Editgrid",
+                            "clearOnHide": True,
+                        },
+                    ],
+                },
+                {
+                    "key": "editgridInverted",
+                    "type": "editgrid",
+                    "label": "Editgrid inverted",
+                    "clearOnHide": True,
+                    "hidden": True,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInInvertedEditgrid",
+                            "label": "Textfield in inverted Editgrid",
+                            "clearOnHide": True,
+                        },
+                    ],
+                },
+            ]
+        )
+
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": key,
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": state,
+                    },
+                }
+                for key, state in [
+                    ("textfield", True),
+                    ("textfieldInverted", False),
+                    ("date", True),
+                    ("dateInverted", False),
+                    ("fieldset", True),
+                    ("fieldsetInverted", False),
+                    ("editgrid", True),
+                    ("editgridInverted", False),
+                ]
+            ],
+        )
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": submission.form.formstep_set.first().uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        with self.subTest("Logic rule is triggered"):
+            # Assuming we go from an unchecked to a checked state for the checkbox, all
+            # components with ``"hidden": False`` will be visible initially
+            response = self.client.post(
+                endpoint,
+                data={
+                    "data": {
+                        "checkbox": True,
+                        "textfield": "a",
+                        "date": "2025-08-27",
+                        "textfieldInFieldset": "b",
+                        "textfieldInFieldsetWithoutClearOnHide": "c",
+                        "editgrid": [
+                            {"textfieldInEditgrid": "d"},
+                            {"textfieldInEditgrid": "e"},
+                        ],
+                    },
+                },
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(
+                response.json()["step"]["data"],
+                {
+                    "textfield": "",
+                    "date": "",
+                    "textfieldInFieldset": "",
+                    "editgrid": [],
+                },
+            )
+
+        with self.subTest("Logic rule is not triggered"):
+            # Assuming we go from a checked to an unchecked state for the checkbox, all
+            # components with ``"hidden": True`` will be visible initially
+            response = self.client.post(
+                endpoint,
+                data={
+                    "data": {
+                        "checkbox": False,
+                        "textfieldInverted": "a",
+                        "dateInverted": "2025-08-27",
+                        "textfieldInInvertedFieldset": "b",
+                        "textfieldInInvertedFieldsetWithoutClearOnHide": "c",
+                        "editgridInverted": [
+                            {"textfieldInInvertedEditgrid": "d"},
+                            {"textfieldInInvertedEditgrid": "e"},
+                        ],
+                    },
+                },
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(
+                response.json()["step"]["data"],
+                {
+                    "textfieldInverted": "",
+                    "dateInverted": "",
+                    "textfieldInInvertedFieldset": "",
+                    "editgridInverted": [],
+                },
+            )
+
+    def test_clear_on_hide_behaviour_with_multiple_steps(self):
+        """
+        Ensure that logic check only returns cleared values relevant for the current
+        step.
+        """
+        form = FormFactory.create()
+        step_1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "Show all textfields",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfieldStep1",
+                        "hidden": True,
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+        step_2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfieldStep2",
+                        "hidden": True,
+                        "clearOnHide": True,
+                    }
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        # We assume the user has already gone through both of the steps, entered some
+        # data, and returned to the first step
+        submission_step_1 = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step_1,
+            data={"checkbox": True, "textfieldStep1": "some data"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step_2,
+            data={"textfieldStep2": "some data"},
+        )
+
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": "textfieldStep1",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": False,
+                    },
+                },
+                {
+                    "component": "textfieldStep2",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": False,
+                    },
+                },
+            ],
+        )
+
+        with self.subTest("logic in step 2"):
+            endpoint = reverse(
+                "api:submission-steps-logic-check",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": step_1.uuid,
+                },
+            )
+            self._add_submission_to_session(submission)
+            response = self.client.post(
+                endpoint,
+                data={
+                    "data": {
+                        "checkbox": False,
+                        "textfieldStep1": "some data",
+                    },
+                },
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+            # Ensure that we only receive cleared data for the first step
+            self.assertEqual(
+                response.json()["step"]["data"],
+                {"textfieldStep1": ""},
+            )
+
+        # Simulate navigating to the next step
+        submission_step_1.data = {"checkbox": False, "textfieldStep1": ""}
+
+        with self.subTest("logic in step 2"):
+            endpoint = reverse(
+                "api:submission-steps-logic-check",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": step_2.uuid,
+                },
+            )
+            self._add_submission_to_session(submission)
+            response = self.client.post(
+                endpoint,
+                data={
+                    "data": {"textfieldStep2": "some data"},
+                },
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+            # Ensure that we only receive cleared data for the second step
+            self.assertEqual(
+                response.json()["step"]["data"],
+                {"textfieldStep2": ""},
+            )
+
+    def test_clear_on_hide_behaviour_with_conditional_and_logic_rule(self):
+        """
+        Ensure that a field which is hidden by default, and affected by both a
+        conditional and a logic rule, is not cleared.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "alienCheckbox",
+                    "type": "checkbox",
+                    "label": "I am an alien",
+                },
+                {
+                    "key": "questionCheckbox",
+                    "type": "checkbox",
+                    "label": "I want to answer the following question",
+                },
+                {
+                    "key": "textfield",
+                    "type": "textfield",
+                    "label": "What do you think about clear on hide?",
+                    "clearOnHide": True,
+                    "hidden": True,
+                    "conditional": {
+                        "show": True,
+                        "when": "questionCheckbox",
+                        "eq": True,
+                    },
+                },
+            ]
+        )
+
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "alienCheckbox"}, True]},
+            actions=[
+                {
+                    "component": "questionCheckbox",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                },
+                {
+                    "component": "textfield",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                },
+            ],
+        )
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": submission.submissionstep_set.first().form_step.uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        # Note: we need to make sure we hit the code path for the case the logic rule is
+        # not triggered
+        response = self.client.post(
+            endpoint,
+            data={
+                "data": {
+                    "alienCheckbox": False,
+                    "questionCheckbox": True,
+                    "textfield": "Clear on hide is amazing",
+                },
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Ensure that nothing is cleared
         self.assertEqual(response.json()["step"]["data"], {})

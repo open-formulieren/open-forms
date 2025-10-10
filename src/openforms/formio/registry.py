@@ -13,6 +13,7 @@ the public API better defined and smaller.
 """
 
 import warnings
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Generic, Literal, Protocol, TypeVar
 
 from django.utils.translation import gettext as _
@@ -22,9 +23,9 @@ from rest_framework.request import Request
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, VariableValue
 
-from .datastructures import FormioData
+from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
 from .utils import is_layout_component
 
@@ -118,6 +119,46 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         """
         raise NotImplementedError()
 
+    @staticmethod
+    def apply_visibility(
+        component: ComponentT,
+        data: FormioData,
+        wrapper: FormioConfigurationWrapper,
+        *,
+        parent_hidden: bool,
+        ignore_hidden_property: bool,
+        get_evaluation_data: Callable | None = None,
+    ) -> None:
+        """
+        Apply (conditional) visibility of this component. This routine should be
+        implemented in the child class.
+
+        :param component: Component configuration.
+        :param data: Data used for processing.
+        :param wrapper: Formio configuration wrapper. Required for component lookup.
+        :param parent_hidden: Indicates whether the parent component was hidden.
+        :param get_evaluation_data: Function used to get the evaluation data used during
+          evaluation of the conditional.
+        :param ignore_hidden_property: Whether to ignore the "hidden" property during
+          further processing of its children.
+        """
+
+    @staticmethod
+    def test_conditional(
+        component: ComponentT, value: VariableValue, compare_value: VariableValue
+    ) -> bool | None:
+        """
+        Perform a component-specific comparison whether a conditional is triggered.
+
+        :param component: Component to evaluate.
+        :param value: Value to evaluate.
+        :param compare_value: Value to compare - should be fetched from the conditional
+          in the component configuration.
+        :return: Whether the conditional was triggered, or ``None`` if not overridden in
+          the child class.
+        """
+        return None
+
 
 class ComponentRegistry(BaseRegistry[BasePlugin]):
     module = "formio_components"
@@ -147,6 +188,73 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         component_plugin = self[component_type]
         formatter = component_plugin.formatter(as_html=as_html)
         return formatter(component, value)
+
+    def test_conditional(
+        self, component: Component, value: VariableValue, compare_value: VariableValue
+    ) -> bool:
+        """
+        Perform a component-specific comparison whether a conditional is triggered.
+
+        :param component: Component to evaluate.
+        :param value: Value to evaluate.
+        :param compare_value: Value to compare - should be fetched from the conditional
+          in the component configuration.
+        :return: Whether the conditional was triggered.
+        """
+        if (component_type := component["type"]) not in self:
+            component_type = "default"
+
+        plugin = self[component_type]
+
+        # First, see if the component has a custom test conditional
+        if (
+            triggered := plugin.test_conditional(component, value, compare_value)
+        ) is not None:
+            return triggered
+
+        # If it does not have one, default to a membership test if the component is
+        # configured as multiple, or a direct comparison otherwise
+        if component.get("multiple", False):
+            assert isinstance(value, list)
+            return compare_value in value
+        else:
+            return value == compare_value
+
+    def apply_visibility(
+        self,
+        component: Component,
+        data: FormioData,
+        wrapper: FormioConfigurationWrapper,
+        *,
+        parent_hidden: bool,
+        ignore_hidden_property: bool,
+        get_evaluation_data: Callable | None = None,
+    ) -> None:
+        """
+        Apply (conditional) visibility of this component. This routine should be
+        implemented in the child class.
+
+        :param component: Component configuration.
+        :param data: Data used for processing.
+        :param wrapper: Formio configuration wrapper. Required for component lookup.
+        :param parent_hidden: Indicates whether the parent component was hidden.
+        :param get_evaluation_data: Function used to get the evaluation data used during
+          evaluation of the conditional.
+        :param ignore_hidden_property: Whether to ignore the "hidden" property during
+          further processing of its children.
+        """
+        if (component_type := component["type"]) not in self:
+            return
+
+        plugin = self[component_type]
+        plugin.apply_visibility(
+            component,
+            data,
+            wrapper,
+            parent_hidden=parent_hidden,
+            ignore_hidden_property=ignore_hidden_property,
+            get_evaluation_data=get_evaluation_data,
+        )
 
     def update_config(
         self, component: Component, submission: "Submission", data: FormioData

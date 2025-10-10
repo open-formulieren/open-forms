@@ -76,3 +76,18 @@ class FormLogic(OrderedModel):
         for action in map(compile_action_operation, self.actions):
             action.rule = self
             yield action
+
+    @property
+    def hidden_actions(self):
+        """Generator which yields actions that change the "hidden" property."""
+        from openforms.submissions.logic.actions import PropertyAction
+
+        for action in self.action_operations:
+            if not isinstance(action, PropertyAction) or action.property != "hidden":
+                continue
+            yield action
+
+    @property
+    def components_in_hidden_actions(self) -> set[str]:
+        """Set of components for which an action changes the "hidden" property."""
+        return {action.component for action in self.hidden_actions}

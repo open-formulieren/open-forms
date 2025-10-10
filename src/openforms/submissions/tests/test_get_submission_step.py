@@ -675,7 +675,9 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                         "type": "textfield",
                         "key": key,
                         "defaultValue": "testCustomType",
-                        "hidden": False,
+                        "validate": {
+                            "required": False,
+                        },
                     }
                 )
 
@@ -704,7 +706,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                     "action": {
                         "type": "property",
                         "property": {
-                            "value": "hidden",
+                            "value": "validate.required",
                             "type": "bool",
                         },
                         "state": True,
@@ -727,7 +729,10 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         )
         self._add_submission_to_session(submission)
 
-        with patch("openforms.formio.dynamic_config.register", new=register):
+        with (
+            patch("openforms.formio.dynamic_config.register", new=register),
+            patch("openforms.formio.visibility.register", new=register),
+        ):
             response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -741,7 +746,9 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 "type": "textfield",
                 "key": "testCustomType",
                 "defaultValue": "testCustomType",
-                "hidden": True,
+                "validate": {
+                    "required": True,
+                },
             },
         ]
         self.assertEqual(components, expected)

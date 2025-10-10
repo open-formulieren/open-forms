@@ -1,18 +1,18 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
-
-from django.utils.functional import empty
 
 import elasticapm
 
 from openforms.formio.service import (
+    FormioConfigurationWrapper,
     FormioData,
     get_dynamic_configuration,
     inject_variables,
+    process_visibility,
 )
 from openforms.formio.typing import FormioConfiguration
-from openforms.formio.utils import get_component_empty_value
 
 from .logic.actions import ActionOperation
 from .logic.rules import get_rules_to_evaluate, iter_evaluate_rules
@@ -45,19 +45,21 @@ def evaluate_form_logic(
     2. Prefilled data is saved at submission start and available in the variables
     3. Loading the variable state, which populates non-saved values with their defaults
     4. Apply any dirty data (unsaved) to the variable state
-    5. Evaluate the logic rules in order, for each action in each triggered rule:
+    5. Evaluate conditional logic
+    6. Evaluate the logic rules in order, for each action in each triggered rule:
 
-       1. If a variable value is being updated, update the data structure
-       2. Else record the action to perform to the configuration (but don't apply it yet!)
+       1. If a variable value is being updated, update the data structure (also includes
+          handling the clear-on-hide behaviour)
+       2. Else record the action to perform to the configuration (but don't apply it
+          yet!)
 
-    6. Apply the dynamic configuration
+    7. Apply the dynamic configuration
 
-       1. Apply the component property mutations that were recorded in 5
-       2. Handle the 'clearOnHide' property
-       3. Interpolate the component configuration with the variables
-       4. Handle custom formio types
+       1. Apply the component property mutations that were recorded in 6
+       2. Interpolate the component configuration with the variables
+       3. Handle custom formio types
 
-    7. Update relevant data structures
+    8. Update relevant data structures
 
        1. Update the variables state
        2. Create a data difference between before and after applying form logic
@@ -88,35 +90,49 @@ def evaluate_form_logic(
     # 4. Apply the (dirty) data to the variable state.
     if unsaved_data is not None:
         submission_variables_state.set_values(unsaved_data)
-    initial_data = submission_variables_state.get_data(
-        include_unsaved=True, include_static_variables=True
-    )
     data_for_evaluation = submission_variables_state.get_data(
         include_unsaved=True, include_static_variables=True
     )
 
+    # 5. Evaluate conditional logic. We need to do this before evaluating backend logic
+    # to make sure we are not processing with outdated data. The frontend will not send
+    # data for fields that were (conditionally) hidden, so simply applying the unsaved
+    # data to the state will not remove existing values of those fields.
     rules = get_rules_to_evaluate(submission, step)
+    # These components are affected by a hidden property action, which means we cannot
+    # check the "hidden" property of the component during conditional logic evaluation
+    components_with_hidden_action = set()
+    for rule in rules:
+        components_with_hidden_action |= rule.components_in_hidden_actions
 
-    # 5. Evaluate the logic rules in order
+    evaluate_conditional_logic(
+        config_wrapper.configuration,
+        data_for_evaluation,
+        config_wrapper,
+        components_with_hidden_action,
+    )
+
+    # 6. Evaluate the logic rules in order
+    # Now that conditional logic is resolved and matches the state of the frontend, we
+    # can get the initial data before evaluating backend logic. This will be used to
+    # create a data difference at the end
+    initial_data = deepcopy(data_for_evaluation)
     mutation_operations = []
 
-    # 5.1 If the action type is to set a variable, update the data. This happens inside
-    # of iter_evaluate_rules. This is the ONLY operation that is allowed to execute
-    # while we're looping through the rules.
-    data_diff = FormioData()
+    # 6.1 If the action type is to set a variable, update the data. This happens inside
+    # of iter_evaluate_rules.
     with elasticapm.capture_span(
         name="collect_logic_operations", span_type="app.submissions.logic"
     ):
-        for operation, mutations in iter_evaluate_rules(
+        for operation in iter_evaluate_rules(
             rules,
             data_for_evaluation,
+            config_wrapper,
             submission=submission,
         ):
             mutation_operations.append(operation)
-            if mutations:
-                data_diff.update(mutations)
 
-    # 6. Apply the dynamic configuration
+    # 7. Apply the dynamic configuration
 
     # we need to apply the context-specific configurations before we can apply
     # mutations based on logic, which is then in turn passed to the serializer(s)
@@ -126,47 +142,22 @@ def evaluate_form_logic(
         data=data_for_evaluation,
     )
 
-    # 6.1 Apply the component mutation operations
+    # 7.1 Apply the component mutation operations
     for mutation in mutation_operations:
         mutation.apply(step, config_wrapper)
 
-    # 6.2 Handle 'clearOnHide' property
-    # XXX: See #2340 and #2409 - we need to clear the values of components that are
-    # (eventually) hidden BEFORE we do any further processing. This is only a bandaid
-    # fix, as the (stale) data has potentially been input for other logic rules.
-    # Note that only the dirty data logic check acts on these differences.
-    for component in config_wrapper:
-        key = component["key"]
-        is_visible = config_wrapper.is_visible_in_frontend(key, data_for_evaluation)
-        if is_visible:
-            continue
-
-        # Reset the value of any field that may have become hidden again after
-        # evaluating the logic
-        original_value = initial_data.get(key, empty)
-        empty_value = get_component_empty_value(component)
-        if original_value is empty or original_value == empty_value:
-            continue
-
-        if not component.get("clearOnHide", True):
-            continue
-
-        # clear the value
-        data_for_evaluation[key] = empty_value
-        data_diff[key] = empty_value
-
-    # 6.3 Interpolate the component configuration with the variables.
+    # 7.2 Interpolate the component configuration with the variables.
     inject_variables(config_wrapper, data_for_evaluation)
 
-    # 6.4 Handle custom formio types
+    # 7.3 Handle custom formio types
     # TODO: this needs to be lifted out of :func:`get_dynamic_configuration` so that it
     #  can use variables.
 
-    # 7. Form evaluation completed
-    # 7.1 All the processing is now complete, so we can update the state.
-    submission_variables_state.set_values(data_diff)
+    # 8. Form evaluation completed
+    # 8.1 All the processing is now complete, so we can update the state.
+    submission_variables_state.set_values(data_for_evaluation)
 
-    # 7.2 Build a difference in data for the step. It is important that we only keep the
+    # 8.2 Build a difference in data for the step. It is important that we only keep the
     # changes in the data, so that old values do not overwrite otherwise debounced
     # client-side data changes
 
@@ -174,11 +165,6 @@ def evaluate_form_logic(
     relevant_variables = submission_variables_state.get_variables_in_submission_step(
         step, include_unsaved=True
     )
-
-    # NOTE: we cannot use `data_diff` as it might contain mutations that are equal to
-    # the original value of the variable. For example, when the same variable was
-    # changed by two separate logic actions back to its original value, it would show
-    # up in the `data_diff` but it shouldn't be returned (set to `SubmissionStep.data`)
     updated_step_data = FormioData()
     for key, variable in relevant_variables.items():
         if not variable.form_variable or initial_data[key] != data_for_evaluation[key]:
@@ -188,6 +174,40 @@ def evaluate_form_logic(
     step._form_logic_evaluated = True
 
     return config_wrapper.configuration
+
+
+def evaluate_conditional_logic(
+    configuration: FormioConfiguration,
+    data: FormioData,
+    wrapper: FormioConfigurationWrapper,
+    components_to_ignore_hidden: set[str],
+):
+    """
+    Evaluate conditional logic through iteration.
+
+    Note that this assumes the data converges to a final state, so no cycles can be
+    present in the complete conditional logic tree.
+
+    :param configuration: Formio configuration.
+    :param data: Data used for evaluation. Mutations will be applied to the data
+      directly.
+    :param wrapper: Formio configuration wrapper. Required for component lookup.
+    :param components_to_ignore_hidden: Set of components for which the "hidden"
+      property is ignored in determining whether the component is hidden.
+    """
+    initial_data = None
+    _loop_count = 0
+    while initial_data != data:
+        if _loop_count >= 50:  # pragma: nocover
+            raise RuntimeError("Potential infinite loop stopped!")
+        _loop_count += 1
+        initial_data = deepcopy(data)
+        process_visibility(
+            configuration,
+            data,
+            wrapper,
+            components_to_ignore_hidden=components_to_ignore_hidden,
+        )
 
 
 def check_submission_logic(
@@ -211,15 +231,12 @@ def check_submission_logic(
     )
 
     mutation_operations: list[ActionOperation] = []
-    data_diff = FormioData({})
-    for operation, mutations in iter_evaluate_rules(
-        rules, data_for_evaluation, submission
+    for operation in iter_evaluate_rules(
+        rules, data_for_evaluation, submission.total_configuration_wrapper, submission
     ):
         mutation_operations.append(operation)
-        if mutations:
-            data_diff.update(mutations)
 
-    submission_variables_state.set_values(data_diff)
+    submission_variables_state.set_values(data_for_evaluation)
 
     # we loop over all steps because we have validations that ensure unique component
     # keys across multiple steps for the whole form.
@@ -232,4 +249,7 @@ def check_submission_logic(
             configuration = step.form_step.form_definition.configuration_wrapper
             mutation.apply(step, configuration)
 
+    # Note that the total configuration wrapper is a cached property, so we need to
+    # reset to ensure we are not operating on outdated configurations later
+    submission._total_configuration_wrapper = None
     submission._form_logic_evaluated = True
