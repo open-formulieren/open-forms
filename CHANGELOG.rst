@@ -34,6 +34,8 @@ Project maintenance
 * Removed some stale documentation.
 * Updated compatible versions (backend/API/SDK) documentation.
 * [:sdk:`445`] Updated the references to the new static assets locations in the SDK.
+* [:backend:`5134`] Addressed some edge cases where logic rule evaluations could yield
+  unexpected results, by fixing the ``clearOnHide`` behaviour implementation.
 
 3.2.5 (2025-10-09)
 ==================
