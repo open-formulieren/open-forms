@@ -6,6 +6,35 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.4.0-alpha.0 (2025-10-10)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Bugfixes
+--------
+
+* [:backend:`5134`] Fixed deriving the correct "empty value" value for date/time/datetime
+  variables.
+* Fixed a crash when trying to save a form with a component where the ``multiple``
+  property was changed.
+* [:backend:`3640`] Fixed a theoretical case where a submission would be able to be
+  suspended while registration is in progress or completed.
+* [:backend:`5429`] Fixed component label being truncated in the preview panel of the
+  configuration modal.
+* [:backend:`5391`] Fixed submission logs (incorrectly) reporting empty results for
+  skipped prefill operations.
+* [:backend:`3544`] Fixed submission pruning potentially deleting submissions that still
+  have future appointments associated with them.
+
+Project maintenance
+-------------------
+
+* Removed the deprecated privacy policy config endpoint.
+* Removed some stale documentation.
+* Updated compatible versions (backend/API/SDK) documentation.
+* [:sdk:`445`] Updated the references to the new static assets locations in the SDK.
+
 3.2.5 (2025-10-09)
 ==================
 
