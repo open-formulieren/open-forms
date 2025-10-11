@@ -1,0 +1,9 @@
+[
+    {
+        "model": "config.mapwfstilelayer",
+        "fields": {
+            "name": "Interactief Basisregistratie Adressen en Gebouwen (BAG)",
+            "url": "https://service.pdok.nl/lv/bag/wfs/v2_0?request=getCapabilities&service=WFS"
+        }
+    }
+]

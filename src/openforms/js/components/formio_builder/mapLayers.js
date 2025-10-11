@@ -1,7 +1,7 @@
 import jsonScriptToVar from 'utils/json-script';
 
 const MAP_WMS_LAYERS = jsonScriptToVar('config-MAP_WMS_LAYERS', {default: []});
-const MAP_WFS_LAYERS = [];
+const MAP_WFS_LAYERS = jsonScriptToVar('config-MAP_WFS_LAYERS', {default: []});
 
 export const getMapOverlayTileLayers = async () => {
   const layers = [
