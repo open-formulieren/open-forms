@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from contextlib import contextmanager
 from datetime import date, datetime
 from functools import cached_property, wraps
 from typing import ParamSpec, TypeVar
@@ -14,7 +15,7 @@ from openforms.formio.typing import Component
 from ...base import AppointmentDetails, BasePlugin, CustomerDetails, Location, Product
 from ...registry import register
 from .constants import CustomerFields
-from .exceptions import GracefulJccRestException
+from .exceptions import GracefulJccRestException, JccRestException
 from .models import JccRestConfig
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -22,6 +23,18 @@ logger = structlog.stdlib.get_logger(__name__)
 Param = ParamSpec("Param")
 T = TypeVar("T")
 FuncT = Callable[Param, T]
+
+
+# TODO-5696: we might be able to include the error message from the response
+@contextmanager
+def log_api_errors(event: str):
+    try:
+        yield
+    except requests.RequestException as exc:
+        logger.exception(event, exc_info=exc)
+        raise GracefulJccRestException("JCC REST API call failed") from exc
+    except Exception as exc:
+        raise JccRestException from exc
 
 
 def with_graceful_default(default: T):
@@ -92,10 +105,38 @@ class JccRestPlugin(BasePlugin):
     ) -> list[Product]:
         return []
 
-    def _get_all_locations(self, client) -> list[Location]:
-        # TODO
-        # Fix the argument's type (client), should be an instance of the Client class
-        return []
+    @staticmethod
+    def _create_location(location) -> Location:
+        """
+        Create a location from the API response data.
+
+        TODO-5696: would it make sense to type hint the location?
+
+        Source: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api-docs-v1/index.html#tag/WARPLocation/paths/~1api~1warp~1v1~1location~1%7Bid%7D/get
+
+        Note: except for "id", all properties are listed in the API spec as
+        "[type] or null"
+        """
+        address = location.get("address", {})
+
+        # Note: the schema defines a string or None, but all the examples from the test
+        # data include an empty string instead :/, so we include it in the checks
+        if (street_name := address.get("streetName")) in (None, ""):
+            formatted_address = None
+        elif (house_number := address.get("houseNumber")) in (None, ""):
+            formatted_address = street_name
+        elif (suffix := address.get("houseNumberSuffix")) in (None, ""):
+            formatted_address = f"{street_name} {house_number}"
+        else:
+            formatted_address = f"{street_name} {house_number}{suffix}"
+
+        return Location(
+            identifier=location["id"],
+            name=location.get("description"),
+            address=formatted_address,
+            city=address.get("city"),
+            postalcode=address.get("postalCode"),
+        )
 
     @with_graceful_default(default=[])
     def get_locations(
@@ -103,10 +144,23 @@ class JccRestPlugin(BasePlugin):
         products: list[Product] | None = None,
     ) -> list[Location]:
         if products is None:
-            # call the internal method `_get_all_locations` for retrieving the whole list
-            pass
+            path = "location"
+            params = None
+        else:
+            path = "location/forappointment"
+            # Note passing the same query parameter multiple times is intended behaviour
+            params = [
+                ("selectedActivityId", product.identifier) for product in products
+            ]
 
-        return []
+        client = self.client
+        with log_api_errors("locations_retrieval_failure"):
+            response = client.get(path, params)
+            response.raise_for_status()
+
+        locations = [self._create_location(location) for location in response.json()]
+
+        return locations
 
     @with_graceful_default(default=[])
     def get_dates(
