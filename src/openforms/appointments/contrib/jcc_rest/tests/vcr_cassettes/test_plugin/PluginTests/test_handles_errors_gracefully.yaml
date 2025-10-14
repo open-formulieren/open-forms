@@ -1,0 +1,148 @@
+interactions:
+- request:
+    body: grant_type=client_credentials&scope=warp-api
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '44'
+      Content-Type:
+      - application/x-www-form-urlencoded;charset=UTF-8
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
+  response:
+    body:
+      string: '{"access_token": "fake_access_token"}'
+    headers:
+      content-length:
+      - '937'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Fri, 09 Jan 2026 12:13:25 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+      language:
+      - nl
+    method: GET
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/activity/appointmentdaterange
+  response:
+    body:
+      string: "{\r\n  \"minDate\": \"2026-01-09T00:00:00\",\r\n  \"maxDate\": \"2027-01-09T00:00:00\"\r\n}"
+    headers:
+      content-length:
+      - '77'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Fri, 09 Jan 2026 12:13:25 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+      language:
+      - nl
+    method: GET
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/availabletimelist?locationId=f3b8864b-2e08-4d01-99db-e36f49f3e19c&fromDate=2026-01-09&toDate=2026-01-16
+  response:
+    body:
+      string: "{\r\n  \"title\": \"ActivityId and amount lists have to be filled\",\r\n
+        \ \"detail\": \"ActivityId and amount lists have to be filled\",\r\n  \"instance\":
+        \"/api/warp/v1/appointment/availabletimelist\",\r\n  \"type\": \"http://www.jccsoftware.nl/rfc7807/bad-request-exception\",\r\n
+        \ \"status\": 400,\r\n  \"code\": 6001,\r\n  \"errors\": []\r\n}"
+    headers:
+      cache-control:
+      - no-cache,no-store
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Fri, 09 Jan 2026 12:13:25 GMT
+      expires:
+      - '-1'
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      transfer-encoding:
+      - chunked
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 400
+      message: Bad Request
+version: 1

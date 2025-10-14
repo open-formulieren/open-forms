@@ -1,7 +1,6 @@
 from collections.abc import Callable
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from functools import wraps
-from typing import ParamSpec, TypeVar
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -12,21 +11,20 @@ from openforms.formio.typing import Component
 
 from ...base import AppointmentDetails, BasePlugin, CustomerDetails, Location, Product
 from ...registry import register
+from .client import JccRestClient, Location as RawLocation
 from .constants import CustomerFields
 from .exceptions import GracefulJccRestException
 from .models import JccRestConfig
 
 logger = structlog.stdlib.get_logger(__name__)
 
-Param = ParamSpec("Param")
-T = TypeVar("T")
-FuncT = Callable[Param, T]
 
-
-def with_graceful_default(default: T):
-    def decorator(func: FuncT) -> FuncT:
+def with_graceful_default[T, **P](
+    default: T,
+) -> Callable[[Callable[P, T]], Callable[P, T]]:
+    def decorator(func: Callable[P, T]) -> Callable[P, T]:
         @wraps(func)
-        def wrapper(*args, **kwargs) -> T:
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             try:
                 return func(*args, **kwargs)
             except GracefulJccRestException:
@@ -51,27 +49,65 @@ class JccRestPlugin(BasePlugin):
 
     @with_graceful_default(default=[])
     def get_available_products(
-        self,
-        current_products: list[Product] | None = None,
-        location_id: str = "",
+        self, current_products: list[Product] | None = None, location_id: str = ""
     ) -> list[Product]:
-        return []
+        with JccRestClient() as client:
+            if current_products is None:
+                data = client.get_activity_list_for_appointment(location_id)
+            else:
+                data = client.get_additional_activity_list_for_appointment(
+                    [product.identifier for product in current_products], location_id
+                )
 
-    def _get_all_locations(self, client) -> list[Location]:
-        # TODO
-        # Fix the argument's type (client), should be an instance of the Client class
-        return []
+        products = [
+            Product(
+                identifier=product["id"],
+                name=product.get("description", ""),
+                description=product.get("necessities", ""),
+            )
+            for product in data
+        ]
+
+        return products
+
+    @staticmethod
+    def _create_location(location: RawLocation) -> Location:
+        """Create a Location object from the API response data."""
+        address = location.get("address", {})
+
+        # Note: the schema defines a string or None (which could also mean the field is
+        # missing), but all the examples from the test data include an empty string
+        # instead of None, so we include it in the checks
+        if (street_name := address.get("streetName")) in (None, ""):
+            formatted_address = ""
+        elif (house_number := address.get("houseNumber")) in (None, ""):
+            formatted_address = street_name
+        elif (suffix := address.get("houseNumberSuffix")) in (None, ""):
+            formatted_address = f"{street_name} {house_number}"
+        else:
+            formatted_address = f"{street_name} {house_number}{suffix}"
+
+        return Location(
+            identifier=location["id"],
+            name=location.get("description") or "",
+            address=formatted_address,
+            city=address.get("city") or "",
+            postalcode=address.get("postalCode") or "",
+        )
 
     @with_graceful_default(default=[])
-    def get_locations(
-        self,
-        products: list[Product] | None = None,
-    ) -> list[Location]:
-        if products is None:
-            # call the internal method `_get_all_locations` for retrieving the whole list
-            pass
+    def get_locations(self, products: list[Product] | None = None) -> list[Location]:
+        with JccRestClient() as client:
+            if products is None:
+                data = client.get_location_list()
+            else:
+                data = client.get_location_list_for_appointment(
+                    [product.identifier for product in products]
+                )
 
-        return []
+        locations = [self._create_location(location) for location in data]
+
+        return locations
 
     @with_graceful_default(default=[])
     def get_dates(
@@ -81,7 +117,26 @@ class JccRestPlugin(BasePlugin):
         start_at: date | None = None,
         end_at: date | None = None,
     ) -> list[date]:
-        return []
+        with JccRestClient() as client:
+            min_date, max_date = client.get_appointment_date_range_for_activities(
+                [product.identifier for product in products]
+            )
+            start_at = max(start_at, min_date) if start_at else min_date
+            # There is a limit of 50 days when requesting the available dates/times
+            end_at = min(end_at or max_date, start_at + timedelta(days=50))
+
+            # Ensure there is at least one day between the start and end date. The
+            # endpoint returns no available dates if they are the same.
+            end_at = start_at + timedelta(days=1) if end_at == start_at else end_at
+
+            data = client.get_available_times_for_appointment(
+                location.identifier,
+                start_at,
+                end_at,
+                [product.identifier for product in products],
+                [product.amount for product in products],
+            )
+        return [datetime_.date() for datetime_ in data]
 
     @with_graceful_default(default=[])
     def get_times(
@@ -90,7 +145,18 @@ class JccRestPlugin(BasePlugin):
         location: Location,
         day: date,
     ) -> list[datetime]:
-        return []
+        with JccRestClient() as client:
+            # We only care about the times of this specific day, so set the `to_date`
+            # argument to the next day.
+            return list(
+                client.get_available_times_for_appointment(
+                    location.identifier,
+                    day,
+                    day + timedelta(days=1),
+                    [product.identifier for product in products],
+                    [product.amount for product in products],
+                )
+            )
 
     @with_graceful_default(default=[])
     def get_required_customer_fields(

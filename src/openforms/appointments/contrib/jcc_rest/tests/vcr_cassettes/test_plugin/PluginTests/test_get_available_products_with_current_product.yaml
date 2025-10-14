@@ -1,0 +1,104 @@
+interactions:
+- request:
+    body: grant_type=client_credentials&scope=warp-api
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '44'
+      Content-Type:
+      - application/x-www-form-urlencoded;charset=UTF-8
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
+  response:
+    body:
+      string: '{"access_token": "fake_access_token"}'
+    headers:
+      content-length:
+      - '937'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Fri, 09 Jan 2026 12:13:23 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+      language:
+      - nl
+    method: GET
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/activity/listforappointment/additional?selectedActivityId=637474a7-ea52-43f8-9e8a-30f3e0c13cf4&includeSelectedActivities=False
+  response:
+    body:
+      string: "[\r\n  {\r\n    \"id\": \"b82534f7-e55a-4973-bb31-86b384256f4b\",\r\n
+        \   \"number\": 36,\r\n    \"description\": \"Huwelijk met toespraak - eigen
+        BABS\",\r\n    \"appointmentDuration\": 3600,\r\n    \"maxCountForEvent\":
+        1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"596a3d22-e72c-4bff-9b6a-49f82018b327\",\r\n    \"number\":
+        32,\r\n    \"description\": \"Partnerschap zonder toespraak\",\r\n    \"appointmentDuration\":
+        900,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"704fb429-01f3-408f-8ed9-dda9316c6e03\",\r\n    \"number\":
+        31,\r\n    \"description\": \"Huwelijk zonder toespraak\",\r\n    \"appointmentDuration\":
+        900,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ }\r\n]"
+    headers:
+      content-length:
+      - '780'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Fri, 09 Jan 2026 12:13:23 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
