@@ -140,14 +140,14 @@ def export_form(form_id, archive_name=None, response=None):
 
 
 @transaction.atomic
-def import_form(import_file, existing_form_instance=None):
+def import_form(import_file, existing_form_instance=None) -> Form:
     import_data = {}
     with zipfile.ZipFile(import_file, "r") as zip_file:
         for resource in IMPORT_ORDER.keys():
             if f"{resource}.json" in zip_file.namelist():
                 import_data[resource] = zip_file.read(f"{resource}.json").decode()
 
-    import_form_data(import_data, existing_form_instance)
+    return import_form_data(import_data, existing_form_instance)
 
 
 def check_form_definition(uuid: str, attrs: dict[str, Any], for_existing_form: bool):
@@ -182,7 +182,7 @@ def check_form_definition(uuid: str, attrs: dict[str, Any], for_existing_form: b
 def import_form_data(
     import_data: dict,
     existing_form_instance: Form | None = None,
-) -> None:
+) -> Form:
     uuid_mapping = {}
 
     request = _get_mock_request()
@@ -364,6 +364,8 @@ def import_form_data(
 
                 else:
                     raise e
+
+    return created_form
 
 
 def apply_component_conversions(configuration):
