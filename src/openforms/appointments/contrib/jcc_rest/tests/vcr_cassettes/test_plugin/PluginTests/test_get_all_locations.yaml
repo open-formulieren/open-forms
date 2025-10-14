@@ -1,0 +1,128 @@
+interactions:
+- request:
+    body: grant_type=client_credentials&scope=warp-api
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '44'
+      Content-Type:
+      - application/x-www-form-urlencoded;charset=UTF-8
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
+  response:
+    body:
+      string: '{"access_token": "fake_access_token"}'
+    headers:
+      content-length:
+      - '937'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Fri, 09 Jan 2026 12:13:22 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+      language:
+      - nl
+    method: GET
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/location
+  response:
+    body:
+      string: "[\r\n  {\r\n    \"isDefault\": true,\r\n    \"locationNumber\": 1,\r\n
+        \   \"phoneNumberList\": [\r\n      {\r\n        \"phoneNumber\": {\r\n          \"value\":
+        \"0123-456789\",\r\n          \"auditId\": \"c03c22e4-0c34-4c63-bf2b-4f88a7c0a648\",\r\n
+        \         \"id\": \"76a7f13a-04f5-43f0-bfd2-b735f074681e\"\r\n        },\r\n
+        \       \"phoneNumberType\": {\r\n          \"name\": \"WorkPhoneNumber\",\r\n
+        \         \"auditId\": \"6bf6c82c-f3b8-4f53-9cdb-7dd29ada777e\",\r\n          \"id\":
+        \"825b7a38-115a-49c1-8104-0d849aae1be6\"\r\n        },\r\n        \"auditId\":
+        \"51163ccb-a41e-4d69-a884-4211dd3a455b\",\r\n        \"id\": \"e7e1358d-4030-4d0c-bb2a-9881d01f5093\"\r\n
+        \     }\r\n    ],\r\n    \"description\": \"Gemeentehuis Meerbergen\",\r\n
+        \   \"address\": {\r\n      \"streetName\": \"Raadhuisplein\",\r\n      \"houseNumber\":
+        \"1\",\r\n      \"postalCode\": \"1234 AZ\",\r\n      \"city\": \"Meerbergen\",\r\n
+        \     \"country\": {\r\n        \"id\": \"c59f75c0-1106-4423-b7d2-5d2b7c41c7bc\",\r\n
+        \       \"isoCode\": \"NL\",\r\n        \"name\": \"Nederland\"\r\n      },\r\n
+        \     \"auditId\": \"ca8cdf7f-9cce-43ea-91ad-46c1e05a724f\",\r\n      \"id\":
+        \"2410125a-5b9d-4223-90ab-5e11cbe02d08\"\r\n    },\r\n    \"isActive\": true,\r\n
+        \   \"auditId\": \"bdc3b77e-a3d2-4a27-993f-8f2f15d62619\",\r\n    \"id\":
+        \"f3b8864b-2e08-4d01-99db-e36f49f3e19c\"\r\n  },\r\n  {\r\n    \"locationNumber\":
+        5,\r\n    \"phoneNumberList\": [],\r\n    \"description\": \"Externe locatie
+        huwelijk en partnerschap\",\r\n    \"address\": {\r\n      \"department\":
+        \"\",\r\n      \"streetName\": \"\",\r\n      \"houseNumber\": \"\",\r\n      \"houseNumberSuffix\":
+        \"\",\r\n      \"city\": \"\",\r\n      \"province\": \"\",\r\n      \"country\":
+        {\r\n        \"id\": \"c59f75c0-1106-4423-b7d2-5d2b7c41c7bc\",\r\n        \"isoCode\":
+        \"NL\",\r\n        \"name\": \"Nederland\"\r\n      },\r\n      \"auditId\":
+        \"f8568c39-f117-4f16-9d59-f304ed438e0e\",\r\n      \"id\": \"519136e4-c243-4721-b7d2-d93a6dcda154\"\r\n
+        \   },\r\n    \"isActive\": true,\r\n    \"auditId\": \"7592354b-6282-4f96-a49f-a3ab47b6ea10\",\r\n
+        \   \"id\": \"f9332b85-2ca3-4b42-aaa9-07e37c010a83\"\r\n  },\r\n  {\r\n    \"locationNumber\":
+        2,\r\n    \"phoneNumberList\": [],\r\n    \"description\": \"Servicepunt \",\r\n
+        \   \"address\": {\r\n      \"department\": \"\",\r\n      \"streetName\":
+        \"\",\r\n      \"houseNumber\": \"\",\r\n      \"houseNumberSuffix\": \"\",\r\n
+        \     \"city\": \"\",\r\n      \"province\": \"\",\r\n      \"country\": {\r\n
+        \       \"id\": \"c59f75c0-1106-4423-b7d2-5d2b7c41c7bc\",\r\n        \"isoCode\":
+        \"NL\",\r\n        \"name\": \"Nederland\"\r\n      },\r\n      \"auditId\":
+        \"a7376ade-66ee-45b0-ac6e-a916f54a067c\",\r\n      \"id\": \"5a5e4cab-0dd2-42ea-9a45-5efaf5159c70\"\r\n
+        \   },\r\n    \"isActive\": true,\r\n    \"auditId\": \"f91dbc90-994d-4281-b7dc-0f2a8c778472\",\r\n
+        \   \"id\": \"1c17f0da-999b-4ec2-85cc-cfda9220ca7e\"\r\n  }\r\n]"
+    headers:
+      content-length:
+      - '2537'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Fri, 09 Jan 2026 12:13:22 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

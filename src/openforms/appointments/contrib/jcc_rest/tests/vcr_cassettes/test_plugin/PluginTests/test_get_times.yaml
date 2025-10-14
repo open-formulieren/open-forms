@@ -1,0 +1,109 @@
+interactions:
+- request:
+    body: grant_type=client_credentials&scope=warp-api
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '44'
+      Content-Type:
+      - application/x-www-form-urlencoded;charset=UTF-8
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
+  response:
+    body:
+      string: '{"access_token": "fake_access_token"}'
+    headers:
+      content-length:
+      - '937'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Fri, 09 Jan 2026 12:13:25 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+      language:
+      - nl
+    method: GET
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/availabletimelist?locationId=f3b8864b-2e08-4d01-99db-e36f49f3e19c&fromDate=2026-01-09&toDate=2026-01-10&activityId=6063baab-b077-4eaf-8671-98394793724c&amount=1
+  response:
+    body:
+      string: "{\r\n  \"availableTimesList\": [\r\n    \"2026-01-09T13:15:00\",\r\n
+        \   \"2026-01-09T13:20:00\",\r\n    \"2026-01-09T13:25:00\",\r\n    \"2026-01-09T13:30:00\",\r\n
+        \   \"2026-01-09T13:35:00\",\r\n    \"2026-01-09T13:40:00\",\r\n    \"2026-01-09T13:45:00\",\r\n
+        \   \"2026-01-09T13:50:00\",\r\n    \"2026-01-09T13:55:00\",\r\n    \"2026-01-09T14:00:00\",\r\n
+        \   \"2026-01-09T14:05:00\",\r\n    \"2026-01-09T14:10:00\",\r\n    \"2026-01-09T14:15:00\",\r\n
+        \   \"2026-01-09T14:20:00\",\r\n    \"2026-01-09T14:25:00\",\r\n    \"2026-01-09T14:30:00\",\r\n
+        \   \"2026-01-09T14:35:00\",\r\n    \"2026-01-09T14:40:00\",\r\n    \"2026-01-09T14:45:00\",\r\n
+        \   \"2026-01-09T14:50:00\",\r\n    \"2026-01-09T14:55:00\",\r\n    \"2026-01-09T15:00:00\",\r\n
+        \   \"2026-01-09T15:05:00\",\r\n    \"2026-01-09T15:10:00\",\r\n    \"2026-01-09T15:15:00\",\r\n
+        \   \"2026-01-09T15:20:00\",\r\n    \"2026-01-09T15:25:00\",\r\n    \"2026-01-09T15:30:00\",\r\n
+        \   \"2026-01-09T15:35:00\",\r\n    \"2026-01-09T15:40:00\",\r\n    \"2026-01-09T15:45:00\",\r\n
+        \   \"2026-01-09T15:50:00\",\r\n    \"2026-01-09T15:55:00\",\r\n    \"2026-01-09T16:00:00\",\r\n
+        \   \"2026-01-09T16:05:00\",\r\n    \"2026-01-09T16:10:00\",\r\n    \"2026-01-09T16:15:00\",\r\n
+        \   \"2026-01-09T16:20:00\",\r\n    \"2026-01-09T16:25:00\",\r\n    \"2026-01-09T16:30:00\",\r\n
+        \   \"2026-01-09T16:35:00\",\r\n    \"2026-01-09T16:40:00\",\r\n    \"2026-01-09T16:45:00\",\r\n
+        \   \"2026-01-09T16:50:00\"\r\n  ],\r\n  \"appointmentDuration\": 600\r\n}"
+    headers:
+      content-length:
+      - '1298'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Fri, 09 Jan 2026 12:13:25 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
