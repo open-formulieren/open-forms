@@ -103,7 +103,39 @@ class JccRestPlugin(BasePlugin):
         current_products: list[Product] | None = None,
         location_id: str = "",
     ) -> list[Product]:
-        return []
+        params = []
+        if current_products is None:
+            path = "activity/listforappointment"
+        else:
+            # Note passing the same query parameter multiple times is intended behaviour
+            path = "activity/listforappointment/additional"
+            params.extend(
+                [
+                    ("selectedActivityId", product.identifier)
+                    for product in current_products
+                ]
+            )
+            params.append(("includeSelectedActivities", False))
+
+        if location_id:
+            params.append(("locationId", location_id))
+
+        client = self.client
+        with log_api_errors("products_retrieval_failure"):
+            response = client.get(path, params)
+            response.raise_for_status()
+
+        products = [
+            Product(
+                identifier=product["id"],
+                name=product.get("description"),
+                code=product.get("code", ""),
+                description=product.get("necessities"),
+            )
+            for product in response.json()
+        ]
+
+        return products
 
     @staticmethod
     def _create_location(location) -> Location:

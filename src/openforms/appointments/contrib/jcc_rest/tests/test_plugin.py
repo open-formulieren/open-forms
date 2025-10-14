@@ -5,11 +5,73 @@ from openforms.appointments.contrib.jcc_rest.plugin import JccRestPlugin
 from ....base import Product
 
 
+# TODO-5696: move the Product and Location constants to setUpClass method. Will be
+#  easier to update if JCC decides to change them
 class PluginTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.plugin = JccRestPlugin("jcc")
+
+    def test_get_available_products_all(self):
+        products = self.plugin.get_available_products()
+
+        self.assertEqual(len(products), 28)
+        # Check the first product
+        product = products[0]
+        self.assertEqual(product.identifier, "cbdba351-a743-4664-8347-20d17134ad5d")
+        self.assertEqual(product.name, "Horecavergunning (aanvraag)")
+        self.assertEqual(product.code, "")
+        self.assertEqual(product.amount, 1)
+        self.assertEqual(product.description, None)
+
+        # Check product with description
+        product = products[26]
+        self.assertEqual(product.identifier, "e4dc7942-d394-4c39-a153-bdabc62634f8")
+        self.assertEqual(product.name, "Identiteitskaart (aanvraag)")
+        self.assertTrue(product.description.startswith("<P>Wat heeft u nodig?"))
+
+    def test_get_available_products_with_location(self):
+        products = self.plugin.get_available_products(
+            location_id="f9332b85-2ca3-4b42-aaa9-07e37c010a83"
+        )
+
+        self.assertEqual(len(products), 8)
+        # Check the first product
+        product = products[0]
+        self.assertEqual(product.identifier, "637474a7-ea52-43f8-9e8a-30f3e0c13cf4")
+        self.assertEqual(product.name, "Partnerschap met toespraak - eigen BABS")
+        self.assertEqual(product.code, "")
+        self.assertEqual(product.amount, 1)
+        self.assertEqual(product.description, None)
+
+    def test_get_available_products_with_current_product(self):
+        product = Product(
+            identifier="637474a7-ea52-43f8-9e8a-30f3e0c13cf4",
+            name="Partnerschap met toespraak - eigen BABS",
+        )
+        products = self.plugin.get_available_products(current_products=[product])
+
+        # This product can only be combined with the received products. Ensure that they
+        # do not include the current product
+        self.assertEqual(len(products), 3)
+        for received_product in products:
+            self.assertNotEqual(received_product.identifier, product.identifier)
+
+    def test_get_available_products_with_location_and_current_product(self):
+        product = Product(
+            identifier="637474a7-ea52-43f8-9e8a-30f3e0c13cf4",
+            name="Partnerschap met toespraak - eigen BABS",
+        )
+        products = self.plugin.get_available_products(
+            current_products=[product],
+            location_id="f9332b85-2ca3-4b42-aaa9-07e37c010a83",
+        )
+
+        # At this specific location, this product can only be combined with one other
+        # product. Ensure it is not the already selected product.
+        self.assertEqual(len(products), 1)
+        self.assertNotEqual(products[0].identifier, product.identifier)
 
     def test_get_all_locations(self):
         locations = self.plugin.get_locations()
