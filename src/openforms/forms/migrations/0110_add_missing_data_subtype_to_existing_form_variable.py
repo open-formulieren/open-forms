@@ -8,18 +8,20 @@ from tqdm import tqdm
 
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.utils import get_component_data_subtype, get_component_datatype
-from openforms.variables.constants import FormVariableDataTypes
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 
 def add_data_subtype_to_existing_form_variables(apps: StateApps, _):
     FormVariable = apps.get_model("forms", "FormVariable")
     FormDefinition = apps.get_model("forms", "FormDefinition")
 
-    # only consider variables and form definitions that have array datatype
+    # only consider variables and form definitions that have array datatype and are
+    # related to a component
     qs = FormVariable.objects.filter(
         form_definition__isnull=False,
         data_type=FormVariableDataTypes.array,
         data_subtype="",
+        source=FormVariableSources.component,
     ).order_by("form_definition_id")
     form_definitions = {
         fd.pk: fd
@@ -40,15 +42,18 @@ def add_data_subtype_to_existing_form_variables(apps: StateApps, _):
 
         variables_to_update = []
         for variable in form_variables:
-            if variable.key not in wrapper:
-                continue
+            if variable.key in wrapper:
+                component = wrapper[variable.key]
+                # We update the data type as well to make sure there is no mismatch
+                # between a (possibly) outdated array data type
+                variable.data_type = get_component_datatype(component)
+                variable.data_subtype = get_component_data_subtype(component)
+            else:
+                # If the variable key is not present in the configuration, we cannot do
+                # much, so just assume a string subtype to ensure the constraint (from
+                # migration 0111) will not be violated.
+                variable.data_subtype = FormVariableDataTypes.string
 
-            component = wrapper[variable.key]
-
-            # We update the data type as well to make sure there is no mismatch
-            # between a (possibly) outdated array data type
-            variable.data_type = get_component_datatype(component)
-            variable.data_subtype = get_component_data_subtype(component)
             variables_to_update.append(variable)
 
         FormVariable.objects.bulk_update(
