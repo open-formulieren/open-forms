@@ -174,16 +174,17 @@ class ImportExportAPITests(APITestCase):
             HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Form.objects.count(), 2)
         self.assertEqual(FormDefinition.objects.count(), 2)
         self.assertEqual(FormStep.objects.count(), 2)
 
+        form_uuid = response.json()["uuid"]
         imported_form = Form.objects.last()
         imported_form_step = imported_form.formstep_set.first()
         imported_form_definition = imported_form_step.form_definition
 
+        self.assertEqual(form_uuid, str(imported_form.uuid))
         self.assertNotEqual(imported_form.pk, form1.pk)
         self.assertNotEqual(imported_form.uuid, str(form1.uuid))
         self.assertEqual(imported_form.active, False)
@@ -258,12 +259,15 @@ class ImportExportAPITests(APITestCase):
             HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+        form_uuid = response.json()["uuid"]
         imported_form = Form.objects.last()
         imported_form_step = imported_form.formstep_set.first()
         imported_form_definition = imported_form_step.form_definition
 
+        # Check that the return response's uuid is the same as the last form in the db
+        self.assertEqual(form_uuid, str(imported_form.uuid))
         # check we imported a new form
         self.assertNotEqual(form1.pk, imported_form.pk)
         # check we added random hex chars
