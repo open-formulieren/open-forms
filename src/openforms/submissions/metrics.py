@@ -9,25 +9,25 @@ from .models import Submission
 meter = metrics.get_meter("openforms.submissions")
 
 start_counter = meter.create_counter(
-    "submission.starts",
+    "openforms.submission.starts",
     description="Amount of form submissions started (via the API).",
     unit="1",  # unitless count
 )
 
 suspension_counter = meter.create_counter(
-    "submission.supensions",
+    "openforms.submission.supensions",
     description="Amount of form submissions suspended/paused.",
     unit="1",  # unitless count
 )
 
 completion_counter = meter.create_counter(
-    "submission.completions",
+    "openforms.submission.completions",
     unit="1",  # unitless count
     description="The number of form submissions completed by end users.",
 )
 
 step_saved_counter = meter.create_counter(
-    "submission.step_saves",
+    "openforms.submission.step_saves",
     unit="1",  # unitless count
     description="The number of steps saved to the database.",
 )
@@ -45,7 +45,7 @@ def count_submissions(
         metrics.Observation(
             value=agg["count"],
             attributes={
-                "form.name": agg["form__name"],
+                "openforms.form.name": agg["form__name"],
                 "type": agg["stage"],
                 "scope": "global",
             },
@@ -55,14 +55,14 @@ def count_submissions(
 
 
 meter.create_observable_gauge(
-    name="submission_count",
+    name="openforms.submission_count",
     description="The number of submissions.",
     unit="",  # no unit so that the _ratio suffix is not added
     callbacks=[count_submissions],
 )
 
 upload_file_size = meter.create_histogram(
-    name="attachment.file_size",
+    name="openforms.attachment_upload.file_size",
     unit="bytes",
     description="Size of a single uploaded attachment.",
     explicit_bucket_boundaries_advisory=(
@@ -77,7 +77,7 @@ upload_file_size = meter.create_histogram(
 )
 
 attachments_per_submission = meter.create_histogram(
-    name="submission.attachments_per_submission",
+    name="openforms.submission.attachments_per_submission",
     unit="1",
     description="Number of attachments per completed form submission.",
     explicit_bucket_boundaries_advisory=(0, 5, 10, 20, 50, 100),

@@ -34,7 +34,7 @@ def count_forms(options: metrics.CallbackOptions) -> Collection[metrics.Observat
 
 
 meter.create_observable_gauge(
-    name="form_count",
+    name="openforms.form_count",
     description="The number of forms in the database.",
     unit="",  # no unit so that the _ratio suffix is not added
     callbacks=[count_forms],
@@ -75,9 +75,9 @@ def count_component_usage(
             amount,
             attributes={
                 "scope": "global",
-                "form.uuid": str(form_uuid),
-                "form.name": uuid_to_name_map[form_uuid],
-                "type": component_type,
+                "openforms.form.uuid": str(form_uuid),
+                "openforms.form.name": uuid_to_name_map[form_uuid],
+                "openforms.component.type": component_type,
             },
         )
         for (form_uuid, component_type), amount in counter.items()
@@ -85,7 +85,7 @@ def count_component_usage(
 
 
 meter.create_observable_gauge(
-    name="form_component_count",
+    name="openforms.form_component_count",
     description="The number of forms in the database.",
     unit="",  # no unit so that the _ratio suffix is not added
     callbacks=[count_component_usage],

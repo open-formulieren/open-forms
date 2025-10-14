@@ -133,16 +133,16 @@ def record_plugin_usage(
                 value=times_used,
                 attributes={
                     "scope": "global",
-                    "plugin.module": module,
-                    "plugin.identifier": plugin.identifier,
-                    "plugin.is_enabled": plugin.is_enabled,
-                    "plugin.is_demo": plugin.is_demo_plugin,
+                    "openforms.plugin.module": module,
+                    "openforms.plugin.identifier": plugin.identifier,
+                    "openforms.plugin.is_enabled": plugin.is_enabled,
+                    "openforms.plugin.is_demo": plugin.is_demo_plugin,
                 },
             )
 
 
 meter.create_observable_gauge(
-    name="plugin_usage_count",
+    name="openforms.plugin.usage_count",
     description="The usage counts of module plugins.",
     unit="",  # no unit so that the _ratio suffix is not added
     callbacks=[record_plugin_usage],

@@ -218,10 +218,10 @@ def attach_uploads_to_submission_step(
         upload_file_size.record(
             attachment.content.size,
             attributes={
-                "form.name": submission_step.submission.form.name,
-                "form.uuid": str(submission_step.submission.form.uuid),
-                "step.name": submission_step.form_step.form_definition.name,
-                "step.number": current_step_index + 1,
+                "openforms.form.name": submission_step.submission.form.name,
+                "openforms.form.uuid": str(submission_step.submission.form.uuid),
+                "openforms.step.name": submission_step.form_step.form_definition.name,
+                "openforms.step.number": current_step_index + 1,
                 "content_type": attachment.content_type,
             },
         )

@@ -42,7 +42,7 @@ class SubmissionCountMetricTests(MetricsAssertMixin, TestCase):
             self.assertEqual(total, 6 + 2 + 3)
 
         with self.subTest(aggregation="by form"):
-            by_form = self._group_observations_by(result, "form.name")
+            by_form = self._group_observations_by(result, "openforms.form.name")
 
             self.assertEqual(
                 by_form,
