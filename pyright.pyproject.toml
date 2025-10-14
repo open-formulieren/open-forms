@@ -5,6 +5,7 @@ include = [
     "src/openforms/plugins",
     "src/openforms/appointments/base.py",
     "src/openforms/appointments/registry.py",
+    "src/openforms/appointments/contrib/jcc_rest/",
     "src/openforms/authentication/base.py",
     "src/openforms/authentication/registry.py",
     "src/openforms/authentication/contrib/digid_eherkenning_oidc/",

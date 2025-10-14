@@ -9,6 +9,7 @@
     "forms.FormVersion",
     "emails.ConfirmationEmailTemplate",
     "jcc.JccConfig",
+    "jcc_rest.JccRestConfig",
     "kadaster.KadasterApiConfig",
     "kvk.KVKConfig",
     "brk.BRKConfig",
