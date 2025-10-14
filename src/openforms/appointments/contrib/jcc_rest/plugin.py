@@ -194,6 +194,28 @@ class JccRestPlugin(BasePlugin):
 
         return locations
 
+    def _get_date_range_for_products(
+        self, products: list[Product]
+    ) -> tuple[date, date]:
+        """
+        Get the available date range for the products.
+
+        :return: Minimum and maximum dates.
+        """
+        client = self.client
+
+        params = [("activityId", product.identifier) for product in products]
+        with log_api_errors("date_range_retrieval_failure"):
+            response = client.get("activity/appointmentdaterange", params=params)
+            response.raise_for_status()
+
+        # Format min and max dates
+        res_json = response.json()
+        min_date = datetime.fromisoformat(res_json["minDate"]).date()
+        max_date = datetime.fromisoformat(res_json["maxDate"]).date()
+
+        return min_date, max_date
+
     @with_graceful_default(default=[])
     def get_dates(
         self,
@@ -202,7 +224,33 @@ class JccRestPlugin(BasePlugin):
         start_at: date | None = None,
         end_at: date | None = None,
     ) -> list[date]:
-        return []
+        client = self.client
+
+        min_date, max_date = self._get_date_range_for_products(products)
+        start_at = max(start_at, min_date) if start_at else min_date
+        # TODO-5696: The endpoint seems to always return error 500 when the date range
+        #  exceeds 50 days, so limit the maximum range to 50 days for now. Remove after
+        #  this is cleared up with JCC
+        end_at = min(end_at or max_date, start_at + timedelta(days=50))
+
+        # Get available dates
+        params = [
+            ("locationId", location.identifier),
+            ("fromDate", start_at.isoformat()),
+            ("toDate", end_at.isoformat()),
+        ]
+        for product in products:
+            params.append(("activityId", product.identifier))
+            params.append(("amount", str(product.amount)))
+
+        with log_api_errors("date_list_retrieval_failure"):
+            response = client.get("appointment/availabletimelist", params=params)
+            response.raise_for_status()
+
+        date_list = response.json()["availableTimesList"]
+        return sorted(
+            {datetime.fromisoformat(date_string).date() for date_string in date_list}
+        )
 
     @with_graceful_default(default=[])
     def get_times(

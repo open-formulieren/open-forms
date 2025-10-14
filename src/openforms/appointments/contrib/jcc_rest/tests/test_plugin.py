@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from openforms.appointments.contrib.jcc_rest.plugin import JccRestPlugin
 
-from ....base import Product
+from ....base import Product, Location
 
 
 # TODO-5696: move the Product and Location constants to setUpClass method. Will be
@@ -101,3 +101,48 @@ class PluginTests(TestCase):
         self.assertEqual(location.address, "Raadhuisplein 1")
         self.assertEqual(location.postalcode, "1234 AZ")
         self.assertEqual(location.city, "Meerbergen")
+
+    def test_get_dates(self):
+        product = Product(
+            identifier="6063baab-b077-4eaf-8671-98394793724c",
+            name="Paspoort aanvraag",
+        )
+        location = Location(
+            identifier="f3b8864b-2e08-4d01-99db-e36f49f3e19c",
+            name="Gemeentehuis Meerbergen",
+            address="Raadhuisplein 1",
+            postalcode="1234 AZ",
+            city="Meerbergen",
+        )
+
+        dates = self.plugin.get_dates(products=[product], location=location)
+
+        # TODO-5696: what to assert here? The number of dates can change over time,
+        #  depending on the created appointments. Perhaps just ensure that the number of
+        #  available dates is not zero? I guess it could happen in theory, but it's
+        #  unlikely I would say
+        self.assertTrue(len(dates) != 0)
+
+    def test_get_dates_with_custom_range(self):
+        product = Product(
+            identifier="6063baab-b077-4eaf-8671-98394793724c",
+            name="Paspoort aanvraag",
+        )
+        location = Location(
+            identifier="f3b8864b-2e08-4d01-99db-e36f49f3e19c",
+            name="Gemeentehuis Meerbergen",
+            address="Raadhuisplein 1",
+            postalcode="1234 AZ",
+            city="Meerbergen",
+        )
+
+        start_at = get_today()
+        end_at = start_at + timedelta(days=7)
+        dates = self.plugin.get_dates(
+            products=[product], location=location, start_at=start_at, end_at=end_at
+        )
+
+        # Exact dates might change, depending on the created appointments for this
+        # activity and location, so just ensure the dates are within the specified range
+        self.assertTrue(min(dates) >= start_at)
+        self.assertTrue(max(dates) <= end_at)
