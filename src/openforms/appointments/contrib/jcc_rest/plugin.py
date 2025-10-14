@@ -1,11 +1,12 @@
 from collections.abc import Callable
 from datetime import date, datetime
-from functools import wraps
+from functools import cached_property, wraps
 from typing import ParamSpec, TypeVar
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import requests
 import structlog
 
 from openforms.formio.typing import Component
@@ -37,6 +38,17 @@ def with_graceful_default(default: T):
     return decorator
 
 
+class Client:
+    def __init__(self, base_url, headers):
+        self.base_url = base_url
+        self.headers = headers
+
+    def get(self, url, params=None):
+        return requests.get(
+            f"{self.base_url}{url}", headers=self.headers, params=params
+        )
+
+
 @register("jcc_rest")
 class JccRestPlugin(BasePlugin):
     """
@@ -48,6 +60,29 @@ class JccRestPlugin(BasePlugin):
 
     verbose_name = _("JCC Rest")
     supports_multiple_products = True
+
+    """
+    Get a new token with:
+
+    response = requests.post(
+        f"{base}connect/token",
+        data={"grant_type": "client_credentials", "scope": "warp-api"},
+        auth=(client_id, secret)
+    )
+    """
+
+    @cached_property
+    def client(self):
+        return Client(
+            "https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/",
+            headers={
+                "Authorization": (
+
+                ),
+                "Accept": "application/json",
+                "language": "nl",
+            },
+        )
 
     @with_graceful_default(default=[])
     def get_available_products(
