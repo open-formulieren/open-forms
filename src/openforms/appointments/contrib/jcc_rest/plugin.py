@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from contextlib import contextmanager
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from functools import cached_property, wraps
 from typing import ParamSpec, TypeVar
 
@@ -259,7 +259,28 @@ class JccRestPlugin(BasePlugin):
         location: Location,
         day: date,
     ) -> list[datetime]:
-        return []
+        client = self.client
+
+        # We only care about the times of this specific day, so set the date range to
+        # one day
+        next_day = day + timedelta(days=1)
+        params = [
+            ("locationId", location.identifier),
+            ("fromDate", day.isoformat()),
+            ("toDate", next_day.isoformat()),
+        ]
+        for product in products:
+            params.append(("activityId", product.identifier))
+            params.append(("amount", str(product.amount)))
+
+        with log_api_errors("time_list_retrieval_failure"):
+            response = client.get("appointment/availabletimelist", params=params)
+            response.raise_for_status()
+
+        date_list = response.json()["availableTimesList"]
+        return sorted(
+            {datetime.fromisoformat(date_string) for date_string in date_list}
+        )
 
     @with_graceful_default(default=[])
     def get_required_customer_fields(

@@ -1,8 +1,11 @@
+from datetime import timedelta
+
 from django.test import TestCase
 
 from openforms.appointments.contrib.jcc_rest.plugin import JccRestPlugin
+from openforms.utils.date import get_today
 
-from ....base import Product, Location
+from ....base import Location, Product
 
 
 # TODO-5696: move the Product and Location constants to setUpClass method. Will be
@@ -146,3 +149,24 @@ class PluginTests(TestCase):
         # activity and location, so just ensure the dates are within the specified range
         self.assertTrue(min(dates) >= start_at)
         self.assertTrue(max(dates) <= end_at)
+
+    def test_get_times(self):
+        product = Product(
+            identifier="6063baab-b077-4eaf-8671-98394793724c",
+            name="Paspoort aanvraag",
+        )
+        location = Location(
+            identifier="f3b8864b-2e08-4d01-99db-e36f49f3e19c",
+            name="Gemeentehuis Meerbergen",
+            address="Raadhuisplein 1",
+            postalcode="1234 AZ",
+            city="Meerbergen",
+        )
+
+        today = get_today()
+        times = self.plugin.get_times(products=[product], location=location, day=today)
+
+        # Exact times might change, depending on the created appointments for this
+        # activity and location, so just ensure all datetime are from today
+        self.assertTrue(min(times).date() == today)
+        self.assertTrue(max(times).date() == today)
