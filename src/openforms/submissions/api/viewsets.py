@@ -182,10 +182,12 @@ class SubmissionViewSet(
         start_counter.add(
             1,
             attributes={
-                "form.name": form.name,
-                "form.uuid": str(form.uuid),
-                "auth.logged_in": logged_in,
-                "auth.plugin": submission.auth_info.plugin if logged_in else "",
+                "openforms.form.name": form.name,
+                "openforms.form.uuid": str(form.uuid),
+                "openforms.auth.logged_in": logged_in,
+                "openforms.auth.plugin": submission.auth_info.plugin
+                if logged_in
+                else "",
             },
         )
 
@@ -442,8 +444,8 @@ class SubmissionViewSet(
         suspension_counter.add(
             1,
             attributes={
-                "form.name": submission.form.name,
-                "form.uuid": str(submission.form.uuid),
+                "openforms.form.name": submission.form.name,
+                "openforms.form.uuid": str(submission.form.uuid),
             },
         )
 
@@ -616,11 +618,11 @@ class SubmissionStepViewSet(
         step_saved_counter.add(
             1,
             attributes={
-                "step.name": instance.form_step.form_definition.name,
-                "step.number": current_step_index + 1,
+                "openforms.step.name": instance.form_step.form_definition.name,
+                "openforms.step.number": current_step_index + 1,
                 "type": "create" if create else "update",
-                "form.name": submission.form.name,
-                "form.uuid": str(submission.form.uuid),
+                "openforms.form.name": submission.form.name,
+                "openforms.form.uuid": str(submission.form.uuid),
             },
         )
 

@@ -32,32 +32,32 @@ def count_users(options: metrics.CallbackOptions) -> Collection[metrics.Observat
 
 
 meter.create_observable_gauge(
-    name="user_count",
+    name="openforms.auth.user_count",
     description="The number of application users in the database.",
-    unit="",  # no unit so that the _ratio suffix is not added
+    unit=r"{user}",  # no unit so that the _ratio suffix is not added
     callbacks=[count_users],
 )
 
 logins = meter.create_counter(
-    "auth.logins",
+    "openforms.auth.logins",
     unit="1",  # unitless count
     description="The number of successful user logins.",
 )
 
 logouts = meter.create_counter(
-    "auth.logouts",
+    "openforms.auth.logouts",
     unit="1",  # unitless count
     description="The number of user logouts.",
 )
 
 login_failures = meter.create_counter(
-    "auth.login_failures",
+    "openforms.auth.login_failures",
     unit="1",  # unitless count
     description="The number of failed logins by users, including the admin.",
 )
 
 user_lockouts = meter.create_counter(
-    "auth.user_lockouts",
+    "openforms.auth.user_lockouts",
     unit="1",  # unitless count
     description="The number of user lockouts because of failed logins.",
 )
