@@ -28,6 +28,7 @@ class Product:
     name: str
     code: str = ""
     amount: int = 1
+    description: str | None = None
 
     def __str__(self):
         return f"{self.identifier} x {self.amount}"
