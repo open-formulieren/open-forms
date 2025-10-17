@@ -12,7 +12,9 @@ from openforms.formio.typing import Component
 
 from ...base import AppointmentDetails, BasePlugin, CustomerDetails, Location, Product
 from ...registry import register
-from .constants import CustomerFields
+from ...utils import get_formatted_phone_number
+from .client import JccRestClient
+from .constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from .exceptions import GracefulJccRestException
 from .models import JccRestConfig
 
@@ -21,6 +23,11 @@ logger = structlog.stdlib.get_logger(__name__)
 Param = ParamSpec("Param")
 T = TypeVar("T")
 FuncT = Callable[Param, T]
+
+
+def squash_ids(products: list[Product]):
+    # When more of the same product are required (amount > 1), the ID needs to be repeated.
+    return sum(([product.identifier] * product.amount for product in products), [])
 
 
 def with_graceful_default(default: T):
@@ -48,6 +55,10 @@ class JccRestPlugin(BasePlugin):
 
     verbose_name = _("JCC Rest")
     supports_multiple_products = True
+    normalizers = {
+        CustomerFields.phone_number: [get_formatted_phone_number],
+        CustomerFields.mobile_phone_number: [get_formatted_phone_number],
+    }
 
     @with_graceful_default(default=[])
     def get_available_products(
@@ -97,7 +108,56 @@ class JccRestPlugin(BasePlugin):
         self,
         products: list[Product],
     ) -> list[Component]:
-        return []
+        product_ids = squash_ids(products)
+
+        with JccRestClient() as client:
+            # TODO
+            # each field from the API has a value which determines if it's required or not
+            # Make sure we know the exact purpose and usage of 0,1 and 2
+
+            # 0 = visible
+            # 1 = hidden
+            # 2 = required
+
+            required_fields = client.list_customer_required_fields(product_ids)
+
+            default_number_field = []
+            default_name_or_initials = []
+            if required_fields.get("isAnyPhoneNumberRequired"):
+                has_any_number_field = any(
+                    required_fields.get(number_field) == 2
+                    for number_field in ("mainPhoneNumber", "mobilePhoneNumber")
+                )
+
+                # fallback to main phone number
+                if not has_any_number_field:
+                    default_number_field = [
+                        FIELD_TO_FORMIO_COMPONENT[CustomerFields.phone_number]
+                    ]
+
+            if required_fields.get("areFirstNameOrInitialsRequired"):
+                has_name_or_initials_field = any(
+                    required_fields.get(given_field) == 2
+                    for given_field in ("firstName", "initials")
+                )
+
+                # fallback to first name
+                if not has_name_or_initials_field:
+                    default_name_or_initials = [
+                        FIELD_TO_FORMIO_COMPONENT[CustomerFields.first_name]
+                    ]
+
+            field_names = [
+                field for field, value in required_fields.items() if value == 2
+            ]
+
+        last_name = [FIELD_TO_FORMIO_COMPONENT[CustomerFields.last_name]]
+        return (
+            default_number_field
+            + default_name_or_initials
+            + last_name
+            + [FIELD_TO_FORMIO_COMPONENT[field] for field in field_names]
+        )
 
     def create_appointment(
         self,
