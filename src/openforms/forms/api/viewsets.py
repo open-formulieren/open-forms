@@ -757,6 +757,7 @@ class FormsImportAPIView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        import_form(serializer.validated_data["file"])
-
-        return response.Response(status=status.HTTP_204_NO_CONTENT)
+        form_instance = import_form(serializer.validated_data["file"])
+        return response.Response(
+            status=status.HTTP_201_CREATED, data={"uuid": form_instance.uuid}
+        )
