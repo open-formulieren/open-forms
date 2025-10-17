@@ -6,10 +6,11 @@ import {onLoaded} from 'utils/dom';
 // connect the "Print this page" link element to a handler
 const registerPrintHandler = () => {
   const node = document.getElementById('print-button');
+  if (!node) return;
   node.addEventListener('click', event => {
     event.preventDefault();
     window.print();
-  });
+});
 };
 
 const initCookieBar = () => {
