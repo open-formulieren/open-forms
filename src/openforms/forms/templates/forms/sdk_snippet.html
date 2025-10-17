@@ -29,8 +29,6 @@
     const basePath = '{% filter escapejs %}{% url "forms:form-detail" slug=form.slug %}{% endfilter %}';
     {% endif %}
     const CSPNonce = '{{ request.csp_nonce|escapejs }}';
-    const backToTopText = '{% trans "Back to top" %}';
-    const backToTopRef = '{{ div_id }}';
     {% if sdk_sentry_dsn %}const sentryDSN = '{% filter escapejs %}{{ sdk_sentry_dsn }}{% endfilter %}';{% endif %}
     {% if sdk_sentry_env %}const sentryEnv = '{% filter escapejs %}{{ sdk_sentry_env }}{% endfilter %}';{% endif %}
     const form = new OpenForms.OpenForm(
@@ -41,7 +39,8 @@
             basePath,
             CSPNonce,
             backToTopText,
-            backToTopRef,
+            backToTopText: '{% filter escapejs %}{% trans "Back to top" %}{% endfilter %}',
+            backToTopRef: 'main-content',
             {% if sdk_sentry_dsn %}sentryDSN,{% endif %}
             {% if sdk_sentry_env %}sentryEnv,{% endif %}
             languageSelectorTarget: '#react-portal--language-selection',
