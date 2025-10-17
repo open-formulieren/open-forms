@@ -10,7 +10,7 @@ const registerPrintHandler = () => {
   node.addEventListener('click', event => {
     event.preventDefault();
     window.print();
-});
+  });
 };
 
 const initCookieBar = () => {
