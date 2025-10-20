@@ -1,0 +1,170 @@
+[
+{
+    "model": "klantinteracties.partij",
+    "pk": 1,
+    "fields": {
+        "bezoekadres_nummeraanduiding_id": "",
+        "bezoekadres_straatnaam": "",
+        "bezoekadres_huisnummer": null,
+        "bezoekadres_huisnummertoevoeging": "",
+        "bezoekadres_postcode": "",
+        "bezoekadres_stad": "",
+        "bezoekadres_adresregel1": "",
+        "bezoekadres_adresregel2": "",
+        "bezoekadres_adresregel3": "",
+        "bezoekadres_land": "",
+        "correspondentieadres_nummeraanduiding_id": "",
+        "correspondentieadres_straatnaam": "",
+        "correspondentieadres_huisnummer": null,
+        "correspondentieadres_huisnummertoevoeging": "",
+        "correspondentieadres_postcode": "",
+        "correspondentieadres_stad": "",
+        "correspondentieadres_adresregel1": "",
+        "correspondentieadres_adresregel2": "",
+        "correspondentieadres_adresregel3": "",
+        "correspondentieadres_land": "",
+        "uuid": "4bf35628-d6fd-4815-9a76-e55c275986b9",
+        "voorkeurs_digitaal_adres": 1,
+        "voorkeurs_rekeningnummer": null,
+        "nummer": "0000000001",
+        "interne_notitie": "",
+        "soort_partij": "persoon",
+        "indicatie_geheimhouding": null,
+        "voorkeurstaal": "nld",
+        "indicatie_actief": false
+    }
+},
+{
+    "model": "klantinteracties.persoon",
+    "pk": 1,
+    "fields": {
+        "contactnaam_voorletters": "J",
+        "contactnaam_voornaam": "John",
+        "contactnaam_voorvoegsel_achternaam": "",
+        "contactnaam_achternaam": "Smith",
+        "partij": 1
+    }
+},
+{
+    "model": "klantinteracties.partijidentificator",
+    "pk": 1,
+    "fields": {
+        "uuid": "50eea111-6836-4f0b-877e-c0b0ed577d8b",
+        "sub_identificator_van": null,
+        "partij": 1,
+        "andere_partij_identificator": "",
+        "partij_identificator_code_objecttype": "natuurlijk_persoon",
+        "partij_identificator_code_soort_object_id": "bsn",
+        "partij_identificator_object_id": "123456782",
+        "partij_identificator_code_register": "brp"
+    }
+},
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 1,
+    "fields": {
+        "uuid": "e5455329-526c-4614-9687-ad3f87d156f3",
+        "partij": 1,
+        "betrokkene": null,
+        "soort_digitaal_adres": "email",
+        "is_standaard_adres": true,
+        "adres": "john.smith@gmail.com",
+        "omschrijving": "",
+        "referentie": "",
+        "verificatie_datum": null
+    }
+},
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 2,
+    "fields": {
+        "uuid": "1a7308a4-f52b-4e3c-9bcf-2f402617422c",
+        "partij": 1,
+        "betrokkene": null,
+        "soort_digitaal_adres": "email",
+        "is_standaard_adres": false,
+        "adres": "devilkiller@example.org",
+        "omschrijving": "",
+        "referentie": "",
+        "verificatie_datum": null
+    }
+},
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 3,
+    "fields": {
+        "uuid": "3d8d396f-7af5-4ab4-b414-60b1a1bcd341",
+        "partij": 1,
+        "betrokkene": null,
+        "soort_digitaal_adres": "email",
+        "is_standaard_adres": false,
+        "adres": "someemail@example.org",
+        "omschrijving": "",
+        "referentie": "",
+        "verificatie_datum": null
+    }
+},
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 4,
+    "fields": {
+        "uuid": "9cc8ef7a-ceea-4e92-adc4-4486958d38ca",
+        "partij": 1,
+        "betrokkene": null,
+        "soort_digitaal_adres": "telefoonnummer",
+        "is_standaard_adres": true,
+        "adres": "0612345678",
+        "omschrijving": "",
+        "referentie": "",
+        "verificatie_datum": null
+    }
+},
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 5,
+    "fields": {
+        "uuid": "1817f1d5-2e3f-4569-9a8c-8b224a7f388c",
+        "partij": 1,
+        "betrokkene": null,
+        "soort_digitaal_adres": "telefoonnummer",
+        "is_standaard_adres": false,
+        "adres": "0687654321",
+        "omschrijving": "",
+        "referentie": "",
+        "verificatie_datum": null
+    }
+},
+{
+    "model": "token.tokenauth",
+    "pk": 1,
+    "fields": {
+        "identifier": "test-token",
+        "token": "9b17346dbb9493f967e6653bbcdb03ac2f7009fa",
+        "contact_person": "John Smith",
+        "email": "john.smith@example.org",
+        "organization": "",
+        "last_modified": "2025-10-24T18:59:19.383Z",
+        "created": "2025-10-24T18:59:19.383Z",
+        "application": "",
+        "administration": ""
+    }
+},
+{
+    "model": "accounts.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$XymCZ3jfG526ZKdmcX2hMw$dd4+txbydv9bIRcTF3+5SA3jli3o5pGVVpYjj6PlVIw=",
+        "last_login": null,
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "admin@example.org",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2025-10-31T15:05:16.816Z",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]

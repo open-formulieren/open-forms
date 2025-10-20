@@ -1,0 +1,73 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Token INVALID
+    method: GET
+    uri: http://localhost:8005/klantinteracties/api/v1/invalid//
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html lang=\"en\" class=\"view view-- landing-page\">\n
+        \   <head>\n        <meta charset=\"utf-8\">\n        <title>API dashboard
+        | Open Klant</title>\n        <meta name=\"viewport\" content=\"width=device-width,
+        initial-scale=1.0\">\n        <link href=\"/static/maykin_common/ico/favicon.svg\"
+        sizes=\"any\" rel=\"icon\" type=\"image/svg+xml\" />\n        <link href=\"/static/maykin_common/ico/favicon-96x96.png\"
+        sizes=\"96x96\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/maykin_common/ico/favicon-32x32.png\"
+        sizes=\"32x32\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/maykin_common/ico/favicon.png\"
+        sizes=\"16x16\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/maykin_common/ico/favicon.png\"
+        rel=\"shortcut icon\">\n        <link href=\"/static/bundles/openklant-css.css\"
+        media=\"all\" rel=\"stylesheet\" />\n        \n\n<link href=\"/static/maykin_common/css/api.css\"
+        media=\"all\" rel=\"stylesheet\" />\n\n    </head>\n\n    <body class=\"view__body\">\n
+        \       <header>\n    <!-- TODO -->\n</header>\n\n\n        <main class=\"view__main\">\n
+        \           \n\n  <h1>Sorry, the requested page could not be found (404)</h1>\n\n\n\n
+        \       </main>\n\n        \n\n\n\n    \n\n    \n        \n<footer class=\"footer\">\n
+        \   <div class=\"footer__row footer__row--3-cols\">\n        <section>\n            <img
+        src=\"/static/maykin_common/ico/favicon-96x96.png\" alt=\"Maykin logo\" height=\"48\">\n
+        \           <p class=\"footer__plain-content footer__plain-content--small\">\n
+        \               \n                \n                    Developed by <a class=\"link\"
+        href=\"https://www.maykinmedia.nl\">Maykin</a><br> within the <a class=\"link\"
+        href=\"https://opengem.nl\">Open Gemeente Initiatief</a> &copy; 2025<br>\n
+        \               \n            </p>\n        </section>\n\n        <section>\n
+        \           <header class=\"footer__column-header\">Open Klant</header>\n
+        \           <ul class=\"footer__list\">\n                \n    <li>\n        <a
+        class=\"link link--muted\" href=\"https://open-klant.readthedocs.io/en/latest/\">\n
+        \           Documentatie\n        </a>\n    </li>\n    <li>\n        <a class=\"link
+        link--muted\" href=\"https://hub.docker.com/r/maykinmedia/open-klant/\">\n
+        \           Docker image\n        </a>\n    </li>\n    <li>\n        <a class=\"link
+        link--muted\" href=\"https://github.com/maykinmedia/open-klant\">\n            Code
+        on Github\n        </a>\n    </li>\n\n            </ul>\n        </section>\n\n
+        \       <section>\n            <header class=\"footer__column-header\">Other</header>\n
+        \           <ul class=\"footer__list\">\n                \n                    <li>\n
+        \                       Report <a class=\"link link--muted\" href=\"https://github.com/maykinmedia/open-klant/issues\">issues</a>
+        for questions, bugs or wishes\n                    </li>\n                    <li>\n
+        \                       Read more on <a class=\"link link--muted\" href=\"https://commonground.nl/\">Common
+        Ground</a>\n                    </li>\n                \n            </ul>\n
+        \       </section>\n    </div>\n\n    <div class=\"footer__row footer__row--2-cols\">\n
+        \       <code>2.13.0</code>\n        <code class=\"content content--align-right\">367e068c11b180394d41e2269e2c357ea6d8042a</code>\n
+        \   </div>\n\n</footer>\n\n    \n\n\n\n        \n<script src=\"/static/maykin_common/js/nav-tabs.js\"></script>\n\n
+        \   </body>\n</html>\n"
+    headers:
+      Content-Length:
+      - '3224'
+      Content-Security-Policy:
+      - 'worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com; img-src ''self''
+        data: cdn.redoc.ly; default-src ''self''; script-src ''self'' ''unsafe-inline'';
+        frame-src ''self''; frame-ancestors ''none''; form-action ''self''; object-src
+        ''none''; base-uri ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
+      Content-Type:
+      - text/html; charset=utf-8
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - origin, Cookie
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 404
+      message: Not Found
+version: 1

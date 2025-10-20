@@ -1259,6 +1259,12 @@
       "value": "en"
     }
   ],
+  "9eJ19L": [
+    {
+      "type": 0,
+      "value": "If enabled, phone numbers are included in the prefill"
+    }
+  ],
   "9fW2NX": [
     {
       "type": 0,
@@ -1389,6 +1395,12 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "AVJSYj": [
+    {
+      "type": 0,
+      "value": "Include phone number"
     }
   ],
   "AWyevn": [
@@ -6091,6 +6103,12 @@
       "value": "markeer de formulierstap als niet van toepassing"
     }
   ],
+  "lC+Im8": [
+    {
+      "type": 0,
+      "value": "Include email"
+    }
+  ],
   "lDFtNM": [
     {
       "type": 0,
@@ -6917,6 +6935,12 @@
     {
       "type": 0,
       "value": "Bestemmingspad"
+    }
+  ],
+  "rpvH9b": [
+    {
+      "type": 0,
+      "value": "If enabled, emails are included in the prefill"
     }
   ],
   "rzGuvz": [

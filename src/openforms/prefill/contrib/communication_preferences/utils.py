@@ -1,0 +1,50 @@
+from collections.abc import Mapping
+from itertools import groupby
+
+from openklant_client.types.resources.digitaal_adres import (
+    DigitaalAdres,
+    SoortDigitaalAdres,
+)
+
+from .typing import (
+    CommunicationChannelPreferences,
+    ProfileCommunicationChannels,
+    SupportedChannels,
+)
+
+ADDRESS_TYPES_TO_CHANNELS: Mapping[SoortDigitaalAdres, SupportedChannels] = {
+    "email": "email",
+    "telefoonnummer": "phone_number",
+}
+
+
+def transform_digital_addresses(
+    digital_addresses: list[DigitaalAdres],
+    configured_address_types: list[SupportedChannels],
+) -> ProfileCommunicationChannels:
+    """
+    * keep only digital addresses listed in 'configured_address_types' parameter
+    * group and transform response from klantinteracties/api/v1/digitaleadressen endpoint
+    to the ProfileCommunicationChannels type
+    """
+    sorted_addresses = sorted(digital_addresses, key=lambda x: x["soortDigitaalAdres"])
+    grouped_digital_addresses: groupby[SoortDigitaalAdres, DigitaalAdres] = groupby(
+        sorted_addresses, key=lambda x: x["soortDigitaalAdres"]
+    )
+
+    result: ProfileCommunicationChannels = {}
+    for address_type, group_iter in grouped_digital_addresses:
+        group = list(group_iter)
+        channel_name: SupportedChannels = ADDRESS_TYPES_TO_CHANNELS[address_type]
+        if channel_name not in configured_address_types:
+            continue
+
+        group_preferences: CommunicationChannelPreferences = {
+            "options": [address["adres"] for address in group],
+            "preferred": next(
+                (address["adres"] for address in group if address["isStandaardAdres"]),
+                None,
+            ),
+        }
+        result[channel_name] = group_preferences
+    return result

@@ -4,9 +4,10 @@ amqp==5.2.0
     # via kombu
 annotated-types==0.7.0
     # via pydantic
-ape-pie==0.1.0
+ape-pie==0.2.0
     # via
     #   -r requirements/base.in
+    #   open-klant-client
     #   zgw-consumers
 asgiref==3.7.2
     # via
@@ -374,6 +375,8 @@ oauthlib==3.2.2
 odfpy==1.4.1
     # via tablib
 onlinepayments-sdk-python3==5.1.0
+    # via -r requirements/base.in
+open-klant-client @ git+https://github.com/maykinmedia/open-klant-client@62c7f0dae6b49bec7e0bb2d90fc72c26f9058903
     # via -r requirements/base.in
 openapi-schema-validator==0.6.2
     # via openapi-spec-validator
