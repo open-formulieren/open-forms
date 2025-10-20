@@ -28,6 +28,12 @@ class Product:
     name: str
     code: str = ""
     amount: int = 1
+    description: str | None = None
+    # TODO
+    # Double check with JCC that the duration is in seconds and can be retrieved in a
+    # different way (like the endpoint "Get duration for appointment"). If so, this can
+    # be removed
+    duration: int | None = None  # in seconds
 
     def __str__(self):
         return f"{self.identifier} x {self.amount}"
