@@ -553,7 +553,9 @@ requests==2.32.4
 requests-file==1.5.1
     # via zeep
 requests-oauthlib==1.3.0
-    # via o365
+    # via
+    #   o365
+    #   zgw-consumers
 requests-toolbelt==1.0.0
     # via
     #   onlinepayments-sdk-python3
@@ -686,7 +688,7 @@ xmltodict==0.12.0
     # via -r requirements/base.in
 zeep==4.2.1
     # via -r requirements/base.in
-zgw-consumers==1.0.0
+zgw-consumers==1.1.0
     # via -r requirements/base.in
 zipp==3.23.0
     # via importlib-metadata
