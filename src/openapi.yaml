@@ -8865,7 +8865,15 @@ components:
         name:
           type: string
           description: Location name
+        city:
+          type: string
+          description: City
+        address:
+          type: string
+          description: Address
       required:
+      - address
+      - city
       - identifier
       - name
     LogicActionPolymorphic:
