@@ -182,7 +182,7 @@ def check_form_definition(uuid: str, attrs: dict[str, Any], for_existing_form: b
 def import_form_data(
     import_data: dict,
     existing_form_instance: Form | None = None,
-) -> Form:
+) -> Form | None:
     uuid_mapping = {}
 
     request = _get_mock_request()

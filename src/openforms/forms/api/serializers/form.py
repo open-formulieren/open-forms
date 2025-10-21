@@ -661,6 +661,10 @@ class FormImportSerializer(serializers.Serializer):
     )
 
 
+class FormImportResponseSerializer(serializers.Serializer):
+    uuid = serializers.UUIDField(help_text=_("The uuid of the imported form."))
+
+
 class FormJsonSchemaOptionsSerializer(serializers.Serializer):
     registration_backend_key: RegistrationBackendKey = serializers.CharField(
         label=_("Registration backend key"),

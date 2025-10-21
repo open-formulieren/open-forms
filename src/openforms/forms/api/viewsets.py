@@ -6,6 +6,7 @@ from django.db import transaction
 from django.db.models import Prefetch
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
@@ -60,7 +61,10 @@ from .serializers import (
     FormVariableSerializer,
     FormVersionSerializer,
 )
-from .serializers.form import FormJsonSchemaOptionsSerializer
+from .serializers.form import (
+    FormImportResponseSerializer,
+    FormJsonSchemaOptionsSerializer,
+)
 from .serializers.logic.form_logic import FormLogicListSerializer
 
 logger = structlog.get_logger(__name__)
@@ -747,7 +751,7 @@ class FormsImportAPIView(views.APIView):
     @extend_schema(
         summary=_("Import form"),
         tags=["forms"],
-        responses={"204": {"description": _("No response body")}},
+        responses={status.HTTP_201_CREATED: FormImportResponseSerializer},
     )
     def post(self, request, *args, **kwargs):
         """
@@ -758,6 +762,16 @@ class FormsImportAPIView(views.APIView):
         serializer.is_valid(raise_exception=True)
 
         form_instance = import_form(serializer.validated_data["file"])
+        assert form_instance
+
         return response.Response(
-            status=status.HTTP_201_CREATED, data={"uuid": form_instance.uuid}
+            status=status.HTTP_201_CREATED,
+            data={"uuid": form_instance.uuid},
+            headers={
+                "Location": request.build_absolute_uri(
+                    reverse(
+                        "api:form-detail", kwargs={"uuid_or_slug": form_instance.uuid}
+                    )
+                )
+            },
         )
