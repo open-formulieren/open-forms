@@ -180,11 +180,16 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(FormStep.objects.count(), 2)
 
         form_uuid = response.json()["uuid"]
+        location = response.headers["Location"]
         imported_form = Form.objects.last()
         imported_form_step = imported_form.formstep_set.first()
         imported_form_definition = imported_form_step.form_definition
 
         self.assertEqual(form_uuid, str(imported_form.uuid))
+        form_detail_full_url = "http://testserver" + reverse(
+            "api:form-detail", kwargs={"uuid_or_slug": form_uuid}
+        )
+        self.assertEqual(form_detail_full_url, location)
         self.assertNotEqual(imported_form.pk, form1.pk)
         self.assertNotEqual(imported_form.uuid, str(form1.uuid))
         self.assertEqual(imported_form.active, False)
@@ -262,12 +267,18 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         form_uuid = response.json()["uuid"]
+        location = response.headers["Location"]
         imported_form = Form.objects.last()
         imported_form_step = imported_form.formstep_set.first()
         imported_form_definition = imported_form_step.form_definition
 
         # Check that the return response's uuid is the same as the last form in the db
         self.assertEqual(form_uuid, str(imported_form.uuid))
+        # Check that the return Location header is the same as the full 'form-detail' api url.
+        form_detail_full_url = "http://testserver" + reverse(
+            "api:form-detail", kwargs={"uuid_or_slug": form_uuid}
+        )
+        self.assertEqual(form_detail_full_url, location)
         # check we imported a new form
         self.assertNotEqual(form1.pk, imported_form.pk)
         # check we added random hex chars
