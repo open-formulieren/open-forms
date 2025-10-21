@@ -764,9 +764,11 @@ class FormsImportAPIView(views.APIView):
         form_instance = import_form(serializer.validated_data["file"])
         assert form_instance
 
+        response_serializer = FormImportResponseSerializer(instance=form_instance)
+
         return response.Response(
             status=status.HTTP_201_CREATED,
-            data={"uuid": form_instance.uuid},
+            data=response_serializer.data,
             headers={
                 "Location": request.build_absolute_uri(
                     reverse(

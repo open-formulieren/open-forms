@@ -140,7 +140,7 @@ def export_form(form_id, archive_name=None, response=None):
 
 
 @transaction.atomic
-def import_form(import_file, existing_form_instance=None) -> Form:
+def import_form(import_file, existing_form_instance=None) -> Form | None:
     import_data = {}
     with zipfile.ZipFile(import_file, "r") as zip_file:
         for resource in IMPORT_ORDER.keys():
