@@ -23,7 +23,7 @@ from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
-from openforms.utils.urls import is_admin_request
+from openforms.utils.urls import is_admin_request, reverse_plus
 from openforms.variables.constants import FormVariableSources
 
 from ..json_schema import generate_json_schema
@@ -60,7 +60,10 @@ from .serializers import (
     FormVariableSerializer,
     FormVersionSerializer,
 )
-from .serializers.form import FormJsonSchemaOptionsSerializer
+from .serializers.form import (
+    FormImportResponseSerializer,
+    FormJsonSchemaOptionsSerializer,
+)
 from .serializers.logic.form_logic import FormLogicListSerializer
 
 logger = structlog.get_logger(__name__)
@@ -747,7 +750,7 @@ class FormsImportAPIView(views.APIView):
     @extend_schema(
         summary=_("Import form"),
         tags=["forms"],
-        responses={"204": {"description": _("No response body")}},
+        responses={status.HTTP_201_CREATED: FormImportResponseSerializer},
     )
     def post(self, request, *args, **kwargs):
         """
@@ -757,6 +760,19 @@ class FormsImportAPIView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        import_form(serializer.validated_data["file"])
+        form_instance = import_form(serializer.validated_data["file"])
+        assert form_instance
 
-        return response.Response(status=status.HTTP_204_NO_CONTENT)
+        response_serializer = FormImportResponseSerializer(instance=form_instance)
+
+        return response.Response(
+            status=status.HTTP_201_CREATED,
+            data=response_serializer.data,
+            headers={
+                "Location": reverse_plus(
+                    "api:form-detail",
+                    kwargs={"uuid_or_slug": form_instance.uuid},
+                    request=request,
+                )
+            },
+        )

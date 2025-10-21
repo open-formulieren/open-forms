@@ -1483,11 +1483,11 @@ paths:
       security:
       - tokenAuth: []
       responses:
-        '204':
+        '201':
           content:
             application/json:
               schema:
-                description: No response body
+                $ref: '#/components/schemas/FormImportResponse'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -8310,6 +8310,15 @@ components:
             steps.
       required:
       - file
+    FormImportResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: The uuid of the imported form.
+      required:
+      - uuid
     FormLiterals:
       type: object
       properties:
