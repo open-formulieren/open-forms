@@ -6,7 +6,6 @@ from django.db import transaction
 from django.db.models import Prefetch
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
@@ -24,7 +23,7 @@ from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
-from openforms.utils.urls import is_admin_request
+from openforms.utils.urls import is_admin_request, reverse_plus
 from openforms.variables.constants import FormVariableSources
 
 from ..json_schema import generate_json_schema
@@ -770,10 +769,10 @@ class FormsImportAPIView(views.APIView):
             status=status.HTTP_201_CREATED,
             data=response_serializer.data,
             headers={
-                "Location": request.build_absolute_uri(
-                    reverse(
-                        "api:form-detail", kwargs={"uuid_or_slug": form_instance.uuid}
-                    )
+                "Location": reverse_plus(
+                    "api:form-detail",
+                    kwargs={"uuid_or_slug": form_instance.uuid},
+                    request=request,
                 )
             },
         )
