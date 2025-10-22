@@ -8871,11 +8871,16 @@ components:
         address:
           type: string
           description: Address
+        postalcode:
+          type: string
+          title: postal code
+          description: Postal code
       required:
       - address
       - city
       - identifier
       - name
+      - postalcode
     LogicActionPolymorphic:
       oneOf:
       - $ref: '#/components/schemas/LogicActionPolymorphicGenericObject'

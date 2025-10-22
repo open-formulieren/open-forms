@@ -37,9 +37,9 @@ class Product:
 class Location:
     identifier: str
     name: str
-    address: str | None = None
-    postalcode: str | None = None
-    city: str | None = None
+    address: str = ""
+    postalcode: str = ""
+    city: str = ""
 
     def __str__(self):
         return self.identifier
