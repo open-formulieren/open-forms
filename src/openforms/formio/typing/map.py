@@ -12,9 +12,12 @@ class MapInteractions(TypedDict):
     polyline: bool
 
 
+type OverlayType = Literal["wms", "wfs"]
+
+
 class Overlay(TypedDict):
     uuid: str
     label: str
     url: NotRequired[str]  # added in dynamically
-    type: Literal["wms", "wfs"]
+    type: OverlayType
     layers: list[str]

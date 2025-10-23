@@ -1,0 +1,388 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://service.pdok.nl/rws/nwbwegen/wfs/v1_0?request=GetCapabilities&service=WFS
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<WFS_Capabilities xmlns:gml=\"http://www.opengis.net/gml/3.2\"
+        xmlns=\"http://www.opengis.net/wfs/2.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\"
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+        xmlns:fes=\"http://www.opengis.net/fes/2.0\" xmlns:inspire_common=\"http://inspire.ec.europa.eu/schemas/common/1.0\"
+        xmlns:inspire_dls=\"http://inspire.ec.europa.eu/schemas/inspire_dls/1.0\"
+        xmlns:nwbwegen=\"http://nwbwegen.geonovum.nl\" version=\"2.0.0\" xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0
+        http://schemas.opengis.net/wfs/2.0/wfs.xsd http://inspire.ec.europa.eu/schemas/inspire_dls/1.0
+        http://inspire.ec.europa.eu/schemas/inspire_dls/1.0/inspire_dls.xsd\">\n\t<ows:ServiceIdentification>\n\t\t<ows:Title>NWB
+        - Wegen WFS</ows:Title>\n\t\t<ows:Abstract>Dit is de web feature service van
+        het Nationaal Wegen Bestand (NWB) - wegen. Deze dataset bevat alleen de wegvakken
+        en hectometerpunten. Het Nationaal Wegen Bestand - Wegen is een digitaal geografisch
+        bestand van alle wegen in Nederland. Opgenomen zijn alle wegen die worden
+        beheerd door wegbeheerders als het Rijk, provincies, gemeenten en waterschappen,
+        echter alleen voor zover deze zijn voorzien van een straatnaam of nummer.</ows:Abstract>\n\t\t<ows:Keywords>\n\t\t\t<ows:Keyword>Vervoersnetwerken</ows:Keyword>\n\t\t\t<ows:Keyword>Menselijke
+        gezondheid en veiligheid</ows:Keyword>\n\t\t\t<ows:Keyword>Geluidsbelasting
+        hoofdwegen (Richtlijn Omgevingslawaai)</ows:Keyword>\n\t\t\t<ows:Keyword>Nationaal</ows:Keyword>\n\t\t\t<ows:Keyword>Voertuigen</ows:Keyword>\n\t\t\t<ows:Keyword>Verkeer</ows:Keyword>\n\t\t\t<ows:Keyword>Wegvakken</ows:Keyword>\n\t\t\t<ows:Keyword>Hectometerpunten</ows:Keyword>\n\t\t\t<ows:Keyword>HVD</ows:Keyword>\n\t\t\t<ows:Keyword>Mobiliteit</ows:Keyword>\n\t\t\t<ows:Keyword>infoFeatureAccessService</ows:Keyword>\n\t\t</ows:Keywords>\n\t\t<ows:ServiceType
+        codeSpace=\"OGC\">WFS</ows:ServiceType>\n\t\t<ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>\n\t\t<ows:Fees>none</ows:Fees>\n\t\t<ows:AccessConstraints>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</ows:AccessConstraints>\n\t</ows:ServiceIdentification>\n\t<ows:ServiceProvider>\n\t\t<ows:ProviderName>PDOK</ows:ProviderName>\n\t\t<ows:ProviderSite
+        xlink:type=\"simple\" xlink:href=\"https://www.pdok.nl\"/>\n\t\t<ows:ServiceContact>\n\t\t\t<ows:IndividualName>KlantContactCenter
+        PDOK</ows:IndividualName>\n\t\t\t<ows:PositionName>pointOfContact</ows:PositionName>\n\t\t\t<ows:ContactInfo>\n\t\t\t\t<ows:Phone>\n\t\t\t\t\t<ows:Voice/>\n\t\t\t\t\t<ows:Facsimile/>\n\t\t\t\t</ows:Phone>\n\t\t\t\t<ows:Address>\n\t\t\t\t\t<ows:DeliveryPoint/>\n\t\t\t\t\t<ows:City>Apeldoorn</ows:City>\n\t\t\t\t\t<ows:AdministrativeArea/>\n\t\t\t\t\t<ows:PostalCode/>\n\t\t\t\t\t<ows:Country>Netherlands</ows:Country>\n\t\t\t\t\t<ows:ElectronicMailAddress>BeheerPDOK@kadaster.nl</ows:ElectronicMailAddress>\n\t\t\t\t</ows:Address>\n\t\t\t\t<ows:OnlineResource
+        xlink:type=\"simple\" xlink:href=\"https://www.pdok.nl\"/>\n\t\t\t\t<ows:HoursOfService/>\n\t\t\t\t<ows:ContactInstructions/>\n\t\t\t</ows:ContactInfo>\n\t\t\t<ows:Role/>\n\t\t</ows:ServiceContact>\n\t</ows:ServiceProvider>\n\t<ows:OperationsMetadata>\n\t\t<ows:Operation
+        name=\"GetCapabilities\">\n\t\t\t<ows:DCP>\n\t\t\t\t<ows:HTTP>\n\t\t\t\t\t<ows:Get
+        xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/rws/nwbwegen/wfs/v1_0?\"/>\n\t\t\t\t</ows:HTTP>\n\t\t\t</ows:DCP>\n\t\t\t<ows:Parameter
+        name=\"AcceptVersions\">\n\t\t\t\t<ows:AllowedValues>\n\t\t\t\t\t<ows:Value>2.0.0</ows:Value>\n\t\t\t\t</ows:AllowedValues>\n\t\t\t</ows:Parameter>\n\t\t\t<ows:Parameter
+        name=\"AcceptFormats\">\n\t\t\t\t<ows:AllowedValues>\n\t\t\t\t\t<ows:Value>text/xml</ows:Value>\n\t\t\t\t</ows:AllowedValues>\n\t\t\t</ows:Parameter>\n\t\t\t<ows:Parameter
+        name=\"Sections\">\n\t\t\t\t<ows:AllowedValues>\n\t\t\t\t\t<ows:Value>ServiceIdentification</ows:Value>\n\t\t\t\t\t<ows:Value>ServiceProvider</ows:Value>\n\t\t\t\t\t<ows:Value>OperationsMetadata</ows:Value>\n\t\t\t\t\t<ows:Value>FeatureTypeList</ows:Value>\n\t\t\t\t\t<ows:Value>Filter_Capabilities</ows:Value>\n\t\t\t\t</ows:AllowedValues>\n\t\t\t</ows:Parameter>\n\t\t</ows:Operation>\n\t\t<ows:Operation
+        name=\"DescribeFeatureType\">\n\t\t\t<ows:DCP>\n\t\t\t\t<ows:HTTP>\n\t\t\t\t\t<ows:Get
+        xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/rws/nwbwegen/wfs/v1_0?\"/>\n\t\t\t\t</ows:HTTP>\n\t\t\t</ows:DCP>\n\t\t\t<ows:Parameter
+        name=\"outputFormat\">\n\t\t\t\t<ows:AllowedValues>\n\t\t\t\t\t<ows:Value>application/gml+xml;
+        version=3.2</ows:Value>\n\t\t\t\t\t<ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>\n\t\t\t\t\t<ows:Value>text/xml;
+        subtype=gml/3.1.1</ows:Value>\n\t\t\t\t</ows:AllowedValues>\n\t\t\t</ows:Parameter>\n\t\t</ows:Operation>\n\t\t<ows:Operation
+        name=\"GetFeature\">\n\t\t\t<ows:DCP>\n\t\t\t\t<ows:HTTP>\n\t\t\t\t\t<ows:Get
+        xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/rws/nwbwegen/wfs/v1_0?\"/>\n\t\t\t\t\t<ows:Post
+        xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/rws/nwbwegen/wfs/v1_0\"/>\n\t\t\t\t</ows:HTTP>\n\t\t\t</ows:DCP>\n\t\t\t<ows:Parameter
+        name=\"outputFormat\">\n\t\t\t\t<ows:AllowedValues>\n\t\t\t\t\t<ows:Value>application/gml+xml;
+        version=3.2</ows:Value>\n\t\t\t\t\t<ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>\n\t\t\t\t\t<ows:Value>text/xml;
+        subtype=gml/3.1.1</ows:Value>\n\t\t\t\t\t<ows:Value>application/json; subtype=geojson</ows:Value>\n\t\t\t\t\t<ows:Value>application/json</ows:Value>\n\t\t\t\t</ows:AllowedValues>\n\t\t\t</ows:Parameter>\n\t\t</ows:Operation>\n\t\t<ows:Operation
+        name=\"ListStoredQueries\">\n\t\t\t<ows:DCP>\n\t\t\t\t<ows:HTTP>\n\t\t\t\t\t<ows:Get
+        xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/rws/nwbwegen/wfs/v1_0?\"/>\n\t\t\t\t</ows:HTTP>\n\t\t\t</ows:DCP>\n\t\t</ows:Operation>\n\t\t<ows:Operation
+        name=\"DescribeStoredQueries\">\n\t\t\t<ows:DCP>\n\t\t\t\t<ows:HTTP>\n\t\t\t\t\t<ows:Get
+        xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/rws/nwbwegen/wfs/v1_0?\"/>\n\t\t\t\t</ows:HTTP>\n\t\t\t</ows:DCP>\n\t\t</ows:Operation>\n\t\t<ows:Parameter
+        name=\"version\">\n\t\t\t<ows:AllowedValues>\n\t\t\t\t<ows:Value>2.0.0</ows:Value>\n\t\t\t</ows:AllowedValues>\n\t\t</ows:Parameter>\n\t\t<ows:Constraint
+        name=\"ImplementsBasicWFS\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"ImplementsTransactionalWFS\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"ImplementsLockingWFS\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"KVPEncoding\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"XMLEncoding\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"SOAPEncoding\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"ImplementsInheritance\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"ImplementsRemoteResolve\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"ImplementsResultPaging\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"ImplementsStandardJoins\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"ImplementsSpatialJoins\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"ImplementsTemporalJoins\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"ImplementsFeatureVersioning\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"ManageStoredQueries\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"PagingIsTransactionSafe\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"CountDefault\">\n\t\t\t<ows:NoValues/>\n\t\t\t<ows:DefaultValue>1000</ows:DefaultValue>\n\t\t</ows:Constraint>\n\t\t<ows:Constraint
+        name=\"QueryExpressions\">\n\t\t\t<ows:AllowedValues>\n\t\t\t\t<ows:Value>wfs:Query</ows:Value>\n\t\t\t\t<ows:Value>wfs:StoredQuery</ows:Value>\n\t\t\t</ows:AllowedValues>\n\t\t</ows:Constraint>\n\t\t<ows:ExtendedCapabilities>\n\t\t\t<inspire_dls:ExtendedCapabilities>\n\t\t\t\t<inspire_common:MetadataUrl>\n\t\t\t\t\t<inspire_common:URL>https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=a9fa7fff-6365-4885-950c-e9d9848359ee</inspire_common:URL>\n\t\t\t\t\t<inspire_common:MediaType>application/vnd.ogc.csw.GetRecordByIdResponse_xml</inspire_common:MediaType>\n\t\t\t\t</inspire_common:MetadataUrl>\n\t\t\t\t<inspire_common:SupportedLanguages>\n\t\t\t\t\t<inspire_common:DefaultLanguage>\n\t\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t\t</inspire_common:DefaultLanguage>\n\t\t\t\t</inspire_common:SupportedLanguages>\n\t\t\t\t<inspire_common:ResponseLanguage>\n\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t</inspire_common:ResponseLanguage>\n\t\t\t\t<inspire_dls:SpatialDataSetIdentifier>\n\t\t\t\t\t<inspire_common:Code>8f0497f0-dbd7-4bee-b85a-5fdec484a7ff</inspire_common:Code>\n\t\t\t\t</inspire_dls:SpatialDataSetIdentifier>\n\t\t\t</inspire_dls:ExtendedCapabilities>\n\t\t</ows:ExtendedCapabilities>\n\t</ows:OperationsMetadata>\n\t<FeatureTypeList>\n\t\t<FeatureType>\n\t\t\t<Name>nwbwegen:wegvakken</Name>\n\t\t\t<Title>Wegvakken</Title>\n\t\t\t<Abstract>Dit
+        featuretype bevat de wegvakken uit het Nationaal Wegen bestand (NWB) en bevat
+        gedetailleerde informatie per wegvak zoals straatnaam, wegnummer, routenummer,
+        wegbeheerder, huisnummers, enz.</Abstract>\n\t\t\t<ows:Keywords>\n\t\t\t\t<ows:Keyword>Vervoersnetwerken</ows:Keyword>\n\t\t\t\t<ows:Keyword>Menselijke
+        gezondheid en veiligheid</ows:Keyword>\n\t\t\t\t<ows:Keyword>Geluidsbelasting
+        hoofdwegen (Richtlijn Omgevingslawaai)</ows:Keyword>\n\t\t\t\t<ows:Keyword>Nationaal</ows:Keyword>\n\t\t\t\t<ows:Keyword>Voertuigen</ows:Keyword>\n\t\t\t\t<ows:Keyword>Verkeer</ows:Keyword>\n\t\t\t\t<ows:Keyword>Wegvakken</ows:Keyword>\n\t\t\t</ows:Keywords>\n\t\t\t<DefaultCRS>urn:ogc:def:crs:EPSG::28992</DefaultCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::25831</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>\n\t\t\t<OutputFormats>\n\t\t\t\t<Format>application/gml+xml;
+        version=3.2</Format>\n\t\t\t\t<Format>text/xml; subtype=gml/3.2.1</Format>\n\t\t\t\t<Format>text/xml;
+        subtype=gml/3.1.1</Format>\n\t\t\t\t<Format>application/json; subtype=geojson</Format>\n\t\t\t\t<Format>application/json</Format>\n\t\t\t</OutputFormats>\n\t\t\t<ows:WGS84BoundingBox>\n\t\t\t\t<ows:LowerCorner>2.527125
+        50.212863</ows:LowerCorner>\n\t\t\t\t<ows:UpperCorner>7.374026 55.721160</ows:UpperCorner>\n\t\t\t</ows:WGS84BoundingBox>\n\t\t\t<MetadataURL
+        xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=a9b7026e-0a81-4813-93bd-ba49e6f28502\"/>\n\t\t</FeatureType>\n\t\t<FeatureType>\n\t\t\t<Name>nwbwegen:hectopunten</Name>\n\t\t\t<Title>Hectopunten</Title>\n\t\t\t<Abstract>Dit
+        featuretype bevat de hectopunten uit het Nationaal Wegen Bestand (NWB) en
+        bevat gedetailleerde informatie per hectopunt zoals hectometrering, afstand,
+        zijde en hectoletter.</Abstract>\n\t\t\t<ows:Keywords>\n\t\t\t\t<ows:Keyword>Vervoersnetwerken</ows:Keyword>\n\t\t\t\t<ows:Keyword>Menselijke
+        gezondheid en veiligheid</ows:Keyword>\n\t\t\t\t<ows:Keyword>Geluidsbelasting
+        hoofdwegen (Richtlijn Omgevingslawaai)</ows:Keyword>\n\t\t\t\t<ows:Keyword>Nationaal</ows:Keyword>\n\t\t\t\t<ows:Keyword>Voertuigen</ows:Keyword>\n\t\t\t\t<ows:Keyword>Verkeer</ows:Keyword>\n\t\t\t\t<ows:Keyword>Hectometerpunten</ows:Keyword>\n\t\t\t</ows:Keywords>\n\t\t\t<DefaultCRS>urn:ogc:def:crs:EPSG::28992</DefaultCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::25831</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>\n\t\t\t<OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>\n\t\t\t<OutputFormats>\n\t\t\t\t<Format>application/gml+xml;
+        version=3.2</Format>\n\t\t\t\t<Format>text/xml; subtype=gml/3.2.1</Format>\n\t\t\t\t<Format>text/xml;
+        subtype=gml/3.1.1</Format>\n\t\t\t\t<Format>application/json; subtype=geojson</Format>\n\t\t\t\t<Format>application/json</Format>\n\t\t\t</OutputFormats>\n\t\t\t<ows:WGS84BoundingBox>\n\t\t\t\t<ows:LowerCorner>2.527125
+        50.212863</ows:LowerCorner>\n\t\t\t\t<ows:UpperCorner>7.374026 55.721160</ows:UpperCorner>\n\t\t\t</ows:WGS84BoundingBox>\n\t\t\t<MetadataURL
+        xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=a9b7026e-0a81-4813-93bd-ba49e6f28502\"/>\n\t\t</FeatureType>\n\t</FeatureTypeList>\n\t<fes:Filter_Capabilities>\n\t\t<fes:Conformance>\n\t\t\t<fes:Constraint
+        name=\"ImplementsQuery\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsAdHocQuery\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsFunctions\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsResourceId\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsMinStandardFilter\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsStandardFilter\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsMinSpatialFilter\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsSpatialFilter\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsMinTemporalFilter\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsTemporalFilter\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsVersionNav\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsSorting\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsExtendedOperators\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsMinimumXPath\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>TRUE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t\t<fes:Constraint
+        name=\"ImplementsSchemaElementFunc\">\n\t\t\t\t<ows:NoValues/>\n\t\t\t\t<ows:DefaultValue>FALSE</ows:DefaultValue>\n\t\t\t</fes:Constraint>\n\t\t</fes:Conformance>\n\t\t<fes:Id_Capabilities>\n\t\t\t<fes:ResourceIdentifier
+        name=\"fes:ResourceId\"/>\n\t\t</fes:Id_Capabilities>\n\t\t<fes:Scalar_Capabilities>\n\t\t\t<fes:LogicalOperators/>\n\t\t\t<fes:ComparisonOperators>\n\t\t\t\t<fes:ComparisonOperator
+        name=\"PropertyIsEqualTo\"/>\n\t\t\t\t<fes:ComparisonOperator name=\"PropertyIsNotEqualTo\"/>\n\t\t\t\t<fes:ComparisonOperator
+        name=\"PropertyIsLessThan\"/>\n\t\t\t\t<fes:ComparisonOperator name=\"PropertyIsGreaterThan\"/>\n\t\t\t\t<fes:ComparisonOperator
+        name=\"PropertyIsLessThanOrEqualTo\"/>\n\t\t\t\t<fes:ComparisonOperator name=\"PropertyIsGreaterThanOrEqualTo\"/>\n\t\t\t\t<fes:ComparisonOperator
+        name=\"PropertyIsLike\"/>\n\t\t\t\t<fes:ComparisonOperator name=\"PropertyIsBetween\"/>\n\t\t\t\t<fes:ComparisonOperator
+        name=\"PropertyIsNull\"/>\n\t\t\t</fes:ComparisonOperators>\n\t\t</fes:Scalar_Capabilities>\n\t\t<fes:Spatial_Capabilities>\n\t\t\t<fes:GeometryOperands>\n\t\t\t\t<fes:GeometryOperand
+        name=\"gml:Point\"/>\n\t\t\t\t<fes:GeometryOperand name=\"gml:MultiPoint\"/>\n\t\t\t\t<fes:GeometryOperand
+        name=\"gml:LineString\"/>\n\t\t\t\t<fes:GeometryOperand name=\"gml:MultiLineString\"/>\n\t\t\t\t<fes:GeometryOperand
+        name=\"gml:Curve\"/>\n\t\t\t\t<fes:GeometryOperand name=\"gml:MultiCurve\"/>\n\t\t\t\t<fes:GeometryOperand
+        name=\"gml:Polygon\"/>\n\t\t\t\t<fes:GeometryOperand name=\"gml:MultiPolygon\"/>\n\t\t\t\t<fes:GeometryOperand
+        name=\"gml:Surface\"/>\n\t\t\t\t<fes:GeometryOperand name=\"gml:MultiSurface\"/>\n\t\t\t\t<fes:GeometryOperand
+        name=\"gml:Box\"/>\n\t\t\t\t<fes:GeometryOperand name=\"gml:Envelope\"/>\n\t\t\t</fes:GeometryOperands>\n\t\t\t<fes:SpatialOperators>\n\t\t\t\t<fes:SpatialOperator
+        name=\"Equals\"/>\n\t\t\t\t<fes:SpatialOperator name=\"Disjoint\"/>\n\t\t\t\t<fes:SpatialOperator
+        name=\"Touches\"/>\n\t\t\t\t<fes:SpatialOperator name=\"Within\"/>\n\t\t\t\t<fes:SpatialOperator
+        name=\"Overlaps\"/>\n\t\t\t\t<fes:SpatialOperator name=\"Crosses\"/>\n\t\t\t\t<fes:SpatialOperator
+        name=\"Intersects\"/>\n\t\t\t\t<fes:SpatialOperator name=\"Contains\"/>\n\t\t\t\t<fes:SpatialOperator
+        name=\"DWithin\"/>\n\t\t\t\t<fes:SpatialOperator name=\"Beyond\"/>\n\t\t\t\t<fes:SpatialOperator
+        name=\"BBOX\"/>\n\t\t\t</fes:SpatialOperators>\n\t\t</fes:Spatial_Capabilities>\n\t\t<fes:Temporal_Capabilities>\n\t\t\t<fes:TemporalOperands>\n\t\t\t\t<fes:TemporalOperand
+        name=\"gml:TimePeriod\"/>\n\t\t\t\t<fes:TemporalOperand name=\"gml:TimeInstant\"/>\n\t\t\t</fes:TemporalOperands>\n\t\t\t<fes:TemporalOperators>\n\t\t\t\t<fes:TemporalOperator
+        name=\"During\"/>\n\t\t\t</fes:TemporalOperators>\n\t\t</fes:Temporal_Capabilities>\n\t</fes:Filter_Capabilities>\n</WFS_Capabilities>"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Headers:
+      - Content-Type
+      Access-Control-Allow-Method:
+      - GET, POST, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - public, max-age=3600, no-transform
+      Content-Length:
+      - '17253'
+      Content-Type:
+      - text/xml; charset=UTF-8
+      Date:
+      - Thu, 02 Oct 2025 15:20:41 GMT
+      Referrer-Policy:
+      - origin
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://schemas.opengis.net/wfs/1.1.0/examples/WFS_Capabilities_Sample.xml
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<wfs:WFS_Capabilities\n
+        \  xmlns:ows=\"http://www.opengis.net/ows\"\n   xmlns:ogc=\"http://www.opengis.net/ogc\"\n
+        \  xmlns:wfs=\"http://www.opengis.net/wfs\"\n   xmlns:gml=\"http://www.opengis.net/gml\"\n
+        \  xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n
+        \  xsi:schemaLocation=\"http://www.opengis.net/wfs ../wfs.xsd\"\n   version=\"1.1.0\"\n
+        \  updateSequence=\"0\">\n\n   <!-- ==================================================================
+        -->\n   <!--    SERVICE IDENTIFICATION SECTION                                  -->\n
+        \  <!-- ==================================================================
+        -->\n   <ows:ServiceIdentification>\n      <ows:Title>OGC Member WFS</ows:Title>\n
+        \     <ows:Abstract>\n         Web Feature Service maintained by NSDI data
+        provider, serving\n         FGDC framework layer XXX; contact Paul.Bunyon@BlueOx.org\n
+        \     </ows:Abstract>\n      <ows:Keywords>\n         <ows:Keyword>FGDC</ows:Keyword>\n
+        \        <ows:Keyword>NSDI</ows:Keyword>\n         <ows:Keyword>Framework
+        Data Layer</ows:Keyword>\n         <ows:Keyword>BlueOx</ows:Keyword>\n         <ows:Type>String</ows:Type>\n
+        \     </ows:Keywords>\n      <ows:ServiceType>WFS</ows:ServiceType>\n      <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>\n
+        \     <ows:Fees>None</ows:Fees>\n      <ows:AccessConstraints>None</ows:AccessConstraints>\n
+        \  </ows:ServiceIdentification>\n\n   <!-- ==================================================================
+        -->\n   <!--    SERVICE PROVIDER SECTION                                        -->\n
+        \  <!-- ==================================================================
+        -->\n   <ows:ServiceProvider>\n      <ows:ProviderName>BlueOx</ows:ProviderName>\n
+        \     <ows:ProviderSite xlink:href=\"http://www.blueox.com/\"/>\n      <ows:ServiceContact>\n
+        \        <ows:IndividualName>Paul Bunyon</ows:IndividualName>\n         <ows:PositionName>Mythology
+        Manager</ows:PositionName>\n         <ows:ContactInfo>\n            <ows:Phone>\n
+        \              <ows:Voice>1.800.BIG.WOOD</ows:Voice>\n               <ows:Facsimile>1.800.FAX.WOOD</ows:Facsimile>\n
+        \           </ows:Phone>\n            <ows:Address>\n               <ows:DeliveryPoint>North
+        Country</ows:DeliveryPoint>\n               <ows:City>Small Town</ows:City>\n
+        \              <ows:AdministrativeArea>Rural County</ows:AdministrativeArea>\n
+        \              <ows:PostalCode>12345</ows:PostalCode>\n               <ows:Country>USA</ows:Country>\n
+        \              <ows:ElectronicMailAddress>Paul.Bunyon@BlueOx.org</ows:ElectronicMailAddress>\n
+        \           </ows:Address>\n            <ows:OnlineResource xlink:href=\"http://www.BlueOx.org/contactUs\"/>\n
+        \           <ows:HoursOfService>24x7</ows:HoursOfService>\n            <ows:ContactInstructions>\n
+        \              eMail Paul with normal requsts; Phone Paul for emergency\n
+        \              requests; if you get voice mail and your request can't wait,\n
+        \              contact another mythological figure listed on the contactUs\n
+        \              page of our web site.\n            </ows:ContactInstructions>\n
+        \        </ows:ContactInfo>\n         <ows:Role>PointOfContact</ows:Role>\n
+        \     </ows:ServiceContact>\n   </ows:ServiceProvider>\n\n   <!-- ==================================================================
+        -->\n   <!--    OPERATIONS METADATA SECTION                                     -->\n
+        \  <!-- ==================================================================
+        -->\n   <ows:OperationsMetadata>\n      <ows:Operation name=\"GetCapabilities\">\n
+        \        <ows:DCP>\n            <ows:HTTP>\n               <ows:Get xlink:href=\"http://www.BlueOx.org/wfs\"/>\n
+        \           </ows:HTTP>\n         </ows:DCP>\n         <ows:Parameter name=\"AcceptVersions\">\n
+        \           <ows:Value>1.1.0</ows:Value>\n            <ows:Value>1.0.0</ows:Value>\n
+        \        </ows:Parameter>\n         <ows:Parameter name=\"AcceptFormats\">\n
+        \           <ows:Value>text/xml</ows:Value>\n         </ows:Parameter>\n         <ows:Parameter
+        name=\"Sections\">\n            <ows:Value>ServiceIdentification</ows:Value>\n
+        \           <ows:Value>ServiceProvider</ows:Value>\n            <ows:Value>OperationsMetadata</ows:Value>\n
+        \           <ows:Value>FeatureTypeList</ows:Value>\n            <ows:Value>ServesGMLObjectTypeList</ows:Value>\n
+        \           <ows:Value>SupportsGMLObjectTypeList</ows:Value>\n            <ows:Value>Filter_Capabilities</ows:Value>\n
+        \        </ows:Parameter>\n      </ows:Operation>\n      <ows:Operation name=\"DescribeFeatureType\">\n
+        \        <ows:DCP>\n            <ows:HTTP>\n               <ows:Get  xlink:href=\"http://www.BlueOx.org/wfs/wfs.cgi?\"/>\n
+        \              <ows:Post xlink:href=\"http://www.BlueOx.org/wfs/wfs.cgi\"/>\n
+        \           </ows:HTTP>\n         </ows:DCP>\n         <ows:Parameter name=\"outputFormat\">\n
+        \           <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>\n         </ows:Parameter>\n
+        \     </ows:Operation>\n      <ows:Operation name=\"GetFeature\">\n         <ows:DCP>\n
+        \           <ows:HTTP>\n               <ows:Get  xlink:href=\"http://www.BlueOx.org/wfs/wfs.cgi?\"/>\n
+        \              <ows:Post xlink:href=\"http://www.BlueOx.org/wfs/wfs.cgi\"/>\n
+        \           </ows:HTTP>\n         </ows:DCP>\n         <ows:Parameter name=\"resultType\">\n
+        \           <ows:Value>results</ows:Value>\n            <ows:Value>hits</ows:Value>\n
+        \        </ows:Parameter>\n         <ows:Parameter name=\"outputFormat\">\n
+        \           <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>\n         </ows:Parameter>\n
+        \     </ows:Operation>\n      <ows:Operation name=\"GetFeatureWithLock\">\n
+        \        <ows:DCP>\n            <ows:HTTP>\n               <ows:Post xlink:href=\"http://www.BlueOx.org/wfs\"/>\n
+        \           </ows:HTTP>\n         </ows:DCP>\n         <ows:Parameter name=\"resultType\">\n
+        \           <ows:Value>results</ows:Value>\n            <ows:Value>hits</ows:Value>\n
+        \        </ows:Parameter>\n         <ows:Parameter name=\"outputFormat\">\n
+        \           <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>\n         </ows:Parameter>\n
+        \     </ows:Operation>\n      <ows:Operation name=\"GetGMLObject\">\n         <ows:DCP>\n
+        \           <ows:HTTP>\n               <ows:Post xlink:href=\"http://www.BlueOx.org/wfs\"/>\n
+        \           </ows:HTTP>\n         </ows:DCP>\n         <ows:Parameter name=\"outputFormat\">\n
+        \           <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>\n            <ows:Value>text/xhtml</ows:Value>\n
+        \        </ows:Parameter>\n         <ows:Parameter name=\"LocalTraverseXLinkScope\">\n
+        \           <ows:Value>0</ows:Value>\n            <ows:Value>*</ows:Value>\n
+        \        </ows:Parameter>\n         <ows:Parameter name=\"RemoteTraverseXLinkScope\">\n
+        \           <ows:Value>0</ows:Value>\n            <ows:Value>*</ows:Value>\n
+        \        </ows:Parameter>\n      </ows:Operation>\n      <ows:Operation name=\"LockFeature\">\n
+        \        <ows:DCP>\n            <ows:HTTP>\n               <ows:Post xlink:href=\"http://www.BlueOx.org/wfs\"/>\n
+        \           </ows:HTTP>\n         </ows:DCP>\n         <ows:Parameter name=\"lockAction\">\n
+        \           <ows:Value>ALL</ows:Value>\n            <ows:Value>SOME</ows:Value>\n
+        \        </ows:Parameter>\n      </ows:Operation>\n      <ows:Operation name=\"Transaction\">\n
+        \        <ows:DCP>\n            <ows:HTTP>\n               <ows:Post xlink:href=\"http://www.BlueOx.org/wfs\"/>\n
+        \           </ows:HTTP>\n         </ows:DCP>\n         <ows:Parameter name=\"inputFormat\">\n
+        \           <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>\n         </ows:Parameter>\n
+        \        <ows:Parameter name=\"idgen\">\n            <ows:Value>GenerateNew</ows:Value>\n
+        \           <ows:Value>UseExisting</ows:Value>\n            <ows:Value>ReplaceDuplicate</ows:Value>\n
+        \        </ows:Parameter>\n         <ows:Parameter name=\"releaseAction\">\n
+        \           <ows:Value>ALL</ows:Value>\n            <ows:Value>SOME</ows:Value>\n
+        \        </ows:Parameter>\n      </ows:Operation>\n      <ows:Parameter name=\"srsName\">\n
+        \        <ows:Value>EPSG:4326</ows:Value>\n         <ows:Value>EPSG:32100</ows:Value>\n
+        \        <ows:Value>EPSG:32101</ows:Value>\n         <ows:Value>EPSG:32102</ows:Value>\n
+        \     </ows:Parameter>\n      <ows:Constraint name=\"DefaultMaxFeatures\">\n
+        \        <ows:Value>10000</ows:Value>\n      </ows:Constraint>\n      <ows:Constraint
+        name=\"LocalTraverseXLinkScope\">\n         <ows:Value>0</ows:Value>\n         <ows:Value>*</ows:Value>\n
+        \     </ows:Constraint>\n      <ows:Constraint name=\"RemoteTraverseXLinkScope\">\n
+        \        <ows:Value>0</ows:Value>\n         <ows:Value>*</ows:Value>\n      </ows:Constraint>\n
+        \     <ows:Constraint name=\"DefaultLockExpiry\">\n         <ows:Value>5</ows:Value>\n
+        \     </ows:Constraint>\n   </ows:OperationsMetadata>\n\n   <!-- ==================================================================
+        -->\n   <!--    FEATURE TYPE LIST SECTION                                       -->\n
+        \  <!-- ==================================================================
+        -->\n   <wfs:FeatureTypeList>\n      <wfs:FeatureType xmlns:bo=\"http://www.BlueOx.org/BlueOx\">\n
+        \        <wfs:Name>bo:WoodsType</wfs:Name>\n         <wfs:Title>The Great
+        Northern Forest</wfs:Title>\n         <wfs:Abstract>\n            Describes
+        the arborial diversity of the Great\n            Northern Forest.\n         </wfs:Abstract>\n
+        \        <ows:Keywords>\n            <ows:Keyword>forest</ows:Keyword>\n            <ows:Keyword>north</ows:Keyword>\n
+        \           <ows:Keyword>woods</ows:Keyword>\n            <ows:Keyword>arborial</ows:Keyword>\n
+        \           <ows:Keyword>diversity</ows:Keyword>\n         </ows:Keywords>\n
+        \        <wfs:DefaultSRS>EPSG:62696405</wfs:DefaultSRS>\n         <wfs:OtherSRS>EPSG:32615</wfs:OtherSRS>\n
+        \        <wfs:OtherSRS>EPSG:32616</wfs:OtherSRS>\n         <wfs:OtherSRS>EPSG:32617</wfs:OtherSRS>\n
+        \        <wfs:OtherSRS>EPSG:32618</wfs:OtherSRS>\n         <wfs:OutputFormats>\n
+        \           <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>\n         </wfs:OutputFormats>\n
+        \        <ows:WGS84BoundingBox>\n            <ows:LowerCorner>-180 -90</ows:LowerCorner>\n
+        \           <ows:UpperCorner>180 90</ows:UpperCorner>\n         </ows:WGS84BoundingBox>\n
+        \        <wfs:MetadataURL type=\"FGDC\" format=\"text/xml\">http://www.ogccatservice.com/csw.cgi?service=CSW&amp;version=2.0.0&amp;request=GetRecords&amp;constraintlanguage=CQL&amp;constraint=\"recordid=urn:uuid:4ee8b2d3-9409-4a1d-b26b-6782e4fa3d59\"</wfs:MetadataURL>\n
+        \     </wfs:FeatureType>\n   </wfs:FeatureTypeList>\n\n   <!-- ==================================================================
+        -->\n   <!--    SERVES GML OBJECT TYPE LIST SECTION                             -->\n
+        \  <!-- ==================================================================
+        -->\n   <wfs:ServesGMLObjectTypeList>\n      <wfs:GMLObjectType xmlns:bo=\"http://www.BlueOx.org/BlueOx\">\n
+        \        <wfs:Name>bo:OxType</wfs:Name>\n         <wfs:Title>Babe's Lineage</wfs:Title>\n
+        \        <wfs:OutputFormats>\n            <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>\n
+        \           <wfs:Format>text/xhmtl</wfs:Format>\n         </wfs:OutputFormats>\n
+        \     </wfs:GMLObjectType>\n   </wfs:ServesGMLObjectTypeList>\n\n   <!-- ==================================================================
+        -->\n   <!--    SUPPORTS GML OBJECT TYPE LIST SECTION                           -->\n
+        \  <!-- ==================================================================
+        -->\n   <wfs:SupportsGMLObjectTypeList>\n      <wfs:GMLObjectType>\n         <wfs:Name>gml:AbstractGMLFeatureType</wfs:Name>\n
+        \        <wfs:OutputFormats>\n            <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>\n
+        \           <wfs:Format>text/xhtml</wfs:Format>\n         </wfs:OutputFormats>\n
+        \     </wfs:GMLObjectType>\n      <wfs:GMLObjectType>\n         <wfs:Name>gml:PointType</wfs:Name>\n
+        \        <wfs:OutputFormats>\n            <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>\n
+        \           <wfs:Format>text/xhtml</wfs:Format>\n         </wfs:OutputFormats>\n
+        \     </wfs:GMLObjectType>\n      <wfs:GMLObjectType>\n         <wfs:Name>gml:LineStringType</wfs:Name>\n
+        \        <wfs:OutputFormats>\n            <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>\n
+        \           <wfs:Format>text/xhtml</wfs:Format>\n         </wfs:OutputFormats>\n
+        \     </wfs:GMLObjectType>\n      <wfs:GMLObjectType>\n         <wfs:Name>gml:PolygonType</wfs:Name>\n
+        \        <wfs:OutputFormats>\n            <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>\n
+        \           <wfs:Format>text/xhtml</wfs:Format>\n         </wfs:OutputFormats>\n
+        \     </wfs:GMLObjectType>\n      <wfs:GMLObjectType>\n         <wfs:Name>gml:MultiPointType</wfs:Name>\n
+        \        <wfs:OutputFormats>\n            <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>\n
+        \           <wfs:Format>text/xhtml</wfs:Format>\n         </wfs:OutputFormats>\n
+        \     </wfs:GMLObjectType>\n      <wfs:GMLObjectType>\n         <wfs:Name>gml:MultiCurveType</wfs:Name>\n
+        \        <wfs:OutputFormats>\n            <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>\n
+        \           <wfs:Format>text/xhtml</wfs:Format>\n         </wfs:OutputFormats>\n
+        \     </wfs:GMLObjectType>\n      <wfs:GMLObjectType>\n         <wfs:Name>gml:MultiSurfaceType</wfs:Name>\n
+        \        <wfs:OutputFormats>\n            <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>\n
+        \           <wfs:Format>text/xhtml</wfs:Format>\n         </wfs:OutputFormats>\n
+        \     </wfs:GMLObjectType>\n      <wfs:GMLObjectType>\n         <wfs:Name>gml:AbstractMetaDataType</wfs:Name>\n
+        \        <wfs:OutputFormats>\n            <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>\n
+        \           <wfs:Format>text/xhtml</wfs:Format>\n         </wfs:OutputFormats>\n
+        \     </wfs:GMLObjectType>\n      <wfs:GMLObjectType>\n         <wfs:Name>gml:AbstractTopologyType</wfs:Name>\n
+        \        <wfs:OutputFormats>\n            <wfs:Format>text/xml; subtype=gml/3.1.1</wfs:Format>\n
+        \           <wfs:Format>text/xhtml</wfs:Format>\n         </wfs:OutputFormats>\n
+        \     </wfs:GMLObjectType>\n   </wfs:SupportsGMLObjectTypeList>\n\n   <!--
+        ================================================================== -->\n   <!--
+        \   FILTER CAPABILITIES SECTION                                     -->\n
+        \  <!-- ==================================================================
+        -->\n   <ogc:Filter_Capabilities>\n      <ogc:Spatial_Capabilities>\n         <ogc:GeometryOperands>\n
+        \           <ogc:GeometryOperand>gml:Envelope</ogc:GeometryOperand>\n            <ogc:GeometryOperand>gml:Point</ogc:GeometryOperand>\n
+        \           <ogc:GeometryOperand>gml:LineString</ogc:GeometryOperand>\n            <ogc:GeometryOperand>gml:Polygon</ogc:GeometryOperand>\n
+        \           <ogc:GeometryOperand>gml:ArcByCenterPoint</ogc:GeometryOperand>\n
+        \           <ogc:GeometryOperand>gml:CircleByCenterPoint</ogc:GeometryOperand>\n
+        \           <ogc:GeometryOperand>gml:Arc</ogc:GeometryOperand>\n            <ogc:GeometryOperand>gml:Circle</ogc:GeometryOperand>\n
+        \           <ogc:GeometryOperand>gml:ArcByBulge</ogc:GeometryOperand>\n            <ogc:GeometryOperand>gml:Bezier</ogc:GeometryOperand>\n
+        \           <ogc:GeometryOperand>gml:Clothoid</ogc:GeometryOperand>\n            <ogc:GeometryOperand>gml:CubicSpline</ogc:GeometryOperand>\n
+        \           <ogc:GeometryOperand>gml:Geodesic</ogc:GeometryOperand>\n            <ogc:GeometryOperand>gml:OffsetCurve</ogc:GeometryOperand>\n
+        \           <ogc:GeometryOperand>gml:Triangle</ogc:GeometryOperand>\n            <ogc:GeometryOperand>gml:PolyhedralSurface</ogc:GeometryOperand>\n
+        \           <ogc:GeometryOperand>gml:TriangulatedSurface</ogc:GeometryOperand>\n
+        \           <ogc:GeometryOperand>gml:Tin</ogc:GeometryOperand>\n            <ogc:GeometryOperand>gml:Solid</ogc:GeometryOperand>\n
+        \        </ogc:GeometryOperands>\n         <ogc:SpatialOperators>\n            <ogc:SpatialOperator
+        name=\"BBOX\"/>\n            <ogc:SpatialOperator name=\"Equals\"/>\n            <ogc:SpatialOperator
+        name=\"Disjoint\"/>\n            <ogc:SpatialOperator name=\"Intersects\"/>\n
+        \           <ogc:SpatialOperator name=\"Touches\"/>\n            <ogc:SpatialOperator
+        name=\"Crosses\"/>\n            <ogc:SpatialOperator name=\"Within\"/>\n            <ogc:SpatialOperator
+        name=\"Contains\"/>\n            <ogc:SpatialOperator name=\"Overlaps\"/>\n
+        \           <ogc:SpatialOperator name=\"Beyond\"/>\n         </ogc:SpatialOperators>\n
+        \     </ogc:Spatial_Capabilities>\n      <ogc:Scalar_Capabilities>\n         <ogc:LogicalOperators/>\n
+        \        <ogc:ComparisonOperators>\n           <ogc:ComparisonOperator>LessThan</ogc:ComparisonOperator>\n
+        \          <ogc:ComparisonOperator>GreaterThan</ogc:ComparisonOperator>\n
+        \          <ogc:ComparisonOperator>LessThanEqualTo</ogc:ComparisonOperator>\n
+        \          <ogc:ComparisonOperator>GreaterThanEqualTo</ogc:ComparisonOperator>\n
+        \          <ogc:ComparisonOperator>EqualTo</ogc:ComparisonOperator>\n           <ogc:ComparisonOperator>NotEqualTo</ogc:ComparisonOperator>\n
+        \          <ogc:ComparisonOperator>Like</ogc:ComparisonOperator>\n           <ogc:ComparisonOperator>Between</ogc:ComparisonOperator>\n
+        \          <ogc:ComparisonOperator>NullCheck</ogc:ComparisonOperator>\n         </ogc:ComparisonOperators>\n
+        \        <ogc:ArithmeticOperators>\n            <ogc:SimpleArithmetic/>\n
+        \           <ogc:Functions>\n               <ogc:FunctionNames>\n                  <ogc:FunctionName
+        nArgs=\"1\">MIN</ogc:FunctionName>\n                  <ogc:FunctionName nArgs=\"1\">MAX</ogc:FunctionName>\n
+        \                 <ogc:FunctionName nArgs=\"1\">SIN</ogc:FunctionName>\n                  <ogc:FunctionName
+        nArgs=\"1\">COS</ogc:FunctionName>\n                  <ogc:FunctionName nArgs=\"1\">TAN</ogc:FunctionName>\n
+        \              </ogc:FunctionNames>\n            </ogc:Functions>\n         </ogc:ArithmeticOperators>\n
+        \     </ogc:Scalar_Capabilities>\n      <ogc:Id_Capabilities>\n         <ogc:EID/>\n
+        \        <ogc:FID/>\n      </ogc:Id_Capabilities>\n   </ogc:Filter_Capabilities>\n</wfs:WFS_Capabilities>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Connection:
+      - Keep-Alive
+      Content-Security-Policy:
+      - upgrade-insecure-requests
+      Content-Type:
+      - application/xml
+      Date:
+      - Thu, 02 Oct 2025 15:20:41 GMT
+      ETag:
+      - '"442e-6324eaaf9e8ae-gzip"'
+      Keep-Alive:
+      - timeout=5, max=100
+      Last-Modified:
+      - Wed, 09 Apr 2025 01:48:37 GMT
+      Server:
+      - Apache
+      Vary:
+      - upgrade-insecure-requests,Accept-Encoding
+      X-Hostname:
+      - (null)
+      content-length:
+      - '17454'
+    status:
+      code: 200
+      message: OK
+version: 1

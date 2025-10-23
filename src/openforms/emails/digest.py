@@ -1,9 +1,11 @@
 import uuid
 from collections import defaultdict
-from collections.abc import Collection, Iterable, Iterator, Mapping, MutableMapping
+from collections.abc import Collection, Iterable, Iterator, MutableMapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from itertools import groupby
+from io import BytesIO
+from itertools import chain, groupby
+from typing import assert_never
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
@@ -17,13 +19,18 @@ from django_yubin.models import Message
 from furl import furl
 from json_logic.typing import JSON
 from lxml import etree
+from lxml.etree import _Element
 from requests.exceptions import RequestException
 from rest_framework import serializers
 from simple_certmanager.models import Certificate
 from zgw_consumers.client import build_client
 from zgw_consumers.models import Service
 
-from openforms.config.models import GlobalConfiguration, MapWMSTileLayer
+from openforms.config.models import (
+    GlobalConfiguration,
+    MapWFSTileLayer,
+    MapWMSTileLayer,
+)
 from openforms.contrib.brk.service import check_brk_config_for_addressNL
 from openforms.contrib.kadaster.service import check_bag_config_for_address_fields
 from openforms.contrib.reference_lists.client import (
@@ -33,7 +40,7 @@ from openforms.contrib.reference_lists.client import (
 )
 from openforms.formio.constants import DataSrcOptions
 from openforms.formio.typing import Component
-from openforms.formio.typing.map import Overlay
+from openforms.formio.typing.map import Overlay, OverlayType
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import Form
 from openforms.forms.models.form_registration_backend import FormRegistrationBackend
@@ -693,16 +700,18 @@ def collect_expired_or_near_expiry_reference_lists_data() -> list[
     return problems
 
 
-class WMS:
+class TileLayer:
     """
-    Helper to process WMS tile layer configuration.
+    Helper to process WMS and WFS tile layer configuration.
     """
 
     _layers_for_wms_url: MutableMapping[str, set[str] | requests.RequestException]
+    _layers_for_wfs_url: MutableMapping[str, set[str] | requests.RequestException]
 
     def __init__(self):
         self.session = requests.Session()
         self._layers_for_wms_url = {}
+        self._layers_for_wfs_url = {}
 
     def __enter__(self):
         self.session.__enter__()
@@ -711,28 +720,109 @@ class WMS:
     def __exit__(self, *args):
         self.session.__exit__(*args)
 
-    def get_layer_names(self, wms_layer_url: str) -> Collection[str]:
-        if self._layers_for_wms_url.get(wms_layer_url) is None:
+    def _get_layer_names(
+        self,
+        root: type[_Element] | None,
+        namespaces: dict[str, str],
+        layer_type: OverlayType,
+    ) -> list[_Element] | None:
+        match layer_type:
+            case "wms":
+                return self._get_wms_layer_names(root, namespaces)
+            case "wfs":
+                return self._get_wfs_layer_names(root, namespaces)
+            case _:
+                assert_never(layer_type)
+
+    @staticmethod
+    def _get_wms_layer_names(
+        root: type[_Element] | None, namespaces: dict[str, str]
+    ) -> list[_Element] | None:
+        if "wms" in namespaces:
+            # Try with common wms standard namespace first (used in WMS 1.3.0)
+            return root.findall(
+                path=".//wms:Layer/wms:Name",
+                namespaces=namespaces,
+            )
+        else:
+            # Fallback to no namespace (for WMS 1.1.1)
+            return root.findall(path=".//Layer/Name")
+
+    @staticmethod
+    def _get_wfs_layer_names(
+        root: type[_Element] | None, namespaces: dict[str, str]
+    ) -> list[_Element] | None:
+        if "wfs" in namespaces:
+            # Try with wfs namespace
+            return root.findall(
+                path=".//wfs:FeatureType/wfs:Name",
+                namespaces=namespaces,
+            )
+        else:
+            # Fallback to wfs without namespaces
+            return root.findall(path=".//FeatureType/Name")
+
+    def _get_layer_names_from_cache(
+        self, layer_url: str, layer_type: OverlayType
+    ) -> set[str] | None:
+        match layer_type:
+            case "wms":
+                return self._layers_for_wms_url.get(layer_url)
+            case "wfs":
+                return self._layers_for_wfs_url.get(layer_url)
+            case _:
+                assert_never(layer_type)
+
+    def _set_result_into_cache(
+        self,
+        layer_url: str,
+        layer_type: OverlayType,
+        result: set[str] | requests.RequestException,
+    ):
+        match layer_type:
+            case "wms":
+                self._layers_for_wms_url[layer_url] = result
+            case "wfs":
+                self._layers_for_wfs_url[layer_url] = result
+            case _:
+                assert_never(layer_type)
+
+    @staticmethod
+    def _extract_namespaces(xml_bytes: bytes, default: str) -> dict[str, str]:
+        """Extract all namespace prefixes and URIs from an XML document."""
+        namespaces = {}
+        for event, elem in etree.iterparse(BytesIO(xml_bytes), events=("start-ns",)):
+            prefix, uri = elem
+            namespaces[prefix if prefix else default] = uri
+
+        return namespaces
+
+    def get_layer_names(
+        self, layer_url: str, layer_type: OverlayType
+    ) -> Collection[str]:
+        cache_result = self._get_layer_names_from_cache(layer_url, layer_type)
+        should_populate_cache = cache_result is None
+
+        if should_populate_cache:
             # populate the cache and do the expensive processing
             try:
-                response = self.session.get(wms_layer_url)
+                response = self.session.get(layer_url)
                 response.raise_for_status()
             except requests.RequestException as exc:
-                self._layers_for_wms_url[wms_layer_url] = exc
+                cache_result = exc
             else:
                 root = etree.fromstring(response.content)
-                # Try with common wms standard namespace first (used in WMS 1.3.0)
-                names = root.findall(
-                    ".//wms:Layer/wms:Name",
-                    namespaces={"wms": "http://www.opengis.net/wms"},
-                    # Fallback to no namespace (for WMS 1.1.1)
-                ) or root.findall(".//Layer/Name")
+                namespaces = self._extract_namespaces(response.content, layer_type)
+                names = self._get_layer_names(root, namespaces, layer_type)
 
-                self._layers_for_wms_url[wms_layer_url] = set(
+                cache_result = set(
                     element.text.strip() for element in names if element.text
                 )
 
-        cache_result = self._layers_for_wms_url[wms_layer_url]
+        if should_populate_cache:
+            # append the new result into the cache
+            self._set_result_into_cache(layer_url, layer_type, cache_result)
+
         if isinstance(cache_result, requests.RequestException):
             raise cache_result
         return cache_result
@@ -740,9 +830,12 @@ class WMS:
 
 def collect_invalid_map_component_overlays() -> list[InvalidMapComponentOverlay]:
     live_forms = Form.objects.live()
-    wms_tile_layers_map: Mapping[str, str] = {
+    tile_layers_map: dict[str, str] = {
         str(uuid): str(url)
-        for uuid, url in MapWMSTileLayer.objects.values_list("uuid", "url")
+        for uuid, url in chain(
+            MapWMSTileLayer.objects.values_list("uuid", "url"),
+            MapWFSTileLayer.objects.values_list("uuid", "url"),
+        )
     }
 
     problems: list[InvalidMapComponentOverlay] = []
@@ -757,11 +850,11 @@ def collect_invalid_map_component_overlays() -> list[InvalidMapComponentOverlay]
                 for overlay in overlays:
                     yield form, component, overlay
 
-    with WMS() as wms_helper:
+    with TileLayer() as tile_layer_helper:
         for form, component, overlay in _iter_overlays():
-            overlay_url = wms_tile_layers_map.get(overlay["uuid"])
+            overlay_url = tile_layers_map.get(overlay["uuid"])
 
-            # Is the uuid connected to a known WMS tile layer
+            # Is the uuid connected to a known WMS or WFS tile layer
             if not overlay_url:
                 problems.append(
                     InvalidMapComponentOverlay(
@@ -775,7 +868,9 @@ def collect_invalid_map_component_overlays() -> list[InvalidMapComponentOverlay]
                 continue
 
             try:
-                xml_layer_names = wms_helper.get_layer_names(overlay_url)
+                xml_layer_names = tile_layer_helper.get_layer_names(
+                    overlay_url, overlay["type"]
+                )
             except requests.RequestException:
                 problems.append(
                     InvalidMapComponentOverlay(
@@ -788,8 +883,8 @@ def collect_invalid_map_component_overlays() -> list[InvalidMapComponentOverlay]
                 )
                 continue
 
-            # Check if all overlay layers are actually available in the WMS tile
-            # layer. It could be that the WMS tile layer was updated, and that the
+            # Check if all overlay layers are actually available in the WMS/WFS tile
+            # layer. It could be that the WMS/WFS tile layer was updated, and that the
             # layer is no-longer available.
             missing_layers = set(overlay["layers"]) - set(xml_layer_names)
             if missing_layers:

@@ -96,3 +96,46 @@ class MapWMSTileLayer(models.Model):
 
     def natural_key(self):
         return (self.uuid,)
+
+
+class MapWFSTileLayerManager(models.Manager["MapWFSTileLayer"]):
+    def get_by_natural_key(self, uuid: str) -> MapWFSTileLayer:
+        return self.get(uuid=uuid)
+
+
+class MapWFSTileLayer(models.Model):
+    uuid = models.UUIDField(
+        _("UUID"),
+        unique=True,
+        default=_uuid.uuid4,
+        editable=False,
+    )
+    name = models.CharField(
+        _("name"),
+        max_length=100,
+        help_text=_(
+            "An easily recognizable name for the WFS tile layer, used to identify it."
+        ),
+    )
+    url = models.URLField(
+        _("tile layer url"),
+        max_length=255,
+        help_text=_(
+            "URL to collect the WFS tile layer capabilities. To ensure correct "
+            "functionality of the map, the WFS tile layer `getFeature` request should "
+            "support EPSG 4326 projection and 'application/json' as output format."
+            "Example value: https://service.pdok.nl/lv/bag/wfs/v2_0?request=getCapabilities&service=WFS"
+        ),
+    )
+
+    objects = MapWFSTileLayerManager()
+
+    class Meta:
+        verbose_name = _("WFS layer")
+        verbose_name_plural = _("WFS layers")
+
+    def __str__(self):
+        return self.name
+
+    def natural_key(self):
+        return (self.uuid,)
