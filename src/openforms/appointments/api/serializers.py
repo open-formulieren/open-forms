@@ -77,8 +77,21 @@ class LocationSerializer(serializers.Serializer):
         label=_("identifier"), help_text=_("ID of the location")
     )
     name = serializers.CharField(label=_("name"), help_text=_("Location name"))
-    city = serializers.CharField(label=_("city"), help_text=_("City"))
-    address = serializers.CharField(label=_("address"), help_text=_("Address"))
+    city = serializers.CharField(
+        label=_("city"),
+        allow_blank=True,
+        help_text=_("City"),
+    )
+    address = serializers.CharField(
+        label=_("address"),
+        allow_blank=True,
+        help_text=_("Address"),
+    )
+    postalcode = serializers.CharField(
+        label=_("postal code"),
+        allow_blank=True,
+        help_text=_("Postal code"),
+    )
 
 
 class LocationInputSerializer(serializers.Serializer):
