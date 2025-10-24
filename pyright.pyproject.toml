@@ -43,7 +43,7 @@ include = [
     "src/openforms/contrib/reference_lists/",
     "src/openforms/contrib/auth_oidc/",
     # Data removal app
-    "src/openforms/data_removal/tasks.py",
+    "src/openforms/data_removal/",
     # Emails
     "src/openforms/emails/forms.py",
     "src/openforms/emails/templatetags/cosign_information.py",
