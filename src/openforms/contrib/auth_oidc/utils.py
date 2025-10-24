@@ -4,7 +4,7 @@ from typing import Literal
 
 import structlog
 from glom import Path, PathAccessError, assign, glom
-from mozilla_django_oidc_db.plugins import OIDCPlugin
+from mozilla_django_oidc_db.plugins import BaseOIDCPlugin
 from mozilla_django_oidc_db.typing import JSONObject
 
 from openforms.authentication.registry import register as auth_register
@@ -223,7 +223,7 @@ def process_claims(
     return processed_claims
 
 
-def get_of_auth_plugin(oidc_plugin: OIDCPlugin) -> OIDCAuthentication:
+def get_of_auth_plugin(oidc_plugin: BaseOIDCPlugin) -> OIDCAuthentication:
     """Get the Open Forms authentication plugin corresponding to the provided OIDC plugin."""
     for plugin in auth_register:
         if not isinstance(plugin, OIDCAuthentication):

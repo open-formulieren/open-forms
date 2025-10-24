@@ -212,7 +212,7 @@ django-sendfile2==0.7.1
     # via django-privates
 django-sessionprofile==2.0.0
     # via django-digid-eherkenning
-django-setup-configuration==0.8.2
+django-setup-configuration==0.11.0
     # via
     #   mozilla-django-oidc-db
     #   zgw-consumers
@@ -361,7 +361,7 @@ maykin-python3-saml==1.16.1
     # via django-digid-eherkenning
 mozilla-django-oidc==4.0.0
     # via mozilla-django-oidc-db
-mozilla-django-oidc-db==0.25.1
+mozilla-django-oidc-db==1.0.2
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning

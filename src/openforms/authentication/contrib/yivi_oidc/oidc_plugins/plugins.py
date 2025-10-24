@@ -2,7 +2,7 @@ import base64
 import json
 from collections.abc import Collection
 from copy import deepcopy
-from typing import cast
+from typing import cast, override
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
@@ -13,12 +13,9 @@ import structlog
 from furl import furl
 from glom import Path, glom
 from mozilla_django_oidc_db.models import OIDCClient
-from mozilla_django_oidc_db.plugins import (
-    AnonymousUserOIDCPluginProtocol,
-    BaseOIDCPlugin,
-)
+from mozilla_django_oidc_db.plugins import AnonymousUserOIDCPlugin
 from mozilla_django_oidc_db.registry import register
-from mozilla_django_oidc_db.typing import ClaimPath, JSONObject
+from mozilla_django_oidc_db.typing import ClaimPath, GetParams, JSONObject
 from mozilla_django_oidc_db.utils import obfuscate_claims
 from mozilla_django_oidc_db.views import (
     _RETURN_URL_SESSION_KEY,
@@ -63,7 +60,8 @@ Note that including an empty attribute sets makes the item optional.
 
 
 @register(OIDC_YIVI_IDENTIFIER)
-class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
+class YiviPlugin(AnonymousUserOIDCPlugin):
+    @override
     def get_schema(self) -> JSONObject:
         return YIVI_SCHEMA
 
@@ -400,8 +398,8 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         return f"signicat:param:condiscon_base64:{base64_bytes.decode('ascii')}"
 
     def get_extra_params(
-        self, request: HttpRequest, extra_params: dict
-    ) -> dict[str, str | bytes]:
+        self, request: HttpRequest, extra_params: GetParams
+    ) -> GetParams:
         assert isinstance(request, Request)  # stronger guarantee
         configured_scopes = deepcopy(self.get_setting("oidc_rp_scopes_list"))
 
@@ -417,6 +415,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         configured_scopes.append(
             self._get_signicat_yivi_condiscon_scope(auth_backend_options)
         )
-
-        extra_params["scope"] = " ".join(configured_scopes)
-        return extra_params
+        return {
+            **extra_params,
+            "scope": " ".join(configured_scopes),
+        }

@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "attributes",
-                    django_jsonform.models.fields.ArrayField(
+                    django_jsonform.models.fields.ArrayField(  # type: ignore
                         base_field=models.CharField(
                             blank=True, max_length=100, verbose_name="attribute"
                         ),
@@ -262,7 +262,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "oidc_rp_scopes_list",
-                    django_jsonform.models.fields.ArrayField(
+                    django_jsonform.models.fields.ArrayField(  # type: ignore
                         base_field=models.CharField(
                             max_length=50, verbose_name="OpenID Connect scope"
                         ),

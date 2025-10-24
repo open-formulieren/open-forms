@@ -65,10 +65,11 @@ class YiviInitTests(IntegrationTestsBase):
             redirect_target.path,
             "/realms/test/protocol/openid-connect/auth",
         )
-        scope_list = query_params["scope"].split(" ")
-        self.assertIn("openid", scope_list)
+        scope = query_params["scope"]
+        assert scope is not None
+        self.assertIn("openid", scope.split(" "))
         self.assertCondisconScope(
-            query_params["scope"],
+            scope,
             [
                 [
                     ["attribute.pseudo"],
@@ -120,10 +121,11 @@ class YiviInitTests(IntegrationTestsBase):
         redirect_target = furl(response["Location"])
         query_params = redirect_target.query.params
 
-        scope_list = query_params["scope"].split(" ")
-        self.assertIn("openid", scope_list)
+        scope = query_params["scope"]
+        assert scope is not None
+        self.assertIn("openid", scope.split(" "))
         self.assertCondisconScope(
-            query_params["scope"],
+            scope,
             [
                 # The `bsn_claim` from the Yivi global config. This is required.
                 [
@@ -159,10 +161,11 @@ class YiviInitTests(IntegrationTestsBase):
         redirect_target = furl(response["Location"])
         query_params = redirect_target.query.params
 
-        scope_list = query_params["scope"].split(" ")
-        self.assertIn("openid", scope_list)
+        scope = query_params["scope"]
+        assert scope is not None
+        self.assertIn("openid", scope.split(" "))
         self.assertCondisconScope(
-            query_params["scope"],
+            scope,
             [
                 # The ``bsn_claim`` and ``bsn_loa_claim`` from the Yivi global config.
                 [
@@ -199,10 +202,11 @@ class YiviInitTests(IntegrationTestsBase):
         redirect_target = furl(response["Location"])
         query_params = redirect_target.query.params
 
-        scope_list = query_params["scope"].split(" ")
-        self.assertIn("openid", scope_list)
+        scope = query_params["scope"]
+        assert scope is not None
+        self.assertIn("openid", scope.split(" "))
         self.assertCondisconScope(
-            query_params["scope"],
+            scope,
             [
                 # The `bsn_claim`, `kvk_claim` and `pseudo_claim` from the Yivi global
                 # config. The user can choose which one they want to provide.
@@ -236,10 +240,11 @@ class YiviInitTests(IntegrationTestsBase):
         redirect_target = furl(response["Location"])
         query_params = redirect_target.query.params
 
-        scope_list = query_params["scope"].split(" ")
-        self.assertIn("openid", scope_list)
+        scope = query_params["scope"]
+        assert scope is not None
+        self.assertIn("openid", scope.split(" "))
         self.assertCondisconScope(
-            query_params["scope"],
+            scope,
             [
                 [
                     ["attribute.pseudo"],

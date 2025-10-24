@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="ofeidascompanyconfig",
             name="oidc_rp_scopes_list",
-            field=django_jsonform.models.fields.ArrayField(
+            field=django_jsonform.models.fields.ArrayField(  # type: ignore
                 base_field=models.CharField(
                     max_length=50, verbose_name="OpenID Connect scope"
                 ),
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="ofeidasconfig",
             name="oidc_rp_scopes_list",
-            field=django_jsonform.models.fields.ArrayField(
+            field=django_jsonform.models.fields.ArrayField(  # type: ignore
                 base_field=models.CharField(
                     max_length=50, verbose_name="OpenID Connect scope"
                 ),

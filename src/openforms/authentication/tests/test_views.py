@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.contrib.sessions.backends.base import SessionBase
 from django.test import TestCase, override_settings, tag
 from django.test.client import RequestFactory
 from django.utils.translation import gettext as _
@@ -90,7 +91,7 @@ class AuthenticationFlowTests(APITestCase):
 
         with self.subTest("start bad authentication backend"):
             request = factory.get(url, {"next": next_url})
-            request.session = {}
+            request.session = SessionBase()
             response = start_view(request, slug=form.slug, plugin_id="plugin2")
             self.assertEqual(response.content, b"plugin not allowed")
             self.assertEqual(response.status_code, 400)
@@ -127,7 +128,7 @@ class AuthenticationFlowTests(APITestCase):
 
         with self.subTest("return bad authentication backend"):
             request = factory.get(url, {"next": next_url})
-            request.session = {}
+            request.session = SessionBase()
             response = return_view(request, slug=form.slug, plugin_id="plugin2")
             self.assertEqual(response.content, b"plugin not allowed")
             self.assertEqual(response.status_code, 400)
@@ -161,7 +162,7 @@ class AuthenticationFlowTests(APITestCase):
         start_view = AuthenticationStartView.as_view(register=register)
 
         response = start_view(
-            factory.get(url, {"next": next_url}),
+            factory.get(url, {"next": str(next_url)}),
             slug=form.slug,
             plugin_id="plugin1",
         )
@@ -193,7 +194,7 @@ class AuthenticationFlowTests(APITestCase):
         start_view = AuthenticationStartView.as_view(register=register)
 
         response = start_view(
-            factory.get(url, {"next": next_url}),
+            factory.get(url, {"next": str(next_url)}),
             slug=form.slug,
             plugin_id="plugin1",
         )
@@ -228,7 +229,7 @@ class AuthenticationFlowTests(APITestCase):
         url = plugin.get_start_url(init_request, form)
         start_view = AuthenticationStartView.as_view(register=register)
         response = start_view(
-            factory.get(url, {"next": next_url}),
+            factory.get(url, {"next": str(next_url)}),
             slug=form.slug,
             plugin_id="plugin1",
         )

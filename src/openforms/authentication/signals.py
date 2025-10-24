@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.dispatch import Signal, receiver
 from django.utils import timezone
@@ -6,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 from rest_framework.request import Request
 
+from openforms.accounts.models import User
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
 from openforms.submissions.signals import (
@@ -17,6 +19,7 @@ from openforms.submissions.signals import (
 
 from .constants import FORM_AUTH_SESSION_KEY, REGISTRATOR_SUBJECT_SESSION_KEY
 from .registry import register
+from .typing import BaseAuth, FormAuth
 from .utils import (
     logout_submission,
     remove_auth_info_from_session,
@@ -59,6 +62,7 @@ Provides:
 def set_auth_attribute_on_session(
     sender, instance: Submission, request: Request, anonymous=False, **kwargs
 ):
+    assert isinstance(request.user, User | AnonymousUser)
     log = logger.bind(submission_uuid=str(instance.uuid), anonymous=anonymous)
     if anonymous:
         log.info("authentication.skip_storing_auth_info")
@@ -89,6 +93,7 @@ def set_auth_attribute_on_session(
         raise PermissionDenied(_("Demo plugins require an active admin session."))
 
     user = request.user if request.user.is_authenticated else None
+    assert isinstance(user, User | None)
     is_delegated = bool(
         registrator_subject and registrator_subject.get("skipped_subject_info") is None
     )
@@ -102,13 +107,13 @@ def set_auth_attribute_on_session(
             store_auth_details(instance, form_auth)
         else:
             # If KVK/BSN is given, store those details in the AuthInfo model and the employee details in the Registrator model.
-            auth_save = {
+            auth_save: FormAuth = {
                 "value": registrator_subject["value"],
                 "attribute": registrator_subject["attribute"],
                 # TODO we don't have a plugin to define here? things break if this doesn't exist (like the logout view)
                 "plugin": registrator_subject.get("plugin", "registrator"),
             }
-            registrator_save = {
+            registrator_save: BaseAuth = {
                 "value": form_auth["value"],
                 "attribute": form_auth["attribute"],
                 "plugin": form_auth["plugin"],

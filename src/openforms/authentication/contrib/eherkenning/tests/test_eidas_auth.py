@@ -40,7 +40,7 @@ class EIDASConfigMixin:
 
     @classmethod
     def setUpTestData(cls):
-        super().setUpTestData()
+        super().setUpTestData()  # pyright: ignore[reportAttributeAccessIssue]
 
         cert = CertificateFactory.create(label="eHerkenning", with_private_key=True)
 
@@ -80,13 +80,13 @@ class EIDASConfigMixin:
 
     @classmethod
     def tearDownClass(cls):
-        super().tearDownClass()
+        super().tearDownClass()  # pyright: ignore[reportAttributeAccessIssue]
 
     def setUp(self):
-        super().setUp()
+        super().setUp()  # pyright: ignore[reportAttributeAccessIssue]
 
         clear_caches()
-        self.addCleanup(clear_caches)
+        self.addCleanup(clear_caches)  # pyright: ignore[reportAttributeAccessIssue]
 
 
 def _create_test_artifact() -> str:

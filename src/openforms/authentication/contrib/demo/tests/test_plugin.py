@@ -1,6 +1,8 @@
 from urllib.parse import quote
 
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import TestCase, override_settings
+
+from rest_framework.test import APIRequestFactory
 
 from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.forms.tests.factories import FormStepFactory
@@ -10,6 +12,8 @@ from openforms.utils.tests.feature_flags import enable_feature_flag
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....registry import register
+
+factory = APIRequestFactory()
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
@@ -27,7 +31,6 @@ class LoginTests(TestCase):
         self.client.force_login(user=user)
 
         # we need an arbitrary request
-        factory = RequestFactory()
         request = factory.get("/foo")
 
         url = plugin.get_start_url(request, form)
@@ -94,7 +97,6 @@ class LoginTests(TestCase):
         self.client.force_login(user=user)
 
         # we need an arbitrary request
-        factory = RequestFactory()
         request = factory.get("/foo")
 
         url = plugin.get_start_url(request, form)
@@ -142,7 +144,6 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
         user = StaffUserFactory.create()
         self.client.force_login(user=user)
         # we need an arbitrary request
-        factory = RequestFactory()
         request = factory.get("/foo")
         start_url = plugin.get_start_url(request, form)
         return_url = plugin.get_return_url(request, form)

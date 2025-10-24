@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import ClassVar, Protocol, runtime_checkable
+from typing import ClassVar
 
 from django.http import (
     HttpRequest,
@@ -10,13 +10,11 @@ from django.http import (
 )
 
 from mozilla_django_oidc_db.registry import register as oidc_registry
-from mozilla_django_oidc_db.typing import ClaimPath
 from mozilla_django_oidc_db.utils import do_op_logout
 from mozilla_django_oidc_db.views import (
     _RETURN_URL_SESSION_KEY,
     OIDCAuthenticationRequestInitView,
 )
-from typing_extensions import deprecated
 
 from openforms.authentication.base import (
     BasePlugin,
@@ -31,7 +29,7 @@ from openforms.authentication.constants import (
 from openforms.authentication.exceptions import InvalidCoSignData
 from openforms.authentication.typing import FormAuth
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
-from openforms.contrib.auth_oidc.typing import ClaimProcessingInstructions, OIDCErrors
+from openforms.contrib.auth_oidc.typing import OIDCErrors
 from openforms.forms.models import Form
 from openforms.typing import StrOrPromise
 from openforms.utils.urls import reverse_plus
@@ -134,19 +132,3 @@ class OIDCAuthentication[T, OptionsT: BaseOptions](BasePlugin[OptionsT]):
 
     def get_error_codes(self) -> OIDCErrors:
         raise NotImplementedError("Subclasses must implement 'get_error_codes'")
-
-
-@runtime_checkable
-class OFBaseOIDCPluginProtocol(Protocol):
-    @deprecated(
-        "These plugin-specific callback URLs are deprecated. "
-        "Instead, use the generic callback URL in urls.py - it"
-        " can handle the different configs."
-    )
-    def _get_legacy_callback(self) -> str:
-        """Get the django URL name of the callback URL."""
-        ...
-
-    def get_sensitive_claims(self) -> list[ClaimPath]: ...
-
-    def get_claim_processing_instructions(self) -> ClaimProcessingInstructions: ...

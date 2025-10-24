@@ -1,5 +1,13 @@
 from typing import Literal, NotRequired, TypedDict
 
+# Ideally, we wouldn't be importing such specific types, but enums <-> string literals
+# typing kinda sucks, since at runtime these values *do* convert into each other.
+from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
+
+from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.constants import (
+    EIDASAssuranceLevels,
+)
+
 
 class DigiDEntity(TypedDict):
     identifierType: Literal["bsn"]
@@ -12,12 +20,15 @@ class DigiDAuthorizee(TypedDict):
 
 class DigiDContext(TypedDict):
     source: Literal["digid"]
-    levelOfAssurance: Literal[
-        "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
-        "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
-        "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
-        "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
-    ]
+    levelOfAssurance: (
+        Literal[
+            "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+            "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+            "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
+            "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
+        ]
+        | DigiDAssuranceLevels
+    )
     authorizee: DigiDAuthorizee
 
 
@@ -52,13 +63,16 @@ class EHerkenningAuthorizee(TypedDict):
 
 class EHerkenningContext(TypedDict):
     source: Literal["eherkenning"]
-    levelOfAssurance: Literal[
-        "urn:etoegang:core:assurance-class:loa1",
-        "urn:etoegang:core:assurance-class:loa2",
-        "urn:etoegang:core:assurance-class:loa2plus",
-        "urn:etoegang:core:assurance-class:loa3",
-        "urn:etoegang:core:assurance-class:loa4",
-    ]
+    levelOfAssurance: (
+        Literal[
+            "urn:etoegang:core:assurance-class:loa1",
+            "urn:etoegang:core:assurance-class:loa2",
+            "urn:etoegang:core:assurance-class:loa2plus",
+            "urn:etoegang:core:assurance-class:loa3",
+            "urn:etoegang:core:assurance-class:loa4",
+        ]
+        | AssuranceLevels
+    )
     authorizee: EHerkenningAuthorizee
 
 
@@ -108,7 +122,7 @@ class YiviAuthorizee(TypedDict):
     legalSubject: YiviLegalSubject
 
 
-# This type definition is highly experimental, and will most definitely change
+# This type definition is experimental, and will likely change
 class YiviContext(TypedDict):
     source: Literal["yivi"]
     # The levelOfAssurance changes based on the used configured auth attribute
@@ -160,22 +174,40 @@ class EIDASMandate(TypedDict):
 
 class EIDASContext(TypedDict):
     source: Literal["eidas"]
-    levelOfAssurance: Literal[
-        "urn:etoegang:core:assurance-class:loa2",
-        "urn:etoegang:core:assurance-class:loa2plus",
-        "urn:etoegang:core:assurance-class:loa3",
-        "urn:etoegang:core:assurance-class:loa4",
-    ]
+    levelOfAssurance: (
+        Literal[
+            "urn:etoegang:core:assurance-class:loa2",
+            "urn:etoegang:core:assurance-class:loa2plus",
+            "urn:etoegang:core:assurance-class:loa3",
+            "urn:etoegang:core:assurance-class:loa4",
+        ]
+        | EIDASAssuranceLevels
+    )
     authorizee: EIDASNaturalPersonAuthorizee
 
 
 class EIDASCompanyContext(TypedDict):
     source: Literal["eidas"]
-    levelOfAssurance: Literal[
-        "urn:etoegang:core:assurance-class:loa2",
-        "urn:etoegang:core:assurance-class:loa2plus",
-        "urn:etoegang:core:assurance-class:loa3",
-        "urn:etoegang:core:assurance-class:loa4",
-    ]
+    levelOfAssurance: (
+        Literal[
+            "urn:etoegang:core:assurance-class:loa2",
+            "urn:etoegang:core:assurance-class:loa2plus",
+            "urn:etoegang:core:assurance-class:loa3",
+            "urn:etoegang:core:assurance-class:loa4",
+        ]
+        | EIDASAssuranceLevels
+    )
     authorizee: EIDASCompanyAuthorizee
     mandate: EIDASMandate
+
+
+type AnyAuthContext = (
+    DigiDContext
+    | DigiDMachtigenContext
+    | EHerkenningContext
+    | EHerkenningMachtigenContext
+    | EIDASContext
+    | EIDASCompanyContext
+    | EmployeeContext
+    | YiviContext
+)

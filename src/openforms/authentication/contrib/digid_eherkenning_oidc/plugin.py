@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import TypedDict, assert_never, final
+from typing import assert_never
 
 from django.utils.translation import gettext_lazy as _
 
 from flags.state import flag_enabled
 
-from openforms.authentication.base import LoginLogo
+from openforms.authentication.base import LoginLogo, Options as NoOptions
 from openforms.authentication.contrib.digid.views import (
     DIGID_MESSAGE_PARAMETER,
     LOGIN_CANCELLED as DIGID_LOGIN_CANCELLED,
@@ -34,6 +34,7 @@ from openforms.contrib.digid_eherkenning.utils import (
     get_eherkenning_logo,
     get_eidas_logo,
 )
+from openforms.typing import JSONObject
 
 from ...constants import (
     AuthAttribute,
@@ -51,11 +52,6 @@ from .oidc_plugins.constants import (
 )
 
 OIDC_ID_TOKEN_SESSION_KEY = "oidc_id_token"
-
-
-@final
-class NoOptions(TypedDict):
-    pass
 
 
 @register("digid_oidc")
@@ -162,7 +158,7 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, NoOptions]):
 
         return {
             "source": "eidas",
-            "levelOfAssurance": EIDASAssuranceLevels(auth_info.loa).value,
+            "levelOfAssurance": EIDASAssuranceLevels(auth_info.loa),
             "authorizee": {
                 "legalSubject": {
                     "identifierType": legal_subject_identifier_type,
@@ -234,7 +230,7 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, NoOp
 
         return {
             "source": "eidas",
-            "levelOfAssurance": EIDASAssuranceLevels(auth_info.loa).value,
+            "levelOfAssurance": EIDASAssuranceLevels(auth_info.loa),
             "authorizee": {
                 "legalSubject": {
                     "identifierType": "opaque",
@@ -270,7 +266,7 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, NoOp
 
         loa_value = str(normalized_claims.get("loa_claim", ""))
 
-        mandate_context = {
+        mandate_context: JSONObject = {
             "services": [{"id": normalized_claims["mandate_service_id_claim"]}]
         }
 
