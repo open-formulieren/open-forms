@@ -10,14 +10,7 @@ from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
 from openforms.authentication.models import AuthInfo
-from openforms.authentication.types import (
-    DigiDContext,
-    DigiDMachtigenContext,
-    EHerkenningContext,
-    EHerkenningMachtigenContext,
-    EmployeeContext,
-    YiviContext,
-)
+from openforms.authentication.types import AnyAuthContext
 from openforms.forms.models import Form
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.typing import AnyRequest, JSONObject, StrOrPromise
@@ -103,16 +96,7 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
 
     # helpers
 
-    def auth_info_to_auth_context(
-        self, auth_info: AuthInfo
-    ) -> (
-        DigiDContext
-        | DigiDMachtigenContext
-        | EHerkenningContext
-        | EHerkenningMachtigenContext
-        | EmployeeContext
-        | YiviContext
-    ):
+    def auth_info_to_auth_context(self, auth_info: AuthInfo) -> AnyAuthContext:
         """
         Plugin custom auth info to auth context handling.
 

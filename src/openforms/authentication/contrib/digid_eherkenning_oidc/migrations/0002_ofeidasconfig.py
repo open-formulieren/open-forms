@@ -173,7 +173,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "loa_claim",
-                    mozilla_django_oidc_db.fields.ClaimField(
+                    mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                         base_field=models.CharField(
                             max_length=50, verbose_name="claim path segment"
                         ),
@@ -210,7 +210,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "person_identifier_claim",
-                    mozilla_django_oidc_db.fields.ClaimField(
+                    mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                         base_field=models.CharField(
                             max_length=50, verbose_name="claim path segment"
                         ),
@@ -224,7 +224,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "person_identifier_type_claim",
-                    mozilla_django_oidc_db.fields.ClaimField(
+                    mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                         base_field=models.CharField(
                             max_length=50, verbose_name="claim path segment"
                         ),
@@ -238,7 +238,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "first_name_claim",
-                    mozilla_django_oidc_db.fields.ClaimField(
+                    mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                         base_field=models.CharField(
                             max_length=50, verbose_name="claim path segment"
                         ),
@@ -252,7 +252,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "family_name_claim",
-                    mozilla_django_oidc_db.fields.ClaimField(
+                    mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                         base_field=models.CharField(
                             max_length=50, verbose_name="claim path segment"
                         ),
@@ -266,7 +266,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "date_of_birth_claim",
-                    mozilla_django_oidc_db.fields.ClaimField(
+                    mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                         base_field=models.CharField(
                             max_length=50, verbose_name="claim path segment"
                         ),
@@ -280,7 +280,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "mandate_service_id_claim",
-                    mozilla_django_oidc_db.fields.ClaimField(
+                    mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                         base_field=models.CharField(
                             max_length=50, verbose_name="claim path segment"
                         ),
