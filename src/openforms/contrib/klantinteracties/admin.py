@@ -1,6 +1,8 @@
 from django.contrib import admin
-from .models import KlantinteractiesConfig
+
 from solo.admin import SingletonModelAdmin
+
+from .models import KlantinteractiesConfig
 
 
 @admin.register(KlantinteractiesConfig)
