@@ -110,7 +110,7 @@ class AuthenticationBasePlugin(BasePlugin):
 
         return HttpResponseRedirect(form_url)
 
-    def get_session_loa(self, session):
+    def get_session_loa(self, session) -> str:
         return ""
 
     def logout(self, request: HttpRequest):

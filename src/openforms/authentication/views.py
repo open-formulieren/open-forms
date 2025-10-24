@@ -1,9 +1,11 @@
 import warnings
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.http import (
     HttpResponseBadRequest,
+    HttpResponseBase,
     HttpResponseNotAllowed,
     HttpResponseRedirect,
 )
@@ -23,6 +25,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.request import Request
 
+from openforms.accounts.models import User
 from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.forms.models import Form, FormAuthenticationBackend
 from openforms.submissions.api.permissions import owns_submission
@@ -67,6 +70,7 @@ class AuthenticationFlowBaseView(RetrieveAPIView):
         """
         Check if the flow is a co-sign flow and validate the referenced submission.
         """
+        assert isinstance(self.request.method, str)
         request_data = getattr(self.request, self.request.method)
         if not (submission_uuid := request_data.get(CO_SIGN_PARAMETER)):
             return None
@@ -166,7 +170,7 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
     queryset = Form.objects.live()
     register = register
 
-    def get(self, request: Request, slug: str, plugin_id: str):
+    def get(self, request: Request, slug: str, plugin_id: str) -> HttpResponseBase:  # pyright: ignore[reportIncompatibleMethodOverride]
         form = self.get_object()
         with structlog.contextvars.bound_contextvars(
             module="authentication",
@@ -192,6 +196,7 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
 
             # demo plugins should require admin authentication to protect against random
             # people spoofing other people's credentials.
+            assert isinstance(request.user, User | AnonymousUser)
             if plugin.is_demo_plugin and not request.user.is_staff:
                 raise PermissionDenied(
                     _("Demo plugins require an active admin session.")
@@ -347,11 +352,13 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             except FormAuthenticationBackend.DoesNotExist:
                 return HttpResponseBadRequest("plugin not allowed")
 
+            assert isinstance(request.method, str)
             if plugin.return_method.upper() != request.method.upper():
                 return HttpResponseNotAllowed([plugin.return_method])
 
             # demo plugins should require admin authentication to protect against random
             # people spoofing other people's credentials.
+            assert isinstance(request.user, User | AnonymousUser)
             if plugin.is_demo_plugin and not request.user.is_staff:
                 raise PermissionDenied(
                     _("Demo plugins require an active admin session.")
@@ -425,7 +432,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             )
 
     @extend_schema(responses=COMMON_RETURN_RESPONSES)
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):  # pyright: ignore[reportIncompatibleMethodOverride]
         return self._handle_return(request, *args, **kwargs)
 
     @extend_schema(

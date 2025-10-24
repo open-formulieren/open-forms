@@ -1,15 +1,15 @@
 from django.test import TestCase
-from django.test.client import RequestFactory
 
 from furl import furl
 from rest_framework.reverse import reverse
+from rest_framework.test import APIRequestFactory
 
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..registry import Registry
 from .mocks import Plugin
 
-factory = RequestFactory()
+factory = APIRequestFactory()
 
 
 class RegistryTests(TestCase):

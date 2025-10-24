@@ -8,7 +8,7 @@ import structlog
 from digid_eherkenning.backends import BaseSaml2Backend
 from digid_eherkenning.saml2.eherkenning import eHerkenningClient
 from digid_eherkenning.views import (
-    eHerkenningAssertionConsumerServiceView as _eHerkenningAssertionConsumerServiceView,
+    eHerkenningAssertionConsumerServiceView as _eHerkenningAssertionConsumerServiceView,  # pyright: ignore[reportPrivateImportUsage]
 )
 from furl import furl
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
