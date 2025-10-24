@@ -23,7 +23,7 @@ type SerializerCls = type[serializers.Serializer]
 
 @dataclass()
 class LoginLogo:
-    title: str
+    title: StrOrPromise
     image_src: str
     appearance: str
     href: str = ""
@@ -80,12 +80,12 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
         raise NotImplementedError()  # noqa
 
     def handle_return(
-        self, request: Request, form: Form, options: OptionsT
+        self, request: HttpRequest, form: Form, options: OptionsT
     ) -> HttpResponse:
         # process and validate return information, store bsn in session
         raise NotImplementedError()  # noqa
 
-    def handle_co_sign(self, request: Request, form: Form) -> CosignSlice:
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> CosignSlice:
         """
         Process the authentication and return a dict of co-sign details.
 
@@ -107,14 +107,14 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
             "Subclasses must implement 'auth_info_to_auth_context'"
         )
 
-    def get_start_url(self, request: Request, form: Form) -> str:
+    def get_start_url(self, request: HttpRequest, form: Form) -> str:
         return reverse(
             "authentication:start",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
             request=request,
         )
 
-    def get_return_url(self, request: Request, form: Form) -> str:
+    def get_return_url(self, request: HttpRequest, form: Form) -> str:
         return reverse(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},

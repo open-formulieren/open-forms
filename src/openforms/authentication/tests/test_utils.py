@@ -1,4 +1,4 @@
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
 from django.urls import reverse
 
 from furl import furl
@@ -24,7 +24,11 @@ class UtilsTests(TestCase):
         with self.assertRaises(ValueError):
             store_auth_details(
                 submission,
-                {"plugin": "digid", "attribute": "WRONG", "value": "some-value"},
+                {
+                    "plugin": "digid",
+                    "attribute": "WRONG",  # pyright: ignore[reportArgumentType]
+                    "value": "some-value",
+                },
             )
 
     def test_store_registrator_details(self):
@@ -33,7 +37,11 @@ class UtilsTests(TestCase):
         with self.assertRaises(ValueError):
             store_registrator_details(
                 submission,
-                {"plugin": "digid", "attribute": "WRONG", "value": "some-value"},
+                {
+                    "plugin": "digid",
+                    "attribute": "WRONG",  # pyright: ignore[reportArgumentType]
+                    "value": "some-value",
+                },
             )
 
     def test_get_cosign_info(self):
@@ -50,7 +58,7 @@ class UtilsTests(TestCase):
             },
         )
 
-        factory = RequestFactory()
+        factory = APIRequestFactory()
         request = factory.get("/foo")
 
         login_url = get_cosign_login_url(
@@ -58,9 +66,10 @@ class UtilsTests(TestCase):
         )
         login_url = furl(login_url)
 
-        submission_find_url = furl(
-            login_url.args["next"]
-        )  # Page where the user will look for the submission to cosign
+        # Page where the user will look for the submission to cosign
+        next_url = login_url.args["next"]
+        assert next_url is not None
+        submission_find_url = furl(next_url)
 
         self.assertEqual(
             login_url.path,

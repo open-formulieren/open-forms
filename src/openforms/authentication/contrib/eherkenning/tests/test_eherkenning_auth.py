@@ -41,7 +41,7 @@ class EHerkenningConfigMixin:
 
     @classmethod
     def setUpTestData(cls):
-        super().setUpTestData()
+        super().setUpTestData()  # pyright: ignore[reportAttributeAccessIssue]
 
         cert = CertificateFactory.create(label="eHerkenning", with_private_key=True)
 
@@ -81,10 +81,10 @@ class EHerkenningConfigMixin:
         assert config_cert.is_ready_for_authn_requests
 
     def setUp(self):
-        super().setUp()
+        super().setUp()  # pyright: ignore[reportAttributeAccessIssue]
 
         clear_caches()
-        self.addCleanup(clear_caches)
+        self.addCleanup(clear_caches)  # pyright: ignore[reportAttributeAccessIssue]
 
 
 def _create_test_artifact() -> str:

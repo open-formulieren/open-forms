@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from rest_framework import serializers
 
-from ..base import BasePlugin
+from ..base import BasePlugin, CosignSlice
 from ..constants import AuthAttribute
 from ..registry import Registry
 
@@ -18,9 +18,9 @@ class Plugin(BasePlugin):
         return HttpResponse("start")
 
     def handle_return(self, request, form, options):
-        return HttpResponseRedirect(request.GET.get("next"))
+        return HttpResponseRedirect(request.GET["next"])
 
-    def handle_co_sign(self, request, form):
+    def handle_co_sign(self, request, form) -> CosignSlice:
         return {
             "identifier": "mock-id",
             "fields": {
@@ -49,9 +49,9 @@ class RequiresAdminPlugin(BasePlugin):
         return HttpResponse("start")
 
     def handle_return(self, request, form, options):
-        return HttpResponseRedirect(request.GET.get("next"))
+        return HttpResponseRedirect(request.GET["next"])
 
-    def handle_co_sign(self, request, form):
+    def handle_co_sign(self, request, form) -> CosignSlice:
         return {
             "identifier": "mock-id",
             "fields": {

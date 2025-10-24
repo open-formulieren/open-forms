@@ -188,7 +188,7 @@ class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
     ):
         class FailingAuthContextPlugin(BasePlugin):
             verbose_name = "some human readable label"
-            provides_auth = AuthAttribute.bsn
+            provides_auth = (AuthAttribute.bsn,)
             manage_auth_context = True
 
         register("failing-auth-context")(FailingAuthContextPlugin)
@@ -210,10 +210,10 @@ class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
     def test_plugin_with_manage_auth_context_calls_auth_info_to_auth_context(self):
         class CorrectAuthContextPlugin(BasePlugin):
             verbose_name = "some human readable label"
-            provides_auth = AuthAttribute.bsn
+            provides_auth = (AuthAttribute.bsn,)
             manage_auth_context = True
 
-            def auth_info_to_auth_context(self, auth_info: AuthInfo):
+            def auth_info_to_auth_context(self, auth_info: AuthInfo):  # type: ignore
                 return {
                     "result": "custom auth_info_to_auth_context handling",
                 }
@@ -241,13 +241,11 @@ class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
     ):
         class UnusedAuthContextPlugin(BasePlugin):
             verbose_name = "some human readable label"
-            provides_auth = AuthAttribute.bsn
+            provides_auth = (AuthAttribute.bsn,)
             manage_auth_context = False
 
             def auth_info_to_auth_context(self, auth_info: AuthInfo):
-                return {
-                    "source": "custom auth_info_to_auth_context handling",
-                }
+                raise AssertionError("should not have been called!")
 
         register("unused-auth-context")(UnusedAuthContextPlugin)
 
