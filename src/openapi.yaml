@@ -2849,7 +2849,6 @@ paths:
         required: true
       tags:
       - geo
-      deprecated: true
       responses:
         '200':
           content:

@@ -64,7 +64,6 @@ class AddressAutocompleteView(APIView):
                 required=True,
             ),
         ],
-        deprecated=True,
     )
     def get(self, request, *args, **kwargs):
         serializer = GetStreetNameAndCityViewInputSerializer(data=request.query_params)
