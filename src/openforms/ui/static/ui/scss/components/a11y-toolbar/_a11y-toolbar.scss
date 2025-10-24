@@ -5,15 +5,12 @@
 @import '~microscope-sass/lib/typography';
 
 .a11y-toolbar {
-  @include hide-on-mobile;
-
   @media print {
     display: none;
   }
 
   @include bem.element('list') {
     display: flex;
-    justify-content: flex-end;
     list-style: none;
     margin: 0;
     gap: $grid-margin-3;
