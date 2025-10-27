@@ -14,6 +14,7 @@ COMPONENT_DATATYPES = {
     "datetime": "datetime",
     "partners": "array",
     "children": "array",
+    "customerProfile": "object",
 }
 
 
