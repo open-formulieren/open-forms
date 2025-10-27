@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -22,11 +24,11 @@ logger = structlog.stdlib.get_logger(__name__)
 PLUGIN_IDENTIFIER = "klantinteracties"
 
 
-CALLBACKS = {
-    Attributes.email: lambda x: [
+CALLBACKS: dict[str, Callable] = {
+    Attributes.email.value: lambda x: [
         da["adres"] for da in x if da["soortDigitaalAdres"] == DigitalAddressTypes.email
     ],
-    Attributes.email_preferred: lambda x: next(
+    Attributes.email_preferred.value: lambda x: next(
         iter(
             da["adres"]
             for da in x
@@ -35,12 +37,12 @@ CALLBACKS = {
         ),
         None,
     ),
-    Attributes.phone: lambda x: [
+    Attributes.phone.value: lambda x: [
         da["adres"]
         for da in x
         if da["soortDigitaalAdres"] == DigitalAddressTypes.telefoonnummer
     ],
-    Attributes.phone_preferred: lambda x: next(
+    Attributes.phone_preferred.value: lambda x: next(
         iter(
             da["adres"]
             for da in x
