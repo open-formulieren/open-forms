@@ -7,6 +7,7 @@ from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.contrib.klantinteracties.models import KlantinteractiesConfig
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
@@ -102,3 +103,37 @@ class KlantinteractiesPluginTests(OFVCRMixin, TestCase):
                 submission,
                 attributes=[Attributes.email],
             )
+
+    def test_prefill_values_not_configured(self):
+        submission = SubmissionFactory.create(auth_info__value="123456782")
+        plugin = klantinteractiesPlugin
+        config_empty = KlantinteractiesConfig(service=None)
+
+        with patch(
+            "openforms.contrib.klantinteracties.client.KlantinteractiesConfig.get_solo",
+            return_value=config_empty,
+        ):
+            values = plugin.get_prefill_values(
+                submission,
+                attributes=[Attributes.email],
+            )
+
+        self.assertEqual(values, {})
+
+    def test_config_invalid(self):
+        plugin = klantinteractiesPlugin("klantinteracties-invalid")
+        config_invalid = KlantinteractiesConfig(
+            service=ServiceFactory.build(
+                api_root="http://localhost:8005/klantinteracties/api/v1/invalid",
+                api_type=APITypes.kc,
+                header_key="Authorization",
+                header_value="Token INVALID",
+                auth_type=AuthTypes.api_key,
+            )
+        )
+        with patch(
+            "openforms.contrib.klantinteracties.client.KlantinteractiesConfig.get_solo",
+            return_value=config_invalid,
+        ):
+            with self.assertRaises(InvalidPluginConfiguration):
+                plugin.check_config()
