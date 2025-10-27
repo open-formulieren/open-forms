@@ -195,8 +195,8 @@ def get_component_data_subtype(component: Component) -> str:
 
     :returns: The original data type of the component if the component is configured as
       'multiple', an empty string otherwise. Components that are already an array
-      (editgrid, files, partners, and children) are a special case, as 'multiple' is
-      not relevant for these.
+      (editgrid, files, partners, children and profile) are a special case, as 'multiple'
+      is not relevant for these.
     """
     if subtype := COMPONENT_DATA_SUBTYPES.get(component["type"], None):
         return subtype
