@@ -14,6 +14,7 @@ COMPONENT_DATATYPES = {
     "datetime": "datetime",
     "partners": "array",
     "children": "array",
+    "customerProfile": "array",
 }
 
 
@@ -22,6 +23,7 @@ COMPONENT_DATA_SUBTYPES = {
     "editgrid": "editgrid",
     "partners": "partners",
     "children": "children",
+    "customerProfile": "object",
 }
 
 
