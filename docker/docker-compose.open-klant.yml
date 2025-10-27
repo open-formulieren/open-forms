@@ -1,0 +1,70 @@
+version: '3.8'
+
+name: open-klant
+
+services:
+  openklant-redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - open-forms-dev
+
+  openklant-db:
+    image: postgres:17
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./open-klant/docker-init-open-klant-db/:/docker-entrypoint-initdb.d
+      - open-klant-db:/var/lib/postgresql/data
+    networks:
+      - open-forms-dev
+
+  openklant-web.local:
+    image: maykinmedia/open-klant:${OPENKLANT_VERSION:-2.13.0}
+    environment: &openklant_web_env
+      - DJANGO_SETTINGS_MODULE=openklant.conf.docker
+      - SECRET_KEY=not-so-secret
+      - ALLOWED_HOSTS=openklant-web.local,localhost
+      - DB_NAME=openklant
+      - DB_USER=openklant
+      - DB_HOST=openklant-db
+      - IS_HTTPS=no
+      - CACHE_DEFAULT=openklant-redis:6379/0
+      - CACHE_AXES=openklant-redis:6379/0
+      - SUBPATH=${SUBPATH:-/}
+      - DISABLE_2FA=yes
+      - CELERY_BROKER_URL=redis://openklant-redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://openklant-redis:6379/1
+      - NOTIFICATIONS_DISABLED=true
+    ports:
+      - 8005:8000
+    volumes: &openklant_web_volumes
+      # mount fixtures dir to automatically populate the DB
+      - ./open-klant/fixtures/:/app/fixtures
+      - media:/app/media  # Shared media volume to get access to saved OAS files
+      - private-media:/app/private-media
+    depends_on:
+      - openklant-db
+      - openklant-redis
+    networks:
+      - open-forms-dev
+
+  celery:
+    image: maykinmedia/open-klant:${OPENKLANT_VERSION:-2.13.0}
+    environment: *openklant_web_env
+    volumes: *openklant_web_volumes
+    command: /celery_worker.sh
+    depends_on:
+      - openklant-db
+      - openklant-redis
+    networks:
+      - open-forms-dev
+
+volumes:
+  open-klant-db:
+  media:
+  private-media:
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev
