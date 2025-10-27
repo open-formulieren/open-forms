@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                     "service",
                     models.OneToOneField(
                         help_text="The Klantinteracties API service.",
-                        limit_choices_to={"api_type": "orc"},
+                        limit_choices_to={"api_type": "kc"},
                         null=True,
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="+",

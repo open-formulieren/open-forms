@@ -24,28 +24,28 @@ PLUGIN_IDENTIFIER = "klantinteracties"
 
 CALLBACKS = {
     Attributes.email: lambda x: [
-        da.adres for da in x if da.soortDigitaalAdres == DigitalAddressTypes.email
+        da["adres"] for da in x if da["soortDigitaalAdres"] == DigitalAddressTypes.email
     ],
     Attributes.email_preferred: lambda x: next(
         iter(
-            da.adres
+            da["adres"]
             for da in x
-            if da.soortDigitaalAdres == DigitalAddressTypes.email
-            and da.isStandaardAdres
+            if da["soortDigitaalAdres"] == DigitalAddressTypes.email
+            and da["isStandaardAdres"]
         ),
         None,
     ),
     Attributes.phone: lambda x: [
-        da.adres
+        da["adres"]
         for da in x
-        if da.soortDigitaalAdres == DigitalAddressTypes.telefoonnummer
+        if da["soortDigitaalAdres"] == DigitalAddressTypes.telefoonnummer
     ],
     Attributes.phone_preferred: lambda x: next(
         iter(
-            da.adres
+            da["adres"]
             for da in x
-            if da.soortDigitaalAdres == DigitalAddressTypes.telefoonnummer
-            and da.isStandaardAdres
+            if da["soortDigitaalAdres"] == DigitalAddressTypes.telefoonnummer
+            and da["isStandaardAdres"]
         ),
         None,
     ),

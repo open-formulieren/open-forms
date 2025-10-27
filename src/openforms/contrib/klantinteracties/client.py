@@ -1,4 +1,3 @@
-from collections.abc import Iterator
 from typing import Literal, TypedDict
 
 from zgw_consumers.client import build_client
@@ -23,7 +22,7 @@ class DigitaleAdres(TypedDict, total=False):
 
 
 class KlantinteractiesClient(LoggingClient):
-    def get_digital_addresses_for_bsn(self, bsn: str) -> Iterator[DigitaleAdres]:
+    def get_digital_addresses_for_bsn(self, bsn: str) -> list[DigitaleAdres]:
         response = self.get(
             "digitaleadressen",
             params={
@@ -35,4 +34,4 @@ class KlantinteractiesClient(LoggingClient):
         )
         response.raise_for_status()
         data = response.json()
-        yield from pagination_helper(self, data)
+        return list(pagination_helper(self, data))

@@ -19,7 +19,7 @@ class KlantinteractiesConfig(SingletonModel):
         "zgw_consumers.Service",
         verbose_name=_("Klantinteracties API"),
         on_delete=models.PROTECT,
-        limit_choices_to={"api_type": APITypes.orc},
+        limit_choices_to={"api_type": APITypes.kc},
         related_name="+",
         null=True,
         help_text=_("The Klantinteracties API service."),
