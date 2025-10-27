@@ -1,0 +1,50 @@
+@use 'microscope-sass/lib/bem';
+@use '@utrecht/components/link'; // emits the .utrecht-link {...} styles
+@use '@utrecht/components/icon';
+
+@import '~microscope-sass/lib/responsive';
+
+.openforms-backtotop-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: var(
+    --of-backtotop-link-column-gap,
+    // Deprecated fallback to make upgrading easier, will be removed in 4.0.
+    var(--utrecht-button-column-gap, 8px)
+  );
+
+  padding-block-end: var(
+    --of-backtotop-link-padding-block-end,
+    // Deprecated fallback to make upgrading easier, will be removed in 4.0.
+    var(--utrecht-button-padding-block-end)
+  );
+  padding-block-start: var(
+    --of-backtotop-link-padding-block-start,
+    // Deprecated fallback to make upgrading easier, will be removed in 4.0.
+    var(--utrecht-button-padding-block-start)
+  );
+
+  .utrecht-icon {
+    // Required as long as we hardcode font-awesome icons, will need to revisit this
+    // when we support other icon libraries
+    --utrecht-icon-size: var(--of-backtotop-link-icon-size, auto);
+    // allow hiding the icon entirely, if desired
+    display: var(--of-backtotop-link-icon-display, inline-block);
+
+    > .fa-icon {
+      --fa: var(--of-backtotop-link-fa-icon, '\f176');
+    }
+  }
+}
+
+/**
+ * Style overrides for our theme
+ */
+@include mobile-only {
+  .openforms-theme {
+    .openforms-backtotop-link {
+      align-items: center;
+    }
+  }
+}
