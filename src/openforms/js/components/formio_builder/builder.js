@@ -63,6 +63,7 @@ const getBuilderOptions = () => {
           addressNL: true,
           partners: true,
           children: true,
+          customerInteraction: true,
         },
       },
       custom_layout: {

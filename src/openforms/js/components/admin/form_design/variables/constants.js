@@ -13,6 +13,7 @@ const COMPONENT_DATATYPES = {
   editgrid: 'array',
   partners: 'array',
   children: 'array',
+  customerInteraction: 'object',
 };
 
 const DATATYPES_CHOICES = [
