@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from mozilla_django_oidc_db.registry import register as oidc_register
 from mozilla_django_oidc_db.tests.mixins import OIDCMixin
@@ -202,3 +202,18 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
                 "family_name": "***",
             },
         )
+
+    @override_settings(USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=True)
+    def test_new_plugins_dont_return_real_legacy_oidc_callback(self):
+        eidas_client = OFOIDCClientFactory.build(with_eidas=True)
+        eidas_company_client = OFOIDCClientFactory.build(with_eidas_company=True)
+        plugins = (
+            oidc_register[eidas_client.identifier],
+            oidc_register[eidas_company_client.identifier],
+        )
+
+        for plugin in plugins:
+            with self.subTest(plugin=type(plugin)):
+                callback_url = plugin.get_setting("oidc_authentication_callback_url")
+
+                self.assertEqual(callback_url, "oidc_authentication_callback")

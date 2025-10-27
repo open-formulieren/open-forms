@@ -1,5 +1,5 @@
 from django.contrib.sessions.backends.base import SessionBase
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.test.client import RequestFactory
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
@@ -9,6 +9,7 @@ from openforms.authentication.contrib.yivi_oidc.config import YiviOptions
 from openforms.authentication.registry import register
 from openforms.authentication.tests.factories import (
     AttributeGroupFactory,
+    AuthInfoFactory,
 )
 
 plugin = register["yivi_oidc"]
@@ -256,3 +257,23 @@ class YiviPluginCheckRequirementsTest(TestCase):
         }
 
         self.assertFalse(plugin.check_requirements(request, plugin_options))
+
+
+class AuthInfoToAuthContextTests(SimpleTestCase):
+    def test_unsupported_attributes(self):
+        unsupported_attributes = (
+            attribute
+            for attribute in AuthAttribute
+            if attribute not in plugin.provides_auth
+        )
+
+        for attribute in unsupported_attributes:
+            with (
+                self.subTest(attribute=attribute),
+                self.assertRaises(NotImplementedError),
+            ):
+                auth_info = AuthInfoFactory.build(
+                    attribute=attribute, plugin="yivi_oidc", value="dummy"
+                )
+
+                plugin.auth_info_to_auth_context(auth_info)

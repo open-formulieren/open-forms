@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping
-from typing import TypedDict, assert_never, cast
+from typing import Literal, TypedDict, assert_never, cast
 
 from django.http import HttpRequest
 from django.templatetags.static import static
@@ -77,7 +77,11 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
     def _get_user_chosen_authentication_attribute(
         authentication_options: list[AuthAttribute],
         normalized_claims: YiviClaims,
-    ) -> AuthAttribute:
+    ) -> (
+        Literal[AuthAttribute.bsn]
+        | Literal[AuthAttribute.kvk]
+        | Literal[AuthAttribute.pseudo]
+    ):
         """
         Return the user chosen authentication attribute.
         User chosen authentication attribute is defined based on the provided claims. To
@@ -141,10 +145,8 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
                 )
                 return _build_form_auth(value, "unknown")
 
-            case _:
-                raise NotImplementedError(
-                    f"Unknown/unsupported auth attribute {authentication_attribute}"
-                )
+            case _:  # pragma: no cover
+                assert_never(authentication_attribute)
 
     def auth_info_to_auth_context(self, auth_info: AuthInfo) -> YiviContext:
         auth_attribute = AuthAttribute(auth_info.attribute)
