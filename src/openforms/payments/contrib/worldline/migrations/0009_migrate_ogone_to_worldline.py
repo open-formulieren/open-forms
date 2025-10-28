@@ -55,35 +55,19 @@ def migrate_webhook_configuration(
         "payments_worldline", "WorldlineWebhookConfiguration"
     )
 
-    try:
-        ogone_webhook_configuration = OgoneWebhookConfiguration.objects.get()
-    except OgoneWebhookConfiguration.DoesNotExist:
-        return
-
-    worldline_webhook_configuration, _ = (
-        WorldlineWebhookConfiguration.objects.get_or_create()
-    )
-
-    if not all(
-        (
-            ogone_webhook_configuration.webhook_key_id,
-            ogone_webhook_configuration.webhook_key_secret,
+    for ogone_config in OgoneWebhookConfiguration.objects.all():
+        wordline_config, _ = WorldlineWebhookConfiguration.objects.get_or_create(
+            pspid=ogone_config.pspid
         )
-    ) or any(
-        (
-            worldline_webhook_configuration.webhook_key_id,
-            worldline_webhook_configuration.webhook_key_secret,
-        )
-    ):
-        return
 
-    worldline_webhook_configuration.webhook_key_id = (
-        ogone_webhook_configuration.webhook_key_id
-    )
-    worldline_webhook_configuration.webhook_key_secret = (
-        ogone_webhook_configuration.webhook_key_secret
-    )
-    worldline_webhook_configuration.save()
+        if not all(
+            (ogone_config.webhook_key_id, ogone_config.webhook_key_secret)
+        ) or any((wordline_config.webhook_key_id, wordline_config.webhook_key_secret)):
+            continue
+
+        wordline_config.webhook_key_id = ogone_config.webhook_key_id
+        wordline_config.webhook_key_secret = ogone_config.webhook_key_secret
+        wordline_config.save()
 
 
 class Migration(migrations.Migration):
