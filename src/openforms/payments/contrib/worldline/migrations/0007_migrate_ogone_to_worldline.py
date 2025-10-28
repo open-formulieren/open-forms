@@ -89,6 +89,7 @@ def migrate_webhook_configuration(
 class Migration(migrations.Migration):
     dependencies = [
         ("payments_worldline", "0006_worldlinewebhookconfiguration_and_more"),
+        ("payments_ogone", "0004_alter_ogonewebhookconfiguration_options_and_more"),
     ]
 
     operations = [

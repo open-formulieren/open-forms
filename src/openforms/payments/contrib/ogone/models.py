@@ -89,9 +89,9 @@ class OgoneWebhookConfiguration(models.Model):
         _("Webhook Key Secret"), max_length=255, default=""
     )
 
-    def __str__(self):
-        return self.webhook_key_id
-
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Worldline webhook configuration (transition)")
         verbose_name_plural = _("Worldline webhook configurations (transition)")
+
+    def __str__(self):
+        return self.webhook_key_id
