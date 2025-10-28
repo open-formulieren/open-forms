@@ -8,6 +8,8 @@ from maykin_2fa.test import disable_admin_mfa
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.utils.urls import reverse_plus
 
+from .factories import OgoneWebhookConfigurationFactory
+
 
 @disable_admin_mfa()
 class OgoneMerchantAdminTest(WebTest):
@@ -36,12 +38,15 @@ class OgoneWebhookConfigurationAdminTest(WebTest):
     @override_settings()
     def test_webhook_configuration_detail_page(self):
         user = SuperUserFactory.create()
+        config = OgoneWebhookConfigurationFactory.create()
         webhook_url = reverse_plus(
             "payments:webhook",
             kwargs={"plugin_id": "worldline"},
             request=None,
         )
-        url = reverse("admin:payments_ogone_ogonewebhookconfiguration_change")
+        url = reverse(
+            "admin:payments_ogone_ogonewebhookconfiguration_change", args=(config.pk,)
+        )
 
         response = self.app.get(url, user=user)
 

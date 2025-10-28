@@ -2,8 +2,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from solo.models import SingletonModel
-
 from .constants import HashAlgorithm, OgoneEndpoints
 
 
@@ -88,7 +86,14 @@ class OgoneMerchant(models.Model):
 
 
 # Worldline migration model
-class OgoneWebhookConfiguration(SingletonModel):
+class OgoneWebhookConfiguration(models.Model):
+    pspid = models.CharField(
+        _("PSPID"),
+        max_length=255,
+        help_text=_("Ogone PSPID"),
+        default="(ONBEKEND)",
+        unique=True,
+    )
     webhook_key_id = models.CharField(_("Webhook Key ID"), max_length=255, default="")
     webhook_key_secret = models.CharField(
         _("Webhook Key Secret"), max_length=255, default=""
@@ -99,3 +104,4 @@ class OgoneWebhookConfiguration(SingletonModel):
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Worldline webhook configuration (transition)")
+        verbose_name_plural = _("Worldline webhook configurations (transition)")
