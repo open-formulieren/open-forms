@@ -9,7 +9,7 @@ from django.http import (
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.crypto import constant_time_compare
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 import structlog
 from onlinepayments.sdk.api_exception import ApiException as WorldlineApiException
@@ -427,11 +427,11 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
     @classmethod
     def iter_config_checks(cls) -> Iterator[Entry]:
         merchants = WorldlineMerchant.objects.all()
-        webhook_configuration = WorldlineWebhookConfiguration.get_solo()
+        webhook_configurations = WorldlineWebhookConfiguration.objects.all()
 
         if not merchants:
             yield Entry(
-                name="Worldline merchant",
+                name=gettext("Worldline merchant"),
                 actions=[
                     (
                         _("Add merchant"),
@@ -446,23 +446,41 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         for merchant in merchants:
             yield cls.check_merchant(merchant)
 
-        yield Entry(
-            name="Worldline webhook configuration",
-            actions=[
-                (
-                    _("Configure webhooks"),
-                    reverse(
-                        "admin:payments_worldline_worldlinewebhookconfiguration_change",
-                    ),
-                )
-            ],
-            status=all(
-                (
-                    webhook_configuration.webhook_key_id,
-                    webhook_configuration.webhook_key_secret,
-                )
-            ),
-        )
+        if not webhook_configurations:
+            yield Entry(
+                name=gettext("Add worldline webhook configuration"),
+                actions=[
+                    (
+                        _("Add webhook"),
+                        reverse(
+                            "admin:payments_worldline_worldlinewebhookconfiguration_add",
+                        ),
+                    )
+                ],
+                status=False,
+            )
+
+        for webhook_configuration in webhook_configurations:
+            yield Entry(
+                name=gettext("Worldline webhook configuration ({pspid})").format(
+                    pspid=webhook_configuration.pspid or _("(no pspid)")
+                ),
+                actions=[
+                    (
+                        _("Configure webhook"),
+                        reverse(
+                            "admin:payments_worldline_worldlinewebhookconfiguration_change",
+                            args=(webhook_configuration.pk,),
+                        ),
+                    )
+                ],
+                status=all(
+                    (
+                        webhook_configuration.webhook_key_id,
+                        webhook_configuration.webhook_key_secret,
+                    )
+                ),
+            )
 
     @classmethod
     def check_merchant(cls, merchant: WorldlineMerchant):
