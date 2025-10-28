@@ -20,7 +20,7 @@ class PluginLogoutTest(TestCase):
 
         with self.subTest("session"):
             session = self.client.session
-            session[plugin.session_key] = "xyz"
+            session[plugin.session_key] = "xyz"  # pyright: ignore[reportAttributeAccessIssue]
             session.save()
 
             request = RequestFactory().post("/dummy")
@@ -43,7 +43,7 @@ class PluginLogoutTest(TestCase):
 
         with self.subTest("session"):
             session = self.client.session
-            session[plugin.session_key] = "xyz"
+            session[plugin.session_key] = "xyz"  # pyright: ignore[reportAttributeAccessIssue]
             session.save()
 
             request = RequestFactory().post("/dummy")

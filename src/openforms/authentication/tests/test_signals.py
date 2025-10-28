@@ -1,9 +1,9 @@
 from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.sessions.backends.base import SessionBase
 from django.core.exceptions import PermissionDenied
 from django.test import override_settings, tag
-from django.test.client import RequestFactory
 
 from freezegun import freeze_time
 from rest_framework.request import Request
@@ -37,13 +37,16 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         register("plugin1")(RequiresAdminPlugin)
         instance = SubmissionFactory.create()
         request = factory.get("/foo")
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "plugin": "plugin1",
-                "attribute": RequiresAdminPlugin.provides_auth[0],
-                "value": "123",
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "plugin": "plugin1",
+                    "attribute": RequiresAdminPlugin.provides_auth[0],
+                    "value": "123",
+                }
             }
-        }
+        )
 
         invalid_users = (
             AnonymousUser(),
@@ -69,13 +72,16 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         instance = SubmissionFactory.create()
         request = factory.get("/foo")
         request.user = StaffUserFactory.create()
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "plugin": "plugin1",
-                "attribute": RequiresAdminPlugin.provides_auth[0],
-                "value": "123",
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "plugin": "plugin1",
+                    "attribute": RequiresAdminPlugin.provides_auth[0],
+                    "value": "123",
+                }
             }
-        }
+        )
 
         with mock_register(register):
             set_auth_attribute_on_session(
@@ -91,17 +97,20 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         instance = SubmissionFactory.create()
         request = factory.get("/foo")
         request.user = StaffUserFactory.create(username="Joe")
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "plugin": "organization_plugin",
-                "attribute": AuthAttribute.employee_id,
-                "value": "my-employee-id",
-            },
-            REGISTRATOR_SUBJECT_SESSION_KEY: {
-                "attribute": AuthAttribute.bsn,
-                "value": "123",
-            },
-        }
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "plugin": "organization_plugin",
+                    "attribute": AuthAttribute.employee_id,
+                    "value": "my-employee-id",
+                },
+                REGISTRATOR_SUBJECT_SESSION_KEY: {
+                    "attribute": AuthAttribute.bsn,
+                    "value": "123",
+                },
+            }
+        )
 
         with mock_register(register):
             set_auth_attribute_on_session(
@@ -125,6 +134,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
 
         with override_settings(LANGUAGE_CODE="en"), self.subTest("audit trail"):
             log_entry = TimelineLogProxy.objects.last()
+            assert log_entry is not None
             message = log_entry.get_message()
 
             self.assertEqual(
@@ -139,16 +149,19 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         instance = SubmissionFactory.create()
         request = factory.get("/foo")
         request.user = StaffUserFactory.create()
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "plugin": "organization_plugin",
-                "attribute": AuthAttribute.employee_id,
-                "value": "my-employee-id",
-            },
-            REGISTRATOR_SUBJECT_SESSION_KEY: {
-                "skipped_subject_info": True,
-            },
-        }
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "plugin": "organization_plugin",
+                    "attribute": AuthAttribute.employee_id,
+                    "value": "my-employee-id",
+                },
+                REGISTRATOR_SUBJECT_SESSION_KEY: {
+                    "skipped_subject_info": True,
+                },
+            }
+        )
 
         with mock_register(register):
             set_auth_attribute_on_session(
@@ -188,13 +201,16 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         request = factory.get(url, {"next": next_url})
 
         # Add session information to the request:
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "plugin": "plugin1",
-                "attribute": Plugin.provides_auth[0],
-                "value": "123",
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "plugin": "plugin1",
+                    "attribute": Plugin.provides_auth[0],
+                    "value": "123",
+                }
             }
-        }
+        )
 
         return_view = AuthenticationReturnView.as_view(register=register)
 
@@ -227,7 +243,6 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         form = step.form
 
         # we need an arbitrary request
-        factory = RequestFactory()
         init_request = factory.get("/foo")
         url = plugin.get_return_url(init_request, form)
         next_url = "http://foo.bar"
@@ -236,7 +251,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         return_view = AuthenticationReturnView.as_view(register=register)
 
         # No FORM_AUTH_SESSION_KEY in the session, since auth was unsuccessful
-        request.session = {}
+        request.session = SessionBase()
 
         with patch(
             "openforms.authentication.views.authentication_success.send"
@@ -264,13 +279,16 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
 
         request = factory.get("/foo")
         request.user = user
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "plugin": "digid",
-                "attribute": "bsn",
-                "value": "123456789",
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "plugin": "digid",
+                    "attribute": "bsn",
+                    "value": "123456789",
+                }
             }
-        }
+        )
 
         set_auth_attribute_on_session(sender=None, instance=submission, request=request)
 
@@ -289,13 +307,16 @@ class SetCosignDataTests(APITestCase):
         )
         request = APIRequestFactory().get("/")
         request.user = UserFactory()
-        request.session = {  # type: ignore
-            FORM_AUTH_SESSION_KEY: {
-                "plugin": "digid",
-                "attribute": "bsn",
-                "value": "123456782",
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "plugin": "digid",
+                    "attribute": "bsn",
+                    "value": "123456782",
+                }
             }
-        }
+        )
 
         set_cosign_data_on_submission(sender=None, instance=submission, request=request)
 

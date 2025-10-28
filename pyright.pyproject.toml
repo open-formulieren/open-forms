@@ -6,11 +6,6 @@ include = [
     "src/openforms/appointments/base.py",
     "src/openforms/appointments/registry.py",
     "src/openforms/appointments/contrib/jcc_rest/",
-    "src/openforms/authentication/base.py",
-    "src/openforms/authentication/registry.py",
-    "src/openforms/authentication/contrib/digid_eherkenning_oidc/",
-    "src/openforms/authentication/contrib/org_oidc/",
-    "src/openforms/authentication/contrib/yivi_oidc/",
     "src/openforms/dmn/base.py",
     "src/openforms/dmn/registry.py",
     "src/openforms/formio/registry.py",
@@ -48,7 +43,7 @@ include = [
     "src/openforms/contrib/reference_lists/",
     "src/openforms/contrib/auth_oidc/",
     # Data removal app
-    "src/openforms/data_removal/tasks.py",
+    "src/openforms/data_removal/",
     # Emails
     "src/openforms/emails/forms.py",
     "src/openforms/emails/templatetags/cosign_information.py",
@@ -56,9 +51,7 @@ include = [
     "src/openforms/logging/logevent.py",
     "src/openforms/logging/models.py",
     # Authentication
-    "src/openforms/authentication/contrib/digid/",
-    "src/openforms/authentication/contrib/outage/",
-    "src/openforms/authentication/models.py",
+    "src/openforms/authentication/",
     # Prefill
     "src/openforms/prefill/",
     # Registrations
@@ -91,14 +84,9 @@ include = [
 ]
 exclude = [
     "**/__pycache__",
-    "src/openforms/authentication/contrib/digid_eherkenning_oidc/migrations/",
-    "src/openforms/authentication/contrib/digid_eherkenning_oidc/tests/oidc_plugins/",
-    "src/openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py",
     "src/openforms/authentication/contrib/digid/tests/test_auth_procedure.py",
     "src/openforms/authentication/contrib/digid/tests/test_signicat_integration.py",
-    "src/openforms/authentication/contrib/yivi_oidc/migrations/",
-    "src/openforms/authentication/contrib/yivi_oidc/plugin.py",
-    "src/openforms/authentication/contrib/yivi_oidc/tests/",
+    "src/openforms/authentication/contrib/eherkenning/tests/test_signicat_integration.py",
     "src/openforms/contrib/objects_api/tests/",
     "src/openforms/contrib/objects_api/json_schema.py",
     "src/openforms/formio/formatters/tests/",

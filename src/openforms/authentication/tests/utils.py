@@ -65,6 +65,6 @@ class AuthContextAssertMixin:
         try:
             validator.validate(context)
         except ValidationError as exc:
-            raise self.failureException(
+            raise self.failureException(  # pyright: ignore[reportAttributeAccessIssue]
                 "Context is not valid according to schema"
             ) from exc

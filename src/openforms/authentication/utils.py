@@ -40,7 +40,7 @@ def store_registrator_details(
         raise ValueError(f"Unexpected auth attribute {attribute} specified")
 
     RegistratorInfo.objects.update_or_create(
-        submission=submission, defaults=registrator_auth
+        submission=submission, defaults={**registrator_auth}
     )
 
 

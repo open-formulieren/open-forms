@@ -1,4 +1,5 @@
-from typing import TypedDict, assert_never, cast
+from collections.abc import MutableMapping
+from typing import Literal, TypedDict, assert_never, cast
 
 from django.http import HttpRequest
 from django.templatetags.static import static
@@ -6,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.contrib.auth_oidc.plugin import OIDCAuthentication
 from openforms.contrib.auth_oidc.typing import OIDCErrors
-from openforms.typing import AnyRequest
+from openforms.typing import AnyRequest, JSONValue
 
 from ...base import LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
@@ -59,7 +60,7 @@ class YiviClaims(TypedDict, total=False):
     loa_claim: str | int | float
 
     # Mapping for additionally fetched claims
-    additional_claims: dict[str, str]
+    additional_claims: MutableMapping[str, JSONValue]
 
 
 @register(PLUGIN_ID)
@@ -76,7 +77,11 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
     def _get_user_chosen_authentication_attribute(
         authentication_options: list[AuthAttribute],
         normalized_claims: YiviClaims,
-    ) -> AuthAttribute:
+    ) -> (
+        Literal[AuthAttribute.bsn]
+        | Literal[AuthAttribute.kvk]
+        | Literal[AuthAttribute.pseudo]
+    ):
         """
         Return the user chosen authentication attribute.
         User chosen authentication attribute is defined based on the provided claims. To
@@ -106,32 +111,42 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
             authentication_options, normalized_claims
         )
 
-        form_auth = {
-            "attribute": authentication_attribute.value,
-            "plugin": self.identifier,
-            "additional_claims": normalized_claims.get("additional_claims", {}),
-        }
+        def _build_form_auth(value: str, loa: str) -> FormAuth:
+            return {
+                "attribute": authentication_attribute,
+                "plugin": self.identifier,
+                "value": value,
+                "loa": loa,
+                "additional_claims": normalized_claims.get("additional_claims") or {},
+            }
 
         # Set form authentication values based on the used authentication option
         match authentication_attribute:
             case AuthAttribute.bsn:
+                assert "bsn_claim" in normalized_claims
                 # Copied from digid_oidc
-                form_auth["value"] = normalized_claims["bsn_claim"]
-                form_auth["loa"] = str(normalized_claims.get("loa_claim", ""))
+                return _build_form_auth(
+                    normalized_claims["bsn_claim"],
+                    str(normalized_claims.get("loa_claim", "")),
+                )
 
             case AuthAttribute.kvk:
+                assert "kvk_claim" in normalized_claims
                 # Copied from eherkenning_oidc
-                form_auth["value"] = normalized_claims["kvk_claim"]
-                form_auth["loa"] = str(normalized_claims.get("loa_claim", ""))
+                return _build_form_auth(
+                    normalized_claims["kvk_claim"],
+                    str(normalized_claims.get("loa_claim", "")),
+                )
 
             case AuthAttribute.pseudo:
-                form_auth["value"] = (
+                value = (
                     normalized_claims.get("pseudo_claim", "")
                     or "dummy-set-by@openforms"
                 )
-                form_auth["loa"] = "unknown"
+                return _build_form_auth(value, "unknown")
 
-        return form_auth
+            case _:  # pragma: no cover
+                assert_never(authentication_attribute)
 
     def auth_info_to_auth_context(self, auth_info: AuthInfo) -> YiviContext:
         auth_attribute = AuthAttribute(auth_info.attribute)
@@ -143,7 +158,9 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
             case AuthAttribute.pseudo:
                 identifier_type = "opaque"
             case _:
-                assert_never(auth_attribute)
+                raise NotImplementedError(
+                    f"Auth attribute '{auth_attribute}' is not supported"
+                )
 
         yivi_context: YiviContext = {
             "source": "yivi",

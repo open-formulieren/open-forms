@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 import decimal
 import uuid
-from collections.abc import Sequence
+from collections.abc import MutableMapping, Sequence
 from typing import TYPE_CHECKING, Any, NewType, Protocol
 
 from django.http import HttpRequest
@@ -22,9 +22,9 @@ type JSONPrimitive = str | int | float | bool | None
 
 type JSONValue = JSONPrimitive | JSONObject | Sequence[JSONValue]
 
-type JSONObject = dict[str, JSONValue]
+type JSONObject = MutableMapping[str, JSONValue]
 
-type DataMapping = dict[str, Any]  # key: value pair
+type DataMapping = MutableMapping[str, Any]  # key: value pair
 
 type AnyRequest = HttpRequest | Request
 

@@ -20,7 +20,7 @@ class AuthInfoFactory(factory.django.DjangoModelFactory):
     )
     loa = DIGID_DEFAULT_LOA
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = AuthInfo
 
     class Params:
@@ -95,12 +95,12 @@ class RegistratorInfoFactory(factory.django.DjangoModelFactory):
         "openforms.submissions.tests.factories.SubmissionFactory"
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = RegistratorInfo
 
 
 class AttributeGroupFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: f"attribute-group-{n}")
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = AttributeGroup

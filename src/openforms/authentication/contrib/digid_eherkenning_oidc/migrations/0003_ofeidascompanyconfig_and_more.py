@@ -210,7 +210,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "legal_subject_identifier_claim",
-                    django_jsonform.models.fields.ArrayField(
+                    django_jsonform.models.fields.ArrayField(  # type: ignore
                         base_field=models.CharField(
                             max_length=100, verbose_name="claim path segment"
                         ),
@@ -224,7 +224,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "legal_subject_name_claim",
-                    django_jsonform.models.fields.ArrayField(
+                    django_jsonform.models.fields.ArrayField(  # type: ignore
                         base_field=models.CharField(
                             max_length=100, verbose_name="claim path segment"
                         ),
@@ -373,7 +373,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ofeidasconfig",
             name="legal_subject_date_of_birth_claim",
-            field=mozilla_django_oidc_db.fields.ClaimField(
+            field=mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                 base_field=models.CharField(
                     max_length=50, verbose_name="claim path segment"
                 ),
@@ -388,7 +388,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ofeidasconfig",
             name="legal_subject_family_name_claim",
-            field=mozilla_django_oidc_db.fields.ClaimField(
+            field=mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                 base_field=models.CharField(
                     max_length=50, verbose_name="claim path segment"
                 ),
@@ -403,7 +403,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ofeidasconfig",
             name="legal_subject_first_name_claim",
-            field=mozilla_django_oidc_db.fields.ClaimField(
+            field=mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                 base_field=models.CharField(
                     max_length=50, verbose_name="claim path segment"
                 ),
@@ -418,7 +418,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ofeidasconfig",
             name="legal_subject_identifier_claim",
-            field=mozilla_django_oidc_db.fields.ClaimField(
+            field=mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                 base_field=models.CharField(
                     max_length=50, verbose_name="claim path segment"
                 ),
@@ -433,7 +433,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ofeidasconfig",
             name="legal_subject_identifier_type_claim",
-            field=mozilla_django_oidc_db.fields.ClaimField(
+            field=mozilla_django_oidc_db.fields.ClaimField(  # type: ignore
                 base_field=models.CharField(
                     max_length=50, verbose_name="claim path segment"
                 ),

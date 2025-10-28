@@ -1,6 +1,8 @@
 from django.urls import path
 
-from digid_eherkenning.views import eHerkenningLoginView
+from digid_eherkenning.views import (
+    eHerkenningLoginView,  # pyright: ignore[reportPrivateImportUsage]
+)
 
 from .views import eHerkenningAssertionConsumerServiceView
 

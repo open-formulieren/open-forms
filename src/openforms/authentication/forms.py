@@ -45,10 +45,11 @@ class RegistratorSubjectInfoForm(forms.Form):
     )
 
     def clean(self):
-        cleaned_data = super().clean()
-        bsn = cleaned_data.get("bsn")
-        kvk = cleaned_data.get("kvk")
-        skip_subject = cleaned_data.get("skip_subject")
+        super().clean()
+
+        bsn = self.cleaned_data.get("bsn")
+        kvk = self.cleaned_data.get("kvk")
+        skip_subject = self.cleaned_data.get("skip_subject")
 
         msg = _("Use either BSN or KvK")
         if bsn and kvk:

@@ -46,11 +46,12 @@ class DemoBaseAuthentication(BasePlugin):
     verbose_name = _("Demo")
     return_method = "POST"
     form_class: type = NotImplemented
+    form_field: str
     is_demo_plugin = True
 
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str, options
-    ) -> str | HttpResponse:
+    ) -> HttpResponse:
         context = {
             "form_action": self.get_return_url(request, form),
             "form_url": form_url,
@@ -73,9 +74,7 @@ class DemoBaseAuthentication(BasePlugin):
             "fields": {},
         }
 
-    def handle_return(
-        self, request: HttpRequest, form: Form, options
-    ) -> str | HttpResponse:
+    def handle_return(self, request: HttpRequest, form: Form, options) -> HttpResponse:
         submitted = self.form_class(request.POST)
         if not submitted.is_valid():
             return HttpResponseBadRequest("invalid data")

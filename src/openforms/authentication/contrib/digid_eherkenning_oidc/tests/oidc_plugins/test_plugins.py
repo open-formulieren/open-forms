@@ -1,21 +1,12 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from mozilla_django_oidc_db.registry import register as oidc_register
 from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 from mozilla_django_oidc_db.utils import obfuscate_claims
 
-from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.plugins import (
-    OIDCDigiDMachtigenPlugin,
-    OIDCDigidPlugin,
-    OIDCeHerkenningBewindvoeringPlugin,
-    OIDCeHerkenningPlugin,
-    OIDCEidasCompanyPlugin,
-    OIDCEidasPlugin,
-)
-from openforms.contrib.auth_oidc.plugin import OFBaseOIDCPluginProtocol
-from openforms.contrib.auth_oidc.tests.factories import (
-    OFOIDCClientFactory,
-)
+from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
+
+from ...oidc_plugins.plugins import BaseDigiDeHerkenningPlugin
 
 
 class OIDCPluginsTestCase(OIDCMixin, TestCase):
@@ -27,8 +18,7 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
 
         plugin = oidc_register[oidc_client.identifier]
 
-        assert isinstance(plugin, OIDCDigidPlugin)
-        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
+        assert isinstance(plugin, BaseDigiDeHerkenningPlugin)
         obfuscated_claims = obfuscate_claims(
             {"bsn": "123456789", "other": "other"}, plugin.get_sensitive_claims()
         )
@@ -44,8 +34,7 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
 
         plugin = oidc_register[oidc_client.identifier]
 
-        assert isinstance(plugin, OIDCDigiDMachtigenPlugin)
-        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
+        assert isinstance(plugin, BaseDigiDeHerkenningPlugin)
         obfuscated_claims = obfuscate_claims(
             {
                 "aanvrager": "123456789",
@@ -74,8 +63,7 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
 
         plugin = oidc_register[oidc_client.identifier]
 
-        assert isinstance(plugin, OIDCeHerkenningPlugin)
-        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
+        assert isinstance(plugin, BaseDigiDeHerkenningPlugin)
         obfuscated_claims = obfuscate_claims(
             {
                 "kvk": "12345678",
@@ -107,8 +95,7 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
 
         plugin = oidc_register[oidc_client.identifier]
 
-        assert isinstance(plugin, OIDCeHerkenningBewindvoeringPlugin)
-        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
+        assert isinstance(plugin, BaseDigiDeHerkenningPlugin)
         obfuscated_claims = obfuscate_claims(
             {
                 "bsn": "123456789",
@@ -150,8 +137,7 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
 
         plugin = oidc_register[oidc_client.identifier]
 
-        assert isinstance(plugin, OIDCEidasPlugin)
-        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
+        assert isinstance(plugin, BaseDigiDeHerkenningPlugin)
         obfuscated_claims = obfuscate_claims(
             {
                 "person_bsn_identifier": "123456789",
@@ -194,8 +180,7 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
 
         plugin = oidc_register[oidc_client.identifier]
 
-        assert isinstance(plugin, OIDCEidasCompanyPlugin)
-        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
+        assert isinstance(plugin, BaseDigiDeHerkenningPlugin)
         obfuscated_claims = obfuscate_claims(
             {
                 "company_identifier": "123456789",
@@ -217,3 +202,18 @@ class OIDCPluginsTestCase(OIDCMixin, TestCase):
                 "family_name": "***",
             },
         )
+
+    @override_settings(USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=True)
+    def test_new_plugins_dont_return_real_legacy_oidc_callback(self):
+        eidas_client = OFOIDCClientFactory.build(with_eidas=True)
+        eidas_company_client = OFOIDCClientFactory.build(with_eidas_company=True)
+        plugins = (
+            oidc_register[eidas_client.identifier],
+            oidc_register[eidas_company_client.identifier],
+        )
+
+        for plugin in plugins:
+            with self.subTest(plugin=type(plugin)):
+                callback_url = plugin.get_setting("oidc_authentication_callback_url")
+
+                self.assertEqual(callback_url, "oidc_authentication_callback")

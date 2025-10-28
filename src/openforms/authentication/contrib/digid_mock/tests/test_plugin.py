@@ -106,7 +106,9 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
             self.assertEqual(start_response.status_code, 302, start_response.content)
             redirect_target = furl(start_response["Location"])
             self.assertEqual(redirect_target.path, reverse("digid-mock:login"))
-            acs_url = furl(redirect_target.args["acs"])
+            acs = redirect_target.args["acs"]
+            assert acs is not None
+            acs_url = furl(acs)
             self.assertIn(CO_SIGN_PARAMETER, acs_url.args)
             self.assertEqual(acs_url.args[CO_SIGN_PARAMETER], str(submission.uuid))
 
@@ -118,7 +120,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
             acs_url.args["bsn"] = ""
             acs_url.args["next"] = "http://localhost:3000"
 
-            return_response = self.client.get(acs_url)
+            return_response = self.client.get(str(acs_url))
 
             self.assertEqual(return_response.status_code, 400)
 
@@ -127,7 +129,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
             acs_url.args["bsn"] = "111222333"
             acs_url.args["next"] = "http://localhost:3000"
 
-            return_response = self.client.get(acs_url)
+            return_response = self.client.get(str(acs_url))
 
             self.assertEqual(return_response.status_code, 302)
             self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)

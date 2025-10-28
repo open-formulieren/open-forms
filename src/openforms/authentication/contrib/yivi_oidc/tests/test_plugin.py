@@ -1,4 +1,5 @@
-from django.test import TestCase
+from django.contrib.sessions.backends.base import SessionBase
+from django.test import SimpleTestCase, TestCase
 from django.test.client import RequestFactory
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
@@ -8,6 +9,7 @@ from openforms.authentication.contrib.yivi_oidc.config import YiviOptions
 from openforms.authentication.registry import register
 from openforms.authentication.tests.factories import (
     AttributeGroupFactory,
+    AuthInfoFactory,
 )
 
 plugin = register["yivi_oidc"]
@@ -25,7 +27,7 @@ class YiviPluginTransformClaimsTest(TestCase):
             "bsn_loa": "",
             "kvk_loa": "",
         }
-        form_auth = plugin.transform_claims(
+        form_auth = plugin.transform_claims(  # pyright: ignore[reportAttributeAccessIssue]
             plugin_options,
             {
                 "bsn_claim": "123456789",
@@ -51,7 +53,7 @@ class YiviPluginTransformClaimsTest(TestCase):
             "bsn_loa": "",
             "kvk_loa": "",
         }
-        form_auth = plugin.transform_claims(
+        form_auth = plugin.transform_claims(  # pyright: ignore[reportAttributeAccessIssue]
             plugin_options,
             {
                 "kvk_claim": "12345678",
@@ -78,7 +80,7 @@ class YiviPluginTransformClaimsTest(TestCase):
             "bsn_loa": "",
             "kvk_loa": "",
         }
-        form_auth = plugin.transform_claims(plugin_options, {})
+        form_auth = plugin.transform_claims(plugin_options, {})  # pyright: ignore[reportAttributeAccessIssue]
 
         self.assertEqual(
             form_auth,
@@ -92,7 +94,7 @@ class YiviPluginTransformClaimsTest(TestCase):
         )
 
     def test_transform_claims_with_additional_attributes_claims(self):
-        AttributeGroupFactory.create(
+        attribute_group = AttributeGroupFactory.create(
             name="foo_attribute",
             uuid="6af22687-08b3-4546-ad2e-22ed90c18a13",
             attributes=["attribute_name"],
@@ -100,11 +102,11 @@ class YiviPluginTransformClaimsTest(TestCase):
 
         plugin_options: YiviOptions = {
             "authentication_options": list(AuthAttribute),
-            "additional_attributes_groups": ["6af22687-08b3-4546-ad2e-22ed90c18a13"],
+            "additional_attributes_groups": [attribute_group],
             "bsn_loa": "",
             "kvk_loa": "",
         }
-        form_auth = plugin.transform_claims(
+        form_auth = plugin.transform_claims(  # pyright: ignore[reportAttributeAccessIssue]
             plugin_options, {"additional_claims": {"attribute_name": "attribute_value"}}
         )
 
@@ -133,12 +135,15 @@ class YiviPluginCheckRequirementsTest(TestCase):
 
     def test_valid_check_requirements_for_pseudo_auth(self):
         request = RequestFactory().get("/")
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "loa": "unknown",
-                "attribute": AuthAttribute.pseudo,
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "loa": "unknown",
+                    "attribute": AuthAttribute.pseudo,
+                }
             }
-        }
+        )
 
         plugin_options: YiviOptions = {
             "authentication_options": [
@@ -155,12 +160,15 @@ class YiviPluginCheckRequirementsTest(TestCase):
 
     def test_valid_check_requirements_for_bsn_auth(self):
         request = RequestFactory().get("/")
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "loa": "unknown",
-                "attribute": AuthAttribute.pseudo,
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "loa": "unknown",
+                    "attribute": AuthAttribute.pseudo,
+                }
             }
-        }
+        )
         plugin_options: YiviOptions = {
             "authentication_options": [
                 AuthAttribute.pseudo,
@@ -178,12 +186,15 @@ class YiviPluginCheckRequirementsTest(TestCase):
         self,
     ):
         request = RequestFactory().get("/")
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "loa": DigiDAssuranceLevels.substantial,
-                "attribute": AuthAttribute.bsn,
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "loa": DigiDAssuranceLevels.substantial,
+                    "attribute": AuthAttribute.bsn,
+                }
             }
-        }
+        )
         plugin_options: YiviOptions = {
             "authentication_options": [
                 AuthAttribute.pseudo,
@@ -199,12 +210,15 @@ class YiviPluginCheckRequirementsTest(TestCase):
 
     def test_valid_check_requirements_for_kvk_auth(self):
         request = RequestFactory().get("/")
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "loa": AssuranceLevels.high,
-                "attribute": AuthAttribute.kvk,
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "loa": AssuranceLevels.high,
+                    "attribute": AuthAttribute.kvk,
+                }
             }
-        }
+        )
         plugin_options: YiviOptions = {
             "authentication_options": [
                 AuthAttribute.pseudo,
@@ -222,12 +236,15 @@ class YiviPluginCheckRequirementsTest(TestCase):
         self,
     ):
         request = RequestFactory().get("/")
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "loa": AssuranceLevels.substantial,
-                "attribute": AuthAttribute.kvk,
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "loa": AssuranceLevels.substantial,
+                    "attribute": AuthAttribute.kvk,
+                }
             }
-        }
+        )
         plugin_options: YiviOptions = {
             "authentication_options": [
                 AuthAttribute.pseudo,
@@ -240,3 +257,23 @@ class YiviPluginCheckRequirementsTest(TestCase):
         }
 
         self.assertFalse(plugin.check_requirements(request, plugin_options))
+
+
+class AuthInfoToAuthContextTests(SimpleTestCase):
+    def test_unsupported_attributes(self):
+        unsupported_attributes = (
+            attribute
+            for attribute in AuthAttribute
+            if attribute not in plugin.provides_auth
+        )
+
+        for attribute in unsupported_attributes:
+            with (
+                self.subTest(attribute=attribute),
+                self.assertRaises(NotImplementedError),
+            ):
+                auth_info = AuthInfoFactory.build(
+                    attribute=attribute, plugin="yivi_oidc", value="dummy"
+                )
+
+                plugin.auth_info_to_auth_context(auth_info)

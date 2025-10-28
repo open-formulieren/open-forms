@@ -378,7 +378,7 @@ django-sessionprofile==2.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
-django-setup-configuration==0.8.2
+django-setup-configuration==0.11.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -701,7 +701,7 @@ mozilla-django-oidc==4.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc-db
-mozilla-django-oidc-db==0.25.1
+mozilla-django-oidc-db==1.0.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
