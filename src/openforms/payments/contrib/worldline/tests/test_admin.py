@@ -7,7 +7,7 @@ from maykin_2fa.test import disable_admin_mfa
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.payments.registry import register
 
-from .factories import WorldlineMerchantFactory
+from .factories import WorldlineMerchantFactory, WorldlineWebhookConfigurationFactory
 
 
 @disable_admin_mfa()
@@ -39,7 +39,11 @@ class WorldlineWebhookConfigurationAdminTest(WebTest):
     @override_settings(BASE_URL="https://example.com/foo")
     def test_webhook_configuration_detail_page(self):
         user = SuperUserFactory.create()
-        url = reverse("admin:payments_worldline_worldlinewebhookconfiguration_change")
+        config = WorldlineWebhookConfigurationFactory.create()
+        url = reverse(
+            "admin:payments_worldline_worldlinewebhookconfiguration_change",
+            args=(config.pk,),
+        )
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(None)
 

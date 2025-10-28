@@ -1,8 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from solo.admin import SingletonModelAdmin
-
 from ...registry import register
 from .models import WorldlineMerchant, WorldlineWebhookConfiguration
 
@@ -29,8 +27,10 @@ class WorldlineMerchantAdmin(admin.ModelAdmin):
 
 
 @admin.register(WorldlineWebhookConfiguration)
-class WorldlineWebhookConfigurationAdmin(SingletonModelAdmin):
+class WorldlineWebhookConfigurationAdmin(admin.ModelAdmin):
+    list_display = ("pspid", "webhook_key_id")
     fields = (
+        "pspid",
         "webhook_key_id",
         "webhook_key_secret",
         "feedback_url",

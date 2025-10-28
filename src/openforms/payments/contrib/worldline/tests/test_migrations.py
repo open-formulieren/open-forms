@@ -6,7 +6,7 @@ from ..constants import WorldlineEndpoints
 
 class WorldlineMigrationTest(TestMigrations):
     migrate_from = "0006_worldlinewebhookconfiguration_and_more"
-    migrate_to = "0007_migrate_ogone_to_worldline"
+    migrate_to = "0009_migrate_ogone_to_worldline"
     app = "payments_worldline"
 
     def setUpBeforeMigration(self, apps):
@@ -89,7 +89,7 @@ class WorldlineMigrationTest(TestMigrations):
 
 class WorldlineExistingMerchantMigrationTest(TestMigrations):
     migrate_from = "0006_worldlinewebhookconfiguration_and_more"
-    migrate_to = "0007_migrate_ogone_to_worldline"
+    migrate_to = "0009_migrate_ogone_to_worldline"
     app = "payments_worldline"
 
     def setUpBeforeMigration(self, apps):
@@ -146,7 +146,7 @@ class WorldlineExistingMerchantMigrationTest(TestMigrations):
 
 class WorldlineIncompleteWebhookMigrationTest(TestMigrations):
     migrate_from = "0006_worldlinewebhookconfiguration_and_more"
-    migrate_to = "0007_migrate_ogone_to_worldline"
+    migrate_to = "0009_migrate_ogone_to_worldline"
     app = "payments_worldline"
 
     def setUpBeforeMigration(self, apps):
@@ -170,7 +170,7 @@ class WorldlineIncompleteWebhookMigrationTest(TestMigrations):
 
 class WorldlineExistingWebhookMigrationTest(TestMigrations):
     migrate_from = "0006_worldlinewebhookconfiguration_and_more"
-    migrate_to = "0007_migrate_ogone_to_worldline"
+    migrate_to = "0009_migrate_ogone_to_worldline"
     app = "payments_worldline"
 
     def setUpBeforeMigration(self, apps):

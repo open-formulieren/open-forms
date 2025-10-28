@@ -504,9 +504,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
                 webhook_entry.actions,
                 [
                     (
-                        _("Configure webhooks"),
+                        _("Add webhook"),
                         reverse(
-                            "admin:payments_worldline_worldlinewebhookconfiguration_change",
+                            "admin:payments_worldline_worldlinewebhookconfiguration_add",
                         ),
                     )
                 ],
@@ -539,10 +539,14 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
         with self.subTest("Test webhook entry"):
             self.assertEqual(
-                configuration_entries[2].name, "Worldline webhook configuration"
+                configuration_entries[2].name,
+                _("Add worldline webhook configuration"),
             )
 
     def test_webhook_event(self):
+        # create a dummy configuration entry to verify that the runtime code selects the
+        # correct one
+        WorldlineWebhookConfigurationFactory.create()
         webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
         submission = SubmissionFactory.create(
@@ -638,6 +642,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         """
         Tests that status mutations should not be possible for completed payments
         """
+        # create a dummy configuration entry to verify that the runtime code selects the
+        # correct one
+        WorldlineWebhookConfigurationFactory.create()
         webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
         submission = SubmissionFactory.create(

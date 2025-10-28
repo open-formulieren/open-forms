@@ -15,13 +15,14 @@ logger = structlog.stdlib.get_logger(__name__)
 
 class SecretKeyStore(BaseKeyStore):
     def get_secret_key(self, key_id: str) -> str:
-        configuration = WorldlineWebhookConfiguration.get_solo()
-
-        if not configuration.webhook_key_id == key_id:
+        try:
+            configuration = WorldlineWebhookConfiguration.objects.get(
+                webhook_key_id=key_id
+            )
+        except WorldlineWebhookConfiguration.DoesNotExist as exc:
             raise SecretKeyNotAvailableException(
                 key_id, "No secret key found for given value"
-            )
-
+            ) from exc
         return configuration.webhook_key_secret
 
 

@@ -1,7 +1,5 @@
 from django.contrib import admin
 
-from solo.admin import SingletonModelAdmin
-
 from openforms.utils.urls import reverse_plus
 
 from ...registry import register
@@ -40,8 +38,10 @@ class OgoneMerchantAdmin(admin.ModelAdmin):
 
 
 @admin.register(OgoneWebhookConfiguration)
-class OgoneWebhookAdmin(SingletonModelAdmin):
+class OgoneWebhookAdmin(admin.ModelAdmin):
+    list_display = ("pspid", "webhook_key_id")
     fields = (
+        "pspid",
         "webhook_key_id",
         "webhook_key_secret",
         "feedback_url",
