@@ -504,9 +504,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
                 webhook_entry.actions,
                 [
                     (
-                        _("Configure webhooks"),
+                        _("Add webhook"),
                         reverse(
-                            "admin:payments_worldline_worldlinewebhookconfiguration_change",
+                            "admin:payments_worldline_worldlinewebhookconfiguration_add",
                         ),
                     )
                 ],
@@ -539,7 +539,8 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
         with self.subTest("Test webhook entry"):
             self.assertEqual(
-                configuration_entries[2].name, "Worldline webhook configuration"
+                configuration_entries[2].name,
+                _("Add worldline webhook configuration"),
             )
 
     def test_webhook_event(self):
