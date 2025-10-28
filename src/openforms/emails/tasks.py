@@ -65,6 +65,7 @@ def send_email_digest() -> None:
     config = GlobalConfiguration.get_solo()
     if not (recipients := config.recipients_email_digest):
         return
+    assert isinstance(recipients, list)
 
     yesterday = timezone.now() - timedelta(days=1)
     digest = Digest(since=yesterday)

@@ -12,6 +12,7 @@ from mail_cleaner.text import strip_tags_plus
 
 from openforms.config.models import GlobalConfiguration, Theme
 from openforms.template import openforms_backend, render_from_string
+from openforms.typing import StrOrPromise
 
 from .context import get_wrapper_context
 
@@ -27,6 +28,13 @@ def get_system_netloc_allowlist() -> list[str]:
     ]
 
 
+def get_netloc_allowlist() -> list[str]:
+    config = GlobalConfiguration.get_solo()
+    configured_allowlist = config.email_template_netloc_allowlist
+    assert isinstance(configured_allowlist, list)
+    return get_system_netloc_allowlist() + configured_allowlist
+
+
 def sanitize_content(content: str) -> str:
     """
     Sanitize the content by stripping untrusted content.
@@ -36,17 +44,16 @@ def sanitize_content(content: str) -> str:
 
     * strip URLs that are not present in the explicit allow list
     """
-    config = GlobalConfiguration.get_solo()
     # strip out any hyperlinks that are not in the configured allowlist
-    allowlist = get_system_netloc_allowlist() + config.email_template_netloc_allowlist
+    allowlist = get_netloc_allowlist()
     return _sanitize_content(content, allowlist)
 
 
-AttachmentsType = Sequence[tuple[str, str, Any]] | None
+AttachmentsType = Sequence[tuple[str, str | bytes, Any]] | None
 
 
 def send_mail_html(
-    subject: str,
+    subject: StrOrPromise,
     html_body: str,
     from_email: str,
     recipient_list: list[str],
@@ -76,7 +83,7 @@ def send_mail_html(
     html_message = template.render(wrapper_context)
 
     send_mail_plus(
-        subject,
+        str(subject),
         text_message,
         from_email,
         recipient_list,

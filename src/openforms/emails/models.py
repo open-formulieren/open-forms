@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import ClassVar
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -6,7 +10,7 @@ from openforms.forms.models import Form
 from openforms.template.validators import DjangoTemplateValidator
 
 
-class ConfirmationEmailTemplateManager(models.Manager):
+class ConfirmationEmailTemplateManager(models.Manager["ConfirmationEmailTemplate"]):
     def set_for_form(self, form: Form, data: dict | None):
         # if there's *no* template data, make sure that we do indeed wipe the fields,
         # making the template not usable
@@ -87,7 +91,11 @@ class ConfirmationEmailTemplate(models.Model):
         help_text=_("The form for which this confirmation email template will be used"),
     )
 
-    objects = ConfirmationEmailTemplateManager()
+    objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
+        ConfirmationEmailTemplateManager
+    ] = ConfirmationEmailTemplateManager()
+
+    form_id: int | None
 
     class Meta:
         verbose_name = _("Confirmation email template")

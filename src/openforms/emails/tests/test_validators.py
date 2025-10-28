@@ -10,7 +10,7 @@ from openforms.emails.validators import URLSanitationValidator
 class URLSanitationValidatorTest(TestCase):
     def test_validator(self):
         config = GlobalConfiguration.get_solo()
-        config.email_template_netloc_allowlist = ["good.net"]
+        config.email_template_netloc_allowlist = ["good.net"]  # pyright: ignore[reportAttributeAccessIssue]
         config.save()
 
         validator = URLSanitationValidator()

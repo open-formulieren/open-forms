@@ -40,7 +40,9 @@ class GetLastConfirmationEmailTests(TestCase):
         self.send_email(submission, "Email 2", EmailEventChoices.confirmation)
         self.send_email(submission, "Email 3", EmailEventChoices.confirmation)
 
-        content, _ = get_last_confirmation_email(submission)
+        last_email = get_last_confirmation_email(submission)
+        assert last_email is not None
+        content, _ = last_email
 
         self.assertIn("Email 3", content)
 

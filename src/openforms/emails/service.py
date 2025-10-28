@@ -1,3 +1,5 @@
+from django.core.mail.message import EmailMultiAlternatives
+
 from django_yubin.models import Message
 
 from openforms.submissions.models import Submission
@@ -34,6 +36,7 @@ def get_last_confirmation_email(submission: Submission) -> tuple[str, int] | Non
 
     for message in messages:
         email = message.get_email_message()
+        assert isinstance(email, EmailMultiAlternatives)
 
         submission_uuid = email.extra_headers.get(X_OF_CONTENT_UUID_HEADER)
         event = email.extra_headers.get(X_OF_EVENT_HEADER)
@@ -45,6 +48,7 @@ def get_last_confirmation_email(submission: Submission) -> tuple[str, int] | Non
             continue
 
         html = next(alt[0] for alt in email.alternatives if alt[1] == "text/html")
+        assert isinstance(html, str)
 
         return html, message.pk
 

@@ -45,8 +45,7 @@ include = [
     # Data removal app
     "src/openforms/data_removal/",
     # Emails
-    "src/openforms/emails/forms.py",
-    "src/openforms/emails/templatetags/cosign_information.py",
+    "src/openforms/emails/",
     # Logging
     "src/openforms/logging/logevent.py",
     "src/openforms/logging/models.py",

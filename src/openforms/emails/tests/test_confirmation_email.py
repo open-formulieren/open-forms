@@ -96,7 +96,8 @@ NESTED_COMPONENT_CONF = {
 
 
 class FixedCancelAndChangeLinkPlugin(DemoAppointment):
-    def get_cancel_link(self, submission) -> str:
+    @staticmethod
+    def get_cancel_link(submission) -> str:
         return "http://fake.nl/api/v2/submission-uuid/token/verify/"
 
 
@@ -120,7 +121,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
     def test_validate_content_netloc_sanitation_validation(self):
         config = GlobalConfiguration.get_solo()
-        config.email_template_netloc_allowlist = ["good.net"]
+        config.email_template_netloc_allowlist = ["good.net"]  # pyright: ignore[reportAttributeAccessIssue]
         config.save()
 
         with self.subTest("valid"):
@@ -231,11 +232,11 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
     @patch(
         "openforms.emails.templatetags.appointments.get_plugin",
-        return_value=FixedCancelAndChangeLinkPlugin("email"),
+        return_value=FixedCancelAndChangeLinkPlugin("email"),  # pyright: ignore[reportAbstractUsage]
     )
     def test_appointment_information(self, get_plugin_mock):
         config = GlobalConfiguration.get_solo()
-        config.email_template_netloc_allowlist = ["fake.nl"]
+        config.email_template_netloc_allowlist = ["fake.nl"]  # pyright: ignore[reportAttributeAccessIssue]
         config.save()
 
         appointment = AppointmentFactory.create(appointment_info__registration_ok=True)
@@ -644,7 +645,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             subject="My Subject",
             content="{% confirmation_summary %}",
         )
-        first_step_name = submission.submissionstep_set.all()[
+        first_step_name = submission.submissionstep_set.all()[  # pyright: ignore[reportAttributeAccessIssue]
             0
         ].form_step.form_definition.name
 
