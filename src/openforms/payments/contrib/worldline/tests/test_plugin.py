@@ -544,6 +544,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             )
 
     def test_webhook_event(self):
+        # create a dummy configuration entry to verify that the runtime code selects the
+        # correct one
+        WorldlineWebhookConfigurationFactory.create()
         webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
         submission = SubmissionFactory.create(
@@ -639,6 +642,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         """
         Tests that status mutations should not be possible for completed payments
         """
+        # create a dummy configuration entry to verify that the runtime code selects the
+        # correct one
+        WorldlineWebhookConfigurationFactory.create()
         webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
         submission = SubmissionFactory.create(
