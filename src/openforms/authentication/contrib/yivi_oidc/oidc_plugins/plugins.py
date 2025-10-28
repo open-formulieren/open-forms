@@ -6,7 +6,7 @@ from typing import cast, override
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponseBase
 from django.urls import resolve
 
 import structlog
@@ -85,6 +85,7 @@ class YiviPlugin(AnonymousUserOIDCPlugin):
         ]
         return sensitive_claims
 
+    @override
     def get_or_create_user(
         self,
         access_token: str,
@@ -148,11 +149,13 @@ class YiviPlugin(AnonymousUserOIDCPlugin):
         )
         return processed_claims
 
+    @override
     def validate_settings(self) -> None:
         pass
 
-    def handle_callback(self, request: HttpRequest) -> HttpResponse:
-        return anon_user_callback_view(request)  # pyright: ignore[reportReturnType] # .as_view() returns HttpResponseBase
+    @override
+    def handle_callback(self, request: HttpRequest) -> HttpResponseBase:
+        return anon_user_callback_view(request)
 
     def _get_auth_backend_options(self, form_slug: str) -> YiviOptions | None:
         plugin = get_of_auth_plugin(self)
@@ -397,6 +400,7 @@ class YiviPlugin(AnonymousUserOIDCPlugin):
         base64_bytes = base64.b64encode(condiscon_string.encode("ascii"))
         return f"signicat:param:condiscon_base64:{base64_bytes.decode('ascii')}"
 
+    @override
     def get_extra_params(
         self, request: HttpRequest, extra_params: GetParams
     ) -> GetParams:
