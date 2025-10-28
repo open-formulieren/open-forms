@@ -16,6 +16,7 @@ class WorldlineMerchantFactory(factory.django.DjangoModelFactory):
 
 
 class WorldlineWebhookConfigurationFactory(factory.django.DjangoModelFactory):
+    pspid = factory.Sequence(lambda n: f"webhook-{n:03d}")
     webhook_key_id = factory.Faker("uuid4")
     webhook_key_secret = factory.Faker("pystr", min_chars=40, max_chars=40)
 
