@@ -16,6 +16,7 @@ class OgoneMerchantFactory(factory.django.DjangoModelFactory):
 
 
 class OgoneWebhookConfigurationFactory(factory.django.DjangoModelFactory):
+    pspid = factory.Sequence(lambda n: f"webhook-{n:03d}")
     webhook_key_id = factory.Faker("pystr", min_chars=20, max_chars=20)
     webhook_key_secret = factory.Faker("pystr", min_chars=128, max_chars=128)
 
