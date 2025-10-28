@@ -58,7 +58,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
         super().setUpTestData()
 
         config = GlobalConfiguration.get_solo()
-        config.recipients_email_digest = ["tralala@test.nl", "trblblb@test.nl"]
+        config.recipients_email_digest = ["tralala@test.nl", "trblblb@test.nl"]  # pyright: ignore[reportAttributeAccessIssue]
         config.save()
 
     def setUp(self):
@@ -107,7 +107,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
 
     def test_no_email_sent_if_no_recipients(self):
         config = GlobalConfiguration.get_solo()
-        config.recipients_email_digest = []
+        config.recipients_email_digest = []  # pyright: ignore[reportAttributeAccessIssue]
         config.save()
         submission = SubmissionFactory.create()
 
@@ -219,6 +219,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
         # send the email digest
         send_email_digest()
         sent_email = mail.outbox[-1]
+        assert isinstance(sent_email.body, str)
 
         # assertions
         with self.subTest("failed email"):
@@ -231,11 +232,13 @@ class EmailDigestTaskIntegrationTests(TestCase):
             admin_relative_submissions_url = furl(
                 reverse("admin:submissions_submission_changelist")
             )
-            admin_relative_submissions_url.args = {
-                "form__id__exact": form.id,
-                "needs_on_completion_retry__exact": 1,
-                "registration_time": "24hAgo",
-            }
+            admin_relative_submissions_url.args.update(
+                {
+                    "form__id__exact": form.id,
+                    "needs_on_completion_retry__exact": 1,
+                    "registration_time": "24hAgo",
+                }
+            )
             admin_submissions_url = furl(
                 f"http://testserver{admin_relative_submissions_url.url}"
             ).url
@@ -251,11 +254,13 @@ class EmailDigestTaskIntegrationTests(TestCase):
             admin_relative_logs_url = furl(
                 reverse("admin:logging_timelinelogproxy_changelist")
             )
-            admin_relative_logs_url.args = {
-                "content_type": content_type,
-                "object_id__in": submission.id,
-                "extra_data__log_event__in": "prefill_retrieve_empty,prefill_retrieve_failure",
-            }
+            admin_relative_logs_url.args.update(
+                {
+                    "content_type": content_type,
+                    "object_id__in": submission.id,
+                    "extra_data__log_event__in": "prefill_retrieve_empty,prefill_retrieve_failure",
+                }
+            )
             admin_logs_url = furl(f"http://testserver{admin_relative_logs_url.url}").url
 
             self.assertIn(
@@ -312,7 +317,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
         super().setUpTestData()
 
         config = GlobalConfiguration.get_solo()
-        config.recipients_email_digest = ["tralala@test.nl", "trblblb@test.nl"]
+        config.recipients_email_digest = ["tralala@test.nl", "trblblb@test.nl"]  # pyright: ignore[reportAttributeAccessIssue]
         config.save()
 
         # The service is relative to the docker compose instance that we have in the
@@ -352,6 +357,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
         with freeze_time("2020-01-30T12:30:00+01:00"):
             send_email_digest()
             sent_email = mail.outbox[-1]
+            assert isinstance(sent_email.body, str)
 
             self.assertIn(
                 "Table 'Tabel that is not geldig anymore' will expire in 3 days, 21 hours.",
@@ -362,6 +368,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
         with freeze_time("2020-03-30T12:30:00+01:00"):
             send_email_digest()
             sent_email = mail.outbox[-1]
+            assert isinstance(sent_email.body, str)
 
             self.assertIn(
                 "Table 'Tabel that is not geldig anymore' expired 1 month, 3 weeks ago.",
@@ -391,6 +398,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
         with freeze_time("2025-02-01T12:30:00+01:00"):
             send_email_digest()
             sent_email = mail.outbox[-1]
+            assert isinstance(sent_email.body, str)
 
             self.assertIn(
                 "Item 'Not geldig option' will expire in 6 days, 2 hours.",
@@ -401,6 +409,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
         with freeze_time("2025-03-01T12:30:00+01:00"):
             send_email_digest()
             sent_email = mail.outbox[-1]
+            assert isinstance(sent_email.body, str)
 
             self.assertIn(
                 "Item 'Not geldig option' expired 3 weeks ago.",
@@ -434,6 +443,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
 
         send_email_digest()
         sent_email = mail.outbox[-1]
+        assert isinstance(sent_email.body, str)
 
         self.assertIn(
             f"Something went wrong while trying to retrieve data from service: {self.reference_lists_service.label}",
@@ -489,6 +499,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
 
         send_email_digest()
         sent_email = mail.outbox[-1]
+        assert isinstance(sent_email.body, str)
 
         self.assertIn(
             f"Something went wrong while trying to retrieve data from service: {self.reference_lists_service.label}",

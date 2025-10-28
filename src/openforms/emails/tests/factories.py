@@ -7,7 +7,7 @@ class ConfirmationEmailTemplateFactory(factory.django.DjangoModelFactory):
     form = factory.SubFactory(FormFactory)
     content = "Thanks!"
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = "emails.ConfirmationEmailTemplate"
 
     class Params:

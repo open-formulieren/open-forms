@@ -8,7 +8,7 @@ from ..models import ConfirmationEmailTemplate
 class ConfirmationEmailTemplateSerializer(serializers.ModelSerializer):
     translations = ModelTranslationsSerializer()
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = ConfirmationEmailTemplate
         fields = (
             "subject",

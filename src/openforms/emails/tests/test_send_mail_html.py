@@ -40,17 +40,20 @@ class HTMLEmailWrapperTest(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         message = mail.outbox[0]
+        assert isinstance(message, mail.EmailMultiAlternatives)
         self.assertEqual(message.subject, "My Subject")
         self.assertEqual(message.recipients(), ["foo@bar.baz"])
         self.assertEqual(message.from_email, "foo@sender.com")
 
         # text
         self.assertEqual(message.body, "My Message\n")
+        assert isinstance(message.body, str)
         self.assertNotIn("<p>", message.body)
 
         # html alternative
         self.assertEqual(len(message.alternatives), 1)
         content, mime_type = message.alternatives[0]
+        assert isinstance(content, str)
         self.assertEqual(mime_type, "text/html")
         self.assertIn("<p>My Message</p>", content)
         self.assertIn("<table", content)
@@ -64,7 +67,7 @@ class HTMLEmailWrapperTest(TestCase):
 
     def test_strip_non_allowed_urls(self):
         config = GlobalConfiguration.get_solo()
-        config.email_template_netloc_allowlist = ["allowed.com"]
+        config.email_template_netloc_allowlist = ["allowed.com"]  # pyright: ignore[reportAttributeAccessIssue]
         config.save()
 
         body = "<p>test https://google.com https://www.google.com https://allowed.com test</p>"
@@ -79,7 +82,9 @@ class HTMLEmailWrapperTest(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         message = mail.outbox[0]
+        assert isinstance(message, mail.EmailMultiAlternatives)
         message_html = message.alternatives[0][0]
+        assert isinstance(message_html, str)
 
         self.assertNotIn("google.com", message_html)
         self.assertIn("https://allowed.com", message_html)
@@ -89,7 +94,7 @@ class HTMLEmailWrapperTest(TestCase):
         self,
     ):
         config = GlobalConfiguration.get_solo()
-        config.email_template_netloc_allowlist = []
+        config.email_template_netloc_allowlist = []  # pyright: ignore[reportAttributeAccessIssue]
         config.save()
 
         body = "<p>test https://google.com https://www.google.com https://allowed.com test</p>"
@@ -103,7 +108,9 @@ class HTMLEmailWrapperTest(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         message = mail.outbox[0]
+        assert isinstance(message, mail.EmailMultiAlternatives)
         message_html = message.alternatives[0][0]
+        assert isinstance(message_html, str)
 
         self.assertNotIn("google.com", message_html)
         self.assertNotIn("allowed.com", message_html)
@@ -324,6 +331,8 @@ class TemplateRenderingTest(TestCase):
         self.assertEqual(img.attr("height"), "150")
         self.assertIsNone(img.attr("width"))
 
-        img_styles = img.attr("style").replace(" ", "").split(";")
+        style_attr = img.attr("style")
+        assert isinstance(style_attr, str)
+        img_styles = style_attr.replace(" ", "").split(";")
         self.assertIn("width:auto", img_styles)
         self.assertIn("height:150px", img_styles)

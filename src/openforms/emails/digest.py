@@ -1,6 +1,12 @@
 import uuid
 from collections import defaultdict
-from collections.abc import Collection, Iterable, Iterator, Mapping, MutableMapping
+from collections.abc import (
+    Collection,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    Sequence,
+)
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from itertools import groupby
@@ -192,7 +198,7 @@ class InvalidMapComponentOverlay:
         return build_absolute_uri(form_relative_admin_url)
 
 
-def collect_failed_emails(since: datetime) -> Iterable[FailedEmail]:
+def collect_failed_emails(since: datetime) -> Sequence[FailedEmail]:
     logs = TimelineLogProxy.objects.filter(
         timestamp__gt=since,
         extra_data__status=Message.STATUS_FAILED,
@@ -465,7 +471,7 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
             InvalidLogicRule(
                 variable=var_key,
                 form_name=form.admin_name,
-                form_id=form.id,
+                form_id=form.pk,
                 exception=exception,
                 rule_index=rule_index,
             )
@@ -484,7 +490,7 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
                 "source": form_variable.source,
                 "type": form_variable.data_type,
             }
-            for form_variable in form.formvariable_set.all()
+            for form_variable in form.formvariable_set.all()  # pyright: ignore[reportAttributeAccessIssue]
         }
 
         all_keys = list(static_variables) + list(form_variables)
@@ -551,6 +557,7 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
             # variable does *not* have any of the container types, then it's a
             # guaranteed error since lookups inside primitives are not possible.
             parent_var = form_variables.get(outer) or static_variables.get(outer)
+            assert parent_var is not None
             if parent_var["type"] not in expected_container_types:
                 _report(var.key)
                 continue

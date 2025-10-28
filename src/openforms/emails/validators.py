@@ -33,16 +33,10 @@ class URLSanitationValidator:
         This operation matches the logic of
         :func:`openforms.emails.utils.sanitize_content`.
         """
-
+        from .utils import get_netloc_allowlist
         # local imports because we use this on GlobalConfiguration itself
-        from openforms.config.models import GlobalConfiguration
-        from openforms.emails.utils import get_system_netloc_allowlist
 
-        config = GlobalConfiguration.get_solo()
-
-        allowlist = (
-            get_system_netloc_allowlist() + config.email_template_netloc_allowlist
-        )
+        allowlist = get_netloc_allowlist()
 
         for m in URL_REGEX.finditer(value):
             parsed = urlsplit(m.group())

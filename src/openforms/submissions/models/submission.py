@@ -21,6 +21,7 @@ import structlog
 from django_jsonform.models.fields import ArrayField
 from furl import furl
 
+from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.service import FormioConfigurationWrapper, FormioData
 from openforms.forms.models import FormRegistrationBackend, FormStep
@@ -329,6 +330,10 @@ class Submission(models.Model):
     auth_info: AuthInfo
     report: SubmissionReport
     payments: SubmissionPaymentManager
+    appointment_info: AppointmentInfo
+    """
+    May raise ``RelatedObjectDoesNotExist`` if no record exists in the database.
+    """
 
     class Meta:
         verbose_name = _("submission")
