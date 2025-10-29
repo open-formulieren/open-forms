@@ -14,7 +14,7 @@ def get_klantinteracties_client() -> "KlantinteractiesClient":
     return build_client(config.service, client_factory=KlantinteractiesClient)
 
 
-class DigitaleAdres(TypedDict, total=False):
+class DigitaleAdres(TypedDict):
     url: str
     adres: str
     soortDigitaalAdres: Literal["email", "telefoonnummer", "overig"]
