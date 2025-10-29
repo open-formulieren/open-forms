@@ -497,9 +497,8 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             ],
         )
 
-        merchant_client = merchant.get_merchant_client()
-
         try:
+            merchant_client = merchant.get_merchant_client()
             merchant_client.services().test_connection()
         except Exception as e:
             entry.status = False
