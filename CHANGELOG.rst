@@ -6,6 +6,28 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.1 (2025-10-29)
+==================
+
+Regular bugfix release.
+
+* Fixed a crash in the upgrade migrations for form variables pointing to a component
+  that cannot be resolved.
+* [:backend:`5613`] You can now specify the ``SESSION_COOKIE_DOMAIN`` setting as an
+  environment variable.
+* [:backend:`5722`] Fixed Worldline configuration not taking into account multiple
+  webhook key ID + secret combinations when multiple PSPIDs are used.
+
+3.2.6 (2025-10-29)
+==================
+
+Regular bugfix release.
+
+* [:backend:`5613`] You can now specify the ``SESSION_COOKIE_DOMAIN`` setting as an
+  environment variable.
+* [:backend:`5722`] Fixed Worldline configuration for transition not taking into account
+  multiple webhook key ID + secret combinations when multiple PSPIDs are used.
+
 3.4.0-alpha.0 (2025-10-10)
 ==========================
 
