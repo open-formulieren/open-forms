@@ -11,7 +11,14 @@ Start an instance in your local environment from the parent directory:
 docker compose -f docker-compose.open-klant.yml up -d
 ```
 
-This brings up the admin at http://localhost:8005/admin/.
+This brings up the admin at http://localhost:8005/admin/. To log in into the admin you need to create an
+admin user first:
+
+```bash
+docker compose -f docker-compose.open-klant.yml run openklant-web.local \
+    python src/manage.py createsuperuser
+```
+
 
 ## Load fixtures
 

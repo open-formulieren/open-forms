@@ -38,7 +38,36 @@ class KlantinteractiesClientTest(OFVCRMixin, TestCase):
         with get_klantinteracties_client() as client:
             data = client.get_digital_addresses_for_bsn(bsn="123456782")
 
+        expected_addresses = [
+            {
+                "adres": "0687654321",
+                "soortDigitaalAdres": "telefoonnummer",
+                "isStandaardAdres": False,
+            },
+            {
+                "adres": "0612345678",
+                "soortDigitaalAdres": "telefoonnummer",
+                "isStandaardAdres": True,
+            },
+            {
+                "adres": "someemail@example.org",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+            },
+            {
+                "adres": "devilkiller@example.org",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+            },
+            {
+                "adres": "john.smith@gmail.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": True,
+            },
+        ]
         self.assertEqual(len(data), 5)
+        for expected, actual in zip(expected_addresses, data, strict=False):
+            self.assertLessEqual(expected.items(), actual.items())
 
     def test_list_digital_addresses_empty(self):
         with get_klantinteracties_client() as client:
