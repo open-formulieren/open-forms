@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from typing import TypedDict
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -11,7 +11,6 @@ from openforms.contrib.klantinteracties.client import get_klantinteracties_clien
 from openforms.contrib.klantinteracties.models import KlantinteractiesConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
-from openforms.typing import JSONEncodable
 
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
@@ -24,34 +23,15 @@ logger = structlog.stdlib.get_logger(__name__)
 PLUGIN_IDENTIFIER = "klantinteracties"
 
 
-CALLBACKS: dict[str, Callable] = {
-    Attributes.email.value: lambda x: [
-        da["adres"] for da in x if da["soortDigitaalAdres"] == DigitalAddressTypes.email
-    ],
-    Attributes.email_preferred.value: lambda x: next(
-        iter(
-            da["adres"]
-            for da in x
-            if da["soortDigitaalAdres"] == DigitalAddressTypes.email
-            and da["isStandaardAdres"]
-        ),
-        None,
-    ),
-    Attributes.phone.value: lambda x: [
-        da["adres"]
-        for da in x
-        if da["soortDigitaalAdres"] == DigitalAddressTypes.telefoonnummer
-    ],
-    Attributes.phone_preferred.value: lambda x: next(
-        iter(
-            da["adres"]
-            for da in x
-            if da["soortDigitaalAdres"] == DigitalAddressTypes.telefoonnummer
-            and da["isStandaardAdres"]
-        ),
-        None,
-    ),
-}
+class DigitalAddresses(TypedDict):
+    phone_numbers: list[str]
+    preferred_phone_number: str | None
+    emails: list[str]
+    preferred_email: str | None
+
+
+class DigitalAddressResult(TypedDict):
+    digital_addresses: DigitalAddresses
 
 
 @register(PLUGIN_IDENTIFIER)
@@ -69,14 +49,21 @@ class klantinteractiesPlugin(BasePlugin):
         submission: Submission,
         attributes: list[str],
         identifier_role: IdentifierRoles = IdentifierRoles.main,
-    ) -> dict[str, JSONEncodable]:
+    ) -> DigitalAddressResult:
         # TODO changer implementation to get_prefill_values_from_options
         # TODO add kvk support
+
+        result = DigitalAddresses(
+            phone_numbers=[],
+            preferred_phone_number=None,
+            emails=[],
+            preferred_email=None,
+        )
 
         try:
             client = get_klantinteracties_client()
         except AssertionError:
-            return {}
+            return DigitalAddressResult(digital_addresses=result)
 
         if not (bsn_value := cls.get_identifier_value(submission, identifier_role)):
             logger.info(
@@ -88,7 +75,20 @@ class klantinteractiesPlugin(BasePlugin):
 
         digital_addresses = client.get_digital_addresses_for_bsn(bsn=bsn_value)
 
-        return {attr: CALLBACKS[attr](digital_addresses) for attr in attributes}
+        for digital_address in digital_addresses:
+            address = digital_address["adres"]
+            match digital_address["soortDigitaalAdres"]:
+                case DigitalAddressTypes.telefoonnummer:
+                    result["phone_numbers"].append(address)
+                    if digital_address["isStandaardAdres"]:
+                        result["preferred_phone_number"] = address
+
+                case DigitalAddressTypes.email:
+                    result["emails"].append(address)
+                    if digital_address["isStandaardAdres"]:
+                        result["preferred_email"] = address
+
+        return DigitalAddressResult(digital_addresses=result)
 
     def check_config(self):
         try:

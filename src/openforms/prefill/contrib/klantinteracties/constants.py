@@ -9,7 +9,4 @@ class DigitalAddressTypes(models.TextChoices):
 
 
 class Attributes(models.TextChoices):
-    email = ("email", _("email"))
-    email_preferred = ("email_preferred", _("email preferred"))
-    phone = ("phone", _("phone"))
-    phone_preferred = ("phone_preferred", _("phone preferred"))
+    digital_addresses = ("digital_addresses", _("Digital addresses"))

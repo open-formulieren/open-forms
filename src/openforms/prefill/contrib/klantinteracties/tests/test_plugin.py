@@ -50,23 +50,20 @@ class KlantinteractiesPluginTests(OFVCRMixin, TestCase):
 
         values = plugin.get_prefill_values(
             submission,
-            attributes=[
-                Attributes.email,
-                Attributes.email_preferred,
-                Attributes.phone,
-                Attributes.phone_preferred,
-            ],
+            attributes=[Attributes.digital_addresses],
         )
 
         expected = {
-            Attributes.email: [
-                "someemail@example.org",
-                "devilkiller@example.org",
-                "john.smith@gmail.com",
-            ],
-            Attributes.email_preferred: "john.smith@gmail.com",
-            Attributes.phone: ["0687654321", "0612345678"],
-            Attributes.phone_preferred: "0612345678",
+            "digital_addresses": {
+                "emails": [
+                    "someemail@example.org",
+                    "devilkiller@example.org",
+                    "john.smith@gmail.com",
+                ],
+                "preferred_email": "john.smith@gmail.com",
+                "phone_numbers": ["0687654321", "0612345678"],
+                "preferred_phone_number": "0612345678",
+            }
         }
         self.assertEqual(values, expected)
 
@@ -78,18 +75,17 @@ class KlantinteractiesPluginTests(OFVCRMixin, TestCase):
         values = plugin.get_prefill_values(
             submission,
             attributes=[
-                Attributes.email,
-                Attributes.email_preferred,
-                Attributes.phone,
-                Attributes.phone_preferred,
+                Attributes.digital_addresses,
             ],
         )
 
         expected = {
-            Attributes.email: [],
-            Attributes.email_preferred: None,
-            Attributes.phone: [],
-            Attributes.phone_preferred: None,
+            "digital_addresses": {
+                "emails": [],
+                "preferred_email": None,
+                "phone_numbers": [],
+                "preferred_phone_number": None,
+            }
         }
         self.assertEqual(values, expected)
 
@@ -101,7 +97,7 @@ class KlantinteractiesPluginTests(OFVCRMixin, TestCase):
         with self.assertRaises(PrefillSkipped):
             plugin.get_prefill_values(
                 submission,
-                attributes=[Attributes.email],
+                attributes=[Attributes.digital_addresses],
             )
 
     def test_prefill_values_not_configured(self):
@@ -115,10 +111,18 @@ class KlantinteractiesPluginTests(OFVCRMixin, TestCase):
         ):
             values = plugin.get_prefill_values(
                 submission,
-                attributes=[Attributes.email],
+                attributes=[Attributes.digital_addresses],
             )
 
-        self.assertEqual(values, {})
+        expected = {
+            "digital_addresses": {
+                "emails": [],
+                "preferred_email": None,
+                "phone_numbers": [],
+                "preferred_phone_number": None,
+            }
+        }
+        self.assertEqual(values, expected)
 
     def test_config_invalid(self):
         plugin = klantinteractiesPlugin("klantinteracties-invalid")
