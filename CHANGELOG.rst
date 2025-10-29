@@ -6,6 +6,16 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.2.6 (2025-10-29)
+==================
+
+Regular bugfix release.
+
+* [:backend:`5613`] You can now specify the ``SESSION_COOKIE_DOMAIN`` setting as an
+  environment variable.
+* [:backend:`5722`] Fixed Worldline configuration for transition not taking into account
+  multiple webhook key ID + secret combinations when multiple PSPIDs are used.
+
 3.2.5 (2025-10-09)
 ==================
 
