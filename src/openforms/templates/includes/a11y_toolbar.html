@@ -1,13 +1,11 @@
 {% load i18n %}
 <nav class="a11y-toolbar">
-    <ul class="a11y-toolbar__list">
-        <li class="a11y-toolbar__list-item">
-            <a
-                class="utrecht-link utrecht-link--html-a utrecht-link--openforms openforms-backtotop-link"
-                href="#main-content">
-                <span aria-hidden="true" class="utrecht-icon"><i class="fa fas fa-icon fa-fw" aria-hidden="true"></i></span>
-                {% trans "Back to top" %}
-            </a>
-        </li>
-    </ul>
+    <p class="a11y-toolbar__list" role="group">
+        <a
+            class="utrecht-link utrecht-link--html-a utrecht-link--openforms openforms-backtotop-link"
+            href="#main-content">
+            <span aria-hidden="true" class="utrecht-icon"><i class="fa fas fa-icon fa-fw" aria-hidden="true"></i></span>
+            {% trans "Back to top" %}
+        </a>
+    </p>
 </nav>
