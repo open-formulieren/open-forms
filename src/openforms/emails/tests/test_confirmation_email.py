@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from django.core import mail
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template import TemplateSyntaxError
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -17,6 +18,7 @@ from openforms.appointments.tests.factories import (
     AppointmentInfoFactory,
 )
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
@@ -620,6 +622,11 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
     """
     maxDiff = None
 
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
     def test_templatetag_alias(self):
         submission = SubmissionFactory.from_components(
             [
@@ -859,3 +866,192 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         expected_text = inspect.cleandoc("Test:").lstrip()
 
         self.assertEqual(expected_text, text)
+
+    def test_confirmation_email_with_theme_connected_to_form(self):
+        theme_svg_content = b"""
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        """
+        theme = ThemeFactory.create(
+            organization_name="The company",
+            main_website="http://example.com",
+            logo=SimpleUploadedFile(
+                "theme-pixel.svg", theme_svg_content, content_type="image/svg+xml"
+            ),
+        )
+
+        config = GlobalConfiguration.get_solo()
+        config.organization_name = "Global company"
+        config.main_website = "http://example-global.com"
+        config.save()
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "test",
+                    "type": "textfield",
+                    "label": "Test",
+                    "showInEmail": True,
+                },
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                    "showInEmail": False,
+                    "confirmationRecipient": True,
+                },
+            ],
+            {"test": "This is a test", "email": "test@test.nl"},
+            registration_success=True,
+            form__theme=theme,
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form,
+            subject="My Subject",
+            content="{% confirmation_summary %}",
+        )
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        assert isinstance(message, mail.EmailMultiAlternatives)
+
+        content, _ = message.alternatives[0]
+        assert isinstance(content, str)
+
+        # Theme's values should be rendered
+        self.assertIn("http://example.com", content)
+        self.assertIn("theme-pixel", content)
+        self.assertNotIn("http://example-global.com", content)
+
+    def test_confirmation_email_with_default_theme_configured(self):
+        theme_svg_content = b"""
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        """
+        theme = ThemeFactory.create(
+            organization_name="The company",
+            main_website="http://example.com",
+            logo=SimpleUploadedFile(
+                "theme-pixel.svg", theme_svg_content, content_type="image/svg+xml"
+            ),
+        )
+
+        config = GlobalConfiguration.get_solo()
+        config.organization_name = "Global company"
+        config.main_website = "http://example-global.com"
+        config.default_theme = theme
+        config.save()
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "test",
+                    "type": "textfield",
+                    "label": "Test",
+                    "showInEmail": True,
+                },
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                    "showInEmail": False,
+                    "confirmationRecipient": True,
+                },
+            ],
+            {"test": "This is a test", "email": "test@test.nl"},
+            registration_success=True,
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form,
+            subject="My Subject",
+            content="{% confirmation_summary %}",
+        )
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+
+        assert isinstance(message, mail.EmailMultiAlternatives)
+
+        content, _ = message.alternatives[0]
+        assert isinstance(content, str)
+
+        # Theme's values should be rendered
+        self.assertIn("http://example.com", content)
+        self.assertIn("theme-pixel", content)
+        self.assertNotIn("http://example-global.com", content)
+
+    def test_confirmation_email_with_global_config_fallback(self):
+        theme_svg_content = b"""
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        """
+        global_svg_content = b"""
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="40" stroke="red" stroke-width="4" fill="blue" />
+        </svg>
+        """
+
+        ThemeFactory.create(
+            organization_name="The company",
+            main_website="http://example.com",
+            logo=SimpleUploadedFile(
+                "theme-pixel.svg", theme_svg_content, content_type="image/svg+xml"
+            ),
+        )
+
+        config = GlobalConfiguration.get_solo()
+        config.organization_name = "Global company"
+        config.main_website = "http://example-global.com"
+        config.favicon = SimpleUploadedFile(
+            "global-pixel.svg", global_svg_content, content_type="image/svg+xml"
+        )
+        config.save()
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "test",
+                    "type": "textfield",
+                    "label": "Test",
+                    "showInEmail": True,
+                },
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                    "showInEmail": False,
+                    "confirmationRecipient": True,
+                },
+            ],
+            {"test": "This is a test", "email": "test@test.nl"},
+            registration_success=True,
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form,
+            subject="My Subject",
+            content="{% confirmation_summary %}",
+        )
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+
+        assert isinstance(message, mail.EmailMultiAlternatives)
+
+        content, _ = message.alternatives[0]
+        assert isinstance(content, str)
+
+        # Theme's values should not be rendered
+        self.assertNotIn("http://example.com", content)
+        self.assertNotIn("theme-pixel", content)

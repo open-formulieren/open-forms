@@ -28,6 +28,35 @@ class Theme(models.Model):
         default=_uuid.uuid4,
         editable=False,
     )
+    organization_name = models.CharField(
+        _("organization name"),
+        max_length=100,
+        blank=True,
+        help_text=_(
+            "The name of your organization that will be used as label for elements "
+            "like the logo. If left blank, the matching configuration option from the "
+            "global configuration is used."
+        ),
+    )
+    main_website = models.URLField(
+        _("main website link"),
+        blank=True,
+        help_text=_(
+            "URL to the main website. Used for the 'back to municipality website' link. "
+            "If left blank, the matching configuration option from the global configuration "
+            "is used."
+        ),
+    )
+    favicon = SVGOrImageField(
+        _("favicon"),
+        upload_to="logo/",
+        blank=True,
+        help_text=_(
+            "Allow the uploading of a favicon, .png .jpg .svg and .ico are compatible. "
+            "If left blank, the matching configuration option from the global configuration "
+            "is used."
+        ),
+    )
     # XXX: do not expose this field via the API to non-admin users! There is not
     # sufficient input validation to protect against the SVG attack surface. The SVG
     # is rendered by the browser of end-users.
@@ -43,7 +72,7 @@ class Theme(models.Model):
         upload_to="logo/",
         blank=True,
         help_text=_(
-            "Upload the theme/orgnization logo, visible to users filling out forms. We "
+            "Upload the theme/organization logo, visible to users filling out forms. We "
             "advise dimensions around 150px by 75px. SVG's are permitted."
         ),
     )

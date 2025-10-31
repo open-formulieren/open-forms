@@ -14,6 +14,7 @@ from rest_framework.test import APITestCase
 
 from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.frontend import get_frontend_redirect_url
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
@@ -382,6 +383,80 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             self.assertEqual(response_data["status"], ProcessingStatuses.done)
             self.assertEqual(response_data["result"], ProcessingResults.success)
             self.assertEqual(response_data["mainWebsiteUrl"], "")
+
+    @patch(
+        "openforms.submissions.api.serializers.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(main_website="https://maykinmedia.nl"),
+    )
+    def test_displaying_main_website_link_from_theme_connected_to_form(
+        self, mock_get_solo
+    ):
+        theme = ThemeFactory.create(
+            organization_name="The company", main_website="http://example.com"
+        )
+        submission = SubmissionFactory.create(completed=True, form__theme=theme)
+
+        token = submission_status_token_generator.make_token(submission)
+        check_status_url = reverse(
+            "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
+        )
+
+        with patch("openforms.submissions.status.AsyncResult") as mock_AsyncResult:
+            mock_AsyncResult.return_value.state = states.SUCCESS
+            response = self.client.get(check_status_url)
+            response_data = response.json()
+
+            self.assertEqual(response_data["mainWebsiteUrl"], "http://example.com")
+
+    @patch(
+        "openforms.submissions.api.serializers.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            default_theme=ThemeFactory.build(
+                organization_name="The company", main_website="http://example.com"
+            ),
+            main_website="https://maykinmedia.nl",
+        ),
+    )
+    def test_displaying_main_website_link_from_general_configs_default_theme(
+        self, mock_get_solo
+    ):
+        submission = SubmissionFactory.create(completed=True)
+
+        token = submission_status_token_generator.make_token(submission)
+        check_status_url = reverse(
+            "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
+        )
+
+        with patch("openforms.submissions.status.AsyncResult") as mock_AsyncResult:
+            mock_AsyncResult.return_value.state = states.SUCCESS
+            response = self.client.get(check_status_url)
+            response_data = response.json()
+
+            self.assertEqual(response_data["mainWebsiteUrl"], "http://example.com")
+
+    @patch(
+        "openforms.submissions.api.serializers.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            default_theme=ThemeFactory.build(
+                organization_name="The company", main_website="http://example.com"
+            ),
+            main_website="https://maykinmedia.nl",
+        ),
+    )
+    def test_displaying_main_website_link_from_config(self, mock_get_solo):
+        submission = SubmissionFactory.create(completed=True)
+
+        token = submission_status_token_generator.make_token(submission)
+        check_status_url = reverse(
+            "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
+        )
+
+        with patch("openforms.submissions.status.AsyncResult") as mock_AsyncResult:
+            mock_AsyncResult.return_value.state = states.SUCCESS
+            response = self.client.get(check_status_url)
+            response_data = response.json()
+
+            self.assertEqual(response_data["mainWebsiteUrl"], "http://example.com")
 
     def test_payment_required(self):
         merchant = OgoneMerchantFactory.create()

@@ -27,8 +27,9 @@
         {% include 'includes/design-tokens.html' with skip_csp=True %}
     </head>
 
-    {% if config.organization_name %}
-        {% blocktranslate with name=config.organization_name asvar logo_alt trimmed %}
+    {% firstof theme.organization_name config.organization_name "" as org_name %}
+    {% if org_name %}
+        {% blocktranslate with name=org_name asvar logo_alt trimmed %}
             Logo {{ name }}
         {% endblocktranslate %}
     {% else %}

@@ -12,15 +12,16 @@ html-email.
 
 Organization name
     The organization name is used in link labels and document titles for accessibility
-    reasons.
+    reasons. You can override this on individual themes.
 
 Main website link
     The main website link is used so the end-user can return to your main website, e.g.
-    ``https://www.gemeente.nl``. Clicking the logo (or link) in the header will return the
-    end-user to this URL.
+    ``https://www.gemeente.nl``. Clicking the logo (or link) in the header will return the 
+    end-user to this URL (this can be more specific and set at the theme level too).
 
 Favicon
-    You can upload your own favicon, typically displayed on the browser tab.
+    You can upload your own favicon, typically displayed on the browser tab. You can override
+    this on individual themes.
 
 Default theme
     Open Forms supports configuring :ref:`multiple themes<configuration_general_styling_themes>`.
@@ -42,6 +43,22 @@ data.
 
 Themes can be configured via **Admin** > **Configuratie** > **Thema's**. The customizable
 aspects are:
+
+Organization name
+    The organization name is used in link labels and document titles for accessibility
+    reasons. You can also configure this globally (see above). When this is configured
+    on both the theme and global level, the theme gets priority.
+
+Main website link
+    The main website link is used so the end-user can return to your main website, e.g.
+    ``https://www.gemeente.nl``. Clicking the logo (or link) in the header will return 
+    the end-user to this URL. You can also configure this globally (see above). When this
+    is configured on both the theme and global level, the theme gets priority.
+    
+Favicon
+    You can upload your own favicon, typically displayed on the browser tab. You can also
+    configure this globally (see above). When this is configured on both the theme and 
+    global level, the theme gets priority.
 
 Logo
     You can upload a logo to be used in the header here. If no logo is uploaded, a plain
