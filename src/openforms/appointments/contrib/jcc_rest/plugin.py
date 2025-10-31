@@ -8,12 +8,13 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 
 from openforms.formio.typing import Component
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 
 from ...base import AppointmentDetails, BasePlugin, CustomerDetails, Location, Product
 from ...registry import register
-from .client import JccRestClient, Location as RawLocation
+from .client import JccRestClient, Location as RawLocation, NoServiceConfigured
 from .constants import CustomerFields
-from .exceptions import GracefulJccRestException
+from .exceptions import GracefulJccRestException, JccRestException
 from .models import JccRestConfig
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -184,7 +185,20 @@ class JccRestPlugin(BasePlugin):
         return None  # type: ignore [reportIncompatibleMethodOverride]
 
     def check_config(self) -> None:
-        pass
+        try:
+            client = JccRestClient()
+        except NoServiceConfigured as exc:
+            raise InvalidPluginConfiguration(
+                _("No JCC REST service configured.")
+            ) from exc
+
+        with client:
+            try:
+                client.get_version()
+            except JccRestException as exc:
+                raise InvalidPluginConfiguration(
+                    _("Invalid plugin configuration: {exc}").format(exc=exc)
+                )
 
     def get_config_actions(self) -> list[tuple]:
         return [
