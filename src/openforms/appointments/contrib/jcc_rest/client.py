@@ -129,6 +129,13 @@ class Client(LoggingClient):
         # add the required header for the desired language
         self.headers["language"] = get_language()
 
+    def get_version(self):
+        with log_api_errors("version_retrieval_failure"):
+            response = self.get("version")
+            response.raise_for_status()
+
+        return response.json()
+
     def get_activity_list_for_appointment(
         self, location_id: str
     ) -> Collection[Activity]:
