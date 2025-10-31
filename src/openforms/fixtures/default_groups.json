@@ -1059,6 +1059,26 @@
                 "jccconfig"
             ],
             [
+                "add_klantinteractiesconfig",
+                "klantinteracties",
+                "klantinteractiesconfig"
+            ],
+            [
+                "change_klantinteractiesconfig",
+                "klantinteracties",
+                "klantinteractiesconfig"
+            ],
+            [
+                "delete_klantinteractiesconfig",
+                "klantinteracties",
+                "klantinteractiesconfig"
+            ],
+            [
+                "view_klantinteractiesconfig",
+                "klantinteracties",
+                "klantinteractiesconfig"
+            ],
+            [
                 "add_kvkconfig",
                 "kvk",
                 "kvkconfig"
