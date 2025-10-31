@@ -148,5 +148,23 @@
         "application": "",
         "administration": ""
     }
+},
+{
+    "model": "accounts.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$XymCZ3jfG526ZKdmcX2hMw$dd4+txbydv9bIRcTF3+5SA3jli3o5pGVVpYjj6PlVIw=",
+        "last_login": null,
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "admin@example.org",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2025-10-31T15:05:16.816Z",
+        "groups": [],
+        "user_permissions": []
+    }
 }
 ]

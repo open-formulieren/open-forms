@@ -11,13 +11,8 @@ Start an instance in your local environment from the parent directory:
 docker compose -f docker-compose.open-klant.yml up -d
 ```
 
-This brings up the admin at http://localhost:8005/admin/. To log in into the admin you need to create an
-admin user first:
-
-```bash
-docker compose -f docker-compose.open-klant.yml run openklant-web.local \
-    python src/manage.py createsuperuser
-```
+This brings up the admin at http://localhost:8005/admin/. You can log in with the `admin` / `admin`
+credentials.
 
 
 ## Load fixtures
@@ -38,7 +33,8 @@ docker compose -f docker-compose.open-klant.yml run openklant-web.local \
         --indent=4 \
         --output /app/fixtures/open_klant_fixtures.json \
         klantinteracties \
-        token
+        token \
+        accounts.user
 ```
 
 Depending on your OS, you may need to grant extra write permissions:
