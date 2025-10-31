@@ -1,0 +1,13 @@
+.openforms-backtotop-divider {
+  color: var(--of-backtotop-divider-color, --of-color-border);
+  block-size: var(--of-backtotop-divider-block-size, auto);
+  inline-size: var(--of-backtotop-divider-inline-size, auto);
+  margin-block-start: var(--of-backtotop-divider-margin-block-start, auto);
+  margin-block-end: var(--of-backtotop-divider-margin-block-end, auto);
+}
+
+.openforms-theme {
+  .openforms-backtotop-divider {
+    display: none;
+  }
+}
