@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.conf import settings
 from django.core import mail
 from django.core.exceptions import SuspiciousOperation
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.mail.backends.smtp import EmailBackend
 from django.template.loader import get_template
 from django.test import TestCase, override_settings
@@ -11,6 +12,7 @@ from django_yubin.models import Message
 from pyquery import PyQuery
 
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -26,6 +28,11 @@ from ..utils import send_mail_html
 
 
 class HTMLEmailWrapperTest(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
     def test_send_mail_html(self):
         body = "<p>My Message</p>"
         attachments = [("file.bin", b"content", "application/foo")]
@@ -127,6 +134,126 @@ class HTMLEmailWrapperTest(TestCase):
                 "foo@sender.com",
                 ["foo@bar.baz"],
             )
+
+    def test_send_mail_html_when_theme_connected_to_form(self):
+        theme_svg_content = b"""
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        """
+
+        theme = ThemeFactory.create(
+            organization_name="The company",
+            main_website="http://example.com",
+            logo=SimpleUploadedFile(
+                "theme-pixel.svg", theme_svg_content, content_type="image/svg+xml"
+            ),
+        )
+
+        config = GlobalConfiguration.get_solo()
+        config.organization_name = "Global company"
+        config.main_website = "http://example-global.com"
+        config.save()
+
+        send_mail_html(
+            subject="My Subject",
+            html_body="<p>My Message</p>",
+            from_email="foo@sender.com",
+            recipient_list=["foo@bar.baz"],
+            theme=theme,
+        )
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        assert isinstance(message, mail.EmailMultiAlternatives)
+
+        content, _ = message.alternatives[0]
+        assert isinstance(content, str)
+
+        # Theme's values should be rendered
+        self.assertIn("http://example.com", content)
+        self.assertIn("theme-pixel", content)
+        self.assertNotIn("http://example-global.com", content)
+
+    def test_send_mail_html_with_default_theme_configured(self):
+        theme_svg_content = b"""
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        """
+
+        theme = ThemeFactory.create(
+            organization_name="The company",
+            main_website="http://example.com",
+            logo=SimpleUploadedFile(
+                "theme-pixel.svg", theme_svg_content, content_type="image/svg+xml"
+            ),
+        )
+
+        config = GlobalConfiguration.get_solo()
+        config.organization_name = "Global company"
+        config.main_website = "http://example-global.com"
+        config.default_theme = theme
+        config.save()
+
+        send_mail_html(
+            subject="My Subject",
+            html_body="<p>My Message</p>",
+            from_email="foo@sender.com",
+            recipient_list=["foo@bar.baz"],
+        )
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        assert isinstance(message, mail.EmailMultiAlternatives)
+
+        content, _ = message.alternatives[0]
+        assert isinstance(content, str)
+
+        # Theme's values should be rendered
+        self.assertIn("http://example.com", content)
+        self.assertIn("theme-pixel", content)
+        self.assertNotIn("http://example-global.com", content)
+
+    def test_send_mail_html_with_global_config_fallback(self):
+        theme_svg_content = b"""
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        """
+
+        ThemeFactory.create(
+            organization_name="The company",
+            main_website="http://example.com",
+            logo=SimpleUploadedFile(
+                "theme-pixel.svg", theme_svg_content, content_type="image/svg+xml"
+            ),
+        )
+
+        config = GlobalConfiguration.get_solo()
+        config.organization_name = "Global company"
+        config.main_website = "http://example-global.com"
+        config.save()
+
+        send_mail_html(
+            subject="My Subject",
+            html_body="<p>My Message</p>",
+            from_email="foo@sender.com",
+            recipient_list=["foo@bar.baz"],
+        )
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        assert isinstance(message, mail.EmailMultiAlternatives)
+
+        content, _ = message.alternatives[0]
+        assert isinstance(content, str)
+
+        # Theme's values should not be rendered
+        self.assertNotIn("http://example.com", content)
 
 
 @override_settings(

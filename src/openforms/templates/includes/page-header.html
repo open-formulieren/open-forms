@@ -8,8 +8,9 @@ include the SDK snippet directly.
 {% get_solo 'config.GlobalConfiguration' as config %}
 {% get_theme as theme %}
 
-{% if config.organization_name %}
-    {% blocktranslate with name=config.organization_name asvar logo_alt trimmed %}
+{% firstof theme.organization_name config.organization_name "" as org_name %}
+{% if org_name %}
+    {% blocktranslate with name=org_name asvar logo_alt trimmed %}
         Back to website of {{ name }}
     {% endblocktranslate %}
 {% else %}

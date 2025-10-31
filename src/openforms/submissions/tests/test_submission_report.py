@@ -4,6 +4,7 @@ from datetime import timedelta
 from unittest.mock import patch
 from uuid import UUID
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 
 from freezegun import freeze_time
@@ -12,7 +13,10 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.formio.rendering.registry import register
+from openforms.utils.tests.cache import clear_caches
 
 from ..models import SubmissionReport
 from ..tasks import generate_submission_report
@@ -23,6 +27,11 @@ from .factories import SubmissionFactory, SubmissionReportFactory, SubmissionSte
 @temp_private_root()
 @override_settings(SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS=2)
 class DownloadSubmissionReportTests(APITestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(clear_caches)
+
     def test_valid_token(self):
         report = SubmissionReportFactory.create(submission__completed=True)
         token = submission_report_token_generator.make_token(report)
@@ -120,6 +129,111 @@ class DownloadSubmissionReportTests(APITestCase):
         self.assertEqual("some-id", report.task_id)
         # report.content.name contains the path too
         self.assertTrue(report.content.name.endswith("test-form.pdf"))
+
+    @patch("celery.app.task.Task.request")
+    def test_report_generation_with_theme_connected_to_form(self, mock_request):
+        theme_svg_content = b"""
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        """
+
+        theme = ThemeFactory.create(
+            organization_name="The company",
+            main_website="http://example.com",
+            logo=SimpleUploadedFile(
+                "theme-pixel.svg", theme_svg_content, content_type="image/svg+xml"
+            ),
+        )
+
+        config = GlobalConfiguration.get_solo()
+        config.organization_name = "Global company"
+        config.main_website = "http://example-global.com"
+        config.save()
+
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__name="Test Form Theme",
+            form__slug="test-form-theme",
+            form__theme=theme,
+        )
+        mock_request.id = "some-id"
+
+        generate_submission_report(submission.id)
+        report = submission.report
+        html = report.generate_submission_report_pdf()
+
+        self.assertIn("Logo The company", html)
+        self.assertNotIn("Logo Global company", html)
+
+    @patch("celery.app.task.Task.request")
+    def test_report_generation_with_default_theme_in_global_config(self, mock_request):
+        theme_svg_content = b"""
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        """
+
+        theme = ThemeFactory.create(
+            organization_name="The company",
+            main_website="http://example.com",
+            logo=SimpleUploadedFile(
+                "theme-pixel.svg", theme_svg_content, content_type="image/svg+xml"
+            ),
+        )
+
+        config = GlobalConfiguration.get_solo()
+        config.organization_name = "Global company"
+        config.main_website = "http://example-global.com"
+        config.default_theme = theme
+        config.save()
+
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__name="Test Form Theme 2",
+            form__slug="test-form-theme-2",
+        )
+        mock_request.id = "some-id"
+
+        generate_submission_report(submission.id)
+        report = submission.report
+        html = report.generate_submission_report_pdf()
+
+        self.assertIn("Logo The company", html)
+        self.assertNotIn("Logo Global company", html)
+
+    @patch("celery.app.task.Task.request")
+    def test_report_generation_global_config_fallback(self, mock_request):
+        theme_svg_content = b"""
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        """
+
+        ThemeFactory.create(
+            organization_name="The company",
+            main_website="http://example.com",
+            logo=SimpleUploadedFile(
+                "theme-pixel.svg", theme_svg_content, content_type="image/svg+xml"
+            ),
+        )
+
+        config = GlobalConfiguration.get_solo()
+        config.organization_name = "Global company"
+        config.main_website = "http://example-global.com"
+        config.save()
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__name="Test Form Theme 3",
+            form__slug="test-form-theme-3",
+        )
+        mock_request.id = "some-id"
+
+        generate_submission_report(submission.id)
+        report = submission.report
+        html = report.generate_submission_report_pdf()
+
+        self.assertNotIn("Logo The company", html)
 
     def test_report_is_generated_in_same_language_as_submission(self):
         # fixture_data

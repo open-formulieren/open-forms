@@ -508,7 +508,21 @@ class SubmissionProcessingStatusSerializer(serializers.Serializer):
     def get_main_website_url(self, obj) -> str:
         if not obj.submission.form.display_main_website_link:
             return ""
-        return GlobalConfiguration.get_solo().main_website
+
+        # The order that we retrieve the main website url is:
+        # 1. Use the theme connected to the form
+        # 2. Get the default theme configured in the general configuration
+        # 3. Fall back to the global configuration's fields
+        if (theme := obj.submission.form.theme) and (theme_url := theme.main_website):
+            return theme_url
+
+        config = GlobalConfiguration.get_solo()
+        if (default_theme := config.get_default_theme()) and (
+            default_theme_url := default_theme.main_website
+        ):
+            return default_theme_url
+
+        return config.main_website
 
 
 @deprecated("Cosign v1 is deprecated")

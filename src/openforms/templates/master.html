@@ -9,12 +9,21 @@
 <html lang="nl" class="utrecht-document {{ theme.get_classname }}">
 <head>
     <meta charset="utf-8">
-    <title>{% block title %}{% if config.organization_name %}{{ config.organization_name }} {% else %}Openforms{% endif %}{% endblock %}</title>
+    <title>
+        {% block title %}
+            {% firstof theme.organization_name config.organization_name "Openforms" %}
+        {% endblock %}
+    </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if request.indexing_options.block %}
     <meta name="robots" content="{{ request.indexing_options.content }}">
     {% endif %}
-    <link href="{% if config.favicon %}{{ config.favicon.url }}{% else %}{% static 'ico/favicon.png' %}{% endif %}" rel="shortcut icon">
+    
+    {% static 'ico/favicon.png' as static_icon %}
+    {% firstof theme.favicon config.favicon static_icon as favicon %}
+    
+    <link href="{{ favicon }}" rel="shortcut icon">
+        
     <link href="{% static 'bundles/public-styles.css' %}" media="all" rel="stylesheet"/>
     {% include "forms/sdk_css_snippet.html" %}
     {% block extra_css %}

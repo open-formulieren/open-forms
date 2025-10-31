@@ -10,6 +10,7 @@ from rest_framework import exceptions as drf_exceptions
 
 from openforms.emails.context import get_wrapper_context
 from openforms.forms.context_processors import sdk_urls
+from openforms.submissions.models import Submission
 
 from ..api import exceptions
 
@@ -87,7 +88,16 @@ class EmailDebugViewMixin:  # pragma: nocover
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data()
         content = self.get_email_content()
-        ctx.update(get_wrapper_context(content))
+
+        form_theme = None
+        if not kwargs.get("email_digest"):
+            submission = kwargs.get("object") or Submission.objects.get(
+                id=kwargs.get("submission_id")
+            )
+
+            form_theme = submission.form.theme
+
+        ctx.update(get_wrapper_context(content, form_theme))
         ctx.update(kwargs)
         return ctx
 

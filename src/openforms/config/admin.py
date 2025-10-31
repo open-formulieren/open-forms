@@ -305,6 +305,10 @@ class ThemeAdmin(admin.ModelAdmin):
     form = ThemeAdminForm
     fieldsets = (
         (None, {"fields": ("name",)}),
+        (
+            _("Organization configuration"),
+            {"fields": ("organization_name", "main_website", "favicon")},
+        ),
         (_("Logo"), {"fields": ("logo", "email_logo")}),
         (
             _("Appearance"),

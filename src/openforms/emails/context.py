@@ -8,12 +8,17 @@ from openforms.utils.urls import build_absolute_uri
 
 def get_wrapper_context(html_content="", theme: Theme | None = None):
     config = GlobalConfiguration.get_solo()
+
+    # The order that we retrieve the necessary information is:
+    # 1. Use the theme from the function's arguments (form level)
+    # 2. Get the default theme configured in the general configuration
+    # 3. Fall back to the global configuration's fields
     theme = theme or config.get_default_theme()
 
     design_tokens = theme.design_token_values or {}
     ctx = {
         "content": mark_safe(html_content),
-        "main_website_url": config.main_website,
+        "main_website_url": theme.main_website or config.main_website,
         "style": _get_design_token_values(design_tokens),
     }
     if email_logo := theme.email_logo or theme.logo:
