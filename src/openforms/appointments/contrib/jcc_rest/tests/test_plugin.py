@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.test import TestCase
 
@@ -7,14 +8,16 @@ from freezegun import freeze_time
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.utils.date import get_today
 from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....base import Location, Product
+from ..client import Location as RawLocation
+from ..exceptions import JccRestException
 from ..models import JccRestConfig
 from ..plugin import JccRestPlugin
-from ..client import Location as RawLocation
 
 
 def _scrub_access_token(response):
@@ -280,3 +283,36 @@ class PluginTests(OFVCRMixin, TestCase):
             raw_location["address"]["houseNumberSuffix"] = "b"
             location = self.plugin._create_location(raw_location)  # pyright: ignore[reportAttributeAccessIssue]
             self.assertEqual(location.address, "Street 10b")
+
+    def test_config_check_ok(self):
+        try:
+            self.plugin.check_config()
+        except InvalidPluginConfiguration:
+            self.failureException("Config check should have passed.")
+
+
+class FailedConfigCheckTests(TestCase):
+    def test_check_config_no_service_configured(self):
+        plugin = JccRestPlugin("jcc")
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    @patch("openforms.appointments.contrib.jcc_rest.plugin.JccRestClient")
+    def test_check_config_endpoint_does_not_respond(self, mock_client):
+        class Client:
+            def __enter__(self):
+                pass
+
+            def __exit__(self, *args, **kwargs):
+                pass
+
+            def get_version(self):
+                raise JccRestException
+
+        mock_client.return_value = Client()
+
+        plugin = JccRestPlugin("jcc")
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()

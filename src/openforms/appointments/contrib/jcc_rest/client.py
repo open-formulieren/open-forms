@@ -26,6 +26,11 @@ logger = structlog.stdlib.get_logger(__name__)
 # Note that the documentation defines a "revision" key for most of these dicts, but
 # NONE of the example data from their test environment include this, so decided to leave
 # it out
+class Version(TypedDict):
+    warpApiVersion: NotRequired[str]
+    afsprakenVersion: NotRequired[str]
+
+
 class Activity(TypedDict):
     id: str
     number: NotRequired[int]  # will be replaced by id eventually
@@ -122,6 +127,14 @@ class Client(LoggingClient):
         super().__init__(*args, **kwargs)
         # add the required header for the desired language
         self.headers["language"] = get_language()
+
+    def get_version(self) -> Version:
+        """Get JCC-Afspraken version."""
+        with log_api_errors("version_retrieval_failure"):
+            response = self.get("version")
+            response.raise_for_status()
+
+        return response.json()
 
     def get_activity_list_for_appointment(
         self, location_id: str
