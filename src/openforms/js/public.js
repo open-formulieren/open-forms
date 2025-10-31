@@ -5,12 +5,11 @@ import {onLoaded} from 'utils/dom';
 
 // connect the "Print this page" link element to a handler
 const registerPrintHandler = () => {
-  const nodes = document.querySelectorAll('.a11y-toolbar__window-print-action');
-  nodes.forEach(node => {
-    node.addEventListener('click', event => {
-      event.preventDefault();
-      window.print();
-    });
+  const node = document.getElementById('print-button');
+  if (!node) return;
+  node.addEventListener('click', event => {
+    event.preventDefault();
+    window.print();
   });
 };
 
