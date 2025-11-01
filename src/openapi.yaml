@@ -7038,8 +7038,12 @@ components:
         name:
           type: string
           description: Product name
+        description:
+          type: string
+          description: Product description
       required:
       - code
+      - description
       - identifier
       - name
     AttributeGroup:
