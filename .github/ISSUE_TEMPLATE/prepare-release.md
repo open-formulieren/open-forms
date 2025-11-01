@@ -11,7 +11,9 @@ assignees: sergei-maertens
 - [ ] Re-generate VCR cassettes (delete the old ones and then) for API tests (see instructions on
       Taiga). You can find all test cases with `grep OFVCRMixin -r src`
   - [ ] Accounts (`openforms.accounts.tests.test_oidc`)
-  - Appointments: Qmatic (`openforms.appointments.contrib.qmatic`) (no testenv available anymore)
+  - Appointments
+    - [ ] Qmatic (`openforms.appointments.contrib.qmatic`) (no testenv available anymore)
+    - [ ] JccRest: `openforms.appointments.contrib.jcc_rest.test_plugin`
   - Authentication plugins
     - [ ] DigiD (Signicat): `openforms.authentication.contrib.digid.tests.test_signicat_integration`
     - [ ] eHerkenning
