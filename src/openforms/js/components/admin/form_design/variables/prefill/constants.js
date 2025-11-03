@@ -1,5 +1,6 @@
 import DefaultFields from './default/DefaultFields';
 import FamilyMembersFields from './family_members/FamilyMembersFields';
+import KlantinteractiesFields from './klantinteracties/KlantinteractiesFields';
 import ObjectsAPIFields from './objects_api/ObjectsAPIFields';
 import ToggleCopyButton from './objects_api/ToggleCopyButton';
 import YiviFields from './yivi/YiviFields';
@@ -15,6 +16,10 @@ const PLUGIN_COMPONENT_MAPPING = {
   },
   yivi: {
     component: YiviFields,
+    pluginFieldExtra: null,
+  },
+  klantinteracties: {
+    component: KlantinteractiesFields,
     pluginFieldExtra: null,
   },
   default: {
