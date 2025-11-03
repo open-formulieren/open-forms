@@ -1,5 +1,3 @@
-from typing import TypedDict
-
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -10,62 +8,46 @@ from openforms.authentication.service import AuthAttribute
 from openforms.contrib.klantinteracties.client import get_klantinteracties_client
 from openforms.contrib.klantinteracties.models import KlantinteractiesConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionValueVariable
+from openforms.typing import JSONEncodable
 
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
 from ...exceptions import PrefillSkipped
 from ...registry import register
-from .constants import Attributes, DigitalAddressTypes
+from .config import KlantInteractiesOptionsSerializer
+from .typing import KlantInteractiesOptions
+from .utils import transform_digital_addresses
 
 logger = structlog.stdlib.get_logger(__name__)
 
 PLUGIN_IDENTIFIER = "klantinteracties"
 
 
-class DigitalAddresses(TypedDict):
-    phone_numbers: list[str]
-    preferred_phone_number: str | None
-    emails: list[str]
-    preferred_email: str | None
-
-
-class DigitalAddressResult(TypedDict):
-    digital_addresses: DigitalAddresses
-
-
 @register(PLUGIN_IDENTIFIER)
-class klantinteractiesPlugin(BasePlugin):
+class klantinteractiesPlugin(BasePlugin[KlantInteractiesOptions]):
     verbose_name = _("Klantinteracties API")
     requires_auth = (AuthAttribute.bsn,)
-
-    @staticmethod
-    def get_available_attributes() -> list[tuple[str, str]]:
-        return Attributes.choices
+    options = KlantInteractiesOptionsSerializer
 
     @classmethod
-    def get_prefill_values(
+    def get_prefill_values_from_options(
         cls,
         submission: Submission,
-        attributes: list[str],
-        identifier_role: IdentifierRoles = IdentifierRoles.main,
-    ) -> DigitalAddressResult:
-        # TODO changer implementation to get_prefill_values_from_options
-        # TODO add kvk support
-
-        result = DigitalAddresses(
-            phone_numbers=[],
-            preferred_phone_number=None,
-            emails=[],
-            preferred_email=None,
-        )
-
+        options: KlantInteractiesOptions,
+        submission_value_variable: SubmissionValueVariable,
+    ) -> dict[str, JSONEncodable]:
         try:
             client = get_klantinteracties_client()
         except AssertionError:
-            return DigitalAddressResult(digital_addresses=result)
+            logger.warning("klantinteracties_service_not_configured")
+            return {}
 
-        if not (bsn_value := cls.get_identifier_value(submission, identifier_role)):
+        if not (
+            bsn_value := cls.get_identifier_value(
+                submission, identifier_role=IdentifierRoles.main
+            )
+        ):
             logger.info(
                 "lookup_identifier_absent",
                 submission_uuid=str(submission.uuid),
@@ -73,22 +55,12 @@ class klantinteractiesPlugin(BasePlugin):
             )
             raise PrefillSkipped("No BSN available.")
 
+        assert submission_value_variable.form_variable
+        variable = str(submission_value_variable.form_variable.key)
+
         digital_addresses = client.get_digital_addresses_for_bsn(bsn=bsn_value)
-
-        for digital_address in digital_addresses:
-            address = digital_address["adres"]
-            match digital_address["soortDigitaalAdres"]:
-                case DigitalAddressTypes.telefoonnummer:
-                    result["phone_numbers"].append(address)
-                    if digital_address["isStandaardAdres"]:
-                        result["preferred_phone_number"] = address
-
-                case DigitalAddressTypes.email:
-                    result["emails"].append(address)
-                    if digital_address["isStandaardAdres"]:
-                        result["preferred_email"] = address
-
-        return DigitalAddressResult(digital_addresses=result)
+        result = transform_digital_addresses(digital_addresses, options)
+        return {variable: result}
 
     def check_config(self):
         try:
