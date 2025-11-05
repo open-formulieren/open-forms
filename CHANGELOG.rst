@@ -6,6 +6,14 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.2 (2025-11-05)
+==================
+
+Bugfix release.
+
+* [:backend:`5134`] Fixed a crash occurring when processing empty date/datetime/time values.
+* Upgraded Django to the latest security release.
+
 3.3.1 (2025-10-29)
 ==================
 
