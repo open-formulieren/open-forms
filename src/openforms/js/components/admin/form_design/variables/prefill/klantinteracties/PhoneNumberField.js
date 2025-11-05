@@ -22,7 +22,7 @@ const PhoneNumberField = () => {
             defaultMessage={`If enabled, phone numbers are included in the prefill`}
           />
         }
-        {...fieldProps({name: 'options.phoneNumber', type: 'checkbox'})}
+        {...fieldProps}
       />
     </FormRow>
   );

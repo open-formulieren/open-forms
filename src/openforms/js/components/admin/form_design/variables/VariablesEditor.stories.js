@@ -189,6 +189,12 @@ export default {
         requiresAuth: ['bsn'],
         requiresAuthPlugin: [],
       },
+      {
+        id: 'klantinteracties',
+        label: 'Klantinteracties',
+        requiresAuth: ['bsn'],
+        requiresAuthPlugin: [],
+      },
     ],
     onChange: fn(),
     onAdd: fn(),
@@ -2133,5 +2139,57 @@ export const TwoBackendsWhereOnlyOneIntroducesRegistrationVariables = {
     // With multiple backends configured, but only one of them introduces registration variables,
     // the plugin heading should be visible.
     expect(canvas.getByRole('heading', {name: 'Objects API registration'})).toBeVisible();
+  },
+};
+
+export const ConfigurePrefillKlantinteracties = {
+  args: {
+    availableFormVariables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'Klantinteracties prefill',
+        key: 'klantinteractiesPrefill',
+        source: 'user_defined',
+        prefillPlugin: 'klantinteracties',
+        dataType: 'object',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: {},
+        prefillOptions: {
+          email: false,
+          phoneNumber: false,
+        },
+      },
+    ],
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    await step('Open configuration modal', async () => {
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
+      expect(userDefinedVarsTab).toBeVisible();
+      await userEvent.click(userDefinedVarsTab);
+      // open modal for configuration
+      const editIcons = canvas.getAllByTitle('Prefill instellen');
+      await userEvent.click(editIcons[0]);
+      expect(await canvas.findByRole('dialog')).toBeVisible();
+    });
+
+    await step('Configure Klantinteracties prefill', async () => {
+      const modal = within(await canvas.findByRole('dialog'));
+      const pluginDropdown = await canvas.findByLabelText('Plugin');
+      expect(pluginDropdown).toBeVisible();
+      await userEvent.selectOptions(pluginDropdown, 'Klantinteracties');
+      // check email
+      const emailCheckbox = canvas.getByText('Include email');
+      expect(emailCheckbox).toBeVisible();
+      await userEvent.click(emailCheckbox);
+      // check phoneNumber
+      const phoneNumberCheckbox = canvas.getByText('Include phone number');
+      expect(phoneNumberCheckbox).toBeVisible();
+      await userEvent.click(phoneNumberCheckbox);
+    });
   },
 };
