@@ -32,6 +32,7 @@ familiarize yourself with the design principles.
    extensions
    checklists
    i18n
+   ui-components
    csp
    npm
    releases
