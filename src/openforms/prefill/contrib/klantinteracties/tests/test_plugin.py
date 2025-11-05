@@ -90,6 +90,26 @@ class KlantinteractiesPluginTests(OFVCRMixin, TestCase):
 
         self.assertEqual(state.variables["profile_prefill"].value, {})
 
+    def test_prefill_values_not_authenticated(self):
+        submission = SubmissionFactory.create()
+        assert not submission.is_authenticated
+        FormVariableFactory.create(
+            key="profile_prefill",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.object,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "email": True,
+                "phone_number": True,
+            },
+        )
+
+        prefill_variables(submission=submission)
+        state = submission.load_submission_value_variables_state()
+
+        self.assertEqual(state.variables["profile_prefill"].value, {})
+
     def test_prefill_values_not_configured(self):
         submission = SubmissionFactory.create(auth_info__value="123456782")
         FormVariableFactory.create(
