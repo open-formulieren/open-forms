@@ -72,7 +72,7 @@ boltons==21.0.0
     #   glom
 bracex==2.5.post1
     # via wcmatch
-brotli==1.1.0
+brotli==1.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
