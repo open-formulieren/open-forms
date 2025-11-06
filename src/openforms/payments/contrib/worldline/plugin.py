@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.utils.crypto import constant_time_compare
 from django.utils.translation import gettext, gettext_lazy as _
 
+import sentry_sdk
 import structlog
 from onlinepayments.sdk.api_exception import ApiException as WorldlineApiException
 from onlinepayments.sdk.communication.request_header import RequestHeader
@@ -158,9 +159,16 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         payment: SubmissionPayment,
         options: PaymentOptions,
     ) -> PaymentInfo:
+        log = logger.bind(
+            payment=str(payment.uuid),
+            pspid=options["merchant"].pspid,
+            plugin="worldline",
+        )
+        log.info("payment_start")
         order = _generate_order(payment, options)
         checkout_input = _generate_checkout_input(request, payment, options, self)
         client = options["merchant"].get_checkout_client()
+        log.debug("client_built")
 
         # See the hostedCheckoutSpecificInput field on
         # https://docs.direct.worldline-solutions.com/en/api-reference#tag/HostedCheckout/operation/CreateHostedCheckoutApi
@@ -174,16 +182,22 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             }
         )
 
+        log.info("creating_hosted_checkout")
         try:
             checkout_response = client.create_hosted_checkout(checkout_request)
-        except (WorldlineApiException, CommunicationException) as e:
+        except (WorldlineApiException, CommunicationException) as exc:
+            # capture the exception because raising APIException results in an HTTP 500
+            # response which doesn't end up in Sentry automatically.
+            sentry_sdk.capture_exception(exc)
+            log.error("hosted_checkout_creation_failed", exc_info=exc)
             payment.status = PaymentStatus.failed
             payment.save(update_fields=("status",))
 
             raise APIException(
                 detail="Failed to retrieve redirect URL from payment provider"
-            ) from e
+            ) from exc
 
+        log.info("hosted_checkout_created")
         assert checkout_response.redirect_url, (
             "Missing redirect url in Worldline response"
         )
