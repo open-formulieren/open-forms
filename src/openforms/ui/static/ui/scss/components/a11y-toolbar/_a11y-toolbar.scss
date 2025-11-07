@@ -8,34 +8,28 @@
   @media print {
     display: none;
   }
-  @include mobile-only {
-      padding-inline-end: var(--of-app-mobile-padding-inline-end, 15px);
-      padding-inline-start: var(--of-app-mobile-padding-inline-start, 15px);
-  }
 
-  @include bem.element('list') {
     display: flex;
-    margin: 0;
-    gap: $grid-margin-3;
-    padding-inline-start: var(--of-card-padding-inline-start, 40px);
-    padding-inline-end: var(--of-card-padding-inline-end, 40px);
+    flex-direction: column;
+    padding-inline-start: var(--of-a11y-toolbar-padding-inline-start, 40px);
+    padding-inline-end: var(--of-a11y-toolbar-padding-inline-end, 40px);
+    padding-block-start: var(--of-a11y-toolbar-padding-block-start, 20px);
+    padding-block-end: var(--of-a11y-toolbar-padding-block-end, 20px);
 
-    @include mobile-only {
-      @include container-margin($properties: padding);
-
-      flex-direction: column;
-    }
-  }
-
-  .utrecht-link.utrecht-link--openforms {
-    @include margin(true, padding-top);
-    @include margin(true, padding-bottom);
+  @include bem.element('divider') {
+    width: 100%;
+    display: var(--of-a11y-toolbar-divider-display, none);
+    color: var(--of-a11y-toolbar-divider-color, #767676);
+    block-size: var(--of-a11y-toolbar-divider-block-size, auto);
+    inline-size: var(--of-a11y-toolbar-divider-inline-size, auto);
+    margin-block-start: var(--of-a11y-toolbar-divider-margin-block-start, auto);
+    margin-block-end: var(--of-a11y-toolbar-divider-margin-block-end, auto);
   }
 }
 
 @include mobile-only {
   .openforms-theme {
-    .a11y-toolbar__list {
+    .a11y-toolbar {
       align-items: center;
     }
   }
