@@ -9,19 +9,19 @@
     display: none;
   }
 
-    display: flex;
-    flex-direction: column;
-    padding-inline-start: var(--of-a11y-toolbar-padding-inline-start, 40px);
-    padding-inline-end: var(--of-a11y-toolbar-padding-inline-end, 40px);
-    padding-block-start: var(--of-a11y-toolbar-padding-block-start, 20px);
-    padding-block-end: var(--of-a11y-toolbar-padding-block-end, 20px);
+  display: flex;
+  flex-direction: column;
+  padding-inline-start: var(--of-a11y-toolbar-padding-inline-start, 40px);
+  padding-inline-end: var(--of-a11y-toolbar-padding-inline-end, 40px);
+  padding-block-start: var(--of-a11y-toolbar-padding-block-start, 20px);
+  padding-block-end: var(--of-a11y-toolbar-padding-block-end, 20px);
 
   @include bem.element('divider') {
-    width: 100%;
     display: var(--of-a11y-toolbar-divider-display, none);
-    color: var(--of-a11y-toolbar-divider-color, #767676);
+    background-color: var(--of-a11y-toolbar-divider-color, #767676);
+    border: none;
     block-size: var(--of-a11y-toolbar-divider-block-size, auto);
-    inline-size: var(--of-a11y-toolbar-divider-inline-size, auto);
+    inline-size: var(--of-a11y-toolbar-divider-inline-size, 100%);
     margin-block-start: var(--of-a11y-toolbar-divider-margin-block-start, auto);
     margin-block-end: var(--of-a11y-toolbar-divider-margin-block-end, auto);
   }

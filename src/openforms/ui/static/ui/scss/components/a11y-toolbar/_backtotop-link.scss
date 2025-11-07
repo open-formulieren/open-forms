@@ -2,7 +2,7 @@
 @use '@utrecht/components/link'; // emits the .utrecht-link {...} styles
 @use '@utrecht/components/icon';
 
-@import '~microscope-sass/lib/responsive';
+@import 'microscope-sass/lib/responsive';
 
 .openforms-backtotop-link {
   display: flex;
@@ -34,17 +34,6 @@
 
     > .fa-icon {
       --fa: var(--of-backtotop-link-fa-icon, '\f176');
-    }
-  }
-}
-
-/**
- * Style overrides for our theme
- */
-@include mobile-only {
-  .openforms-theme {
-    .openforms-backtotop-link {
-      align-items: center;
     }
   }
 }
