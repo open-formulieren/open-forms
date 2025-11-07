@@ -5,23 +5,32 @@
 @import '~microscope-sass/lib/typography';
 
 .a11y-toolbar {
-  @include hide-on-mobile;
-
   @media print {
     display: none;
   }
 
-  @include bem.element('list') {
-    display: flex;
-    justify-content: flex-end;
-    list-style: none;
-    margin: 0;
-    gap: $grid-margin-3;
-  }
+  display: flex;
+  flex-direction: column;
+  padding-inline-start: var(--of-a11y-toolbar-padding-inline-start, 40px);
+  padding-inline-end: var(--of-a11y-toolbar-padding-inline-end, 40px);
+  padding-block-start: var(--of-a11y-toolbar-padding-block-start, 20px);
+  padding-block-end: var(--of-a11y-toolbar-padding-block-end, 20px);
 
-  .utrecht-link.utrecht-link--openforms {
-    @include margin(true, padding-top);
-    @include margin(true, padding-bottom);
-    display: block;
+  @include bem.element('divider') {
+    display: var(--of-a11y-toolbar-divider-display, none);
+    background-color: var(--of-a11y-toolbar-divider-color, #767676);
+    border: none;
+    block-size: var(--of-a11y-toolbar-divider-block-size, auto);
+    inline-size: var(--of-a11y-toolbar-divider-inline-size, 100%);
+    margin-block-start: var(--of-a11y-toolbar-divider-margin-block-start, auto);
+    margin-block-end: var(--of-a11y-toolbar-divider-margin-block-end, auto);
+  }
+}
+
+@include mobile-only {
+  .openforms-theme {
+    .a11y-toolbar {
+      align-items: center;
+    }
   }
 }

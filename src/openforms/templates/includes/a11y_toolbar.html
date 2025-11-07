@@ -1,11 +1,13 @@
 {% load i18n %}
-<nav class="a11y-toolbar">
-    <ul class="a11y-toolbar__list">
-        <li class="a11y-toolbar__list-item">
-            <a class="utrecht-link utrecht-link--html-a utrecht-link--openforms a11y-toolbar__window-print-action" href="#">{% trans "Print this page" %}</a>
-        </li>
-        <li class="a11y-toolbar__list-item">
-            <a class="utrecht-link utrecht-link--html-a utrecht-link--openforms" href="#main-content">{% trans "Back to top" %}</a>
-        </li>
-    </ul>
+<nav class="a11y-toolbar" aria-label="{% trans 'Accessibility tools' %}">
+    <hr class="a11y-toolbar__divider"/>
+    <a
+        class="utrecht-link utrecht-link--html-a utrecht-link--openforms openforms-backtotop-link"
+        href="#main-content"
+    >
+        <span aria-hidden="true" class="utrecht-icon">
+            <i class="fa fas fa-icon fa-fw" aria-hidden="true"></i>
+        </span>
+        {% trans "Back to top" %}
+    </a>
 </nav>
