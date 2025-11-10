@@ -115,6 +115,7 @@ class SubmissionStep(models.Model):  # noqa: DJ008
     # can be modified by logic evaluations/checks
     _can_submit = True
     _is_applicable: bool | None = None
+    _form_logic_evaluated: bool = False
 
     _unsaved_data = None
 
