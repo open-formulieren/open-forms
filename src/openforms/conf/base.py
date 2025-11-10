@@ -1022,7 +1022,7 @@ Open Forms fits in the [Common Ground](https://commonground.nl) vision and archi
 and it plays nice with other available components.
 """
 
-API_VERSION = "3.4.0-alpha.0"
+API_VERSION = "3.4.0-alpha.1"
 
 SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api/v2",
@@ -1287,11 +1287,10 @@ SETUP_CONFIGURATION_STEPS = [
 # DJANGO-UPGRADE-CHECK
 #
 UPGRADE_CHECK_PATHS: UpgradePaths = {
-    "3.3.0": UpgradeCheck(
+    "3.4.0": UpgradeCheck(
         VersionRange(minimum="3.2.0"),
         code_checks=[BinScriptCheck("report_duplicate_merchant_pspids")],
     ),
-    "3.2.0": UpgradeCheck(VersionRange(minimum="3.0.1")),
 }
 UPGRADE_CHECK_STRICT = False
 
