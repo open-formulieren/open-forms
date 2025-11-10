@@ -125,7 +125,7 @@ const ManageDataMappings = ({errors}) => {
   const simpleRelevantComponents = relevantComponents.filter(
     ([, compConfig]) =>
       !['array', 'object'].includes(getComponentDatatype(compConfig)) &&
-      compConfig.type !== 'columns'
+      !['columns', 'fieldset'].includes(compConfig.type)
   );
   const editGridFakeVariables = simpleRelevantComponents.map(([_, initialCompConfig]) =>
     makeNewVariableFromComponent(initialCompConfig, undefined)
