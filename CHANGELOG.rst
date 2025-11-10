@@ -6,6 +6,71 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.4.0-alpha.1 (2025-11-10)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Upgrade procedure
+-----------------
+
+To upgrade to 3.4, please:
+
+* ⚠️ Ensure you are currently on Open Forms 3.2.x or newer.
+
+.. warning:: If you've built dashboards using the metrics telemetry, you'll need to
+   update them with the updated metric names. The new names are in the documentation.
+
+New features
+------------
+
+* [:backend:`5687`] Added the initial structure of JCC (REST) API appointment plugin,
+  which will replace the SOAP API variant.
+* [:backend:`5694`] Address details for appointment locations are now available for display.
+* [:backend:`5683`] The form import endpoint now returns the UUID of the imported form.
+* [:backend:`4357`] You can now use theme-specific favicons, organization names and
+  logos.
+* [:backend:`5546`] Improved the accessibility toolbar layout:
+
+  - Moved the "print page" button to the footer.
+  - Aligned the "back to top" link with the navigation controls.
+  - Added an optional visual separator between the form and accessibility toolbar.
+  - Fixed the toolbar not being shown on mobile devices.
+  - Added the missing navigation role label.
+  - The appearance can be tweaked with a number of new design tokens.
+
+Bugfixes
+--------
+
+* Fixed a crash in the upgrade migrations for form variables pointing to a component
+  that cannot be resolved.
+* [:backend:`5722`] Fixed Worldline configuration not taking into account multiple
+  webhook key ID + secret combinations when multiple PSPIDs are used.
+* [Sentry#453174] Fixed a crash in the configuration overview for invalid Worldline
+  merchants.
+
+Project maintenance
+-------------------
+
+* Renamed the metrics to comply with OTel naming conventions.
+* Updated zgw-consumers to support OAUTH2-enabled services.
+* The container image is now also published to
+  `ghcr.io <https://github.com/open-formulieren/open-forms/pkgs/container/open-forms>`_.
+* Removed incorrect deprecation marker on address autocomplete endpoint.
+* Upgraded frontend dependencies with their latest security updates, affecting
+  development tooling.
+* Upgraded to mozilla-django-oidc-db and its improved type annotations.
+* Added ``openforms.authentication``, ``openforms.data_removal`` and ``openforms.emails``
+  to type-checked packages in CI.
+* Added documentation on how to develop UI components.
+* Bumped security update versions:
+
+  - Django
+  - brotli
+
+* [DH#817] Added more logging and error information captures in case the Worldline
+  payment flow errors.
+
 3.3.2 (2025-11-05)
 ==================
 
