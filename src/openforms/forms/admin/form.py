@@ -152,6 +152,7 @@ class FormAdmin(
         "translation_enabled",
         FormDeletedListFilter,
         FormReachedSubmissionLimitListFilter,
+        "payment_backend",
     )
     search_fields = ("uuid", "name", "internal_name", "slug")
 
