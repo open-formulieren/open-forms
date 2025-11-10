@@ -1287,11 +1287,10 @@ SETUP_CONFIGURATION_STEPS = [
 # DJANGO-UPGRADE-CHECK
 #
 UPGRADE_CHECK_PATHS: UpgradePaths = {
-    "3.3.0": UpgradeCheck(
+    "3.4.0": UpgradeCheck(
         VersionRange(minimum="3.2.0"),
         code_checks=[BinScriptCheck("report_duplicate_merchant_pspids")],
     ),
-    "3.2.0": UpgradeCheck(VersionRange(minimum="3.0.1")),
 }
 UPGRADE_CHECK_STRICT = False
 
