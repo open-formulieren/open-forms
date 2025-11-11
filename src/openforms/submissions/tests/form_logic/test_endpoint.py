@@ -831,3 +831,90 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
 
         # Ensure that nothing is cleared
         self.assertEqual(response.json()["step"]["data"], {})
+
+    @tag("gh-5735")
+    def test_actions_on_variables_of_components_in_not_applicable_step(self):
+        """
+        Ensure that logic evaluation of a step - containing a component with a variable
+        action - which was already submitted before and then marked as not applicable,
+        does not result in a crash.
+
+        Note that the original ticket describes a crash during submission report
+        generation. The example here fails because of the same bug, but it is a bit
+        easier to write a test for it.
+        """
+        form = FormFactory.create()
+        step_1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "textfield",
+                    }
+                ]
+            },
+        )
+        step_2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "textfield",
+                    }
+                ]
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "form_step_uuid": str(step_2.uuid),
+                    "action": {"type": "step-not-applicable"},
+                }
+            ],
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "textfield",
+                    "action": {
+                        "type": "variable",
+                        "value": "foo",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(completed=True, form=form)
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": str(submission.uuid),
+                "step_uuid": str(step_1.uuid),
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        # Simulate submitting the first step
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step_1, data={"checkbox": False}
+        )
+        # Simulate submitting the second step (still applicable because the checkbox was
+        # not checked)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step_2, data={"textfield": "foo"}
+        )
+
+        # Simulate navigating to the first step and make it not applicable
+        try:
+            response = self.client.post(endpoint, data={"data": {"checkbox": True}})
+        except KeyError as e:
+            raise self.failureException("Check logic post failed unexpectedly") from e
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
