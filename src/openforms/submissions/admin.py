@@ -635,6 +635,10 @@ class EmailVerificationAdmin(admin.ModelAdmin):
         "submission__uuid",
         "submission__public_registration_reference",
     )
+    readonly_fields = (
+        "submission",
+        "component_key",
+    )
 
     @admin.display(description=_("is verified"), boolean=True)
     def is_verified(self, obj: EmailVerification) -> bool:
