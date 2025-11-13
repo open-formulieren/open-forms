@@ -11,7 +11,7 @@
     "jcc.JccConfig",
     "jcc_rest.JccRestConfig",
     "kadaster.KadasterApiConfig",
-    "klantinteracties.KlantinteractiesConfig",
+    "customer_interactions.CustomerInteractionsAPIGroupConfig",
     "kvk.KVKConfig",
     "brk.BRKConfig",
     "haalcentraal.BRPPersonenRequestOptions",
