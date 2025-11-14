@@ -172,6 +172,7 @@ jobs:
             --reverse
 
         env:
+          PYTHONOPTIMIZE: '1'  # skip 'assert' execution
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
           DB_USER: postgres
