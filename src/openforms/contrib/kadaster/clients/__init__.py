@@ -12,7 +12,8 @@ class NoServiceConfigured(RuntimeError):
 def get_locatieserver_client() -> LocatieServerClient:
     config = KadasterApiConfig.get_solo()
     # model field is not nullable because a default is configured
-    assert (service := config.search_service)
+    service = config.search_service
+    assert service is not None
     return build_client(service, client_factory=LocatieServerClient)
 
 
