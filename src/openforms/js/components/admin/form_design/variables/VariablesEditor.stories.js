@@ -189,6 +189,18 @@ export default {
         requiresAuth: ['bsn'],
         requiresAuthPlugin: [],
       },
+      {
+        id: 'communication_preferences',
+        label: 'Communication preferences',
+        configurationContext: {
+          apiGroups: [
+            ['group-1', 'Group 1'],
+            ['group-2', 'Group 2'],
+          ],
+        },
+        requiresAuth: ['bsn'],
+        requiresAuthPlugin: [],
+      },
     ],
     onChange: fn(),
     onAdd: fn(),
@@ -2133,5 +2145,80 @@ export const TwoBackendsWhereOnlyOneIntroducesRegistrationVariables = {
     // With multiple backends configured, but only one of them introduces registration variables,
     // the plugin heading should be visible.
     expect(canvas.getByRole('heading', {name: 'Objects API registration'})).toBeVisible();
+  },
+};
+
+export const ConfigurePrefillCommunicationPreferences = {
+  args: {
+    availableFormVariables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+        name: 'Profile',
+        key: 'profile',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'object',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: {},
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'Communication preferences prefill',
+        key: 'communicationPreferencesPrefill',
+        source: 'user_defined',
+        prefillPlugin: 'communication_preferences',
+        dataType: 'object',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: {},
+        prefillOptions: {
+          customerInteractionsApiGroup: null,
+          profileFormVariable: '',
+        },
+      },
+    ],
+    availableComponents: {
+      profile: {
+        type: 'customerProfile',
+        key: 'profile',
+      },
+    },
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    await step('Open configuration modal', async () => {
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
+      expect(userDefinedVarsTab).toBeVisible();
+      await userEvent.click(userDefinedVarsTab);
+
+      // open modal for configuration
+      const editIcon = canvas.getByTitle('Prefill instellen');
+      await userEvent.click(editIcon);
+      expect(await canvas.findByRole('dialog')).toBeVisible();
+    });
+
+    await step('Configure Communication preferences prefill', async () => {
+      const pluginDropdown = await canvas.findByLabelText('Plugin');
+      expect(pluginDropdown).toBeVisible();
+      await userEvent.selectOptions(pluginDropdown, 'Communication preferences');
+
+      // check API group
+      const apiGroupDropdown = await canvas.findByLabelText('API group');
+      expect(apiGroupDropdown).toBeVisible();
+      await userEvent.selectOptions(apiGroupDropdown, 'Group 1');
+
+      // check Profile form variable
+      const profileVariableDropdown = await canvas.findByLabelText('Profile form variable');
+      expect(profileVariableDropdown).toBeVisible();
+      await userEvent.selectOptions(profileVariableDropdown, 'Profile');
+    });
   },
 };

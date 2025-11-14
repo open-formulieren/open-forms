@@ -1255,6 +1255,12 @@
       "value": "and"
     }
   ],
+  "9eJ19L": [
+    {
+      "type": 0,
+      "value": "If enabled, phone numbers are included in the prefill"
+    }
+  ],
   "9fW2NX": [
     {
       "type": 0,
@@ -1385,6 +1391,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
+    }
+  ],
+  "AVJSYj": [
+    {
+      "type": 0,
+      "value": "Include phone number"
     }
   ],
   "AWyevn": [
@@ -6103,6 +6115,12 @@
       "value": "Mark the form step as not-applicable"
     }
   ],
+  "lC+Im8": [
+    {
+      "type": 0,
+      "value": "Include email"
+    }
+  ],
   "lDFtNM": [
     {
       "type": 0,
@@ -6929,6 +6947,12 @@
     {
       "type": 0,
       "value": "JSON Schema target"
+    }
+  ],
+  "rpvH9b": [
+    {
+      "type": 0,
+      "value": "If enabled, emails are included in the prefill"
     }
   ],
   "rzGuvz": [

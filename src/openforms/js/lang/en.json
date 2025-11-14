@@ -544,6 +544,11 @@
     "description": "Extra logic action prefix",
     "originalDefault": "and"
   },
+  "9eJ19L": {
+    "defaultMessage": "If enabled, phone numbers are included in the prefill",
+    "description": "Klantinteracties options: 'PhoneNumber' helpText",
+    "originalDefault": "If enabled, phone numbers are included in the prefill"
+  },
   "9fW2NX": {
     "defaultMessage": "Sorry! Something unexpected went wrong.<br></br>Contact your technical administrator to investigate, or perhaps more information is available in the <link>outgoing request logs</link>.",
     "description": "Generic admin error message",
@@ -598,6 +603,11 @@
     "defaultMessage": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration.",
     "description": "literals.changeText help text",
     "originalDefault": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
+  },
+  "AVJSYj": {
+    "defaultMessage": "Include phone number",
+    "description": "Klantinteracties options: 'PhoneNumber' label",
+    "originalDefault": "Include phone number"
   },
   "AWyevn": {
     "defaultMessage": "Confidentiality",
@@ -2864,6 +2874,11 @@
     "description": "action type \"step-not-applicable\" label",
     "originalDefault": "Mark the form step as not-applicable"
   },
+  "lC+Im8": {
+    "defaultMessage": "Include email",
+    "description": "Klantinteracties options: 'Email' label",
+    "originalDefault": "Include email"
+  },
   "lDFtNM": {
     "defaultMessage": "Value",
     "description": "Label for 'value' in MappingArrayInput table column",
@@ -3248,6 +3263,11 @@
     "defaultMessage": "JSON Schema target",
     "description": "'JSON Schema target' label",
     "originalDefault": "JSON Schema target"
+  },
+  "rpvH9b": {
+    "defaultMessage": "If enabled, emails are included in the prefill",
+    "description": "Klantinteracties options: 'Email' helpText",
+    "originalDefault": "If enabled, emails are included in the prefill"
   },
   "rzGuvz": {
     "defaultMessage": "(not configured yet)",
