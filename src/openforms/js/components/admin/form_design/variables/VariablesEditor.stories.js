@@ -190,8 +190,14 @@ export default {
         requiresAuthPlugin: [],
       },
       {
-        id: 'klantinteracties',
-        label: 'Klantinteracties',
+        id: 'communication_preferences',
+        label: 'Communication preferences',
+        configurationContext: {
+          apiGroups: [
+            ['group-1', 'Group 1'],
+            ['group-2', 'Group 2'],
+          ],
+        },
         requiresAuth: ['bsn'],
         requiresAuthPlugin: [],
       },
@@ -2142,27 +2148,48 @@ export const TwoBackendsWhereOnlyOneIntroducesRegistrationVariables = {
   },
 };
 
-export const ConfigurePrefillKlantinteracties = {
+export const ConfigurePrefillCommunicationPreferences = {
   args: {
     availableFormVariables: [
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+        name: 'Profile',
+        key: 'profile',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'object',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: {},
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
         formDefinition: undefined,
-        name: 'Klantinteracties prefill',
-        key: 'klantinteractiesPrefill',
+        name: 'Communication preferences prefill',
+        key: 'communicationPreferencesPrefill',
         source: 'user_defined',
-        prefillPlugin: 'klantinteracties',
+        prefillPlugin: 'communication_preferences',
         dataType: 'object',
         dataFormat: undefined,
         isSensitiveData: false,
         serviceFetchConfiguration: undefined,
         initialValue: {},
         prefillOptions: {
-          email: false,
-          phoneNumber: false,
+          customerInteractionsApiGroup: null,
+          profileFormVariable: '',
         },
       },
     ],
+    availableComponents: {
+      profile: {
+        type: 'customerProfile',
+        key: 'profile',
+      },
+    },
   },
   play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
@@ -2171,25 +2198,27 @@ export const ConfigurePrefillKlantinteracties = {
       const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
       expect(userDefinedVarsTab).toBeVisible();
       await userEvent.click(userDefinedVarsTab);
+
       // open modal for configuration
-      const editIcons = canvas.getAllByTitle('Prefill instellen');
-      await userEvent.click(editIcons[0]);
+      const editIcon = canvas.getByTitle('Prefill instellen');
+      await userEvent.click(editIcon);
       expect(await canvas.findByRole('dialog')).toBeVisible();
     });
 
-    await step('Configure Klantinteracties prefill', async () => {
-      const modal = within(await canvas.findByRole('dialog'));
+    await step('Configure Communication preferences prefill', async () => {
       const pluginDropdown = await canvas.findByLabelText('Plugin');
       expect(pluginDropdown).toBeVisible();
-      await userEvent.selectOptions(pluginDropdown, 'Klantinteracties');
-      // check email
-      const emailCheckbox = canvas.getByText('Include email');
-      expect(emailCheckbox).toBeVisible();
-      await userEvent.click(emailCheckbox);
-      // check phoneNumber
-      const phoneNumberCheckbox = canvas.getByText('Include phone number');
-      expect(phoneNumberCheckbox).toBeVisible();
-      await userEvent.click(phoneNumberCheckbox);
+      await userEvent.selectOptions(pluginDropdown, 'Communication preferences');
+
+      // check API group
+      const apiGroupDropdown = await canvas.findByLabelText('API group');
+      expect(apiGroupDropdown).toBeVisible();
+      await userEvent.selectOptions(apiGroupDropdown, 'Group 1');
+
+      // check Profile form variable
+      const profileVariableDropdown = await canvas.findByLabelText('Profile form variable');
+      expect(profileVariableDropdown).toBeVisible();
+      await userEvent.selectOptions(profileVariableDropdown, 'Profile');
     });
   },
 };

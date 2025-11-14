@@ -20,8 +20,8 @@ class NoServiceConfigured(RuntimeError):
 def get_customer_interactions_client(
     config: CustomerInteractionsAPIGroupConfig,
 ) -> CustomerInteractionsClient:
-    if not (service := config.klantinteracties_service):
-        raise NoServiceConfigured("No Klanteninteracties API service configured.")
+    if not (service := config.customer_interactions_service):
+        raise NoServiceConfigured("No Customer interactions API service configured.")
     return build_client(service, client_factory=CustomerInteractionsClient)
 
 

@@ -44,14 +44,13 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "klantinteracties_service",
+                    "customer_interactions_service",
                     models.ForeignKey(
                         limit_choices_to={"api_type": "kc"},
-                        null=True,
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="+",
                         to="zgw_consumers.service",
-                        verbose_name="Klantinteracties API",
+                        verbose_name="Customer Interactions API",
                     ),
                 ),
             ],

@@ -9,5 +9,5 @@ class CustomerInteractionsAPIGroupConfigAdmin(admin.ModelAdmin):
         "name",
         "identifier",
     )
-    raw_id_fields = ("klantinteracties_service",)
+    raw_id_fields = ("customer_interactions_service",)
     prepopulated_fields = {"identifier": ["name"]}

@@ -6,7 +6,6 @@ from ..client import get_customer_interactions_client
 from .factories import CustomerInteractionsAPIGroupConfigFactory
 
 
-
 class CustomerInteractionsClientTest(OFVCRMixin, TestCase):
     @classmethod
     def setUpTestData(cls):

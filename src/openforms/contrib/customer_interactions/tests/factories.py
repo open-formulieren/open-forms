@@ -6,9 +6,9 @@ from ..models import CustomerInteractionsAPIGroupConfig
 
 
 class CustomerInteractionsAPIGroupConfigFactory(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: f"Klantinteracties API group {n:03}")
-    identifier = factory.Sequence(lambda n: f"klantineracties-api-group-{n}")
-    klantinteracties_service = factory.SubFactory(
+    name = factory.Sequence(lambda n: f"Customer interactions API group {n:03}")
+    identifier = factory.Sequence(lambda n: f"customer-interactions-api-group-{n}")
+    customer_interactions_service = factory.SubFactory(
         "zgw_consumers.test.factories.ServiceFactory", api_type=APITypes.kc
     )
 
@@ -17,7 +17,7 @@ class CustomerInteractionsAPIGroupConfigFactory(factory.django.DjangoModelFactor
 
     class Params:
         for_test_docker_compose = factory.Trait(
-            klantinteracties_service=factory.SubFactory(
+            customer_interactions_service=factory.SubFactory(
                 ServiceFactory,
                 api_root="http://localhost:8005/klantinteracties/api/v1/",
                 api_type=APITypes.kc,

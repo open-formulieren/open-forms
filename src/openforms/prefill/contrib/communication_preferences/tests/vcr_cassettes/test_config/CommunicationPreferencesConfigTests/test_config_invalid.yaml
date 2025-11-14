@@ -2,18 +2,10 @@ interactions:
 - request:
     body: null
     headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, br
       Authorization:
       - Token INVALID
-      Connection:
-      - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
     method: GET
-    uri: http://localhost:8005/klantinteracties/api/v1/invalid/klantcontacten
+    uri: http://localhost:8005/klantinteracties/api/v1/invalid//
   response:
     body:
       string: "<!DOCTYPE html>\n<html lang=\"en\" class=\"view view-- landing-page\">\n
@@ -59,10 +51,10 @@ interactions:
       Content-Length:
       - '3224'
       Content-Security-Policy:
-      - 'object-src ''none''; font-src ''self'' fonts.gstatic.com; default-src ''self'';
-        img-src ''self'' data: cdn.redoc.ly; form-action ''self''; base-uri ''self'';
-        frame-ancestors ''none''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
-        frame-src ''self''; worker-src ''self'' blob:; script-src ''self'' ''unsafe-inline'''
+      - 'worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com; img-src ''self''
+        data: cdn.redoc.ly; default-src ''self''; script-src ''self'' ''unsafe-inline'';
+        frame-src ''self''; frame-ancestors ''none''; form-action ''self''; object-src
+        ''none''; base-uri ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
       Content-Type:
       - text/html; charset=utf-8
       Cross-Origin-Opener-Policy:

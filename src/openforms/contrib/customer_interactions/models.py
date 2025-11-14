@@ -6,7 +6,7 @@ from zgw_consumers.constants import APITypes
 
 class CustomerInteractionsAPIGroupConfigManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related("service")
+        return super().get_queryset().select_related("customer_interactions_service")
 
 
 class CustomerInteractionsAPIGroupConfig(models.Model):
@@ -22,13 +22,12 @@ class CustomerInteractionsAPIGroupConfig(models.Model):
         unique=True,
         help_text=_("A unique, human-friendly identifier to identify this group."),
     )
-    klantinteracties_service = models.ForeignKey(
+    customer_interactions_service = models.ForeignKey(
         "zgw_consumers.Service",
-        verbose_name=_("Klantinteracties API"),
+        verbose_name=_("Customer Interactions API"),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.kc},
-        related_name="+",
-        null=True,
+        related_name="+"
     )
 
     objects = CustomerInteractionsAPIGroupConfigManager()

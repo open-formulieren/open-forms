@@ -1,6 +1,6 @@
+import CommunicationPreferencesFields from './communication_preferences/CommunicationPreferencesFields';
 import DefaultFields from './default/DefaultFields';
 import FamilyMembersFields from './family_members/FamilyMembersFields';
-import KlantinteractiesFields from './klantinteracties/KlantinteractiesFields';
 import ObjectsAPIFields from './objects_api/ObjectsAPIFields';
 import ToggleCopyButton from './objects_api/ToggleCopyButton';
 import YiviFields from './yivi/YiviFields';
@@ -18,8 +18,8 @@ const PLUGIN_COMPONENT_MAPPING = {
     component: YiviFields,
     pluginFieldExtra: null,
   },
-  klantinteracties: {
-    component: KlantinteractiesFields,
+  communication_preferences: {
+    component: CommunicationPreferencesFields,
     pluginFieldExtra: null,
   },
   default: {
