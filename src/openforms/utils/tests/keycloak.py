@@ -53,7 +53,9 @@ def keycloak_login(
             allow_redirects=False,
         )
 
-        assert login_response.status_code == 302
-        assert (redirect_uri := login_response.headers["Location"]).startswith(host)
-
+        if login_response.status_code != 302:
+            raise AssertionError("Expected redirect response from keycloak")
+        redirect_uri = login_response.headers["Location"]
+        if not redirect_uri.startswith(host):
+            raise AssertionError("Keycloak response redirects to unexpected host")
         return redirect_uri

@@ -598,7 +598,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 ],
             }
         )
-        assert serializer.is_valid()
+        is_valid = serializer.is_valid()
+        assert is_valid
         v2_options: RegistrationOptionsV2 = serializer.validated_data
 
         handler = ObjectsAPIV2Handler()
@@ -709,7 +710,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             }
         )
 
-        assert serializer.is_valid()
+        is_valid = serializer.is_valid()
+        assert is_valid
 
         v2_options: RegistrationOptionsV2 = serializer.validated_data
 
@@ -809,7 +811,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             }
         )
 
-        assert serializer.is_valid()
+        is_valid = serializer.is_valid()
+        assert is_valid
 
         v2_options: RegistrationOptionsV2 = serializer.validated_data
 
@@ -924,7 +927,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             }
         )
 
-        assert serializer.is_valid()
+        is_valid = serializer.is_valid()
+        assert is_valid
 
         v2_options: RegistrationOptionsV2 = serializer.validated_data
 
@@ -1040,7 +1044,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             }
         )
 
-        assert serializer.is_valid()
+        is_valid = serializer.is_valid()
+        assert is_valid
 
         v2_options: RegistrationOptionsV2 = serializer.validated_data
 
@@ -1133,7 +1138,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             }
         )
 
-        assert serializer.is_valid()
+        is_valid = serializer.is_valid()
+        assert is_valid
 
         v2_options: RegistrationOptionsV2 = serializer.validated_data
 
@@ -1252,7 +1258,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             }
         )
 
-        assert serializer.is_valid()
+        is_valid = serializer.is_valid()
+        assert is_valid
 
         v2_options: RegistrationOptionsV2 = serializer.validated_data
 
@@ -1374,7 +1381,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             }
         )
 
-        assert serializer.is_valid()
+        is_valid = serializer.is_valid()
+        assert is_valid
 
         v2_options: RegistrationOptionsV2 = serializer.validated_data
 

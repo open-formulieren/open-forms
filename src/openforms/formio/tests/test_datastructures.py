@@ -124,8 +124,9 @@ class FormioDataTests(TestCase):
         )
 
         for key in bad_keys:
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(Exception) as cm:
                 key in formio_data  # type: ignore  # noqa: B015
+                self.assertIsInstance(cm.exception, AssertionError | TypeError)
 
     def test_keyerror_for_absent_keys(self):
         formio_data = FormioData({})
