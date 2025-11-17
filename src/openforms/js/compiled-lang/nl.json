@@ -517,6 +517,12 @@
       "value": "Tussenvoegsel"
     }
   ],
+  "3Wiy2f": [
+    {
+      "type": 0,
+      "value": "The API group specifies which Customer interactions service to use."
+    }
+  ],
   "3Wuy2O": [
     {
       "type": 0,
@@ -1259,12 +1265,6 @@
       "value": "en"
     }
   ],
-  "9eJ19L": [
-    {
-      "type": 0,
-      "value": "If enabled, phone numbers are included in the prefill"
-    }
-  ],
   "9fW2NX": [
     {
       "type": 0,
@@ -1395,12 +1395,6 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken."
-    }
-  ],
-  "AVJSYj": [
-    {
-      "type": 0,
-      "value": "Include phone number"
     }
   ],
   "AWyevn": [
@@ -2702,6 +2696,12 @@
     {
       "type": 0,
       "value": "Verborgen"
+    }
+  ],
+  "JsiIFI": [
+    {
+      "type": 0,
+      "value": "Profile form variable dropdown"
     }
   ],
   "K/Oijt": [
@@ -4515,6 +4515,12 @@
       "value": "Let op! Als je een andere groep selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?"
     }
   ],
+  "a46ceJ": [
+    {
+      "type": 0,
+      "value": "Profile form variable"
+    }
+  ],
   "a4gS07": [
     {
       "type": 0,
@@ -6103,12 +6109,6 @@
       "value": "markeer de formulierstap als niet van toepassing"
     }
   ],
-  "lC+Im8": [
-    {
-      "type": 0,
-      "value": "Include email"
-    }
-  ],
   "lDFtNM": [
     {
       "type": 0,
@@ -6937,12 +6937,6 @@
       "value": "Bestemmingspad"
     }
   ],
-  "rpvH9b": [
-    {
-      "type": 0,
-      "value": "If enabled, emails are included in the prefill"
-    }
-  ],
   "rzGuvz": [
     {
       "type": 0,
@@ -7453,6 +7447,12 @@
     {
       "type": 0,
       "value": "Het patroon van reguliere expressie waar de waarde aan moet voldoen voor het formulier kan verstuurd worden."
+    }
+  ],
+  "waQw8d": [
+    {
+      "type": 0,
+      "value": "API group"
     }
   ],
   "wnTTZr": [
