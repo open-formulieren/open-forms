@@ -625,7 +625,7 @@ open-forms-ext-haalcentraal-hr==0.3.1
     # via -r requirements/extensions.in
 open-forms-ext-token-exchange==0.4.0
     # via -r requirements/extensions.in
-open-klant-client @ git+https://github.com/maykinmedia/open-klant-client@62c7f0dae6b49bec7e0bb2d90fc72c26f9058903
+open-klant-client==0.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
