@@ -5,7 +5,7 @@ interactions:
       Authorization:
       - Token INVALID
     method: GET
-    uri: http://localhost:8005/klantinteracties/api/v1/invalid//
+    uri: http://localhost:8005/klantinteracties/api/v1/invalid/
   response:
     body:
       string: "<!DOCTYPE html>\n<html lang=\"en\" class=\"view view-- landing-page\">\n

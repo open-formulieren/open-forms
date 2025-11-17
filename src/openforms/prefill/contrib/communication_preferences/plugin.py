@@ -6,7 +6,6 @@ import structlog
 
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.customer_interactions.client import (
-    NoServiceConfigured,
     get_customer_interactions_client,
 )
 from openforms.contrib.customer_interactions.models import (
@@ -78,7 +77,7 @@ class ProfileCommunicationPreferences(
             digital_addresses = client.get_digital_addresses_for_bsn(bsn=bsn_value)
 
         result = transform_digital_addresses(digital_addresses, address_types)
-        return {prefill_variable: result}
+        return {prefill_variable: result}  # pyright: ignore[reportReturnType]
 
     def check_config(self):
         for config in CustomerInteractionsAPIGroupConfig.objects.iterator():
@@ -86,12 +85,6 @@ class ProfileCommunicationPreferences(
                 with get_customer_interactions_client(config) as client:
                     resp = client.get("")
                     resp.raise_for_status()
-            except NoServiceConfigured as exc:
-                raise InvalidPluginConfiguration(
-                    _(
-                        "Service is not configured for Customer interactions group {api_group}."
-                    ).format(api_group=config.name)
-                ) from exc
 
             except requests.RequestException as exc:
                 raise InvalidPluginConfiguration(

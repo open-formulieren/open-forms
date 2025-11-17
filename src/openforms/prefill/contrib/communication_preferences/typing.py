@@ -11,13 +11,6 @@ class ProfileCommunicationPreferencesOptions(TypedDict):
     profile_form_variable: str
 
 
-class DigitalAddressResponse(TypedDict, total=False):
-    emails: list[str]
-    preferred_email: str | None
-    phone_numbers: list[str]
-    preferred_phone_number: str | None
-
-
 class CommunicationChannelPreferences(TypedDict):
     options: Sequence[str]
     preferred: str | None

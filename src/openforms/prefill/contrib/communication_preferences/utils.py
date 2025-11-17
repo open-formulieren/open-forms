@@ -1,4 +1,4 @@
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from itertools import groupby
 
 from openklant_client.types.resources.digitaal_adres import (
@@ -19,7 +19,7 @@ ADDRESS_TYPES_TO_CHANNELS: Mapping[SoortDigitaalAdres, SupportedChannels] = {
 
 
 def transform_digital_addresses(
-    digital_addresses: list[DigitaalAdres],
+    digital_addresses: Iterable[DigitaalAdres],
     configured_address_types: list[SupportedChannels],
 ) -> ProfileCommunicationChannels:
     """

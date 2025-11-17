@@ -16,7 +16,7 @@ class CommunicationPreferencesConfigTests(OFVCRMixin, TestCase):
     def test_config_invalid(self):
         plugin = ProfileCommunicationPreferences("communication_preferences-invalid")
         invalid_service = ServiceFactory.create(
-            api_root="http://localhost:8005/klantinteracties/api/v1/invalid",
+            api_root="http://localhost:8005/klantinteracties/api/v1/invalid/",
             api_type=APITypes.kc,
             header_key="Authorization",
             header_value="Token INVALID",

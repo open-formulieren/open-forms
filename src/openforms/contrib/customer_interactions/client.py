@@ -14,16 +14,12 @@ from openforms.contrib.client import LoggingMixin
 from .models import CustomerInteractionsAPIGroupConfig
 
 
-class NoServiceConfigured(RuntimeError):
-    pass
-
-
 def get_customer_interactions_client(
     config: CustomerInteractionsAPIGroupConfig,
 ) -> CustomerInteractionsClient:
-    if not (service := config.customer_interactions_service):
-        raise NoServiceConfigured("No Customer interactions API service configured.")
-    return build_client(service, client_factory=CustomerInteractionsClient)
+    return build_client(
+        config.customer_interactions_service, client_factory=CustomerInteractionsClient
+    )
 
 
 class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
