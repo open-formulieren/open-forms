@@ -38,7 +38,7 @@ class CustomerInteractionsClientTest(OFVCRMixin, TestCase):
 
     def test_list_digital_addresses(self):
         with get_customer_interactions_client(self.config) as client:
-            data = client.get_digital_addresses_for_bsn(bsn="123456782")
+            data = list(client.get_digital_addresses_for_bsn(bsn="123456782"))
 
         expected_addresses = [
             {
@@ -74,6 +74,6 @@ class CustomerInteractionsClientTest(OFVCRMixin, TestCase):
 
     def test_list_digital_addresses_empty(self):
         with get_customer_interactions_client(self.config) as client:
-            data = client.get_digital_addresses_for_bsn(bsn="123456780")
+            data = list(client.get_digital_addresses_for_bsn(bsn="123456780"))
 
         self.assertEqual(len(data), 0)

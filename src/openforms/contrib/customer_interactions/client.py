@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
+
 from openklant_client.client import OpenKlantClient
 from openklant_client.types.resources.digitaal_adres import (
     DigitaalAdres,
@@ -8,7 +10,6 @@ from openklant_client.types.resources.digitaal_adres import (
 from zgw_consumers.client import build_client
 
 from openforms.contrib.client import LoggingMixin
-from openforms.utils.api_clients import pagination_helper
 
 from .models import CustomerInteractionsAPIGroupConfig
 
@@ -39,7 +40,6 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
             "verstrektDoorPartij__partijIdentificator__objectId": bsn,
         }
 
-    def get_digital_addresses_for_bsn(self, bsn: str) -> list[DigitaalAdres]:
-        response = self.digitaal_adres.list(params=self.bsn_list_param(bsn))
-        digitale_adressen = list(pagination_helper(self, response))
-        return digitale_adressen
+    def get_digital_addresses_for_bsn(self, bsn: str) -> Iterator[DigitaalAdres]:
+        response = self.digitaal_adres.list_iter(params=self.bsn_list_param(bsn))
+        yield from response
