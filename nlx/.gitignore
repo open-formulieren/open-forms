@@ -1,5 +1,0 @@
-certs/*.crt
-certs/*.key
-certs/*.csr
-
-*.swagger.json
