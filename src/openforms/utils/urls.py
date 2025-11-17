@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from importlib import import_module
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urljoin, urlsplit
 
 from django.conf import settings
@@ -223,10 +223,7 @@ def decorator_include(
     else:
         urlconf_module, app_name, namespace = include(arg, namespace=namespace)
     return (
-        cast(
-            Sequence[URLPattern | URLResolver],
-            _DecoratedPatterns(urlconf_module, decorators),
-        ),
+        _DecoratedPatterns(urlconf_module, decorators),  # pyright: ignore[reportReturnType]
         app_name,
         namespace,
     )

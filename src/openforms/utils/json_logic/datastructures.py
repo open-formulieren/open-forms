@@ -1,6 +1,6 @@
 from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import TypedDict, cast
+from typing import TypedDict
 
 from json_logic.meta import JSONLogicExpressionTree, Operation
 from json_logic.typing import JSON, Primitive
@@ -38,7 +38,7 @@ class ExpressionIntrospection:
             if not isinstance(node.arguments[0], str):
                 continue
 
-            key = cast(str, node.arguments[0])
+            key = node.arguments[0]
             if key in REDUCE_VAR_NAMES and context["in_reduce"]:
                 continue
 

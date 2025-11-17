@@ -1,6 +1,5 @@
-from typing import cast
-
 from django.conf import settings
+from django.db.models import Model
 from django.utils.translation import gettext_lazy as _
 
 from modeltranslation.manager import get_translatable_fields_for_model
@@ -91,9 +90,9 @@ class ModelTranslationsSerializer(serializers.Serializer):
         if parent is None:
             return serializers.JSONField
 
-        parent = cast(serializers.ModelSerializer, parent)
+        assert isinstance(parent, serializers.ModelSerializer)
         base = type(parent)
-        model = parent.Meta.model
+        model: type[Model] = parent.Meta.model  # pyright: ignore[reportGeneralTypeIssues]
         # get the translatable models fields, with deterministic ordering
         _translatable_fields = get_translatable_fields_for_model(model) or []
         # FIXME: this should possibly only consider fields listed in the parent

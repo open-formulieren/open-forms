@@ -1,4 +1,5 @@
 import uuid
+from collections.abc import Sequence
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -26,7 +27,8 @@ class AttributeGroup(models.Model):
         ),
         blank=True,
     )
-    attributes = ArrayField(
+    # django-stubs etc. don't have proper type annotations for arrayfield
+    attributes = ArrayField(  # pyright: ignore[reportAssignmentType]
         base_field=models.CharField(
             _("attribute"),
             max_length=100,
@@ -42,6 +44,8 @@ class AttributeGroup(models.Model):
             "attribute groups."
         ),
     )
+
+    attributes: Sequence[str]
 
     class Meta:
         verbose_name = _("yivi attribute group")

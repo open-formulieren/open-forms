@@ -3,7 +3,7 @@ Client code for WebMapService interaction (tile overlays).
 """
 
 from collections.abc import Collection
-from typing import Literal, assert_never, cast
+from typing import Literal, assert_never
 from urllib.parse import urlparse, urlunparse
 
 from django.core.cache import cache
@@ -19,11 +19,6 @@ __all__ = ["get_map", "VersionError"]
 logger = structlog.stdlib.get_logger(__name__)
 
 type SupportedVersion = Literal["1.1.1", "1.3.0"]
-
-SUPPORTED_VERSIONS: Collection[SupportedVersion] = (
-    "1.1.1",
-    "1.3.0",
-)
 
 
 class VersionError(Exception):
@@ -44,9 +39,12 @@ def _check_wms_version(session: requests.Session, url: str) -> SupportedVersion:
         raise VersionError("Could not determine WMS version") from exc
 
     version = capabilities_root.attrib["version"]
-    if version not in SUPPORTED_VERSIONS:
-        raise VersionError(f"Version '{version}' is not supported.")
-    return cast(SupportedVersion, version)
+    match version:
+        case "1.1.1" | "1.3.0":
+            pass
+        case _:
+            raise VersionError(f"Version '{version}' is not supported.")
+    return version
 
 
 def get_map(

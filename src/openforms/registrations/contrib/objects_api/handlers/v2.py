@@ -5,7 +5,7 @@ Implementation details for the v2 registration handler.
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime, time
-from typing import assert_never, cast
+from typing import assert_never, cast  # noqa: TID251
 
 from glom import Assign, Path, glom
 

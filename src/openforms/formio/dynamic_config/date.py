@@ -1,6 +1,6 @@
 import operator
 from datetime import datetime, time
-from typing import TypedDict, cast
+from typing import TypedDict, cast  # noqa: TID251
 
 from django.utils import timezone
 

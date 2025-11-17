@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import Any
 
 from django.utils.translation import gettext as _
 
@@ -107,11 +107,13 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
             if operand.operator == "var":
                 needle = operand.arguments[0]
             elif self._is_date_or_datetime_operand(operand):
-                needle = cast(Operation, operand.arguments[0]).arguments[0]
+                first_arg = operand.arguments[0]
+                assert isinstance(first_arg, Operation)
+                needle = first_arg.arguments[0]
             else:
                 continue
 
-            needle = cast(str, needle)
+            assert isinstance(needle, str)
 
             if needle == "":
                 raise serializers.ValidationError(

@@ -1,7 +1,8 @@
 import hashlib
 import json
+from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, TypedDict, cast
+from typing import TYPE_CHECKING, Literal, TypedDict, overload
 from urllib.parse import urlparse
 
 from django.conf import settings
@@ -10,7 +11,6 @@ from cookie_consent.models import Cookie, CookieGroup
 
 from openforms.config.constants import CSPDirective
 from openforms.config.models import CSPSetting
-from openforms.typing import JSONObject
 
 from .constants import AnalyticsTools
 
@@ -45,10 +45,8 @@ def update_analytics_tool(
         logevent.disabling_analytics_tool(config, analytics_tool)
 
     # process the CSP headers
-    csps = (
-        []
-        if not is_activated
-        else cast(list[CSPDict], load_asset("csp_headers.json", analytics_tool))
+    csps: Sequence[CSPDict] = (
+        [] if not is_activated else load_asset("csp_headers.json", analytics_tool)
     )
 
     for csp in csps:
@@ -67,7 +65,7 @@ def update_analytics_tool(
     )
 
     # process the cookies
-    cookies = cast(list[CookieDict], load_asset("cookies.json", analytics_tool))
+    cookies: Sequence[CookieDict] = load_asset("cookies.json", analytics_tool)
     for cookie in cookies:
         for replacement in tool_config.replacements:
             if field_name := replacement.field_name:
@@ -85,10 +83,22 @@ def update_analytics_tool(
     )
 
 
+@overload
+def load_asset(
+    asset: Literal["cookies.json"], analytics_tool: str
+) -> Sequence[CookieDict]: ...
+
+
+@overload
+def load_asset(
+    asset: Literal["csp_headers.json"], analytics_tool: str
+) -> Sequence[CSPDict]: ...
+
+
 def load_asset(
     asset: Literal["cookies.json", "csp_headers.json"],
     analytics_tool: str,
-) -> list[JSONObject]:
+) -> Sequence[CookieDict] | Sequence[CSPDict]:
     json_file = CONTRIB_DIR / analytics_tool / asset
     with json_file.open("r") as infile:
         return json.load(infile)
@@ -120,7 +130,7 @@ def get_domain_hash(cookie: CookieDict) -> str:
 
 
 def update_analytical_cookies(
-    cookies: list[CookieDict], create: bool, cookie_consent_group_id: int
+    cookies: Sequence[CookieDict], create: bool, cookie_consent_group_id: int
 ):
     if create:
         cookie_domain = get_cookie_domain()

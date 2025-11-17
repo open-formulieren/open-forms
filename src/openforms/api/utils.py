@@ -37,7 +37,7 @@ def get_from_serializer_data_or_instance(
     return serializer_field.get_attribute(instance)
 
 
-def get_model_serializer_instance(serializer: ModelSerializer) -> models.Model:
+def get_model_serializer_instance[T: models.Model](serializer: ModelSerializer[T]) -> T:
     """
     Return an existing serializer instance or build an empty one.
     """

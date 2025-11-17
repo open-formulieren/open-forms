@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Literal, cast
+from typing import Literal
 
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from requests import RequestException
 
+from openforms.typing import StrOrPromise
 from openforms.utils.validators import validate_digits, validate_rsin
 from openforms.validations.base import BasePlugin
 from openforms.validations.registry import register
@@ -20,7 +21,7 @@ KVK_LOOKUP_CACHE_TIMEOUT = 5 * 60
 @deconstructible
 class NumericBaseValidator:
     value_size: int
-    value_label: int
+    value_label: StrOrPromise
     error_messages = {
         "too_short": _("%(type)s should have %(size)i characters."),
     }
@@ -60,7 +61,7 @@ def get_kvk_search_results(query: SearchParams) -> dict:
 
 class KVKRemoteValidatorMixin:
     query_param: Literal["kvkNummer", "rsin", "vestigingsnummer"]
-    value_label: str
+    value_label: StrOrPromise
 
     error_messages = {
         "not_found": _("%(type)s does not exist."),
@@ -69,9 +70,8 @@ class KVKRemoteValidatorMixin:
 
     def validate(self, value: str) -> bool:
         assert self.query_param
-        query = cast(
-            SearchParams, {self.query_param: value}
-        )  # isinstance isn't supported
+        query: SearchParams = {}
+        query[self.query_param] = value
 
         try:
             result = cache.get_or_set(

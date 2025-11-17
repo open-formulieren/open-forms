@@ -5,7 +5,6 @@ Utility classes for the submission report rendering.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import cast
 
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -16,7 +15,6 @@ import structlog
 from openforms.authentication.service import AuthAttribute
 from openforms.forms.models import Form
 
-from .cosigning import CosignV1Data
 from .models import Submission
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -56,13 +54,13 @@ class Report:
         if not details:
             return ""
 
-        # XXX this is something present in cosign v2 but not v1, which happens after the
-        # PDF is generated. Generating the PDF again after it's cosigned otherwise
-        # crashes.
-        if "cosign_date" in details:
+        # if `cosign_date` is present, it guarantees cosign v2 and not v1.
+        # `co_sign_auth_attribute` should only be present in v1.
+        # The cosigning date is set/added *after* the PDF is generated. Generating the
+        # PDF again after it's cosigned otherwise crashes, because we try to access v1
+        # properties.
+        if "cosign_date" in details or "co_sign_auth_attribute" not in details:
             return ""
-
-        details = cast(CosignV1Data, details)
 
         representation = details.get("representation") or ""
         identifier = details["identifier"]

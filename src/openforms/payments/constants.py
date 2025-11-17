@@ -1,4 +1,4 @@
-from typing import cast
+from collections.abc import Set
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -39,11 +39,8 @@ class PaymentStatus(models.TextChoices):
         return dict(cls.choices)[value]
 
 
-PAYMENT_STATUS_FINAL = cast(
-    set[str],
-    {
-        PaymentStatus.failed.value,
-        PaymentStatus.completed.value,
-        PaymentStatus.registered.value,
-    },
-)
+PAYMENT_STATUS_FINAL: Set[str] = {
+    PaymentStatus.failed.value,
+    PaymentStatus.completed.value,
+    PaymentStatus.registered.value,
+}

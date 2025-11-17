@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any, Generic, TypeVar, cast
+from typing import Any
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
@@ -39,10 +39,7 @@ class AllOrNoneTruthyFieldsValidator:
             raise serializers.ValidationError(err, code=self.code)
 
 
-MT = TypeVar("MT", bound=models.Model)
-
-
-class ModelValidator(Generic[MT]):
+class ModelValidator[MT: models.Model]:
     """
     Turn a Django validator of model instances into a DRF validator.
 
@@ -73,7 +70,7 @@ class ModelValidator(Generic[MT]):
         self.validator_func = validator_func
 
     def __call__(
-        self, attrs: dict[str, Any], serializer: serializers.ModelSerializer
+        self, attrs: dict[str, Any], serializer: serializers.ModelSerializer[MT]
     ) -> dict[str, Any]:
         model_fields = [f.name for f in serializer.Meta.model._meta.get_fields()]
 
@@ -81,7 +78,8 @@ class ModelValidator(Generic[MT]):
         # do for a create or update when all the data is valid - this allows validator
         # functions to operate on model instances and shared logic between serializers
         # and Django model.clean() methods.
-        instance = cast(MT, get_model_serializer_instance(serializer))
+
+        instance = get_model_serializer_instance(serializer)
         for key, value in attrs.items():
             if key not in model_fields:
                 continue

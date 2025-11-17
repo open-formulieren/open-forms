@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping
-from typing import Literal, TypedDict, assert_never, cast
+from typing import Literal, TypedDict, assert_never
 
 from django.http import HttpRequest
 from django.templatetags.static import static
@@ -162,13 +162,16 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
                     f"Auth attribute '{auth_attribute}' is not supported"
                 )
 
+        extra_claims = auth_info.additional_claims
+        assert isinstance(extra_claims, dict)
+
         yivi_context: YiviContext = {
             "source": "yivi",
             "authorizee": {
                 "legalSubject": {
                     "identifierType": identifier_type,
                     "identifier": auth_info.value,
-                    "additionalInformation": cast(dict, auth_info.additional_claims),
+                    "additionalInformation": extra_claims,
                 }
             },
             "levelOfAssurance": auth_info.loa,

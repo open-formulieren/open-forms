@@ -12,7 +12,7 @@ apps/packages:
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 import elasticapm
 
@@ -148,6 +148,8 @@ def as_json_schema(
     :returns: None for content and softRequiredErrors components, list of JSON objects
       for columns and fieldsets, and a JSON object otherwise.
     """
+    from typing import cast  # noqa: TID251
+
     registry = _register or register
 
     match component["type"]:

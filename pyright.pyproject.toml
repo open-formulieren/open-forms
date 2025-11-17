@@ -79,6 +79,8 @@ include = [
     "src/openforms/utils/pdf.py",
     # JSON schema generation
     "src/openforms/forms/json_schema.py",
+    # Validations app
+    "src/openforms/validations/api/serializers.py",
     "src/geo_visualization",
 ]
 exclude = [

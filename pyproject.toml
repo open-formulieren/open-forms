@@ -121,3 +121,4 @@ banned-module-level-imports = [
 
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "logging".msg = "Use `structlog.stdlib.get_logger(__name__)` instead of the stdlib logging module."
+"typing.cast".msg = "Casting is an anti-pattern, use `assert isinstance(...)` instead, or suppress the error."
