@@ -6,7 +6,7 @@ component definitions are rewritten to be compatible with the current code.
 """
 
 import json
-from typing import Protocol, cast
+from typing import Protocol, cast  # noqa: TID251
 
 import structlog
 from glom import assign, glom

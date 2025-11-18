@@ -4,7 +4,7 @@ Implementations of description generation for a given JsonLogic operation.
 
 from collections.abc import Sequence
 from functools import wraps
-from typing import TYPE_CHECKING, Protocol, cast
+from typing import TYPE_CHECKING, Protocol
 
 from django.utils.translation import gettext, gettext_lazy as _
 
@@ -117,7 +117,8 @@ def op_var(operation: Operation, for_root=False) -> str:
     if not operation.arguments:
         return gettext("(invalid var ref)")
 
-    var_ref = cast(str | int | Operation | None, operation.arguments[0])
+    var_ref = operation.arguments[0]
+    assert isinstance(var_ref, str | int | Operation | None)
     if isinstance(var_ref, str | int):
         return _fmt_var(str(var_ref))
 

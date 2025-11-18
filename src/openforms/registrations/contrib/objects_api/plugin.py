@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, Any, cast, override
+from typing import TYPE_CHECKING, Any, override
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -264,6 +264,8 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
                     schema.pop(prop)
 
             case {"type": "editgrid"}:
+                from typing import cast  # noqa: TID251
+
                 assert isinstance(schema["items"], dict)
                 _properties = schema["items"]["properties"]
                 assert isinstance(_properties, dict)

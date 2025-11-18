@@ -1,5 +1,3 @@
-from typing import cast
-
 from django.utils.translation import gettext_lazy as _
 
 from djangorestframework_camel_case.util import underscoreize
@@ -35,18 +33,20 @@ class ValidatorsFilterSerializer(serializers.Serializer):
         # FIXME: this should be solved as an extension instead, but at least it's now
         # kept together
         instance = cls()
-        ct_field = cast(serializers.CharField, instance.fields["component_type"])
+        ct_field = instance.fields["component_type"]
+        name = ct_field.field_name
+        assert name
         return [
             OpenApiParameter(
-                underscore_to_camel(cast(str, ct_field.field_name)),
+                underscore_to_camel(name),
                 OpenApiTypes.STR,
-                description=cast(str, ct_field.help_text),
+                description=ct_field.help_text or "",
             )
         ]
 
 
 class ValidationResultSerializer(serializers.Serializer):
-    is_valid = serializers.BooleanField(
+    is_valid = serializers.BooleanField(  # pyright: ignore[reportAssignmentType]
         label=_("Is valid"), help_text=_("Boolean indicating value passed validation.")
     )
     messages = serializers.ListField(
@@ -64,7 +64,7 @@ class ValidationPluginSerializer(serializers.Serializer):
         label=_("ID"),
         help_text=_("The unique plugin identifier"),
     )
-    label = serializers.CharField(
+    label = serializers.CharField(  # pyright: ignore[reportAssignmentType]
         source="verbose_name",
         label=_("Label"),
         help_text=_("The human-readable name for a plugin."),

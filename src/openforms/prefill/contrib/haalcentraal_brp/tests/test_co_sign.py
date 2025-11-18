@@ -169,14 +169,14 @@ class CoSignPrefillEmptyConfigTests(TestCase):
             ),
         )
         config_patcher.start()
-        self.addCleanup(config_patcher.stop)  # type: ignore
+        self.addCleanup(config_patcher.stop)
 
         co_sign_config_patcher = patch(
             "openforms.prefill.co_sign.PrefillConfig.get_solo",
             return_value=PrefillConfig(default_person_plugin=plugin.identifier),
         )
         co_sign_config_patcher.start()
-        self.addCleanup(co_sign_config_patcher.stop)  # type: ignore
+        self.addCleanup(co_sign_config_patcher.stop)
 
     def test_store_names_on_co_sign_auth(self):
         submission = SubmissionFactory.create(

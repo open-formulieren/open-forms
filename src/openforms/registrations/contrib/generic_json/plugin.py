@@ -1,7 +1,7 @@
 import base64
 import json
 from collections import defaultdict
-from typing import cast
+from typing import cast  # noqa: TID251
 
 from django.core.exceptions import SuspiciousOperation
 from django.core.serializers.json import DjangoJSONEncoder

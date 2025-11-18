@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from functools import cache
-from typing import Annotated, cast
+from typing import Annotated
 from unittest import skipIf
 
 from django.test import SimpleTestCase, override_settings
@@ -30,7 +31,7 @@ class RuleDescriptionTests(SimpleTestCase):
     )
 
     def test_rule_generation(self):
-        rule_descriptions = (
+        rule_descriptions: Sequence[tuple[JSON, str]] = (
             (
                 {"!=": [{"var": "textfield"}, "foo"]},
                 r"{{textfield}} is not equal to 'foo'",
@@ -79,7 +80,7 @@ class RuleDescriptionTests(SimpleTestCase):
 
         for rule, expected_description in rule_descriptions:
             with self.subTest(rule=rule):
-                output = generate_rule_description(cast(JSON, rule))
+                output = generate_rule_description(rule)
 
                 self.assertEqual(output, expected_description)
 
@@ -104,7 +105,7 @@ class RuleDescriptionTests(SimpleTestCase):
                 self.assertNotEqual(output, "")
 
     def test_custom_operators(self):
-        rule_descriptions = (
+        rule_descriptions: Sequence[tuple[JSON, str]] = (
             (
                 {"today": []},
                 r"{{today}}",
@@ -125,7 +126,7 @@ class RuleDescriptionTests(SimpleTestCase):
 
         for rule, expected_description in rule_descriptions:
             with self.subTest(rule=rule):
-                output = generate_rule_description(cast(JSON, rule))
+                output = generate_rule_description(rule)
 
                 self.assertEqual(output, expected_description)
 
@@ -133,7 +134,7 @@ class RuleDescriptionTests(SimpleTestCase):
         """Assert that formatting of descriptions involving `rdelta` operations work
         with different numbers of arguments"""
 
-        rule_descriptions = (
+        rule_descriptions: Sequence[tuple[JSON, str]] = (
             (
                 {"rdelta": [7]},
                 "7 year(s)",
@@ -149,6 +150,6 @@ class RuleDescriptionTests(SimpleTestCase):
         )
         for rule, expected_description in rule_descriptions:
             with self.subTest(rule=rule):
-                output = generate_rule_description(cast(JSON, rule))
+                output = generate_rule_description(rule)
 
                 self.assertEqual(output, expected_description)

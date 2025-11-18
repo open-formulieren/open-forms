@@ -6,7 +6,7 @@ import uuid
 from collections import defaultdict
 from collections.abc import Mapping
 from datetime import date, timedelta
-from typing import TYPE_CHECKING, ClassVar, cast
+from typing import TYPE_CHECKING, ClassVar
 
 from django.core.files.base import File
 from django.db import models
@@ -236,7 +236,7 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
 
     def _get_formio_config_property(
         self, lookup: str, default: JSONValue = ""
-    ) -> JSONValue:
+    ) -> str | None:
         """
         Derive a property from the attached formio configuration.
         """
@@ -246,9 +246,8 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
             return None
 
         if value := glom(component, lookup, default=default):
-            # the cast is what *should* happen here, but due to formio shenanigans it is
-            # not guaranteed at runtime.
-            return cast(JSONValue, value)
+            assert isinstance(value, str)
+            return value
 
         return None
 

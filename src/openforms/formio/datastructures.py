@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import UserDict
-from collections.abc import Iterator
-from typing import cast
+from collections.abc import Iterator, Sequence
 
 from glom import glom
 
@@ -136,10 +135,10 @@ class FormioConfigurationWrapper:
     def is_visible_in_frontend(self, key: str, values: FormioData) -> bool:
         config_path = self.reverse_flattened[key]
         path_bits = [".".join(bit) for bit in RE_PATH.findall(config_path)]
-        nodes = []  # leftmost is root, rightmost is leaf
+        nodes: Sequence[Component] = []  # leftmost is root, rightmost is leaf
         for depth in range(len(path_bits)):
             path = ".".join(path_bits[: depth + 1])
-            component = cast(Component, glom(self.configuration, path))
+            component = glom(self.configuration, path)
             nodes.append(component)
         return all(is_visible_in_frontend(node, values) for node in nodes)
 

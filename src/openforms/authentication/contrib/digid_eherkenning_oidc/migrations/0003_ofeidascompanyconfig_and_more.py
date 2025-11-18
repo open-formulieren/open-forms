@@ -224,7 +224,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "legal_subject_name_claim",
-                    django_jsonform.models.fields.ArrayField(  # type: ignore
+                    django_jsonform.models.fields.ArrayField(
                         base_field=models.CharField(
                             max_length=100, verbose_name="claim path segment"
                         ),

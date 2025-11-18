@@ -5,7 +5,7 @@ Implementation details for the v2 registration handler.
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime, time
-from typing import assert_never, cast
+from typing import assert_never, cast  # noqa: TID251
 
 from glom import Assign, Path, glom
 
@@ -116,7 +116,7 @@ def process_mapped_variable(
                 return [
                     AssignmentSpec(
                         # the typeddict union of keys/values is lost when looping over them
-                        destination=Path(*target_path_bits),  # pyright: ignore[reportGeneralTypeIssues]
+                        destination=Path(*target_path_bits),
                         value=_value,  # pyright: ignore[reportArgumentType]
                     )
                     for key, target_path_bits in detailed_mappings.items()

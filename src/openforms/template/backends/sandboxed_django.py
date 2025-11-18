@@ -1,4 +1,4 @@
-from typing import cast
+from collections.abc import Callable
 
 from django.template.backends.django import DjangoTemplates
 from django.utils.functional import SimpleLazyObject
@@ -86,9 +86,15 @@ def get_openforms_backend():
     )
 
 
-openforms_backend = cast(
-    SandboxedDjangoTemplates, SimpleLazyObject(get_openforms_backend)
-)
+type SimpleLazyObjectInit[T] = Callable[[], T]
+
+
+def _simple_lazy_object[T](func: SimpleLazyObjectInit[T]) -> T:
+    # SimpleLazyObject practically acts as if it's the wrapped object itself
+    return SimpleLazyObject(func)  # pyright: ignore[reportReturnType]
+
+
+openforms_backend: SandboxedDjangoTemplates = _simple_lazy_object(get_openforms_backend)
 """
 Sandbox instance supporting custom tags for form designers.
 """

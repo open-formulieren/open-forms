@@ -2,7 +2,7 @@ import base64
 import json
 from collections.abc import Collection
 from copy import deepcopy
-from typing import cast, override
+from typing import override
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
@@ -189,7 +189,7 @@ class YiviPlugin(AnonymousUserOIDCPlugin):
             return []
 
         return [
-            cast(list[str], attributes_group.attributes)
+            attributes_group.attributes
             for attributes_group in auth_backend_options["additional_attributes_groups"]
         ]
 
@@ -345,7 +345,7 @@ class YiviPlugin(AnonymousUserOIDCPlugin):
         """
         additional_attributes_condiscon: Collection[CondisconItem] = [
             [
-                cast(YiviAttributes, attributes_group.attributes),
+                attributes_group.attributes,
                 # The empty list ensures that this attribute becomes optional.
                 # This needs to be placed as last, otherwise it doesn't work
                 # (see https://dashboard.signicat.com/contact-us/tickets/207907)
