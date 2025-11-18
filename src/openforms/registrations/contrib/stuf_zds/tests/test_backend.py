@@ -3163,6 +3163,78 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
 
+class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
+    VCR_TEST_FILES = TESTS_DIR / "files"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.zds_service = StufServiceFactory.create(
+            soap_service__url="http://localhost/stuf-zds"
+        )
+        config = StufZDSConfig.get_solo()
+        config.service = cls.zds_service
+        config.save()
+        cls.addClassCleanup(StufZDSConfig.clear_cache)
+
+        cls.options: RegistrationOptions = {
+            "zds_zaaktype_code": "foo",
+            "zds_documenttype_omschrijving_inzending": "foo",
+            "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
+        }
+
+    @tag("gh-5754")
+    def test_date_related_values_in_extra_elementen(self):
+        """Ensure that date-related values in extraElementen are formatted correctly."""
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                },
+                {
+                    "key": "datetime",
+                    "type": "datetime",
+                    "label": "Datetime",
+                },
+                {
+                    "key": "time",
+                    "type": "time",
+                    "label": "time",
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={
+                "date": "2025-11-18",
+                "time": "14:21:00",
+                "datetime": "2025-11-18T14:21:00+01:00",
+            },
+            language_code="en",
+        )
+
+        plugin = StufZDSRegistration("stuf")
+        plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+        self.assertSoapXMLCommon(xml_doc)
+
+        # Ensure that date-related values are formatted correctly
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//stuf:extraElementen/stuf:extraElement[@naam='date']": "2025-11-18",
+                "//stuf:extraElementen/stuf:extraElement[@naam='datetime']": "2025-11-18T14:21:00+01:00",
+                "//stuf:extraElementen/stuf:extraElement[@naam='time']": "14:21:00",
+            },
+        )
+
+
 @freeze_time("2020-12-22")
 @temp_private_root()
 @requests_mock.Mocker()
