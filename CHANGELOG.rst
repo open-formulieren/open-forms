@@ -6,6 +6,39 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.3 (2025-11-18)
+==================
+
+Bugfix release.
+
+This release addresses a security issue - we recommend upgrading as soon as possible.
+See below for a workaround if that isn't feasible.
+
+**Validation bypass issue and workaround**
+
+When Open Formulieren retrieves data via prefill from an authentic source, form builders
+can prevent tampering with this data by marking it as "read only". However, this mechanism
+didn't work as intended when the component is marked as "read only" via form logic based
+on certain conditions.
+
+As a workaround, you can invert the logic - initially mark the field as "read only" and
+use logic to make it writable if no prefill data is available.
+
+**Bugfixes**
+
+* [:cve:`CVE-2025-64515`] Fixed missing logic evaluation before validating (step data)
+  user input. See :ghsa:`GHSA-cp63-63mq-5wvf` for details.
+* [:backend:`5735`] Fixed a crash when converting raw JSON data to the Python types when
+  variables don't exist in the database in certain circumstances.
+* [:backend:`5737`] Fixed a crash in the form builder UI when the "synchronize variable"
+  logic action is used and fieldset components are present.
+* Fixed a crash in the configuration overview when Worldline merchants are misconfigured.
+* Fixed some crashes due to enabling certain optimizations, notably when:
+
+  - Looking up the nearest address for map coordinates.
+  - Looking up addresses in the Kadaster API.
+  - Processing (single) file attachments in the generic registration plugin.
+
 3.3.2 (2025-11-05)
 ==================
 
