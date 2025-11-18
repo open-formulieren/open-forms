@@ -19,6 +19,7 @@ class ValidatePrefillData:
 
     def __call__(self, data: dict, field: JSONField):
         instance: SubmissionStep = field.parent.instance
+        assert instance._form_logic_evaluated, "Logic must be evaluated"
         prefill_data = instance.submission.get_prefilled_data()
 
         errors = {}
