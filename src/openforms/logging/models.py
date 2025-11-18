@@ -46,9 +46,7 @@ class TimelineLogProxy(TimelineLog):
     content_type_id: int
     user_id: int | None
 
-    objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
-        TimelineLogProxyManager
-    ] = TimelineLogProxyManager()
+    objects: ClassVar[TimelineLogProxyManager] = TimelineLogProxyManager()
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         proxy = True

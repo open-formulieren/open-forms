@@ -12,7 +12,7 @@ from .plugin import PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER
 
 
 def check_unmatched_variables() -> str:
-    live_forms = Form.objects.live()  # pyright: ignore[reportAttributeAccessIssue]
+    live_forms = Form.objects.live()
 
     fm_immutable_variables = FormVariable.objects.filter(
         source=FormVariableSources.user_defined,

@@ -306,7 +306,7 @@ class HaalCentraalEmptyConfigTests(TestCase):
             return_value=config,
         )
         config_patcher.start()
-        self.addCleanup(config_patcher.stop)  # pyright: ignore[reportAttributeAccessIssue]
+        self.addCleanup(config_patcher.stop)
 
     def test_get_available_attributes(self):
         attributes = HaalCentraalPrefill.get_available_attributes()

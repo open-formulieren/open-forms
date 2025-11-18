@@ -71,7 +71,7 @@ class WorldlineWebhookConfiguration(models.Model):
         _("Webhook Key Secret"), max_length=255, default=""
     )
 
-    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+    class Meta:
         verbose_name = _("Worldline webhook configuration")
         verbose_name_plural = _("Worldline webhook configurations")
 
