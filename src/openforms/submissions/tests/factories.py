@@ -335,7 +335,7 @@ class SubmissionReportFactory(factory.django.DjangoModelFactory):
 
 class TemporaryFileUploadFactory(factory.django.DjangoModelFactory):
     submission = factory.Maybe(
-        "legacy",
+        "legacy",  # TODO: remove
         yes_declaration=None,
         no_declaration=factory.SubFactory(SubmissionFactory),
     )

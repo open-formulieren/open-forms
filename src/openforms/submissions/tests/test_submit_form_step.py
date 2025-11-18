@@ -21,7 +21,11 @@ from openforms.forms.tests.factories import (
 )
 
 from ..models import SubmissionValueVariable
-from .factories import SubmissionFactory, SubmissionStepFactory
+from .factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+    TemporaryFileUploadFactory,
+)
 from .mixins import SubmissionsMixin
 
 
@@ -329,3 +333,71 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
 
         variable = SubmissionValueVariable.objects.get(key="nested.key")
         self.assertEqual(variable.value, "some data")
+
+    @tag("gh-5757")
+    def test_create_step_data_with_fileupload(self):
+        # Regression test for uploads added to steps that haven't been persisted
+        # yet. See Sentry 450470 amongst others.
+        step1 = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "text"}]
+            },
+        )
+        form = step1.form
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [{"type": "file", "key": "attachment"}]
+            },
+        )
+        submission = SubmissionFactory.create(form=step2.form)
+        self._add_submission_to_session(submission)
+        with self.subTest("submit step 1"):
+            endpoint1 = reverse(
+                "api:submission-steps-detail",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": step1.uuid,
+                },
+            )
+
+            response = self.client.put(endpoint1, {"data": {"text": "foo"}})
+
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        upload = TemporaryFileUploadFactory.create(
+            submission=submission, file_name="my-image.jpg"
+        )
+        upload_data = {
+            "attachment": [
+                {
+                    "url": f"http://localhost/api/v2/submissions/files/{upload.uuid}",
+                    "data": {
+                        "url": f"http://localhost/api/v2/submissions/files/{upload.uuid}",
+                        "form": "",
+                        "name": "my-image.jpg",
+                        "size": upload.file_size,
+                        "baseUrl": "http://localhost",
+                        "project": "",
+                    },
+                    "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                    "size": upload.file_size,
+                    "type": "image/jpg",
+                    "storage": "url",
+                    "originalName": "my-image.jpg",
+                }
+            ],
+        }
+
+        with self.subTest("submit step 2"):
+            endpoint2 = reverse(
+                "api:submission-steps-detail",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": step2.uuid,
+                },
+            )
+
+            response = self.client.put(endpoint2, {"data": upload_data})
+
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
