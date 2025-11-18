@@ -485,6 +485,27 @@ class StufZDSPluginTests(StUFZDSTestBase):
                         "attribute": RegistrationAttribute.locatie_coordinaat,
                     },
                 },
+                {
+                    "key": "contactpersoonNaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_contactpersoonNaam,
+                    },
+                },
+                {
+                    "key": "telefoonnummer",
+                    "type": "phoneNumber",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_telefoonnummer,
+                    },
+                },
+                {
+                    "key": "emailadres",
+                    "type": "email",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_emailadres,
+                    },
+                },
             ],
             public_registration_reference="foo-zaak",
             registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
@@ -500,6 +521,9 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 },
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
+                "contactpersoonNaam": "Naam",
+                "telefoonnummer": "0612345678",
+                "emailadres": "foo@example.com",
             },
             bsn="111222333",
             form__name="my-form",
@@ -579,6 +603,9 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "J.W.",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsaanduiding": "M",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:heeftAlsAanspreekpunt/zkn:gerelateerde/zkn:contactpersoonNaam": "Naam",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:heeftAlsAanspreekpunt/zkn:gerelateerde/bg:telefoonnummer": "0612345678",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:heeftAlsAanspreekpunt/zkn:gerelateerde/bg:emailadres": "foo@example.com",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
                 "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",

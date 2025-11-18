@@ -130,6 +130,9 @@
                     {% endif %}
                 </ZKN:gerelateerde>
                 <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
+                {% if initiator.contactpersoonNaam or initiator.telefoonnummer or initiator.emailadres %}
+                    {% include "stuf_zds/soap/includes/heeftAlsAanspreekpunt.xml" %}
+                {% endif %}
             </ZKN:heeftAlsInitiator>
         {% elif not global_config.allow_empty_initiator %}
             <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
