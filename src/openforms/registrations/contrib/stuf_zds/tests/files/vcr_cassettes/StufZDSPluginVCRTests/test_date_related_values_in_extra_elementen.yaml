@@ -7,7 +7,7 @@ interactions:
       \   xmlns:BG=\"http://www.egem.nl/StUF/sector/bg/0310\"\n    xmlns:GML=\"http://www.opengis.net/gml\"\n>\n
       \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Lk01</StUF:berichtcode>\n
       \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>88103725-72eb-444b-91a6-4945fd2d1e9b</StUF:referentienummer>\n<StUF:tijdstipBericht>20251118142850</StUF:tijdstipBericht>\n\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>87c6eef5-3726-483c-af53-8d533f38a217</StUF:referentienummer>\n<StUF:tijdstipBericht>20251118142956</StUF:tijdstipBericht>\n\n
       \       <StUF:entiteittype>ZAK</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
       \   <ZKN:parameters>\n        <StUF:mutatiesoort>T</StUF:mutatiesoort>\n        <StUF:indicatorOvername>V</StUF:indicatorOvername>\n
       \   </ZKN:parameters>\n    <ZKN:object StUF:verwerkingssoort=\"T\" StUF:entiteittype=\"ZAK\">\n
@@ -15,13 +15,12 @@ interactions:
       \       \n        \n        \n        <ZKN:startdatum>20251118</ZKN:startdatum>\n
       \       <ZKN:registratiedatum>20251118</ZKN:registratiedatum>\n        <ZKN:betalingsIndicatie>N.v.t.</ZKN:betalingsIndicatie>\n
       \       \n\n        <ZKN:zaakniveau>1</ZKN:zaakniveau>\n        <ZKN:deelzakenIndicatie>N</ZKN:deelzakenIndicatie>\n
-      \       <StUF:tijdstipRegistratie>20251118142850</StUF:tijdstipRegistratie>\n
+      \       <StUF:tijdstipRegistratie>20251118142956</StUF:tijdstipRegistratie>\n
       \       <StUF:extraElementen>\n\n<StUF:extraElement naam=\"language_code\">en</StUF:extraElement>\n\n<StUF:extraElement
-      naam=\"date\">nov 18, 2025</StUF:extraElement>\n\n<StUF:extraElement naam=\"datetime\">nov
-      18, 2025, 2:21 p.m.</StUF:extraElement>\n\n<StUF:extraElement naam=\"time\">2:21
-      p.m.</StUF:extraElement>\n\n</StUF:extraElementen>\n\n\n        <ZKN:isVan StUF:entiteittype=\"ZAKZKT\"
-      StUF:verwerkingssoort=\"T\">\n            <ZKN:gerelateerde StUF:verwerkingssoort=\"I\"
-      StUF:entiteittype=\"ZKT\">\n                \n                <ZKN:code>foo</ZKN:code>\n
+      naam=\"date\">2025-11-18</StUF:extraElement>\n\n<StUF:extraElement naam=\"datetime\">2025-11-18T14:21:00+01:00</StUF:extraElement>\n\n<StUF:extraElement
+      naam=\"time\">14:21:00</StUF:extraElement>\n\n</StUF:extraElementen>\n\n\n        <ZKN:isVan
+      StUF:entiteittype=\"ZAKZKT\" StUF:verwerkingssoort=\"T\">\n            <ZKN:gerelateerde
+      StUF:verwerkingssoort=\"I\" StUF:entiteittype=\"ZKT\">\n                \n                <ZKN:code>foo</ZKN:code>\n
       \               <ZKN:ingangsdatumObject>20251118</ZKN:ingangsdatumObject>\n
       \           </ZKN:gerelateerde>\n        </ZKN:isVan>\n        \n            <ZKN:heeftAlsInitiator
       StUF:verwerkingssoort=\"T\" StUF:entiteittype=\"ZAKBTRINI\">\n                <ZKN:gerelateerde>\n
@@ -32,7 +31,7 @@ interactions:
       \                           \n                            \n                            \n
       \                           \n                            \n                            \n\n
       \                           \n                        </ZKN:natuurlijkPersoon>\n
-      \                   \n                </ZKN:gerelateerde>\n                <StUF:tijdstipRegistratie>20251118142850</StUF:tijdstipRegistratie>\n
+      \                   \n                </ZKN:gerelateerde>\n                <StUF:tijdstipRegistratie>20251118142956</StUF:tijdstipRegistratie>\n
       \           </ZKN:heeftAlsInitiator>\n        \n        \n        \n        \n\n
       \       \n\n        \n    </ZKN:object>\n</ZKN:zakLk01>\n    </soapenv:Body>\n</soapenv:Envelope>\n"
     headers:
@@ -43,7 +42,7 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '3771'
+      - '3770'
       Content-Type:
       - application/soap+xml
       SOAPAction:
@@ -76,7 +75,7 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Tue, 18 Nov 2025 14:28:50 GMT
+      - Tue, 18 Nov 2025 14:29:56 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.9
     status:
@@ -89,7 +88,7 @@ interactions:
       \       \n\n<ZKN:genereerDocumentIdentificatie_Di02 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
       \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Di02</StUF:berichtcode>\n
       \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>80f1301a-ffb9-49e4-999b-8117263d9dec</StUF:referentienummer>\n<StUF:tijdstipBericht>20251118142850</StUF:tijdstipBericht>\n\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>26c4fabd-8598-4c61-ac9c-ef324e6d9802</StUF:referentienummer>\n<StUF:tijdstipBericht>20251118142956</StUF:tijdstipBericht>\n\n
       \       <StUF:functie>genereerDocumentidentificatie</StUF:functie>\n    </ZKN:stuurgegevens>\n</ZKN:genereerDocumentIdentificatie_Di02>\n
       \   </soapenv:Body>\n</soapenv:Envelope>\n"
     headers:
@@ -123,7 +122,7 @@ interactions:
         \               <StUF:functie>genereerDocumentidentificatie</StUF:functie>\n
         \           </ZKN:stuurgegevens>\n            <ZKN:melding>melding</ZKN:melding>\n
         \           <ZKN:document StUF:entiteittype=\"EDC\" StUF:functie=\"entiteit\">\n
-        \               <ZKN:identificatie>4ac627d907c6c058</ZKN:identificatie>\n
+        \               <ZKN:identificatie>935f9ea9ab80d3c6</ZKN:identificatie>\n
         \           </ZKN:document>\n        </ZKN:genereerDocumentIdentificatie_Du02>\n
         \   </soapenv:Body>\n</soapenv:Envelope>"
     headers:
@@ -134,7 +133,7 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Tue, 18 Nov 2025 14:28:50 GMT
+      - Tue, 18 Nov 2025 14:29:56 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.9
     status:
@@ -147,11 +146,11 @@ interactions:
       \       \n\n<ZKN:edcLk01 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\"
       xmlns:xmime=\"http://www.w3.org/2005/05/xmlmime\">\n    <ZKN:stuurgegevens>\n
       \       <StUF:berichtcode>Lk01</StUF:berichtcode>\n        <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>3b5d5d4b-83fd-412c-a9ad-a884e8b40ea4</StUF:referentienummer>\n<StUF:tijdstipBericht>20251118142850</StUF:tijdstipBericht>\n\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>037c9f29-98ab-4cb5-9c23-a44f4f90570b</StUF:referentienummer>\n<StUF:tijdstipBericht>20251118142956</StUF:tijdstipBericht>\n\n
       \       <StUF:entiteittype>EDC</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
       \   <ZKN:parameters>\n        <StUF:mutatiesoort>T</StUF:mutatiesoort>\n        <StUF:indicatorOvername>I</StUF:indicatorOvername>\n
       \   </ZKN:parameters>\n    <ZKN:object StUF:entiteittype=\"EDC\" StUF:verwerkingssoort=\"T\">\n
-      \       <ZKN:identificatie>4ac627d907c6c058</ZKN:identificatie>\n        <ZKN:dct.omschrijving>foo</ZKN:dct.omschrijving>\n
+      \       <ZKN:identificatie>935f9ea9ab80d3c6</ZKN:identificatie>\n        <ZKN:dct.omschrijving>foo</ZKN:dct.omschrijving>\n
       \       <ZKN:creatiedatum>20251118</ZKN:creatiedatum>\n        <ZKN:ontvangstdatum>20251118</ZKN:ontvangstdatum>\n
       \       <ZKN:titel>inzending</ZKN:titel>\n        <ZKN:beschrijving>Ingezonden
       formulier</ZKN:beschrijving>\n        <ZKN:formaat>application/pdf</ZKN:formaat>\n
@@ -161,11 +160,11 @@ interactions:
       StUF:bestandsnaam=\"open-forms-inzending.pdf\"></ZKN:inhoud>\n        <StUF:tijdvakGeldigheid>\n
       \           <StUF:beginGeldigheid>20251118</StUF:beginGeldigheid>\n            <StUF:eindGeldigheid
       StUF:noValue=\"geenWaarde\" xsi:nil=\"true\"/>\n        </StUF:tijdvakGeldigheid>\n
-      \       <StUF:tijdstipRegistratie>20251118142850</StUF:tijdstipRegistratie>\n
+      \       <StUF:tijdstipRegistratie>20251118142956</StUF:tijdstipRegistratie>\n
       \       <ZKN:isRelevantVoor StUF:entiteittype=\"EDCZAK\" StUF:verwerkingssoort=\"T\">\n
       \           <ZKN:gerelateerde StUF:entiteittype=\"ZAK\" StUF:verwerkingssoort=\"I\">\n
       \               <ZKN:identificatie>foo-zaak</ZKN:identificatie>\n                <ZKN:omschrijving>my-form</ZKN:omschrijving>\n
-      \           </ZKN:gerelateerde>\n            <StUF:tijdstipRegistratie>20251118142850</StUF:tijdstipRegistratie>\n
+      \           </ZKN:gerelateerde>\n            <StUF:tijdstipRegistratie>20251118142956</StUF:tijdstipRegistratie>\n
       \       </ZKN:isRelevantVoor>\n    </ZKN:object>\n</ZKN:edcLk01>\n    </soapenv:Body>\n</soapenv:Envelope>\n"
     headers:
       Accept:
@@ -208,7 +207,7 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Tue, 18 Nov 2025 14:28:50 GMT
+      - Tue, 18 Nov 2025 14:29:56 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.9
     status:

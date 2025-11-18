@@ -50,7 +50,7 @@ from ...utils import execute_unless_result_exists
 from .options import ZaakOptionsSerializer
 from .registration_variables import register as variables_registry
 from .typing import RegistrationOptions
-from .utils import flatten_data
+from .utils import flatten_data_and_convert_to_primitives
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -436,7 +436,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             self.process_children(submission, zaak_data, extra_data)
 
             # The extraElement tag of StUF-ZDS expects primitive types
-            extra_data = flatten_data(extra_data)
+            extra_data = flatten_data_and_convert_to_primitives(extra_data)
 
             assert submission.registration_result is not None
             if internal_reference := submission.registration_result.get(
@@ -528,7 +528,9 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         self, submission: Submission, options: RegistrationOptions
     ):
         # The extraElement tag of StUF-ZDS expects primitive types
-        extra_data = flatten_data(self.get_extra_data(submission, options))
+        extra_data = flatten_data_and_convert_to_primitives(
+            self.get_extra_data(submission, options)
+        )
 
         zaak_options: ZaakOptions = {
             **options,
