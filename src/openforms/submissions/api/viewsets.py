@@ -596,7 +596,8 @@ class SubmissionStepViewSet(
         # The endpoint permission evaluated the submission state, but now a step has been
         # created/updated, so we need to refresh it
         execution_state = submission.load_execution_state(refresh=True)
-        current_step_index = execution_state.submission_steps.index(instance)
+        assert instance.form_step is not None
+        current_step_index = execution_state.get_step_index(instance.form_step.uuid)
         subsequent_steps = execution_state.submission_steps[current_step_index + 1 :]
         for subsequent_step in subsequent_steps:
             if not subsequent_step.pk:

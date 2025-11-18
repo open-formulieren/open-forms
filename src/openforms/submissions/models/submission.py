@@ -106,6 +106,24 @@ class SubmissionState:
     def resolve_step(self, form_step_uuid: str) -> SubmissionStep:
         return self.get_submission_step(form_step_uuid=form_step_uuid)
 
+    def get_step_index(self, form_step_uuid: str | uuid.UUID) -> int:
+        """
+        Look up the index of a particular step.
+
+        The UUID must be the UUID of the form step. Note that we cannot simply look at
+        ``self.submission_steps.index`` because django model instance equality testing
+        is done by comparing ``instance.pk``, and for freshly created step instances the
+        execution state can be stale.
+
+        .. todo:: This is another reason why these datastructures require rework!
+        """
+        needle = str(form_step_uuid)
+        for index, submission_step in enumerate(self.submission_steps):
+            assert submission_step.form_step is not None
+            if str(submission_step.form_step.uuid) == needle:
+                return index
+        raise ValueError(f"Step with UUID {needle} does not exist!")  # pragma: no cover
+
 
 class Submission(models.Model):
     """

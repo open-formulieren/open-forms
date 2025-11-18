@@ -214,7 +214,9 @@ def attach_uploads_to_submission_step(
         result.append((attachment, created))
 
         # update OTel metric
-        current_step_index = execution_state.submission_steps.index(submission_step)
+        current_step_index = execution_state.get_step_index(
+            submission_step.form_step.uuid
+        )
         upload_file_size.record(
             attachment.content.size,
             attributes={
