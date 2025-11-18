@@ -6,6 +6,16 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.4 (2025-11-18)
+==================
+
+Hotfix release.
+
+* [:backend:`5754`] Fixed a date/datetime/time formatting regression in the
+  ``extraElementen`` of the StUF-ZDS registration plugin.
+* [:backend:`5757`] Fixed a crash when attempting to submit a submission step with file
+  upload attachments.
+
 3.3.3 (2025-11-18)
 ==================
 
