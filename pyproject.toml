@@ -90,6 +90,8 @@ extend-select = [
     # "B904",
     "TID251",# tidy-imports
     "TID253",
+    # RUFF specific rules
+    "RUF018", # assignment in assert
 ]
 ignore = [
     "B017",

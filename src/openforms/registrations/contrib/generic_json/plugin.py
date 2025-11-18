@@ -338,7 +338,8 @@ def process_component(
             variable_schema = schema[schema_key]
             assert isinstance(variable_schema, dict)
 
-            assert (n_attachments := len(attachment_list)) <= 1  # sanity check
+            n_attachments = len(attachment_list)
+            assert n_attachments <= 1  # sanity check
             if n_attachments == 0:
                 values[key] = None
 

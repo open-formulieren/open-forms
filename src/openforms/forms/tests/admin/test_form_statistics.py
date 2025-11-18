@@ -281,7 +281,8 @@ class FormStatisticsExportAdminTests(WebTest):
                     "end_date": "2024-12-31",
                 }
             )
-            assert export_form1.is_valid()
+            export_form1_valid = export_form1.is_valid()
+            assert export_form1_valid
 
             dataset1 = export_form1.export()
 
@@ -296,7 +297,8 @@ class FormStatisticsExportAdminTests(WebTest):
                     "end_date": "2024-12-05",
                 }
             )
-            assert export_form2.is_valid()
+            export_form2_valid = export_form2.is_valid()
+            assert export_form2_valid
 
             dataset2 = export_form2.export()
 
@@ -313,7 +315,8 @@ class FormStatisticsExportAdminTests(WebTest):
                     "limit_to_forms": [form2.pk, form3.pk],
                 }
             )
-            assert export_form3.is_valid()
+            export_form3_valid = export_form3.is_valid()
+            assert export_form3_valid
 
             dataset3 = export_form3.export()
             self.assertEqual(len(dataset3), 3)
