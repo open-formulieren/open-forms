@@ -1,7 +1,7 @@
 import re
 from collections.abc import Mapping
 from copy import deepcopy
-from datetime import datetime
+from datetime import date, datetime
 from typing import Protocol
 
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
@@ -747,7 +747,9 @@ class PartnerListField(serializers.Field):
             initial_value = [
                 {
                     key: (
-                        datetime.strptime(value, "%Y-%m-%d").date()
+                        # date format for StUF-BG (yyyymmdd) is different from HaalCentraal
+                        # (yyyy-MM-dd)
+                        date.fromisoformat(value)
                         if key == "dateOfBirth" and value
                         else value
                     )
@@ -869,7 +871,9 @@ class ChildListField(serializers.Field):
             initial_value = [
                 {
                     key: (
-                        datetime.strptime(value, "%Y-%m-%d").date()
+                        # date format for StUF-BG (yyyymmdd) is different from HaalCentraal
+                        # (yyyy-MM-dd)
+                        date.fromisoformat(value)
                         if key == "dateOfBirth" and value
                         else value
                     )
