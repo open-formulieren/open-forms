@@ -366,6 +366,8 @@ mozilla-django-oidc-db==1.1.1
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning
+networkx==3.6
+    # via -r requirements/base.in
 numpy==2.3.3
     # via shapely
 o365==2.0.31

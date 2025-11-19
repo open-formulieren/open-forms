@@ -28,6 +28,7 @@ from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
 from openforms.authentication.registry import register as authentication_register
 from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
+from openforms.formio.service import iter_components
 from openforms.formio.typing import Component
 from openforms.formio.validators import variable_key_validator
 from openforms.payments.fields import PaymentBackendChoiceField
@@ -45,7 +46,7 @@ User = get_user_model()
 logger = structlog.stdlib.get_logger(__name__)
 
 if TYPE_CHECKING:
-    from . import FormAuthenticationBackend
+    from . import FormAuthenticationBackend, FormStep
 
 
 class FormQuerySet(models.QuerySet["Form"]):
@@ -448,6 +449,32 @@ class Form(models.Model):
             return True
         return False
 
+    @property
+    def component_to_step(self) -> dict[str, FormStep]:
+        """Mapping from all component keys to their corresponding form step."""
+        if getattr(self, "_component_to_step", None) is None:
+            self._component_to_step: dict[str, FormStep] = {}
+            for form_step in self.formstep_set.select_related("form_definition"):
+                component_list = list(
+                    form_step.form_definition.configuration_wrapper.component_map
+                )
+                self._component_to_step.update(
+                    zip(component_list, [form_step] * len(component_list), strict=False)
+                )
+        return self._component_to_step
+
+    @property
+    def all_form_variables(self) -> set[str]:
+        """Set of all available form variable keys. Also includes static variables."""
+        if getattr(self, "_all_form_variables", None) is None:
+            from openforms.variables.service import get_static_variables
+
+            self._all_form_variables = {
+                *[var.key for var in get_static_variables()],
+                *[var.key for var in self.formvariable_set.all()],
+            }
+        return self._all_form_variables
+
     def get_registration_backend_display(self) -> str:
         return (
             ", ".join(
@@ -630,11 +657,11 @@ class Form(models.Model):
                     return_keys.add(key)
         return list(return_keys)
 
-    def iter_components(self, recursive=True) -> Iterator[Component]:
+    def iter_components(self, recursive=True, **kwargs) -> Iterator[Component]:
         # steps are ordered on the 'order' field because of django-ordered-model through
         # the FormStep.Meta configuration
         for form_step in self.formstep_set.select_related("form_definition"):
-            yield from form_step.iter_components(recursive=recursive)
+            yield from form_step.iter_components(recursive=recursive, **kwargs)
 
     @transaction.atomic
     def restore_old_version(
@@ -701,6 +728,27 @@ class Form(models.Model):
         self.deactivate_on = None
         self.save(update_fields=["active", "deactivate_on"])
         logger.debug("forms.form_deactivated", id=self.pk, name=self.admin_name)
+
+    def get_child_component_keys(self, key: str) -> set[str]:
+        """Get all child component keys for an arbitrary component key."""
+        step = self.component_to_step.get(key, None)
+        if step is None:
+            return set()
+
+        component = step.form_definition.configuration_wrapper[key]
+        return {
+            child["key"]
+            for child in iter_components(
+                component, recursive=True, recurse_into_editgrid=False
+            )
+        }
+
+    def get_form_step(self, component_key: str) -> FormStep | None:
+        """
+        Get the corresponding form step for a component key. Returns ``None`` if there
+        is no step.
+        """
+        return self.component_to_step.get(component_key, None)
 
 
 class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):

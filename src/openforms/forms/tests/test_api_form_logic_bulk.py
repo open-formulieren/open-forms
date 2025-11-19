@@ -1512,3 +1512,117 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(data["invalidParams"][6]["code"], "required")
         self.assertEqual(data["invalidParams"][6]["name"], "0.actions.2.action.config")
+
+
+class FormLogicAPIGraphValidationTests(APITestCase):
+    def setUp(self):
+        super().setUp()
+        user = SuperUserFactory.create(username="test", password="test")
+        self.client.force_authenticate(user=user)
+
+    def test_create(self):
+        form = FormFactory.create()
+        step_1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    },
+                    {
+                        "type": "content",
+                        "key": "content",
+                        "openForms": {
+                            "translations": {"nl": {"html": "<p>Dit is content!</p>"}}
+                        },
+                    },
+                ]
+            },
+        )
+        step_2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date",
+                        "label": "Date",
+                    },
+                ]
+            },
+        )
+
+        form_detail_url = f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}"
+        form_logic_data = [
+            {
+                "form": form_detail_url,
+                "jsonLogicTrigger": {"==": [{"var": "textfield"}, "datum"]},
+                "description": "First rule",
+                "order": 0,
+                "actions": [
+                    {
+                        "variable": "date",
+                        "action": {"type": "variable", "value": "2025-10-26"},
+                    }
+                ],
+            },
+            {
+                "form": form_detail_url,
+                "jsonLogicTrigger": {"==": [{"var": "checkbox"}, True]},
+                "description": "Second rule",
+                "order": 1,
+                "actions": [
+                    {
+                        "component": "textfield",
+                        "action": {
+                            "type": "property",
+                            "property": {"value": "disabled", "type": "bool"},
+                            "state": False,
+                        },
+                    }
+                ],
+            },
+            {
+                "form": form_detail_url,
+                "jsonLogicTrigger": {"==": [{"var": "checkbox"}, True]},
+                "description": "Third rule",
+                "order": 2,
+                "actions": [
+                    {
+                        "component": "content",
+                        "action": {
+                            "type": "property",
+                            "property": {"value": "hidden", "type": "bool"},
+                            "state": True,
+                        },
+                    }
+                ],
+            },
+        ]
+
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.put(url, data=form_logic_data)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        form_logic_qs = FormLogic.objects.all()
+        self.assertEqual(3, form_logic_qs.count())
+
+        with self.subTest("Rule order"):
+            expected_order = ["Second rule", "Third rule", "First rule"]
+            for description, rule in zip(expected_order, form_logic_qs, strict=False):
+                self.assertEqual(rule.description, description)
+
+        with self.subTest("Rules of step 1"):
+            self.assertEqual(
+                list(step_1.logic_rules.all()), [form_logic_qs[0], form_logic_qs[1]]
+            )
+
+        with self.subTest("Rules of step 2"):
+            self.assertEqual(list(step_2.logic_rules.all()), [form_logic_qs[2]])
