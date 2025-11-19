@@ -6,6 +6,16 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.5 (2025-11-19)
+==================
+
+Hotfix release.
+
+* Fixed crash in the MS Graph/Sharepoint registration plugin because it couldn't handle
+  date/datetime/time objects in the JSON serialization.
+* Fixed a bug in the OpenID library breaking our legacy callback endpoint compatibility
+  layer.
+
 3.3.4 (2025-11-18)
 ==================
 
