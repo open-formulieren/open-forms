@@ -21,7 +21,9 @@ from openforms.formio.service import (
 from openforms.formio.typing.custom import ChildProperties
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
+from openforms.forms.models.logic import _resolve_key
 from openforms.typing import DataMapping, JSONObject
+from openforms.utils.json_logic import introspect_json_logic
 
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
@@ -54,6 +56,48 @@ def compile_action_operation(action: ActionDict) -> ActionOperation:
 
 class ActionOperation:
     rule: FormLogic
+
+    # TODO-2409: if there are no input/output variables, return None instead?
+    # TODO-2409: variables might not be an accurate name, as it can also include
+    #  component keys
+    @property
+    def input_variables(self) -> set[str]:
+        """Return a set of input variable names that are used in the action."""
+        return set()
+
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        return set()
+
+    # TODO-2409: another possibility would be to have a (class) property on the Action
+    #  that defines which variables should be used to determine the step. Can be an
+    #  enum with options "json_logic_trigger", "input_variables", "output_variables".
+    #  Though we might also need a way to indicate it needs to be executed on all steps?
+    #  Don't think this is a good idea actually. Suppose you want to add another
+    #  ActionOperation with a new way to determine the step. Then you'd need to
+    #  implement that behaviour inside the FormLogic model, which isn't really
+    #  clear directly. We are doing a lot of things that the FormLogic model should do
+    #  though. Not really sure about this one
+    def get_steps(self, input_keys_from_trigger, all_form_variables):
+        """Get the relevant step(s) on which this rule should be executed."""
+        return set()
+        raise NotImplementedError()
+
+    def _get_steps(self, keys: set[str], all_form_variables: set[str]):
+        steps = set()
+        for key in keys:
+            # If we can't resolve it, the key does not belong to a form variable.
+            # HOWEVER, it might be a component, so we try to resolve a step for it
+            # anyway.
+            resolved_key = _resolve_key(key, all_form_variables) or key
+
+            step = self.rule.form.get_form_step(resolved_key)
+            if not step:
+                continue
+            steps.add(step)
+
+        return steps
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -97,6 +141,21 @@ class PropertyAction(ActionOperation):
             value=action["action"]["state"],
         )
 
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        # TODO-2409: is it worth only returning this for the "hidden" property action,
+        #  as marking a field as "required" or "disabled" doesn't affect the data?
+        # Also need to include children, as it might be a layout component. Note that
+        # these include all component keys, and should still be resolved against the
+        # available form variables
+        return {self.component} | self.rule.form.get_child_component_keys(
+            self.component
+        )
+
+    def get_steps(self, input_keys_from_trigger, all_form_variables):
+        return self._get_steps(self.output_variables, all_form_variables)
+
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
@@ -135,9 +194,16 @@ class PropertyAction(ActionOperation):
 
 
 class DisableNextAction(ActionOperation):
+    # TODO-2409: we cannot add variables at the moment, because we have no context
+    #  about which step is involved.
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls()
+
+    def get_steps(self, input_keys_from_trigger, all_form_variables):
+        steps = self._get_steps(input_keys_from_trigger, all_form_variables)
+        # Return last step
+        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -149,11 +215,32 @@ class DisableNextAction(ActionOperation):
 class StepNotApplicableAction(ActionOperation):
     form_step_identifier: str
 
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        # TODO-2409: once we resolve against all form variables, it will remove all
+        #  components that have no variable. Is that OK for this action? Feels like it
+        #  might introduce some edge cases. Perhaps worth considering to not resolve
+        #  against the variables at all?
+        # TODO-2409: do we need to speed up data access here?
+        # TODO-2409: ALSO, perhaps this is not even necessary, as we will get all rules
+        #  per step anyway. Meaning all other rules related to that step will not get
+        #  executed, since we never reach that step. Though it makes sense to include
+        #  them from a graph-building perspective. It will be incomplete otherwise.
+        form_step = self.rule.form.formstep_set.get(uuid=self.form_step_identifier)
+        configuration = form_step.form_definition.configuration_wrapper
+        return set(configuration.component_map.keys())
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(
             form_step_identifier=action["form_step_uuid"],
         )
+
+    def get_steps(self, input_keys_from_trigger, all_form_variables):
+        steps = self._get_steps(input_keys_from_trigger, all_form_variables)
+        # Return last step
+        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -178,11 +265,24 @@ class StepNotApplicableAction(ActionOperation):
 class StepApplicableAction(ActionOperation):
     form_step_identifier: str
 
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        # TODO-2409: see comments on "not applicable" action
+        form_step = self.rule.form.formstep_set.get(uuid=self.form_step_identifier)
+        configuration = form_step.form_definition.configuration_wrapper
+        return set(configuration.component_map.keys())
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(
             form_step_identifier=action["form_step_uuid"],
         )
+
+    def get_steps(self, input_keys_from_trigger, all_form_variables):
+        steps = self._get_steps(input_keys_from_trigger, all_form_variables)
+        # Return last step
+        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -200,6 +300,37 @@ class StepApplicableAction(ActionOperation):
 class VariableAction(ActionOperation):
     variable: str
     value: JSONObject
+
+    @property
+    def input_variables(self) -> set[str]:
+        """Return a set of input variable names that are used in the action.
+
+        The value can be a JSON logic expression that takes other variables and performs
+        operations on them. This means we need to introspect it to find variable names.
+        Note that they should still be resolved against all available form variables.
+        """
+        return {var_.key for var_ in introspect_json_logic(self.value).get_input_keys()}
+
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        return {self.variable}
+
+    def get_steps(self, input_keys_from_trigger, all_form_variables):
+        steps = self._get_steps(self.output_variables, all_form_variables)
+        if steps:
+            return steps
+
+        # TODO-2409: ideally we would only do this if there is a user-defined variable
+        #  involved, AND we weren't able to determine a step from the other actions on
+        #  the corresponding logic rule
+        # If we cannot resolve a step from the output variables (might be because we are
+        # setting a value on a user-defined variable), try to resolve it from the input
+        # variables
+        steps = self._get_steps(
+            input_keys_from_trigger | self.input_variables, all_form_variables
+        )
+        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -234,10 +365,24 @@ class SynchronizeVariablesAction(ActionOperation):
     identifier_variable: str
     data_mappings: list[DataMappingsConfig]
 
+    # TODO-2409: do we need to do something with `data_mappings` here?
+    @property
+    def input_variables(self) -> set[str]:
+        """Return a set of input variable names that are used in the action."""
+        return {self.source_variable}
+
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        return {self.destination_variable}
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         children_config: DataConfig = action["action"]["config"]
         return cls(**children_config)
+
+    def get_steps(self, input_keys_from_trigger, all_form_variables):
+        return self._get_steps(self.output_variables, all_form_variables)
 
     @staticmethod
     def _map_children_data(
@@ -331,9 +476,23 @@ class SynchronizeVariablesAction(ActionOperation):
 class ServiceFetchAction(ActionOperation):
     variable: str
 
+    @property
+    def input_variables(self) -> set[str]:
+        # TODO-2409: we need to extract the variables from the query parameter
+        #  configuration of the service fetch options. Form builders can use Django
+        #  templates here
+        return set()
+
+    @property
+    def output_variables(self) -> set[str]:
+        return {self.variable}
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(variable=action["variable"])
+
+    def get_steps(self, input_keys_from_trigger, all_form_variables):
+        return self._get_steps(self.output_variables, all_form_variables)
 
     def eval(
         self,
@@ -370,6 +529,18 @@ class EvaluateDMNAction(ActionOperation):
     # DigiD sessions expire after 15 mins of inactivity, so we multiply that a couple
     # times for a long-enought-but-still-soon-expiring cache entry.
     cache_timeout: int = 60 * 15 * 4  # 1 hour
+
+    # TODO-2409
+    @property
+    def input_variables(self) -> set[str]:
+        return set()
+
+    @property
+    def output_variables(self) -> set[str]:
+        return set()
+
+    def get_steps(self, input_keys_from_trigger, all_form_variables):
+        return self._get_steps(self.output_variables, all_form_variables)
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
