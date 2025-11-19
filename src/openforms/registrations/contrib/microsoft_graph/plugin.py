@@ -72,7 +72,7 @@ class MSGraphRegistration(BasePlugin[MicrosoftGraphOptions]):
 
         data = submission.data
         data["__metadata__"] = {"submission_language": submission.language_code}
-        uploader.upload_json(data.data, folder_name / "data.json")
+        uploader.upload_data_as_json(data.data, folder_name / "data.json")
 
         for attachment in submission.attachments.order_by("pk"):
             uploader.upload_django_file(
