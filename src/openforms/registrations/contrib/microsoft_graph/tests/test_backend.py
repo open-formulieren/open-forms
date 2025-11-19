@@ -211,6 +211,55 @@ class MSGraphRegistrationBackendTests(TestCase):
             content = call.kwargs["stream"].read().decode("utf8")
             self.assertEqual(content, f"{_('payment received')}: € 11.35")
 
+    def test_with_date_related_values(self):
+        """Ensure that date-related values are properly serialized to JSON."""
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                    "multiple": True,
+                },
+                {
+                    "key": "time",
+                    "type": "time",
+                    "label": "Time",
+                },
+                {
+                    "key": "datetime",
+                    "type": "datetime",
+                    "label": "Datetime",
+                },
+            ],
+            submitted_data={
+                "date": ["2025-11-19", "2025-11-20"],
+                "time": "12:34:56",
+                "datetime": "2025-11-19T12:34:56+01:00",
+            },
+            completed=True,
+            with_report=True,
+            form__name="MyName",
+            form__internal_name="MyInternalName: with (extra)",
+            form__registration_backend="microsoft-graph",
+        )
+        set_submission_reference(submission)
+
+        options: MicrosoftGraphOptions = {
+            "folder_path": "/open-forms/",
+            "drive_id": "",
+        }
+        graph_submission = MSGraphRegistration("microsoft-graph")
+
+        with (
+            patch.object(Account, "is_authenticated", True),
+            patch.object(Drive, "get_root_folder", return_value=MockFolder()),
+        ):
+            try:
+                graph_submission.register_submission(submission, options)
+            except TypeError as e:
+                raise self.failureException("Registration failed unexpectedly") from e
+
 
 @temp_private_root()
 @patch.object(MockFolder, "upload_file", return_value=None)
