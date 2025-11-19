@@ -279,7 +279,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                             "prefilled": bool(submission_variable),
                         }
                     )
-                    del partner["dateOfBirthPrecision"]
+                    partner.pop("dateOfBirthPrecision", None)
         # register as extraElementen
         else:
             variables = FormVariable.objects.filter(
@@ -296,7 +296,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 )
                 value = extra_data[from_key]
                 for item in value:
-                    del item["dateOfBirthPrecision"]
+                    item.pop("dateOfBirthPrecision", None)
 
                     item["dateOfBirth"] = item["dateOfBirth"].isoformat()
 
