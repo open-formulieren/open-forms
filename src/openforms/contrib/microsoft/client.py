@@ -14,6 +14,8 @@ from io import BytesIO
 from pathlib import PurePosixPath
 from typing import TYPE_CHECKING, Literal, TypedDict
 
+from django.core.serializers.json import DjangoJSONEncoder
+
 from O365 import Account
 from O365.drive import Folder
 
@@ -95,8 +97,8 @@ class MSGraphUploadHelper:
         with input_field.open("rb") as stream:
             return self.upload_stream(stream, stream_size, remote_path)
 
-    def upload_json(self, json_data: dict, remote_path: PurePosixPath | None):
-        json_str = json.dumps(json_data)
+    def upload_data_as_json(self, data: dict, remote_path: PurePosixPath | None):
+        json_str = json.dumps(data, cls=DjangoJSONEncoder)
         return self.upload_string(json_str, remote_path)
 
     def upload_string(self, string: str, remote_path: PurePosixPath | None):
