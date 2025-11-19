@@ -16,7 +16,8 @@ Possible future features:
 from collections.abc import Iterator, Mapping
 
 from django.template.backends.django import Template as DjangoTemplate
-from django.template.base import Node, VariableNode
+from django.template.base import FilterExpression, Node, Variable, VariableNode
+from django.template.defaulttags import ForNode, IfNode, TemplateLiteral
 from django.utils.safestring import SafeString
 
 from .backends.sandboxed_django import backend as sandbox_backend, openforms_backend
@@ -70,6 +71,63 @@ def _iter_nodes(nodelist: list[Node]) -> Iterator[Node]:
             yield from _iter_nodes(nested_nodelist)
 
 
+def _iter_variables_from_node(node: Node) -> Iterator[str]:
+    """Iterate over all variables used in the node."""
+    match node:
+        case VariableNode():
+            # Example: {{someVar}} -> someVar
+            yield node.filter_expression.var.var
+
+        case ForNode():
+            # Variables used inside the loop
+            # Example: {% for var in "1234" %}{{var}}{% endfor %} -> var
+            for attr in node.child_nodelists:
+                nested_nodelist = getattr(node, attr)
+                for child in _iter_nodes(nested_nodelist):
+                    yield from _iter_variables_from_node(child)
+
+            # Variable that is being looped over
+            # Example: {% for var in vars %}{{var}}{% endfor %} -> vars
+            if isinstance(node.sequence, FilterExpression) and isinstance(
+                node.sequence.var, Variable
+            ):
+                # This check is performed in the constructor of `Variable`
+                assert isinstance(node.sequence.var.var, str)
+                yield node.sequence.var.var
+
+        case IfNode():
+            # Note that variables inside the if statement are already extracted by
+            # iterating over the complete node list
+            for condition, _ in node.conditions_nodelists:
+                # Example: {% if someVar %} -> someVar
+                if (
+                    isinstance(condition, TemplateLiteral)
+                    and isinstance(condition.value, FilterExpression)
+                    and isinstance(condition.value.var, Variable)
+                ):
+                    # This check is performed in the constructor of `Variable`
+                    assert isinstance(condition.value.var.var, str)
+                    yield condition.value.var.var
+                    continue
+
+                # A condition can also be of type "Operation". We cannot check the
+                # instance, because this class is defined inside another function
+                # (`django.template.smartif.infix`), so we just check the "first" and
+                # "second" attributes manually.
+                # Example 'first': {% if someVar == "foo" % } -> someVar
+                # Example 'second': {% if "foo" == someVar % } -> someVar
+                for name in ("first", "second"):
+                    if (
+                        (attr := getattr(condition, name))
+                        and isinstance(attr, TemplateLiteral)
+                        and isinstance(attr.value, FilterExpression)
+                        and isinstance(attr.value.var, Variable)
+                    ):
+                        # This check is performed in the constructor of `Variable`
+                        assert isinstance(attr.value.var.var, str)
+                        yield attr.value.var.var
+
+
 def extract_variables_used(source: str, backend=sandbox_backend) -> set[str]:
     """
     Given a template source, return a sequence of variables used in the template.
@@ -77,8 +135,6 @@ def extract_variables_used(source: str, backend=sandbox_backend) -> set[str]:
     template = parse(source, backend=backend)
     nodelist = template.template.nodelist
     variable_names = {
-        node.filter_expression.var.var
-        for node in _iter_nodes(nodelist)
-        if isinstance(node, VariableNode)
+        var for node in _iter_nodes(nodelist) for var in _iter_variables_from_node(node)
     }
     return variable_names

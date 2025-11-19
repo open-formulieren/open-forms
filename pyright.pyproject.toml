@@ -33,7 +33,9 @@ include = [
     "src/openforms/formio/dynamic_config/reference_lists.py",
     # Core forms app
     "src/openforms/forms/api/serializers/logic/action_serializers.py",
-    "src/openforms/forms/management/commands/set_forms_new_renderer_enabled",
+    "src/openforms/forms/management/commands/set_forms_new_renderer_enabled.py",
+    "src/openforms/forms/json_schema.py",
+    "src/openforms/forms/logic_analysis.py",
     # Payments
     "src/openforms/payments/",
     # Interaction with the outside world
@@ -79,8 +81,6 @@ include = [
     # Utils
     "src/openforms/utils/form_fields.py",
     "src/openforms/utils/pdf.py",
-    # JSON schema generation
-    "src/openforms/forms/json_schema.py",
     # Validations app
     "src/openforms/validations/api/serializers.py",
     "src/geo_visualization",

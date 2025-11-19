@@ -1,12 +1,21 @@
+from collections import defaultdict
+
 from django.utils.translation import gettext_lazy as _
 
 from ordered_model.serializers import OrderedModelSerializer
 from rest_framework import serializers
+from rest_framework.exceptions import ErrorDetail
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
 
+from ....logic_analysis import (
+    add_missing_steps,
+    create_graph,
+    detect_cycles,
+    resolve_order,
+)
 from ....models import Form, FormLogic, FormStep
 from ...validators import (
     FormLogicTriggerFromStepFormValidator,
@@ -16,6 +25,7 @@ from ...validators import (
 from .action_serializers import LogicComponentActionSerializer
 
 
+# TODO-2409: with price logic gone, I think we can get rid of this base serializer?
 class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
     form = RelatedFieldFromContext(
         queryset=Form.objects.all(),
@@ -63,6 +73,73 @@ class FormLogicListSerializer(ListWithChildSerializer):
         "openforms.forms.api.serializers.logic.form_logic.FormLogicSerializer"
     )
 
+    # TODO-2409: might also be able to set the graph validator like this, instead of
+    #  overriding the `validate` method.
+    # class Meta:
+    #     validators = [FormLogicGraphValidator()]
+
+    def validate(self, data):
+        # This will only run when the logic rules have passed individual serializer
+        # validation, so we can initialize model instances here.
+        # Note: model instances without a pk are not hashable, which is a requirement to
+        # use them in the graph, so we set it to the order manually. These rules will
+        # just live in memory, so it will not result in conflicts with existing rules.
+        rules = [FormLogic(**rule_data, pk=rule_data["order"]) for rule_data in data]
+
+        graph = create_graph(rules)
+        cycles = detect_cycles(graph)
+        if cycles:
+            msg = _("Rule contains cycles through variable(s): {variables}.")
+            errors = defaultdict(list)
+            for cycle in cycles:
+                # Sort to get consistent order in the error message (rules of a cycle do
+                # not have a start or end, so the order in which they are processed is
+                # not always consistent).
+                var_keys = ", ".join(sorted(cycle["variables"]))
+                for rule in cycle["rules"]:
+                    # TODO-2409: ideally this should be a general field error, but these
+                    #  are currently not shown in the frontend
+                    errors[f"{rule.order}.json_logic_trigger"].append(
+                        ErrorDetail(
+                            msg.format(variables=var_keys), code="cycles-detected"
+                        )
+                    )
+            raise serializers.ValidationError(errors)
+
+        # Form steps are added to the context dictionary from the form-step set, which
+        # is an ordered model queryset, so we can just select the first value.
+        first_step = next(iter(self.context["form_steps"].values()))
+        assert first_step.order == 0
+        add_missing_steps(graph, first_step)
+        new_rule_order = resolve_order(graph)
+
+        # Reorder the incoming data according to the determined order.
+        data_new, steps = [], []
+        for rule in new_rule_order:
+            # We can get the original rule data by using the order as an index.
+            rule_data = data[rule.order]
+            steps.append(list(rule.steps))
+            data_new.append(rule_data)
+
+        # Saving it to the context here to avoid determining the steps again when
+        # assigning them to the `form_steps` model property. It is an expensive
+        # operation, and we can only set a many-to-many relationship after the instances
+        # have been created in the database.
+        self.context["steps_for_each_rule"] = steps
+
+        return super().validate(data_new)
+
+    def create(self, validated_data):
+        rules = super().create(validated_data)
+
+        # Set many-to-many relationship from logic rules to form steps
+        for rule, step_list in zip(
+            rules, self.context["steps_for_each_rule"], strict=True
+        ):
+            rule.form_steps.set(step_list)
+
+        return rules
+
 
 class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
     trigger_from_step = NestedHyperlinkedRelatedField(
@@ -86,6 +163,21 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
             "Actions triggered when the trigger expression evaluates to 'truthy'."
         ),
     )
+    # form_steps = NestedHyperlinkedRelatedField(
+    #     required=False,
+    #     allow_null=True,
+    #     many=True,
+    #     queryset=FormStep.objects,
+    #     view_name="api:form-steps-detail",
+    #     lookup_field="uuid",
+    #     parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
+    #     label=_("form steps"),
+    #     help_text=_(
+    #         "When set, the trigger will only be checked once the specified step is reached. "
+    #         "This means the rule will never trigger for steps before the specified trigger step. "
+    #         "If unset, the trigger will always be checked."
+    #     ),
+    # )
 
     class Meta(FormLogicBaseSerializer.Meta):
         model = FormLogic
@@ -96,6 +188,7 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
             "trigger_from_step",
             "actions",
             "is_advanced",
+            # "form_steps",
         )
         extra_kwargs = {
             **FormLogicBaseSerializer.Meta.extra_kwargs,
