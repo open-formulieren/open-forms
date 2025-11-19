@@ -10,7 +10,7 @@ from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 
-class ProfileCommunicationPreferencesSerializer(
+class CommunicationPreferencesSerializer(
     JsonSchemaSerializerMixin, serializers.Serializer
 ):
     customer_interactions_api_group = SlugRelatedAsChoicesField(
@@ -23,7 +23,7 @@ class ProfileCommunicationPreferencesSerializer(
     profile_form_variable = FormioVariableKeyField(
         label=_("Profile form variable key"),
         help_text=_(
-            "The 'dotted' path to a form variable key which has a customer profile. "
+            "The 'dotted' path to a form variable key of a customer-profile component. "
             "The format should comply to how Formio handles nested component keys."
         ),
     )

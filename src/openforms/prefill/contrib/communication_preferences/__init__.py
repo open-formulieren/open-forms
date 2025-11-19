@@ -1,3 +1,3 @@
 """
-Customer Interactions API prefill plugin.
+Communication preferences prefill plugin.
 """

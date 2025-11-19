@@ -2223,8 +2223,15 @@ export const ConfigurePrefillCommunicationPreferences = {
       await rsSelect(apiGroupDropdown, 'Group 1');
 
       // check Profile form variable
-      const profileVariableDropdown = await canvas.findByText('Profile form variable');
+      const profileVariableDropdown = await canvas.findByLabelText('Profile form variable');
       expect(profileVariableDropdown).toBeVisible();
+      selectEvent.openMenu(profileVariableDropdown);
+
+      const profileVariableSelectMenu = within(await findReactSelectMenu(canvas));
+      const profileVariableOptions = await profileVariableSelectMenu.findAllByRole('option');
+      expect(profileVariableOptions).toHaveLength(1);
+      expect(profileVariableOptions[0], {name: 'Profile'}).toBeVisible();
+      await rsSelect(profileVariableDropdown, 'Profile');
     });
   },
 };

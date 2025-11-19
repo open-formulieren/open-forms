@@ -6,8 +6,8 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 
-const ProfileFormVariable = ({name = 'profileFormVariable', required = true}) => {
-  const [fieldProps] = useField({name: name});
+const ProfileFormVariable = ({name = 'profileFormVariable'}) => {
+  const [fieldProps] = useField(name);
   return (
     <FormRow>
       <Field
@@ -18,7 +18,8 @@ const ProfileFormVariable = ({name = 'profileFormVariable', required = true}) =>
             defaultMessage="Profile form variable"
           />
         }
-        required={required}
+        required
+        noManageChildProps
       >
         <VariableSelection
           {...fieldProps}
@@ -40,11 +41,6 @@ ProfileFormVariable.propTypes = {
    * Name to use for the form field, is passed down to Formik.
    */
   name: PropTypes.string,
-
-  /**
-   * Indicate if the field is required or optional.
-   */
-  required: PropTypes.bool,
 };
 
 export default ProfileFormVariable;

@@ -19,8 +19,8 @@ from ...base import BasePlugin
 from ...constants import IdentifierRoles
 from ...exceptions import PrefillSkipped
 from ...registry import register
-from .config import ProfileCommunicationPreferencesSerializer
-from .typing import ProfileCommunicationPreferencesOptions
+from .config import CommunicationPreferencesSerializer
+from .typing import CommunicationPreferencesOptions
 from .utils import transform_digital_addresses
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -29,18 +29,16 @@ PLUGIN_IDENTIFIER = "communication_preferences"
 
 
 @register(PLUGIN_IDENTIFIER)
-class ProfileCommunicationPreferences(
-    BasePlugin[ProfileCommunicationPreferencesOptions]
-):
+class CommunicationPreferences(BasePlugin[CommunicationPreferencesOptions]):
     verbose_name = _("Communication preferences (customer interactions API)")
     requires_auth = (AuthAttribute.bsn,)
-    options = ProfileCommunicationPreferencesSerializer
+    options = CommunicationPreferencesSerializer
 
     @classmethod
     def get_prefill_values_from_options(
         cls,
         submission: Submission,
-        options: ProfileCommunicationPreferencesOptions,
+        options: CommunicationPreferencesOptions,
         submission_value_variable: SubmissionValueVariable,
     ) -> dict[str, JSONEncodable]:
         if not (

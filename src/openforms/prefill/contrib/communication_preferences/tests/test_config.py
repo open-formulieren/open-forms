@@ -9,12 +9,18 @@ from openforms.contrib.customer_interactions.tests.factories import (
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..plugin import ProfileCommunicationPreferences
+from ..plugin import CommunicationPreferences
 
 
 class CommunicationPreferencesConfigTests(OFVCRMixin, TestCase):
+    def test_config_valid(self):
+        plugin = CommunicationPreferences("communication_preferences-invalid")
+        CustomerInteractionsAPIGroupConfigFactory.create(for_test_docker_compose=True)
+
+        plugin.check_config()
+
     def test_config_invalid(self):
-        plugin = ProfileCommunicationPreferences("communication_preferences-invalid")
+        plugin = CommunicationPreferences("communication_preferences-invalid")
         invalid_service = ServiceFactory.create(
             api_root="http://localhost:8005/klantinteracties/api/v1/invalid/",
             api_type=APITypes.kc,

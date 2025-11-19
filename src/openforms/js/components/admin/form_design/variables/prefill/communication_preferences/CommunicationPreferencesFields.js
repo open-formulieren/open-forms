@@ -44,10 +44,10 @@ const CommunicationPreferencesFields = () => {
     <ValidationErrorsProvider errors={optionsErrors}>
       <Fieldset>
         <CustomerInteractionsAPIGroup
-          name={'options.customerInteractionsApiGroup'}
+          name="options.customerInteractionsApiGroup"
           apiGroupChoices={apiGroups}
         />
-        <ProfileFormVariable name={'options.profileFormVariable'} />
+        <ProfileFormVariable name="options.profileFormVariable" />
       </Fieldset>
     </ValidationErrorsProvider>
   );

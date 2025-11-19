@@ -1,0 +1,39 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Token 9b17346dbb9493f967e6653bbcdb03ac2f7009fa
+    method: GET
+    uri: http://localhost:8005/klantinteracties/api/v1/
+  response:
+    body:
+      string: '{"actoren":"http://localhost:8005/klantinteracties/api/v1/actoren","digitaleadressen":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen","rekeningnummers":"http://localhost:8005/klantinteracties/api/v1/rekeningnummers","actorklantcontacten":"http://localhost:8005/klantinteracties/api/v1/actorklantcontacten","klantcontacten":"http://localhost:8005/klantinteracties/api/v1/klantcontacten","betrokkenen":"http://localhost:8005/klantinteracties/api/v1/betrokkenen","onderwerpobjecten":"http://localhost:8005/klantinteracties/api/v1/onderwerpobjecten","bijlagen":"http://localhost:8005/klantinteracties/api/v1/bijlagen","maak-klantcontact":"http://localhost:8005/klantinteracties/api/v1/maak-klantcontact","internetaken":"http://localhost:8005/klantinteracties/api/v1/internetaken","categorieen":"http://localhost:8005/klantinteracties/api/v1/categorieen","categorie-relaties":"http://localhost:8005/klantinteracties/api/v1/categorie-relaties","partijen":"http://localhost:8005/klantinteracties/api/v1/partijen","partij-identificatoren":"http://localhost:8005/klantinteracties/api/v1/partij-identificatoren","vertegenwoordigingen":"http://localhost:8005/klantinteracties/api/v1/vertegenwoordigingen"}'
+    headers:
+      API-version:
+      - 0.4.1
+      Allow:
+      - GET, HEAD, OPTIONS
+      Content-Length:
+      - '1211'
+      Content-Security-Policy:
+      - 'worker-src ''self'' blob:; font-src ''self'' fonts.gstatic.com; img-src ''self''
+        data: cdn.redoc.ly; default-src ''self''; script-src ''self'' ''unsafe-inline'';
+        frame-src ''self''; frame-ancestors ''none''; form-action ''self''; object-src
+        ''none''; base-uri ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+version: 1

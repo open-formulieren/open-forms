@@ -6,7 +6,7 @@ from openforms.contrib.customer_interactions.models import (
 )
 
 
-class ProfileCommunicationPreferencesOptions(TypedDict):
+class CommunicationPreferencesOptions(TypedDict):
     customer_interactions_api_group: CustomerInteractionsAPIGroupConfig
     profile_form_variable: str
 
