@@ -34,6 +34,19 @@ class RegistrationAttribute(models.TextChoices):
     )
     initiator_postcode = "initiator_postcode", _("Initiator > Postcode")
     initiator_woonplaats = "initiator_woonplaats", _("Initiator > Woonplaats")
+    # heeftAlsAanspreekpunt for Natuurlijk Persoon
+    initiator_contactpersoonNaam = (
+        "initiator_contactpersoonNaam",
+        _("Initiator > ContactpersoonNaam"),
+    )
+    initiator_telefoonnummer = (
+        "initiator_telefoonnummer",
+        _("Initiator > Telefoonnummer"),
+    )
+    initiator_emailadres = (
+        "initiator_emailadres",
+        _("Initiator > Emailadres"),
+    )
 
     # Vestiging
     initiator_handelsnaam = "initiator_handelsnaam", _("Initiator > Handelsnaam")

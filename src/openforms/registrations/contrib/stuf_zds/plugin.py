@@ -199,6 +199,10 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         "initiator.verblijfsadres.huisnummer": RegistrationAttribute.initiator_huisnummer,
         "initiator.verblijfsadres.huisletter": RegistrationAttribute.initiator_huisletter,
         "initiator.verblijfsadres.huisnummertoevoeging": RegistrationAttribute.initiator_huisnummer_toevoeging,
+        # heeftAlsAanspreekpunt for Natuurlijk Persoon
+        "initiator.contactpersoonNaam": RegistrationAttribute.initiator_contactpersoonNaam,
+        "initiator.telefoonnummer": RegistrationAttribute.initiator_telefoonnummer,
+        "initiator.emailadres": RegistrationAttribute.initiator_emailadres,
         # Vestiging
         "initiator.vestigingsNummer": RegistrationAttribute.initiator_vestigingsnummer,
         "initiator.handelsnaam": RegistrationAttribute.initiator_handelsnaam,
