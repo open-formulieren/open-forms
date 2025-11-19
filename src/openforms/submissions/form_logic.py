@@ -15,7 +15,11 @@ from openforms.formio.service import (
 from openforms.formio.typing import FormioConfiguration
 
 from .logic.actions import ActionOperation
-from .logic.rules import get_rules_to_evaluate, iter_evaluate_rules
+from .logic.rules import (
+    get_rules_to_evaluate,
+    get_rules_to_evaluate_v2,
+    iter_evaluate_rules,
+)
 from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:
@@ -98,7 +102,7 @@ def evaluate_form_logic(
     # to make sure we are not processing with outdated data. The frontend will not send
     # data for fields that were (conditionally) hidden, so simply applying the unsaved
     # data to the state will not remove existing values of those fields.
-    rules = get_rules_to_evaluate(submission, step)
+    rules = get_rules_to_evaluate_v2(submission, step)
     # These components are affected by a hidden property action, which means we cannot
     # check the "hidden" property of the component during conditional logic evaluation
     components_with_hidden_action = set()
@@ -210,6 +214,11 @@ def evaluate_conditional_logic(
         )
 
 
+# TODO-2409: this is executed in `SubmissionSerializer.to_representation`, which means
+#  it is also executed when serializing the response of the check logic call (through
+#  `SubmissionStateLogicSerializer`). Investigate if we can avoid this or at least do it
+#  more efficiently - all relevant rules should have already been evaluated in
+#  `evaluate_form_logic`
 def check_submission_logic(
     submission: Submission,
     current_step: SubmissionStep | None = None,
@@ -243,6 +252,8 @@ def check_submission_logic(
     #
     # We need to apply all component mutations at this stage too, because for validation
     # reasons, a serializer is built from them.
+    # TODO-2409: possible optimization here? If there is a current step available, only
+    #  apply the mutations to that step
     for mutation in mutation_operations:
         for step in submission_state.submission_steps:
             assert step.form_step

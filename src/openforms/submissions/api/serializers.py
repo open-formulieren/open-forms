@@ -24,7 +24,10 @@ from openforms.emails.utils import render_email_template, send_mail_html
 from openforms.formio.api.fields import FormioDataField
 from openforms.formio.service import FormioData, build_serializer
 from openforms.formio.utils import iter_components
-from openforms.forms.api.serializers import FormDefinitionSerializer
+from openforms.forms.api.serializers import (
+    FormDefinitionSerializer,
+    FormLogicSerializer,
+)
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
 from openforms.forms.validators import validate_not_deleted
@@ -211,10 +214,11 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer[Submission]):
 
 class ContextAwareFormStepSerializer(serializers.ModelSerializer):
     configuration = serializers.SerializerMethodField()
+    logic_rules = FormLogicSerializer(read_only=True, many=True)
 
     class Meta:
         model = FormStep
-        fields = ("index", "configuration")
+        fields = ("index", "configuration", "logic_rules")
         extra_kwargs = {
             "index": {"source": "order"},
         }
