@@ -210,6 +210,11 @@ def evaluate_conditional_logic(
         )
 
 
+# TODO-2409: this is executed in `SubmissionSerializer.to_representation`, which means
+#  it is also executed when serializing the response of the check logic call (through
+#  `SubmissionStateLogicSerializer`). Investigate if we can avoid this or at least do it
+#  more efficiently - all relevant rules should have already been evaluated in
+#  `evaluate_form_logic`
 def check_submission_logic(
     submission: Submission,
     current_step: SubmissionStep | None = None,
@@ -243,6 +248,8 @@ def check_submission_logic(
     #
     # We need to apply all component mutations at this stage too, because for validation
     # reasons, a serializer is built from them.
+    # TODO-2409: if there is a current step available, this will apply the step specific
+    #  mutations to ALL steps :|
     for mutation in mutation_operations:
         for step in submission_state.submission_steps:
             assert step.form_step

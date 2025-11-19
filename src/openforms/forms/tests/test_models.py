@@ -7,6 +7,7 @@ from hypothesis.extra.django import TestCase as HypothesisTestCase
 
 from openforms.utils.tests.feature_flags import enable_feature_flag
 
+from ...variables.constants import FormVariableDataTypes, FormVariableSources
 from ..models import Form, FormDefinition, FormStep
 from .factories import (
     FormAuthenticationBackendFactory,
@@ -15,6 +16,7 @@ from .factories import (
     FormLogicFactory,
     FormRegistrationBackendFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 
 
@@ -525,6 +527,79 @@ class FormLogicTests(TestCase):
                 logic.clean()
             except ValidationError:
                 self.fail("Should be allowed")
+
+    def test_input_and_output_variable_keys(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "checkbox",
+                        "type": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "key": "num.ber",
+                        "type": "number",
+                        "label": "Number",
+                    },
+                    {
+                        "key": "fieldset",
+                        "type": "fieldset",
+                        "label": "Fieldset",
+                        "components": [
+                            {
+                                "key": "textfield",
+                                "type": "textfield",
+                                "label": "Textfield",
+                                "clearOnHide": True,
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            source=FormVariableSources.user_defined,
+            key="user_defined_number",
+            form=form,
+            data_type=FormVariableDataTypes.int,
+        )
+
+        rule = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "action": {
+                        "name": "Multiple user-defined variable",
+                        "type": "variable",
+                        "value": {"*": [{"var": "user_defined_number"}, 2]},
+                    },
+                    "variable": "num.ber",
+                },
+                {
+                    "action": {
+                        "name": "Non-existing variable",
+                        "type": "variable",
+                        "value": {"*": [{"var": "i_am_non_existing"}, 2]},
+                    },
+                    "variable": "num.ber",
+                },
+                {
+                    "action": {
+                        "name": "Hide fieldset",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "fieldset",
+                },
+            ],
+        )
+
+        self.assertEqual(rule.input_variable_keys, {"checkbox", "user_defined_number"})
+        self.assertEqual(rule.output_variable_keys, {"num.ber", "textfield"})
 
 
 class FormRegistrationBackendTests(TestCase):

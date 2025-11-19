@@ -28,6 +28,7 @@ from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
 from openforms.authentication.registry import register as authentication_register
 from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
+from openforms.formio.service import iter_components
 from openforms.formio.typing import Component
 from openforms.formio.validators import variable_key_validator
 from openforms.payments.fields import PaymentBackendChoiceField
@@ -630,11 +631,11 @@ class Form(models.Model):
                     return_keys.add(key)
         return list(return_keys)
 
-    def iter_components(self, recursive=True) -> Iterator[Component]:
+    def iter_components(self, recursive=True, **kwargs) -> Iterator[Component]:
         # steps are ordered on the 'order' field because of django-ordered-model through
         # the FormStep.Meta configuration
         for form_step in self.formstep_set.select_related("form_definition"):
-            yield from form_step.iter_components(recursive=recursive)
+            yield from form_step.iter_components(recursive=recursive, **kwargs)
 
     @transaction.atomic
     def restore_old_version(
@@ -701,6 +702,40 @@ class Form(models.Model):
         self.deactivate_on = None
         self.save(update_fields=["active", "deactivate_on"])
         logger.debug("forms.form_deactivated", id=self.pk, name=self.admin_name)
+
+    # TODO-2409: move to formio.service
+    def get_child_component_keys(self, key: str) -> set[str]:
+        """
+        Get all child component keys variable key for an arbitrary component key
+
+        1. Determine the step of the component
+        2. Get component configuration
+        3. Get type and lookup in registry
+        4. Get children (recursively iter_components, or the registry maybe?). Note that
+           every non-layout component *must* have a variable already, so we don't have
+           to check against the form variable keys I think
+        """
+        # TODO-2409: this is NOT a fast search. Also, it doesn't include which step the
+        #  component is from. We might have to cache a mapping from component key ->
+        #  step/form configuration
+        found = False
+        for component in self.iter_components(
+            recursive=True, recurse_into_editgrid=False
+        ):
+            if component["key"] == key:
+                found = True
+                break
+
+        if not found:
+            # TODO-2409: add logging
+            return set()
+
+        return {
+            child["key"]
+            for child in iter_components(
+                component, recursive=True, recurse_into_editgrid=False
+            )
+        }
 
 
 class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):

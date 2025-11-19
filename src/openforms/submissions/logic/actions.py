@@ -22,6 +22,7 @@ from openforms.formio.typing.custom import ChildProperties
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.typing import DataMapping, JSONObject
+from openforms.utils.json_logic import introspect_json_logic
 
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
@@ -54,6 +55,17 @@ def compile_action_operation(action: ActionDict) -> ActionOperation:
 
 class ActionOperation:
     rule: FormLogic
+
+    # TODO-2409: if there are no input/output variables, return None instead
+    @property
+    def input_variables(self) -> set[str]:
+        """Return a set of input variable names that are used in the action."""
+        return set()
+
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        return set()
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -97,6 +109,18 @@ class PropertyAction(ActionOperation):
             value=action["action"]["state"],
         )
 
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        # TODO-2409: is it worth only returning this for the "hidden" property action,
+        #  as marking a field as "required" or "disabled" doesn't affect the data?
+        # Also need to include children, as it might be a layout component. Note that
+        # these include all component keys, and should still be resolved against the
+        # available form variables
+        return {self.component} | self.rule.form.get_child_component_keys(
+            self.component
+        )
+
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
@@ -135,6 +159,11 @@ class PropertyAction(ActionOperation):
 
 
 class DisableNextAction(ActionOperation):
+
+    # TODO-2409: I think we only need to include any variables here if we are not able
+    #  to resolve the order of this via the get rules per step. Question: how to
+    #  determine on which step to execute this? Perhaps in combination with "from which
+    #  step", and if not specified, we assume the first step?
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls()
@@ -148,6 +177,22 @@ class DisableNextAction(ActionOperation):
 @dataclass
 class StepNotApplicableAction(ActionOperation):
     form_step_identifier: str
+
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        # TODO-2409: once we resolve against all form variables, it will remove all
+        #  components that have no variable. Is that OK for this action? Feels like it
+        #  might introduce some edge cases. Perhaps worth considering to not resolve
+        #  against the variables at all?
+        # TODO-2409: do we need to speed up data access here?
+        # TODO-2409: ALSO, perhaps this is not even necessary, as we will get all rules
+        #  per step anyway. Meaning all other rules related to that step will not get
+        #  executed, since we never reach that step. Though it makes sense to include
+        #  them, from the graph perspective. It will be incomplete otherwise.
+        form_step = self.rule.form.formstep_set.get(uuid=self.form_step_identifier)
+        configuration = form_step.form_definition.configuration_wrapper
+        return set(configuration.component_map.keys())
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -178,6 +223,14 @@ class StepNotApplicableAction(ActionOperation):
 class StepApplicableAction(ActionOperation):
     form_step_identifier: str
 
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        # TODO-2409: see comments on "not applicable" action
+        form_step = self.rule.form.formstep_set.get(uuid=self.form_step_identifier)
+        configuration = form_step.form_definition.configuration_wrapper
+        return set(configuration.component_map.keys())
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(
@@ -200,6 +253,21 @@ class StepApplicableAction(ActionOperation):
 class VariableAction(ActionOperation):
     variable: str
     value: JSONObject
+
+    @property
+    def input_variables(self) -> set[str]:
+        """Return a set of input variable names that are used in the action.
+
+        The value can be a JSON logic expression that takes other variables and performs
+        operations on them. This means we need to introspect it to find variable names.
+        Note that they should still be resolved against all available form variables.
+        """
+        return {var_.key for var_ in introspect_json_logic(self.value).get_input_keys()}
+
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        return {self.variable}
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -233,6 +301,16 @@ class SynchronizeVariablesAction(ActionOperation):
     destination_variable: str
     identifier_variable: str
     data_mappings: list[DataMappingsConfig]
+
+    @property
+    def input_variables(self) -> set[str]:
+        """Return a set of input variable names that are used in the action."""
+        return {self.source_variable}
+
+    @property
+    def output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        return {self.destination_variable}
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -331,6 +409,10 @@ class SynchronizeVariablesAction(ActionOperation):
 class ServiceFetchAction(ActionOperation):
     variable: str
 
+    @property
+    def output_variables(self) -> set[str]:
+        return {self.variable}
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(variable=action["variable"])
@@ -370,6 +452,15 @@ class EvaluateDMNAction(ActionOperation):
     # DigiD sessions expire after 15 mins of inactivity, so we multiply that a couple
     # times for a long-enought-but-still-soon-expiring cache entry.
     cache_timeout: int = 60 * 15 * 4  # 1 hour
+
+    # TODO-2409
+    @property
+    def input_variables(self) -> set[str]:
+        return set()
+
+    @property
+    def output_variables(self) -> set[str]:
+        return set()
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
