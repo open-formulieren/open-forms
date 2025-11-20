@@ -297,7 +297,10 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
 
     def _run_formio_validation(self, data: FormioData) -> None:
         submission = self.instance.submission
-        # evaluate dynamic configuration
+        # Evaluate dynamic configuration. We need to make sure we are not fetching an
+        # outdated configuration here, so we force re-evaluation of form logic by
+        # setting the `_form_logic_evaluated` property to False.
+        self.instance._form_logic_evaluated = False
         configuration = evaluate_form_logic(submission, step=self.instance, data=data)
 
         # mark them all as not required, to support pausing forms where data is very

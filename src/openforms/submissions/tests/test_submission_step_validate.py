@@ -1130,3 +1130,55 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    @tag("gh-5765")
+    def test_radio_with_dynamic_options_from_another_component_form_variable(self):
+        """
+        Ensure that dynamic options from another form variable (source should be a
+        component, not user defined!) does not result validation errors.
+        """
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "multiple": True,
+                    },
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "label": "Radio",
+                        "values": [{"label": "", "value": ""}],
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "translations": {},
+                            "itemsExpression": {"var": "textfield"},
+                        },
+                    },
+                ]
+            },
+        )
+        step = submission.form.formstep_set.get()
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            endpoint,
+            {
+                "data": {
+                    "textfield": ["A", "B", "C"],
+                    "radio": "A",
+                }
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
