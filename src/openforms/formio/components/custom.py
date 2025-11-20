@@ -754,7 +754,7 @@ class PartnerListField(serializers.Field):
                         else value
                     )
                     for key, value in partner.items()
-                    if key not in ("dateOfBirthPrecision", "firstNames")
+                    if key not in ("dateOfBirthPrecision", "firstNames", "deceased")
                 }
                 for partner in prefill_data[fm_immutable_variable.key]
             ]
@@ -884,6 +884,7 @@ class ChildListField(serializers.Field):
                         "lastName",
                         "affixes",
                         "initials",
+                        "deceased",
                     )
                 }
                 for child in prefill_data[fm_immutable_variable.key]
