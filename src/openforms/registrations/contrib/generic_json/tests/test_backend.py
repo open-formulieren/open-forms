@@ -5,10 +5,13 @@ from pathlib import Path
 from uuid import uuid4
 
 from django.core.exceptions import SuspiciousOperation
-from django.test import TestCase, tag
+from django.test import TestCase, override_settings, tag
 
+from log_outgoing_requests.conf import LogOutgoingRequestsConf
+from log_outgoing_requests.constants import SaveLogsChoice
 import requests_mock
 from freezegun import freeze_time
+from log_outgoing_requests.models import OutgoingRequestsLog, OutgoingRequestsLogConfig
 from requests import RequestException
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
@@ -2827,6 +2830,98 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             self.assertEqual(
                 result["api_response"]["data"]["values_schema"], expected_schema
             )
+
+    @override_settings(LOG_OUTGOING_REQUESTS=True, LOG_OUTGOING_REQUESTS_DB_SAVE=True, LOG_STDOUT=True, LOG_REQUESTS=True)
+    def test_submission_registration_logging(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "firstName", "type": "textfield"},
+                {"key": "lastName", "type": "textfield"},
+                {"key": "file", "type": "file"},
+            ],
+            completed=True,
+            submitted_data={
+                "firstName": "We Are",
+                "lastName": "Checking",
+                "file": [
+                    {
+                        "url": "some://url",
+                        "name": "my-foo.bin",
+                        "type": "application/foo",
+                        "originalName": "my-foo.bin",
+                    }
+                ],
+            },
+            bsn="123456789",
+            with_public_registration_reference=True,
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            form_key="file",
+            submission_step=submission.steps[0],
+            file_name="test_file.txt",
+            original_name="test_file.txt",
+            content_type="application/text",
+            content__data=b"This is example content.",
+            _component_configuration_path="components.2",
+            _component_data_path="file",
+        )
+
+        options: GenericJSONOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["auth_bsn", "firstName", "file"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+        json_plugin = GenericJSONRegistration("json_registration_plugin")
+
+        expected_values = {
+            # Note that `lastName` is not included here as it wasn't specified in the variables
+            "auth_bsn": "123456789",
+            "firstName": "We Are",
+            "file": {
+                "file_name": "test_file.txt",
+                "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",
+            },
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "auth_bsn": {
+                    "title": "BSN",
+                    "description": (
+                        "Uniquely identifies the authenticated person. This "
+                        "value follows the rules for Dutch social security "
+                        "numbers."
+                    ),
+                    "type": "string",
+                    "pattern": "^\\d{9}$|^$",
+                    "format": "nl-bsn",
+                },
+                "firstName": {"title": "Firstname", "type": "string"},
+                "file": {
+                    "title": "File",
+                    "type": "object",
+                    "properties": {
+                        "file_name": {"type": "string"},
+                        "content": {"type": "string", "format": "base64"},
+                    },
+                    "required": ["file_name", "content"],
+                    "additionalProperties": False,
+                },
+            },
+            "required": ["auth_bsn", "firstName", "file"],
+            "additionalProperties": False,
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        request_log = OutgoingRequestsLog.objects.last()
+        assert request_log is not None
 
 
 class GenericJSONRequestTests(TestCase):
