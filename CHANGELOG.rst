@@ -6,6 +6,34 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.6 (2025-11-20)
+==================
+
+Hotfix release.
+
+* [:backend:`5765`] Fixed a regression introduced in the 3.3.3 security fix that would
+  prevent valid values from being accepted in radio, select and selectboxes components
+  with options sourced from a variable.
+* [:backend:`5756`] Fixed an issue where at most one child would be retrieved for the
+  children prefill when using StUF-BG.
+* [:backend:`5748`] Fixed the handling of a difference in data between Haal Centraal
+  Personen Bevragen API and StUF-BG when retrieving family members data, preventing
+  valid submission data from being accepted in children and partners components.
+* Fixed a crash in the processing of family members components data because of a
+  difference in data format between StUF-BG and Haal Centraal Personen bevragen.
+
+3.2.8 (2025-11-20)
+==================
+
+Hotfix release.
+
+* [:backend:`5765`] Fixed a regression introduced in the 3.3.3 security fix that would
+  prevent valid values from being accepted in radio, select and selectboxes components
+  with options sourced from a variable.
+* [:backend:`5748`] Fixed the handling of a difference in data between Haal Centraal
+  Personen Bevragen API and StUF-BG when retrieving family members data, preventing
+  valid submission data from being accepted in children and partners components.
+
 3.3.5 (2025-11-19)
 ==================
 
