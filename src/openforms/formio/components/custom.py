@@ -725,7 +725,7 @@ class PartnerListField(serializers.Field):
                         else value
                     )
                     for key, value in partner.items()
-                    if key not in ("dateOfBirthPrecision", "firstNames")
+                    if key not in ("dateOfBirthPrecision", "firstNames", "deceased")
                 }
                 for partner in prefill_data[fm_immutable_variable.key]
             ]
