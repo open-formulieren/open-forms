@@ -5,7 +5,7 @@ requires-python = "== 3.12"
 emit-index-url = false
 
 [tool.bumpversion]
-current_version = "3.2.7"
+current_version = "3.2.8"
 parse = """(?x)
     (?P<major>0|[1-9]\\d*)\\.
     (?P<minor>0|[1-9]\\d*)\\.

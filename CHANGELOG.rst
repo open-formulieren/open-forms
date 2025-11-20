@@ -6,6 +6,18 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.2.8 (2025-11-20)
+==================
+
+Hotfix release.
+
+* [:backend:`5765`] Fixed a regression introduced in the 3.3.3 security fix that would
+  prevent valid values from being accepted in radio, select and selectboxes components
+  with options sourced from a variable.
+* [:backend:`5748`] Fixed the handling of a difference in data between Haal Centraal
+  Personen Bevragen API and StUF-BG when retrieving family members data, preventing
+  valid submission data from being accepted in children and partners components.
+
 3.2.7 (2025-11-18)
 ==================
 
