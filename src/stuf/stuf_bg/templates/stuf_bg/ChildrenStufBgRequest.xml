@@ -9,7 +9,6 @@
     <ns:parameters>
         <StUF:sortering>0</StUF:sortering>
         <StUF:indicatorVervolgvraag>false</StUF:indicatorVervolgvraag>
-        <StUF:maximumAantal>1</StUF:maximumAantal>
         <StUF:indicatorAfnemerIndicatie>false</StUF:indicatorAfnemerIndicatie>
         <StUF:indicatorAantal>false</StUF:indicatorAantal>
     </ns:parameters>
