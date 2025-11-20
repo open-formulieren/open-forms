@@ -35,8 +35,12 @@ class ChildrenValidationTests(TestCase):
                 {
                     "bsn": "999970409",
                     "firstNames": "Pero",
+                    "initials": "P.",
+                    "affixes": "van",
+                    "lastName": "Paassen",
                     "dateOfBirth": "2016-02-01",
-                },
+                    "deceased": False,
+                }
             ],
         )
 
@@ -132,8 +136,12 @@ class ChildrenValidationTests(TestCase):
                 {
                     "bsn": "999970409",
                     "firstNames": "",
+                    "initials": "P.",
+                    "affixes": "van",
+                    "lastName": "Paassen",
                     "dateOfBirth": "2020-01-01",
-                },
+                    "deceased": False,
+                }
             ],
         )
 
@@ -178,7 +186,11 @@ class ChildrenValidationTests(TestCase):
                 {
                     "bsn": "999970409",
                     "firstNames": "",
+                    "initials": "P.",
+                    "affixes": "van",
+                    "lastName": "Paassen",
                     "dateOfBirth": "2020-01-01",
+                    "deceased": False,
                 },
             ],
         )
