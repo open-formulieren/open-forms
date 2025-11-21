@@ -23,22 +23,19 @@ def get_customer_interactions_client(
 
 
 class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
-    @staticmethod
-    def bsn_list_param(bsn: str) -> ListDigitaalAdresParams:
+    def get_digital_addresses_for_bsn(self, bsn: str) -> Iterator[DigitaalAdres]:
         """
-        Return a group of query params needed to search digital addresses by BSN.
+        Search digital addresses by BSN of the party.
 
         The selection of query params and their values are based on the OAS for the
         "partij identificator":
         https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/maykinmedia/open-klant/master/src/openklant/components/klantinteracties/openapi.yaml#tag/partij-identificatoren
         """
-        return {
+        params: ListDigitaalAdresParams = {
             "verstrektDoorPartij__partijIdentificator__codeSoortObjectId": "bsn",
             "verstrektDoorPartij__partijIdentificator__codeRegister": "brp",
             "verstrektDoorPartij__partijIdentificator__codeObjecttype": "natuurlijk_persoon",
             "verstrektDoorPartij__partijIdentificator__objectId": bsn,
         }
-
-    def get_digital_addresses_for_bsn(self, bsn: str) -> Iterator[DigitaalAdres]:
-        response = self.digitaal_adres.list_iter(params=self.bsn_list_param(bsn))
+        response = self.digitaal_adres.list_iter(params=params)
         yield from response
