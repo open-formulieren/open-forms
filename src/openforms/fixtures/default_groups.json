@@ -829,6 +829,26 @@
                 "logitem"
             ],
             [
+                "add_customerinteractionsapigroupconfig",
+                "customer_interactions",
+                "customerinteractionsapigroupconfig"
+            ],
+            [
+                "change_customerinteractionsapigroupconfig",
+                "customer_interactions",
+                "customerinteractionsapigroupconfig"
+            ],
+            [
+                "delete_customerinteractionsapigroupconfig",
+                "customer_interactions",
+                "customerinteractionsapigroupconfig"
+            ],
+            [
+                "view_customerinteractionsapigroupconfig",
+                "customer_interactions",
+                "customerinteractionsapigroupconfig"
+            ],
+            [
                 "add_blacklist",
                 "django_yubin",
                 "blacklist"

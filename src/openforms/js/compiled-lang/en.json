@@ -517,6 +517,12 @@
       "value": "Affixes"
     }
   ],
+  "3Wiy2f": [
+    {
+      "type": 0,
+      "value": "The API group specifies which Customer interactions service to use."
+    }
+  ],
   "3Wuy2O": [
     {
       "type": 0,
@@ -2705,6 +2711,12 @@
       "value": "Hidden"
     }
   ],
+  "JsiIFI": [
+    {
+      "type": 0,
+      "value": "Profile form variable dropdown"
+    }
+  ],
   "K/Oijt": [
     {
       "type": 0,
@@ -4517,6 +4529,12 @@
     {
       "type": 0,
       "value": "Changing the api group will remove the existing variables mapping. Are you sure you want to continue?"
+    }
+  ],
+  "a46ceJ": [
+    {
+      "type": 0,
+      "value": "Profile form variable"
     }
   ],
   "a4gS07": [
@@ -7445,6 +7463,12 @@
     {
       "type": 0,
       "value": "The regular expression pattern test that the field value must pass before the form can be submitted."
+    }
+  ],
+  "waQw8d": [
+    {
+      "type": 0,
+      "value": "API group"
     }
   ],
   "wnTTZr": [

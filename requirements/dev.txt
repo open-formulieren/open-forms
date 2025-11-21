@@ -17,10 +17,11 @@ annotated-types==0.7.0
     #   pydantic
 anyio==4.9.0
     # via httpx
-ape-pie==0.1.0
+ape-pie==0.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   open-klant-client
     #   zgw-consumers
 asgiref==3.7.2
     # via
@@ -730,6 +731,10 @@ odfpy==1.4.1
     #   -r requirements/ci.txt
     #   tablib
 onlinepayments-sdk-python3==5.1.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+open-klant-client==0.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

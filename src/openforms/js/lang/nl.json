@@ -236,6 +236,11 @@
     "description": "Synchronize action, children component, affixes property label",
     "originalDefault": "Affixes"
   },
+  "3Wiy2f": {
+    "defaultMessage": "The API group specifies which Customer interactions service to use.",
+    "description": "Customer interactions API group field help text",
+    "originalDefault": "The API group specifies which Customer interactions service to use."
+  },
   "3Wuy2O": {
     "defaultMessage": "Attribuut",
     "description": "Column title for the property that a component is mapped to",
@@ -1267,6 +1272,11 @@
     "description": "Cosign components in repeating group warning message",
     "originalDefault": "There are co-sign components inside repeating groups. This is not supported."
   },
+  "JsiIFI": {
+    "defaultMessage": "Profile form variable dropdown",
+    "description": "Accessible label for (form) variable dropdown",
+    "originalDefault": "Profile form variable dropdown"
+  },
   "K/Oijt": {
     "defaultMessage": "RSIN organisatie",
     "description": "Objects API registration options 'organisationRSIN' label",
@@ -2170,6 +2180,11 @@
     "defaultMessage": "Let op! Als je een andere groep selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?",
     "description": "Objects API registration options: warning message when changing the api group",
     "originalDefault": "Changing the api group will remove the existing variables mapping. Are you sure you want to continue?"
+  },
+  "a46ceJ": {
+    "defaultMessage": "Profile form variable",
+    "description": "Profile form variable label",
+    "originalDefault": "Profile form variable"
   },
   "a4gS07": {
     "defaultMessage": "Nee (zonder overzichtspagina)",
@@ -3510,6 +3525,11 @@
     "defaultMessage": "JSON-waarde invoeren",
     "description": "Toggle array input raw JSON input mode",
     "originalDefault": "Use raw JSON input"
+  },
+  "waQw8d": {
+    "defaultMessage": "API group",
+    "description": "Customer interactions API group field label",
+    "originalDefault": "API group"
   },
   "wnTTZr": {
     "defaultMessage": "ID van de schijf/drive waar bestanden terecht moeten komen. Indien leeg, dan wordt de standaard-drive gebruikt.",

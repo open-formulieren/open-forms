@@ -1,3 +1,4 @@
+import CommunicationPreferencesFields from './communication_preferences/CommunicationPreferencesFields';
 import DefaultFields from './default/DefaultFields';
 import FamilyMembersFields from './family_members/FamilyMembersFields';
 import ObjectsAPIFields from './objects_api/ObjectsAPIFields';
@@ -15,6 +16,10 @@ const PLUGIN_COMPONENT_MAPPING = {
   },
   yivi: {
     component: YiviFields,
+    pluginFieldExtra: null,
+  },
+  communication_preferences: {
+    component: CommunicationPreferencesFields,
     pluginFieldExtra: null,
   },
   default: {
