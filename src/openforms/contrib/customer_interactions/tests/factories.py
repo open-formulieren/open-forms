@@ -16,6 +16,7 @@ class CustomerInteractionsAPIGroupConfigFactory(factory.django.DjangoModelFactor
         model = CustomerInteractionsAPIGroupConfig
 
     class Params:
+        # See the docker compose fixtures for base URLs authentication values:
         for_test_docker_compose = factory.Trait(
             customer_interactions_service=factory.SubFactory(
                 ServiceFactory,
