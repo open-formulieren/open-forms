@@ -26,7 +26,10 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
     @staticmethod
     def bsn_list_param(bsn: str) -> ListDigitaalAdresParams:
         """
-        based on docs for partij identification parameters -
+        Return a group of query params needed to search digital addresses by BSN.
+
+        The selection of query params and their values are based on the OAS for the
+        "partij identificator":
         https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/maykinmedia/open-klant/master/src/openklant/components/klantinteracties/openapi.yaml#tag/partij-identificatoren
         """
         return {
