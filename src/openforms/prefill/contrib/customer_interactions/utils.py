@@ -23,9 +23,12 @@ def transform_digital_addresses(
     configured_address_types: list[SupportedChannels],
 ) -> ProfileCommunicationChannels:
     """
-    * keep only digital addresses listed in 'configured_address_types' parameter
-    * group and transform response from klantinteracties/api/v1/digitaleadressen endpoint
-    to the ProfileCommunicationChannels type
+    Filter and group digital addresses.
+
+    This function:
+    * keeps only digital addresses listed in 'configured_address_types' parameter.
+    * groups response from /klantinteracties/api/v1/digitaleadressen endpoint by
+    the address type.
     """
     sorted_addresses = sorted(digital_addresses, key=lambda x: x["soortDigitaalAdres"])
     grouped_digital_addresses: groupby[SoortDigitaalAdres, DigitaalAdres] = groupby(

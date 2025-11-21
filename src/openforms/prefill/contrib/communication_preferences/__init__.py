@@ -1,3 +1,0 @@
-"""
-Communication preferences prefill plugin.
-"""

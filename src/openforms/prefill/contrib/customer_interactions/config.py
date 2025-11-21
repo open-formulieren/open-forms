@@ -16,9 +16,9 @@ class CommunicationPreferencesSerializer(
     customer_interactions_api_group = SlugRelatedAsChoicesField(
         queryset=CustomerInteractionsAPIGroupConfig.objects.all(),
         slug_field="identifier",
-        label=_("Customer interactions API group"),
+        label=_("Customer Interactions API group"),
         required=True,
-        help_text=_("Which Customer interactions API group to use."),
+        help_text=_("Which Customer Interactions API group to use."),
     )
     profile_form_variable = FormioVariableKeyField(
         label=_("Profile form variable key"),

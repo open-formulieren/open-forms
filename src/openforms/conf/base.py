@@ -239,7 +239,7 @@ INSTALLED_APPS = [
     "openforms.prefill",
     "openforms.prefill.contrib.demo",
     "openforms.prefill.contrib.eidas",
-    "openforms.prefill.contrib.communication_preferences",
+    "openforms.prefill.contrib.customer_interactions",
     "openforms.prefill.contrib.kvk",
     "openforms.prefill.contrib.stufbg",
     "openforms.prefill.contrib.haalcentraal_brp",

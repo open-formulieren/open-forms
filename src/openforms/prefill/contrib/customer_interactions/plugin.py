@@ -60,6 +60,7 @@ class CommunicationPreferences(BasePlugin[CommunicationPreferencesOptions]):
         # use component variable to find a formio component
         total_config_wrapper = submission.total_configuration_wrapper
         profile_component = total_config_wrapper[profile_form_variable]
+        assert profile_component["type"] == "customerProfile"
         if not (address_types := profile_component.get("digitalAddressTypes")):
             logger.info(
                 "missing_component_digital_address_types",

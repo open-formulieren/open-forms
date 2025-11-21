@@ -17,7 +17,10 @@ class CommunicationPreferencesConfigTests(OFVCRMixin, TestCase):
         plugin = CommunicationPreferences("communication_preferences-invalid")
         CustomerInteractionsAPIGroupConfigFactory.create(for_test_docker_compose=True)
 
-        plugin.check_config()
+        try:
+            plugin.check_config()
+        except Exception as exc:
+            raise self.failureException("valid config must pass") from exc
 
     def test_config_invalid(self):
         plugin = CommunicationPreferences("communication_preferences-invalid")

@@ -24,8 +24,10 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
                 for_test_docker_compose=True
             )
         )
+
+    def test_prefill_values_found(self):
         profile_channels: list[SupportedChannels] = ["email", "phone_number"]
-        cls.form = FormFactory.create(
+        form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
                 "components": [
@@ -41,21 +43,19 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         )
         FormVariableFactory.create(
             key="communication-preferences",
-            form=cls.form,
+            form=form,
             user_defined=True,
             data_type=FormVariableDataTypes.object,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
-                "customer_interactions_api_group": cls.customer_interactions_config.identifier,
+                "customer_interactions_api_group": self.customer_interactions_config.identifier,
                 "profile_form_variable": "profile",
             },
         )
-
-    def test_prefill_values_found(self):
         submission = SubmissionFactory.create(
             auth_info__value="123456782",
             auth_info__attribute=AuthAttribute.bsn,
-            form=self.form,
+            form=form,
         )
         assert submission.is_authenticated
 
@@ -79,10 +79,36 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         self.assertEqual(state.variables["communication-preferences"].value, expected)
 
     def test_prefill_values_not_found(self):
+        profile_channels: list[SupportedChannels] = ["email", "phone_number"]
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "label": "Profile",
+                        "digitalAddressTypes": profile_channels,
+                        "shouldUpdateCustomerData": True,
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.object,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.customer_interactions_config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
         submission = SubmissionFactory.create(
             auth_info__value="123456780",
             auth_info__attribute=AuthAttribute.bsn,
-            form=self.form,
+            form=form,
         )
         assert submission.is_authenticated
 
@@ -92,7 +118,33 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         self.assertEqual(state.variables["communication-preferences"].value, {})
 
     def test_prefill_values_not_authenticated(self):
-        submission = SubmissionFactory.create(form=self.form)
+        profile_channels: list[SupportedChannels] = ["email", "phone_number"]
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "label": "Profile",
+                        "digitalAddressTypes": profile_channels,
+                        "shouldUpdateCustomerData": True,
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.object,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.customer_interactions_config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
         assert not submission.is_authenticated
 
         prefill_variables(submission=submission)
