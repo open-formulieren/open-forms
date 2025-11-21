@@ -5,7 +5,7 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
-const CustomerInteractionsAPIGroup = ({apiGroupChoices, name = 'customerInteractionsApiGroup'}) => {
+const CustomerInteractionsAPIGroup = ({apiGroupChoices, name}) => {
   const options = apiGroupChoices.map(([value, label]) => ({value, label}));
 
   return (
@@ -46,7 +46,7 @@ CustomerInteractionsAPIGroup.propTypes = {
   /**
    * Name to use for the form field, is passed down to Formik.
    */
-  name: PropTypes.string,
+  name: PropTypes.string.isRequired,
 };
 
 export default CustomerInteractionsAPIGroup;

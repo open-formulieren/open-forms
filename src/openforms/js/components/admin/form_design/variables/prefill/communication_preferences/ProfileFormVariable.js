@@ -6,7 +6,7 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 
-const ProfileFormVariable = ({name = 'profileFormVariable'}) => {
+const ProfileFormVariable = ({name}) => {
   const [fieldProps] = useField(name);
   return (
     <FormRow>
@@ -21,16 +21,7 @@ const ProfileFormVariable = ({name = 'profileFormVariable'}) => {
         required
         noManageChildProps
       >
-        <VariableSelection
-          {...fieldProps}
-          aria-label={
-            <FormattedMessage
-              description="Accessible label for (form) variable dropdown"
-              defaultMessage="Profile form variable dropdown"
-            />
-          }
-          filter={variable => variable.source === 'component'}
-        />
+        <VariableSelection {...fieldProps} filter={variable => variable.source === 'component'} />
       </Field>
     </FormRow>
   );
@@ -40,7 +31,7 @@ ProfileFormVariable.propTypes = {
   /**
    * Name to use for the form field, is passed down to Formik.
    */
-  name: PropTypes.string,
+  name: PropTypes.string.isRequired,
 };
 
 export default ProfileFormVariable;
