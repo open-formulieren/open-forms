@@ -622,7 +622,7 @@ onlinepayments-sdk-python3==5.1.0
     #   -r requirements/base.txt
 open-forms-ext-haalcentraal-hr==0.3.1
     # via -r requirements/extensions.in
-open-forms-ext-token-exchange==0.4.0
+open-forms-ext-token-exchange==0.5.0
     # via -r requirements/extensions.in
 openapi-schema-validator==0.6.2
     # via
