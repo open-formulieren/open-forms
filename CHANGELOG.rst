@@ -6,6 +6,13 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.7 (2025-11-21)
+==================
+
+Hotfix for the ``all-extensions`` build variant.
+
+* Fixed the Token Exchange extension no longer functioning due to the OpenID library rework.
+
 3.3.6 (2025-11-20)
 ==================
 
