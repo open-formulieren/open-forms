@@ -1964,6 +1964,11 @@
     "description": "Form logic tab title",
     "originalDefault": "Logic"
   },
+  "WjxSEM": {
+    "defaultMessage": "There are multiple profile components specified in this form. This configuration is not supported and may lead to unexpected behavior.",
+    "description": "Too many profile components",
+    "originalDefault": "There are multiple profile components specified in this form. This configuration is not supported and may lead to unexpected behavior."
+  },
   "WnKF/i": {
     "defaultMessage": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments",
     "description": "Objects API registration options \"Attachment informatieobjecttype\" description",
