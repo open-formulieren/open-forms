@@ -807,6 +807,12 @@
       "value": "Name of the form definition used in this form step"
     }
   ],
+  "68Aey7": [
+    {
+      "type": 0,
+      "value": "When this is checked, Open Forms automatically updates the customer profile when a digital address is added."
+    }
+  ],
   "6F2H6H": [
     {
       "type": 0,
@@ -901,6 +907,12 @@
     {
       "type": 0,
       "value": "Add another overlay"
+    }
+  ],
+  "78ckd0": [
+    {
+      "type": 0,
+      "value": "Email"
     }
   ],
   "7AQfXl": [
@@ -1241,6 +1253,12 @@
     {
       "type": 0,
       "value": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
+    }
+  ],
+  "9XqFGF": [
+    {
+      "type": 0,
+      "value": "Open Forms should update customer data after submission"
     }
   ],
   "9akVrT": [
@@ -1935,6 +1953,12 @@
     {
       "type": 0,
       "value": "Session expired"
+    }
+  ],
+  "DgwkGj": [
+    {
+      "type": 0,
+      "value": "There are multiple profile components specified in this form. At most one should be present."
     }
   ],
   "Dm3S1P": [
@@ -2711,12 +2735,6 @@
       "value": "Hidden"
     }
   ],
-  "JsiIFI": [
-    {
-      "type": 0,
-      "value": "Profile form variable dropdown"
-    }
-  ],
   "K/Oijt": [
     {
       "type": 0,
@@ -3321,6 +3339,16 @@
     {
       "type": 0,
       "value": "Include confirmation page content in PDF"
+    }
+  ],
+  "PToTK+": [
+    {
+      "type": 1,
+      "value": "field"
+    },
+    {
+      "type": 0,
+      "value": " must be a valid phone number."
     }
   ],
   "PaEo2j": [
@@ -4177,6 +4205,12 @@
       "value": "Authentication automatic login"
     }
   ],
+  "XKpEHP": [
+    {
+      "type": 0,
+      "value": "At least one digital address type must be selected."
+    }
+  ],
   "XMV3t2": [
     {
       "type": 0,
@@ -4265,6 +4299,12 @@
     {
       "type": 0,
       "value": "Variables"
+    }
+  ],
+  "Y1qhnH": [
+    {
+      "type": 0,
+      "value": "Digital address types a user can be contacted on."
     }
   ],
   "Y4oNhH": [
@@ -6765,6 +6805,12 @@
       "value": "Confirm"
     }
   ],
+  "q+qVVR": [
+    {
+      "type": 0,
+      "value": "Phone number"
+    }
+  ],
   "q3kxsb": [
     {
       "type": 0,
@@ -7181,6 +7227,12 @@
       "value": "The earliest possible value that can be entered."
     }
   ],
+  "tZwyML": [
+    {
+      "type": 0,
+      "value": "Phone number"
+    }
+  ],
   "tg+6bo": [
     {
       "type": 0,
@@ -7325,6 +7377,12 @@
     {
       "type": 0,
       "value": "Source path"
+    }
+  ],
+  "vN6yXh": [
+    {
+      "type": 0,
+      "value": "Available digital address types"
     }
   ],
   "vNRiMn": [
@@ -7535,6 +7593,12 @@
     {
       "type": 0,
       "value": "Submission confirmation template"
+    }
+  ],
+  "xPFvic": [
+    {
+      "type": 0,
+      "value": "Email"
     }
   ],
   "xTcRPO": [
