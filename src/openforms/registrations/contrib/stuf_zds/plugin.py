@@ -289,7 +289,6 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 value = extra_data[to_key]
                 for item in value:
                     item.pop("dateOfBirthPrecision", None)
-                    item["dateOfBirth"] = item["dateOfBirth"].isoformat()
 
                 extra_data[to_key] = value
                 extra_data.pop(from_key, None)
