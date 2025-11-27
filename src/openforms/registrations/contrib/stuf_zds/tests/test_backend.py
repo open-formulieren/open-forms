@@ -3807,6 +3807,66 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             },
         )
 
+    @tag("gh-5770")
+    def test_partners_registration_with_date_of_birth_as_str(self):
+        submission = SubmissionFactory.from_components(
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
+            components_list=[
+                {
+                    "key": "stuf_bg_partners_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+            submitted_data={
+                "stuf_bg_partners_mutable": [
+                    {
+                        "bsn": "123123123",
+                        "firstNames": "Belly",
+                        "initials": "K",
+                        "affixes": "van",
+                        "lastName": "Doe",
+                        # the date of birth is of type datetime.date when we submit the step
+                        "dateOfBirth": date(1985, 6, 15),
+                        "deceased": None,
+                        "dateOfBirthPrecision": "date",
+                    }
+                ]
+            },
+            completed=True,
+        )
+
+        SubmissionValueVariableFactory.create(
+            key="stuf_bg_partners_immutable",
+            submission=submission,
+            form_variable__user_defined=True,
+            form_variable__prefill_plugin="family_members",
+            form_variable__prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "stuf_bg_partners_mutable",
+            },
+            value=[
+                {
+                    "bsn": "123123123",
+                    "firstNames": "Belly",
+                    "initials": "K",
+                    "affixes": "van",
+                    "lastName": "Doe",
+                    # date of birth as an str in order to have the regression test
+                    "dateOfBirth": "19850615",
+                    "deceased": None,
+                }
+            ],
+        )
+
+        try:
+            self.plugin.register_submission(submission, self.options)
+        except AttributeError as e:
+            raise self.failureException("Registration failed unexpectedly") from e
+
 
 class StufZDSConfirmationEmailVCRTests(OFVCRMixin, StUFZDSTestBase):
     VCR_TEST_FILES = TESTS_DIR / "files"

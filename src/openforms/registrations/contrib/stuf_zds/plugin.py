@@ -286,12 +286,13 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                     variable.key,
                     variable.prefill_options["mutable_data_form_variable"],
                 )
-                value = extra_data[from_key]
+                value = extra_data[to_key]
                 for item in value:
-                    del item["dateOfBirthPrecision"]
+                    item.pop("dateOfBirthPrecision", None)
+                    item["dateOfBirth"] = item["dateOfBirth"].isoformat()
 
                 extra_data[to_key] = value
-                del extra_data[from_key]
+                extra_data.pop(from_key, None)
 
     def register_submission(
         self, submission: Submission, options: RegistrationOptions
