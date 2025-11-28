@@ -4,7 +4,7 @@ Implementation details for the v2 registration handler.
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import date, datetime, time
+from datetime import date, datetime
 from typing import assert_never, cast
 
 from glom import Assign, Path, glom
@@ -13,6 +13,7 @@ from openforms.api.utils import underscore_to_camel
 from openforms.formio.service import FormioData
 from openforms.formio.typing import Component, EditGridComponent
 from openforms.formio.typing.vanilla import FileComponent
+from openforms.submissions.models import SubmissionValueVariable
 from openforms.typing import JSONObject, JSONValue, VariableValue
 
 from ..typing import ObjecttypeVariableMapping
@@ -57,6 +58,7 @@ def process_mapped_variable(
     mapping: ObjecttypeVariableMapping,
     value: VariableValue,  # can't narrow it down yet, as the type depends on the component type
     transform_to_list: list[str] | None = None,
+    variable: SubmissionValueVariable | None = None,
     component: Component | None = None,
     attachment_urls: dict[str, list[str]] | None = None,
 ) -> AssignmentSpec | Sequence[AssignmentSpec]:
@@ -72,9 +74,10 @@ def process_mapped_variable(
     :arg value: The raw value of the form variable for the submission being processed.
       The type/shape of the value depends on the variable/component data type being
       processed and even the component configuration (such as multiple True/False).
-    :arg transform_to_list: transform_to_list: Component keys in this list will be sent
-      as an array of values rather than the default object-shape for selectboxes
-      components.
+    :arg transform_to_list: Component keys in this list will be sent as an array of
+      values rather than the default object-shape for selectboxes components.
+    :arg variable: Corresponding submission value variable, will be ``None`` for
+      registration variables.
     :arg component: If the variable corresponds to a Formio component, the component
       definition is provided, otherwise ``None``.
     :arg attachment_urls: The registration plugin uploads attachments to a Documents API
@@ -91,21 +94,18 @@ def process_mapped_variable(
     variable_key = mapping["variable_key"]
     target_path = Path(*bits) if (bits := mapping.get("target_path")) else None
 
-    # normalize non-primitive date/datetime values for non components so that they're
-    # ready for JSON serialization in the proper format
-    if isinstance(value, date | datetime) and not component:
+    # Normalize to primitives so that they're ready for JSON serialization in the proper
+    # format. Utilize the variable if we have one, otherwise convert to ISO-8601 string
+    # directly.
+    if variable is not None:
+        value = variable.to_json(value)
+    elif isinstance(value, date | datetime):
         value = value.isoformat()
 
     # transform the value within the context of the component
     # TODO: convert this in a proper registry in due time so we can use better type
     # annotations
     match component:
-        case {"type": "date" | "datetime" | "time", "multiple": True}:
-            assert isinstance(value, list)
-            value = [v.isoformat() if value else "" for v in value]  # pyright: ignore[reportAttributeAccessIssue, reportOptionalMemberAccess]
-        case {"type": "date" | "datetime" | "time"}:
-            assert isinstance(value, date | time | datetime | None)
-            value = value.isoformat() if value else ""
         case {"type": "addressNL"}:
             assert isinstance(value, dict)
             value = value.copy()
@@ -116,7 +116,7 @@ def process_mapped_variable(
                 return [
                     AssignmentSpec(
                         # the typeddict union of keys/values is lost when looping over them
-                        destination=Path(*target_path_bits),  # pyright: ignore[reportGeneralTypeIssues]
+                        destination=Path(*target_path_bits),
                         value=_value,  # pyright: ignore[reportArgumentType]
                     )
                     for key, target_path_bits in detailed_mappings.items()
@@ -163,8 +163,6 @@ def process_mapped_variable(
 
             for partner in value:
                 assert isinstance(partner, dict)
-                assert isinstance(partner["dateOfBirth"], date)
-                partner["dateOfBirth"] = partner["dateOfBirth"].isoformat()
 
                 # these are not relevant for the object (at least for now)
                 partner.pop("dateOfBirthPrecision", None)
@@ -185,9 +183,6 @@ def process_mapped_variable(
                 assert isinstance(child, dict)
                 if child.get("selected") not in (None, True):
                     continue
-
-                assert isinstance(child["dateOfBirth"], date)
-                child["dateOfBirth"] = child["dateOfBirth"].isoformat()
 
                 for attribute in need_removal:
                     child.pop(attribute, None)
