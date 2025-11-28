@@ -884,11 +884,39 @@ class V2HandlerTests(TestCase):
             [
                 {"key": "date", "type": "date"},
                 {"key": "date_multiple", "type": "date", "multiple": True},
+                {
+                    "key": "editgrid",
+                    "type": "editgrid",
+                    "components": [
+                        {
+                            "key": "fieldset",
+                            "type": "fieldset",
+                            "components": [
+                                {"key": "time", "type": "time"},
+                                {
+                                    "key": "datetime_multiple",
+                                    "type": "datetime",
+                                    "multiple": True,
+                                },
+                            ],
+                        }
+                    ],
+                },
             ],
             completed=True,
             submitted_data={
                 "date": "2000-01-01",
                 "date_multiple": ["2000-01-01", "2025-08-11"],
+                "editgrid": [
+                    {
+                        "time": "12:34:00",
+                        "datetime_multiple": [
+                            "2025-11-28T12:34:56+01:00",
+                            "2026-01-01T11:22:33+01:00",
+                            "",
+                        ],
+                    }
+                ],
             },
         )
 
@@ -903,6 +931,7 @@ class V2HandlerTests(TestCase):
             "variables_mapping": [
                 {"variable_key": "date", "target_path": ["path1"]},
                 {"variable_key": "date_multiple", "target_path": ["path2"]},
+                {"variable_key": "editgrid", "target_path": ["path3"]},
             ],
             "iot_attachment": "",
             "iot_submission_csv": "",
@@ -920,5 +949,15 @@ class V2HandlerTests(TestCase):
             {
                 "path1": "2000-01-01",
                 "path2": ["2000-01-01", "2025-08-11"],
+                "path3": [
+                    {
+                        "time": "12:34:00",
+                        "datetime_multiple": [
+                            "2025-11-28T12:34:56+01:00",
+                            "2026-01-01T11:22:33+01:00",
+                            "",
+                        ],
+                    }
+                ],
             },
         )
