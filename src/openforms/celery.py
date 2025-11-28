@@ -6,7 +6,12 @@ from django.conf import settings
 
 import structlog
 from celery import Celery, bootsteps
-from celery.signals import setup_logging, worker_ready, worker_shutdown
+from celery.signals import (
+    after_task_publish,
+    setup_logging,
+    worker_ready,
+    worker_shutdown,
+)
 from django_structlog.celery.steps import DjangoStructLogInitStep
 
 from openforms.conf.utils import config
@@ -14,6 +19,8 @@ from openforms.conf.utils import config
 from .setup import setup_env
 
 setup_env()
+
+IS_BEAT = config("IS_BEAT", default=False)
 
 app = Celery("open-forms")
 assert app.steps is not None
@@ -166,3 +173,13 @@ def worker_shutdown(**_):
 
 
 app.steps["worker"].add(LivenessProbe)
+
+if IS_BEAT:
+
+    @after_task_publish.connect
+    def mark_beat_task_scheduled(**kwargs):
+        import structlog
+
+        logger = structlog.stdlib.get_logger()
+
+        logger.info("beat_task_scheduled")
