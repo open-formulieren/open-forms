@@ -502,6 +502,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
             assignment_spec = process_mapped_variable(
                 mapping=mapping,
                 value=value,
+                variable=variable,
                 component=component,
                 attachment_urls=urls_map,
                 transform_to_list=transform_to_list,
@@ -531,6 +532,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
             assignment_spec = process_mapped_variable(
                 mapping={"variable_key": key, "target_path": ["geometry"]},
                 value=all_values[key],
+                variable=variable,
                 component=component,
             )
             assert isinstance(assignment_spec, AssignmentSpec)
