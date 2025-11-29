@@ -69,14 +69,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
-        with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gettext postgresql-client gdal-bin'
-          python-version: '3.12'
-          optimize-postgres: 'yes'
-          pg-service: 'postgres'
-          setup-node: 'yes'
-          npm-ci-flags: '--legacy-peer-deps'
+        uses: ./.github/actions/setup-backend
 
       - name: Start CI docker services
         run: |
@@ -155,14 +148,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
-        with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gettext postgresql-client gdal-bin'
-          python-version: '3.12'
-          optimize-postgres: 'yes'
-          pg-service: 'postgres'
-          setup-node: 'yes'
-          npm-ci-flags: '--legacy-peer-deps'
+        uses: ./.github/actions/setup-backend
 
       - name: Start CI docker services
         run: |
@@ -252,14 +238,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
-        with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gettext postgresql-client gdal-bin'
-          python-version: '3.12'
-          optimize-postgres: 'yes'
-          pg-service: 'postgres'
-          setup-node: 'yes'
-          npm-ci-flags: '--legacy-peer-deps'
+        uses: ./.github/actions/setup-backend
 
       # See https://playwright.dev/python/docs/ci#caching-browsers
       - name: Cache Playwright browser
@@ -311,11 +290,10 @@ jobs:
           path: open-forms
 
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
+        uses: ./open-forms/.github/actions/setup-backend
         with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
-          python-version: '3.12'
           setup-node: 'no'
+          optimize-postgres: 'no'
           working-directory: 'open-forms'
 
       - name: Checkout SDK repository

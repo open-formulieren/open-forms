@@ -1,0 +1,39 @@
+---
+
+name: Setup backend
+
+description: >2
+  Set up the Django backend for builds/CI checks.
+
+  Wraps around the maykinmedia/setup-django-backend action, conveniently centralizing
+  its configuration options.
+
+inputs:
+  setup-node:
+    type: string
+    required: false
+    default: 'yes'
+  optimize-postgres:
+    required: false
+    default: 'yes'
+  working-directory:
+    description: Specifies the working directory where commands are run.
+    required: false
+    default: ''
+
+outputs: {}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Set up backend environment
+      uses: maykinmedia/setup-django-backend@v1.3
+      with:
+        apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gettext postgresql-client gdal-bin'
+        python-version: '3.12'
+        optimize-postgres: ${{ inputs.optimize-postgres }}
+        pg-service: 'postgres'
+        setup-node: ${{ inputs.setup-node }}
+        npm-ci-flags: '--legacy-peer-deps'
+        working-directory: ${{ inputs.working-directory }}

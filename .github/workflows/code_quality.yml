@@ -19,11 +19,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
+        uses: ./.github/actions/setup-backend
         with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
-          python-version: '3.12'
           setup-node: 'no'
+          optimize-postgres: 'no'
       - run: |
           ruff check --output-format=github .
           ruff format --check
@@ -46,11 +45,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
+        uses: ./.github/actions/setup-backend
         with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
-          python-version: '3.12'
           setup-node: 'no'
+          optimize-postgres: 'no'
       - name: Run manage.py makemigrations --check --dry-run
         run: |
           src/manage.py makemigrations --check --dry-run
