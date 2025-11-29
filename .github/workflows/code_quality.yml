@@ -13,20 +13,20 @@ on:
 
 jobs:
   ruff:
-    name: Lint codebase with ruff (black, isort and flake8 alternative)
+    name: Ruff - lint and check code formatting
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
+      - name: Determine ruff version
+        id: ruff-version
+        run: |
+          version=$(grep -oP '(?<=ruff==)\d+\.\d+\.\d+' requirements/ci.txt)
+          echo "version=$version" >> $GITHUB_OUTPUT
+      - uses: astral-sh/ruff-action@v3  # runs ruff check
         with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
-          python-version: '3.12'
-          setup-node: 'no'
-      - run: |
-          ruff check --output-format=github .
-          ruff format --check
+          version: "${{ steps.ruff-version.outputs.version }}"
+      - run: ruff format --check --diff
 
   migrations:
     name: Check for model changes not present in the migrations or default_admin_index fixture
@@ -46,11 +46,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
+        uses: ./.github/actions/setup-backend
         with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
-          python-version: '3.12'
           setup-node: 'no'
+          optimize-postgres: 'no'
       - name: Run manage.py makemigrations --check --dry-run
         run: |
           src/manage.py makemigrations --check --dry-run

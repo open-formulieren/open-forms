@@ -3,7 +3,7 @@ name: Build the target Docker image
 on:
   workflow_call:
     inputs:
-      target_env:
+      target-env:
         required: true
         type: string
         # choice is not available yet :(
@@ -11,10 +11,18 @@ on:
         # options:
         #   - production
         #   - extensions
-      image_name:
+      image-name:
         required: true
         type: string # image name without tag, e.g. 'openforms/open-forms'
-      image_tag_prefix:
+      image-tag-prefix:
+        required: true
+        type: string
+        default: ''
+      version:
+        required: true
+        type: string
+        default: ''
+      git-hash:
         required: true
         type: string
         default: ''
@@ -23,12 +31,12 @@ on:
         type: string
         default: ''
     outputs:
-      image_name:
+      image-name:
         description: Image name + tag of the built image
-        value: ${{ jobs.image_build.outputs.image_name }}
-      artifact_name:
+        value: ${{ jobs.image_build.outputs.image-name }}
+      artifact-name:
         description: Artifact name for the built image
-        value: ${{ jobs.image_build.outputs.artifact_name }}
+        value: ${{ jobs.image_build.outputs.artifact-name }}
 
 jobs:
   image_build:
@@ -40,8 +48,8 @@ jobs:
       DOCKER_BUILDKIT: 1
 
     outputs:
-      image_name: ${{ steps.build-args.outputs.image_name }}
-      artifact_name: ${{ steps.build-args.outputs.artifact_name }}
+      image-name: ${{ steps.build-args.outputs.image-name }}
+      artifact-name: ${{ steps.build-args.outputs.artifact-name }}
 
     steps:
       - uses: actions/checkout@v4
@@ -49,44 +57,30 @@ jobs:
       - name: Extract build args
         id: build-args
         run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          # Strip "v" prefix from tag name (if present at all)
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
-
-          # PRs result in version 'merge' -> transform that into 'latest'
-          [ "$VERSION" == "merge" ] && VERSION=latest
-
           # Obtain the SDK release to bundle along, use latest if backend is also latest
           SDK_RELEASE=$(cat .sdk-release | tr -d '[:space:]')
-          # TODO: check how this behaves with tag all-extensions-latest
-          [ "$VERSION" == "latest" ] && SDK_RELEASE=latest
-
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          [ "${{ inputs.version }}" == "latest" ] && SDK_RELEASE=latest
           echo "sdk_release=${SDK_RELEASE}" >> $GITHUB_OUTPUT
-          echo "image_name=${{ inputs.image_name }}:${{ inputs.image_tag_prefix }}${VERSION}" >> $GITHUB_OUTPUT
-          echo "artifact_name=docker-image-${{ inputs.image_tag_prefix }}${VERSION}" >> $GITHUB_OUTPUT
+
+          echo "image-name=${{ inputs.image-name }}:${{ inputs.image-tag-prefix }}${{ inputs.version }}" >> $GITHUB_OUTPUT
+          echo "artifact-name=docker-image-${{ inputs.image-tag-prefix }}${{ inputs.version }}" >> $GITHUB_OUTPUT
 
       - name: Build the Docker image
         run: |
           docker build . \
-            --tag ${{ steps.build-args.outputs.image_name }} \
-            --build-arg TARGET_ENVIRONMENT=${{ inputs.target_env }} \
+            --tag ${{ steps.build-args.outputs.image-name }} \
+            --build-arg TARGET_ENVIRONMENT=${{ inputs.target-env }} \
             --build-arg EXTENSIONS=${{ inputs.extensions }} \
             --build-arg SDK_RELEASE=${{ steps.build-args.outputs.sdk_release }} \
-            --build-arg COMMIT_HASH=${GITHUB_SHA} \
-            --build-arg RELEASE=${{ steps.build-args.outputs.version }}
+            --build-arg COMMIT_HASH=${{ inputs.git-hash }} \
+            --build-arg RELEASE=${{ inputs.version }}
 
       - name: Dump image to file
-        run: docker image save -o image.tar ${{ steps.build-args.outputs.image_name }}
+        run: docker image save -o image.tar ${{ steps.build-args.outputs.image-name }}
 
       - name: Store image artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.build-args.outputs.artifact_name }}
+          name: ${{ steps.build-args.outputs.artifact-name }}
           path: image.tar
           retention-days: 1
