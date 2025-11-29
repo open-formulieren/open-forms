@@ -1,0 +1,41 @@
+---
+
+name: Determine the SDK version/release to include
+
+description: >2
+  Given the checked out repository and current Open Forms backend version, determine
+  the matching SDK version.
+
+  When the 'latest' backend is being built, it must also pull the latest SDK version,
+  otherwise the pinned version from the `.sdk-release` file must be used.
+
+  For PRs against stable branches, the pinned version is used as well.
+
+inputs:
+  backend-version:
+    type: string
+    required: true
+    description: Backend version being built, either a SemVer version or 'latest'.
+
+outputs:
+  sdk-version:
+    value: ${{ steps.vars.outputs.sdk-version }}
+    description: >2
+      The resolved SDK version - either a version number (SemVer) if the backend version
+      is a particular version, or 'latest' otherwise.
+  sdk-ref:
+    value: ${{ steps.vars.outputs.sdk-ref }}
+    description: >2
+      The git ref that matches the determined version, in the open-forms-sdk repository.
+
+runs:
+  using: composite
+
+  steps:
+    - name: Extract version information
+      id: vars
+      run: |
+        ${{ github.action_path }}/extract_sdk_version.sh \
+          "${{ inputs.backend-version }}" \
+          "${{ github.base_ref }}"
+      shell: bash

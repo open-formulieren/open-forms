@@ -32,15 +32,20 @@ jobs:
       image-name: ${{ steps.envars-to-outputs.outputs.image-name }}
       version: ${{ steps.vars.outputs.version }}
       git_hash: ${{ steps.vars.outputs.git_hash }}
+      sdk-version: ${{ steps.sdk-vars.outputs.sdk-version }}
+      sdk-ref: ${{ steps.sdk-vars.outputs.sdk-ref }}
     steps:
+      - uses: actions/checkout@v4
       - name: Set output with default values
         id: envars-to-outputs
         run: |
           echo "image-name=${{ env.IMAGE_NAME }}" >> $GITHUB_OUTPUT
       - name: Extract version info
         id: vars
-        uses: maykinmedia/open-api-workflows/actions/extract-version@feature/extract-and-polish-reusable-actions
-      # TODO: add step to determine SDK release version
+        uses: maykinmedia/open-api-workflows/actions/extract-version@v6
+      - name: Extract SDK version info
+        id: sdk-vars
+        uses: ./.github/actions/extract-sdk-version
 
   tests:
     name: Run the Django test suite
@@ -110,7 +115,6 @@ jobs:
           coverage combine
 
         env:
-          DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
           DB_USER: postgres
           DB_PASSWORD: ''
@@ -191,7 +195,6 @@ jobs:
 
         env:
           PYTHONOPTIMIZE: '1'  # skip 'assert' execution
-          DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
           DB_USER: postgres
           DB_PASSWORD: ''
@@ -217,6 +220,7 @@ jobs:
 
   e2etests:
     runs-on: ubuntu-24.04
+    needs: setup
 
     if: "${{ !( (github.event_name == 'push' && contains(github.event.head_commit.message, '[skip: e2e]')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.body, '[skip: e2e]')) ) }}"
 
@@ -269,36 +273,9 @@ jobs:
       - name: Install playwright deps
         run: playwright install --with-deps ${{ matrix.browser }}
 
-      - name: Determine which SDK image to use to extract the JS/CSS files
-        id: sdk-tag
-        run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          # Strip "v" prefix from tag name (if present at all)
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # default to version in .sdk-release file
-          SDK_TAG=$(cat .sdk-release | tr -d '[:space:]')
-
-          # PRs have the base_ref, straight up pushes don't
-          if [[ "${{ github.base_ref }}" == stable/* ]]; then
-            echo "pull request to stable branch"
-          else
-            echo "not a pull request to a stable branch"
-            case $VERSION in
-              # if building master -> include latest image of SDK
-              master) SDK_TAG=latest;;
-              # PRs result in version 'merge' that'll go to master -> include latest image of SDK
-              merge) SDK_TAG=latest;;
-            esac
-          fi
-
-          echo "sdk_tag=${SDK_TAG}" >> $GITHUB_OUTPUT
-
       - name: Extract SDK files from SDK docker image
         run: |
-          container_id=$(docker create openformulieren/open-forms-sdk:${{ steps.sdk-tag.outputs.sdk_tag }})
+          container_id=$(docker create openformulieren/open-forms-sdk:${{ needs.setup.outputs.sdk-version }})
           docker cp $container_id:/sdk ./src/openforms/static/
           docker rm -v $container_id
 
@@ -308,14 +285,13 @@ jobs:
           python src/manage.py collectstatic --noinput --link
           src/manage.py test src --force-color --tag=e2e
         env:
-          DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
           DB_USER: postgres
           DB_PASSWORD: ''
           E2E_DRIVER: ${{ matrix.browser }}
           E2E_ENABLE_TRACING: '1'
           E2E_TRACES_PATH: /tmp/playwright_traces
-          SDK_RELEASE: ${{ steps.sdk-tag.outputs.sdk_tag }}
+          SDK_RELEASE: ${{ needs.setup.outputs.sdk-version }}
 
       - name: Upload playwright traces artifact on failure
         if: ${{ failure() }}
@@ -342,33 +318,11 @@ jobs:
           setup-node: 'no'
           working-directory: 'open-forms'
 
-      - name: Determine SDK version to checkout
-        id: sdk-ref
-        run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          # Strip "v" prefix from tag name (if present at all)
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # default to version in .sdk-release file
-          SDK_REF=$(cat .sdk-release | tr -d '[:space:]')
-
-          case $VERSION in
-            # if building master -> include main of SDK
-            master) SDK_REF=main;;
-            # PRs result in version 'merge' that'll go to master -> include main of SDK
-            merge) SDK_REF=main;;
-          esac
-
-          echo "sdk_ref=${SDK_REF}" >> $GITHUB_OUTPUT
-        working-directory: open-forms
-
       - name: Checkout SDK repository
         uses: actions/checkout@v4
         with:
           repository: 'open-formulieren/open-forms-sdk'
-          ref: ${{ steps.sdk-ref.outputs.sdk_ref }}
+          ref: ${{ needs.setup.outputs.sdk-ref }}
           path: open-forms-sdk
 
       - name: Setup symlinks
