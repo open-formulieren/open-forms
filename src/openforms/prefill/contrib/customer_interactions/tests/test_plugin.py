@@ -45,7 +45,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
             key="communication-preferences",
             form=form,
             user_defined=True,
-            data_type=FormVariableDataTypes.object,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "customer_interactions_api_group": self.customer_interactions_config.identifier,
@@ -62,8 +62,9 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        expected = {
-            "email": {
+        expected = [
+            {
+                "type": "email",
                 "options": [
                     "someemail@example.org",
                     "devilkiller@example.org",
@@ -71,11 +72,12 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
                 ],
                 "preferred": "john.smith@gmail.com",
             },
-            "phone_number": {
+            {
+                "type": "phone_number",
                 "options": ["0687654321", "0612345678"],
                 "preferred": "0612345678",
             },
-        }
+        ]
         self.assertEqual(state.variables["communication-preferences"].value, expected)
 
     def test_prefill_values_not_found(self):
@@ -98,7 +100,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
             key="communication-preferences",
             form=form,
             user_defined=True,
-            data_type=FormVariableDataTypes.object,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "customer_interactions_api_group": self.customer_interactions_config.identifier,
@@ -115,7 +117,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        self.assertEqual(state.variables["communication-preferences"].value, {})
+        self.assertEqual(state.variables["communication-preferences"].value, [])
 
     def test_prefill_values_not_authenticated(self):
         profile_channels: list[SupportedChannels] = ["email", "phone_number"]
@@ -137,7 +139,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
             key="communication-preferences",
             form=form,
             user_defined=True,
-            data_type=FormVariableDataTypes.object,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "customer_interactions_api_group": self.customer_interactions_config.identifier,
@@ -150,7 +152,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        self.assertEqual(state.variables["communication-preferences"].value, {})
+        self.assertEqual(state.variables["communication-preferences"].value, [])
 
     def test_prefill_values_for_email(self):
         profile_channels: list[SupportedChannels] = ["email"]
@@ -172,7 +174,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
             key="email-preferences",
             form=form,
             user_defined=True,
-            data_type=FormVariableDataTypes.object,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "customer_interactions_api_group": self.customer_interactions_config.identifier,
@@ -189,16 +191,17 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        expected = {
-            "email": {
+        expected = [
+            {
+                "type": "email",
                 "options": [
                     "someemail@example.org",
                     "devilkiller@example.org",
                     "john.smith@gmail.com",
                 ],
                 "preferred": "john.smith@gmail.com",
-            },
-        }
+            }
+        ]
         self.assertEqual(state.variables["email-preferences"].value, expected)
 
     def test_prefill_values_for_phone_number(self):
@@ -221,7 +224,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
             key="phone-number-preferences",
             form=form,
             user_defined=True,
-            data_type=FormVariableDataTypes.object,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "customer_interactions_api_group": self.customer_interactions_config.identifier,
@@ -238,12 +241,13 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        expected = {
-            "phone_number": {
+        expected = [
+            {
+                "type": "phone_number",
                 "options": ["0687654321", "0612345678"],
                 "preferred": "0612345678",
-            },
-        }
+            }
+        ]
         self.assertEqual(state.variables["phone-number-preferences"].value, expected)
 
     def test_prefill_values_no_channel(self):
@@ -265,7 +269,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
             key="empty-preferences",
             form=form,
             user_defined=True,
-            data_type=FormVariableDataTypes.object,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "customer_interactions_api_group": self.customer_interactions_config.identifier,
@@ -282,4 +286,4 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        self.assertEqual(state.variables["empty-preferences"].value, {})
+        self.assertEqual(state.variables["empty-preferences"].value, [])
