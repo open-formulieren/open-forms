@@ -1,12 +1,15 @@
 import {useField} from 'formik';
 import PropTypes from 'prop-types';
+import {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
+import {FormContext} from 'components/admin/form_design/Context';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 
 const ProfileFormVariable = ({name}) => {
+  const {components} = useContext(FormContext);
   const [fieldProps] = useField(name);
   return (
     <FormRow>
@@ -21,7 +24,12 @@ const ProfileFormVariable = ({name}) => {
         required
         noManageChildProps
       >
-        <VariableSelection {...fieldProps} filter={variable => variable.source === 'component'} />
+        <VariableSelection
+          {...fieldProps}
+          filter={variable =>
+            variable.source === 'component' && components[variable.key]?.type === 'customerProfile'
+          }
+        />
       </Field>
     </FormRow>
   );
