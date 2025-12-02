@@ -467,7 +467,7 @@ flower==2.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-fonttools==4.45.1
+fonttools==4.61.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

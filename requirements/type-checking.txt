@@ -490,7 +490,7 @@ flower==2.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-fonttools==4.45.1
+fonttools==4.61.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

@@ -272,7 +272,7 @@ face==20.1.1
     # via glom
 flower==2.0.1
     # via -r requirements/base.in
-fonttools==4.45.1
+fonttools==4.61.0
     # via weasyprint
 frozendict==2.3.4
     # via -r requirements/base.in
