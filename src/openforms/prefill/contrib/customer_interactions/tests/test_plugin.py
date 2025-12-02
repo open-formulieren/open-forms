@@ -4,7 +4,10 @@ from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.customer_interactions.tests.factories import (
     CustomerInteractionsAPIGroupConfigFactory,
 )
-from openforms.forms.tests.factories import FormFactory, FormVariableFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormVariableFactory,
+)
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
