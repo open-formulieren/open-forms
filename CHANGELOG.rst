@@ -6,6 +6,18 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.8 (2025-12-02)
+==================
+
+Bugfix release.
+
+* [:backend:`5784`] Fixed Wordline credit card payments authorization mode not being
+  set to ``SALE``.
+* [:backend:`5778`] Fixed crashes during registration with Objects API when there are
+  date or datetime fields inside a repeating group.
+* [:backend:`5770`] Fixed a crash when registering data for the ``partners`` component
+  with StUF-ZDS.
+
 3.3.7 (2025-11-21)
 ==================
 
