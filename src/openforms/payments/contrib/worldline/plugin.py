@@ -170,6 +170,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             {
                 "returnCancelState": True,
                 "hostedCheckoutSpecificInput": checkout_input,
+                "cardPaymentMethodSpecificInput": {"authorizationMode": "SALE"},
                 "order": order,
             }
         )
