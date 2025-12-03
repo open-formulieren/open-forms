@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -8,6 +9,9 @@ from rest_framework.exceptions import ValidationError
 
 from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
+from openforms.prefill.contrib.customer_interactions.constants import (
+    PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+)
 from openforms.prefill.registry import register
 from openforms.variables.api.serializers import ServiceFetchConfigurationSerializer
 from openforms.variables.constants import FormVariableSources
@@ -92,10 +96,69 @@ class FormVariableListSerializer(ListWithChildSerializer):
 
             existing_form_key_combinations.append(key_form_combination)
 
+        # Validate the uniqueness of variables using the communication preferences prefill plugin.
+        # Keeping this separate from the above key validation, as they aren't related.
+        for index, variable in enumerate(attrs):
+            prefill_plugin = variable.get("prefill_plugin")
+            prefill_options = variable.get("prefill_options")
+
+            if (
+                prefill_plugin == COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER
+                and prefill_options
+            ):
+                valid = self.validate_unique_variable_configuration_for_communication_preferences_prefill(
+                    variable, attrs[:index]
+                )
+                if not valid:
+                    errors[f"{index}.prefill_options.profile_form_variable"].append(
+                        serializers.ErrorDetail(
+                            _(
+                                "This profile form variable is already used in another communication preferences prefill plugin."
+                            ),
+                            code="invalid",
+                        )
+                    )
+
         if errors:
             raise ValidationError(errors)
 
         return attrs
+
+    @staticmethod
+    def validate_unique_variable_configuration_for_communication_preferences_prefill(
+        variable: dict[str, Any], previous_form_variables: list
+    ) -> bool:
+        """
+        Validate the uniqueness of variables using the communication preferences prefill plugin.
+
+        This function checks if the prefill configuration of the current variable is also
+        present in the previously validated variables. If so, this variable is a
+        duplicate and should be rejected.
+
+        For correct working of the communication preferences prefill plugin, we need to
+        ensure each plugin has a unique combination of form and profile form variable.
+        Otherwise, we don't know which customer interactions API should be used for prefilling
+        and post-submission updating of customer information.
+        """
+        key = variable["key"]
+        profile_form_variable = variable["prefill_options"].get("profile_form_variable")
+
+        # Search in the previously validated variables for variables using the
+        # communication preferences prefill plugin, and using the same
+        # `profile form variable` as the current variable.
+        similar_variables = [
+            variable
+            for variable in previous_form_variables
+            if (variable.get("prefill_plugin") or "")
+            == COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER
+            and variable.get("prefill_options").get("profile_form_variable")
+            == profile_form_variable
+            and variable.get("key") != key
+        ]
+
+        # If there is another variable using the communication preferences plugin using the same
+        # profile form variable, then this variable is not unique.
+        return len(similar_variables) == 0
 
 
 # TODO transform in polymorphic serializer to validate on different types of initial values?
