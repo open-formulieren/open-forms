@@ -60,7 +60,4 @@ class CommunicationPreferencesView(GenericAPIView):
         state = submission.load_submission_value_variables_state()
         submission_variable = state.variables[form_variable.key]
 
-        if not submission_variable.is_initially_prefilled:
-            return []
-
         return submission_variable.value

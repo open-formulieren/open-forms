@@ -90,3 +90,37 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
                 },
             ],
         )
+
+    def test_api_endpoint_no_user_var(self):
+        profile_channels: list[SupportedChannels] = ["email", "phone_number"]
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "label": "Profile",
+                        "digitalAddressTypes": profile_channels,
+                        "shouldUpdateCustomerData": True,
+                    }
+                ],
+            },
+        )
+        submission = SubmissionFactory.create(
+            auth_info__value="123456782",
+            auth_info__attribute=AuthAttribute.bsn,
+            form=form,
+        )
+        self._add_submission_to_session(submission)
+        prefill_variables(submission=submission)
+
+        url = reverse(
+            "api:prefill_customer_interactions:communication-preferences",
+            kwargs={"submission_uuid": submission.uuid, "profile_component": "profile"},
+        )
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), [])
