@@ -187,7 +187,7 @@ diff-match-patch==20230430
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-import-export
-django==4.2.26
+django==4.2.27
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
