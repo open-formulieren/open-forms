@@ -14,12 +14,18 @@ from openforms.accounts.tests.factories import (
     SuperUserFactory,
     UserFactory,
 )
+from openforms.contrib.customer_interactions.tests.factories import (
+    CustomerInteractionsAPIGroupConfigFactory,
+)
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
     FormVariableFactory,
+)
+from openforms.prefill.contrib.customer_interactions.plugin import (
+    PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
 )
 from openforms.prefill.contrib.demo.plugin import DemoPrefill
 from openforms.prefill.tests.utils import get_test_register, patch_prefill_registry
@@ -1320,3 +1326,148 @@ class FormVariableViewsetTest(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
+
+
+@override_settings(LANGUAGE_CODE="en")
+class CommunicationPreferencesPrefillPluginFormVariableViewsetTest(APITestCase):
+    def test_bulk_create_and_update_with_profile_form_variables(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user)
+
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "customerProfile",
+                        "key": "profile",
+                        "name": "Profile",
+                        "digitalAddressTypes": ["email"],
+                        "shouldUpdateCustomerData": True,
+                    },
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                    },
+                ]
+            },
+        )
+        form_definition = form_step.form_definition
+        customer_interactions_api = CustomerInteractionsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
+        )
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        with self.subTest(
+            "Create variable with textfield component as `profile form variable`"
+        ):
+            data = [
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "key": "profile",
+                    "name": "Profile",
+                    "data_type": FormVariableDataTypes.array,
+                    "source": FormVariableSources.component,
+                },
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "key": "textfield",
+                    "name": "Textfield",
+                    "data_type": FormVariableDataTypes.string,
+                    "source": FormVariableSources.component,
+                },
+                {
+                    "name": "profile-prefill",
+                    "key": "profilePrefill",
+                    "formDefinition": "",
+                    "source": FormVariableSources.user_defined,
+                    "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                    "prefillAttribute": "",
+                    "prefillIdentifierRole": "main",
+                    "dataType": FormVariableDataTypes.string,
+                    "prefillOptions": {
+                        "customerInteractionsApiGroup": customer_interactions_api.identifier,
+                        "profileFormVariable": "textfield",
+                    },
+                    "form": form_url,
+                },
+            ]
+
+            response = self.client.put(
+                reverse(
+                    "api:form-variables",
+                    kwargs={"uuid_or_slug": form.uuid},
+                ),
+                data=data,
+            )
+
+            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+            # The error message is targeted at the prefillOptions of the user-defined variable
+            self.assertEqual(
+                response.json()["invalidParams"][0]["name"],
+                "2.prefillOptions.profileFormVariable",
+            )
+            self.assertEqual(response.json()["invalidParams"][0]["code"], "invalid")
+            self.assertEqual(
+                response.json()["invalidParams"][0]["reason"],
+                _(
+                    "Only variables of 'profile' components are allowed as profile form variable."
+                ),
+            )
+
+        with self.subTest(
+            "Create variable with profile component as `profile form variable`"
+        ):
+            data = [
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "key": "profile",
+                    "name": "Profile",
+                    "data_type": FormVariableDataTypes.array,
+                    "source": FormVariableSources.component,
+                },
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "key": "textfield",
+                    "name": "Textfield",
+                    "data_type": FormVariableDataTypes.string,
+                    "source": FormVariableSources.component,
+                },
+                {
+                    "name": "profile-prefill",
+                    "key": "profilePrefill",
+                    "formDefinition": "",
+                    "source": FormVariableSources.user_defined,
+                    "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                    "prefillAttribute": "",
+                    "prefillIdentifierRole": "main",
+                    "dataType": FormVariableDataTypes.string,
+                    "prefillOptions": {
+                        "customerInteractionsApiGroup": customer_interactions_api.identifier,
+                        "profileFormVariable": "profile",
+                    },
+                    "form": form_url,
+                },
+            ]
+
+            response = self.client.put(
+                reverse(
+                    "api:form-variables",
+                    kwargs={"uuid_or_slug": form.uuid},
+                ),
+                data=data,
+            )
+
+            self.assertEqual(status.HTTP_200_OK, response.status_code)

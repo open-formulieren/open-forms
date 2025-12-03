@@ -244,7 +244,9 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         # check the specific validation options of the prefill plugin
         if prefill_plugin and prefill_options:
             plugin = register[prefill_plugin]
-            serializer = plugin.options(data=prefill_options)
+            serializer = plugin.options(
+                data=prefill_options, context={"form": attrs["form"]}
+            )
             try:
                 serializer.is_valid(raise_exception=True)
             except serializers.ValidationError as e:

@@ -7,6 +7,7 @@ from openforms.contrib.customer_interactions.models import (
     CustomerInteractionsAPIGroupConfig,
 )
 from openforms.formio.api.fields import FormioVariableKeyField
+from openforms.forms.models import FormVariable
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 
@@ -27,3 +28,27 @@ class CommunicationPreferencesSerializer(
             "The format should comply to how Formio handles nested component keys."
         ),
     )
+
+    def validate(self, attrs):
+        profile_form_variable = attrs["profile_form_variable"]
+        form = self.context.get("form")
+
+        if form:
+            form_variable = FormVariable.objects.get(
+                form=form, key=profile_form_variable
+            )
+
+            component = form_variable.form_definition.configuration_wrapper[
+                profile_form_variable
+            ]
+            if component["type"] != "customerProfile":
+                raise serializers.ValidationError(
+                    {
+                        "profile_form_variable": _(
+                            "Only variables of 'profile' components are allowed as "
+                            "profile form variable."
+                        )
+                    }
+                )
+
+        return attrs
