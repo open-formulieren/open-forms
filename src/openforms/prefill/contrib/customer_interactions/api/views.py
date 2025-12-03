@@ -4,8 +4,8 @@ import structlog
 from drf_spectacular.utils import extend_schema
 from rest_framework import authentication
 from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
 
-from openforms.api.views import ListMixin
 from openforms.forms.models import FormVariable
 from openforms.submissions.api.permissions import ActiveSubmissionPermission
 from openforms.submissions.models import Submission
@@ -20,7 +20,7 @@ logger = structlog.stdlib.get_logger(__name__)
 @extend_schema(
     summary=_("Get communication preferences for Customer Interactions"),
 )
-class CommunicationPreferencesView(ListMixin, GenericAPIView):
+class CommunicationPreferencesView(GenericAPIView):
     """
     Get prefilled communication preferences for a particular submission
     """
@@ -32,7 +32,12 @@ class CommunicationPreferencesView(ListMixin, GenericAPIView):
     lookup_url_kwarg = "submission_uuid"
     lookup_field = "uuid"
 
-    def get_objects(self) -> list[CommunicationChannel]:
+    def get(self, request, *args, **kwargs):
+        preferences = self.get_preferences()
+        serializer = self.get_serializer(preferences, many=True)
+        return Response(serializer.data)
+
+    def get_preferences(self) -> list[CommunicationChannel]:
         submission = self.get_object()
 
         profile_variable = self.kwargs["profile_component"]
