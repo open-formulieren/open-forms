@@ -3577,6 +3577,43 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/prefill/plugins/customer-interactions/communication-preferences/{submission_uuid}/component/{profile_component}:
+    get:
+      operationId: prefill_plugins_customer_interactions_communication_preferences_component_retrieve
+      description: Get prefilled communication preferences for a particular submission
+      summary: Get communication preferences for Customer Interactions
+      parameters:
+      - in: path
+        name: profile_component
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: submission_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - prefill
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunicationPreferences'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/prefill/plugins/objects-api/objecttypes/{objecttype_uuid}/versions/{objecttype_version}/properties:
     get:
       operationId: prefill_plugins_objects_api_objecttypes_versions_properties_list
@@ -7228,6 +7265,37 @@ components:
       - depth
       - name
       - url
+    CommunicationPreferences:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/CommunicationPreferencesTypeEnum'
+          description: |-
+            Communication channel type
+
+            * `email` - Email
+            * `phone_number` - Phone number
+        options:
+          type: array
+          items:
+            type: string
+          description: List of available address options for this channel
+        preferred:
+          type: string
+          description: Preferred address option for this channel
+      required:
+      - options
+      - preferred
+      - type
+    CommunicationPreferencesTypeEnum:
+      enum:
+      - email
+      - phone_number
+      type: string
+      description: |-
+        * `email` - Email
+        * `phone_number` - Phone number
     ComponentProperty:
       type: object
       properties:
