@@ -10,7 +10,7 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 
 from ....service import prefill_variables
-from ..plugin import PLUGIN_IDENTIFIER
+from ..constants import PLUGIN_IDENTIFIER
 from ..typing import SupportedChannels
 
 
