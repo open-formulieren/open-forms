@@ -24,6 +24,7 @@ from openforms.forms.tests.factories import (
 from openforms.logging.models import TimelineLogProxy
 from openforms.variables.constants import FormVariableDataTypes
 
+from ..form_logic import evaluate_form_logic
 from ..utils import persist_user_defined_variables
 from .factories import (
     SubmissionFactory,
@@ -207,7 +208,11 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},
         )
+        # Simulate submitting a step. This will evaluate logic and persist the
+        # user-defined variables
+        evaluate_form_logic(submission, submission.submissionstep_set.get())
         persist_user_defined_variables(submission)
+
         submission.calculate_price()
         with self.subTest(part="check data setup"):
             self.assertTrue(submission.payment_required)
@@ -293,7 +298,11 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             ],
             order=1,
         )
+        # Simulate submitting a step. This will evaluate logic and persist the
+        # user-defined variables
+        evaluate_form_logic(submission, submission.submissionstep_set.get())
         persist_user_defined_variables(submission)
+
         assert submission.payment_required
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-detail", kwargs={"uuid": submission.uuid})
