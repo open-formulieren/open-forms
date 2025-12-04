@@ -35,12 +35,15 @@ from openforms.registrations.base import BasePlugin
 from openforms.registrations.registry import Registry
 from openforms.registrations.tests.utils import patch_registry
 from openforms.submissions.pricing import InvalidPrice
+from openforms.utils.tests.feature_flags import disable_feature_flag
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..constants import SUBMISSIONS_SESSION_KEY, PostSubmissionEvents
+from ..form_logic import evaluate_form_logic
 from ..logic.actions import LogicActionTypes
 from ..models import SubmissionStep
 from ..tasks import on_post_submission_event
+from ..utils import persist_user_defined_variables
 from .factories import (
     SubmissionFactory,
     SubmissionStepFactory,
@@ -380,6 +383,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    @disable_feature_flag("PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION")
     def test_user_defined_variables_set_properly(self):
         form = FormFactory.create()
         step = FormStepFactory.create(
@@ -740,11 +744,17 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form=submission.form,
             form_definition=submission.form.formstep_set.get().form_definition,
         )
+
+        # Simulate submitting a step. This will evaluate logic and persist the
+        # user-defined variables
         SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},
         )
+        evaluate_form_logic(submission, submission.submissionstep_set.get())
+        persist_user_defined_variables(submission)
+
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
