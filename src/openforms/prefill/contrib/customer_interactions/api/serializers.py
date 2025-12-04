@@ -6,7 +6,7 @@ from rest_framework import serializers
 
 class CommunicationChannels(TextChoices):
     email = "email", _("Email")
-    phone_number = "phone_number", _("Phone number")
+    phone_number = "phoneNumber", _("Phone number")
 
 
 class CommunicationPreferencesSerializer(serializers.Serializer):
@@ -22,6 +22,6 @@ class CommunicationPreferencesSerializer(serializers.Serializer):
     )
     preferred = serializers.CharField(
         label=_("Preferred"),
-        allow_blank=True,
+        allow_null=True,
         help_text=_("Preferred address option for this channel"),
     )
