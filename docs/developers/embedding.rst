@@ -24,20 +24,11 @@ Loading static assets
 
         <link rel="stylesheet" href="https://openforms.example.com/static/sdk/open-forms-sdk.css" />
 
-2. The Javascript code
+2. Preload the Javascript code
 
     .. code-block:: html
 
-        <script src="https://openforms.example.com/static/sdk/open-forms-sdk.js"></script>
-
-.. note::
-
-    We provide an EXPERIMENTAL npm package that you should be able to integrate in your
-    own frontend toolchain, as an alternative to loading the assets directly in a page.
-
-    .. code-block:: bash
-
-        npm install --save @open-formulieren/sdk
+        <link href="https://openforms.example.com/static/sdk/open-forms-sdk.mjs" rel="modulepreload" />
 
 Rendering the form
 ==================
@@ -45,10 +36,14 @@ Rendering the form
 Once the Javascript is loaded, the module ``OpenForms`` is available. To initialize
 a form, use the constructor and initialize the form:
 
-.. code-block:: js
+.. code-block:: html
 
-    const form = new OpenForms.OpenForm(element, options);
-    form.init();
+    <script type="module" nonce="[CSP-NONCE]">
+        import {OpenForm} from 'https://openforms.example.com/static/sdk/open-forms-sdk.mjs';
+
+        const form = new OpenForm(element, options);
+        form.init();
+    </script>
 
 Where ``element`` is a valid DOM node and ``options`` an options Object, see
 :ref:`developers_embedding_options`.
@@ -84,8 +79,11 @@ Available options
     at the end of the URL).
 
     .. warning::
-        This is a last resort solution - preferably the backend where you embed the form would set up "wildcard" routes to
-        ensure that refreshing the page works, e.g. ``/some-path/<form-id>/*`` should just load the CMS page for a specific form.
+        This is a last resort solution - preferably the backend where you embed the form
+        would set up "wildcard" routes to ensure that refreshing the page works, e.g.
+        ``/some-path/<form-id>/*`` should just load the CMS page for a specific form.
+
+        See :ref:`developers_embedding_cms_guidelines` for more details.
 
 ``CSPNonce``:
     Recommended. The page's CSP Nonce value if inline styles are blocked by your
@@ -142,8 +140,8 @@ Minimal example
         <meta charset="utf-8">
 
         <!-- Load stylesheet and SDK bundle -->
-        <link rel="stylesheet" href="https://openforms.example.com/sdk/1.0.0/open-forms-sdk.css" />
-        <script src="https://openforms.example.com/sdk/1.0.0/open-forms-sdk.js"></script>
+        <link rel="stylesheet" href="https://openforms.example.com/static/sdk/open-forms-sdk.css" />
+        <link rel="modulepreload" href="https://openforms.example.com/static/sdk/open-forms-sdk.mjs" />
     </head>
 
     <body>
@@ -154,16 +152,18 @@ Minimal example
             data-form-id="0d2f5453-8987-43dd-952e-aad3dd8f2318"
             data-base-path="/some-cms-page"
         ></div>
-        <script>
+        <script type="module">
+            import {OpenForm} from 'https://openforms.example.com/static/sdk/open-forms-sdk.mjs';
+
             var targetNode = document.getElementById('openforms-root');
-            var form = new OpenForms.OpenForm(targetNode, targetNode.dataset);
+            var form = new OpenForm(targetNode, targetNode.dataset);
             form.init();
         </script>
     </body>
     </html>
 
-Full example
-------------
+Advanced example
+----------------
 
 .. code-block:: html
 
@@ -174,8 +174,8 @@ Full example
         <meta charset="utf-8">
 
         <!-- Load stylesheet and SDK bundle -->
-        <link rel="stylesheet" href="https://openforms.example.com/sdk/1.0.0/open-forms-sdk.css" />
-        <script src="https://openforms.example.com/sdk/1.0.0/open-forms-sdk.js"></script>
+        <link rel="stylesheet" href="https://openforms.example.com/static/sdk/open-forms-sdk.css" />
+        <link rel="modulepreload" href="https://openforms.example.com/static/sdk/open-forms-sdk.mjs" />
     </head>
 
     <body>
@@ -191,19 +191,14 @@ Full example
             data-sentry-env="example"
         ></div>
         <script nonce="OSUzOHNqqL9HzWU0CVSC/w==">
+            import {OpenForm} from 'https://openforms.example.com/static/sdk/open-forms-sdk.mjs';
+
             var targetNode = document.getElementById('openforms-root');
-            var form = new OpenForms.OpenForm(targetNode, targetNode.dataset);
+            var form = new OpenForm(targetNode, targetNode.dataset);
             form.init();
         </script>
     </body>
     </html>
-
-More examples
--------------
-
-See (on Github) the directory ``docker/embedding`` README file for working examples of
-different embedding cases. These should be easy to bring up with ``docker compose``, provided
-you have a backend instance ready to go.
 
 Backend configuration
 =====================
@@ -252,24 +247,41 @@ value is ``strict-origin-when-cross-origin``.
 .. _Referrer Policy: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
 .. _MDN documentation about SameSite: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
 
-Deploying the SDK
-=================
+.. _developers_embedding_cms_guidelines:
 
-.. note:: These assets are bundled in the backend image too, so you typically do not
-   need to deploy the SDK assets separately. You can point to
-   ``https://openforms.example.com/static/sdk/`` for convenience.
+Third party CMS guidelines
+==========================
 
-The SDK is published as container image on
-`Docker Hub <https://hub.docker.com/r/openformulieren/open-forms-sdk>`_, containing
-the static Javascript and CSS assets:
+When embedding forms on other web pages, those web pages are typically kept in a
+content management system (CMS). This tends to create some URL routing challenges,
+as the page ID is usually defined in the URL and retrieved from a database.
 
-* ``open-forms-sdk.js`` and
-* ``open-forms-sdk.css``
+The embedded forms on a page (by default) have their own nested URL routes/locations,
+relative to the page where it's loaded. For example, a CMS contact page could be hosted
+at ``https://example.com/contact-us``. The embedded form on that page would then manage
+the form-specific URLs, e.g.:
 
-When you're deploying the ``latest`` tag, these assets are available in the webroot,
-e.g. ``http://localhost:8080/open-forms-sdk.js``.
+* ``https://example.com/contact-us/startpagina``
+* ``https://example.com/contact-us/stap/uw-gegevens``
+* ``https://example.com/contact-us/stap/uw-vraag``
+* ``https://example.com/contact-us/stap/bevestiging``
 
-When you're using a pinned version, such as ``1.0.0``, the assets are available in that
-directory: ``http://localhost:8080/1.0.0/open-forms-sdk.js``.
+This works fine *as long as the user doesn't refresh their browser* (e.g. by hitting
+F5), because when they do that, the CMS server usually tries to find that exact page,
+but those URLs are not known/managed by the CMS solution, so the user gets an 404 error
+saying the page wasn't found.
 
-The SDK follows semantic versioning.
+The most elegant solution here is for the CMS provider to support "catch-all" or
+"wildcard" routes that match on a part of the URL. In this example, such a catch-all
+route would look like:
+
+* ``https://example.com/contact-us/*``
+
+Every sub-route of that page would load the "Contact us" page, and the form is smart
+enough to figure out which part of the form is requested, allowing the user to continue
+in their form.
+
+If that is not possible, the "hash-routing" alternative is available, but it has a
+massive drawback that "anchors" on the page break the form navigation. You could have
+a table-of-contents with an anchor to ``#address`` for example, but that is not
+understood by the embedded form, yet it tries to use it.
