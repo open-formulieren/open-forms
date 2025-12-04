@@ -6,6 +6,97 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.4.0-alpha.2 (2025-12-04)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Upgrade procedure
+-----------------
+
+To upgrade to 3.4, please:
+
+* ⚠️ Ensure you are currently on Open Forms 3.2.x or newer.
+* if you've built custom NL DS themes, please review the deprecations in the SDK
+  changelog.
+
+.. warning:: If you've built dashboards using the metrics telemetry, you'll need to
+   update them with the updated metric names. The new names are in the documentation.
+
+New features
+------------
+
+* [:backend:`5704`] You can now filter forms in the admin based on the payment backend
+  used.
+* [:backend:`5643`] Added ``heeftAlsAanspreekpunt`` to the StUF-ZDS registration plugin.
+* [:backend:`5707`] Implemented prefill plugin to retrieve the preferences for the
+  customer profile from customer interaction APIs like Open Klant.
+* Included the latest SDK with the latest (beta version of the) renderer. We'd like
+  everyone to actively test this now. Some known limitations at this point:
+
+  * the map component integration is not available yet.
+  * the customer profile component integration is not available yet.
+  * the datepicker (``date`` and ``datetime`` components) has known (UX) issues.
+  * themes may be broken due to missing design token values in custom themes.
+
+Bugfixes
+--------
+
+* [:backend:`5737`] Fixed a crash in the form builder UI when the "synchronize variable"
+  logic action is used and fieldset components are present.
+* [:backend:`5735`] Fixed a crash when converting raw JSON data to the Python types when
+  variables don't exist in the database in certain circumstances.
+* [:cve:`CVE-2025-64515`] Fixed missing logic evaluation before validating (step data)
+  user input. See :ghsa:`GHSA-cp63-63mq-5wvf` for details.
+* Fixed the performance of the email verifications page in the admin.
+* Fixed some crashes due to enabling certain optimizations, notably when:
+
+  - Looking up the nearest address for map coordinates.
+  - Looking up addresses in the Kadaster API.
+  - Processing (single) file attachments in the generic registration plugin.
+
+* [:backend:`5757`] Fixed a crash when attempting to submit a submission step with file
+  upload attachments.
+* [:backend:`5754`] Fixed a date/datetime/time formatting regression in the
+  ``extraElementen`` of the StUF-ZDS registration plugin.
+* Fixed crash in the MS Graph/Sharepoint registration plugin because it couldn't handle
+  date/datetime/time objects in the JSON serialization.
+* Fixed a bug in the OpenID library breaking our legacy callback endpoint compatibility
+  layer.
+* Fixed a crash in the processing of family members components data because of a
+  difference in data format between StUF-BG and Haal Centraal Personen bevragen.
+* [:backend:`5748`] Fixed the handling of a difference in data between Haal Centraal
+  Personen Bevragen API and StUF-BG when retrieving family members data, preventing
+  valid submission data from being accepted in children and partners components.
+* [:backend:`5756`] Fixed an issue where at most one child would be retrieved for the
+  children prefill when using StUF-BG.
+* [:backend:`5765`] Fixed a regression introduced in the 3.3.3 security fix that would
+  prevent valid values from being accepted in radio, select and selectboxes components
+  with options sourced from a variable.
+* Fixed the Token Exchange extension no longer functioning due to the OpenID library rework.
+* [:backend:`5770`] Fixed a crash when registering data for the ``partners`` component
+  with StUF-ZDS.
+* [:backend:`5778`] Fixed crashes during registration with Objects API when there are
+  date or datetime fields inside a repeating group.
+* [:backend:`5784`] Fixed Wordline credit card payments authorization mode not being
+  set to ``SALE``.
+
+Project maintenance
+-------------------
+
+* Updated (development) frontend dependencies with their latest security fixes.
+* Tweaked the CI pipeline to include a test run with stripped out ``assert`` statements.
+* Enabled a linter rule that checks for possible bugs due to stripepd out ``assert``
+  statements.
+* Banned ``typing.cast`` usage through linter rule.
+* Enabled an option in the type checker to error when error suppression is no longer
+  necessary.
+* Cleaned up CI pipelines by using our own reusable actions.
+* Updated backend dependencies with their latest security fixes:
+
+  - fonttools
+  - Django
+
 3.3.8 (2025-12-02)
 ==================
 
