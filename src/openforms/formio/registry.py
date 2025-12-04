@@ -159,6 +159,17 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         """
         return None
 
+    def pre_registration_hook(
+        self, component: ComponentT, submission: "Submission"
+    ) -> None:
+        """
+        Request external API or apply other logic before registration.
+
+        :param component: Component configuration.
+        :param submission: Submission instance.
+        """
+        raise NotImplementedError()
+
 
 class ComponentRegistry(BaseRegistry[BasePlugin]):
     module = "formio_components"
@@ -329,6 +340,18 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
         component_plugin = self[component_type]
         return component_plugin.build_serializer_field(component)
+
+    def apply_pre_registration_hook(
+        self, component: Component, submission: Submission
+    ) -> None:
+        """
+        Apply component pre registration hook.
+        """
+        if (component_type := component["type"]) not in self:
+            return
+
+        plugin = self[component_type]
+        plugin.pre_registration_hook(component, submission)
 
 
 # Sentinel to provide the default registry. You can easily instantiate another
