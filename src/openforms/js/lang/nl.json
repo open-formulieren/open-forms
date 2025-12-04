@@ -237,7 +237,7 @@
     "originalDefault": "Affixes"
   },
   "3Wiy2f": {
-    "defaultMessage": "The API group specifies which Customer interactions service to use.",
+    "defaultMessage": "De API-groep bepaalt welke klantinteractiesservice gebruikt moet worden.",
     "description": "Customer interactions API group field help text",
     "originalDefault": "The API group specifies which Customer interactions service to use."
   },
@@ -1272,11 +1272,6 @@
     "description": "Cosign components in repeating group warning message",
     "originalDefault": "There are co-sign components inside repeating groups. This is not supported."
   },
-  "JsiIFI": {
-    "defaultMessage": "Profile form variable dropdown",
-    "description": "Accessible label for (form) variable dropdown",
-    "originalDefault": "Profile form variable dropdown"
-  },
   "K/Oijt": {
     "defaultMessage": "RSIN organisatie",
     "description": "Objects API registration options 'organisationRSIN' label",
@@ -2182,7 +2177,7 @@
     "originalDefault": "Changing the api group will remove the existing variables mapping. Are you sure you want to continue?"
   },
   "a46ceJ": {
-    "defaultMessage": "Profile form variable",
+    "defaultMessage": "Profielformuliervariabele",
     "description": "Profile form variable label",
     "originalDefault": "Profile form variable"
   },
@@ -3527,7 +3522,7 @@
     "originalDefault": "Use raw JSON input"
   },
   "waQw8d": {
-    "defaultMessage": "API group",
+    "defaultMessage": "API-groep",
     "description": "Customer interactions API group field label",
     "originalDefault": "API group"
   },
