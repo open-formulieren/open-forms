@@ -1259,11 +1259,6 @@
     "description": "Cosign components in repeating group warning message",
     "originalDefault": "There are co-sign components inside repeating groups. This is not supported."
   },
-  "JsiIFI": {
-    "defaultMessage": "Profile form variable dropdown",
-    "description": "Accessible label for (form) variable dropdown",
-    "originalDefault": "Profile form variable dropdown"
-  },
   "K/Oijt": {
     "defaultMessage": "Organisation RSIN",
     "description": "Objects API registration options 'organisationRSIN' label",
