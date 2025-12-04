@@ -7275,7 +7275,7 @@ components:
             Communication channel type
 
             * `email` - Email
-            * `phone_number` - Phone number
+            * `phoneNumber` - Phone number
         options:
           type: array
           items:
@@ -7283,6 +7283,7 @@ components:
           description: List of available address options for this channel
         preferred:
           type: string
+          nullable: true
           description: Preferred address option for this channel
       required:
       - options
@@ -7291,11 +7292,11 @@ components:
     CommunicationPreferencesTypeEnum:
       enum:
       - email
-      - phone_number
+      - phoneNumber
       type: string
       description: |-
         * `email` - Email
-        * `phone_number` - Phone number
+        * `phoneNumber` - Phone number
     ComponentProperty:
       type: object
       properties:

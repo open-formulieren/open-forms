@@ -26,7 +26,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         )
 
     def test_prefill_values_found(self):
-        profile_channels: list[SupportedChannels] = ["email", "phone_number"]
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
@@ -73,7 +73,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
                 "preferred": "john.smith@gmail.com",
             },
             {
-                "type": "phone_number",
+                "type": "phoneNumber",
                 "options": ["0687654321", "0612345678"],
                 "preferred": "0612345678",
             },
@@ -81,7 +81,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         self.assertEqual(state.variables["communication-preferences"].value, expected)
 
     def test_prefill_values_not_found(self):
-        profile_channels: list[SupportedChannels] = ["email", "phone_number"]
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
@@ -120,7 +120,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         self.assertEqual(state.variables["communication-preferences"].value, [])
 
     def test_prefill_values_not_authenticated(self):
-        profile_channels: list[SupportedChannels] = ["email", "phone_number"]
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
@@ -205,7 +205,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         self.assertEqual(state.variables["email-preferences"].value, expected)
 
     def test_prefill_values_for_phone_number(self):
-        profile_channels: list[SupportedChannels] = ["phone_number"]
+        profile_channels: list[SupportedChannels] = ["phoneNumber"]
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
@@ -243,7 +243,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
 
         expected = [
             {
-                "type": "phone_number",
+                "type": "phoneNumber",
                 "options": ["0687654321", "0612345678"],
                 "preferred": "0612345678",
             }

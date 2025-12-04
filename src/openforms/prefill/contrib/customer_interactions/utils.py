@@ -13,7 +13,7 @@ from .typing import (
 
 ADDRESS_TYPES_TO_CHANNELS: Mapping[SoortDigitaalAdres, SupportedChannels] = {
     "email": "email",
-    "telefoonnummer": "phone_number",
+    "telefoonnummer": "phoneNumber",
 }
 
 

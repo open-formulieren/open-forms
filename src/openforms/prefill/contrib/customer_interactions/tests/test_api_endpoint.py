@@ -29,7 +29,7 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
         )
 
     def test_api_endpoint_prefill_found(self):
-        profile_channels: list[SupportedChannels] = ["email", "phone_number"]
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
@@ -84,7 +84,7 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
                     "preferred": "john.smith@gmail.com",
                 },
                 {
-                    "type": "phone_number",
+                    "type": "phoneNumber",
                     "options": ["0687654321", "0612345678"],
                     "preferred": "0612345678",
                 },
@@ -92,7 +92,7 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
         )
 
     def test_api_endpoint_no_user_var(self):
-        profile_channels: list[SupportedChannels] = ["email", "phone_number"]
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={

@@ -11,7 +11,7 @@ class CommunicationPreferencesOptions(TypedDict):
     profile_form_variable: str
 
 
-type SupportedChannels = Literal["email", "phone_number"]
+type SupportedChannels = Literal["email", "phoneNumber"]
 
 
 class CommunicationChannel(TypedDict):
