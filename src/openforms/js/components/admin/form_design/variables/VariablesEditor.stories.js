@@ -2211,7 +2211,7 @@ export const ConfigurePrefillCommunicationPreferences = {
       await userEvent.selectOptions(pluginDropdown, 'Communication preferences');
 
       // check API group
-      const apiGroupDropdown = await canvas.findByLabelText('API group');
+      const apiGroupDropdown = await canvas.findByLabelText('API-groep');
       expect(apiGroupDropdown).toBeVisible();
       selectEvent.openMenu(apiGroupDropdown);
 
@@ -2223,7 +2223,7 @@ export const ConfigurePrefillCommunicationPreferences = {
       await rsSelect(apiGroupDropdown, 'Group 1');
 
       // check Profile form variable
-      const profileVariableDropdown = await canvas.findByLabelText('Profile form variable');
+      const profileVariableDropdown = await canvas.findByLabelText('Profielformuliervariabele');
       expect(profileVariableDropdown).toBeVisible();
       selectEvent.openMenu(profileVariableDropdown);
 

@@ -520,7 +520,7 @@
   "3Wiy2f": [
     {
       "type": 0,
-      "value": "The API group specifies which Customer interactions service to use."
+      "value": "De API-groep bepaalt welke klantinteractiesservice gebruikt moet worden."
     }
   ],
   "3Wuy2O": [
@@ -2698,12 +2698,6 @@
       "value": "Verborgen"
     }
   ],
-  "JsiIFI": [
-    {
-      "type": 0,
-      "value": "Profile form variable dropdown"
-    }
-  ],
   "K/Oijt": [
     {
       "type": 0,
@@ -4518,7 +4512,7 @@
   "a46ceJ": [
     {
       "type": 0,
-      "value": "Profile form variable"
+      "value": "Profielformuliervariabele"
     }
   ],
   "a4gS07": [
@@ -7452,7 +7446,7 @@
   "waQw8d": [
     {
       "type": 0,
-      "value": "API group"
+      "value": "API-groep"
     }
   ],
   "wnTTZr": [
