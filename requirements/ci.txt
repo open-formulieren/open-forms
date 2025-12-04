@@ -665,7 +665,7 @@ onlinepayments-sdk-python3==5.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-open-klant-client==0.2.0
+open-klant-client @ git+https://github.com/maykinmedia/open-klant-client.git@2c892ec1b2f436fd0d38ab677b3788fe5e35b9e2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
