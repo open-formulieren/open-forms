@@ -2,12 +2,14 @@ from django.db import transaction
 from django.utils import timezone
 
 import structlog
+from flags.state import flag_disabled
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
 from openforms.logging import logevent
 
 from ..constants import PostSubmissionEvents
+from ..form_logic import check_submission_logic
 from ..metrics import attachments_per_submission, completion_counter
 from ..models import Submission, SubmissionFileAttachment
 from ..signals import submission_complete
@@ -38,7 +40,12 @@ class SubmissionCompletionMixin:
         submission.calculate_price(save=False)
         submission.completed_on = timezone.now()
 
-        persist_user_defined_variables(submission)
+        if flag_disabled("PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION"):
+            # If we have reached the submission completion, all steps were already
+            # submitted, so it *shouldn't* be necessary to persist the user-defined
+            # variables again.
+            check_submission_logic(submission)
+            persist_user_defined_variables(submission)
 
         # all logic has run; we can fix backend
         submission.save()
