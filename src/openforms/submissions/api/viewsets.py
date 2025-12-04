@@ -44,6 +44,7 @@ from ..utils import (
     add_submmission_to_session,
     check_form_status,
     initialise_user_defined_variables,
+    persist_user_defined_variables,
     remove_submission_from_session,
 )
 from .mixins import SubmissionCompletionMixin
@@ -588,13 +589,17 @@ class SubmissionStepViewSet(
         create = instance.pk is None
         serializer.save()
 
+        submission = instance.submission
+        # This requires form logic to be evaluated, which is done already in the
+        # serializer
+        persist_user_defined_variables(submission)
+
         logevent.submission_step_fill(instance)
         attach_uploads_to_submission_step(instance)
 
         # See #1480 - if there is navigation between steps and original form field values
         # are changed, they can cause subsequent steps to be not-applicable. If that
         # happens, we need to wipe the data from those steps.
-        submission = instance.submission
         # The endpoint permission evaluated the submission state, but now a step has been
         # created/updated, so we need to refresh it
         execution_state = submission.load_execution_state(refresh=True)

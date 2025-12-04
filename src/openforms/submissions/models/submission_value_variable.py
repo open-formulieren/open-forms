@@ -72,6 +72,15 @@ class SubmissionValueVariablesState:
             if variable.pk
         }
 
+    @property
+    def user_defined_variables(self) -> dict[str, SubmissionValueVariable]:
+        return {
+            variable.key: variable
+            for variable in self.variables.values()
+            if variable.form_variable
+            and variable.form_variable.source == FormVariableSources.user_defined
+        }
+
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
 

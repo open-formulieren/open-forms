@@ -35,12 +35,14 @@ from openforms.formio.service import FormioData
 from openforms.forms.models import Form
 from openforms.logging import logevent
 from openforms.utils.urls import build_absolute_uri
-from openforms.variables.constants import FormVariableSources
 
 from .constants import SUBMISSIONS_SESSION_KEY
 from .exceptions import FormDeactivated, FormMaintenance, FormMaximumSubmissions
-from .form_logic import check_submission_logic
-from .models import Submission, SubmissionReport, SubmissionValueVariable
+from .models import (
+    Submission,
+    SubmissionReport,
+    SubmissionValueVariable,
+)
 from .tokens import submission_report_token_generator
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -237,32 +239,21 @@ def send_confirmation_email(submission: Submission) -> None:
 
 def initialise_user_defined_variables(submission: Submission):
     state = submission.load_submission_value_variables_state()
-    variables = {
-        variable_key: variable
-        for variable_key, variable in state.variables.items()
-        if variable.form_variable.source == FormVariableSources.user_defined
-    }
     SubmissionValueVariable.objects.bulk_create(
-        [variable for variable in variables.values() if not variable.pk]
+        [
+            variable
+            for variable in state.user_defined_variables.values()
+            if not variable.pk
+        ]
     )
 
 
 def persist_user_defined_variables(submission: Submission) -> None:
-    last_form_step = submission.submissionstep_set.order_by("form_step__order").last()
-    if not last_form_step:
-        return
-
-    check_submission_logic(submission)
-
     state = submission.load_submission_value_variables_state()
-    variables = state.variables
-
     user_defined_vars_data = FormioData(
         {
             variable.key: variable.value
-            for variable in variables.values()
-            if variable.form_variable
-            and variable.form_variable.source == FormVariableSources.user_defined
+            for variable in state.user_defined_variables.values()
         }
     )
 
