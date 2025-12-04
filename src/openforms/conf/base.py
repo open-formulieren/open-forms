@@ -1273,6 +1273,14 @@ FLAGS = {
             "value": config("ZGW_APIS_INCLUDE_DRAFTS", default=False),
         },
     ],
+    "PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION": [
+        {
+            "condition": "boolean",
+            "value": config(
+                "PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION", default=True
+            ),
+        }
+    ],
 }
 
 #
