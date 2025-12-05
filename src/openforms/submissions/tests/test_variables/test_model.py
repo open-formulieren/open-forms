@@ -4,13 +4,16 @@ from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
 
-from openforms.forms.tests.factories import (
-    FormStepFactory,
-)
+from openforms.formio.datastructures import FormioData
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.variables.constants import FormVariableDataTypes
 
 from ...models import SubmissionValueVariable
-from ..factories import SubmissionStepFactory, SubmissionValueVariableFactory
+from ..factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+    SubmissionValueVariableFactory,
+)
 
 
 class SubmissionValueVariableModelTests(TestCase):
@@ -478,3 +481,175 @@ class SubmissionValueVariableModelTests(TestCase):
 
             stored = SubmissionValueVariable.objects.get(key=variable.key)
             self.assertEqual(stored.value, [{"date": "", "time": [""]}])
+
+
+class SubmissionValueVariableManagerTests(TestCase):
+    def test_create_from_data(self):
+        form = FormFactory.create()
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "textfield",
+                    }
+                ],
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "date",
+                        "type": "date",
+                        "label": "date",
+                    }
+                ],
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+
+        state = submission.load_submission_value_variables_state()
+        variable = state.variables["textfield"]
+        # Variable is present in the state, but not in the database yet
+        self.assertIsNone(variable.pk)
+        self.assertEqual(variable.value, "")
+
+        # Persist the textfield to the database
+        SubmissionValueVariable.objects.bulk_create_or_update_from_data(
+            FormioData({"textfield": "foo"}), submission
+        )
+
+        # Ensure textfield exists, but date does not
+        variable = SubmissionValueVariable.objects.get(key="textfield")
+        self.assertEqual(variable.value, "foo")
+        # TODO: note that this is different behaviour from before the refactor, might
+        #  need a separate test?
+        self.assertFalse(SubmissionValueVariable.objects.filter(key="date").exists())
+
+    def test_only_create_variables_on_step(self):
+        form = FormFactory.create()
+        submission = SubmissionFactory.create(form=form)
+        step_1 = SubmissionStepFactory.create(
+            submission=submission,
+            form_step__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "textfield",
+                    }
+                ],
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "date",
+                        "type": "date",
+                        "label": "date",
+                    }
+                ],
+            },
+        )
+
+        state = submission.load_submission_value_variables_state()
+        for key in ("textfield", "date"):
+            variable = state.variables[key]
+            # Variable is present in the state, but not in the database yet
+            self.assertIsNone(variable.pk)
+            self.assertEqual(variable.value, "")
+
+        # Persist the textfield to the database
+        SubmissionValueVariable.objects.bulk_create_or_update_from_data(
+            FormioData({"textfield": "foo"}), submission, step_1
+        )
+
+        # Ensure textfield exists, but date does not
+        variable = SubmissionValueVariable.objects.get(key="textfield")
+        self.assertEqual(variable.value, "foo")
+        self.assertFalse(SubmissionValueVariable.objects.filter(key="date").exists())
+
+    def test_update_from_data(self):
+        form = FormFactory.create(
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "textfield",
+                    }
+                ],
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionValueVariableFactory.create(
+            submission=submission,
+            value="foo",
+            data_type=FormVariableDataTypes.string,
+            key="textfield",
+            configuration={
+                "key": "textfield",
+                "type": "textfield",
+                "label": "textfield",
+            },
+        )
+
+        # Update the textfield in the database
+        SubmissionValueVariable.objects.bulk_create_or_update_from_data(
+            FormioData({"textfield": "bar"}), submission
+        )
+
+        # Ensure textfield is updated
+        variable = SubmissionValueVariable.objects.get(key="textfield")
+        self.assertEqual(variable.value, "bar")
+
+    def test_delete_variable(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "textfield",
+                    },
+                    {
+                        "key": "date",
+                        "type": "date",
+                        "label": "date",
+                    },
+                ],
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+        state = submission.load_submission_value_variables_state()
+
+        # Create textfield and date variables
+        SubmissionValueVariable.objects.bulk_create_or_update_from_data(
+            FormioData({"textfield": "foo", "date": "2025-12-05"}), submission
+        )
+        variable = SubmissionValueVariable.objects.get(key="textfield")
+        self.assertEqual(variable.value, "foo")
+        variable = SubmissionValueVariable.objects.get(key="date")
+        self.assertEqual(variable.value, "2025-12-05")
+
+        # Ensure textfield is updated and date is deleted
+        SubmissionValueVariable.objects.bulk_create_or_update_from_data(
+            FormioData({"textfield": "bar"}), submission, delete_missing_variables=True
+        )
+        variable = SubmissionValueVariable.objects.get(key="textfield")
+        self.assertEqual(variable.value, "bar")
+        self.assertFalse(SubmissionValueVariable.objects.filter(key="date").exists())
+
+        # TODO-2409: this still fails
+        # Ensure date is still present in the state though
+        variable = state.variables["date"]
+        self.assertIsNone(variable.pk)
+        self.assertEqual(variable.value, "")
