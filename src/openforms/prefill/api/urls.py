@@ -18,4 +18,8 @@ urlpatterns += [
         "plugins/objects-api/",
         include("openforms.prefill.contrib.objects_api.api.urls"),
     ),
+    path(
+        "plugins/customer-interactions/",
+        include("openforms.prefill.contrib.customer_interactions.api.urls"),
+    ),
 ]

@@ -1,4 +1,4 @@
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from typing import Literal, TypedDict
 
 from openforms.contrib.customer_interactions.models import (
@@ -11,12 +11,10 @@ class CommunicationPreferencesOptions(TypedDict):
     profile_form_variable: str
 
 
-class CommunicationChannelPreferences(TypedDict):
+type SupportedChannels = Literal["email", "phoneNumber"]
+
+
+class CommunicationChannel(TypedDict):
+    type: SupportedChannels
     options: Sequence[str]
     preferred: str | None
-
-
-type SupportedChannels = Literal["email", "phone_number"]
-type ProfileCommunicationChannels = Mapping[
-    SupportedChannels, CommunicationChannelPreferences
-]
