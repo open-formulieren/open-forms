@@ -1,4 +1,4 @@
-from typing import Any
+from collections.abc import Sequence
 
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
@@ -11,6 +11,7 @@ from openforms.api.views import ListMixin
 from openforms.forms.models import FormVariable
 from openforms.submissions.api.permissions import ActiveSubmissionPermission
 from openforms.submissions.models import Submission
+from openforms.typing import VariableValue
 from openforms.variables.constants import FormVariableSources
 
 from .serializers import CommunicationPreferencesSerializer
@@ -21,7 +22,7 @@ logger = structlog.stdlib.get_logger(__name__)
 @extend_schema(
     summary=_("Get communication preferences for Customer Interactions"),
 )
-class CommunicationPreferencesView(ListMixin, views.APIView):
+class CommunicationPreferencesView(ListMixin[VariableValue], views.APIView):
     """
     Get prefilled communication preferences for a particular submission
     """
@@ -39,7 +40,7 @@ class CommunicationPreferencesView(ListMixin, views.APIView):
         self.check_object_permissions(self.request, submission)
         return submission
 
-    def get_objects(self) -> list[dict[str, Any]]:
+    def get_objects(self):
         submission = self.get_submission()
 
         profile_variable = self.kwargs["profile_component"]
@@ -55,6 +56,6 @@ class CommunicationPreferencesView(ListMixin, views.APIView):
             return []
 
         state = submission.load_submission_value_variables_state()
-        submission_variable = state.variables[form_variable.key]
-
-        return submission_variable.value
+        value = state.get_data()[form_variable.key]
+        assert isinstance(value, Sequence)
+        return value
