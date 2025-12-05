@@ -3579,7 +3579,7 @@ paths:
               $ref: '#/components/headers/Content-Language'
   /api/v2/prefill/plugins/customer-interactions/communication-preferences/{submission_uuid}/component/{profile_component}:
     get:
-      operationId: prefill_plugins_customer_interactions_communication_preferences_component_retrieve
+      operationId: prefill_plugins_customer_interactions_communication_preferences_component_list
       description: Get prefilled communication preferences for a particular submission
       summary: Get communication preferences for Customer Interactions
       parameters:
@@ -3603,7 +3603,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommunicationPreferences'
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommunicationPreferences'
           description: ''
           headers:
             X-Session-Expires-In:

@@ -1,3 +1,5 @@
+import uuid
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -216,3 +218,16 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_api_endpoint_non_existing_submission(self):
+        submission = SubmissionFactory.create()
+        self._add_submission_to_session(submission)
+
+        url = reverse(
+            "api:prefill_customer_interactions:communication-preferences",
+            kwargs={"submission_uuid": uuid.uuid4(), "profile_component": "profile"},
+        )
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

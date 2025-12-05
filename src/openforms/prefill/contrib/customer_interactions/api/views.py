@@ -1,17 +1,18 @@
+from typing import Any
+
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
 import structlog
 from drf_spectacular.utils import extend_schema
-from rest_framework import authentication
-from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
+from rest_framework import authentication, views
 
+from openforms.api.views import ListMixin
 from openforms.forms.models import FormVariable
 from openforms.submissions.api.permissions import ActiveSubmissionPermission
 from openforms.submissions.models import Submission
 from openforms.variables.constants import FormVariableSources
 
-from ..typing import CommunicationChannel
 from .serializers import CommunicationPreferencesSerializer
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -20,7 +21,7 @@ logger = structlog.stdlib.get_logger(__name__)
 @extend_schema(
     summary=_("Get communication preferences for Customer Interactions"),
 )
-class CommunicationPreferencesView(GenericAPIView):
+class CommunicationPreferencesView(ListMixin, views.APIView):
     """
     Get prefilled communication preferences for a particular submission
     """
@@ -28,17 +29,18 @@ class CommunicationPreferencesView(GenericAPIView):
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = [ActiveSubmissionPermission]
     serializer_class = CommunicationPreferencesSerializer
-    queryset = Submission.objects.all()
     lookup_url_kwarg = "submission_uuid"
-    lookup_field = "uuid"
 
-    def get(self, request, *args, **kwargs):
-        preferences = self.get_preferences()
-        serializer = self.get_serializer(preferences, many=True)
-        return Response(serializer.data)
+    def get_submission(self) -> Submission:
+        submission = get_object_or_404(
+            Submission, uuid=self.kwargs[self.lookup_url_kwarg]
+        )
 
-    def get_preferences(self) -> list[CommunicationChannel]:
-        submission = self.get_object()
+        self.check_object_permissions(self.request, submission)
+        return submission
+
+    def get_objects(self) -> list[dict[str, Any]]:
+        submission = self.get_submission()
 
         profile_variable = self.kwargs["profile_component"]
         # get prefill variable name
