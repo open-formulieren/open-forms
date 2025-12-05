@@ -8,6 +8,7 @@ import Component from './components/form/component';
 import ContentField from './components/form/content';
 import CoSignField from './components/form/cosign';
 import CurrencyField from './components/form/currency';
+import CustomerProfile from './components/form/customerProfile';
 import Datamap from './components/form/datamap';
 import DateField from './components/form/date';
 import DateTimeField from './components/form/datetime';
@@ -68,6 +69,7 @@ const FormIOModule = {
     softRequiredErrors: SoftRequiredErrors,
     partners: Partners,
     children: Children,
+    customerProfile: CustomerProfile,
   },
   builders: {
     webform: WebformBuilder,

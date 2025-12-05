@@ -5,6 +5,7 @@ import {FormContext} from 'components/admin/form_design/Context';
 import CosignInRepeatingGroupWarning from 'components/admin/form_design/CosignInRepeatingGroupWarning';
 import MissingTranslationsWarning from 'components/admin/form_design/MissingTranslationsWarning';
 import MultipleCosignComponentsWarning from 'components/admin/form_design/MultipleCosignComponentsWarning';
+import MultipleProfileComponentsWarning from 'components/admin/form_design/MultipleProfileComponentsWarning';
 
 import {MissingAuthCosignWarning} from './index';
 
@@ -24,11 +25,16 @@ const FormWarnings = ({form}) => {
     })
     .filter(Boolean);
 
+  const profileComponents = Object.entries(components).filter(
+    ([, component]) => component.type === 'customerProfile'
+  );
+
   return (
     <>
       {form.translationEnabled ? (
         <MissingTranslationsWarning form={form} formSteps={formSteps} />
       ) : null}
+      <MultipleProfileComponentsWarning profileComponents={profileComponents} />
       <MultipleCosignComponentsWarning cosignComponents={cosignComponentsWithoutPath} />
       {cosignComponentsWithoutPath.length === 1 && <MissingAuthCosignWarning />}
       <CosignInRepeatingGroupWarning

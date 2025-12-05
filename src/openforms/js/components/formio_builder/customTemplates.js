@@ -4,6 +4,7 @@ import children from './templates/children';
 import coSign from './templates/coSign';
 import columnsTemplate from './templates/columns.ejs';
 import componentTemplate from './templates/component.ejs';
+import customerProfile from './templates/customerProfile';
 import fieldTemplate from './templates/field.ejs';
 import fieldsetTemplate from './templates/fieldset.ejs';
 import partners from './templates/partners';
@@ -18,6 +19,7 @@ const TEMPLATES = {
   fieldset: {form: fieldsetTemplate},
   partners: {form: partners},
   children: {form: children},
+  customerProfile: {form: customerProfile},
 };
 
 export default TEMPLATES;

@@ -14,6 +14,10 @@ about:
   have been translated.
 - Multiple co-sign components: currently Open Forms supports only one co-sign component per form. If
   there are multiple, any extra component will be ignored.
+- Multiple profile components: currently Open Forms supports only one profile component per form.
+  With multiple profile components, we cannot guarantee that the profile data will be correctly
+  saved to the 'klantinteracties' service. The form will be rendered with all the profile
+  components.
 - Missing authentication plugin: if the co-sign component is present and no authentication plugins
   are enabled on the form.
 - Co-sign component in repeating groups: since only one co-sign component is allowed per form, it
