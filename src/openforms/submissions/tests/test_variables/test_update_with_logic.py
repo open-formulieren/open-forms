@@ -8,6 +8,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.utils.tests.feature_flags import disable_feature_flag
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ...models import SubmissionValueVariable
@@ -399,6 +400,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
             ).exists()
         )
 
+    @disable_feature_flag("PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION")
     def test_user_defined_variables_are_persisted(self):
         form = FormFactory.create()
         form_step = FormStepFactory.create(

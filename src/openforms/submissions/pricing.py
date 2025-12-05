@@ -90,11 +90,8 @@ def _price_from_variable(submission: Submission) -> Decimal | None:
         return None
 
     values_state = submission.load_submission_value_variables_state()
-    # user defined variables don't show up in `values_state.get_data()` :( so we
-    # need to access them differently.
-    # XXX these data structures can be cleaned up - Victorien did an attempt already
-    # and it revealed it's not easy.
-    if var_key not in values_state.variables:
+    data = values_state.get_data(include_unsaved=True)
+    if var_key not in data:
         # Discussed with DH - it's better to crash hard than the possibly make them
         # pay the wrong price.
         raise InvalidPrice(
@@ -102,7 +99,7 @@ def _price_from_variable(submission: Submission) -> Decimal | None:
             "temptation to guess.",
             variable=var_key,
         )
-    value = values_state.get_variable(var_key).value
+    value = data[var_key]
     logger.debug("price_taken_from_variable", variable=var_key, value=value)
 
     invalid_type_error = InvalidPrice(
