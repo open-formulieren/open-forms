@@ -48,14 +48,6 @@ class CommunicationPreferencesView(GenericAPIView):
                 prefill_plugin="communication_preferences",
                 prefill_options__profile_form_variable=profile_variable,
             )
-        except FormVariable.MultipleObjectsReturned as exc:
-            logger.warning(
-                "invalid_prefill_configuration",
-                submission_id=submission.uuid,
-                profile_variable=profile_variable,
-                exc=exc,
-            )
-            return []
         except FormVariable.DoesNotExist:
             # it's possible to use profile component without prefill, so no warning
             return []
