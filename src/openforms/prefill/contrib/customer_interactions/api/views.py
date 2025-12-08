@@ -5,8 +5,10 @@ from django.utils.translation import gettext_lazy as _
 
 import structlog
 from drf_spectacular.utils import extend_schema
-from rest_framework import authentication, views
+from rest_framework import views
 
+from openforms.api.authentication import AnonCSRFSessionAuthentication
+from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ListMixin
 from openforms.forms.models import FormVariable
 from openforms.submissions.api.permissions import ActiveSubmissionPermission
@@ -14,6 +16,7 @@ from openforms.submissions.models import Submission
 from openforms.typing import VariableValue
 from openforms.variables.constants import FormVariableSources
 
+from ..plugin import PLUGIN_IDENTIFIER
 from .serializers import CommunicationPreferencesSerializer
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -21,13 +24,18 @@ logger = structlog.stdlib.get_logger(__name__)
 
 @extend_schema(
     summary=_("Get communication preferences for Customer Interactions"),
+    responses={
+        200: CommunicationPreferencesSerializer(many=True),
+        403: ExceptionSerializer,
+        404: ExceptionSerializer,
+    },
 )
 class CommunicationPreferencesView(ListMixin[VariableValue], views.APIView):
     """
     Get prefilled communication preferences for a particular submission
     """
 
-    authentication_classes = (authentication.SessionAuthentication,)
+    authentication_classes = (AnonCSRFSessionAuthentication,)
     permission_classes = [ActiveSubmissionPermission]
     serializer_class = CommunicationPreferencesSerializer
     lookup_url_kwarg = "submission_uuid"
@@ -48,7 +56,7 @@ class CommunicationPreferencesView(ListMixin[VariableValue], views.APIView):
         try:
             form_variable = submission.form.formvariable_set.get(
                 source=FormVariableSources.user_defined,
-                prefill_plugin="communication_preferences",
+                prefill_plugin=PLUGIN_IDENTIFIER,
                 prefill_options__profile_form_variable=profile_variable,
             )
         except FormVariable.DoesNotExist:

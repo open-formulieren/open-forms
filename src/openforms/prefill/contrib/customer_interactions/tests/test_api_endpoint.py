@@ -188,7 +188,7 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
             ],
         )
 
-    def test_api_endpoint_not_logged_in(self):
+    def test_api_endpoint_prevent_access_to_others_submissions(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -231,3 +231,69 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_api_endpoint_dots_in_var_key(self):
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "customer.profile",
+                        "type": "customerProfile",
+                        "label": "Profile",
+                        "digitalAddressTypes": profile_channels,
+                        "shouldUpdateCustomerData": True,
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.customer_interactions_config.identifier,
+                "profile_form_variable": "customer.profile",
+            },
+        )
+        submission = SubmissionFactory.create(
+            auth_info__value="123456782",
+            auth_info__attribute=AuthAttribute.bsn,
+            form=form,
+        )
+        self._add_submission_to_session(submission)
+        prefill_variables(submission=submission)
+
+        url = reverse(
+            "api:prefill_customer_interactions:communication-preferences",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "profile_component": "customer.profile",
+            },
+        )
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    "type": "email",
+                    "options": [
+                        "someemail@example.org",
+                        "devilkiller@example.org",
+                        "john.smith@gmail.com",
+                    ],
+                    "preferred": "john.smith@gmail.com",
+                },
+                {
+                    "type": "phoneNumber",
+                    "options": ["0687654321", "0612345678"],
+                    "preferred": "0612345678",
+                },
+            ],
+        )
