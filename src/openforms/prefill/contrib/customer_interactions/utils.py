@@ -1,15 +1,34 @@
 from collections.abc import Iterable, Mapping
 from itertools import groupby
 
+import structlog
+from openklant_client.types.methods.maak_klant_contact import MaakKlantContactResponse
 from openklant_client.types.resources.digitaal_adres import (
     DigitaalAdres,
     SoortDigitaalAdres,
 )
 
+from openforms.authentication.constants import AuthAttribute
+from openforms.contrib.customer_interactions.client import (
+    get_customer_interactions_client,
+)
+from openforms.contrib.customer_interactions.models import (
+    CustomerInteractionsAPIGroupConfig,
+)
+from openforms.formio.typing.custom import DigitalAddress
+from openforms.forms.models import FormVariable
+from openforms.prefill.contrib.customer_interactions.plugin import (
+    PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+)
+from openforms.submissions.models import Submission
+from openforms.variables.constants import FormVariableSources
+
 from .typing import (
     CommunicationChannel,
     SupportedChannels,
 )
+
+logger = structlog.stdlib.get_logger(__name__)
 
 ADDRESS_TYPES_TO_CHANNELS: Mapping[SoortDigitaalAdres, SupportedChannels] = {
     "email": "email",
@@ -51,3 +70,71 @@ def transform_digital_addresses(
         }
         result.append(group_preferences)
     return result
+
+
+def update_customer_interaction_data(submission: Submission, profile_key: str):
+    """
+    Writes to the Customer interaction API when the form with profile component is submitted
+
+    * always create contactMoment, betrokkene and onderwerpObject
+    * There are several flows depending on if the user and their digital addresses
+    is known in the API
+    """
+    # bsn
+    bsn = (
+        submission.auth_info.value
+        if (
+            submission.is_authenticated
+            and submission.auth_info.attribute == AuthAttribute.bsn
+        )
+        else None
+    )
+
+    # submission profile data
+    state = submission.load_submission_value_variables_state()
+    profile_submission_data: list[DigitalAddress] = state.get_data()[profile_key]
+
+    # prefill info
+    try:
+        prefill_form_variable = submission.form.formvariable_set.get(
+            source=FormVariableSources.user_defined,
+            prefill_plugin=COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+            prefill_options__profile_form_variable=profile_key,
+        )
+    except FormVariable.DoesNotExist:
+        # todo warning, since the component configured shouldUpdateCustomerData = True
+        return
+
+    api_group_id = prefill_form_variable.prefill_options[
+        "customer_interactions_api_group"
+    ]
+    # prefill_addresses = state.get_data()[prefill_form_variable.key]
+
+    api_group = CustomerInteractionsAPIGroupConfig.objects.get(api_group_id)
+    channels_to_address_types = {v: k for k, v in ADDRESS_TYPES_TO_CHANNELS.items()}
+
+    with get_customer_interactions_client(api_group) as client:
+        if not bsn:
+            # 1. Anonymous user provides email address and/or phone number.
+            # We create new betrokkene, klantcontact and OnderwerpObject
+            # Next we create the digital address and connect them to the previously created betrokkene
+            maak_klant_contact: MaakKlantContactResponse = (
+                client.create_customer_contact(submission)
+            )
+            logger.debug(
+                "created_klantcontact",
+                submission_uuid=str(submission.uuid),
+                klantcontact=maak_klant_contact["klantcontact"]["uuid"],
+            )
+            # todo save onderwerpObject id for future patching
+            for digital_address in profile_submission_data:
+                created_address = client.create_digital_address_for_betrokkene(
+                    address=digital_address["address"],
+                    address_type=channels_to_address_types[digital_address["type"]],
+                    betrokkene_uuid=maak_klant_contact["betrokkene"]["uuid"],
+                )
+                logger.debug(
+                    "created_digital_address",
+                    submission_uuid=str(submission.uuid),
+                    digital_address_uuid=created_address["uuid"],
+                )

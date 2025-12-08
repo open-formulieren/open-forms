@@ -24,6 +24,9 @@ from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration, MapTileLayer, MapWMSTileLayer
 from openforms.formio.typing.map import Overlay
 from openforms.forms.models import FormVariable
+from openforms.prefill.contrib.customer_interactions.utils import (
+    update_customer_interaction_data,
+)
 from openforms.prefill.contrib.family_members.plugin import (
     PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
 )
@@ -50,6 +53,7 @@ from ..typing import (
     AddressNLComponent,
     ChildrenComponent,
     Component,
+    CustomerProfileComponent,
     DateComponent,
     DatetimeComponent,
     MapComponent,
@@ -1056,3 +1060,22 @@ class LicensePlate(BasePlugin):
             "pattern": r"^[a-zA-Z0-9]{1,3}-[a-zA-Z0-9]{1,3}-[a-zA-Z0-9]{1,3}$",
         }
         return to_multiple(base) if multiple else base
+
+
+@register("customerProfile")
+class CustomerProfile(BasePlugin):
+    formatter = DefaultFormatter
+
+    def pre_registration_hook(
+        self, component: CustomerProfileComponent, submission: Submission
+    ) -> None:
+        """
+        update customer interaction API if applicable
+        """
+        if not component["shouldUpdateCustomerData"]:
+            return
+
+        update_customer_interaction_data(
+            profile_key=component["key"],
+            submission=submission,
+        )

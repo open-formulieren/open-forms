@@ -1,4 +1,3 @@
-
 import structlog
 from celery import group
 

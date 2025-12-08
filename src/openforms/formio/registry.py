@@ -342,7 +342,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         return component_plugin.build_serializer_field(component)
 
     def apply_pre_registration_hook(
-        self, component: Component, submission: Submission
+        self, component: Component, submission: "Submission"
     ) -> None:
         """
         Apply component pre registration hook.
