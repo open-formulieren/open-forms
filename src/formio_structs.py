@@ -41,6 +41,8 @@ class CommonOptions:
 #
 # LAYOUT components
 #
+
+
 class Content(Component, kw_only=True, tag="content"):
     html: str
 
@@ -60,6 +62,8 @@ class Columns(Component, kw_only=True, tag="columns"):
     columns: Sequence[Column]
 
 
+type LayoutComponent = Content | Fieldset | Columns
+
 #
 # INPUT components
 #
@@ -75,8 +79,8 @@ class TextField(CommonOptions, Component, kw_only=True, tag="textfield"):
             raise ValueError(f"The default value type must match {self.multiple=}")
 
 
-type LayoutComponent = Content | Fieldset | Columns
 type InputComponent = TextField
+
 type AnyComponent = InputComponent | LayoutComponent
 
 
