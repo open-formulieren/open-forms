@@ -2160,11 +2160,26 @@ export const ConfigurePrefillCommunicationPreferences = {
         prefillPlugin: '',
         prefillAttribute: '',
         prefillIdentifierRole: 'main',
-        dataType: 'object',
+        dataType: 'array',
+        dataFormat: undefined,
+        isSensitiveData: true,
+        serviceFetchConfiguration: undefined,
+        initialValue: null,
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+        name: 'Textfield',
+        key: 'textfield',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'string',
         dataFormat: undefined,
         isSensitiveData: false,
         serviceFetchConfiguration: undefined,
-        initialValue: {},
+        initialValue: '',
       },
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
@@ -2188,6 +2203,10 @@ export const ConfigurePrefillCommunicationPreferences = {
       profile: {
         type: 'customerProfile',
         key: 'profile',
+      },
+      textfield: {
+        type: 'textfield',
+        key: 'textfield',
       },
     },
   },
@@ -2229,6 +2248,7 @@ export const ConfigurePrefillCommunicationPreferences = {
 
       const profileVariableSelectMenu = within(await findReactSelectMenu(canvas));
       const profileVariableOptions = await profileVariableSelectMenu.findAllByRole('option');
+      // Expect only the profile component form variable to be available
       expect(profileVariableOptions).toHaveLength(1);
       expect(profileVariableOptions[0], {name: 'Profile'}).toBeVisible();
       await rsSelect(profileVariableDropdown, 'Profile');
