@@ -300,7 +300,7 @@ django-jsonform==2.21.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
-django-log-outgoing-requests==0.6.1
+django-log-outgoing-requests==0.7.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
