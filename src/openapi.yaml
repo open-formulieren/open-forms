@@ -8019,6 +8019,9 @@ components:
         requiredFieldsWithAsterisk:
           type: boolean
           readOnly: true
+        communicationPreferencesPortalUrl:
+          type: string
+          readOnly: true
         translations:
           $ref: '#/components/schemas/FormModelTranslations'
         resumeLinkLifetime:
@@ -8081,6 +8084,7 @@ components:
             renderer is not feature complete and is very likely to contain bugs. You
             should not enable this in production.'
       required:
+      - communicationPreferencesPortalUrl
       - cosignHasLinkInEmail
       - cosignLoginOptions
       - hideNonApplicableSteps
@@ -9681,6 +9685,9 @@ components:
           description: Display the instruction from the confirmation page in the PDF.
         requiredFieldsWithAsterisk:
           type: boolean
+          readOnly: true
+        communicationPreferencesPortalUrl:
+          type: string
           readOnly: true
         translations:
           $ref: '#/components/schemas/FormModelTranslations'
