@@ -309,7 +309,7 @@ django-jsonform==2.21.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc-db
-django-log-outgoing-requests==0.6.1
+django-log-outgoing-requests==0.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
