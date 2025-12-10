@@ -7,21 +7,20 @@ from openklant_client.types.resources.digitaal_adres import (
 )
 
 from .typing import (
-    CommunicationChannelPreferences,
-    ProfileCommunicationChannels,
+    CommunicationChannel,
     SupportedChannels,
 )
 
 ADDRESS_TYPES_TO_CHANNELS: Mapping[SoortDigitaalAdres, SupportedChannels] = {
     "email": "email",
-    "telefoonnummer": "phone_number",
+    "telefoonnummer": "phoneNumber",
 }
 
 
 def transform_digital_addresses(
     digital_addresses: Iterable[DigitaalAdres],
     configured_address_types: list[SupportedChannels],
-) -> ProfileCommunicationChannels:
+) -> list[CommunicationChannel]:
     """
     Filter and group digital addresses.
 
@@ -35,19 +34,20 @@ def transform_digital_addresses(
         sorted_addresses, key=lambda x: x["soortDigitaalAdres"]
     )
 
-    result: ProfileCommunicationChannels = {}
+    result: list[CommunicationChannel] = []
     for address_type, group_iter in grouped_digital_addresses:
         group = list(group_iter)
         channel_name: SupportedChannels = ADDRESS_TYPES_TO_CHANNELS[address_type]
         if channel_name not in configured_address_types:
             continue
 
-        group_preferences: CommunicationChannelPreferences = {
+        group_preferences: CommunicationChannel = {
+            "type": channel_name,
             "options": [address["adres"] for address in group],
             "preferred": next(
                 (address["adres"] for address in group if address["isStandaardAdres"]),
                 None,
             ),
         }
-        result[channel_name] = group_preferences
+        result.append(group_preferences)
     return result
