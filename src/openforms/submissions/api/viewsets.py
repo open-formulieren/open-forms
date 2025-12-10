@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from flags.state import flag_enabled
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, PermissionDenied
@@ -44,6 +45,7 @@ from ..utils import (
     add_submmission_to_session,
     check_form_status,
     initialise_user_defined_variables,
+    persist_user_defined_variables,
     remove_submission_from_session,
 )
 from .mixins import SubmissionCompletionMixin
@@ -588,13 +590,18 @@ class SubmissionStepViewSet(
         create = instance.pk is None
         serializer.save()
 
+        submission = instance.submission
+        if flag_enabled("PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION"):
+            # This requires form logic to be evaluated, which is done already in the
+            # serializer
+            persist_user_defined_variables(submission)
+
         logevent.submission_step_fill(instance)
         attach_uploads_to_submission_step(instance)
 
         # See #1480 - if there is navigation between steps and original form field values
         # are changed, they can cause subsequent steps to be not-applicable. If that
         # happens, we need to wipe the data from those steps.
-        submission = instance.submission
         # The endpoint permission evaluated the submission state, but now a step has been
         # created/updated, so we need to refresh it
         execution_state = submission.load_execution_state(refresh=True)

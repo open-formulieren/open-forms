@@ -17,7 +17,9 @@ from rest_framework.test import APITestCase
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
+    FormLogicFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 
 from ..models import SubmissionValueVariable
@@ -401,3 +403,44 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             response = self.client.put(endpoint2, {"data": upload_data})
 
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_user_defined_variables_are_persisted(self):
+        step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "text"}]
+            },
+        )
+        FormVariableFactory.create(
+            form=step.form,
+            user_defined=True,
+            name="foo",
+            key="foo",
+            initial_value="",
+        )
+        FormLogicFactory.create(
+            form=step.form,
+            json_logic_trigger={"==": [{"var": "text"}, "triggered"]},
+            actions=[
+                {
+                    "action": {"type": "variable", "value": "persisted"},
+                    "variable": "foo",
+                },
+            ],
+        )
+        submission = SubmissionFactory.create(form=step.form)
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+        response = self.client.put(endpoint, {"data": {"text": "triggered"}})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Ensure the user-defined variable is persisted and has the value set by the
+        # logic rule
+        state = submission.load_submission_value_variables_state(refresh=True)
+        self.assertEqual(state.get_data(include_unsaved=False)["foo"], "persisted")
