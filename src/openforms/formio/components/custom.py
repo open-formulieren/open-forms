@@ -24,9 +24,6 @@ from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration, MapTileLayer, MapWMSTileLayer
 from openforms.formio.typing.map import Overlay
 from openforms.forms.models import FormVariable
-from openforms.prefill.contrib.customer_interactions.utils import (
-    update_customer_interaction_data,
-)
 from openforms.prefill.contrib.family_members.plugin import (
     PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
 )
@@ -1074,6 +1071,10 @@ class CustomerProfile(BasePlugin):
         """
         if not component["shouldUpdateCustomerData"]:
             return
+
+        from openforms.prefill.contrib.customer_interactions.utils import (
+            update_customer_interaction_data,
+        )
 
         update_customer_interaction_data(
             profile_key=component["key"],

@@ -17,9 +17,6 @@ from openforms.contrib.customer_interactions.models import (
 )
 from openforms.formio.typing.custom import DigitalAddress
 from openforms.forms.models import FormVariable
-from openforms.prefill.contrib.customer_interactions.plugin import (
-    PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
-)
 from openforms.submissions.models import Submission
 from openforms.variables.constants import FormVariableSources
 
@@ -98,7 +95,7 @@ def update_customer_interaction_data(submission: Submission, profile_key: str):
     try:
         prefill_form_variable = submission.form.formvariable_set.get(
             source=FormVariableSources.user_defined,
-            prefill_plugin=COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+            prefill_plugin="communication_preferences",  # todo replace with plugin identifier
             prefill_options__profile_form_variable=profile_key,
         )
     except FormVariable.DoesNotExist:
@@ -110,7 +107,7 @@ def update_customer_interaction_data(submission: Submission, profile_key: str):
     ]
     # prefill_addresses = state.get_data()[prefill_form_variable.key]
 
-    api_group = CustomerInteractionsAPIGroupConfig.objects.get(api_group_id)
+    api_group = CustomerInteractionsAPIGroupConfig.objects.get(identifier=api_group_id)
     channels_to_address_types = {v: k for k, v in ADDRESS_TYPES_TO_CHANNELS.items()}
 
     with get_customer_interactions_client(api_group) as client:

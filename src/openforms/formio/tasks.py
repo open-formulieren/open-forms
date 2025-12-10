@@ -27,4 +27,4 @@ def pre_registration_component_group_task(task, submission_id: int) -> None:
         #     todo if some property?
     )
 
-    return task.replace(task_group=task_group)
+    return task.replace(task_group)
