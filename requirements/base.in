@@ -95,7 +95,7 @@ flower # task monitoring
 
 # Common Ground integration
 zgw-consumers[setup-configuration,oauth2]
-git+https://github.com/maykinmedia/open-klant-client.git@feature/maak-klant-contact-suggestions
+open-klant-client
 
 # Anti virus scan
 clamd
