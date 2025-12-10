@@ -7,7 +7,13 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.test import TestCase, tag
 
+from openforms.contrib.customer_interactions.tests.factories import (
+    CustomerInteractionsAPIGroupConfigFactory,
+)
 from openforms.prefill.constants import IdentifierRoles
+from openforms.prefill.contrib.customer_interactions.constants import (
+    PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+)
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
@@ -413,6 +419,162 @@ class FormVariableModelTests(TestCase):
                 )
             except IntegrityError as e:
                 self.fail(f"IntegrityError raised unexpectedly: {e}")
+
+
+class CommunicationPreferencesPrefillFormVariableModelTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.customer_interactions_config = (
+            CustomerInteractionsAPIGroupConfigFactory.create()
+        )
+
+    def test_create_multiple_prefill_variables_for_same_profile_component(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "label": "Profile",
+                        "shouldUpdateCustomerData": True,
+                        "digitalAddressTypes": ["email", "phone_number"],
+                    }
+                ]
+            },
+        )
+
+        # The first prefill variable can be created
+        FormVariableFactory.create(
+            key="empty-preferences",
+            form=form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.object,
+            prefill_plugin=COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.customer_interactions_config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+
+        # Each combination of form, profile component must be unique for this prefill plugin.
+        # Trying to create a second prefill variable for the same component will raise an
+        # IntegrityError.
+        with self.assertRaises(IntegrityError):
+            FormVariableFactory.create(
+                key="empty-preferences",
+                form=form,
+                user_defined=True,
+                data_type=FormVariableDataTypes.object,
+                prefill_plugin=COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                prefill_options={
+                    "customer_interactions_api_group": self.customer_interactions_config.identifier,
+                    "profile_form_variable": "profile",
+                },
+            )
+
+    def test_create_multiple_prefill_variables_for_different_profile_components(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "label": "Profile",
+                        "shouldUpdateCustomerData": True,
+                        "digitalAddressTypes": ["email", "phone_number"],
+                    },
+                    {
+                        "key": "profile2",
+                        "type": "customerProfile",
+                        "label": "Profile",
+                        "shouldUpdateCustomerData": True,
+                        "digitalAddressTypes": ["email", "phone_number"],
+                    },
+                ]
+            },
+        )
+
+        # The first prefill variable can be created
+        FormVariableFactory.create(
+            key="empty-preferences",
+            form=form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.object,
+            prefill_plugin=COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.customer_interactions_config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+
+        # The second prefill variable can also be created, as it's meant for a different component
+        with self.assertRaises(IntegrityError):
+            FormVariableFactory.create(
+                key="empty-preferences",
+                form=form,
+                user_defined=True,
+                data_type=FormVariableDataTypes.object,
+                prefill_plugin=COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                prefill_options={
+                    "customer_interactions_api_group": self.customer_interactions_config.identifier,
+                    "profile_form_variable": "profile2",
+                },
+            )
+
+    def test_create_multiple_prefill_variables_for_same_profile_component_on_different_forms(
+        self,
+    ):
+        formDefinition = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "label": "Profile",
+                        "shouldUpdateCustomerData": True,
+                        "digitalAddressTypes": ["email", "phone_number"],
+                    },
+                ]
+            }
+        )
+        form1 = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition=formDefinition,
+        )
+        form2 = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition=formDefinition,
+        )
+
+        # Creating form variable for form 1
+        FormVariableFactory.create(
+            key="empty-preferences",
+            form=form1,
+            user_defined=True,
+            data_type=FormVariableDataTypes.object,
+            prefill_plugin=COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.customer_interactions_config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+
+        # Creating form variable for form 2
+        FormVariableFactory.create(
+            key="empty-preferences",
+            form=form2,
+            user_defined=True,
+            data_type=FormVariableDataTypes.object,
+            prefill_plugin=COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.customer_interactions_config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
 
 
 class FormVariableManagerTests(TestCase):

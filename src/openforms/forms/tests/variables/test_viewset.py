@@ -24,7 +24,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.prefill.contrib.customer_interactions.plugin import (
+from openforms.prefill.contrib.customer_interactions.constants import (
     PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
 )
 from openforms.prefill.contrib.demo.plugin import DemoPrefill
@@ -1330,14 +1330,265 @@ class FormVariableViewsetTest(APITestCase):
 
 @override_settings(LANGUAGE_CODE="en")
 class CommunicationPreferencesPrefillPluginFormVariableViewsetTest(APITestCase):
-    def test_bulk_create_and_update_with_profile_form_variables(self):
+    def setUp(self):
+        super().setUp()
+
         user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user)
 
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
+        self.customer_interactions_api = (
+            CustomerInteractionsAPIGroupConfigFactory.create()
+        )
+
+    def test_bulk_create_and_update_with_one_variable(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "customerProfile",
+                        "key": "profile",
+                        "name": "Profile",
+                        "digitalAddressTypes": ["email"],
+                        "shouldUpdateCustomerData": True,
+                    }
+                ]
+            },
+        )
+        form_definition = form.formstep_set.get().form_definition
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "profile",
+                "name": "Profile",
+                "data_type": FormVariableDataTypes.array,
+                "source": FormVariableSources.component,
+            },
+            {
+                "name": "profile-prefill",
+                "key": "profilePrefill",
+                "formDefinition": "",
+                "source": FormVariableSources.user_defined,
+                "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                "prefillAttribute": "",
+                "prefillIdentifierRole": "main",
+                "dataType": FormVariableDataTypes.string,
+                "prefillOptions": {
+                    "customerInteractionsApiGroup": self.customer_interactions_api.identifier,
+                    "profileFormVariable": "profile",
+                },
+                "form": form_url,
+            },
+        ]
+
+        response = self.client.put(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    def test_bulk_create_and_update_with_multiple_variables_using_different_prefill_options(
+        self,
+    ):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "customerProfile",
+                        "key": "profileComponent",
+                        "name": "Profile component",
+                        "digitalAddressTypes": ["email"],
+                        "shouldUpdateCustomerData": True,
+                    },
+                    {
+                        "type": "customerProfile",
+                        "key": "secondProfileComponent",
+                        "name": "Second profile component",
+                        "digitalAddressTypes": ["phoneNumber"],
+                        "shouldUpdateCustomerData": True,
+                    },
+                ]
+            },
+        )
+        form_definition = form.formstep_set.get().form_definition
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "profileComponent",
+                "name": "Profile component",
+                "data_type": FormVariableDataTypes.array,
+                "source": FormVariableSources.component,
+            },
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "secondProfileComponent",
+                "name": "Second profile component",
+                "data_type": FormVariableDataTypes.array,
+                "source": FormVariableSources.component,
+            },
+            {
+                "key": "profilePrefill",
+                "name": "profile-prefill",
+                "formDefinition": "",
+                "source": FormVariableSources.user_defined,
+                "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                "prefillAttribute": "",
+                "prefillIdentifierRole": "main",
+                "dataType": FormVariableDataTypes.string,
+                "prefillOptions": {
+                    "customerInteractionsApiGroup": self.customer_interactions_api.identifier,
+                    "profileFormVariable": "profileComponent",
+                },
+                "form": form_url,
+            },
+            {
+                "key": "secondProfilePrefill",
+                "name": "second-profile-prefill",
+                "formDefinition": "",
+                "source": FormVariableSources.user_defined,
+                "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                "prefillAttribute": "",
+                "prefillIdentifierRole": "main",
+                "dataType": FormVariableDataTypes.string,
+                "prefillOptions": {
+                    "customerInteractionsApiGroup": self.customer_interactions_api.identifier,
+                    "profileFormVariable": "secondProfileComponent",
+                },
+                "form": form_url,
+            },
+        ]
+
+        response = self.client.put(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+
+        # You should be able to create and update multiple variables using the
+        # communication preferences prefill plugin, as long as they use different
+        # `profileFormVariable` prefill options.
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    def test_bulk_create_and_update_with_multiple_variables_using_the_same_prefill_options(
+        self,
+    ):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "customerProfile",
+                        "key": "profile",
+                        "name": "Profile",
+                        "digitalAddressTypes": ["email"],
+                        "shouldUpdateCustomerData": True,
+                    }
+                ]
+            },
+        )
+        form_definition = form.formstep_set.get().form_definition
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "profile",
+                "name": "Profile",
+                "data_type": FormVariableDataTypes.array,
+                "source": FormVariableSources.component,
+            },
+            {
+                "name": "profile-prefill",
+                "key": "profilePrefill",
+                "formDefinition": "",
+                "source": FormVariableSources.user_defined,
+                "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                "prefillAttribute": "",
+                "prefillIdentifierRole": "main",
+                "dataType": FormVariableDataTypes.string,
+                "prefillOptions": {
+                    "customerInteractionsApiGroup": self.customer_interactions_api.identifier,
+                    "profileFormVariable": "profile",
+                },
+                "form": form_url,
+            },
+            # The second user-defined variable has the same prefillOptions.profileFormVariable
+            # as the first user-defined variable
+            {
+                "name": "profile-prefill2",
+                "key": "profilePrefill2",
+                "formDefinition": "",
+                "source": FormVariableSources.user_defined,
+                "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                "prefillAttribute": "",
+                "prefillIdentifierRole": "main",
+                "dataType": FormVariableDataTypes.string,
+                "prefillOptions": {
+                    "customerInteractionsApiGroup": self.customer_interactions_api.identifier,
+                    "profileFormVariable": "profile",
+                },
+                "form": form_url,
+            },
+        ]
+
+        response = self.client.put(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        # The error message is targeted at the prefillOptions of the second user-defined variable
+        self.assertEqual(
+            response.json()["invalidParams"][0]["name"],
+            "2.prefillOptions.profileFormVariable",
+        )
+        self.assertEqual(response.json()["invalidParams"][0]["code"], "invalid")
+        self.assertEqual(
+            response.json()["invalidParams"][0]["reason"],
+            _(
+                "This profile form variable is already used in another communication "
+                "preferences prefill plugin."
+            ),
+        )
+
+    def test_bulk_create_and_update_with_profile_form_variables(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
                 "components": [
                     {
                         "type": "customerProfile",
@@ -1354,10 +1605,7 @@ class CommunicationPreferencesPrefillPluginFormVariableViewsetTest(APITestCase):
                 ]
             },
         )
-        form_definition = form_step.form_definition
-        customer_interactions_api = CustomerInteractionsAPIGroupConfigFactory.create(
-            for_test_docker_compose=True
-        )
+        form_definition = form.formstep_set.get().form_definition
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_url = f"http://testserver.com{form_path}"
         form_definition_path = reverse(
@@ -1395,7 +1643,7 @@ class CommunicationPreferencesPrefillPluginFormVariableViewsetTest(APITestCase):
                     "prefillIdentifierRole": "main",
                     "dataType": FormVariableDataTypes.string,
                     "prefillOptions": {
-                        "customerInteractionsApiGroup": customer_interactions_api.identifier,
+                        "customerInteractionsApiGroup": self.customer_interactions_api.identifier,
                         "profileFormVariable": "textfield",
                     },
                     "form": form_url,
@@ -1455,7 +1703,7 @@ class CommunicationPreferencesPrefillPluginFormVariableViewsetTest(APITestCase):
                     "prefillIdentifierRole": "main",
                     "dataType": FormVariableDataTypes.string,
                     "prefillOptions": {
-                        "customerInteractionsApiGroup": customer_interactions_api.identifier,
+                        "customerInteractionsApiGroup": self.customer_interactions_api.identifier,
                         "profileFormVariable": "profile",
                     },
                     "form": form_url,

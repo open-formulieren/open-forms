@@ -8,6 +8,9 @@ from rest_framework.exceptions import ValidationError
 
 from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
+from openforms.prefill.contrib.customer_interactions.constants import (
+    PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+)
 from openforms.prefill.registry import register
 from openforms.variables.api.serializers import ServiceFetchConfigurationSerializer
 from openforms.variables.constants import FormVariableSources
@@ -91,6 +94,35 @@ class FormVariableListSerializer(ListWithChildSerializer):
                 continue
 
             existing_form_key_combinations.append(key_form_combination)
+
+        existing_profile_form_vars: list[str] = []
+
+        # Validate the uniqueness of variables using the communication preferences prefill plugin.
+        # Keeping this separate from the above key validation, as they aren't related.
+        for index, variable in enumerate(attrs):
+            prefill_plugin = variable.get("prefill_plugin")
+            prefill_options = variable.get("prefill_options")
+
+            if (
+                prefill_plugin != COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER
+                or not prefill_options
+            ):
+                continue
+
+            profile_form_variable = prefill_options.get("profile_form_variable")
+            if profile_form_variable in existing_profile_form_vars:
+                errors[f"{index}.prefill_options.profile_form_variable"].append(
+                    serializers.ErrorDetail(
+                        _(
+                            "This profile form variable is already used in another "
+                            "communication preferences prefill plugin."
+                        ),
+                        code="invalid",
+                    )
+                )
+                continue
+
+            existing_profile_form_vars.append(profile_form_variable)
 
         if errors:
             raise ValidationError(errors)

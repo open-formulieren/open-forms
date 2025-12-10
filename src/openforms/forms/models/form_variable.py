@@ -5,7 +5,9 @@ from copy import copy, deepcopy
 from typing import ClassVar
 
 from django.db import models, transaction
-from django.db.models import CheckConstraint, Q
+from django.db.models import CheckConstraint, F, Q
+from django.db.models.constraints import UniqueConstraint
+from django.db.models.fields.json import KeyTransform
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
@@ -20,6 +22,9 @@ from openforms.formio.utils import (
 )
 from openforms.formio.validators import variable_key_validator
 from openforms.prefill.constants import IdentifierRoles
+from openforms.prefill.contrib.customer_interactions.constants import (
+    PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+)
 from openforms.typing import JSONObject
 from openforms.variables.constants import (
     DATA_TYPE_TO_JSON_SCHEMA,
@@ -399,6 +404,13 @@ class FormVariable(models.Model):
                     )
                 ),
                 name="form_variable_data_type_is_not_subtype_exclusive",
+            ),
+            UniqueConstraint(
+                F("form_id"),
+                F("prefill_plugin"),
+                KeyTransform("profile_form_variable", "prefill_options"),
+                name="unique_form_id_and_profile_form_variable_for_prefill_plugin_communication_preferences",
+                condition=Q(prefill_plugin=COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER),
             ),
         ]
 

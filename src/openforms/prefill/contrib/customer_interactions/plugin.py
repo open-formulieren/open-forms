@@ -20,12 +20,11 @@ from ...constants import IdentifierRoles
 from ...exceptions import PrefillSkipped
 from ...registry import register
 from .config import CommunicationPreferencesSerializer
+from .constants import PLUGIN_IDENTIFIER
 from .typing import CommunicationPreferencesOptions
 from .utils import transform_digital_addresses
 
 logger = structlog.stdlib.get_logger(__name__)
-
-PLUGIN_IDENTIFIER = "communication_preferences"
 
 
 @register(PLUGIN_IDENTIFIER)
