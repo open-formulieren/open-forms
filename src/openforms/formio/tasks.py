@@ -24,7 +24,7 @@ def pre_registration_component_group_task(task, submission_id: int) -> None:
     task_group = group(
         pre_registration_component_task.si(component, submission_id)
         for component in submission.total_configuration_wrapper
-        #     todo if some property?
+        if formio_registry.has_pre_registration_hook(component)
     )
 
     return task.replace(task_group)

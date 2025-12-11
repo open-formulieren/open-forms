@@ -1063,8 +1063,9 @@ class LicensePlate(BasePlugin):
 class CustomerProfile(BasePlugin):
     formatter = DefaultFormatter
 
+    @staticmethod
     def pre_registration_hook(
-        self, component: CustomerProfileComponent, submission: Submission
+        component: CustomerProfileComponent, submission: Submission
     ) -> None:
         """
         update customer interaction API if applicable
