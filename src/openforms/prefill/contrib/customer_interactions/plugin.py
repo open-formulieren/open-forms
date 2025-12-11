@@ -11,6 +11,7 @@ from openforms.contrib.customer_interactions.client import (
 from openforms.contrib.customer_interactions.models import (
     CustomerInteractionsAPIGroupConfig,
 )
+from openforms.contrib.customer_interactions.utils import transform_digital_addresses
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission, SubmissionValueVariable
 from openforms.typing import JSONEncodable, JSONObject
@@ -21,7 +22,6 @@ from ...exceptions import PrefillSkipped
 from ...registry import register
 from .config import CommunicationPreferencesSerializer
 from .typing import CommunicationPreferencesOptions
-from .utils import transform_digital_addresses
 
 logger = structlog.stdlib.get_logger(__name__)
 

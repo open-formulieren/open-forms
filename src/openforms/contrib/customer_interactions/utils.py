@@ -17,13 +17,12 @@ from openforms.contrib.customer_interactions.models import (
 )
 from openforms.formio.typing.custom import DigitalAddress
 from openforms.forms.models import FormVariable
-from openforms.submissions.models import Submission
-from openforms.variables.constants import FormVariableSources
-
-from .typing import (
+from openforms.prefill.contrib.customer_interactions.typing import (
     CommunicationChannel,
     SupportedChannels,
 )
+from openforms.submissions.models import Submission
+from openforms.variables.constants import FormVariableSources
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -111,6 +110,7 @@ def update_customer_interaction_data(submission: Submission, profile_key: str):
     channels_to_address_types = {v: k for k, v in ADDRESS_TYPES_TO_CHANNELS.items()}
 
     with get_customer_interactions_client(api_group) as client:
+        print("bsn=", bsn)
         if not bsn:
             # 1. Anonymous user provides email address and/or phone number.
             # We create new betrokkene, klantcontact and OnderwerpObject

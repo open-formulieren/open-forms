@@ -1073,7 +1073,7 @@ class CustomerProfile(BasePlugin):
         if not component["shouldUpdateCustomerData"]:
             return
 
-        from openforms.prefill.contrib.customer_interactions.utils import (
+        from openforms.contrib.customer_interactions.utils import (
             update_customer_interaction_data,
         )
 
