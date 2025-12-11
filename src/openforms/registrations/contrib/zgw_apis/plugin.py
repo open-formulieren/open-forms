@@ -33,10 +33,10 @@ from openforms.submissions.models import Submission, SubmissionReport
 from openforms.typing import VariableValue
 from openforms.utils.date import datetime_in_amsterdam
 from openforms.utils.pdf import convert_html_to_pdf
-from openforms.variables.utils import get_variables_for_context
 
 from ...base import BasePlugin, PreRegistrationResult
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
+from ...contrib.objects_api.handlers.v1 import _get_variables_for_context
 from ...exceptions import RegistrationFailed
 from ...registry import register
 from ...utils import execute_unless_result_exists
@@ -735,7 +735,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         context = {
             "_submission": submission,
             "productaanvraag_type": "ProductAanvraag",
-            "variables": get_variables_for_context(submission),
+            "variables": _get_variables_for_context(submission),
             "submission": {
                 "public_reference": submission.public_registration_reference,
                 "kenmerk": str(submission.uuid),

@@ -1210,6 +1210,148 @@ class ZGWBackendTests(TestCase):
             },
         )
 
+    @tag("gh-5803")
+    def test_date_related_objects_as_separate_variables_in_objects_api_template(
+        self, m
+    ):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            organisatie_rsin="000000000",
+        )
+
+        def get_create_json_for_object(req, ctx):
+            request_body = req.json()
+            return {
+                "url": "https://objecten.nl/api/v1/objects/1",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "type": request_body["type"],
+                "record": {
+                    "index": 0,
+                    **request_body["record"],
+                    "endAt": None,
+                    "registrationAt": date.today().isoformat(),
+                    "correctionFor": 0,
+                    "correctedBy": "",
+                },
+            }
+
+        def get_create_json_for_zaakobject(req, ctx):
+            request_body = req.json()
+            return {
+                "url": "https://zaken.nl/api/v1/zaakobjecten/2c556247-aaa2-48d5-a94c-0aa72c78323a",
+                "uuid": "2c556247-aaa2-48d5-a94c-0aa72c78323a",
+                "zaak": request_body["zaak"],
+                "object": request_body["object"],
+                "zaakobjecttype": None,
+                "objectType": "overige",
+                "objectTypeOverige": "",
+                "objectTypeOverigeDefinitie": {
+                    "url": request_body["objectTypeOverigeDefinitie"]["url"],
+                    "schema": ".jsonSchema",
+                    "objectData": ".record.data",
+                },
+                "relatieomschrijving": "",
+                "objectIdentificatie": None,
+            }
+
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json=get_create_json_for_object,
+        )
+        m.post(
+            "https://zaken.nl/api/v1/zaakobjecten",
+            status_code=201,
+            json=get_create_json_for_zaakobject,
+        )
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                },
+                {
+                    "key": "datetime",
+                    "type": "datetime",
+                    "label": "datetime",
+                },
+                {
+                    "key": "editgrid",
+                    "type": "editgrid",
+                    "label": "Editgrid",
+                    "components": [
+                        {
+                            "type": "time",
+                            "key": "time",
+                            "label": "Time",
+                        }
+                    ],
+                },
+            ],
+            submitted_data={
+                "date": "2025-12-10",
+                "datetime": "2025-12-11T12:34:56+01:00",
+                "editgrid": [{"time": "12:34:56"}],
+            },
+            language_code="en",
+            bsn="111222333",
+            form_definition_kwargs={"slug": "test"},
+            registration_result={
+                "zaak": {
+                    "url": "https://zaken.nl/api/v1/zaken/1",
+                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                }
+            },
+        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "document_type_description": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "objects_api_group": objects_api_group,
+            "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2",
+            "objecttype_version": 1,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "content_json": textwrap.dedent(
+                """
+                {
+                    "bron": {"naam": "Open Formulieren"},
+                    "aanvraaggegevens": {
+                        "datum": "{{ variables.date }}",
+                        "datumtijd": "{{ variables.datetime }}",
+                        "editgrid": "{{ variables.editgrid }}"
+                    }
+                }"""
+            ),
+        }
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        result = plugin.register_submission(submission, zgw_form_options)
+        assert result
+
+        self.assertEqual(
+            result["objects_api_object"]["record"]["data"],
+            {
+                "bron": {"naam": "Open Formulieren"},
+                "aanvraaggegevens": {
+                    "datum": "2025-12-10",
+                    "datumtijd": "2025-12-11T12:34:56+01:00",
+                    "editgrid": "[{'time': '12:34:56'}]",
+                },
+            },
+        )
+
     @tag("gh-4337")
     def test_zgw_backend_zaak_omschrijving(self, m):
         with self.subTest("Short name that is not truncated"):
