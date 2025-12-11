@@ -106,6 +106,30 @@ def get_cosign_login_url(request: Request, form: Form, plugin_id: str) -> str:
     return auth_page.url
 
 
+def same_cosigner(request: Request, submission: Submission) -> bool:
+    from openforms.submissions.utils import is_same_login_attribute, is_same_login_value
+
+    if not submission.is_authenticated:
+        logger.info(
+            "cosign_not_allowed",
+            reason="missing_auth_info",
+            submission_uuid=submission.uuid,
+        )
+        return False
+
+    if is_same_login_value(submission, request) and is_same_login_attribute(
+        submission, request
+    ):
+        logger.info(
+            "cosign_not_allowed",
+            reason="cannot_sign_own_cosign_request",
+            submission_uuid=submission.uuid,
+        )
+        return True
+
+    return False
+
+
 def remove_auth_info_from_session(request: AnyRequest) -> None:
     if FORM_AUTH_SESSION_KEY in request.session:
         del request.session[FORM_AUTH_SESSION_KEY]
