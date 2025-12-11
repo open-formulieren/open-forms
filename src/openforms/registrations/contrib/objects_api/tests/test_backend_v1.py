@@ -1054,6 +1054,83 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         except AssertionError:
             self.fail("Assertion should have passed.")
 
+    @tag("gh-5803")
+    def test_date_related_objects_as_separate_variables_in_template(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                },
+                {
+                    "key": "datetime",
+                    "type": "datetime",
+                    "label": "datetime",
+                },
+                {
+                    "key": "editgrid",
+                    "type": "editgrid",
+                    "label": "Editgrid",
+                    "components": [
+                        {
+                            "type": "time",
+                            "key": "time",
+                            "label": "Time",
+                        }
+                    ],
+                },
+            ],
+            submitted_data={
+                "date": "2025-12-10",
+                "datetime": "2025-12-11T12:34:56+01:00",
+                "editgrid": [{"time": "12:34:56"}],
+            },
+            language_code="en",
+            uuid=FIXED_SUBMISSION_UUID,
+        )
+
+        objects_form_options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.objects_api_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "content_json": textwrap.dedent(
+                """
+                {
+                    "bron": {"naam": "Open Formulieren"},
+                    "aanvraaggegevens": {
+                        "datum": "{{ variables.date }}",
+                        "datumtijd": "{{ variables.datetime }}",
+                        "editgrid": "{{ variables.editgrid }}"
+                    }
+                }
+                """
+            ),
+        }
+
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, objects_form_options)
+
+        self.assertEqual(
+            result["record"]["data"],
+            {
+                "bron": {"naam": "Open Formulieren"},
+                "aanvraaggegevens": {
+                    "datum": "2025-12-10",
+                    "datumtijd": "2025-12-11T12:34:56+01:00",
+                    "editgrid": "[{'time': '12:34:56'}]",
+                },
+            },
+        )
+
 
 class V1HandlerTests(TestCase):
     """
