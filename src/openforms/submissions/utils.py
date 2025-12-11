@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from typing import Any
 
 from django.conf import settings
+from django.contrib.auth.hashers import check_password as check_salted_hash
 from django.contrib.sessions.backends.base import SessionBase
 from django.core.cache import caches
 from django.http import HttpRequest
@@ -15,6 +16,7 @@ from rest_framework.permissions import SAFE_METHODS
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.emails.confirmation_emails import (
     get_confirmation_email_context_data,
     get_confirmation_email_templates,
@@ -34,6 +36,7 @@ from openforms.emails.utils import (
 from openforms.formio.service import FormioData
 from openforms.forms.models import Form
 from openforms.logging import logevent
+from openforms.typing import AnyRequest
 from openforms.utils.urls import build_absolute_uri
 
 from .constants import SUBMISSIONS_SESSION_KEY
@@ -328,3 +331,32 @@ def get_filtered_submission_admin_url(
     submissions_relative_admin_url.add(query_params)
 
     return build_absolute_uri(submissions_relative_admin_url.url)
+
+
+def is_same_login_attribute(submission: Submission, request: AnyRequest) -> bool:
+    return (
+        submission.auth_info.attribute
+        == request.session[FORM_AUTH_SESSION_KEY]["attribute"]
+    )
+
+
+def is_same_login_value(submission: Submission, request: AnyRequest) -> bool:
+    submission_auth_value = submission.auth_info.value
+    # there are two modus operandi - the submission may not be completed yet, in
+    # which case we don't have a hashed value yet, but the raw value (used for
+    # prefill and the like). There are also other flows where the attributes may
+    # be hashed despite the submission not being completed yet.
+    current_auth_value = request.session[FORM_AUTH_SESSION_KEY]["value"]
+
+    if submission.auth_info.attribute_hashed:
+        is_auth_data_correct = check_salted_hash(
+            current_auth_value, submission_auth_value, setter=None
+        )
+    else:
+        # timing attacks are not a concern here, as you need to go through a valid
+        # authentication flow first which sets the value in the session. Additionally,
+        # enumeration would still be possible and you don't necessarily leak passwords
+        # that may be used on other sites - end-users cannot change their BSN/KVK etc.
+        # anyway.
+        is_auth_data_correct = submission_auth_value == current_auth_value
+    return is_auth_data_correct

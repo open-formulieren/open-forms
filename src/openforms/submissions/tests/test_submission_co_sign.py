@@ -307,3 +307,46 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
                 data["invalidParams"][0]["reason"],
                 "You must declare the form to be filled out truthfully.",
             )
+
+    @override_settings(ALLOWED_HOSTS=["testserver", "localhost"])
+    def test_cosigner_same_as_submitter(self):
+        submission = SubmissionFactory.from_components(
+            form_url="http://localhost/some-form",
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
+            bsn="123456782",
+            components_list=[
+                {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
+            ],
+            submitted_data={
+                "cosign": "test@example.com",
+            },
+            registration_success=True,
+        )
+
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
+
+        with patch(
+            "openforms.forms.models.form.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                ask_statement_of_truth=True, ask_privacy_consent=True
+            ),
+        ):
+            response = self.client.post(
+                endpoint,
+                data={
+                    "privacy_policy_accepted": True,
+                    "statement_of_truth_accepted": True,
+                },
+            )
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
