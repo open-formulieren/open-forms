@@ -119,3 +119,7 @@ class Component(TypedDict):
 class FormioConfiguration(TypedDict):
     display: NotRequired[Literal["form"]]
     components: Sequence[Component]
+
+
+class ComponentPreRegistrationResult(TypedDict):
+    data: NotRequired[JSONValue]

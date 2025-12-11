@@ -68,7 +68,9 @@ def transform_digital_addresses(
     return result
 
 
-def update_customer_interaction_data(submission: Submission, profile_key: str):
+def update_customer_interaction_data(
+    submission: Submission, profile_key: str
+) -> dict | None:
     """
     Writes to the Customer interaction API when the form with profile component is submitted
 
@@ -110,7 +112,6 @@ def update_customer_interaction_data(submission: Submission, profile_key: str):
     channels_to_address_types = {v: k for k, v in ADDRESS_TYPES_TO_CHANNELS.items()}
 
     with get_customer_interactions_client(api_group) as client:
-        print("bsn=", bsn)
         if not bsn:
             # 1. Anonymous user provides email address and/or phone number.
             # We create new betrokkene, klantcontact and OnderwerpObject
@@ -123,8 +124,8 @@ def update_customer_interaction_data(submission: Submission, profile_key: str):
                 submission_uuid=str(submission.uuid),
                 klantcontact=maak_klant_contact["klantcontact"]["uuid"],
             )
-            # todo save onderwerpObject id for future patching
             for digital_address in profile_submission_data:
+                created_addresses = []
                 created_address = client.create_digital_address_for_betrokkene(
                     address=digital_address["address"],
                     address_type=channels_to_address_types[digital_address["type"]],
@@ -135,3 +136,12 @@ def update_customer_interaction_data(submission: Submission, profile_key: str):
                     submission_uuid=str(submission.uuid),
                     digital_address_uuid=created_address["uuid"],
                 )
+                created_addresses.append(created_address["uuid"])
+
+            result = {
+                "klantcontact_uuid": maak_klant_contact["klantcontact"]["uuid"],
+                "betrokkene_uuid": maak_klant_contact["betrokkene"]["uuid"],
+                "onderwerpobject_uuid": maak_klant_contact["onderwerpobject"]["uuid"],
+                "digital_addresses_uuids": created_addresses,
+            }
+            return result

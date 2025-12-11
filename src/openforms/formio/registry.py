@@ -27,6 +27,7 @@ from openforms.typing import JSONObject, VariableValue
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
+from .typing.base import ComponentPreRegistrationResult
 from .utils import is_layout_component
 
 if TYPE_CHECKING:
@@ -50,7 +51,9 @@ class RewriterForRequestProtocol(Protocol[ComponentT]):
 
 
 class PreRegistrationHookProtocol(Protocol[ComponentT]):
-    def __call__(self, component: ComponentT, submission: "Submission") -> None: ...
+    def __call__(
+        self, component: ComponentT, submission: "Submission"
+    ) -> ComponentPreRegistrationResult: ...
 
 
 class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
@@ -349,7 +352,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
     def apply_pre_registration_hook(
         self, component: Component, submission: "Submission"
-    ) -> None:
+    ) -> ComponentPreRegistrationResult | None:
         """
         Apply component pre registration hook.
         """
@@ -357,7 +360,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
             return
 
         hook = self[component["type"]].pre_registration_hook
-        hook(component, submission)
+        return hook(component, submission)
 
 
 # Sentinel to provide the default registry. You can easily instantiate another

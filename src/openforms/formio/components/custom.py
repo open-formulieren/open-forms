@@ -55,6 +55,7 @@ from ..typing import (
     DatetimeComponent,
     MapComponent,
 )
+from ..typing.base import ComponentPreRegistrationResult
 from ..utils import conform_to_mask
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
@@ -1066,18 +1067,21 @@ class CustomerProfile(BasePlugin):
     @staticmethod
     def pre_registration_hook(
         component: CustomerProfileComponent, submission: Submission
-    ) -> None:
+    ) -> ComponentPreRegistrationResult:
         """
         update customer interaction API if applicable
         """
+        result: ComponentPreRegistrationResult = {}
         if not component["shouldUpdateCustomerData"]:
-            return
+            return result
 
         from openforms.contrib.customer_interactions.utils import (
             update_customer_interaction_data,
         )
 
-        update_customer_interaction_data(
+        data = update_customer_interaction_data(
             profile_key=component["key"],
             submission=submission,
         )
+        result["data"] = data
+        return result
