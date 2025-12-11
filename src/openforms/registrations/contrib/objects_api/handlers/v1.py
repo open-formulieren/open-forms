@@ -7,13 +7,18 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Literal, TypedDict
 
+from django.conf import settings
+
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.rendering import render_to_json
+from openforms.formio.service import FormioData
+from openforms.submissions.constants import SubmissionValueVariableSources
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject, VariableValue
-from openforms.variables.utils import get_variables_for_context
+from openforms.variables.service import get_static_variables
 
 from ..registration_variables import get_cosign_value
+from ..utils import recursively_escape_html_strings
 
 
 class PaymentContextData(TypedDict):
@@ -76,6 +81,37 @@ class JSONTemplateContext(TypedDict):
     submission: SubmissionContext
 
 
+def _get_variables_for_context(submission: Submission) -> dict[str, VariableValue]:
+    """
+    Return the key/value pairs of data in the state (static, user-defined, and component
+    variables). If specified in the settings, strings will be escaped for HTML.
+
+    Note that this is a custom override of ``variables.utils.get_variables_for_context``
+    that returns JSON values instead (for the submission data). The static variables
+    are still date-related objects.
+    """
+    state = submission.load_submission_value_variables_state()
+
+    data = FormioData()
+    # Loop over the saved variables here to mimic the exact behaviour of the original
+    # ``get_variables_for_context``
+    for variable in state.saved_variables.values():
+        if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
+            data[variable.key] = variable.to_json()
+    data.update(
+        {
+            variable.key: variable.initial_value
+            for variable in get_static_variables(submission=submission)
+        }
+    )
+
+    data = data.data
+    if settings.ESCAPE_REGISTRATION_OUTPUT:
+        data = recursively_escape_html_strings(data)
+
+    return data
+
+
 def render_template(
     *,
     submission: Submission,
@@ -90,7 +126,7 @@ def render_template(
         "productaanvraag_type": product_request_type,
         "payment": get_payment_context_data(submission),
         "cosign_data": get_cosign_context_data(submission),
-        "variables": get_variables_for_context(submission),
+        "variables": _get_variables_for_context(submission),
         # Github issue #661, nested for namespacing note: other templates and context expose all submission
         # variables in the top level namespace, but that is due for refactor
         "submission": {
