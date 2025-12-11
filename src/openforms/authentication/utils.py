@@ -1,3 +1,6 @@
+from django.contrib.auth.hashers import check_password as check_salted_hash
+from django.http import HttpRequest
+
 import structlog
 from furl import furl
 from rest_framework.request import Request
@@ -104,6 +107,52 @@ def get_cosign_login_url(request: Request, form: Form, plugin_id: str) -> str:
     auth_page = furl(auth_url)
     auth_page.args.set("next", next_url)
     return auth_page.url
+
+
+def check_user_is_submission_initiator(
+    request: HttpRequest, submission: Submission
+) -> bool:
+    """
+    Test if the logged in user matches the user who started the submission.
+
+    The logged in user is not to be confused with a Django user, but the user stored in
+    the session under ``FORM_AUTH_SESSION_KEY`` after logging in for a particular form.
+
+    The session details are compared against ``submission.auth_info``. A match happens
+    when the same auth plugin and identifier are present on both.
+
+    Callers must verify that:
+
+    Returns ``True`` if there's a match, and ``False`` otherwise.
+    """
+    if FORM_AUTH_SESSION_KEY not in request.session or not submission.is_authenticated:
+        return False
+
+    has_auth_attribute_match = (
+        submission.auth_info.attribute
+        == request.session[FORM_AUTH_SESSION_KEY]["attribute"]
+    )
+
+    submission_auth_value = submission.auth_info.value
+    # there are two modus operandi - the submission may not be completed yet, in
+    # which case we don't have a hashed value yet, but the raw value (used for
+    # prefill and the like). There are also other flows where the attributes may
+    # be hashed despite the submission not being completed yet.
+    current_auth_value = request.session[FORM_AUTH_SESSION_KEY]["value"]
+
+    if submission.auth_info.attribute_hashed:
+        has_auth_value_match = check_salted_hash(
+            current_auth_value, submission_auth_value, setter=None
+        )
+    else:
+        # timing attacks are not a concern here, as you need to go through a valid
+        # authentication flow first which sets the value in the session. Additionally,
+        # enumeration would still be possible and you don't necessarily leak passwords
+        # that may be used on other sites - end-users cannot change their BSN/KVK etc.
+        # anyway.
+        has_auth_value_match = submission_auth_value == current_auth_value
+
+    return has_auth_attribute_match and has_auth_value_match
 
 
 def remove_auth_info_from_session(request: AnyRequest) -> None:
