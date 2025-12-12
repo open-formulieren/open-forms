@@ -55,3 +55,28 @@ class ProfilePreRegistrationHookTests(TestCase):
         )
 
         self.assertEqual(result, {})
+
+
+class TextFieldPreRegistrationHookTests(TestCase):
+    def test_textfield_has_hook(self):
+        text_component = {
+            "key": "someText",
+            "type": "textField",
+            "label": "some text",
+        }
+
+        self.assertFalse(register.has_pre_registration_hook(text_component))
+
+    def test_textfield_apply_hook(self):
+        text_component = {
+            "key": "someText",
+            "type": "textField",
+            "label": "some text",
+        }
+        submission = SubmissionFactory.from_components([text_component])
+
+        result: ComponentPreRegistrationResult = register.apply_pre_registration_hook(
+            text_component, submission
+        )
+
+        self.assertIsNone(result)

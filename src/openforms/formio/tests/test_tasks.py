@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from django.test import TestCase, override_settings
 
+from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -110,6 +111,33 @@ class PreRegistrationTaskTests(TestCase):
 
         submission.refresh_from_db()
         self.assertTrue(submission.needs_on_completion_retry)
+
+    def test_reregistration_task_skipped(self):
+        hook_component: Component = {
+            "key": "withHook",
+            "type": "hook",
+            "label": "With Hook",
+            "validate": {"required": False},
+        }
+        submission = SubmissionFactory.from_components(
+            [hook_component],
+            {"withHook": "foo"},
+        )
+        state = submission.load_submission_value_variables_state()
+        component_var = state.variables["withHook"]
+        component_var.pre_registration_status = ComponentPreRegistrationStatuses.success
+        component_var.save()
+
+        pre_registration_component_task(
+            component=hook_component, submission_id=submission.id
+        )
+
+        self.assertIsNone(component_var.pre_registration_result)
+        # check logs
+        logs = TimelineLogProxy.objects.for_object(submission)
+        self.assertEqual(
+            logs.filter_event("component_pre_registration_skip").count(), 1
+        )
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_pre_registration_group(self):
