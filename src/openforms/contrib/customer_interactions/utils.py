@@ -76,8 +76,9 @@ def update_customer_interaction_data(
     Writes to the Customer interaction API when the form with profile component is submitted
 
     * always create contactMoment, betrokkene and onderwerpObject
-    * There are several flows depending on if the user and their digital addresses
-    is known in the API
+    * if the user is authenticated, it's always linked to partij
+    * if the address is marked as 'isNewPreferred' then it's linked to the partij
+      otherwise it's linked just to betrokkene
     """
     # bsn
     bsn = (
@@ -109,105 +110,51 @@ def update_customer_interaction_data(
     ]
     api_group = CustomerInteractionsAPIGroupConfig.objects.get(identifier=api_group_id)
     prefill_value = state.get_data()[prefill_form_variable.key]
+    prefill_addresses = [address["address"] for address in prefill_value]
 
     channels_to_address_types: Mapping[SupportedChannels, SoortDigitaalAdres] = {
         v: k for k, v in ADDRESS_TYPES_TO_CHANNELS.items()
     }
 
+    result = {}
     with get_customer_interactions_client(api_group) as client:
-        if not bsn:
-            # 1. Anonymous user provides email address and/or phone number.
-            # We create new betrokkene, klantcontact and OnderwerpObject
-            # Next we create the digital address and connect them to the previously created betrokkene
-            maak_klant_contact: MaakKlantContactResponse = (
-                client.create_customer_contact(submission)
-            )
-            created_addresses = []
-            for digital_address in profile_submission_data:
-                created_address = client.create_digital_address(
-                    address=digital_address["address"],
-                    address_type=channels_to_address_types[digital_address["type"]],
-                    betrokkene_uuid=maak_klant_contact["betrokkene"]["uuid"],
-                )
-                created_addresses.append(created_address)
+        if bsn:
+            # link authenticated user to the party
+            party = client.find_party_for_bsn(bsn)
+            if not party:
+                party = client.create_party_for_bsn(bsn)
+                result["party"] = party
 
-            result = {
+            party_uuid = party["uuid"]
+        else:
+            party_uuid = None
+
+        maak_klant_contact: MaakKlantContactResponse = client.create_customer_contact(
+            submission, party_uuid
+        )
+
+        created_addresses = []
+        for digital_address in profile_submission_data:
+            if digital_address["address"] in prefill_addresses:
+                # used value from prefill, so it already exists in Open Klant
+                continue
+
+            created_address = client.create_digital_address(
+                address=digital_address["address"],
+                address_type=channels_to_address_types[digital_address["type"]],
+                betrokkene_uuid=maak_klant_contact["betrokkene"]["uuid"],
+                party_uuid=party_uuid
+                if digital_address.get("preferenceUpdate") == "isNewPreferred"
+                else None,
+            )
+            created_addresses.append(created_address)
+
+        result.update(
+            {
                 "klantcontact": maak_klant_contact["klantcontact"],
                 "betrokkene": maak_klant_contact["betrokkene"],
                 "onderwerpobject": maak_klant_contact["onderwerpobject"],
                 "digital_addresses": created_addresses,
             }
-            return result
-
-        else:
-            # user is authenticated
-            party = client.find_party_for_bsn(bsn)
-
-            if not party:
-                # 2. Authenticated user isn't known in Open Klant.
-                # if user wants to use provided addresses later then we save him as party
-                created_party = client.create_party_for_bsn(bsn)
-                # todo add to results
-                party_uuid = created_party["uuid"]
-
-                maak_klant_contact: MaakKlantContactResponse = (
-                    client.create_customer_contact(submission, party_uuid=party_uuid)
-                )
-                created_addresses = []
-                # 2a. decide to "use it once" and continue.
-                # Same as flow 1 - create address and link to betrokkene
-                # 2b. decide to "as new preferred" and continue
-                # create address and link to party
-                for digital_address in profile_submission_data:
-                    created_address = client.create_digital_address(
-                        address=digital_address["address"],
-                        address_type=channels_to_address_types[digital_address["type"]],
-                        betrokkene_uuid=maak_klant_contact["betrokkene"]["uuid"],
-                        party_uuid=party_uuid
-                        if digital_address.get("preferenceUpdate") == "isNewPreferred"
-                        else None,
-                    )
-                    created_addresses.append(created_address)
-
-                result = {
-                    "klantcontact": maak_klant_contact["klantcontact"],
-                    "betrokkene": maak_klant_contact["betrokkene"],
-                    "onderwerpobject": maak_klant_contact["onderwerpobject"],
-                    "digital_addresses": created_addresses,
-                }
-                return result
-            else:
-                # Authenticated user is known in Open Klant.
-                party_uuid = party["uuid"]
-
-                # See if there are submitted addresses not from prefill
-                prefill_addresses = [address["address"] for address in prefill_value]
-                new_addresses = [
-                    address
-                    for address in profile_submission_data
-                    if address["address"] not in prefill_addresses
-                ]
-                maak_klant_contact: MaakKlantContactResponse = (
-                    client.create_customer_contact(submission, party_uuid=party_uuid)
-                )
-                created_addresses = []
-                # 4. Authenticated user is known in Open Klant, they have one known "digitaal adres", which is fetched.
-                # They define another email address and/or phone number.
-                for digital_address in new_addresses:
-                    created_address = client.create_digital_address(
-                        address=digital_address["address"],
-                        address_type=channels_to_address_types[digital_address["type"]],
-                        betrokkene_uuid=maak_klant_contact["betrokkene"]["uuid"],
-                        party_uuid=party_uuid
-                        if digital_address.get("preferenceUpdate") == "isNewPreferred"
-                        else None,
-                    )
-                    created_addresses.append(created_address)
-
-                result = {
-                    "klantcontact": maak_klant_contact["klantcontact"],
-                    "betrokkene": maak_klant_contact["betrokkene"],
-                    "onderwerpobject": maak_klant_contact["onderwerpobject"],
-                    "digital_addresses": created_addresses,
-                }
-                return result
+        )
+        return result
