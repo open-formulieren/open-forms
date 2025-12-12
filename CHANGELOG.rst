@@ -6,6 +6,15 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.9 (2025-12-11)
+==================
+
+Hotfix release.
+
+* [:backend:`5733`] Fixed outgoing requests for the Generic JSON registration not being logged.
+* [:backend:`5803`] Worked around date/time/datetime objects in submission data being automatically
+  formatted according to the locale in Objects API V1 templates.
+
 3.4.0-alpha.2 (2025-12-04)
 ==========================
 
