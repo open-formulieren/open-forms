@@ -807,12 +807,6 @@
       "value": "Name of the form definition used in this form step"
     }
   ],
-  "68Aey7": [
-    {
-      "type": 0,
-      "value": "When this is checked, Open Forms automatically updates the customer profile when a digital address is added."
-    }
-  ],
   "6F2H6H": [
     {
       "type": 0,
@@ -907,12 +901,6 @@
     {
       "type": 0,
       "value": "Add another overlay"
-    }
-  ],
-  "78ckd0": [
-    {
-      "type": 0,
-      "value": "Email"
     }
   ],
   "7AQfXl": [
@@ -1253,12 +1241,6 @@
     {
       "type": 0,
       "value": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
-    }
-  ],
-  "9XqFGF": [
-    {
-      "type": 0,
-      "value": "Open Forms should update customer data after submission"
     }
   ],
   "9akVrT": [
@@ -3437,6 +3419,26 @@
       "value": "Specify a positive, non-zero file size without decimals, e.g. 10MB."
     }
   ],
+  "QWOU1l": [
+    {
+      "type": 0,
+      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "extraElementen"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "QXfH7G": [
     {
       "type": 0,
@@ -4195,12 +4197,6 @@
       "value": "Authentication automatic login"
     }
   ],
-  "XKpEHP": [
-    {
-      "type": 0,
-      "value": "At least one digital address type must be selected."
-    }
-  ],
   "XMV3t2": [
     {
       "type": 0,
@@ -4289,12 +4285,6 @@
     {
       "type": 0,
       "value": "Variables"
-    }
-  ],
-  "Y1qhnH": [
-    {
-      "type": 0,
-      "value": "Digital address types a user can be contacted on."
     }
   ],
   "Y4oNhH": [
@@ -4959,6 +4949,12 @@
       "value": "Product request type"
     }
   ],
+  "csTJIN": [
+    {
+      "type": 0,
+      "value": "Variables mapping"
+    }
+  ],
   "cuivC6": [
     {
       "type": 0,
@@ -5393,12 +5389,6 @@
     {
       "type": 0,
       "value": "Save the value as this attribute in the registration backend system."
-    }
-  ],
-  "fTmdl/": [
-    {
-      "type": 0,
-      "value": "Payment status update variable mapping"
     }
   ],
   "fUaRWW": [
@@ -6615,26 +6605,6 @@
       "value": "Complex process variables"
     }
   ],
-  "p3t0c/": [
-    {
-      "type": 0,
-      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "extraElementen"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": "."
-    }
-  ],
   "p5Iv+R": [
     {
       "type": 0,
@@ -6793,12 +6763,6 @@
     {
       "type": 0,
       "value": "Confirm"
-    }
-  ],
-  "q+qVVR": [
-    {
-      "type": 0,
-      "value": "Phone number"
     }
   ],
   "q3kxsb": [
@@ -7217,12 +7181,6 @@
       "value": "The earliest possible value that can be entered."
     }
   ],
-  "tZwyML": [
-    {
-      "type": 0,
-      "value": "Phone number"
-    }
-  ],
   "tg+6bo": [
     {
       "type": 0,
@@ -7367,12 +7325,6 @@
     {
       "type": 0,
       "value": "Source path"
-    }
-  ],
-  "vN6yXh": [
-    {
-      "type": 0,
-      "value": "Available digital address types"
     }
   ],
   "vNRiMn": [
@@ -7583,12 +7535,6 @@
     {
       "type": 0,
       "value": "Submission confirmation template"
-    }
-  ],
-  "xPFvic": [
-    {
-      "type": 0,
-      "value": "Email"
     }
   ],
   "xTcRPO": [

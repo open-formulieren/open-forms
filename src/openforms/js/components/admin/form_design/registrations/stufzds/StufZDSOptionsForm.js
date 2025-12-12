@@ -19,7 +19,7 @@ const StufZDSOptionsForm = ({name, label, schema, formData, onChange}) => {
     zdsZaaktypeStatusOmschrijving: '',
     zdsDocumenttypeOmschrijvingInzending: '',
     zdsZaakdocVertrouwelijkheid: '',
-    paymentStatusUpdateMapping: [],
+    variablesMapping: [],
     // existing configuration
     ...formData,
   };
@@ -60,7 +60,7 @@ StufZDSOptionsForm.propTypes = {
     required: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   formData: PropTypes.shape({
-    paymentStatusUpdateMapping: PropTypes.arrayOf(
+    variablesMapping: PropTypes.arrayOf(
       PropTypes.shape({
         formVariable: PropTypes.string,
         stufName: PropTypes.string,

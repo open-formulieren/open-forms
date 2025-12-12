@@ -148,26 +148,40 @@ def _prepare_value(value: Any):
             return value
 
 
-def _get_extra_payment_variables(submission: Submission, options: RegistrationOptions):
+def _get_extra_variables_mapping(submission: Submission, options: RegistrationOptions):
+    plugin_payment_static_variables = [
+        "payment_completed",
+        "payment_amount",
+        "payment_public_order_ids",
+        "provider_payment_ids",
+    ]
+
     key_mapping = {
         mapping["form_variable"]: mapping["stuf_name"]
-        for mapping in options.get("payment_status_update_mapping", [])
+        for mapping in options.get("variables_mapping", [])
     }
-    return {
+
+    static_variables_data = {
         key_mapping[variable.key]: _prepare_value(variable.initial_value)
         for variable in get_static_variables(
             submission=submission,
             variables_registry=variables_registry,
         )
-        if variable.key
-        in [
-            "payment_completed",
-            "payment_amount",
-            "payment_public_order_ids",
-            "provider_payment_ids",
-        ]
+        if variable.key in plugin_payment_static_variables
         and variable.key in key_mapping
     }
+
+    state_variables_data = submission.load_submission_value_variables_state().get_data(
+        include_static_variables=False
+    )
+
+    dynamic_variables_data = {
+        stuf_name: state_variables_data.get(variable_name)
+        for variable_name, stuf_name in key_mapping.items()
+        if variable_name not in plugin_payment_static_variables
+    }
+
+    return {**static_variables_data, **dynamic_variables_data}
 
 
 @register(PLUGIN_IDENTIFIER)
@@ -239,8 +253,15 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         self, submission: Submission, options: RegistrationOptions
     ) -> dict[str, Any]:
         data = get_unmapped_data(submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE)
-        payment_extra = _get_extra_payment_variables(submission, options)
-        return {**data, **payment_extra}
+        extra_variables_mapping = _get_extra_variables_mapping(submission, options)
+
+        # Remove duplicates for variables that are present in the data and are also handled
+        # by the `_get_extra_variables_mapping`.
+        for mapping in options.get("variables_mapping", []):
+            if mapping["form_variable"] in data:
+                data.pop(mapping["form_variable"], None)
+
+        return {**data, **extra_variables_mapping}
 
     def process_partners(
         self,

@@ -807,12 +807,6 @@
       "value": "Naam van de formulierdefinitie die in deze stap gebruikt wordt."
     }
   ],
-  "68Aey7": [
-    {
-      "type": 0,
-      "value": "Wanneer dit is ingeschakeld, wordt het klantprofiel automatisch bijgewerkt door Open Formulieren zodra een digitaal adres wordt toegevoegd."
-    }
-  ],
   "6F2H6H": [
     {
       "type": 0,
@@ -907,12 +901,6 @@
     {
       "type": 0,
       "value": "Voeg nog een laag toe"
-    }
-  ],
-  "78ckd0": [
-    {
-      "type": 0,
-      "value": "E-mailadres"
     }
   ],
   "7AQfXl": [
@@ -1257,12 +1245,6 @@
     {
       "type": 0,
       "value": "Let op! Als je een ander objecttype selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?"
-    }
-  ],
-  "9XqFGF": [
-    {
-      "type": 0,
-      "value": "Gebruikercommunicatiemethodes bijwerken"
     }
   ],
   "9akVrT": [
@@ -3420,6 +3402,26 @@
       "value": "Geef een bestandsgrootte groter dan nul zonder decimalen op, bijvoorbeeld '10MB'."
     }
   ],
+  "QWOU1l": [
+    {
+      "type": 0,
+      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "extraElementen"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "QXfH7G": [
     {
       "type": 0,
@@ -4178,12 +4180,6 @@
       "value": "Authenticatie automatische login"
     }
   ],
-  "XKpEHP": [
-    {
-      "type": 0,
-      "value": "Selecteer ten minste één digitaal adrestype."
-    }
-  ],
   "XMV3t2": [
     {
       "type": 0,
@@ -4272,12 +4268,6 @@
     {
       "type": 0,
       "value": "Variabelen"
-    }
-  ],
-  "Y1qhnH": [
-    {
-      "type": 0,
-      "value": "Digitale adrestypen waarop een gebruiker te bereiken is."
     }
   ],
   "Y4oNhH": [
@@ -4947,6 +4937,12 @@
       "value": "Productaanvraagtype"
     }
   ],
+  "csTJIN": [
+    {
+      "type": 0,
+      "value": "Variables mapping"
+    }
+  ],
   "cuivC6": [
     {
       "type": 0,
@@ -5381,12 +5377,6 @@
     {
       "type": 0,
       "value": "Sla de waarde op onder het geselecteerde attribuut in de geselecteerde registratieplugin."
-    }
-  ],
-  "fTmdl/": [
-    {
-      "type": 0,
-      "value": "Variabelekoppelingen voor de betaalstatusupdate"
     }
   ],
   "fUaRWW": [
@@ -6603,26 +6593,6 @@
       "value": "Complexe procesvariabelen"
     }
   ],
-  "p3t0c/": [
-    {
-      "type": 0,
-      "value": "Met deze variabelekoppelingen stel je in welke formuliervariabelen met welke namen overeenkomen in de XML die naar StUF-ZDS gestuurd wordt. De namen en bijhorende waarden worden opgenomen in "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "extraElementen"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": "."
-    }
-  ],
   "p5Iv+R": [
     {
       "type": 0,
@@ -6781,12 +6751,6 @@
     {
       "type": 0,
       "value": "Bevestigen"
-    }
-  ],
-  "q+qVVR": [
-    {
-      "type": 0,
-      "value": "Telefoonnummer"
     }
   ],
   "q3kxsb": [
@@ -7201,12 +7165,6 @@
       "value": "De minimale tijd die gekozen kan worden."
     }
   ],
-  "tZwyML": [
-    {
-      "type": 0,
-      "value": "Telefoonnummer"
-    }
-  ],
   "tg+6bo": [
     {
       "type": 0,
@@ -7351,12 +7309,6 @@
     {
       "type": 0,
       "value": "Bronpad"
-    }
-  ],
-  "vN6yXh": [
-    {
-      "type": 0,
-      "value": "Beschikbare digitale adrestypen"
     }
   ],
   "vNRiMn": [
@@ -7567,12 +7519,6 @@
     {
       "type": 0,
       "value": "Sjabloon bevestigingspagina"
-    }
-  ],
-  "xPFvic": [
-    {
-      "type": 0,
-      "value": "E-mailadres"
     }
   ],
   "xTcRPO": [

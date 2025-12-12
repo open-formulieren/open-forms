@@ -1688,6 +1688,11 @@
     "description": "Form step save text label",
     "originalDefault": "Save text"
   },
+  "QWOU1l": {
+    "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>.",
+    "description": "StUF-ZDS registration variablesMapping message",
+    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>."
+  },
   "QXfH7G": {
     "defaultMessage": "Geeft aan of de gebruiker het formulier kan inzenden of niet, en of een overzichtspagina getoond wordt indien niet.",
     "description": "Form submissionAllowed field help text",
@@ -2353,6 +2358,11 @@
     "description": "Legacy objects API registration options: 'productaanvraagType' label",
     "originalDefault": "Product request type"
   },
+  "csTJIN": {
+    "defaultMessage": "Variables mapping",
+    "description": "StUF-ZDS registration variablesMapping label",
+    "originalDefault": "Variables mapping"
+  },
   "cuivC6": {
     "defaultMessage": "Versie",
     "description": "ZGW APIs registration options 'objecttypeVersion' label",
@@ -2512,11 +2522,6 @@
     "defaultMessage": "Registratie-instellingen overnemen",
     "description": "Copy Objects API prefill configuration from registration backend label",
     "originalDefault": "Copy configuration from registration backend"
-  },
-  "fTmdl/": {
-    "defaultMessage": "Variabelekoppelingen voor de betaalstatusupdate",
-    "description": "StUF-ZDS registration paymentStatusUpdateMapping label",
-    "originalDefault": "Payment status update variable mapping"
   },
   "fUaRWW": {
     "defaultMessage": "Bestemmingspad stad/gemeente",
@@ -3118,11 +3123,6 @@
     "defaultMessage": "Complexe procesvariabelen",
     "description": "Open manage complex camunda process vars modal button",
     "originalDefault": "Complex process variables"
-  },
-  "p3t0c/": {
-    "defaultMessage": "Met deze variabelekoppelingen stel je in welke formuliervariabelen met welke namen overeenkomen in de XML die naar StUF-ZDS gestuurd wordt. De namen en bijhorende waarden worden opgenomen in <code>extraElementen</code>.",
-    "description": "StUF-ZDS registration paymentStatusUpdateMapping message",
-    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>."
   },
   "p5Iv+R": {
     "defaultMessage": "Documenttype-API-resource-URL in de Catalogi-API.",
