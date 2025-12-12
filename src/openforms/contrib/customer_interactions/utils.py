@@ -22,6 +22,7 @@ from openforms.prefill.contrib.customer_interactions.typing import (
     SupportedChannels,
 )
 from openforms.submissions.models import Submission
+from openforms.typing import JSONValue
 from openforms.variables.constants import FormVariableSources
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -70,7 +71,7 @@ def transform_digital_addresses(
 
 def update_customer_interaction_data(
     submission: Submission, profile_key: str
-) -> dict | None:
+) -> dict[str, JSONValue] | None:
     """
     Writes to the Customer interaction API when the form with profile component is submitted
 
@@ -106,8 +107,6 @@ def update_customer_interaction_data(
     api_group_id = prefill_form_variable.prefill_options[
         "customer_interactions_api_group"
     ]
-    # prefill_addresses = state.get_data()[prefill_form_variable.key]
-
     api_group = CustomerInteractionsAPIGroupConfig.objects.get(identifier=api_group_id)
     channels_to_address_types = {v: k for k, v in ADDRESS_TYPES_TO_CHANNELS.items()}
 
@@ -119,29 +118,19 @@ def update_customer_interaction_data(
             maak_klant_contact: MaakKlantContactResponse = (
                 client.create_customer_contact(submission)
             )
-            logger.debug(
-                "created_klantcontact",
-                submission_uuid=str(submission.uuid),
-                klantcontact=maak_klant_contact["klantcontact"]["uuid"],
-            )
+            created_addresses = []
             for digital_address in profile_submission_data:
-                created_addresses = []
                 created_address = client.create_digital_address_for_betrokkene(
                     address=digital_address["address"],
                     address_type=channels_to_address_types[digital_address["type"]],
                     betrokkene_uuid=maak_klant_contact["betrokkene"]["uuid"],
                 )
-                logger.debug(
-                    "created_digital_address",
-                    submission_uuid=str(submission.uuid),
-                    digital_address_uuid=created_address["uuid"],
-                )
-                created_addresses.append(created_address["uuid"])
+                created_addresses.append(created_address)
 
             result = {
-                "klantcontact_uuid": maak_klant_contact["klantcontact"]["uuid"],
-                "betrokkene_uuid": maak_klant_contact["betrokkene"]["uuid"],
-                "onderwerpobject_uuid": maak_klant_contact["onderwerpobject"]["uuid"],
-                "digital_addresses_uuids": created_addresses,
+                "klantcontact": maak_klant_contact["klantcontact"],
+                "betrokkene": maak_klant_contact["betrokkene"],
+                "onderwerpobject": maak_klant_contact["onderwerpobject"],
+                "digital_addresses": created_addresses,
             }
             return result
