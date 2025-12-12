@@ -34,6 +34,7 @@ class UpdateCustomerInteractionDataTests(
                 "profile": profile_data,
             },
             public_registration_reference="OF-12345",
+            form__name="With profile",
         )
         FormVariableFactory.create(
             key="communication-preferences",
@@ -54,37 +55,36 @@ class UpdateCustomerInteractionDataTests(
         onderwerpobject = result["onderwerpobject"]
         digital_addresses = result["digital_addresses"]
 
-        with self.subTest("verify klantcontact"):
-            self.assertEqual(klantcontact["kanaal"], "open forms")
-            self.assertEqual(klantcontact["onderwerp"], submission.form.name)
-            self.assertEqual(betrokkene["rol"], "klant")
-            self.assertTrue(betrokkene["initiator"])
-            self.assertEqual(
-                onderwerpobject["onderwerpobjectidentificator"],
-                {
-                    "objectId": "OF-12345",
-                    "codeObjecttype": "form",
-                    "codeRegister": "openforms",
-                    "codeSoortObjectId": "public_registration_reference",
-                },
-            )
+        self.assertEqual(klantcontact["kanaal"], "open forms")
+        self.assertEqual(klantcontact["onderwerp"], "Form With profile")
+        self.assertEqual(betrokkene["rol"], "klant")
+        self.assertTrue(betrokkene["initiator"])
+        self.assertEqual(
+            onderwerpobject["onderwerpobjectidentificator"],
+            {
+                "objectId": "OF-12345",
+                "codeObjecttype": "form",
+                "codeRegister": "openforms",
+                "codeSoortObjectId": "public_registration_reference",
+            },
+        )
 
-        with self.subTest("verify digital addresses"):
-            self.assertEqual(len(digital_addresses), 2)
-            expected_addresses: list[ExpectedDigitalAddress] = [
-                {
-                    "adres": "some@email.com",
-                    "soortDigitaalAdres": "email",
-                    "isStandaardAdres": False,
-                },
-                {
-                    "adres": "0612345678",
-                    "soortDigitaalAdres": "telefoonnummer",
-                    "isStandaardAdres": False,
-                },
-            ]
+        self.assertEqual(len(digital_addresses), 2)
+        expected_addresses: list[ExpectedDigitalAddress] = [
+            {
+                "adres": "some@email.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+            },
+            {
+                "adres": "0612345678",
+                "soortDigitaalAdres": "telefoonnummer",
+                "isStandaardAdres": False,
+            },
+        ]
 
-            for expected_address in expected_addresses:
+        for expected_address in expected_addresses:
+            with self.subTest(expected_address):
                 self.assertAddressPresent(digital_addresses, expected_address)
 
     def test_no_prefill_var_configured(self):
