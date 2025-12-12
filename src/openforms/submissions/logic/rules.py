@@ -155,7 +155,6 @@ def iter_evaluate_rules(
                     mutations_python = {
                         key: state.variables[key].to_python(value)
                         for key, value in mutations.items()
-                        if key in state.variables
                     }
                     data.update(mutations_python)
 
