@@ -50,10 +50,12 @@ from ..typing import (
     AddressNLComponent,
     ChildrenComponent,
     Component,
+    CustomerProfileComponent,
     DateComponent,
     DatetimeComponent,
     MapComponent,
 )
+from ..typing.base import ComponentPreRegistrationResult
 from ..utils import conform_to_mask
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
@@ -1056,3 +1058,30 @@ class LicensePlate(BasePlugin):
             "pattern": r"^[a-zA-Z0-9]{1,3}-[a-zA-Z0-9]{1,3}-[a-zA-Z0-9]{1,3}$",
         }
         return to_multiple(base) if multiple else base
+
+
+@register("customerProfile")
+class CustomerProfile(BasePlugin):
+    formatter = DefaultFormatter
+
+    @staticmethod
+    def pre_registration_hook(
+        component: CustomerProfileComponent, submission: Submission
+    ) -> ComponentPreRegistrationResult:
+        """
+        update customer interaction API if applicable
+        """
+        result: ComponentPreRegistrationResult = {}
+        if not component["shouldUpdateCustomerData"]:
+            return result
+
+        from openforms.contrib.customer_interactions.utils import (
+            update_customer_interaction_data,
+        )
+
+        data = update_customer_interaction_data(
+            profile_key=component["key"],
+            submission=submission,
+        )
+        result["data"] = data
+        return result

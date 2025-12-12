@@ -38,3 +38,17 @@ class ChildProperties(TypedDict):
     date_of_birth: str
     date_of_birth_precision: Literal["date", "year_month", "year"] | None
     selected: NotRequired[bool]
+
+
+SupportedChannels = Literal["email", "phoneNumber"]
+
+
+class CustomerProfileComponent(Component):
+    shouldUpdateCustomerData: bool
+    digitalAddressTypes: list[SupportedChannels]
+
+
+class DigitalAddress(TypedDict):
+    address: str
+    type: SupportedChannels
+    preferenceUpdate: NotRequired[Literal["useOnlyOnce", "isNewPreferred"]]

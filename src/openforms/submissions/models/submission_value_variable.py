@@ -34,7 +34,7 @@ from openforms.utils.date import format_date_value, parse_datetime, parse_time
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.service import VariablesRegistry, get_static_variables
 
-from ..constants import SubmissionValueVariableSources
+from ..constants import ComponentPreRegistrationStatuses, SubmissionValueVariableSources
 from .submission import Submission
 
 if TYPE_CHECKING:
@@ -411,6 +411,23 @@ class SubmissionValueVariable(models.Model):
         choices=FormVariableDataTypes.choices,
         max_length=50,
         blank=True,
+    )
+    pre_registration_status = models.CharField(
+        verbose_name=_("pre-registration status"),
+        help_text=_(
+            "Indication whether the pre-registration hook in the component plugin was successful."
+        ),
+        choices=ComponentPreRegistrationStatuses.choices,
+        default=ComponentPreRegistrationStatuses.not_used,
+        max_length=50,
+    )
+    pre_registration_result = models.JSONField(
+        _("pre-registration result"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "Contains data returned by the pre-registration hook of the component."
+        ),
     )
 
     objects = SubmissionValueVariableManager()
