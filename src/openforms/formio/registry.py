@@ -27,6 +27,7 @@ from openforms.typing import JSONObject, VariableValue
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
+from .typing.base import ComponentPreRegistrationResult
 from .utils import is_layout_component
 
 if TYPE_CHECKING:
@@ -49,6 +50,12 @@ class RewriterForRequestProtocol(Protocol[ComponentT]):
     def __call__(self, component: ComponentT, request: Request) -> None: ...
 
 
+class PreRegistrationHookProtocol(Protocol[ComponentT]):
+    def __call__(
+        self, component: ComponentT, submission: "Submission"
+    ) -> ComponentPreRegistrationResult: ...
+
+
 class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
     """
     Base class for Formio component plugins.
@@ -68,6 +75,10 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
     rewrite_for_request: RewriterForRequestProtocol[ComponentT] | None = None
     """
     Callback to invoke to rewrite plugin configuration for a given HTTP request.
+    """
+    pre_registration_hook: PreRegistrationHookProtocol[ComponentT] | None = None
+    """
+    Request external API or apply other logic before registration.
     """
 
     @property
@@ -329,6 +340,29 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
         component_plugin = self[component_type]
         return component_plugin.build_serializer_field(component)
+
+    def has_pre_registration_hook(self, component: Component) -> bool:
+        """
+        Whether a given component has a pre-registration hook.
+        """
+        if (component_type := component["type"]) not in self:
+            return False
+
+        return bool(self[component_type].pre_registration_hook)
+
+    def apply_pre_registration_hook(
+        self, component: Component, submission: "Submission"
+    ) -> ComponentPreRegistrationResult | None:
+        """
+        Apply component pre registration hook.
+        """
+        if not self.has_pre_registration_hook(component):
+            return
+
+        hook = self[component["type"]].pre_registration_hook
+        assert hook is not None
+
+        return hook(component, submission)
 
 
 # Sentinel to provide the default registry. You can easily instantiate another

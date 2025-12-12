@@ -376,7 +376,7 @@ odfpy==1.4.1
     # via tablib
 onlinepayments-sdk-python3==5.1.0
     # via -r requirements/base.in
-open-klant-client==0.2.0
+open-klant-client==0.3.0
     # via -r requirements/base.in
 openapi-schema-validator==0.6.2
     # via openapi-spec-validator
