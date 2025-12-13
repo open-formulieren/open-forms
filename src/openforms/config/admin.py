@@ -176,6 +176,7 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
                 "fields": (
                     "plugin_configuration",
                     "family_members_data_api",
+                    "communication_preferences_portal_url",
                     "reference_lists_services",
                 )
             },
