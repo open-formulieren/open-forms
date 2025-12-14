@@ -6,6 +6,7 @@ component types.
 from __future__ import annotations
 
 from collections.abc import Sequence
+from pprint import pprint
 
 import msgspec
 
@@ -32,4 +33,4 @@ if __name__ == "__main__":
 
     converted = msgspec.convert([comp_def, content_def], type=Sequence[AnyComponent])
 
-    print(converted)
+    pprint(converted)

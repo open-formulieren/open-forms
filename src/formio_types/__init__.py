@@ -4,8 +4,21 @@ from collections.abc import Sequence
 from typing import Literal
 
 from ._base import Component, FormioStruct
-from .input import InputComponent
-from .layout import Content
+from .content import Content
+from .textfield import TextField
+
+# ordered as they are displayed in the formio builder UI
+__all__ = [
+    "AnyComponent",
+    # basic
+    "TextField",
+    # special
+    # layout
+    "Content",
+    "Columns",
+    "Fieldset",
+    # deprecated
+]
 
 # Component types - these cannot be split into the layout.py module due to circular
 # import challenges :(
@@ -26,8 +39,7 @@ class Columns(Component, tag="columns"):
     columns: Sequence[Column]
 
 
-type LayoutComponent = Content | Fieldset | Columns
+# Discriminated union of all possible component types - ordered as they are displayed
+# in the formio builder UI
 
-# Discriminated union of all possible component types
-
-type AnyComponent = InputComponent | LayoutComponent
+type AnyComponent = TextField | Content | Columns | Fieldset
