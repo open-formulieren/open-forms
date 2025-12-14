@@ -15,18 +15,42 @@ __all__ = [
     "AnyComponent",
     # basic
     "TextField",
+    # "Email",
     "Date",
+    # "DateTime",
+    # "Time",
+    # "PhoneNumber",
+    # "File",
+    # "Textarea",
+    # "Number",
+    # "Map",
     "Checkbox",
+    # "Selectboxes",
+    # "Select",
+    # "Currency",
+    # "Radio",
     # special
+    # "IBAN",
+    # "LicensePlate",
+    # "Postcode",
     "BSN",
+    # "Signature",
+    # "Cosign",
+    # "EditGrid",
+    # "AddressNL",
+    # "Partners",
+    # "Children",
+    # "CustomerProfile",
     # layout
     "Content",
     "Columns",
     "Fieldset",
+    # "SoftRequiredErrors",
     # deprecated
+    # "CosignOld",
 ]
 
-# Component types - these cannot be split into the layout.py module due to circular
+# Component types - these cannot be split into the layout modules due to circular
 # import challenges :(
 
 
