@@ -5,13 +5,14 @@ Base building blocks for Formio component type definitions.
 from __future__ import annotations
 
 from collections.abc import Mapping, MutableMapping
-from typing import Annotated, Literal, TypeVar
+from typing import Annotated, Literal, TypeVar, dataclass_transform
 
 import msgspec
 
 __all__ = [
     "Key",
     "Component",
+    "FormioStruct",
     "Conditional",
     "SupportedLanguage",
     "Errors",
@@ -23,17 +24,19 @@ __all__ = [
 ]
 
 
+@dataclass_transform(kw_only_default=True)
 class ComponentMeta(msgspec.StructMeta):
     def __new__(mcls, name, bases, namespace, **struct_config):
         struct_config.setdefault("tag_field", "type")
         struct_config.setdefault("rename", "camel")
+        struct_config["kw_only"] = True
         return super().__new__(mcls, name, bases, namespace, **struct_config)
 
 
 type Key = Annotated[str, msgspec.Meta(pattern=r"^(\w|\w[\w.\-]*\w)$")]
 
 
-class Component(msgspec.Struct, metaclass=ComponentMeta, kw_only=True):
+class Component(msgspec.Struct, metaclass=ComponentMeta):
     """
     Base structure that any Formio component must satisfy.
 
@@ -44,7 +47,13 @@ class Component(msgspec.Struct, metaclass=ComponentMeta, kw_only=True):
     key: Key
 
 
-class Conditional(msgspec.Struct, kw_only=True):
+class FormioStruct(msgspec.Struct, kw_only=True, rename="camel"):
+    """
+    Base struct that applies camel case conversion and only accepts keyword arguments.
+    """
+
+
+class Conditional(FormioStruct):
     """
     The ``None``/``null`` is not in line with the frontend types, but ``undefined``
     does not exist in JS.
@@ -68,7 +77,7 @@ P = TypeVar("P", bound=str)  # needs to be defined for msgspec
 type PropertyTranslations[P] = Mapping[SupportedLanguage, Mapping[P, str]]
 
 
-class BaseOpenFormsExtensions[P](msgspec.Struct, kw_only=True):
+class BaseOpenFormsExtensions[P](FormioStruct):
     translations: PropertyTranslations[P]
     """
     Field properties that can be translated server-side.
@@ -77,11 +86,11 @@ class BaseOpenFormsExtensions[P](msgspec.Struct, kw_only=True):
     """
 
 
-class Prefill(msgspec.Struct, kw_only=True):
+class Prefill(FormioStruct):
     plugin: str
     attribute: str
     identifier_role: Literal["main", "authorised_person"] = "main"
 
 
-class Registration(msgspec.Struct, kw_only=True):
+class Registration(FormioStruct):
     attribute = str
