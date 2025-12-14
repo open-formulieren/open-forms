@@ -3,13 +3,12 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Annotated, Literal
 
-import msgspec
-
 from ._base import (
     BaseOpenFormsExtensions,
     Component,
     Conditional,
     Errors,
+    FormioStruct,
     Prefill,
     Registration,
     TranslatedErrors,
@@ -21,13 +20,13 @@ type TextFieldExtensions = BaseOpenFormsExtensions[
 ]
 
 
-class TextfieldValidate(msgspec.Struct, kw_only=True):
+class TextfieldValidate(FormioStruct):
     required: bool = False
     max_length: int | None = None
     pattern: str = ""
 
 
-class TextField(Component, kw_only=True, tag="textfield"):
+class TextField(Component, tag="textfield"):
     autocomplete: str = ""
     clear_on_hide: bool = True
     conditional: Conditional | None = None
