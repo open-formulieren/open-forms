@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from .checkbox import Checkbox
 from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
 from .fieldset import Fieldset as BaseFieldSet
@@ -12,6 +13,7 @@ __all__ = [
     "AnyComponent",
     # basic
     "TextField",
+    "Checkbox",
     # special
     # layout
     "Content",
@@ -39,4 +41,4 @@ class Columns(BaseColumns):
 # Discriminated union of all possible component types - ordered as they are displayed
 # in the formio builder UI
 
-type AnyComponent = TextField | Content | Columns | Fieldset
+type AnyComponent = TextField | Checkbox | Content | Columns | Fieldset
