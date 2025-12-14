@@ -10,8 +10,6 @@ from collections.abc import Sequence
 import msgspec
 
 from formio_types import AnyComponent
-from formio_types._base import BaseOpenFormsExtensions
-from formio_types.textfield import TextField
 
 if __name__ == "__main__":
     comp_def = {
@@ -35,12 +33,3 @@ if __name__ == "__main__":
     converted = msgspec.convert([comp_def, content_def], type=Sequence[AnyComponent])
 
     print(converted)
-
-    some_textfield = TextField(
-        key="typeCheckerGoesBrr",
-        label="Type checker validates things!",
-        open_forms=BaseOpenFormsExtensions(
-            translations={"nl": {"label": "De datatypecontrole valideert dingen!"}}
-        ),
-        translated_errors={"nl": {"required": "Dit veld is verplicht."}},
-    )
