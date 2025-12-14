@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Literal
 
-from ._base import Component, FormioStruct
+from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
 from .fieldset import Fieldset as BaseFieldSet
 from .textfield import TextField
@@ -29,13 +28,11 @@ class Fieldset(BaseFieldSet):
     components: Sequence[AnyComponent]
 
 
-class Column(FormioStruct):
-    size: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    size_mobile: Literal[1, 2, 3, 4]
+class Column(BaseColumn):
     components: Sequence[AnyComponent]
 
 
-class Columns(Component, tag="columns"):
+class Columns(BaseColumns):
     columns: Sequence[Column]
 
 
