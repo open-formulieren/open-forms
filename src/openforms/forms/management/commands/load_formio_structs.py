@@ -22,4 +22,8 @@ class Command(BaseCommand):
     def handle(self, **options):
         for fd in FormDefinition.objects.all().iterator():
             components = fd.configuration["components"]
-            msgspec.convert(components, type=Sequence[AnyComponent])
+            try:
+                msgspec.convert(components, type=Sequence[AnyComponent])
+            except:
+                breakpoint()
+                raise
