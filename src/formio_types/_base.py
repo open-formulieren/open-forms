@@ -50,6 +50,7 @@ class Component(msgspec.Struct, metaclass=ComponentMeta):
         return f"{self.__class__.__name__}(key={self.key!r})"
 
 
+@dataclass_transform(kw_only_default=True)
 class FormioStruct(msgspec.Struct, kw_only=True, rename="camel"):
     """
     Base struct that applies camel case conversion and only accepts keyword arguments.
