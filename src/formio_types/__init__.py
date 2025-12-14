@@ -6,6 +6,7 @@ from .bsn import BSN
 from .checkbox import Checkbox
 from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
+from .date import Date
 from .fieldset import Fieldset as BaseFieldSet
 from .textfield import TextField
 
@@ -14,6 +15,7 @@ __all__ = [
     "AnyComponent",
     # basic
     "TextField",
+    "Date",
     "Checkbox",
     # special
     "BSN",
@@ -43,4 +45,4 @@ class Columns(BaseColumns):
 # Discriminated union of all possible component types - ordered as they are displayed
 # in the formio builder UI
 
-type AnyComponent = TextField | Checkbox | BSN | Content | Columns | Fieldset
+type AnyComponent = TextField | Date | Checkbox | BSN | Content | Columns | Fieldset
