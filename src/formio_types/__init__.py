@@ -5,6 +5,7 @@ from typing import Literal
 
 from ._base import Component, FormioStruct
 from .content import Content
+from .fieldset import Fieldset as BaseFieldSet
 from .textfield import TextField
 
 # ordered as they are displayed in the formio builder UI
@@ -24,8 +25,7 @@ __all__ = [
 # import challenges :(
 
 
-class Fieldset(Component, tag="fieldset"):
-    label: str
+class Fieldset(BaseFieldSet):
     components: Sequence[AnyComponent]
 
 
