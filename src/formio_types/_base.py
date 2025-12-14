@@ -64,8 +64,10 @@ class Conditional(FormioStruct):
     Note however that formio at runtime uses ``null`` (!).
     """
 
-    show: bool | None = None
-    when: Key | None = None
+    # FIXME: empty strings in existing data
+    show: bool | None | Literal[""] = None
+    # FIXME: empty strings in existing data, ideally this would use ``Key``
+    when: str | None = None
     eq: str | bool | int | float | None = ""  # formio defaults to empty string
 
 
@@ -81,7 +83,9 @@ type PropertyTranslations[P] = Mapping[SupportedLanguage, Mapping[P, str]]
 
 
 class BaseOpenFormsExtensions[P](FormioStruct):
-    translations: PropertyTranslations[P]
+    translations: PropertyTranslations[P] | None = (
+        None  # TODO not optional in TS types (!)
+    )
     """
     Field properties that can be translated server-side.
 
