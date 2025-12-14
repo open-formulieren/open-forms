@@ -46,6 +46,9 @@ class Component(msgspec.Struct, metaclass=ComponentMeta):
     id: str = ""
     key: Key
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(key={self.key!r})"
+
 
 class FormioStruct(msgspec.Struct, kw_only=True, rename="camel"):
     """
