@@ -1,7 +1,7 @@
-<ZKN:heeftAlsAanspreekpunt StUF:verwerkingssoort="T">
+<ZKN:heeftAlsAanspreekpunt StUF:entiteittype="ZAKBTRINICTP">
     <ZKN:gerelateerde>
-        {% if initiator.contactpersoonNaam %}<ZKN:contactpersoonNaam>{{ initiator.contactpersoonNaam }}</ZKN:contactpersoonNaam>{% endif %}
-        {% if initiator.telefoonnummer %}<BG:telefoonnummer>{{ initiator.telefoonnummer }}</BG:telefoonnummer>{% endif %}
-        {% if initiator.emailadres %}<BG:emailadres>{{ initiator.emailadres }}</BG:emailadres>{% endif %}
+        {% if initiator.contactpersoonNaam %}<ZKN:naam>{{ initiator.contactpersoonNaam }}</ZKN:naam>{% endif %}
+        {% if initiator.telefoonnummer %}<ZKN:telefoonnummer>{{ initiator.telefoonnummer }}</ZKN:telefoonnummer>{% endif %}
+        {% if initiator.emailadres %}<ZKN:emailadres>{{ initiator.emailadres }}</ZKN:emailadres>{% endif %}
     </ZKN:gerelateerde>
 </ZKN:heeftAlsAanspreekpunt>
