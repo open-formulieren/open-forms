@@ -1,3 +1,4 @@
+
 from .factories import CustomerInteractionsAPIGroupConfigFactory
 from .typing import ExpectedDigitalAddress
 
