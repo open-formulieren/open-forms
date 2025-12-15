@@ -1987,7 +1987,7 @@
     "originalDefault": "Logic"
   },
   "WjxSEM": {
-    "defaultMessage": "There are multiple profile components specified in this form. This configuration is not supported and may lead to unexpected behavior.",
+    "defaultMessage": "Er zijn meerdere klantprofielcomponenten aanwezig in het formulier. Deze configuratie is niet ondersteund en kan tot onvoorspelbaar gedrag leiden.",
     "description": "Too many profile components",
     "originalDefault": "There are multiple profile components specified in this form. This configuration is not supported and may lead to unexpected behavior."
   },
