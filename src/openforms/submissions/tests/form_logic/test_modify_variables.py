@@ -94,9 +94,8 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step2)
 
-        variables_state = submission.load_submission_value_variables_state()
-        variable = variables_state.variables["nTotalBoxes"]
-        self.assertEqual(7, variable.value)
+        state = submission.load_submission_value_variables_state()
+        self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
 
     def test_modify_variable_related_to_another_step_than_the_one_being_edited(self):
         form = FormFactory.create()
@@ -173,9 +172,8 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step2)
 
-        variables_state = submission.load_submission_value_variables_state()
-        variable = variables_state.variables["nTotalBoxes"]
-        self.assertEqual(7, variable.value)
+        state = submission.load_submission_value_variables_state()
+        self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
 
     def test_modify_variable_not_related_to_a_step(self):
         form = FormFactory.create()
@@ -252,9 +250,8 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step2)
 
-        variables_state = submission.load_submission_value_variables_state()
-        variable = variables_state.variables["nTotalBoxes"]
-        self.assertEqual(7, variable.value)
+        state = submission.load_submission_value_variables_state()
+        self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
 
     def test_logic_with_repeating_groups(self):
         form = FormFactory.create()
@@ -355,11 +352,11 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step)
 
-        variables_state = submission.load_submission_value_variables_state()
-
-        self.assertEqual(2, variables_state.variables["numberOfCars"].value)
-        self.assertEqual(5000, variables_state.variables["totalPrice"].value)
-        self.assertEqual(0, variables_state.variables["priceOfThirdCar"].value)
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_unsaved=True)
+        self.assertEqual(2, data["numberOfCars"])
+        self.assertEqual(5000, data["totalPrice"])
+        self.assertEqual(0, data["priceOfThirdCar"])
 
     def test_dates_and_timedeltas(self):
         form = FormFactory.create(
@@ -404,9 +401,8 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step)
 
-        variables_state = submission.load_submission_value_variables_state()
-
-        self.assertEqual("P368D", variables_state.variables["timedelta"].value)
+        state = submission.load_submission_value_variables_state()
+        self.assertEqual(state.get_data(include_unsaved=True)["timedelta"], "P368D")
 
     @requests_mock.Mocker()
     def test_evaluate_dmn_action(self, m):
@@ -499,9 +495,8 @@ class VariableModificationTests(TestCase):
         ):
             evaluate_form_logic(submission, submission_step)
 
-        variables_state = submission.load_submission_value_variables_state()
-
-        self.assertTrue(variables_state.variables["canApply"].value)
+        state = submission.load_submission_value_variables_state()
+        self.assertTrue(state.get_data(include_unsaved=True)["canApply"])
 
     @requests_mock.Mocker()
     def test_evaluate_dmn_with_nested_variables(self, m):
@@ -612,9 +607,8 @@ class VariableModificationTests(TestCase):
         ):
             evaluate_form_logic(submission, submission_step)
 
-        variables_state = submission.load_submission_value_variables_state()
-
-        self.assertFalse(variables_state.variables["yo.im.nested.canApply"].value)
+        state = submission.load_submission_value_variables_state()
+        self.assertFalse(state.get_data(include_unsaved=True)["yo.im.nested.canApply"])
 
     @requests_mock.Mocker()
     def test_evaluate_dmn_action_returns_empty_data(self, m):
@@ -711,9 +705,8 @@ class VariableModificationTests(TestCase):
         ):
             evaluate_form_logic(submission, submission_step)
 
-        variables_state = submission.load_submission_value_variables_state()
-
-        self.assertTrue(variables_state.variables["canApply"].value)
+        state = submission.load_submission_value_variables_state()
+        self.assertTrue(state.get_data(include_unsaved=True)["canApply"])
 
     def test_two_actions_on_the_same_variable(self):
         """
@@ -760,9 +753,10 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step)
 
-        variables_state = submission.load_submission_value_variables_state()
-
-        self.assertEqual(str(variables_state.variables["date"].value), "2025-07-06")
+        state = submission.load_submission_value_variables_state()
+        self.assertEqual(
+            str(state.get_data(include_unsaved=True)["date"]), "2025-07-06"
+        )
 
     def test_children_synchronization_not_allowing_selection(self):
         form = FormFactory.create()
@@ -891,11 +885,9 @@ class VariableModificationTests(TestCase):
         )
         evaluate_form_logic(submission, submission_step2)
 
-        variables_state = submission.load_submission_value_variables_state()
-        variable = variables_state.variables["editgrid"]
-
+        state = submission.load_submission_value_variables_state()
         self.assertEqual(
-            variable.value,
+            state.get_data(include_unsaved=True)["editgrid"],
             [
                 {"bsn": "999970409", "childName": "Pero", "affixes": "van"},
                 {"bsn": "999970161", "childName": "Peet", "affixes": "van"},
@@ -1025,11 +1017,9 @@ class VariableModificationTests(TestCase):
         )
         evaluate_form_logic(submission, submission_step2)
 
-        variables_state = submission.load_submission_value_variables_state()
-        variable = variables_state.variables["editgrid"]
-
+        state = submission.load_submission_value_variables_state()
         self.assertEqual(
-            variable.value,
+            state.get_data(include_unsaved=True)["editgrid"],
             [
                 {"bsn": "999970161", "childName": "Peet"},
                 {"bsn": "999970173", "childName": "Pelle"},
@@ -1164,11 +1154,9 @@ class VariableModificationTests(TestCase):
         )
         evaluate_form_logic(submission, submission_step2)
 
-        variables_state = submission.load_submission_value_variables_state()
-        variable = variables_state.variables["editgrid"]
-
+        state = submission.load_submission_value_variables_state()
         self.assertEqual(
-            variable.value,
+            state.get_data(include_unsaved=True)["editgrid"],
             [
                 {"bsn": "999970409", "childName": "Pero"},
                 {"bsn": "999970161", "childName": "Peet"},
@@ -1259,7 +1247,5 @@ class VariableModificationTests(TestCase):
         )
         evaluate_form_logic(submission, submission_step2)
 
-        variables_state = submission.load_submission_value_variables_state()
-        variable = variables_state.variables["editgrid"]
-
-        self.assertIsNone(variable.value)
+        state = submission.load_submission_value_variables_state()
+        self.assertEqual(state.get_data(include_unsaved=True)["editgrid"], [])

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Collection
 from dataclasses import dataclass, field
 from datetime import date, datetime, time
 from typing import TYPE_CHECKING, Any
@@ -215,10 +216,34 @@ class SubmissionValueVariablesState:
 
         return all_submission_variables
 
-    def remove_variables(self, keys: list) -> None:
+    def reset_variables(self, keys: Collection[str]) -> None:
+        """
+        Reset variables to their unsaved state.
+
+        We want to make sure we have a submission value variable instance for all
+        available form variables. So instead of removing them from the state completely,
+        we set their primary key to ``None`` and reset the value to the initial value
+        assigned during collecting of variables.
+
+        :param keys: List of variable keys to reset.
+        """
         for key in keys:
-            if key in self._variables:
-                del self._variables[key]
+            variable = self.variables[key]
+
+            # Get the original initial value from the form variable
+            initial_value = variable.form_variable.get_initial_value()
+            if variable.form_variable.source == FormVariableSources.component:
+                configuration = (
+                    variable.form_variable.form_definition.configuration_wrapper[key]
+                )
+                # If it does not have an initial value, make sure we get the empty
+                # component value.
+                if initial_value is None:
+                    initial_value = get_component_empty_value(configuration)
+
+            # Remove the primary key and reset to the original initial value.
+            variable.pk = None
+            variable.value = initial_value
 
     def _get_static_data(
         self,
@@ -302,32 +327,51 @@ class SubmissionValueVariableManager(models.Manager):
         data: FormioData,
         submission: Submission,
         submission_step: SubmissionStep | None = None,
-        update_missing_variables: bool = False,
+        reset_missing_variables: bool = False,
     ) -> None:
-        submission_value_variables_state = (
-            submission.load_submission_value_variables_state()
+        """
+        Create or update variables from data.
+
+        We collect all variables in the state, which ensures we have a
+        ``SubmissionValueVariable`` instance for all form variables (either from the
+        database or just in-memory). We iterate through all variables, and update the
+        value with the one from ``data`` if it is present. The updated variables will be
+        saved to the database, either by updating an existing entry, or creating a new
+        one.
+
+        Note that any keys present in ``data`` for which we don't have a corresponding
+        variable, will be ignored, so this method cannot be used to create variables
+        from arbitrary data.
+
+        :param data: Data, can be submitted step data, or data from user-defined
+          variables.
+        :param submission: Submission.
+        :param submission_step: Optional submission step. If passed, only variables
+          related to this step will be fetched from the state.
+        :param reset_missing_variables: If ``True``, all variables that were fetched
+          from the state and not present in the provided ``data``, will be deleted from
+          the database (if present). The variable instances in the state will be reset
+          to their unsaved version (no primary key, and reset to the initial value).
+        """
+        state = submission.load_submission_value_variables_state()
+        variables = (
+            state.variables
+            if submission_step is None
+            else state.get_variables_in_submission_step(submission_step)
         )
-        submission_variables = submission_value_variables_state.variables
-        if submission_step:
-            submission_variables = (
-                submission_value_variables_state.get_variables_in_submission_step(
-                    submission_step
-                )
-            )
 
         variables_to_create = []
         variables_to_update = []
-        variables_keys_to_delete = []
-        for key, variable in submission_variables.items():
+        variables_keys_to_reset = []
+        for key, variable in variables.items():
             try:
                 variable.value = data[key]
             except KeyError:
-                if update_missing_variables:
-                    if variable.pk:
-                        variables_keys_to_delete.append(variable.key)
-                    else:
-                        variable.value = variable.form_variable.get_initial_value()
-                    continue
+                if reset_missing_variables:
+                    # Variable exists in the database or in-memory, but not in the
+                    # provided data, so we reset it.
+                    variables_keys_to_reset.append(variable.key)
+                continue
 
             if not variable.pk:
                 variables_to_create.append(variable)
@@ -336,14 +380,12 @@ class SubmissionValueVariableManager(models.Manager):
 
         self.bulk_create(variables_to_create)
         self.bulk_update(variables_to_update, fields=["value"])
-        self.filter(submission=submission, key__in=variables_keys_to_delete).delete()
+        self.filter(submission=submission, key__in=variables_keys_to_reset).delete()
 
         # Variables that are deleted are not automatically updated in the state
-        # (i.e. they remain present with their pk)
-        if variables_keys_to_delete:
-            submission_value_variables_state.remove_variables(
-                keys=variables_keys_to_delete
-            )
+        # (i.e. they remain present with their pk), so we have to reset them manually.
+        if variables_keys_to_reset:
+            state.reset_variables(keys=variables_keys_to_reset)
 
 
 class SubmissionValueVariable(models.Model):
