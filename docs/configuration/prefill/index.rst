@@ -8,6 +8,7 @@ Prefill plugins
    :maxdepth: 1
 
    bag
+   communication_preferences
    haal_centraal
    kvk
    stuf_bg
