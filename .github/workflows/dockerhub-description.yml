@@ -24,16 +24,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          cache: 'pip'
-          cache-dependency-path: 'docker/ci/requirements.txt'
-      - name: Install dependencies
-        run: pip install -r docker/ci/requirements.txt
-
+      - uses: astral-sh/setup-uv@v6
       - name: Generate Docker Hub README
-        run: ./docker/ci/generate_dockerhub_description.py "${{ github.ref_name }}"
+        run: |
+          uv run \
+            ./docker/ci/generate_dockerhub_description.py \
+            "${{ github.ref_name }}"
       - name: Update Docker Hub description
         uses: peter-evans/dockerhub-description@v4
         with:
