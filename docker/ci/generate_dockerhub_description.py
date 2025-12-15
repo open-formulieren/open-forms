@@ -2,11 +2,18 @@
 #
 # The configuration for the README generation lives in ./config.json
 #
+# /// script
+# dependencies = [
+#   "jinja2~=3.1.6",
+#   "requests~=2.32.4",
+# ]
+# ///
+#
 # Usage from the root of the repository:
 #
 # .. code-block:: bash
 #
-#     ./docker/ci/generate_dockerhub_description.py
+#     uv run ./docker/ci/generate_dockerhub_description.py
 #
 import json
 import re
