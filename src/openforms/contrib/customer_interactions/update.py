@@ -2,7 +2,8 @@ import structlog
 from openklant_client.types.methods.maak_klant_contact import MaakKlantContactResponse
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.formio.typing.custom import DigitalAddress
+from openforms.formio.typing.custom import DigitalAddress, SupportedChannels
+from openforms.prefill.contrib.customer_interactions.typing import CommunicationChannel
 from openforms.prefill.contrib.customer_interactions.variables import (
     fetch_user_variable_from_profile_component,
 )
@@ -65,7 +66,7 @@ def update_customer_interaction_data(
         logger.info("missing_prefill_variable", component=profile_key)
         return
 
-    prefill_addresses = state.get_data()[prefill_form_variable.key]
+    prefill_value = state.get_data()[prefill_form_variable.key]
 
     plugin = prefill_registry[prefill_form_variable.prefill_plugin]
     options_serializer = plugin.options(data=prefill_form_variable.prefill_options)
@@ -92,7 +93,7 @@ def update_customer_interaction_data(
             party = client.find_party_for_bsn(bsn)
             if not party:
                 party = client.create_party_for_bsn(bsn)
-                result["party"] = party
+                result["partij"] = party
 
             party_uuid = party["uuid"]
         else:
@@ -104,13 +105,19 @@ def update_customer_interaction_data(
 
         created_addresses = []
         for digital_address in profile_submission_data:
-            if digital_address["address"] in prefill_addresses:
+            address_channel: SupportedChannels = digital_address["type"]
+            prefill_address: CommunicationChannel | None = next(
+                (value for value in prefill_value if value["type"] == address_channel),
+                None,
+            )
+            prefill_options = prefill_address["options"] if prefill_address else []
+            if digital_address["address"] in prefill_options:
                 # used value from prefill, so it already exists in Open Klant
                 continue
 
             created_address = client.create_digital_address(
                 address=digital_address["address"],
-                address_type=channels_to_address_types[digital_address["type"]],
+                address_type=channels_to_address_types[address_channel],
                 betrokkene_uuid=maak_klant_contact["betrokkene"]["uuid"],
                 party_uuid=party_uuid
                 if digital_address.get("preferenceUpdate") == "isNewPreferred"

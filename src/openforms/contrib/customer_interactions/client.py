@@ -91,7 +91,7 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         address_type: SoortDigitaalAdres,
         betrokkene_uuid: str,
         party_uuid: str | None = None,
-    ):
+    ) -> DigitaalAdres:
         party_data = {"uuid": party_uuid} if party_uuid else None
         data = DigitaalAdresCreateData(
             adres=address,
@@ -147,6 +147,6 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
                     }
                 }
             ],
-            "partijIdentificatie": None,
+            "partijIdentificatie": {"contactnaam": None},
         }
         return self.partij.create_persoon(data=data)
