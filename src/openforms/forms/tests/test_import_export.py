@@ -1746,6 +1746,74 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         self.assertEqual(error_detail.code, "does_not_exist")
 
+    def test_import_export_in_stuf_zds(self):
+        """
+        Test the old options are updated during export/import.
+        """
+        form = FormFactory.create()
+        FormRegistrationBackend.objects.create(
+            form=form,
+            name="StUF-ZDS registration",
+            key="stuf-zds-registration",
+            backend="stuf-zds-create-zaak",
+            options={
+                "payment_status_update_mapping": [
+                    {
+                        "stuf_name": "payment_completed",
+                        "form_variable": "payment_completed",
+                    },
+                    {"stuf_name": "payment_amount", "form_variable": "payment_amount"},
+                    {
+                        "stuf_name": "payment_public_order_ids",
+                        "form_variable": "payment_public_order_ids",
+                    },
+                    {
+                        "stuf_name": "provider_payment_ids",
+                        "form_variable": "provider_payment_ids",
+                    },
+                ],
+                "zds_zaaktype_code": "test",
+                "zds_zaaktype_status_code": "",
+                "zds_zaaktype_omschrijving": "",
+                "zds_zaakdoc_vertrouwelijkheid": "OPENBAAR",
+                "zds_zaaktype_status_omschrijving": "",
+                "zds_documenttype_omschrijving_inzending": "",
+            },
+        )
+
+        call_command("export", form.pk, self.filepath)
+        call_command("import", import_file=self.filepath)
+
+        updated_form = Form.objects.last()
+        registration_backend = updated_form.registration_backends.get()
+
+        self.assertEqual(
+            registration_backend.options,
+            {
+                "variables_mapping": [
+                    {
+                        "stuf_name": "payment_completed",
+                        "form_variable": "payment_completed",
+                    },
+                    {"stuf_name": "payment_amount", "form_variable": "payment_amount"},
+                    {
+                        "stuf_name": "payment_public_order_ids",
+                        "form_variable": "payment_public_order_ids",
+                    },
+                    {
+                        "stuf_name": "provider_payment_ids",
+                        "form_variable": "provider_payment_ids",
+                    },
+                ],
+                "zds_zaaktype_code": "test",
+                "zds_zaaktype_status_code": "",
+                "zds_zaaktype_omschrijving": "",
+                "zds_zaakdoc_vertrouwelijkheid": "OPENBAAR",
+                "zds_zaaktype_status_omschrijving": "",
+                "zds_documenttype_omschrijving_inzending": "",
+            },
+        )
+
 
 class ExportObjectsAPITests(TempdirMixin, TestCase):
     @tag("gh-5384")

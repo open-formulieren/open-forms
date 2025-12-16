@@ -122,7 +122,7 @@ export default {
               description:
                 'Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK.',
             },
-            paymentStatusUpdateMapping: {
+            variablesMapping: {
               type: 'array',
               items: {
                 type: 'object',
@@ -142,9 +142,9 @@ export default {
                 },
                 required: ['formVariable', 'stufName'],
               },
-              title: 'payment status update variable mapping',
+              title: 'Variables mapping',
               description:
-                'This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in extraElementen.',
+                'This mapping is used to map the variable keys (User defined variables are also available) to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in extraElementen.',
               default: [
                 {
                   formVariable: 'payment_completed',
@@ -753,7 +753,7 @@ export const ConfiguredBackends = {
         name: 'StUF ZDS',
         backend: 'stuf-zds-create-zaak',
         options: {
-          paymentStatusUpdateMapping: [
+          variablesMapping: [
             {
               formVariable: 'payment_completed',
               stufName: 'payment_completed',
@@ -1190,7 +1190,7 @@ export const STUFZDS = {
         name: 'StUF ZDS',
         backend: 'stuf-zds-create-zaak',
         options: {
-          paymentStatusUpdateMapping: [
+          variablesMapping: [
             {
               formVariable: 'payment_completed',
               stufName: 'payment_completed',

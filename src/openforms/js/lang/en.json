@@ -1669,6 +1669,11 @@
     "description": "Form step save text label",
     "originalDefault": "Save text"
   },
+  "QWOU1l": {
+    "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>.",
+    "description": "StUF-ZDS registration variablesMapping message",
+    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>."
+  },
   "QXfH7G": {
     "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not.",
     "description": "Form submissionAllowed field help text",
@@ -2329,6 +2334,11 @@
     "description": "Legacy objects API registration options: 'productaanvraagType' label",
     "originalDefault": "Product request type"
   },
+  "csTJIN": {
+    "defaultMessage": "Variables mapping",
+    "description": "StUF-ZDS registration variablesMapping label",
+    "originalDefault": "Variables mapping"
+  },
   "cuivC6": {
     "defaultMessage": "Version",
     "description": "ZGW APIs registration options 'objecttypeVersion' label",
@@ -2488,11 +2498,6 @@
     "defaultMessage": "Copy configuration from registration backend",
     "description": "Copy Objects API prefill configuration from registration backend label",
     "originalDefault": "Copy configuration from registration backend"
-  },
-  "fTmdl/": {
-    "defaultMessage": "Payment status update variable mapping",
-    "description": "StUF-ZDS registration paymentStatusUpdateMapping label",
-    "originalDefault": "Payment status update variable mapping"
   },
   "fUaRWW": {
     "defaultMessage": "City Schema target",
@@ -3093,11 +3098,6 @@
     "defaultMessage": "Complex process variables",
     "description": "Open manage complex camunda process vars modal button",
     "originalDefault": "Complex process variables"
-  },
-  "p3t0c/": {
-    "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>.",
-    "description": "StUF-ZDS registration paymentStatusUpdateMapping message",
-    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>."
   },
   "p5Iv+R": {
     "defaultMessage": "Document type API resource URL in the Catalogi API.",
