@@ -1,5 +1,6 @@
+from collections.abc import Mapping
 from datetime import time
-from typing import Any
+from typing import Any, ClassVar
 
 from django.template.defaultfilters import time as fmt_time, yesno
 from django.utils.formats import number_format
@@ -8,13 +9,17 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 import structlog
 
+from openforms.typing import StrOrPromise
+
 from ..typing import (
     Component,
+    CustomerProfileComponent,
     OptionDict,
     RadioComponent,
     SelectBoxesComponent,
     SelectComponent,
 )
+from ..typing.custom import DigitalAddress, SupportedChannels
 from .base import FormatterBase
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -166,4 +171,40 @@ class SignatureFormatter(FormatterBase):
             """<img src="{src}" alt="{alt}" style="max-width: 100%;" />""",
             src=value,
             alt=text,
+        )
+
+
+class CustomerProfileFormatter(FormatterBase):
+    ADDRESS_TYPE_LABELS: ClassVar[Mapping[SupportedChannels, StrOrPromise]] = {
+        "email": _("email address"),
+        "phoneNumber": _("phone number"),
+    }
+
+    def format(
+        self, component: CustomerProfileComponent, value: list[DigitalAddress]
+    ) -> str:
+        # Gather all filled-in addresses and possibly add "as preferred" suffix
+        addresses: list[str] = [
+            _("{address} (will become preferred {address_type})").format(
+                address=address["address"],
+                address_type=self.ADDRESS_TYPE_LABELS[address["type"]],
+            )
+            if address.get("preferenceUpdate") == "isNewPreferred"
+            else address["address"]
+            for address in value
+            if address["address"] != ""
+        ]
+        if len(addresses) == 0:
+            return ""
+
+        if not self.as_html:
+            return self.multiple_separator.join(addresses)
+
+        return format_html(
+            "<ul>{values}</ul>",
+            values=format_html_join(
+                "",
+                "<li>{}</li>",
+                ((address,) for address in addresses),
+            ),
         )
