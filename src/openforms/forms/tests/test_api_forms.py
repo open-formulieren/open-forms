@@ -607,6 +607,29 @@ class FormsAPITests(APITestCase):
         self.assertEqual(step_literals_data["nextText"]["resolved"], "Next")
         self.assertEqual(step_literals_data["nextText"]["value"], "")
 
+    def test_global_config_communication_preferences_portal_url_value_returned_through_api(
+        self,
+    ):
+        config = GlobalConfiguration.get_solo()
+        config.communication_preferences_portal_url = "https://example-portal-url.com"
+        config.save()
+
+        form = FormFactory.create()
+        FormStepFactory.create(form=form)
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["communicationPreferencesPortalUrl"],
+            "https://example-portal-url.com",
+        )
+
     def test_overridden_text_field_values_returned_through_api(self):
         form = FormFactory.create(
             begin_text="Overridden Begin Text",
