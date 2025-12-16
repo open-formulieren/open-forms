@@ -223,6 +223,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         read_only=True,
         help_text=_("The number of days that the resume link is valid for."),
     )
+    communication_preferences_portal_url = serializers.SerializerMethodField(
+        read_only=True
+    )
     hide_non_applicable_steps = serializers.SerializerMethodField(read_only=True)
     submission_report_download_link_title = serializers.SerializerMethodField()
     submission_statements_configuration = serializers.SerializerMethodField(
@@ -292,6 +295,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "display_main_website_link",
             "include_confirmation_page_content_in_pdf",
             "required_fields_with_asterisk",
+            "communication_preferences_portal_url",
             "translations",
             "resume_link_lifetime",
             "hide_non_applicable_steps",
@@ -323,6 +327,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "translation_enabled",
             "active",
             "required_fields_with_asterisk",
+            "communication_preferences_portal_url",
             "submission_allowed",
             "submission_limit_reached",
             "suspension_allowed",
@@ -571,6 +576,10 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     def get_required_fields_with_asterisk(self, obj) -> bool:
         config = GlobalConfiguration.get_solo()
         return config.form_display_required_with_asterisk
+
+    def get_communication_preferences_portal_url(self, obj) -> str:
+        config = GlobalConfiguration.get_solo()
+        return config.communication_preferences_portal_url
 
     def get_hide_non_applicable_steps(self, obj) -> bool:
         config = GlobalConfiguration.get_solo()

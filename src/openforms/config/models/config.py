@@ -576,6 +576,14 @@ class GlobalConfiguration(SingletonModel):
         max_length=100,
         blank=True,
     )
+    communication_preferences_portal_url = models.URLField(
+        _("communication preferences portal url"),
+        blank=True,
+        help_text=_(
+            "Url to the online portal where users can update their communication preferences. "
+            "This is used by the profile component."
+        ),
+    )
 
     # search engine configuration
     allow_indexing_form_detail = models.BooleanField(
