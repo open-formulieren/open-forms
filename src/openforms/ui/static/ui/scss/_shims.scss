@@ -1,0 +1,7 @@
+// TODO: set hardcoded defaults with css var() function where applicable (to make old tokens compatible with the new tokens)
+// TODO: set hardcoded defaults with hardcode pixels as a last resort where styling needs to happen
+:root {
+  --of-uploaded-file-row-gap: 8px;
+  --of-uploaded-files-list-row-gap: 16px;
+  --of-file-upload-with-dropzone-uploads-padding-block-start: 16px;
+}
