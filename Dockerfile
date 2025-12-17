@@ -97,6 +97,7 @@ COPY ./bin/celery_worker.sh \
 RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle /app/tmp
 COPY \
     ./bin/check_celery_worker_liveness.py \
+    ./bin/check_celery_beat_liveness.py \
     ./bin/report_component_problems.py \
     ./bin/report_form_registration_problems.py \
     ./bin/report_duplicate_merchant_pspids.py \
