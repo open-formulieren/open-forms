@@ -3420,6 +3420,26 @@
       "value": "Geef een bestandsgrootte groter dan nul zonder decimalen op, bijvoorbeeld '10MB'."
     }
   ],
+  "QWOU1l": [
+    {
+      "type": 0,
+      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "extraElementen"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "QXfH7G": [
     {
       "type": 0,
@@ -4947,6 +4967,12 @@
       "value": "Productaanvraagtype"
     }
   ],
+  "csTJIN": [
+    {
+      "type": 0,
+      "value": "Variables mapping"
+    }
+  ],
   "cuivC6": [
     {
       "type": 0,
@@ -5381,12 +5407,6 @@
     {
       "type": 0,
       "value": "Sla de waarde op onder het geselecteerde attribuut in de geselecteerde registratieplugin."
-    }
-  ],
-  "fTmdl/": [
-    {
-      "type": 0,
-      "value": "Variabelekoppelingen voor de betaalstatusupdate"
     }
   ],
   "fUaRWW": [
@@ -6601,26 +6621,6 @@
     {
       "type": 0,
       "value": "Complexe procesvariabelen"
-    }
-  ],
-  "p3t0c/": [
-    {
-      "type": 0,
-      "value": "Met deze variabelekoppelingen stel je in welke formuliervariabelen met welke namen overeenkomen in de XML die naar StUF-ZDS gestuurd wordt. De namen en bijhorende waarden worden opgenomen in "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "extraElementen"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": "."
     }
   ],
   "p5Iv+R": [

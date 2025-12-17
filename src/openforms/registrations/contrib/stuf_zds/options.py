@@ -8,7 +8,7 @@ from stuf.stuf_zds.constants import VertrouwelijkheidsAanduidingen
 from .typing import MappingItem
 
 
-def default_payment_status_update_mapping() -> list[MappingItem]:
+def default_variables_mapping() -> list[MappingItem]:
     return [
         {
             "form_variable": "payment_completed",
@@ -79,9 +79,9 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ),
     )
 
-    payment_status_update_mapping = MappingSerializer(
+    variables_mapping = MappingSerializer(
         many=True,
-        label=_("payment status update variable mapping"),
+        label=_("Variables mapping"),
         help_text=_(
             "This mapping is used to map the variable keys to keys used in the XML "
             "that is sent to StUF-ZDS. Those keys and the values belonging to them in "
@@ -94,10 +94,29 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     def display_as_jsonschema(cls):
         data = super().display_as_jsonschema()
         # Workaround because drf_jsonschema_serializer does not pick up defaults
-        data["properties"]["payment_status_update_mapping"]["default"] = (
-            default_payment_status_update_mapping()
-        )
+        data["properties"]["variables_mapping"]["default"] = default_variables_mapping()
         # To avoid duplicating the title and help text for each item
-        del data["properties"]["payment_status_update_mapping"]["items"]["title"]
-        del data["properties"]["payment_status_update_mapping"]["items"]["description"]
+        del data["properties"]["variables_mapping"]["items"]["title"]
+        del data["properties"]["variables_mapping"]["items"]["description"]
         return data
+
+    def _handle_import(self, attrs) -> None:
+        # we're not importing, nothing to do
+        if not self.context.get("is_import", False) or not hasattr(
+            self, "initial_data"
+        ):
+            return
+
+        # needed for StUF-ZDS backwards compatibility (see issue #5776)
+        if (
+            self.initial_data
+            and isinstance(self.initial_data, dict)
+            and "payment_status_update_mapping" in self.initial_data
+        ):
+            attrs["variables_mapping"] = self.initial_data.pop(
+                "payment_status_update_mapping"
+            )
+
+    def validate(self, attrs):
+        self._handle_import(attrs)
+        return super().validate(attrs)

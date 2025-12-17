@@ -16,9 +16,9 @@ import CaseTypeCode from './fields/CaseTypeCode';
 import CaseTypeDescription from './fields/CaseTypeDescription';
 import DocumentConfidentialityLevel from './fields/DocumentConfidentialityLevel';
 import DocumentTypeDescription from './fields/DocumentTypeDescription';
-import PaymentStatusUpdateMapping from './fields/PaymentStatusUpdateMapping';
 import StatusTypeCode from './fields/StatusTypeCode';
 import StatusTypeDescription from './fields/StatusTypeDescription';
+import VariablesMapping from './fields/VariablesMapping';
 
 const StufZDSOptionsFormFields = ({name, schema}) => {
   const validationErrors = useContext(ValidationErrorContext);
@@ -30,11 +30,12 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
   ).map(([value, label]) => ({value, label}));
 
   const relevantErrors = filterErrors(name, validationErrors);
-  const numPaymentStatusMappingErrors = filterErrors(
-    `${name}.paymentStatusUpdateMapping`,
+  const numVariablesMappingErrors = filterErrors(
+    `${name}.variablesMapping`,
     validationErrors
   ).length;
-  const numBaseErrors = relevantErrors.length - numPaymentStatusMappingErrors;
+  const numBaseErrors = relevantErrors.length - numVariablesMappingErrors;
+
   return (
     <ValidationErrorsProvider errors={relevantErrors}>
       <Tabs>
@@ -45,7 +46,7 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
               defaultMessage="Base"
             />
           </Tab>
-          <Tab hasErrors={numPaymentStatusMappingErrors > 0}>
+          <Tab hasErrors={numVariablesMappingErrors > 0}>
             <FormattedMessage
               description="StUF-ZDS registration backend options, 'extra elements' tab label"
               defaultMessage="Extra elements"
@@ -68,15 +69,15 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
           <Fieldset
             title={
               <FormattedMessage
-                description="StUF-ZDS registration paymentStatusUpdateMapping label"
-                defaultMessage="Payment status update variable mapping"
+                description="StUF-ZDS registration variablesMapping label"
+                defaultMessage="Variables mapping"
               />
             }
-            fieldNames={['paymentStatusUpdateMapping']}
+            fieldNames={['variablesMapping']}
           >
             <div className="description">
               <FormattedMessage
-                description="StUF-ZDS registration paymentStatusUpdateMapping message"
+                description="StUF-ZDS registration variablesMapping message"
                 defaultMessage={`This mapping is used to map the variable keys to keys
                 used in the XML that is sent to StUF-ZDS. Those keys and the values
                 belonging to them in the submission data are included in <code>extraElementen</code>.
@@ -86,7 +87,7 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
                 }}
               />
             </div>
-            <PaymentStatusUpdateMapping />
+            <VariablesMapping />
           </Fieldset>
         </TabPanel>
       </Tabs>

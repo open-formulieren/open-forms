@@ -47,7 +47,7 @@ from stuf.tests.factories import StufServiceFactory
 
 from ....constants import RegistrationAttribute
 from ....exceptions import RegistrationFailed
-from ..options import default_payment_status_update_mapping
+from ..options import default_variables_mapping
 from ..plugin import PLUGIN_IDENTIFIER, PartialDate, StufZDSRegistration
 from ..typing import RegistrationOptions
 
@@ -3121,6 +3121,98 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
     @patch("celery.app.task.Task.request")
+    def test_user_defined_and_static_variables_have_stuf_name_in_extra_elementen(
+        self, m, mock_task
+    ):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+            ],
+            form__name="my-form",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={
+                "voornaam": "Foo",
+            },
+            language_code="en",
+            completed=True,
+        )
+        # can't pass this as part of `SubmissionFactory.from_components`
+        submission.price = Decimal("40.00")
+        submission.save()
+
+        SubmissionValueVariableFactory.create(
+            key="userDefinedVarString",
+            submission=submission,
+            form_variable__user_defined=True,
+            value="value",
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        # Needed for the PDF report
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+        mock_task.id = 1
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "123",
+            "zds_zaaktype_status_omschrijving": "aaabbc",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+            "variables_mapping": [
+                {"form_variable": "payment_amount", "stuf_name": "paymentAmount"},
+                {"form_variable": "userDefinedVarString", "stuf_name": "foo"},
+                {"form_variable": "form_id", "stuf_name": "bar"},
+            ],
+        }
+
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        self.assertTrue(serializer.is_valid())
+
+        plugin.register_submission(submission, serializer.validated_data)
+
+        xml_request_body = xml_from_request_history(m, 0)
+
+        self.assertXPathEqual(
+            xml_request_body,
+            "//stuf:extraElementen/stuf:extraElement[@naam='paymentAmount']",
+            "40.0",
+        )
+        self.assertXPathEqual(
+            xml_request_body,
+            "//stuf:extraElementen/stuf:extraElement[@naam='foo']",
+            "value",
+        )
+        self.assertXPathEqual(
+            xml_request_body,
+            "//stuf:extraElementen/stuf:extraElement[@naam='bar']",
+            str(submission.form.uuid),
+        )
+
+    @patch("celery.app.task.Task.request")
     def test_plugin_with_extra_unmapped_number_data(self, m, mock_task):
         submission = SubmissionFactory.from_components(
             [
@@ -3474,7 +3566,7 @@ class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
             "zds_zaaktype_code": "foo",
             "zds_documenttype_omschrijving_inzending": "foo",
             "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
-            "payment_status_update_mapping": default_payment_status_update_mapping(),
+            "variables_mapping": default_variables_mapping(),
         }
         cls.submission = SubmissionFactory.from_components(
             [
@@ -3544,16 +3636,16 @@ class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     value,
                 )
 
-    def test_set_zaak_payment_incorrect_payment_status_update_mapping(self):
+    def test_set_zaak_payment_incorrect_variables_mapping(self):
         """
-        Non-existent fields in the payment_status_update_mapping should be ignored
+        Non-existent fields in the variables_mapping should be ignored
         """
         plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
         options: RegistrationOptions = {
             "zds_zaaktype_code": "foo",
             "zds_documenttype_omschrijving_inzending": "foo",
             "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
-            "payment_status_update_mapping": [
+            "variables_mapping": [
                 {"form_variable": "payment_amount", "stuf_name": "paymentAmount"},
                 {"form_variable": "non-existent-field", "stuf_name": "foo"},
             ],

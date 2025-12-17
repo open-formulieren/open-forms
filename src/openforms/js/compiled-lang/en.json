@@ -3437,6 +3437,26 @@
       "value": "Specify a positive, non-zero file size without decimals, e.g. 10MB."
     }
   ],
+  "QWOU1l": [
+    {
+      "type": 0,
+      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "extraElementen"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "QXfH7G": [
     {
       "type": 0,
@@ -4959,6 +4979,12 @@
       "value": "Product request type"
     }
   ],
+  "csTJIN": [
+    {
+      "type": 0,
+      "value": "Variables mapping"
+    }
+  ],
   "cuivC6": [
     {
       "type": 0,
@@ -5393,12 +5419,6 @@
     {
       "type": 0,
       "value": "Save the value as this attribute in the registration backend system."
-    }
-  ],
-  "fTmdl/": [
-    {
-      "type": 0,
-      "value": "Payment status update variable mapping"
     }
   ],
   "fUaRWW": [
@@ -6613,26 +6633,6 @@
     {
       "type": 0,
       "value": "Complex process variables"
-    }
-  ],
-  "p3t0c/": [
-    {
-      "type": 0,
-      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "extraElementen"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": "."
     }
   ],
   "p5Iv+R": [

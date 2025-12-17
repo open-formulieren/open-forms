@@ -22,4 +22,4 @@ class RegistrationOptions(TypedDict):
         "BEPERKT OPENBAAR",
         "OPENBAAR",
     ]
-    payment_status_update_mapping: NotRequired[list[MappingItem]]
+    variables_mapping: NotRequired[list[MappingItem]]
