@@ -58,7 +58,7 @@ x-app-env: &x-app-env
   - OTEL_SDK_DISABLED=${OTEL_SDK_DISABLED:-true}
   - OTEL_RESOURCE_ATTRIBUTES=of.client=of,of.target=docker-compose
   - OTEL_METRIC_EXPORT_INTERVAL=${OTEL_METRIC_EXPORT_INTERVAL:-60000}
-  - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}  # gRPC
+  - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317} # gRPC
   # otel:supersecret, escape spaces and = with percent encoding
   - OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic b3RlbDpzdXBlcnNlY3JldA==
   - OTEL_EXPORTER_OTLP_METRICS_INSECURE=${OTEL_EXPORTER_OTLP_METRICS_INSECURE:-true}
@@ -75,7 +75,7 @@ x-app-volumes: &x-app-volumes
 
 services:
   db:
-    image: postgres:${PG_VERSION:-15}  # Minimum required version is 12
+    image: postgres:${PG_VERSION:-15} # Minimum required version is 12
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
@@ -86,7 +86,14 @@ services:
 
   redis:
     image: redis:8
-    command: ["redis-server", "--appendonly", "yes"]
+    command: ['redis-server', '--appendonly', 'yes']
+    # The check is done by using redis-cli (already part of the installation)
+    # https://redis.io/docs/latest/develop/tools/cli/#install-redis-cli
+    healthcheck:
+      test: ['CMD-SHELL', 'redis-cli ping || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
     networks:
       - open-forms-dev
     volumes:
@@ -98,6 +105,10 @@ services:
       - open-forms-dev
 
   clamav:
+    # The clamav:1.0.0 image itself defines a health check via HEALTHCHECK in its Dockerfile.
+    # This is happening by sending a ping to clamd on the default port (3310). No need
+    # for any overrides (at least for now).
+    # https://docs.clamav.net/manual/Installing/Docker.html#container-clamd-health-check
     image: clamav/clamav:1.0.0
     networks:
       - open-forms-dev
@@ -136,6 +147,15 @@ services:
       #   condition: service_completed_successfully
     networks:
       - open-forms-dev
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >
+          python -c "import requests,sys; r=requests.get('http://localhost:8000/api/v2/health',
+          timeout=5); sys.exit(0 if r.status_code == 204 else 1)"
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   web-init:
     build: .
@@ -161,6 +181,12 @@ services:
       - web
     networks:
       - open-forms-dev
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost/health/']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   celery:
     build: *web_build
@@ -168,7 +194,7 @@ services:
     environment: *x-app-env
     command: /celery_worker.sh
     healthcheck:
-      test: ["CMD", "python", "/app/bin/check_celery_worker_liveness.py"]
+      test: ['CMD', 'python', '/app/bin/check_celery_worker_liveness.py']
       interval: 30s
       timeout: 5s
       retries: 3
@@ -194,6 +220,12 @@ services:
     depends_on:
       - db
       - redis
+    healthcheck:
+      test: ['CMD', 'python', '/app/bin/check_celery_beat_liveness.py']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     networks:
       - open-forms-dev
 
@@ -210,6 +242,14 @@ services:
     depends_on:
       - redis
       - celery
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >
+        - python -c "import requests; requests.get('http://localhost:5555/')"
+      interval: 30s
+      timeout: 5s
+      retries: 3
     networks:
       - open-forms-dev
 

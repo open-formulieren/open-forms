@@ -4,6 +4,7 @@ Concrete view classes/utilities not tied to any particular app.
 
 from collections import OrderedDict
 
+from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 
 import sentry_sdk
@@ -67,3 +68,14 @@ class PingView(APIView):
     )
     def get(self, request):
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+def health_check_view(request):
+    """
+    Simple view for making sure that the API is accessible.
+
+    The purpose of the view is to access it only internally so extra permissions and
+    authentication is not needed here (DRF complicates things). The real check for what
+    has access/permissions to this view is done in the nginx level.
+    """
+    return HttpResponse(status=204)
