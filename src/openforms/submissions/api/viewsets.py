@@ -21,7 +21,10 @@ from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.throttle_classes import PollingRateThrottle
-from openforms.authentication.service import is_authenticated_with_an_allowed_plugin
+from openforms.authentication.service import (
+    check_user_is_submission_initiator,
+    is_authenticated_with_an_allowed_plugin,
+)
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import Form, FormStep
 from openforms.logging import logevent
@@ -245,6 +248,10 @@ class SubmissionViewSet(
                     "You need to be logged in with one of the allowed authentication backends to co-sign the submission."
                 )
             )
+
+        assert not check_user_is_submission_initiator(request, submission), (
+            "The submission cannot be co-signed by the original submitter."
+        )
 
         serializer = CosignValidationSerializer(
             data={

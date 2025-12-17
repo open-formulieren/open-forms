@@ -342,3 +342,51 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
         title_node = logout_response.html.find("h1")
 
         self.assertEqual(title_node.text.strip(), "You successfully logged out.")
+
+    def test_cosigner_same_as_submitter(self):
+        submission = SubmissionFactory.from_components(
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
+            bsn="123456782",
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            completed=True,
+            cosign_complete=False,
+            form__slug="form-to-cosign",
+            form_url="http://url-to-form.nl/startpagina",
+            public_registration_reference="OF-IMAREFERENCE",
+        )
+        session = self.app.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
+        }
+        session.save()
+
+        response = self.app.get(
+            reverse(
+                "submissions:find-submission-for-cosign",
+                kwargs={"form_slug": "form-to-cosign"},
+            )
+        )
+
+        form = response.forms[0]
+        form["code"] = submission.public_registration_reference
+        submission_response = form.submit()
+
+        self.assertEqual(submission_response.status_code, 200)
+
+        error_node = submission_response.html.find("div", class_="error")
+        expected_message = _(
+            "The submission cannot be co-signed by the original submitter."
+        )
+        self.assertEqual(error_node.text.strip(), expected_message)

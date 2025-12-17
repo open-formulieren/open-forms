@@ -1,7 +1,6 @@
 import uuid
 from pathlib import Path
 
-from django.contrib.auth.hashers import check_password as check_salted_hash
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
@@ -18,6 +17,7 @@ from privates.views import PrivateMediaView
 from rest_framework.reverse import reverse
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
+from openforms.authentication.service import check_user_is_submission_initiator
 from openforms.authentication.utils import (
     get_authentication_plugin,
     is_authenticated_with_plugin,
@@ -33,7 +33,10 @@ from .forms import SearchSubmissionForCosignForm
 from .models import Submission, SubmissionFileAttachment, SubmissionReport
 from .signals import submission_resumed
 from .tokens import submission_report_token_generator, submission_resume_token_generator
-from .utils import add_submmission_to_session, check_form_status
+from .utils import (
+    add_submmission_to_session,
+    check_form_status,
+)
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -110,35 +113,10 @@ class ResumeFormMixin(TemplateResponseMixin):
 
         if not meets_plugin_requirements(self.request, submission.form, plugin_id):
             return False
-        is_auth_attribute_correct = (
-            submission.auth_info.attribute
-            == self.request.session[FORM_AUTH_SESSION_KEY]["attribute"]
-        )
 
-        submission_auth_value = submission.auth_info.value
-        # there are two modus operandi - the submission may not be completed yet, in
-        # which case we don't have a hashed value yet, but the raw value (used for
-        # prefill and the like). There are also other flows where the attributes may
-        # be hashed despite the submission not being completed yet.
-        current_auth_value = self.request.session[FORM_AUTH_SESSION_KEY]["value"]
+        is_same_user = check_user_is_submission_initiator(self.request, submission)
 
-        if submission.auth_info.attribute_hashed:
-            is_auth_data_correct = check_salted_hash(
-                current_auth_value, submission_auth_value, setter=None
-            )
-        else:
-            # timing attacks are not a concern here, as you need to go through a valid
-            # authentication flow first which sets the value in the session. Additionally,
-            # enumeration would still be possible and you don't necessarily leak passwords
-            # that may be used on other sites - end-users cannot change their BSN/KVK etc.
-            # anyway.
-            is_auth_data_correct = submission_auth_value == current_auth_value
-
-        return (
-            is_auth_plugin_correct
-            and is_auth_data_correct
-            and is_auth_attribute_correct
-        )
+        return is_auth_plugin_correct and is_same_user
 
     def custom_submission_modifications(self, submission: Submission) -> Submission:
         return submission
@@ -323,6 +301,8 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
         super_kwargs["instance"] = self.form
         if code := self.request.GET.get("code"):
             super_kwargs["data"] = {"code": code}
+
+        super_kwargs["request"] = self.request
         return super_kwargs
 
     def form_valid(self, form: SearchSubmissionForCosignForm):
