@@ -38,3 +38,13 @@ class PingViewTests(SubmissionsMixin, APITestCase):
         response = self.client.get(self.endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+class HealthCheckViewTests(APITestCase):
+    endpoint = reverse_lazy("api:health")
+
+    def test_health_check_returns_204(self):
+        response = self.client.get(self.endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(response.content)
