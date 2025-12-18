@@ -1,0 +1,51 @@
+:root {
+  // file uploads
+  --of-upload-input-padding-block-end: var(--of-file-upload-drop-area-padding, 15px);
+  --of-upload-input-padding-block-start: var(--of-file-upload-drop-area-padding, 15px);
+  --of-upload-input-padding-inline-end: var(--of-file-upload-drop-area-padding, 15px);
+  --of-upload-input-padding-inline-start: var(--of-file-upload-drop-area-padding, 15px);
+  --of-upload-input-border-width: 3px;
+  --of-upload-input-border-style: dashed;
+  --of-upload-input-border-color: var(--of-field-border-color);
+  --of-file-upload-with-dropzone-uploads-padding-block-start: 16px;
+  --of-uploaded-files-list-row-gap: 16px;
+
+  --of-uploaded-file-row-gap: 8px;
+  --of-uploaded-file-column-gap: 8px;
+  --of-uploaded-file-padding-block-end: 8px;
+  --of-uploaded-file-padding-block-start: 8px;
+  --of-uploaded-file-padding-inline-end: 4px;
+  --of-uploaded-file-padding-inline-start: 16px;
+  --of-uploaded-file-border-width: var(--utrecht-form-control-border-width, 1px);
+  --of-uploaded-file-border-style: solid;
+  --of-uploaded-file-border-color: var(--utrecht-form-control-border-color, #767676);
+  --of-uploaded-file-border-radius: var(--utrecht-form-control-border-radius, 0);
+
+  // button - icon + text spacing
+  --utrecht-button-column-gap: 8px;
+
+  // calendar/date picker
+  --utrecht-calendar-background-color: #fff;
+  --utrecht-calendar-navigation-background-color: #fff;
+  --utrecht-calendar-navigation-color: #000;
+  --utrecht-calendar-navigation-padding-block-end: 4px;
+  --utrecht-calendar-navigation-padding-block-start: 4px;
+  --utrecht-calendar-icon-size: 24px;
+  --utrecht-calendar-table-weeks-item-width: 44px;
+  --utrecht-calendar-table-weeks-item-line-height: 24px;
+  --utrecht-calendar-table-weeks-item-padding-block-end: 10px;
+  --utrecht-calendar-table-weeks-item-padding-block-start: 4px;
+  --utrecht-calendar-table-days-item-day-out-of-the-month-color: #3939394d;
+  --utrecht-calendar-table-days-item-day-border-width: 1px;
+  --utrecht-calendar-table-days-item-day-hover-background-color: #e6e6e6;
+  --utrecht-calendar-table-days-item-day-is-today-border-color: #959ea9;
+
+  // input-group
+  --of-input-group-gap: 12px;
+  --of-input-group-align-items: center;
+}
+
+// .utrecht-icon:has(.openforms-tooltip-icon) {
+//   // (tooltip) icons - context-specific override
+//   --utrecht-icon-size: auto;
+// }
