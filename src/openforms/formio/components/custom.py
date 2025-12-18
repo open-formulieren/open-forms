@@ -44,7 +44,11 @@ from ..formatters.custom import (
     DateTimeFormatter,
     MapFormatter,
 )
-from ..formatters.formio import DefaultFormatter, TextFieldFormatter
+from ..formatters.formio import (
+    CustomerProfileFormatter,
+    DefaultFormatter,
+    TextFieldFormatter,
+)
 from ..registry import BasePlugin, register
 from ..typing import (
     AddressNLComponent,
@@ -1062,7 +1066,7 @@ class LicensePlate(BasePlugin):
 
 @register("customerProfile")
 class CustomerProfile(BasePlugin):
-    formatter = DefaultFormatter
+    formatter = CustomerProfileFormatter
 
     @staticmethod
     def pre_registration_hook(

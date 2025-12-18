@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from django.core.cache import cache
 from django.test import SimpleTestCase, TestCase
+from django.test.utils import override_settings
 from django.utils.translation import gettext_lazy as _
 
 from openforms.api.geojson import LineStringGeometry, PointGeometry, PolygonGeometry
@@ -12,7 +13,7 @@ from openforms.config.tests.factories import MapTileLayerFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ...service import format_value
-from ...typing import MapComponent
+from ...typing import CustomerProfileComponent, MapComponent
 from .utils import load_json
 
 FILES_DIR = Path(__file__).parent / "files"
@@ -61,6 +62,7 @@ class DefaultFormatterTestCase(SimpleTestCase):
                 "'lastName': 'Paassen', 'firstNames': 'Pero', 'dateOfBirth': '2023-02-01', "
                 "'dateOfBirthPrecision': 'date', 'selected': False}]"
             ),
+            "profile": "test@mail.com; 06 12345678 (will become preferred phone number)",
         }
 
         for component in all_components:
@@ -198,6 +200,141 @@ class DefaultFormatterTestCase(SimpleTestCase):
                 formatted_html,
                 "test 1A DD<br>1234AA Amsterdam",
             )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_customer_profile(self):
+        component: CustomerProfileComponent = {
+            "type": "customerProfile",
+            "key": "profile",
+            "label": "Profile",
+            "shouldUpdateCustomerData": True,
+            "digitalAddressTypes": ["email", "phoneNumber"],
+        }
+
+        value = [
+            {
+                "type": "email",
+                "address": "test@mail.com",
+                "preferenceUpdate": "useOnlyOnce",
+            },
+            {
+                "type": "phoneNumber",
+                "address": "06 12345678",
+                "preferenceUpdate": "isNewPreferred",
+            },
+        ]
+
+        with self.subTest("as_html False"):
+            formatted_value = format_value(component, value, as_html=False)
+
+            self.assertEqual(
+                formatted_value,
+                "test@mail.com; 06 12345678 (will become preferred phone number)",
+            )
+
+        with self.subTest("as_html True"):
+            formatted_html = format_value(component, value, as_html=True)
+
+            self.assertHTMLEqual(
+                formatted_html,
+                "<ul><li>test@mail.com</li><li>06 12345678 (will become preferred phone number)</li></ul>",
+            )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_customer_profile_missing_address(self):
+        component: CustomerProfileComponent = {
+            "type": "customerProfile",
+            "key": "profile",
+            "label": "Profile",
+            "shouldUpdateCustomerData": True,
+            "digitalAddressTypes": ["email", "phoneNumber"],
+        }
+
+        value = [
+            {
+                "type": "email",
+                "address": "test@mail.com",
+                "preferenceUpdate": "isNewPreferred",
+            },
+            {
+                # This address is missing
+                "type": "phoneNumber",
+                "address": "",
+            },
+        ]
+
+        with self.subTest("as_html False"):
+            formatted_html = format_value(component, value, as_html=False)
+
+            self.assertHTMLEqual(
+                formatted_html,
+                "test@mail.com (will become preferred email address)",
+            )
+
+        with self.subTest("as_html True"):
+            formatted_html = format_value(component, value, as_html=True)
+
+            self.assertHTMLEqual(
+                formatted_html,
+                "<ul><li>test@mail.com (will become preferred email address)</li></ul>",
+            )
+
+    def test_customer_profile_without_addresses(self):
+        component: CustomerProfileComponent = {
+            "type": "customerProfile",
+            "key": "profile",
+            "label": "Profile",
+            "shouldUpdateCustomerData": True,
+            "digitalAddressTypes": ["email", "phoneNumber"],
+        }
+
+        with self.subTest("With empty addresses, as_html True"):
+            # Both addresses are missing
+            value = [
+                {
+                    "type": "email",
+                    "address": "",
+                    "preferenceUpdate": "useOnlyOnce",
+                },
+                {
+                    "type": "phoneNumber",
+                    "address": "",
+                    "preferenceUpdate": "isNewPreferred",
+                },
+            ]
+
+            formatted_html = format_value(component, value, as_html=True)
+            self.assertHTMLEqual(formatted_html, "")
+
+        with self.subTest("With empty addresses, as_html False"):
+            # Both addresses are missing
+            value = [
+                {
+                    "type": "email",
+                    "address": "",
+                    "preferenceUpdate": "useOnlyOnce",
+                },
+                {
+                    "type": "phoneNumber",
+                    "address": "",
+                    "preferenceUpdate": "isNewPreferred",
+                },
+            ]
+
+            formatted_html = format_value(component, value, as_html=False)
+            self.assertHTMLEqual(formatted_html, "")
+
+        with self.subTest("Without addresses, as_html True"):
+            value = []
+
+            formatted_html = format_value(component, value, as_html=True)
+            self.assertHTMLEqual(formatted_html, "")
+
+        with self.subTest("Without addresses, as_html False"):
+            value = []
+
+            formatted_html = format_value(component, value, as_html=False)
+            self.assertHTMLEqual(formatted_html, "")
 
 
 @patch.dict(os.environ, {"_MAP_GENERATION_MAX_WORKERS": "1"})
