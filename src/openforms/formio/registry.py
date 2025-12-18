@@ -371,6 +371,8 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         assert self.has_pre_registration_hook(component)
         hook = self[component["type"]].pre_registration_hook
 
+        assert hook is not None
+
         return hook(component, submission)
 
 
