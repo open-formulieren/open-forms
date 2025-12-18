@@ -22,9 +22,6 @@ def fetch_user_variable_from_profile_component(
             prefill_options__profile_form_variable=profile_key,
         )
     except FormVariable.DoesNotExist:
-        logger.info(
-            "missing_prefill_variable", plugin=PLUGIN_IDENTIFIER, component=profile_key
-        )
         return None
 
     return prefill_form_variable

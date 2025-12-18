@@ -60,6 +60,9 @@ def update_customer_interaction_data(
     prefill_form_variable = fetch_user_variable_from_profile_component(
         submission, profile_key
     )
+    if not prefill_form_variable:
+        logger.info("missing_prefill_variable", component=profile_key)
+        return
 
     plugin = prefill_registry[prefill_form_variable.prefill_plugin]
     options_serializer = plugin.options(data=prefill_form_variable.prefill_options)

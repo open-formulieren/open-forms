@@ -16,29 +16,27 @@ logger = structlog.stdlib.get_logger(__name__)
 
 
 @app.task
-def pre_registration_component_task(component: Component, submission_id: int) -> None:
+def execute_component_pre_registration(
+    submission_id: int, component: Component
+) -> None:
     component_key = component["key"]
+    submission = Submission.objects.get(id=submission_id)
     log = logger.bind(
         action="formio.component_pre_registration",
-        submission_id=submission_id,
-        component=component_key,
+        submission_id=submission.uuid,
+        component_key=component_key,
+        component_type=component["type"],
     )
     log.info("component_pre_registration_task_received")
-    submission = Submission.objects.get(id=submission_id)
     logevent.component_pre_registration_start(submission, component_key)
 
     state = submission.load_submission_value_variables_state()
-    component_var = state.variables[component_key]
+    component_var = state.get_variable(component_key)
 
     # if it's already completed
     config = GlobalConfiguration.get_solo()
 
-    should_skip = (
-        component_var.pre_registration_status
-        == ComponentPreRegistrationStatuses.success
-        or submission.registration_attempts >= config.registration_attempt_limit
-    )
-    if should_skip:
+    if not component_var.is_registration_attempt_allowed:
         log.info(
             "component_pre_registration_skip",
             pre_registration_status=component_var.pre_registration_status,
@@ -54,7 +52,7 @@ def pre_registration_component_task(component: Component, submission_id: int) ->
     try:
         result = formio_registry.apply_pre_registration_hook(component, submission)
     except Exception as exc:
-        logger.info("component_pre_registration_failure", exc_info=exc)
+        log.info("component_pre_registration_failure", exc_info=exc)
         logevent.component_pre_registration_failure(
             submission, error=exc, component_key=component_key
         )
@@ -76,11 +74,13 @@ def pre_registration_component_task(component: Component, submission_id: int) ->
 
 
 @app.task(bind=True)
-def pre_registration_component_group_task(task, submission_id: int) -> None:
+def execute_component_pre_registration_group(task, submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
 
     task_group = group(
-        pre_registration_component_task.si(component, submission_id)
+        execute_component_pre_registration.si(
+            submission_id=submission_id, component=component
+        )
         for component in submission.total_configuration_wrapper
         if formio_registry.has_pre_registration_hook(component)
     )

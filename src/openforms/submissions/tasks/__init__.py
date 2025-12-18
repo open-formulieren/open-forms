@@ -11,7 +11,7 @@ from celery.result import AsyncResult
 from openforms.appointments.tasks import maybe_register_appointment
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.tasks import pre_registration_component_group_task
+from openforms.formio.tasks import execute_component_pre_registration_group
 
 from ..constants import PostSubmissionEvents, RegistrationStatuses
 from ..models import PostCompletionMetadata, Submission
@@ -42,7 +42,7 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
     # just set a submission reference (if it hasn't already been set)
     pre_registration_task = pre_registration.si(submission_id, event)
 
-    pre_registration_component_group = pre_registration_component_group_task.si(
+    component_pre_registration_group = execute_component_pre_registration_group.si(
         submission_id
     )
 
@@ -63,7 +63,7 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
     actions_chain = chain(
         register_appointment_task,
         pre_registration_task,
-        pre_registration_component_group,
+        component_pre_registration_group,
         generate_report_task,
         register_submission_task,
         payment_status_update_task,

@@ -20,9 +20,11 @@ from openforms.api.geojson import (
     GeoJsonGeometryTypes,
 )
 from openforms.authentication.service import AuthAttribute
-from openforms.contrib.customer_interactions.update import update_customer_interaction_data
 from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration, MapTileLayer, MapWMSTileLayer
+from openforms.contrib.customer_interactions.update import (
+    update_customer_interaction_data,
+)
 from openforms.formio.typing.map import Overlay
 from openforms.forms.models import FormVariable
 from openforms.prefill.contrib.family_members.plugin import (
@@ -50,7 +52,7 @@ from ..formatters.formio import (
     DefaultFormatter,
     TextFieldFormatter,
 )
-from ..registry import BasePlugin, register
+from ..registry import BasePlugin, ComponentPreRegistrationResult, register
 from ..typing import (
     AddressNLComponent,
     ChildrenComponent,
@@ -60,7 +62,6 @@ from ..typing import (
     DatetimeComponent,
     MapComponent,
 )
-from ..typing.base import ComponentPreRegistrationResult
 from ..utils import conform_to_mask
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
@@ -1074,7 +1075,7 @@ class CustomerProfile(BasePlugin):
         component: CustomerProfileComponent, submission: Submission
     ) -> ComponentPreRegistrationResult:
         """
-        update customer interaction API if applicable
+        Write back customer profile preferences to the customer interactions API.
         """
         result: ComponentPreRegistrationResult = {}
         if not component["shouldUpdateCustomerData"]:

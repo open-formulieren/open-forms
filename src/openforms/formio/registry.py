@@ -14,7 +14,16 @@ the public API better defined and smaller.
 
 import warnings
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Generic, Literal, Protocol, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Generic,
+    Literal,
+    NotRequired,
+    Protocol,
+    TypedDict,
+    TypeVar,
+)
 
 from django.utils.translation import gettext as _
 
@@ -23,17 +32,20 @@ from rest_framework.request import Request
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
-from openforms.typing import JSONObject, VariableValue
+from openforms.typing import JSONObject, JSONValue, VariableValue
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
-from .typing.base import ComponentPreRegistrationResult
 from .utils import is_layout_component
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 ComponentT = TypeVar("ComponentT", bound=Component, contravariant=True)
+
+
+class ComponentPreRegistrationResult(TypedDict):
+    data: NotRequired[JSONValue]
 
 
 class FormatterProtocol(Protocol[ComponentT]):
@@ -78,7 +90,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
     """
     pre_registration_hook: PreRegistrationHookProtocol[ComponentT] | None = None
     """
-    Request external API or apply other logic before registration.
+    Hook to perform component-specific registration logic during the "pre-registration" phase.
     """
 
     @property
@@ -343,22 +355,19 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
     def has_pre_registration_hook(self, component: Component) -> bool:
         """
-        Whether a given component has a pre-registration hook.
+        Determine if a given component has a pre-registration hook.
         """
         if (component_type := component["type"]) not in self:
             return False
 
-        return bool(self[component_type].pre_registration_hook)
+        return self[component_type].pre_registration_hook is not None
 
     def apply_pre_registration_hook(
         self, component: Component, submission: "Submission"
-    ) -> ComponentPreRegistrationResult | None:
+    ) -> ComponentPreRegistrationResult:
         """
         Apply component pre registration hook.
         """
-        if not self.has_pre_registration_hook(component):
-            return
-
         hook = self[component["type"]].pre_registration_hook
         assert hook is not None
 
