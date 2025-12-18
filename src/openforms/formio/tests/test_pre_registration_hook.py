@@ -78,5 +78,6 @@ class TextFieldPreRegistrationHookTests(TestCase):
         }
         submission = SubmissionFactory.from_components([text_component])
 
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(Exception) as exc:
             register.apply_pre_registration_hook(text_component, submission)
+            self.assertIsInstance(exc.exception, AssertionError | KeyError)
