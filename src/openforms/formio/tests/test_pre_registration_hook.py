@@ -78,8 +78,5 @@ class TextFieldPreRegistrationHookTests(TestCase):
         }
         submission = SubmissionFactory.from_components([text_component])
 
-        result: ComponentPreRegistrationResult = register.apply_pre_registration_hook(
-            text_component, submission
-        )
-
-        self.assertIsNone(result)
+        with self.assertRaises(AssertionError):
+            register.apply_pre_registration_hook(text_component, submission)

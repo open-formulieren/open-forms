@@ -80,8 +80,11 @@ def update_customer_interaction_data(
             )
             created_addresses = []
             for digital_address in profile_submission_data:
+                if not (address_value := digital_address["address"]):
+                    continue
+
                 created_address = client.create_digital_address_for_betrokkene(
-                    address=digital_address["address"],
+                    address=address_value,
                     address_type=channels_to_address_types[digital_address["type"]],
                     betrokkene_uuid=maak_klant_contact["betrokkene"]["uuid"],
                 )
