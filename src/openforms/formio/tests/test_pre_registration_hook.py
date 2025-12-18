@@ -1,11 +1,9 @@
-from unittest.mock import patch
-
 from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..registry import register
-from ..typing.base import ComponentPreRegistrationResult
+from ..registry import ComponentPreRegistrationResult, register
+from ..typing.custom import DigitalAddress
 
 
 class ProfilePreRegistrationHookTests(TestCase):
@@ -28,17 +26,22 @@ class ProfilePreRegistrationHookTests(TestCase):
             "digitalAddressTypes": ["phoneNumber", "email"],
             "shouldUpdateCustomerData": True,
         }
-        submission = SubmissionFactory.from_components([profile_component])
+        profile_data: list[DigitalAddress] = [
+            {"address": "some@email.com", "type": "email"},
+            {"address": "0612345678", "type": "phoneNumber"},
+        ]
+        submission = SubmissionFactory.from_components(
+            [profile_component],
+            submitted_data={
+                "profile": profile_data,
+            },
+        )
 
-        with patch(
-            "openforms.contrib.customer_interactions.utils.update_customer_interaction_data",
-            lambda submission, profile_key: "something",
-        ):
-            result: ComponentPreRegistrationResult = (
-                register.apply_pre_registration_hook(profile_component, submission)
-            )
+        result: ComponentPreRegistrationResult = register.apply_pre_registration_hook(
+            profile_component, submission
+        )
 
-        self.assertEqual(result, {"data": "something"})
+        self.assertEqual(result, {"data": None})
 
     def test_profile_hook_should_not_update(self):
         profile_component = {

@@ -3,17 +3,16 @@ from unittest.mock import patch
 from django.test import TestCase, override_settings
 
 from openforms.logging.models import TimelineLogProxy
+from openforms.submissions.constants import ComponentPreRegistrationStatuses
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ...submissions.constants import ComponentPreRegistrationStatuses
-from ..registry import BasePlugin, ComponentRegistry
+from ..registry import BasePlugin, ComponentPreRegistrationResult, ComponentRegistry
 from ..tasks import (
-    pre_registration_component_group_task,
-    pre_registration_component_task,
+    execute_component_pre_registration,
+    execute_component_pre_registration_group,
 )
 from ..typing import Component
-from ..typing.base import ComponentPreRegistrationResult
 
 
 class NoHookComponent(Component): ...
@@ -70,7 +69,7 @@ class PreRegistrationTaskTests(TestCase):
             {"withHook": "foo"},
         )
 
-        pre_registration_component_task(
+        execute_component_pre_registration(
             component=hook_component, submission_id=submission.id
         )
 
@@ -96,7 +95,7 @@ class PreRegistrationTaskTests(TestCase):
         )
         assert submission.needs_on_completion_retry is False
 
-        pre_registration_component_task(
+        execute_component_pre_registration(
             component=failed_hook_component, submission_id=submission.id
         )
 
@@ -128,10 +127,12 @@ class PreRegistrationTaskTests(TestCase):
         component_var.pre_registration_status = ComponentPreRegistrationStatuses.success
         component_var.save()
 
-        pre_registration_component_task(
+        execute_component_pre_registration(
             component=hook_component, submission_id=submission.id
         )
 
+        # Assert that the pre-registration hook isn't run, as the pre-registration status
+        # is already set to success
         self.assertIsNone(component_var.pre_registration_result)
         # check logs
         logs = TimelineLogProxy.objects.for_object(submission)
@@ -158,7 +159,7 @@ class PreRegistrationTaskTests(TestCase):
             {"withoutHook": "foo", "withHook": "bar"},
         )
 
-        pre_registration_component_group_task.delay(submission_id=submission.id)
+        execute_component_pre_registration_group.delay(submission_id=submission.id)
 
         state = submission.load_submission_value_variables_state()
         no_hook_var = state.variables["withoutHook"]
@@ -195,7 +196,7 @@ class PreRegistrationTaskTests(TestCase):
         )
         assert submission.needs_on_completion_retry is False
 
-        pre_registration_component_group_task.delay(submission_id=submission.id)
+        execute_component_pre_registration_group.delay(submission_id=submission.id)
 
         state = submission.load_submission_value_variables_state()
         no_hook_var = state.variables["withoutHook"]
@@ -215,3 +216,87 @@ class PreRegistrationTaskTests(TestCase):
 
         submission.refresh_from_db()
         self.assertTrue(submission.needs_on_completion_retry)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_pre_registration_group_one_component_succeed_and_another_failed(self):
+        hook_component: Component = {
+            "key": "withHook",
+            "type": "hook",
+            "label": "With Hook",
+            "validate": {"required": False},
+        }
+        failed_hook_component: Component = {
+            "key": "failedHook",
+            "type": "failHook",
+            "label": "Failed Hook",
+            "validate": {"required": False},
+        }
+        submission = SubmissionFactory.from_components(
+            [hook_component, failed_hook_component],
+            {"withHook": "foo", "failedHook": "bar"},
+        )
+        assert submission.needs_on_completion_retry is False
+
+        execute_component_pre_registration_group.delay(submission_id=submission.id)
+
+        state = submission.load_submission_value_variables_state()
+        hook_var = state.variables["withHook"]
+        failed_hook_var = state.variables["failedHook"]
+
+        self.assertEqual(
+            hook_var.pre_registration_status,
+            ComponentPreRegistrationStatuses.success,
+        )
+        self.assertEqual(hook_var.pre_registration_result, {"data": "something"})
+
+        self.assertEqual(
+            failed_hook_var.pre_registration_status,
+            ComponentPreRegistrationStatuses.failed,
+        )
+        self.assertIn("traceback", failed_hook_var.pre_registration_result)
+
+        submission.refresh_from_db()
+        self.assertTrue(submission.needs_on_completion_retry)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_pre_registration_group_component_failed_retried_and_succeed(self):
+        hook_component: Component = {
+            "key": "withHook",
+            "type": "hook",
+            "label": "With Hook",
+            "validate": {"required": False},
+        }
+        submission = SubmissionFactory.from_components(
+            [hook_component],
+            {"withHook": "foo"},
+        )
+        assert submission.needs_on_completion_retry is False
+
+        # 1st run - fail
+        with patch(
+            "openforms.formio.tests.test_tasks.Hook.pre_registration_hook"
+        ) as mock_hook:
+            mock_hook.side_effect = ValueError("something went wrong")
+            execute_component_pre_registration_group.delay(submission_id=submission.id)
+
+        state = submission.load_submission_value_variables_state()
+        hook_var = state.variables["withHook"]
+
+        self.assertEqual(
+            hook_var.pre_registration_status,
+            ComponentPreRegistrationStatuses.failed,
+        )
+        self.assertIn("traceback", hook_var.pre_registration_result)
+
+        submission.refresh_from_db()
+        self.assertTrue(submission.needs_on_completion_retry)
+
+        # 2nd run - success
+        execute_component_pre_registration_group.delay(submission_id=submission.id)
+
+        hook_var.refresh_from_db()
+        self.assertEqual(
+            hook_var.pre_registration_status,
+            ComponentPreRegistrationStatuses.success,
+        )
+        self.assertEqual(hook_var.pre_registration_result, {"data": "something"})
