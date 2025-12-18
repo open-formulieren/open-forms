@@ -11,11 +11,13 @@ from openklant_client.types.resources.digitaal_adres import (
     DigitaalAdres,
     DigitaalAdresCreateData,
     ListDigitaalAdresParams,
+    SoortDigitaalAdres,
 )
 from zgw_consumers.client import build_client
 
 from openforms.contrib.client import LoggingMixin
 from openforms.submissions.models import Submission
+from openforms.translations.utils import to_iso639_2b
 
 from .models import CustomerInteractionsAPIGroupConfig
 
@@ -51,9 +53,9 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
     ) -> MaakKlantContactResponse:
         data: MaakKlantContactCreateData = {
             "klantcontact": {
-                "kanaal": "open forms",
+                "kanaal": "Webformulier",
                 "onderwerp": submission.form.name,
-                "taal": "nld",
+                "taal": to_iso639_2b(submission.language_code),
                 "vertrouwelijk": True,
             },
             "betrokkene": {
@@ -64,8 +66,8 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
             "onderwerpobject": {
                 "onderwerpobjectidentificator": {
                     "objectId": submission.public_registration_reference,
-                    "codeObjecttype": "form",
-                    "codeRegister": "openforms",
+                    "codeObjecttype": "formulierinzending",
+                    "codeRegister": "Open Formulieren",
                     "codeSoortObjectId": "public_registration_reference",
                 }
             },
@@ -73,14 +75,12 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         return self.methods.maak_klant_contact(data=data)
 
     def create_digital_address_for_betrokkene(
-        self, address, address_type, betrokkene_uuid
+        self, address: str, address_type: SoortDigitaalAdres, betrokkene_uuid: str
     ):
         data = DigitaalAdresCreateData(
             adres=address,
             soortDigitaalAdres=address_type,
-            omschrijving="Open Forms profile",
             verstrektDoorBetrokkene={"uuid": betrokkene_uuid},
             verstrektDoorPartij=None,
-            # isStandaardAdres=is_preferred,
         )
         return self.digitaal_adres.create(data=data)
