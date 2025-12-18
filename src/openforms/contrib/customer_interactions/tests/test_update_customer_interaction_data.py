@@ -7,12 +7,13 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 
-from ..utils import update_customer_interaction_data
-from .mixins import CustomerInteractionsMixin, ExpectedDigitalAddress
+from ..update import update_customer_interaction_data
+from .mixins import CustomerInteractionsMixin
+from .typing import ExpectedDigitalAddress
 
 
 class UpdateCustomerInteractionDataTests(
-    OFVCRMixin, CustomerInteractionsMixin, TestCase
+    CustomerInteractionsMixin, OFVCRMixin, TestCase
 ):
     def test_non_auth_user(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
@@ -55,16 +56,16 @@ class UpdateCustomerInteractionDataTests(
         onderwerpobject = result["onderwerpobject"]
         digital_addresses = result["digital_addresses"]
 
-        self.assertEqual(klantcontact["kanaal"], "open forms")
-        self.assertEqual(klantcontact["onderwerp"], "Form With profile")
+        self.assertEqual(klantcontact["kanaal"], "Webformulier")
+        self.assertEqual(klantcontact["onderwerp"], "With profile")
         self.assertEqual(betrokkene["rol"], "klant")
         self.assertTrue(betrokkene["initiator"])
         self.assertEqual(
             onderwerpobject["onderwerpobjectidentificator"],
             {
                 "objectId": "OF-12345",
-                "codeObjecttype": "form",
-                "codeRegister": "openforms",
+                "codeObjecttype": "formulierinzending",
+                "codeRegister": "Open Formulieren",
                 "codeSoortObjectId": "public_registration_reference",
             },
         )

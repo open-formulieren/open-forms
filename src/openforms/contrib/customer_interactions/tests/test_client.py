@@ -3,10 +3,11 @@ from django.test import TestCase
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import get_customer_interactions_client
-from .mixins import CustomerInteractionsMixin, ExpectedDigitalAddress
+from .mixins import CustomerInteractionsMixin
+from .typing import ExpectedDigitalAddress
 
 
-class CustomerInteractionsClientTest(OFVCRMixin, CustomerInteractionsMixin, TestCase):
+class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, TestCase):
     def test_list_digital_addresses(self):
         with get_customer_interactions_client(self.config) as client:
             data = list(client.get_digital_addresses_for_bsn(bsn="123456782"))

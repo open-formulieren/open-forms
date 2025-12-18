@@ -1,16 +1,5 @@
-from typing import TypedDict
-
-from openklant_client.types.resources.digitaal_adres import SoortDigitaalAdres
-
 from .factories import CustomerInteractionsAPIGroupConfigFactory
-
-
-class ExpectedDigitalAddress(TypedDict):
-    """Partial of openklant_client.DigitaalAdres with only necessary properties."""
-
-    adres: str
-    soortDigitaalAdres: SoortDigitaalAdres
-    isStandaardAdres: bool
+from .typing import ExpectedDigitalAddress
 
 
 class CustomerInteractionsMixin:
