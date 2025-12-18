@@ -495,7 +495,7 @@ def execute_component_pre_registration_group(task, submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
 
     task_group = group(
-        execute_component_pre_registration.si(
+        execute_component_pre_registration.si(  # pyright: ignore[reportFunctionMemberAccess]
             submission_id=submission_id, component=component
         )
         for component in submission.total_configuration_wrapper
