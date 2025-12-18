@@ -2,17 +2,21 @@ from unittest.mock import patch
 
 from django.test import TestCase, override_settings
 
+from openforms.formio.registry import (
+    BasePlugin,
+    ComponentPreRegistrationResult,
+    ComponentRegistry,
+)
+from openforms.formio.typing import Component
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.constants import ComponentPreRegistrationStatuses
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..registry import BasePlugin, ComponentPreRegistrationResult, ComponentRegistry
 from ..tasks import (
     execute_component_pre_registration,
     execute_component_pre_registration_group,
 )
-from ..typing import Component
 
 
 class NoHookComponent(Component): ...
@@ -53,7 +57,7 @@ class PreRegistrationTaskTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        patcher = patch("openforms.formio.tasks.formio_registry", register)
+        patcher = patch("openforms.registrations.tasks.formio_registry", register)
         patcher.start()
         self.addCleanup(patcher.stop)
 
@@ -274,7 +278,7 @@ class PreRegistrationTaskTests(TestCase):
 
         # 1st run - fail
         with patch(
-            "openforms.formio.tests.test_tasks.Hook.pre_registration_hook"
+            "openforms.registrations.tests.test_component_pre_registration_tasks.Hook.pre_registration_hook"
         ) as mock_hook:
             mock_hook.side_effect = ValueError("something went wrong")
             execute_component_pre_registration_group.delay(submission_id=submission.id)

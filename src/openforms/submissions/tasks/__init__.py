@@ -11,7 +11,6 @@ from celery.result import AsyncResult
 from openforms.appointments.tasks import maybe_register_appointment
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.tasks import execute_component_pre_registration_group
 
 from ..constants import PostSubmissionEvents, RegistrationStatuses
 from ..models import PostCompletionMetadata, Submission
