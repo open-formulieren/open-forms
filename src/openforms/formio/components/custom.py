@@ -20,6 +20,7 @@ from openforms.api.geojson import (
     GeoJsonGeometryTypes,
 )
 from openforms.authentication.service import AuthAttribute
+from openforms.contrib.customer_interactions.update import update_customer_interaction_data
 from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration, MapTileLayer, MapWMSTileLayer
 from openforms.formio.typing.map import Overlay
@@ -1078,10 +1079,6 @@ class CustomerProfile(BasePlugin):
         result: ComponentPreRegistrationResult = {}
         if not component["shouldUpdateCustomerData"]:
             return result
-
-        from openforms.contrib.customer_interactions.utils import (
-            update_customer_interaction_data,
-        )
 
         data = update_customer_interaction_data(
             profile_key=component["key"],

@@ -11,7 +11,9 @@ from openforms.contrib.customer_interactions.client import (
 from openforms.contrib.customer_interactions.models import (
     CustomerInteractionsAPIGroupConfig,
 )
-from openforms.contrib.customer_interactions.utils import transform_digital_addresses
+from openforms.contrib.customer_interactions.transform import (
+    transform_digital_addresses,
+)
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission, SubmissionValueVariable
 from openforms.typing import JSONEncodable, JSONObject
