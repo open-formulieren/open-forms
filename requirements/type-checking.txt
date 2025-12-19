@@ -705,7 +705,7 @@ onlinepayments-sdk-python3==5.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-open-klant-client==0.3.0
+open-klant-client==0.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
