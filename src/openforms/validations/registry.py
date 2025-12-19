@@ -59,7 +59,7 @@ class Registry(BaseRegistry[BasePlugin[JSONValue]]):
     def validate(
         self, plugin_id: str, value: JSONValue, submission: Submission
     ) -> ValidationResult:
-        log = logger.bind(plugin_id=plugin_id, submission_id=submission.uuid)
+        log = logger.bind(plugin_id=plugin_id, submission_uuid=str(submission.uuid))
         try:
             validator = self._registry[plugin_id]
         except KeyError as exc:
