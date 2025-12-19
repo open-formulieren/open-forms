@@ -7,7 +7,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODU2NzE1NSwiZXhwIjoxNzU4NjEwMzU1LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.TpSA0TXoz8MY2WqCapxeFuZ47ftMJhYq_fEUqS0NH6Y
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc2NjE1MDAzMCwiZXhwIjoxNzY2MTkzMjMwLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.YlY-9F6oa1GawRxH178Ehsn3Jx_l9w2dvg1c8SHq2xg
       Connection:
       - keep-alive
       User-Agent:
@@ -23,7 +23,7 @@ interactions:
         partners","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749","domein":"DRAFT","rsin":"000000000","contactpersoonBeheerNaam":"OF","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/cf903a2f-0acd-4dbf-9c77-6e5e35d794e1"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/3628d25f-f491-4375-a752-39d16bf2dd59"],"naam":"Drafts","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/630271f6-568a-485e-b1c4-4ed2d6ab3a58","domein":"OTHER","rsin":"000000000","contactpersoonBeheerNaam":"Test
         name","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/cc1d39d9-05a2-45f9-8cfe-230790d36f71"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81"],"naam":"Test
         catalog 2","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d","domein":"TEST","rsin":"000000000","contactpersoonBeheerNaam":"Test
-        name","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","http://localhost:8003/catalogi/api/v1/zaaktypen/b79d9c2f-5ec4-4e23-bb66-ec6dd959a400","http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","http://localhost:8003/catalogi/api/v1/zaaktypen/fcc3499a-04d4-421c-b115-7e3cba2127ac"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/29b63e5c-3835-4f68-8fad-f2aea9ae6b71","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b"],"naam":"Test
+        name","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","http://localhost:8003/catalogi/api/v1/zaaktypen/b79d9c2f-5ec4-4e23-bb66-ec6dd959a400","http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","http://localhost:8003/catalogi/api/v1/zaaktypen/fcc3499a-04d4-421c-b115-7e3cba2127ac"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/29b63e5c-3835-4f68-8fad-f2aea9ae6b71","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e"],"naam":"Test
         catalog","versie":"","begindatumVersie":null}]}'
     headers:
       API-version:
@@ -55,7 +55,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODU2NzE1NSwiZXhwIjoxNzU4NjEwMzU1LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.TpSA0TXoz8MY2WqCapxeFuZ47ftMJhYq_fEUqS0NH6Y
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc2NjE1MDAzMCwiZXhwIjoxNzY2MTkzMjMwLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.YlY-9F6oa1GawRxH178Ehsn3Jx_l9w2dvg1c8SHq2xg
       Connection:
       - keep-alive
       User-Agent:
