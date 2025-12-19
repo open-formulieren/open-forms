@@ -8,11 +8,10 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 
-from ..update import update_customer_interaction_data
-from .typing import ExpectedDigitalAddress
 from ..client import get_customer_interactions_client
+from ..update import update_customer_interaction_data
 from .mixins import CustomerInteractionsMixin
-
+from .typing import ExpectedDigitalAddress
 
 
 class UpdateCustomerInteractionDataTests(
@@ -154,7 +153,7 @@ class UpdateCustomerInteractionDataTests(
         partij = result["partij"]
         digital_addresses = result["digital_addresses"]
 
-        self.assertEqual(klantcontact["kanaal"], "open forms")
+        self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
         self.assertEqual(betrokkene["rol"], "klant")
         self.assertTrue(betrokkene["initiator"])
@@ -162,8 +161,8 @@ class UpdateCustomerInteractionDataTests(
             onderwerpobject["onderwerpobjectidentificator"],
             {
                 "objectId": "OF-12346",
-                "codeObjecttype": "form",
-                "codeRegister": "openforms",
+                "codeObjecttype": "formulierinzending",
+                "codeRegister": "Open Formulieren",
                 "codeSoortObjectId": "public_registration_reference",
             },
         )
@@ -196,7 +195,7 @@ class UpdateCustomerInteractionDataTests(
             {
                 "adres": "0612345678",
                 "soortDigitaalAdres": "telefoonnummer",
-                "isStandaardAdres": False,
+                "isStandaardAdres": True,
                 "verstrektDoorBetrokkene": {
                     "url": betrokkene["url"],
                     "uuid": betrokkene["uuid"],
@@ -259,7 +258,7 @@ class UpdateCustomerInteractionDataTests(
         onderwerpobject = result["onderwerpobject"]
         digital_addresses = result["digital_addresses"]
 
-        self.assertEqual(klantcontact["kanaal"], "open forms")
+        self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
         self.assertEqual(betrokkene["rol"], "klant")
         self.assertTrue(betrokkene["initiator"])
@@ -267,8 +266,8 @@ class UpdateCustomerInteractionDataTests(
             onderwerpobject["onderwerpobjectidentificator"],
             {
                 "objectId": "OF-12346",
-                "codeObjecttype": "form",
-                "codeRegister": "openforms",
+                "codeObjecttype": "formulierinzending",
+                "codeRegister": "Open Formulieren",
                 "codeSoortObjectId": "public_registration_reference",
             },
         )
@@ -298,7 +297,7 @@ class UpdateCustomerInteractionDataTests(
             {
                 "adres": "0611111111",
                 "soortDigitaalAdres": "telefoonnummer",
-                "isStandaardAdres": False,
+                "isStandaardAdres": True,
                 "verstrektDoorBetrokkene": {
                     "url": betrokkene["url"],
                     "uuid": betrokkene["uuid"],
@@ -315,6 +314,7 @@ class UpdateCustomerInteractionDataTests(
 
     def test_auth_user_known_in_openklant_known_addresses(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        # both addresses are known in the Open Klant
         profile_data: list[DigitalAddress] = [
             {
                 "address": "someemail@example.org",
