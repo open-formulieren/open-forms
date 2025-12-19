@@ -10,45 +10,69 @@ assignees: sergei-maertens
   - [ ] ...
 - [ ] Re-generate VCR cassettes (delete the old ones and then) for API tests (see instructions on
       Taiga). You can find all test cases with `grep OFVCRMixin -r src`
-  - [ ] Accounts (`openforms.accounts.tests.test_oidc`)
-  - Appointments: Qmatic (`openforms.appointments.contrib.qmatic`) (no testenv available anymore)
-  - Authentication plugins
-    - [ ] DigiD (Signicat): `openforms.authentication.contrib.digid.tests.test_signicat_integration`
-    - [ ] eHerkenning
-          (Signicat):`openforms.authentication.contrib.eherkenning.tests.test_signicat_integration`
-    - [ ] DigiD/EH via OIDC: `openforms.authentication.contrib.digid_eherkenning_oidc`
-    - [ ] Org via OIDC: `openforms.authentication.contrib.org_oidc`
-    - [ ] `openforms.tests.test_registrator_prefill`
+
+  - Accounts
+
+    - [ ] `openforms.accounts.tests.test_oidc`
+
+  - Authentication:
+
+    - [ ] `openforms.authentication.contrib.digid.tests.test_signicat_integration`
+    - [ ] `openforms.authentication.contrib.digid_eherkenning_oidc.tests.test_auth_context_data`
+    - [ ] `openforms.authentication.contrib.digid_eherkenning_oidc.tests.test_auth_flow_callbacks`
+    - [ ] `openforms.authentication.contrib.digid_eherkenning_oidc.tests.test_auth_flow_init`
+    - [ ] `openforms.authentication.contrib.digid_eherkenning_oidc.tests.test_auth_flow_logout`
+    - [ ] `openforms.authentication.contrib.org_oidc.tests.test_auth_context_data`
+    - [ ] `openforms.authentication.contrib.org_oidc.tests.test_auth_flow_callbacks`
+    - [ ] `openforms.authentication.contrib.org_oidc.tests.test_auth_flow_init`
+    - [ ] `openforms.authentication.contrib.org_oidc.tests.test_auth_flow_logout`
+    - [ ] `openforms.authentication.contrib.eherkenning.tests.test_signicat_integration`
+
   - General purpose clients
+
     - [ ] `openforms.contrib.brk`
+    - [ ] `openforms.contrib.customer_interactions`
     - [ ] `openforms.contrib.haal_centraal.tests.test_integration`
     - [ ] `openforms.contrib.kvk`
-    - [ ] `openforms.contrib.objects_api.tests`
-    - `suwinet.tests.test_client` (testenv access has been retracted and won't be reinstated)
-  - Family members
-    - [ ] `openforms.prefill.contrib.family_members.tests.test_plugin`
-    - [ ] `openforms.emails.tests.test_digest_functions`
-  - Forms
-    - [ ] `openforms.forms.tests.test_import_export`
-    - [ ] `openforms.forms.tests.e2e_tests.test_registration_backend_conf`
-    - [ ] `openforms.formio.formatters.tests.test_default_formatters`
-  - Payment plugins
-    - [ ] Ogone legacy: `openforms.payments.contrib.ogone.tests.test_client`
-    - [ ] Worldline: `openforms.payments.contrib.worldline.tests.test_plugin`
-  - Prefill
-    - [ ] Objects API: `openforms.prefill.contrib.objects_api`
-    - Suwinet: `openforms.prefill.contrib.suwinet` (testenv access has been retracted and won't be
-      reinstated)
-  - ReferenceLists:
+    - [ ] `openforms.contrib.objects_api`
     - [ ] `openforms.contrib.reference_lists`
-    - [ ] `openforms.emails.tests.test_tasks_integration`
+    - [ ] `soap.tests.test_client.ClientTransportTests`
+
+  - Email digest
+
+    - [ ] `openforms.emails.tests.test_digest_functions.FamilyMembersBrokenHCConfigurationTests`
+    - [ ] `openforms.emails.tests.test_digest_functions.InvalidMapComponentOverlaysTests`
+    - [ ] `openforms.emails.tests.test_tasks_integration.ReferenceListsExpiredDataTests`
+
+  - Formio components
+
     - [ ] `openforms.formio.dynamic_config.tests.test_reference_lists_config`
-    - [ ] `openforms.forms.tests.test_json_schema`
-  - Registration plugins:
-    - [ ] Objects API: `openforms.registrations.contrib.objects_api`
-    - [ ] ZGW APIs: `openforms.registrations.contrib.zgw_apis`
-    - [ ] StUF_ZDS APIs: `openforms.registrations.contrib.stuf_zds.tests.test_backend`
-    - [ ] Generic JSON: `openforms.registrations.contrib.generic_json.tests.test_backend`
+    - [ ] `openforms.formio.formatters.tests.test_default_formatters.MapFormatterTests`
+
+  - Forms
+
+    - [ ] `openforms.forms.tests.e2e_tests.test_registration_backend_conf`
+    - [ ] `openforms.forms.tests.test_import_export`
+    - [ ] `openforms.forms.tests.test_json_schema.GenerateJsonSchemaReferenceListsTests`
+
+  - Payments:
+
+    - [ ] `openforms.payments.contrib.worldline`
+
+  - Prefill:
+
+    - [ ] `openforms.tests.test_registrator_prefill` (uses org OIDC)
+    - [ ] `openforms.prefill.contrib.customer_interactions`
+    - [ ] `openforms.prefill.contrib.family_members`
+    - [ ] `openforms.prefill.contrib.objects_api`
+
+  - Registrations:
+
+    - [ ] `openforms.registrations.contrib.generic_json`
+    - [ ] `openforms.registrations.contrib.objects_api`
+    - [ ] `openforms.registrations.contrib.stuf_zds`
+    - [ ] `openforms.registrations.contrib.zgw_apis`
+
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations
