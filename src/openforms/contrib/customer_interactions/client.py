@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
+from typing import assert_never
 
 from openklant_client.client import OpenKlantClient
 from openklant_client.types.methods.maak_klant_contact import (
@@ -71,7 +72,7 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
     def create_customer_contact(
         self,
         submission: Submission,
-        party_uuid: str | None = None,
+        party_uuid: str = "",
     ) -> MaakKlantContactResponse:
         data: MaakKlantContactCreateData = {
             "klantcontact": {
@@ -105,7 +106,7 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         address_type: SoortDigitaalAdres,
         is_preferred: bool,
         betrokkene_uuid: str,
-        party_uuid: str | None = None,
+        party_uuid="",
     ) -> DigitaalAdres:
         party_data = {"uuid": party_uuid} if party_uuid else None
         data = DigitaalAdresCreateData(
@@ -157,14 +158,6 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
 
         return response["results"][0]
 
-    def find_party(self, auth_value: str, auth_attribute: str) -> Partij | None:
-        match auth_attribute:
-            case AuthAttribute.bsn:
-                return self.find_party_for_bsn(auth_value)
-
-            case _:
-                return None
-
     def create_party_for_bsn(self, bsn: str) -> Partij:
         data: CreatePartijPersoonData = {
             "soortPartij": "persoon",
@@ -189,10 +182,24 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         }
         return self.partij.create_persoon(data=data)
 
-    def create_party(self, auth_value: str, auth_attribute: str) -> Partij | None:
+    def get_or_create_party(
+        self, auth_attribute: AuthAttribute, auth_value: str
+    ) -> tuple[Partij, bool]:
+        party: Partij
+        created: bool
+
         match auth_attribute:
             case AuthAttribute.bsn:
-                return self.create_party_for_bsn(auth_value)
+                existing_party = self.find_party_for_bsn(auth_value)
+                if existing_party:
+                    party = existing_party
+                    created = False
 
-            case _:
-                return None
+                else:
+                    party = self.create_party_for_bsn(auth_value)
+                    created = True
+
+                return party, created
+
+            case _:  # pragma: no cover
+                assert_never(auth_attribute)

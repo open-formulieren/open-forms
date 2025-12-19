@@ -1,8 +1,7 @@
-from typing import NotRequired, TypedDict
+from typing import TypedDict
 
 import structlog
 from openklant_client.types.methods.maak_klant_contact import MaakKlantContactResponse
-from openklant_client.types.resources import Partij
 from openklant_client.types.resources.betrokkene import Betrokkene
 from openklant_client.types.resources.digitaal_adres import DigitaalAdres
 from openklant_client.types.resources.klant_contact import KlantContact
@@ -32,7 +31,7 @@ class UpdateCustomerInteractionsResult(TypedDict):
     betrokkene: Betrokkene
     onderwerpobject: OnderwerpObject
     digital_addresses: DigitalAddressResults
-    partij: NotRequired[Partij]
+    partij_uuid: str
 
 
 def update_customer_interaction_data(
@@ -104,21 +103,16 @@ def update_customer_interaction_data(
 
     channels_to_address_types = {v: k for k, v in ADDRESS_TYPES_TO_CHANNELS.items()}
 
-    result: UpdateCustomerInteractionsResult = {}
     with get_customer_interactions_client(api_group) as client:
         if submission.is_authenticated:
             auth_value = submission.auth_info.value
             auth_attribute = submission.auth_info.attribute
 
             # link authenticated user to the party
-            party = client.find_party(auth_value, auth_attribute)
-            if not party:
-                party = client.create_party(auth_value, auth_attribute)
-                result["partij"] = party
-
+            party, created = client.get_or_create_party(auth_attribute, auth_value)
             party_uuid = party["uuid"]
         else:
-            party_uuid = None
+            party_uuid = ""
 
         customer_contact: MaakKlantContactResponse = client.create_customer_contact(
             submission, party_uuid
@@ -170,12 +164,12 @@ def update_customer_interaction_data(
         digital_address_results = DigitalAddressResults(
             created=created_addresses, updated=updated_addresses
         )
-        result.update(
-            {
-                "klantcontact": customer_contact["klantcontact"],
-                "betrokkene": customer_contact["betrokkene"],
-                "onderwerpobject": customer_contact["onderwerpobject"],
-                "digital_addresses": digital_address_results,
-            }
-        )
+        result: UpdateCustomerInteractionsResult = {
+            "klantcontact": customer_contact["klantcontact"],
+            "betrokkene": customer_contact["betrokkene"],
+            "onderwerpobject": customer_contact["onderwerpobject"],
+            "digital_addresses": digital_address_results,
+            "partij_uuid": party_uuid,
+        }
+
         return result

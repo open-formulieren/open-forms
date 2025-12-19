@@ -57,6 +57,7 @@ class UpdateCustomerInteractionDataTests(
         betrokkene = result["betrokkene"]
         onderwerpobject = result["onderwerpobject"]
         digital_addresses = result["digital_addresses"]
+        partij_uuid = result["partij_uuid"]
 
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertIsNone(betrokkene["wasPartij"])
@@ -72,7 +73,7 @@ class UpdateCustomerInteractionDataTests(
                 "codeSoortObjectId": "public_registration_reference",
             },
         )
-        self.assertFalse("partij" in result)
+        self.assertEqual(partij_uuid, "")
 
         self.assertEqual(len(digital_addresses["created"]), 2)
         expected_addresses: list[ExpectedDigitalAddress] = [
@@ -154,9 +155,14 @@ class UpdateCustomerInteractionDataTests(
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
         onderwerpobject = result["onderwerpobject"]
-        partij = result["partij"]
+        partij_uuid = result["partij_uuid"]
         digital_addresses = result["digital_addresses"]
 
+        with get_customer_interactions_client(self.config) as client:
+            party = client.find_party_for_bsn("108915864")
+
+        # check that party is linked to the user
+        self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
         self.assertEqual(betrokkene["rol"], "klant")
@@ -170,18 +176,8 @@ class UpdateCustomerInteractionDataTests(
                 "codeSoortObjectId": "public_registration_reference",
             },
         )
-        self.assertEqual(partij["soortPartij"], "persoon")
         self.assertEqual(
-            partij["partijIdentificatoren"][0]["partijIdentificator"],
-            {
-                "codeSoortObjectId": "bsn",
-                "codeRegister": "brp",
-                "codeObjecttype": "natuurlijk_persoon",
-                "objectId": "108915864",
-            },
-        )
-        self.assertEqual(
-            betrokkene["wasPartij"], {"url": partij["url"], "uuid": partij["uuid"]}
+            betrokkene["wasPartij"], {"url": party["url"], "uuid": partij_uuid}
         )
 
         self.assertEqual(len(digital_addresses["created"]), 2)
@@ -204,7 +200,7 @@ class UpdateCustomerInteractionDataTests(
                     "url": betrokkene["url"],
                     "uuid": betrokkene["uuid"],
                 },
-                "verstrektDoorPartij": {"url": partij["url"], "uuid": partij["uuid"]},
+                "verstrektDoorPartij": {"url": party["url"], "uuid": partij_uuid},
             },
         ]
         for expected_address in expected_addresses:
@@ -265,7 +261,12 @@ class UpdateCustomerInteractionDataTests(
         betrokkene = result["betrokkene"]
         onderwerpobject = result["onderwerpobject"]
         digital_addresses = result["digital_addresses"]
+        partij_uuid = result["partij_uuid"]
 
+        with get_customer_interactions_client(self.config) as client:
+            party = client.find_party_for_bsn("123456782")
+
+        self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
         self.assertEqual(betrokkene["rol"], "klant")
@@ -279,15 +280,10 @@ class UpdateCustomerInteractionDataTests(
                 "codeSoortObjectId": "public_registration_reference",
             },
         )
-        self.assertFalse("partij" in result)
-
-        # check that the existing party is linked to this contactmoment via betrokkene
-        with get_customer_interactions_client(self.config) as client:
-            existing_party = client.find_party_for_bsn("123456782")
 
         self.assertEqual(
             betrokkene["wasPartij"],
-            {"url": existing_party["url"], "uuid": existing_party["uuid"]},
+            {"url": party["url"], "uuid": partij_uuid},
         )
 
         self.assertEqual(len(digital_addresses["created"]), 2)
@@ -311,8 +307,8 @@ class UpdateCustomerInteractionDataTests(
                     "uuid": betrokkene["uuid"],
                 },
                 "verstrektDoorPartij": {
-                    "url": existing_party["url"],
-                    "uuid": existing_party["uuid"],
+                    "url": party["url"],
+                    "uuid": partij_uuid,
                 },
             },
         ]
@@ -373,7 +369,12 @@ class UpdateCustomerInteractionDataTests(
         betrokkene = result["betrokkene"]
         onderwerpobject = result["onderwerpobject"]
         digital_addresses = result["digital_addresses"]
+        partij_uuid = result["partij_uuid"]
 
+        with get_customer_interactions_client(self.config) as client:
+            party = client.find_party_for_bsn("123456782")
+
+        self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
         self.assertEqual(betrokkene["rol"], "klant")
@@ -387,15 +388,10 @@ class UpdateCustomerInteractionDataTests(
                 "codeSoortObjectId": "public_registration_reference",
             },
         )
-        self.assertFalse("partij" in result)
-
-        # check that the existing party is linked to this contactmoment via betrokkene
-        with get_customer_interactions_client(self.config) as client:
-            existing_party = client.find_party_for_bsn("123456782")
 
         self.assertEqual(
             betrokkene["wasPartij"],
-            {"url": existing_party["url"], "uuid": existing_party["uuid"]},
+            {"url": party["url"], "uuid": partij_uuid},
         )
 
         # no new address is added
@@ -458,7 +454,12 @@ class UpdateCustomerInteractionDataTests(
         betrokkene = result["betrokkene"]
         onderwerpobject = result["onderwerpobject"]
         digital_addresses = result["digital_addresses"]
+        partij_uuid = result["partij_uuid"]
 
+        with get_customer_interactions_client(self.config) as client:
+            party = client.find_party_for_bsn("123456782")
+
+        self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
         self.assertEqual(betrokkene["rol"], "klant")
@@ -472,15 +473,10 @@ class UpdateCustomerInteractionDataTests(
                 "codeSoortObjectId": "public_registration_reference",
             },
         )
-        self.assertFalse("partij" in result)
-
-        # check that the existing party is linked to this contactmoment via betrokkene
-        with get_customer_interactions_client(self.config) as client:
-            existing_party = client.find_party_for_bsn("123456782")
 
         self.assertEqual(
             betrokkene["wasPartij"],
-            {"url": existing_party["url"], "uuid": existing_party["uuid"]},
+            {"url": party["url"], "uuid": partij_uuid},
         )
 
         # no new address is added
@@ -493,8 +489,8 @@ class UpdateCustomerInteractionDataTests(
                 "soortDigitaalAdres": "email",
                 "isStandaardAdres": True,
                 "verstrektDoorPartij": {
-                    "url": existing_party["url"],
-                    "uuid": existing_party["uuid"],
+                    "url": party["url"],
+                    "uuid": partij_uuid,
                 },
             },
             {
@@ -502,8 +498,8 @@ class UpdateCustomerInteractionDataTests(
                 "soortDigitaalAdres": "telefoonnummer",
                 "isStandaardAdres": True,
                 "verstrektDoorPartij": {
-                    "url": existing_party["url"],
-                    "uuid": existing_party["uuid"],
+                    "url": party["url"],
+                    "uuid": partij_uuid,
                 },
             },
         ]
