@@ -1,20 +1,18 @@
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable
 from itertools import groupby
 
+import structlog
 from openklant_client.types.resources.digitaal_adres import (
     DigitaalAdres,
     SoortDigitaalAdres,
 )
 
-from .typing import (
-    CommunicationChannel,
-    SupportedChannels,
-)
+from openforms.formio.typing.custom import SupportedChannels
+from openforms.prefill.contrib.customer_interactions.typing import CommunicationChannel
 
-ADDRESS_TYPES_TO_CHANNELS: Mapping[SoortDigitaalAdres, SupportedChannels] = {
-    "email": "email",
-    "telefoonnummer": "phoneNumber",
-}
+from .constants import ADDRESS_TYPES_TO_CHANNELS
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def transform_digital_addresses(
@@ -25,9 +23,9 @@ def transform_digital_addresses(
     Filter and group digital addresses.
 
     This function:
-    * keeps only digital addresses listed in 'configured_address_types' parameter.
-    * groups response from /klantinteracties/api/v1/digitaleadressen endpoint by
-    the address type.
+    * keeps only digital addresses listed in ``configured_address_types`` parameter.
+    * groups response from ``/klantinteracties/api/v1/digitaleadressen`` endpoint by
+      the address type.
     """
     sorted_addresses = sorted(digital_addresses, key=lambda x: x["soortDigitaalAdres"])
     grouped_digital_addresses: groupby[SoortDigitaalAdres, DigitaalAdres] = groupby(

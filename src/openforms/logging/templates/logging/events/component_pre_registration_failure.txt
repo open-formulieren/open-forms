@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead component=log.extra_data.component %}
+   {{ lead }}: Component "{{ component }}" pre-registration failed.
+{% endblocktrans %}

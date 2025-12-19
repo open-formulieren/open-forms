@@ -10,7 +10,7 @@ from django.db import models
 from django.db.models.constraints import CheckConstraint
 from django.utils import timezone
 from django.utils.dateparse import parse_date
-from django.utils.functional import empty
+from django.utils.functional import cached_property, empty
 from django.utils.translation import gettext_lazy as _
 
 import structlog
@@ -35,7 +35,8 @@ from openforms.utils.date import format_date_value, parse_datetime, parse_time
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.service import VariablesRegistry, get_static_variables
 
-from ..constants import SubmissionValueVariableSources
+from ...config.models import GlobalConfiguration
+from ..constants import ComponentPreRegistrationStatuses, SubmissionValueVariableSources
 from .submission import Submission
 
 if TYPE_CHECKING:
@@ -454,6 +455,23 @@ class SubmissionValueVariable(models.Model):
         max_length=50,
         blank=True,
     )
+    pre_registration_status = models.CharField(
+        verbose_name=_("pre-registration status"),
+        help_text=_(
+            "Indication whether the pre-registration hook in the component plugin was successful."
+        ),
+        choices=ComponentPreRegistrationStatuses.choices,
+        default=ComponentPreRegistrationStatuses.not_used,
+        max_length=50,
+    )
+    pre_registration_result = models.JSONField(
+        _("pre-registration result"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "Contains data returned by the pre-registration hook of the component."
+        ),
+    )
 
     objects = SubmissionValueVariableManager()
 
@@ -696,3 +714,15 @@ class SubmissionValueVariable(models.Model):
             return value.data
 
         return value
+
+    @cached_property
+    def is_registration_attempt_allowed(self) -> bool:
+        config = GlobalConfiguration.get_solo()
+
+        if self.pre_registration_status == ComponentPreRegistrationStatuses.success:
+            return False
+
+        if self.submission.registration_attempts >= config.registration_attempt_limit:
+            return False
+
+        return True

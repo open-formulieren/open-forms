@@ -838,6 +838,48 @@ def skipped_registration_cosign_required(submission: Submission):
 # - - -
 
 
+def component_pre_registration_start(submission: Submission, component_key: str):
+    _create_log(
+        submission,
+        "component_pre_registration_start",
+        extra_data={"component": component_key},
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
+
+
+def component_pre_registration_success(submission: Submission, component_key: str):
+    _create_log(
+        submission,
+        "component_pre_registration_success",
+        extra_data={"component": component_key},
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
+
+
+def component_pre_registration_failure(
+    submission: Submission, error: Exception, component_key: str
+):
+    _create_log(
+        submission,
+        "component_pre_registration_failure",
+        extra_data={"component": component_key},
+        error=error,
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
+
+
+def component_pre_registration_skip(submission: Submission, component_key: str):
+    _create_log(
+        submission,
+        "component_pre_registration_skip",
+        extra_data={"component": component_key},
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
+
+
+# - - -
+
+
 def form_activated(form: Form):
     _create_log(form, "form_activated")
 

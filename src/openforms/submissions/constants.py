@@ -57,3 +57,10 @@ class PostSubmissionEvents(models.TextChoices):
     on_payment_complete = "on_payment_complete", _("On payment complete")
     on_cosign_complete = "on_cosign_complete", _("On cosign complete")
     on_retry = "on_retry", _("On retry")
+
+
+class ComponentPreRegistrationStatuses(models.TextChoices):
+    not_used = "not_used", _("Not used")
+    in_progress = "in_progress", _("In progress")
+    success = "success", _("Success")
+    failed = "failed", _("Failed")

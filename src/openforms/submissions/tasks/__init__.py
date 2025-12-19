@@ -41,6 +41,10 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
     # just set a submission reference (if it hasn't already been set)
     pre_registration_task = pre_registration.si(submission_id, event)
 
+    component_pre_registration_group = execute_component_pre_registration_group.si(
+        submission_id
+    )
+
     # Generate the submission report. Contains information about the payment and co-sign status.
     generate_report_task = generate_submission_report.si(submission_id)
 
@@ -58,6 +62,7 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
     actions_chain = chain(
         register_appointment_task,
         pre_registration_task,
+        component_pre_registration_group,
         generate_report_task,
         register_submission_task,
         payment_status_update_task,

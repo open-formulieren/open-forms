@@ -14,7 +14,16 @@ the public API better defined and smaller.
 
 import warnings
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Generic, Literal, Protocol, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Generic,
+    Literal,
+    NotRequired,
+    Protocol,
+    TypedDict,
+    TypeVar,
+)
 
 from django.utils.translation import gettext as _
 
@@ -23,7 +32,7 @@ from rest_framework.request import Request
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
-from openforms.typing import JSONObject, VariableValue
+from openforms.typing import JSONObject, JSONValue, VariableValue
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
@@ -33,6 +42,10 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 ComponentT = TypeVar("ComponentT", bound=Component, contravariant=True)
+
+
+class ComponentPreRegistrationResult(TypedDict):
+    data: NotRequired[JSONValue]
 
 
 class FormatterProtocol(Protocol[ComponentT]):
@@ -47,6 +60,12 @@ class NormalizerProtocol(Protocol[ComponentT]):
 
 class RewriterForRequestProtocol(Protocol[ComponentT]):
     def __call__(self, component: ComponentT, request: Request) -> None: ...
+
+
+class PreRegistrationHookProtocol(Protocol[ComponentT]):
+    def __call__(
+        self, component: ComponentT, submission: "Submission"
+    ) -> ComponentPreRegistrationResult: ...
 
 
 class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
@@ -68,6 +87,10 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
     rewrite_for_request: RewriterForRequestProtocol[ComponentT] | None = None
     """
     Callback to invoke to rewrite plugin configuration for a given HTTP request.
+    """
+    pre_registration_hook: PreRegistrationHookProtocol[ComponentT] | None = None
+    """
+    Hook to perform component-specific registration logic during the "pre-registration" phase.
     """
 
     @property
@@ -329,6 +352,28 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
         component_plugin = self[component_type]
         return component_plugin.build_serializer_field(component)
+
+    def has_pre_registration_hook(self, component: Component) -> bool:
+        """
+        Determine if a given component has a pre-registration hook.
+        """
+        if (component_type := component["type"]) not in self:
+            return False
+
+        return self[component_type].pre_registration_hook is not None
+
+    def apply_pre_registration_hook(
+        self, component: Component, submission: "Submission"
+    ) -> ComponentPreRegistrationResult:
+        """
+        Apply component pre registration hook.
+        """
+        assert self.has_pre_registration_hook(component)
+        hook = self[component["type"]].pre_registration_hook
+
+        assert hook is not None
+
+        return hook(component, submission)
 
 
 # Sentinel to provide the default registry. You can easily instantiate another

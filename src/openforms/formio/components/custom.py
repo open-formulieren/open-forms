@@ -22,6 +22,9 @@ from openforms.api.geojson import (
 from openforms.authentication.service import AuthAttribute
 from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration, MapTileLayer, MapWMSTileLayer
+from openforms.contrib.customer_interactions.update import (
+    update_customer_interaction_data,
+)
 from openforms.formio.typing.map import Overlay
 from openforms.forms.models import FormVariable
 from openforms.prefill.contrib.family_members.plugin import (
@@ -44,12 +47,17 @@ from ..formatters.custom import (
     DateTimeFormatter,
     MapFormatter,
 )
-from ..formatters.formio import DefaultFormatter, TextFieldFormatter
-from ..registry import BasePlugin, register
+from ..formatters.formio import (
+    CustomerProfileFormatter,
+    DefaultFormatter,
+    TextFieldFormatter,
+)
+from ..registry import BasePlugin, ComponentPreRegistrationResult, register
 from ..typing import (
     AddressNLComponent,
     ChildrenComponent,
     Component,
+    CustomerProfileComponent,
     DateComponent,
     DatetimeComponent,
     MapComponent,
@@ -1056,3 +1064,26 @@ class LicensePlate(BasePlugin):
             "pattern": r"^[a-zA-Z0-9]{1,3}-[a-zA-Z0-9]{1,3}-[a-zA-Z0-9]{1,3}$",
         }
         return to_multiple(base) if multiple else base
+
+
+@register("customerProfile")
+class CustomerProfile(BasePlugin):
+    formatter = CustomerProfileFormatter
+
+    @staticmethod
+    def pre_registration_hook(
+        component: CustomerProfileComponent, submission: Submission
+    ) -> ComponentPreRegistrationResult:
+        """
+        Write back customer profile preferences to the customer interactions API.
+        """
+        result: ComponentPreRegistrationResult = {}
+        if not component["shouldUpdateCustomerData"]:
+            return result
+
+        data = update_customer_interaction_data(
+            profile_key=component["key"],
+            submission=submission,
+        )
+        result["data"] = data
+        return result

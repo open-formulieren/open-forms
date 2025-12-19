@@ -65,5 +65,17 @@
       "dateOfBirth": "1989-04-01",
       "dateOfBirthPrecision": "date"
     }
+  ],
+  "profile": [
+    {
+      "type": "email",
+      "address": "test@mail.com",
+      "preferenceUpdate": "useOnlyOnce"
+    },
+    {
+      "type": "phoneNumber",
+      "address": "06 12345678",
+      "preferenceUpdate": "isNewPreferred"
+    }
   ]
 }
