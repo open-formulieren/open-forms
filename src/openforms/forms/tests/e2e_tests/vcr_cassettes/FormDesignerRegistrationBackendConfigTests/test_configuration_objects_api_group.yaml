@@ -7,55 +7,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Token 171be5abaf41e7856b423ad513df1ef8f867ff48
-      Connection:
-      - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
-    method: GET
-    uri: http://localhost:8001/api/v2/objecttypes
-  response:
-    body:
-      string: '{"count":7,"next":null,"previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/59cdc902-576b-495f-ae63-c9c78b8afc09","uuid":"59cdc902-576b-495f-ae63-c9c78b8afc09","name":"Partners","namePlural":"Partners","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-07-22","modifiedAt":"2025-07-22","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/59cdc902-576b-495f-ae63-c9c78b8afc09/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","uuid":"8faed0fa-7864-4409-aa6d-533a37616a9e","name":"Accepts
-        everything","namePlural":"Accepts everything","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-07-22","modifiedAt":"2024-07-22","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/644ab597-e88c-43c0-8321-f12113510b0e","uuid":"644ab597-e88c-43c0-8321-f12113510b0e","name":"Fieldset
-        component","namePlural":"Fieldset component","description":"","dataClassification":"confidential","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-02-08","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/644ab597-e88c-43c0-8321-f12113510b0e/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/f1dde4fe-b7f9-46dc-84ae-429ae49e3705","uuid":"f1dde4fe-b7f9-46dc-84ae-429ae49e3705","name":"Geo
-        in data","namePlural":"Geo in data","description":"","dataClassification":"confidential","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-02-08","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/f1dde4fe-b7f9-46dc-84ae-429ae49e3705/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","uuid":"527b8408-7421-4808-a744-43ccb7bdaaa2","name":"File
-        Uploads","namePlural":"File Uploads","description":"","dataClassification":"confidential","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-02-08","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f","uuid":"3edfdaf7-f469-470b-a391-bb7ea015bd6f","name":"Tree","namePlural":"Trees","description":"","dataClassification":"confidential","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-02-08","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-11-25","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4"]}]}'
-    headers:
-      Allow:
-      - GET, POST, HEAD, OPTIONS
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '4618'
-      Content-Type:
-      - application/json
-      Cross-Origin-Opener-Policy:
-      - same-origin
-      Date:
-      - Tue, 16 Sep 2025 10:06:52 GMT
-      Referrer-Policy:
-      - same-origin
-      Server:
-      - nginx/1.29.0
-      Vary:
-      - origin
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - DENY
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, br
-      Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODAxNzIxMywiZXhwIjoxNzU4MDYwNDEzLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.v4g5kaeY3XcNn7Bxx3_HEzn5R2-6UYpajLfLX7CY88Q
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc2NjE0OTIwMywiZXhwIjoxNzY2MTkyNDAzLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.ax-iARZFcu5prK3nwtvVlqVnZ2svukNd2XUJ17CQOS8
       Connection:
       - keep-alive
       User-Agent:
@@ -64,7 +16,9 @@ interactions:
     uri: http://localhost:8003/catalogi/api/v1/catalogussen
   response:
     body:
-      string: '{"count":4,"next":null,"previous":null,"results":[{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10","domein":"PARTN","rsin":"000000000","contactpersoonBeheerNaam":"For
+      string: '{"count":5,"next":null,"previous":null,"results":[{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/e035387e-6374-4eb9-b3d1-416294402bae","domein":"CHILD","rsin":"000000000","contactpersoonBeheerNaam":"For
+        testing children component","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35"],"naam":"Test
+        children","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10","domein":"PARTN","rsin":"000000000","contactpersoonBeheerNaam":"For
         testing partners component","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/77543c85-e5cd-4b3e-b7a5-27165e1334b1"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d2ea38b1-5215-402f-a3f5-2977d112bf72"],"naam":"Test
         partners","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749","domein":"DRAFT","rsin":"000000000","contactpersoonBeheerNaam":"OF","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/cf903a2f-0acd-4dbf-9c77-6e5e35d794e1"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/3628d25f-f491-4375-a752-39d16bf2dd59"],"naam":"Drafts","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/630271f6-568a-485e-b1c4-4ed2d6ab3a58","domein":"OTHER","rsin":"000000000","contactpersoonBeheerNaam":"Test
         name","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/cc1d39d9-05a2-45f9-8cfe-230790d36f71"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81"],"naam":"Test
@@ -77,7 +31,7 @@ interactions:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Content-Length:
-      - '3120'
+      - '3693'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -101,7 +55,55 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODAxNzIxMywiZXhwIjoxNzU4MDYwNDEzLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.v4g5kaeY3XcNn7Bxx3_HEzn5R2-6UYpajLfLX7CY88Q
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc2NjE0OTIwNCwiZXhwIjoxNzY2MTkyNDA0LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.Hwv5LUPsV57Li-YnUOVCMc7zPfxcEbU2phQqWwCTDcA
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: http://localhost:8003/catalogi/api/v1/catalogussen
+  response:
+    body:
+      string: '{"count":5,"next":null,"previous":null,"results":[{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/e035387e-6374-4eb9-b3d1-416294402bae","domein":"CHILD","rsin":"000000000","contactpersoonBeheerNaam":"For
+        testing children component","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35"],"naam":"Test
+        children","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10","domein":"PARTN","rsin":"000000000","contactpersoonBeheerNaam":"For
+        testing partners component","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/77543c85-e5cd-4b3e-b7a5-27165e1334b1"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d2ea38b1-5215-402f-a3f5-2977d112bf72"],"naam":"Test
+        partners","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749","domein":"DRAFT","rsin":"000000000","contactpersoonBeheerNaam":"OF","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/cf903a2f-0acd-4dbf-9c77-6e5e35d794e1"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/3628d25f-f491-4375-a752-39d16bf2dd59"],"naam":"Drafts","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/630271f6-568a-485e-b1c4-4ed2d6ab3a58","domein":"OTHER","rsin":"000000000","contactpersoonBeheerNaam":"Test
+        name","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/cc1d39d9-05a2-45f9-8cfe-230790d36f71"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81"],"naam":"Test
+        catalog 2","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d","domein":"TEST","rsin":"000000000","contactpersoonBeheerNaam":"Test
+        name","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","http://localhost:8003/catalogi/api/v1/zaaktypen/b79d9c2f-5ec4-4e23-bb66-ec6dd959a400","http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","http://localhost:8003/catalogi/api/v1/zaaktypen/fcc3499a-04d4-421c-b115-7e3cba2127ac"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/29b63e5c-3835-4f68-8fad-f2aea9ae6b71","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e"],"naam":"Test
+        catalog","versie":"","begindatumVersie":null}]}'
+    headers:
+      API-version:
+      - 1.3.1
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Content-Length:
+      - '3693'
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - Accept, origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc2NjE0OTIwNCwiZXhwIjoxNzY2MTkyNDA0LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.Hwv5LUPsV57Li-YnUOVCMc7zPfxcEbU2phQqWwCTDcA
       Connection:
       - keep-alive
       User-Agent:
@@ -110,7 +112,9 @@ interactions:
     uri: http://localhost:8003/catalogi/api/v1/informatieobjecttypen
   response:
     body:
-      string: '{"count":9,"next":null,"previous":null,"results":[{"url":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d2ea38b1-5215-402f-a3f5-2977d112bf72","catalogus":"http://localhost:8003/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10","omschrijving":"Partners
+      string: '{"count":10,"next":null,"previous":null,"results":[{"url":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35","catalogus":"http://localhost:8003/catalogi/api/v1/catalogussen/e035387e-6374-4eb9-b3d1-416294402bae","omschrijving":"Children
+        PDF Informatieobjecttype","vertrouwelijkheidaanduiding":"openbaar","beginGeldigheid":"2020-06-20","eindeGeldigheid":null,"concept":false,"besluittypen":[],"informatieobjectcategorie":"Test
+        category","trefwoord":[],"omschrijvingGeneriek":{"informatieobjecttypeOmschrijvingGeneriek":"","definitieInformatieobjecttypeOmschrijvingGeneriek":"","herkomstInformatieobjecttypeOmschrijvingGeneriek":"","hierarchieInformatieobjecttypeOmschrijvingGeneriek":"","opmerkingInformatieobjecttypeOmschrijvingGeneriek":""},"zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be"],"beginObject":"2020-06-20","eindeObject":null},{"url":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d2ea38b1-5215-402f-a3f5-2977d112bf72","catalogus":"http://localhost:8003/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10","omschrijving":"Partners
         PDF Informatieobjecttype","vertrouwelijkheidaanduiding":"openbaar","beginGeldigheid":"2020-06-20","eindeGeldigheid":null,"concept":false,"besluittypen":[],"informatieobjectcategorie":"Test
         category","trefwoord":[],"omschrijvingGeneriek":{"informatieobjecttypeOmschrijvingGeneriek":"","definitieInformatieobjecttypeOmschrijvingGeneriek":"","herkomstInformatieobjecttypeOmschrijvingGeneriek":"","hierarchieInformatieobjecttypeOmschrijvingGeneriek":"","opmerkingInformatieobjecttypeOmschrijvingGeneriek":""},"zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/77543c85-e5cd-4b3e-b7a5-27165e1334b1"],"beginObject":"2020-06-20","eindeObject":null},{"url":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e","catalogus":"http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d","omschrijving":"Attachment
         Informatieobjecttype","vertrouwelijkheidaanduiding":"openbaar","beginGeldigheid":"2024-07-10","eindeGeldigheid":null,"concept":false,"besluittypen":[],"informatieobjectcategorie":"Test
@@ -135,7 +139,7 @@ interactions:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Content-Length:
-      - '7690'
+      - '8577'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -168,7 +172,7 @@ interactions:
     uri: http://localhost:8001/api/v2/objecttypes
   response:
     body:
-      string: '{"count":7,"next":null,"previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/59cdc902-576b-495f-ae63-c9c78b8afc09","uuid":"59cdc902-576b-495f-ae63-c9c78b8afc09","name":"Partners","namePlural":"Partners","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-07-22","modifiedAt":"2025-07-22","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/59cdc902-576b-495f-ae63-c9c78b8afc09/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","uuid":"8faed0fa-7864-4409-aa6d-533a37616a9e","name":"Accepts
+      string: '{"count":8,"next":null,"previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298","uuid":"db4e8653-1f84-4df7-82bd-96787c52b298","name":"Children","namePlural":"Children","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-09-15","modifiedAt":"2025-09-15","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/59cdc902-576b-495f-ae63-c9c78b8afc09","uuid":"59cdc902-576b-495f-ae63-c9c78b8afc09","name":"Partners","namePlural":"Partners","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-07-22","modifiedAt":"2025-07-22","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/59cdc902-576b-495f-ae63-c9c78b8afc09/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","uuid":"8faed0fa-7864-4409-aa6d-533a37616a9e","name":"Accepts
         everything","namePlural":"Accepts everything","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-07-22","modifiedAt":"2024-07-22","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/644ab597-e88c-43c0-8321-f12113510b0e","uuid":"644ab597-e88c-43c0-8321-f12113510b0e","name":"Fieldset
         component","namePlural":"Fieldset component","description":"","dataClassification":"confidential","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-02-08","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/644ab597-e88c-43c0-8321-f12113510b0e/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/f1dde4fe-b7f9-46dc-84ae-429ae49e3705","uuid":"f1dde4fe-b7f9-46dc-84ae-429ae49e3705","name":"Geo
         in data","namePlural":"Geo in data","description":"","dataClassification":"confidential","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-02-08","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/f1dde4fe-b7f9-46dc-84ae-429ae49e3705/versions/1"]},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","uuid":"527b8408-7421-4808-a744-43ccb7bdaaa2","name":"File
@@ -179,17 +183,17 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '4618'
+      - '5218'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 16 Sep 2025 10:06:55 GMT
+      - Fri, 19 Dec 2025 13:00:06 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.0
+      - nginx/1.29.1
       Vary:
       - origin
       X-Content-Type-Options:
@@ -207,7 +211,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODAxNzIxNiwiZXhwIjoxNzU4MDYwNDE2LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.7jqt_DwKC7f65PUXDajtJgnN-pn1F2zs8ba0TpvtT28
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc2NjE0OTIwNywiZXhwIjoxNzY2MTkyNDA3LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.cUMIppduNvkatep86oAexTEwCX0Ch88vjvvDmFYqiao
       Connection:
       - keep-alive
       User-Agent:
@@ -216,7 +220,9 @@ interactions:
     uri: http://localhost:8003/catalogi/api/v1/catalogussen
   response:
     body:
-      string: '{"count":4,"next":null,"previous":null,"results":[{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10","domein":"PARTN","rsin":"000000000","contactpersoonBeheerNaam":"For
+      string: '{"count":5,"next":null,"previous":null,"results":[{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/e035387e-6374-4eb9-b3d1-416294402bae","domein":"CHILD","rsin":"000000000","contactpersoonBeheerNaam":"For
+        testing children component","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35"],"naam":"Test
+        children","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10","domein":"PARTN","rsin":"000000000","contactpersoonBeheerNaam":"For
         testing partners component","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/77543c85-e5cd-4b3e-b7a5-27165e1334b1"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d2ea38b1-5215-402f-a3f5-2977d112bf72"],"naam":"Test
         partners","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749","domein":"DRAFT","rsin":"000000000","contactpersoonBeheerNaam":"OF","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/cf903a2f-0acd-4dbf-9c77-6e5e35d794e1"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/3628d25f-f491-4375-a752-39d16bf2dd59"],"naam":"Drafts","versie":"","begindatumVersie":null},{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/630271f6-568a-485e-b1c4-4ed2d6ab3a58","domein":"OTHER","rsin":"000000000","contactpersoonBeheerNaam":"Test
         name","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/cc1d39d9-05a2-45f9-8cfe-230790d36f71"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81"],"naam":"Test
@@ -229,7 +235,7 @@ interactions:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Content-Length:
-      - '3120'
+      - '3693'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -253,7 +259,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1ODAxNzIxNiwiZXhwIjoxNzU4MDYwNDE2LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.7jqt_DwKC7f65PUXDajtJgnN-pn1F2zs8ba0TpvtT28
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc2NjE0OTIwNywiZXhwIjoxNzY2MTkyNDA3LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.cUMIppduNvkatep86oAexTEwCX0Ch88vjvvDmFYqiao
       Connection:
       - keep-alive
       User-Agent:
@@ -262,7 +268,9 @@ interactions:
     uri: http://localhost:8003/catalogi/api/v1/informatieobjecttypen
   response:
     body:
-      string: '{"count":9,"next":null,"previous":null,"results":[{"url":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d2ea38b1-5215-402f-a3f5-2977d112bf72","catalogus":"http://localhost:8003/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10","omschrijving":"Partners
+      string: '{"count":10,"next":null,"previous":null,"results":[{"url":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35","catalogus":"http://localhost:8003/catalogi/api/v1/catalogussen/e035387e-6374-4eb9-b3d1-416294402bae","omschrijving":"Children
+        PDF Informatieobjecttype","vertrouwelijkheidaanduiding":"openbaar","beginGeldigheid":"2020-06-20","eindeGeldigheid":null,"concept":false,"besluittypen":[],"informatieobjectcategorie":"Test
+        category","trefwoord":[],"omschrijvingGeneriek":{"informatieobjecttypeOmschrijvingGeneriek":"","definitieInformatieobjecttypeOmschrijvingGeneriek":"","herkomstInformatieobjecttypeOmschrijvingGeneriek":"","hierarchieInformatieobjecttypeOmschrijvingGeneriek":"","opmerkingInformatieobjecttypeOmschrijvingGeneriek":""},"zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be"],"beginObject":"2020-06-20","eindeObject":null},{"url":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d2ea38b1-5215-402f-a3f5-2977d112bf72","catalogus":"http://localhost:8003/catalogi/api/v1/catalogussen/7575ec62-a5ed-421f-bfc7-f8837066dd10","omschrijving":"Partners
         PDF Informatieobjecttype","vertrouwelijkheidaanduiding":"openbaar","beginGeldigheid":"2020-06-20","eindeGeldigheid":null,"concept":false,"besluittypen":[],"informatieobjectcategorie":"Test
         category","trefwoord":[],"omschrijvingGeneriek":{"informatieobjecttypeOmschrijvingGeneriek":"","definitieInformatieobjecttypeOmschrijvingGeneriek":"","herkomstInformatieobjecttypeOmschrijvingGeneriek":"","hierarchieInformatieobjecttypeOmschrijvingGeneriek":"","opmerkingInformatieobjecttypeOmschrijvingGeneriek":""},"zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/77543c85-e5cd-4b3e-b7a5-27165e1334b1"],"beginObject":"2020-06-20","eindeObject":null},{"url":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e","catalogus":"http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d","omschrijving":"Attachment
         Informatieobjecttype","vertrouwelijkheidaanduiding":"openbaar","beginGeldigheid":"2024-07-10","eindeGeldigheid":null,"concept":false,"besluittypen":[],"informatieobjectcategorie":"Test
@@ -287,7 +295,7 @@ interactions:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Content-Length:
-      - '7690'
+      - '8577'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
