@@ -79,8 +79,6 @@ to add the relevant component and a **user defined** form variable:
     the `Customer Interactions API`_. In the Configuration popup select the API group
     created in the "Configuration" section and the profile form variable.
 
-It's possible to use "Profile" component without the configured prefill plugin. but then
-no initial data would be retrieved from the API.
 
 Technical
 =========
