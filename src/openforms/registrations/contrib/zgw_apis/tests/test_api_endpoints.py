@@ -449,7 +449,7 @@ class GetProductsListViewTests(OFVCRMixin, APITestCase):
         # create service for the docker-compose rx-mission instance.
         ServiceFactory.create(
             api_type=APITypes.orc,
-            api_root="http://localhost/product",
+            api_root="http://localhost:81/product",
             auth_type=AuthTypes.no_auth,
         )
         cls.zgw_api_group = ZGWApiGroupConfigFactory.create(
@@ -524,7 +524,7 @@ class GetProductsListViewTests(OFVCRMixin, APITestCase):
 
         expected_products = [
             {
-                "url": "http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10",
+                "url": "http://localhost:81/product/1234abcd-12ab-34cd-56ef-12345abcde10",
                 "description": "Advies vergunning met instemming",
             }
         ]

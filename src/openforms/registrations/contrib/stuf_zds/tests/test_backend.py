@@ -3290,7 +3290,7 @@ class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
         super().setUpTestData()
 
         cls.zds_service = StufServiceFactory.create(
-            soap_service__url="http://localhost/stuf-zds"
+            soap_service__url="http://localhost:82/stuf-zds"
         )
         config = StufZDSConfig.get_solo()
         config.service = cls.zds_service
@@ -3555,7 +3555,7 @@ class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
         super().setUpTestData()
 
         cls.zds_service = StufServiceFactory.create(
-            soap_service__url="http://localhost/stuf-zds"
+            soap_service__url="http://localhost:82/stuf-zds"
         )
         config = StufZDSConfig.get_solo()
         config.service = cls.zds_service
@@ -3700,7 +3700,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
 
         cls.plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
         cls.zds_service = StufServiceFactory.create(
-            soap_service__url="http://localhost/stuf-zds"
+            soap_service__url="http://localhost:82/stuf-zds"
         )
         config = StufZDSConfig.get_solo()
         config.service = cls.zds_service
@@ -4111,7 +4111,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
 
         cls.plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
         cls.zds_service = StufServiceFactory.create(
-            soap_service__url="http://localhost/stuf-zds"
+            soap_service__url="http://localhost:82/stuf-zds"
         )
         config = StufZDSConfig.get_solo()
         config.service = cls.zds_service
@@ -5379,7 +5379,7 @@ class StufZDSConfirmationEmailVCRTests(OFVCRMixin, StUFZDSTestBase):
         super().setUpTestData()
 
         cls.zds_service = StufServiceFactory.create(
-            soap_service__url="http://localhost/stuf-zds"
+            soap_service__url="http://localhost:82/stuf-zds"
         )
         config = StufZDSConfig.get_solo()
         config.service = cls.zds_service

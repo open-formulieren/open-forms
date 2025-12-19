@@ -1398,7 +1398,7 @@
         "verantwoordingsrelatie": "[]",
         "versiedatum": "2024-10-31",
         "verantwoordelijke": "Ontwikkelaar",
-        "producten_of_diensten": "[\"http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10\"]",
+        "producten_of_diensten": "[\"http://localhost:81/product/1234abcd-12ab-34cd-56ef-12345abcde10\"]",
         "selectielijst_procestype": "https://selectielijst.openzaak.nl/api/v1/procestypen/aa8aa2fd-b9c6-4e34-9a6c-58a677f60ea0",
         "selectielijst_procestype_jaar": 2020,
         "referentieproces_naam": "Testen",

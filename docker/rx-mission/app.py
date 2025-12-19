@@ -20,4 +20,4 @@ if __name__ == "__main__":
         parsed_json = json.load(json_file)
         products = {product["id"]: product for product in parsed_json["products"]}
 
-    app.run(host="0.0.0.0", port=80, debug=True)
+    app.run(host="0.0.0.0", port=81, debug=True)
