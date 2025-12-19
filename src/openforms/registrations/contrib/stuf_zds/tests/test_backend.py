@@ -12,6 +12,7 @@ from freezegun import freeze_time
 from lxml import etree
 from privates.test import temp_private_root
 from requests import ConnectTimeout
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
@@ -4127,7 +4128,8 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
 
         hc_config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
-                api_root="http://localhost:5010/haalcentraal/api/brp/"
+                api_root="http://localhost:5010/haalcentraal/api/brp/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=BRPVersions.v20,
         )
