@@ -15,6 +15,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--state",
             choices=["enabled", "disabled"],
+            required=True,
             help="Desired state of the new renderer",
         )
 
