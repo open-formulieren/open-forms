@@ -24,6 +24,7 @@ from openforms.contrib.client import LoggingMixin
 from openforms.submissions.models import Submission
 from openforms.translations.utils import to_iso639_2b
 
+from ...authentication.constants import AuthAttribute
 from .exceptions import StandardViolation
 from .models import CustomerInteractionsAPIGroupConfig
 
@@ -130,6 +131,14 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
 
         return response["results"][0]
 
+    def find_party(self, auth_value: str, auth_attribute: str) -> Partij | None:
+        match auth_attribute:
+            case AuthAttribute.bsn:
+                return self.find_party_for_bsn(auth_value)
+
+            case _:
+                return None
+
     def create_party_for_bsn(self, bsn: str) -> Partij:
         data: CreatePartijPersoonData = {
             "soortPartij": "persoon",
@@ -153,3 +162,11 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
             "partijIdentificatie": {"contactnaam": None},
         }
         return self.partij.create_persoon(data=data)
+
+    def create_party(self, auth_value: str, auth_attribute: str) -> Partij | None:
+        match auth_attribute:
+            case AuthAttribute.bsn:
+                return self.create_party_for_bsn(auth_value)
+
+            case _:
+                return None

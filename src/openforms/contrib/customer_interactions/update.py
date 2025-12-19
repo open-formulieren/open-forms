@@ -8,7 +8,6 @@ from openklant_client.types.resources.digitaal_adres import DigitaalAdres
 from openklant_client.types.resources.klant_contact import KlantContact
 from openklant_client.types.resources.onderwerp_object import OnderwerpObject
 
-from openforms.authentication.constants import AuthAttribute
 from openforms.formio.typing.custom import DigitalAddress, SupportedChannels
 from openforms.prefill.contrib.customer_interactions.typing import CommunicationChannel
 from openforms.prefill.contrib.customer_interactions.variables import (
@@ -90,23 +89,16 @@ def update_customer_interaction_data(
 
     channels_to_address_types = {v: k for k, v in ADDRESS_TYPES_TO_CHANNELS.items()}
 
-    # authentication
-    bsn = (
-        submission.auth_info.value
-        if (
-            submission.is_authenticated
-            and submission.auth_info.attribute == AuthAttribute.bsn
-        )
-        else None
-    )
-
     result: UpdateCustomerInteractionsResult = {}
     with get_customer_interactions_client(api_group) as client:
-        if bsn:  # todo use submission.is_authenticated and case match
+        if submission.is_authenticated:
+            auth_value = submission.auth_info.value
+            auth_attribute = submission.auth_info.attribute
+
             # link authenticated user to the party
-            party = client.find_party_for_bsn(bsn)
+            party = client.find_party(auth_value, auth_attribute)
             if not party:
-                party = client.create_party_for_bsn(bsn)
+                party = client.create_party(auth_value, auth_attribute)
                 result["partij"] = party
 
             party_uuid = party["uuid"]
