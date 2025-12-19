@@ -1,6 +1,9 @@
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
-from openklant_client.types.resources.digitaal_adres import SoortDigitaalAdres
+from openklant_client.types.resources.digitaal_adres import (
+    FullForeigKeyRef,
+    SoortDigitaalAdres,
+)
 
 
 class ExpectedDigitalAddress(TypedDict):
@@ -9,3 +12,5 @@ class ExpectedDigitalAddress(TypedDict):
     adres: str
     soortDigitaalAdres: SoortDigitaalAdres
     isStandaardAdres: bool
+    verstrektDoorBetrokkene: NotRequired[FullForeigKeyRef | None]
+    verstrektDoorPartij: NotRequired[FullForeigKeyRef | None]

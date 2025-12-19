@@ -1,0 +1,2 @@
+class StandardViolation(RuntimeError):
+    pass
