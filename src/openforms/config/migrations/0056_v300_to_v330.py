@@ -14,6 +14,12 @@ import openforms.template.validators
 import openforms.utils.translations
 
 
+def add_default_wms_tile_layers(apps, schema_editor):
+    from django.core.management import call_command
+
+    call_command("loaddata", "default_map_wms_tile_layers")
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ("zgw_consumers", "0023_add_help_texts_to_service_fields"),
@@ -202,7 +208,10 @@ class Migration(migrations.Migration):
                 "verbose_name_plural": "WMS layers",
             },
         ),
-        # RunPython removed as part of the 3.4.0 release cycle
+        migrations.RunPython(
+            code=add_default_wms_tile_layers,
+            reverse_code=migrations.RunPython.noop,
+        ),
         migrations.AlterField(
             model_name="globalconfiguration",
             name="form_map_default_latitude",
