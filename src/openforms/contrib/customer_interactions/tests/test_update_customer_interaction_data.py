@@ -362,7 +362,91 @@ class UpdateCustomerInteractionDataTests(
         onderwerpobject = result["onderwerpobject"]
         digital_addresses = result["digital_addresses"]
 
-        self.assertEqual(klantcontact["kanaal"], "open forms")
+        self.assertEqual(klantcontact["kanaal"], "Webformulier")
+        self.assertEqual(klantcontact["onderwerp"], "With profile")
+        self.assertEqual(betrokkene["rol"], "klant")
+        self.assertTrue(betrokkene["initiator"])
+        self.assertEqual(
+            onderwerpobject["onderwerpobjectidentificator"],
+            {
+                "objectId": "OF-12346",
+                "codeObjecttype": "formulierinzending",
+                "codeRegister": "Open Formulieren",
+                "codeSoortObjectId": "public_registration_reference",
+            },
+        )
+        self.assertFalse("partij" in result)
+
+        # check that the existing party is linked to this contactmoment via betrokkene
+        with get_customer_interactions_client(self.config) as client:
+            existing_party = client.find_party_for_bsn("123456782")
+
+        self.assertEqual(
+            betrokkene["wasPartij"],
+            {"url": existing_party["url"], "uuid": existing_party["uuid"]},
+        )
+
+        # no new address is added
+        self.assertEqual(digital_addresses, [])
+
+    def test_auth_user_known_in_openklant_known_addresses_with_different_preference(
+        self,
+    ):
+        """
+        even if we change the preference for the known address - we don't update it
+        """
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        # both addresses are known in the Open Klant
+        profile_data: list[DigitalAddress] = [
+            {
+                "address": "someemail@example.org",
+                "type": "email",
+                "preferenceUpdate": "isNewPreferred",
+            },
+            {
+                "address": "0687654321",
+                "type": "phoneNumber",
+                "preferenceUpdate": "isNewPreferred",
+            },
+        ]
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "digitalAddressTypes": profile_channels,
+                    "shouldUpdateCustomerData": True,
+                }
+            ],
+            submitted_data={
+                "profile": profile_data,
+            },
+            public_registration_reference="OF-12346",
+            form__name="With profile",
+            bsn="123456782",
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+        prefill_variables(submission=submission)
+
+        result = update_customer_interaction_data(submission, "profile")
+
+        klantcontact = result["klantcontact"]
+        betrokkene = result["betrokkene"]
+        onderwerpobject = result["onderwerpobject"]
+        digital_addresses = result["digital_addresses"]
+
+        self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
         self.assertEqual(betrokkene["rol"], "klant")
         self.assertTrue(betrokkene["initiator"])
