@@ -440,7 +440,7 @@ def execute_component_pre_registration(
     submission = Submission.objects.get(id=submission_id)
     log = logger.bind(
         action="formio.component_pre_registration",
-        submission_id=submission.uuid,
+        submission_uuid=str(submission.uuid),
         component_key=component_key,
         component_type=component["type"],
     )

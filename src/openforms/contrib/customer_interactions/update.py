@@ -27,15 +27,15 @@ def update_customer_interaction_data(
     1. User is not authenticated (implemented):
 
       * create ``contactMoment``, ``betrokkene`` and ``onderwerpObject``
-      * create ``gigitaalAdres`` records linked to the created ``betrokkene``
+      * create ``digitaalAdres`` records linked to the created ``betrokkene``
 
-    2. User is authenticated, but unknow in the API:
+    2. User is authenticated, but unknown in the API:
 
       * create ``partij`` for the user
       * create ``contactMoment``, ``betrokkene`` and ``onderwerpObject`` and link ``betrokkene``
         to the created ``partij``
-      * create ``gigitaalAdres`` records linked to the created ``betrokkene``. If the address is
-        submitted as "isNewPreferred", then it's also linked to the created ``partij``
+      * create ``digitaalAdres`` records linked to the created ``betrokkene``. If the address is
+        submitted as ``isNewPreferred``, then it's also linked to the created ``partij``
 
     3. User is authenticated, known in the API and uses pre-filled data:
 
@@ -48,8 +48,8 @@ def update_customer_interaction_data(
       * find ``partij`` for the user
       * create ``contactMoment``, ``betrokkene`` and ``onderwerpObject`` and link ``betrokkene``
         to the found ``partij``
-      * create ``gigitaalAdres`` records linked to the created ``betrokkene`` for the new addresses.
-        If the address is submitted as "isNewPreferred", then it's also linked to the ``partij``
+      * create ``digitaalAdres`` records linked to the created ``betrokkene`` for the new addresses.
+        If the address is submitted as ``isNewPreferred``, then it's also linked to the ``partij``
     """
 
     # submission profile data
