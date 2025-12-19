@@ -30,11 +30,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 16 Sep 2025 10:26:19 GMT
+      - Fri, 19 Dec 2025 14:47:39 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.5
+      - nginx/1.29.1
       Vary:
       - origin
       X-Content-Type-Options:
@@ -47,7 +47,7 @@ interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"stepwithnulls": {"radio": "2", "tekstveld":
-      "", "bedrag": null}}, "startAt": "2025-09-16"}}'
+      "", "bedrag": null}}, "startAt": "2025-12-19"}}'
     headers:
       Accept:
       - '*/*'
@@ -69,7 +69,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/1a29afbe-fae9-4dc2-b338-bb6ec308b5d5","uuid":"1a29afbe-fae9-4dc2-b338-bb6ec308b5d5","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"stepwithnulls":{"radio":"2","tekstveld":"","bedrag":null}},"geometry":null,"startAt":"2025-09-16","endAt":null,"registrationAt":"2025-09-16","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/bc201742-55b2-4abe-a1ed-180687fabd02","uuid":"bc201742-55b2-4abe-a1ed-180687fabd02","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"stepwithnulls":{"radio":"2","tekstveld":"","bedrag":null}},"geometry":null,"startAt":"2025-12-19","endAt":null,"registrationAt":"2025-12-19","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -84,13 +84,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 16 Sep 2025 10:26:19 GMT
+      - Fri, 19 Dec 2025 14:47:39 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/1a29afbe-fae9-4dc2-b338-bb6ec308b5d5
+      - http://localhost:8002/api/v2/objects/bc201742-55b2-4abe-a1ed-180687fabd02
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.5
+      - nginx/1.29.1
       Vary:
       - origin
       X-Content-Type-Options:
