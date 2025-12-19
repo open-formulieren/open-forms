@@ -1,5 +1,12 @@
+from typing import NotRequired, TypedDict
+
 import structlog
 from openklant_client.types.methods.maak_klant_contact import MaakKlantContactResponse
+from openklant_client.types.resources import Partij
+from openklant_client.types.resources.betrokkene import Betrokkene
+from openklant_client.types.resources.digitaal_adres import DigitaalAdres
+from openklant_client.types.resources.klant_contact import KlantContact
+from openklant_client.types.resources.onderwerp_object import OnderwerpObject
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.formio.typing.custom import DigitalAddress, SupportedChannels
@@ -9,7 +16,6 @@ from openforms.prefill.contrib.customer_interactions.variables import (
 )
 from openforms.prefill.registry import register as prefill_registry
 from openforms.submissions.models import Submission
-from openforms.typing import JSONValue
 
 from .client import get_customer_interactions_client
 from .constants import ADDRESS_TYPES_TO_CHANNELS
@@ -17,9 +23,17 @@ from .constants import ADDRESS_TYPES_TO_CHANNELS
 logger = structlog.stdlib.get_logger(__name__)
 
 
+class UpdateCustomerInteractionsResult(TypedDict):
+    klantcontact: KlantContact
+    betrokkene: Betrokkene
+    onderwerpobject: OnderwerpObject
+    digital_addresses: list[DigitaalAdres]
+    partij: NotRequired[Partij]
+
+
 def update_customer_interaction_data(
     submission: Submission, profile_key: str
-) -> dict[str, JSONValue] | None:
+) -> UpdateCustomerInteractionsResult | None:
     """
     Writes to the Customer interaction API when the form with profile component is submitted.
 
@@ -86,7 +100,7 @@ def update_customer_interaction_data(
         else None
     )
 
-    result = {}
+    result: UpdateCustomerInteractionsResult = {}
     with get_customer_interactions_client(api_group) as client:
         if bsn:  # todo use submission.is_authenticated and case match
             # link authenticated user to the party
@@ -99,37 +113,44 @@ def update_customer_interaction_data(
         else:
             party_uuid = None
 
-        maak_klant_contact: MaakKlantContactResponse = client.create_customer_contact(
+        customer_contact: MaakKlantContactResponse = client.create_customer_contact(
             submission, party_uuid
         )
 
-        created_addresses = []
+        created_addresses: list[DigitaalAdres] = []
         for digital_address in profile_submission_data:
             address_channel: SupportedChannels = digital_address["type"]
-            prefill_address: CommunicationChannel | None = next(
+            prefill_communication_channel: CommunicationChannel | None = next(
                 (value for value in prefill_value if value["type"] == address_channel),
                 None,
             )
-            prefill_options = prefill_address["options"] if prefill_address else []
-            if digital_address["address"] in prefill_options:
+            prefill_channel_options = (
+                prefill_communication_channel["options"]
+                if prefill_communication_channel
+                else []
+            )
+            if digital_address["address"] in prefill_channel_options:
                 # used value from prefill, so it already exists in Open Klant
+                # we don't update existing addresses
                 continue
 
+            is_address_new_preferred: bool = bool(
+                digital_address.get("preferenceUpdate") == "isNewPreferred"
+            )
             created_address = client.create_digital_address(
                 address=digital_address["address"],
                 address_type=channels_to_address_types[address_channel],
-                betrokkene_uuid=maak_klant_contact["betrokkene"]["uuid"],
-                party_uuid=party_uuid
-                if digital_address.get("preferenceUpdate") == "isNewPreferred"
-                else None,
+                betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
+                party_uuid=party_uuid if is_address_new_preferred else None,
+                is_preferred=is_address_new_preferred,
             )
             created_addresses.append(created_address)
 
         result.update(
             {
-                "klantcontact": maak_klant_contact["klantcontact"],
-                "betrokkene": maak_klant_contact["betrokkene"],
-                "onderwerpobject": maak_klant_contact["onderwerpobject"],
+                "klantcontact": customer_contact["klantcontact"],
+                "betrokkene": customer_contact["betrokkene"],
+                "onderwerpobject": customer_contact["onderwerpobject"],
                 "digital_addresses": created_addresses,
             }
         )

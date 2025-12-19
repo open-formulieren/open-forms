@@ -89,6 +89,7 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         self,
         address: str,
         address_type: SoortDigitaalAdres,
+        is_preferred: bool,
         betrokkene_uuid: str,
         party_uuid: str | None = None,
     ) -> DigitaalAdres:
@@ -96,6 +97,7 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         data = DigitaalAdresCreateData(
             adres=address,
             soortDigitaalAdres=address_type,
+            isStandaardAdres=is_preferred,
             verstrektDoorBetrokkene={"uuid": betrokkene_uuid},
             verstrektDoorPartij=party_data,
         )
@@ -120,7 +122,8 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
 
         if (num_results := len(response["results"])) > 1:
             raise StandardViolation(
-                "Combination of 'codeObjecttype', 'codeSoortObjectId', 'objectId' and 'codeRegister' be unique according to the standard."
+                "Combination of 'codeObjecttype', 'codeSoortObjectId', 'objectId' and 'codeRegister' "
+                "must be unique according to the standards."
             )
         if num_results == 0:
             return None
