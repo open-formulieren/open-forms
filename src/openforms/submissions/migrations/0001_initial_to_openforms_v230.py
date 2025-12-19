@@ -21,7 +21,7 @@ import openforms.utils.validators
 class Migration(migrations.Migration):
     dependencies = [
         ("config", "0001_initial_to_v250"),
-        ("forms", "0001_initial_to_v250"),
+        ("forms", "0001_initial_to_v320"),
     ]
 
     operations = [

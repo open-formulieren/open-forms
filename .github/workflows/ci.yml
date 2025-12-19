@@ -383,10 +383,8 @@ jobs:
     strategy:
       matrix:
         start:
-          - '3.2.0'
-          - '3.2.4'
           - '3.3.0'
-          - '3.3.2'
+          - '3.3.9'
 
     steps:
       - uses: actions/checkout@v4

@@ -1,9 +1,0 @@
-[
-    {
-        "model": "config.mapwmstilelayer",
-        "fields": {
-            "name": "Basisregistratie Adressen en Gebouwen (BAG)",
-            "url": "https://service.pdok.nl/lv/bag/wms/v2_0?request=getCapabilities&service=WMS"
-        }
-    }
-]

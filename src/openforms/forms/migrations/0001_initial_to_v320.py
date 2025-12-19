@@ -26,24 +26,6 @@ import openforms.utils.files
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("forms", "0001_initial_to_v250"),
-        ("forms", "0092_v250_to_v267"),
-        ("forms", "0097_v267_to_v270"),
-        ("forms", "0098_v270_to_v300"),
-        ("forms", "0099_formsubmissionstatisticsv2_delete_formstatistics"),
-        ("forms", "0100_add_interaction_config_to_map_component"),
-        ("forms", "0101_fix_radio_empty_default_value"),
-        ("forms", "0102_execute_fix_scripts"),
-        ("forms", "0103_fix_component_empty_default_value"),
-        ("forms", "0104_formauthenticationbackend"),
-        (
-            "forms",
-            "0105_data_migrate_form_authentication_backend_options_to_form_authentication_backend",
-        ),
-        ("forms", "0106_remove_form_authentication_backend_options"),
-    ]
-
     dependencies = [
         ("products", "0001_initial_to_v270"),
         ("config", "0001_initial_to_v250"),

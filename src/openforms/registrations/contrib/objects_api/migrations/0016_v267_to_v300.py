@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("forms", "0097_v267_to_v270"),
+        ("forms", "0001_initial_to_v320"),
         ("registrations_objects_api", "0001_initial_to_v267"),
         ("zgw_consumers", "0020_service_timeout"),
     ]

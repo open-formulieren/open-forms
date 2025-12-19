@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("zgw_consumers", "0012_auto_20210104_1039"),
-        ("forms", "0001_initial_to_v250"),
+        ("forms", "0001_initial_to_v320"),
         ("submissions", "0001_initial_to_openforms_v230"),
         ("zgw_consumers", "0019_alter_service_uuid"),
     ]

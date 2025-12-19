@@ -6,25 +6,6 @@ import openforms.authentication.models
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("of_authentication", "0002_add_authentication_context_mandate_fields"),
-        (
-            "of_authentication",
-            "0003_authinfo_legal_subject_service_restriction_and_more",
-        ),
-        ("of_authentication", "0004_remove_authinfo_machtigen"),
-        ("of_authentication", "0005_authinfo_additional_claims"),
-        (
-            "of_authentication",
-            "0006_alter_authinfo_acting_subject_identifier_type_and_more",
-        ),
-        ("of_authentication", "0007_alter_authinfo_id_alter_registratorinfo_id"),
-        (
-            "of_authentication",
-            "0008_alter_authinfo_acting_subject_identifier_type_and_more",
-        ),
-    ]
-
     dependencies = [
         ("of_authentication", "0001_initial_to_openforms_v230"),
     ]

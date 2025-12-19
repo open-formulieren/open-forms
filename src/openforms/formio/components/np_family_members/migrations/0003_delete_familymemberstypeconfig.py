@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("config", "0060_copy_family_members_data_api"),
+        ("config", "0056_v300_to_v330"),
         ("np_family_members", "0002_alter_familymemberstypeconfig_table"),
     ]
 

@@ -14,50 +14,7 @@ import openforms.template.validators
 import openforms.utils.translations
 
 
-def copy_family_members_data_api(apps, schema_editor):
-    FamilyMembersTypeConfig = apps.get_model(
-        "np_family_members", "FamilyMembersTypeConfig"
-    )
-    np_family_members_config = (
-        FamilyMembersTypeConfig.objects.first()
-    )  # there is at most one record, because it's a solo model
-    if np_family_members_config is None:
-        return
-
-    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
-    global_config = GlobalConfiguration.objects.first()
-    if global_config is None:
-        return
-
-    if data_api := np_family_members_config.data_api:
-        global_config.family_members_data_api = data_api
-        global_config.save()
-
-
-def add_default_wms_tile_layers(apps, schema_editor):
-    from django.core.management import call_command
-
-    call_command("loaddata", "default_map_wms_tile_layers")
-
-
 class Migration(migrations.Migration):
-    replaces = [
-        ("config", "0056_globalconfiguration_referentielijsten_services"),
-        (
-            "config",
-            "0057_alter_globalconfiguration_cosign_submission_confirmation_template_and_more",
-        ),
-        (
-            "config",
-            "0058_alter_globalconfiguration_referentielijsten_services_to_reference_lists_services",
-        ),
-        ("config", "0059_globalconfiguration_family_members_data_api"),
-        ("config", "0060_copy_family_members_data_api"),
-        ("config", "0061_alter_maptilelayer_identifier"),
-        ("config", "0062_mapwmstilelayer"),
-        ("config", "0063_alter_globalconfiguration_form_map_default_latitude_and_more"),
-    ]
-
     dependencies = [
         ("zgw_consumers", "0023_add_help_texts_to_service_fields"),
         ("config", "0055_v270_to_v300"),
@@ -189,10 +146,7 @@ class Migration(migrations.Migration):
                 verbose_name="family members data api",
             ),
         ),
-        migrations.RunPython(
-            code=copy_family_members_data_api,
-            reverse_code=migrations.RunPython.noop,
-        ),
+        # RunPython removed as part of the 3.4.0 release cycle
         migrations.AlterField(
             model_name="maptilelayer",
             name="identifier",
@@ -248,10 +202,7 @@ class Migration(migrations.Migration):
                 "verbose_name_plural": "WMS layers",
             },
         ),
-        migrations.RunPython(
-            code=add_default_wms_tile_layers,
-            reverse_code=migrations.RunPython.noop,
-        ),
+        # RunPython removed as part of the 3.4.0 release cycle
         migrations.AlterField(
             model_name="globalconfiguration",
             name="form_map_default_latitude",
