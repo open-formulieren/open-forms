@@ -12,6 +12,7 @@ from django_yubin.models import Message
 from freezegun import freeze_time
 from rest_framework import serializers
 from simple_certmanager.test.factories import CertificateFactory
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.constants import FamilyMembersDataAPIChoices
@@ -1110,7 +1111,8 @@ class FamilyMembersBrokenHCConfigurationTests(OFVCRMixin, TestCase):
 
         self.hc_config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
-                api_root="http://localhost:5010/haalcentraal/api/brp/"
+                api_root="http://localhost:5010/haalcentraal/api/brp/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=BRPVersions.v20,
         )
