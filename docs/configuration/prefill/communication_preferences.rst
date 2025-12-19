@@ -1,19 +1,18 @@
 .. _configuration_prefill_communication_preferences:
 
-========================
-Communicatin preferences
-========================
+=========================
+Communication preferences
+=========================
 
-The **Communication preferences** prefill plugin is used for the **customerProfile** form
-component and stores communication channel options based on the infomation in the
-`Customer Interactions API`_. These options can be used to pre-fill "customerProfile" field
-if the user is authenticated and found in the Customer Interactions API.
+The **Communication preferences** prefill plugin stores data records for digital addresses based
+on a person's BSN, retrieved from a `Customer Interactions API`_. These records can be used to
+populate the "customerProfile" form component.
 
 .. note::
 
-   The Customer Interactions API stores data related to the contacts between clients and the
-   municipality. It is not standardized, therefore Open Forms uses the Customer
-   Interactions API implemented in the `Open Klant`_ .
+   The `Customer Interactions API`_ stores data related to the contacts between clients and the
+   municipality. The API specifications aren't standardized, therefore Open Forms follows the
+   `Customer Interactions API`_ specifications of `Open Klant`_.
 
    Information about the architecture and the vision of the API can be also found on the
    `VNG github`_.
@@ -30,8 +29,8 @@ What does the Open Forms administrator need?
 Configuration
 =============
 
-To use Communication Preferences plugin you need to configure the access to Customer
-Interactions API.
+To use the Communication Preferences prefill plugin you need to configure the access to
+`Customer Interactions API`_.
 
 #. In Open Forms, navigate to: **Configuration** > **Services**
 #. Create a service for the Customer Interactions API.
@@ -54,7 +53,7 @@ Interactions API.
    **Prefill plugins** group, click on **Manage API groups** for the **Communication preferences**
    line.
 
-#. Create a new API group for the Customer Interactions API:
+#. Create a new API group for the `Customer Interactions API`_:
 
    a. Click **Add customer interactions API group**.
    b. Enter the following details:
@@ -76,8 +75,8 @@ to add the relevant component and a **user defined** form variable:
     This form variable will hold the data which the user submits.
 
   * Next step is to add a user defined variable that we call ``profilePrefill``.
-    This variable is used for configuring the plugin and holding
-    the pre-filled data from the API. In the Configuration popup select the API group
+    This variable is used for configuring the plugin and holding the pre-filled data from
+    the `Customer Interactions API`_. In the Configuration popup select the API group
     created in the "Configuration" section and the profile form variable.
 
 It's possible to use "Profile" component without the configured prefill plugin. but then
