@@ -4,6 +4,8 @@ from collections.abc import Iterator
 from typing import assert_never
 
 from openklant_client.client import OpenKlantClient
+from openklant_client.types.common import ForeignKeyRef
+from openklant_client.types.iso_639_2 import LanguageCode
 from openklant_client.types.methods.maak_klant_contact import (
     MaakKlantContactCreateData,
     MaakKlantContactResponse,
@@ -66,19 +68,20 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         }
         response = self.digitaal_adres.list_iter(params=params)
 
-        address = next(response)
-        return address
+        digitaal_adres = next(response)
+        return digitaal_adres
 
     def create_customer_contact(
         self,
         submission: Submission,
         party_uuid: str = "",
     ) -> MaakKlantContactResponse:
+        language_code: LanguageCode = to_iso639_2b(submission.language_code)  # pyright: ignore[reportAssignmentType]
         data: MaakKlantContactCreateData = {
             "klantcontact": {
                 "kanaal": "Webformulier",
                 "onderwerp": submission.form.name,
-                "taal": to_iso639_2b(submission.language_code),
+                "taal": language_code,
                 "vertrouwelijk": True,
             },
             "betrokkene": {
@@ -108,13 +111,14 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         betrokkene_uuid: str,
         party_uuid="",
     ) -> DigitaalAdres:
-        party_data = {"uuid": party_uuid} if party_uuid else None
+        party_data: ForeignKeyRef | None = {"uuid": party_uuid} if party_uuid else None
         data = DigitaalAdresCreateData(
             adres=address,
             soortDigitaalAdres=address_type,
             isStandaardAdres=is_preferred,
             verstrektDoorBetrokkene={"uuid": betrokkene_uuid},
             verstrektDoorPartij=party_data,
+            omschrijving="",
         )
         return self.digitaal_adres.create(data=data)
 
@@ -200,6 +204,13 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
                     created = True
 
                 return party, created
+
+            case (
+                AuthAttribute.kvk | AuthAttribute.pseudo | AuthAttribute.employee_id
+            ):  # pragma: no cover
+                raise NotImplementedError(
+                    "Only bsn authentication is supported for Customer Interactions API"
+                )
 
             case _:  # pragma: no cover
                 assert_never(auth_attribute)

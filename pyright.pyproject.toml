@@ -89,6 +89,7 @@ exclude = [
     "src/openforms/authentication/contrib/digid/tests/test_auth_procedure.py",
     "src/openforms/authentication/contrib/digid/tests/test_signicat_integration.py",
     "src/openforms/authentication/contrib/eherkenning/tests/test_signicat_integration.py",
+    "src/openforms/contrib/customer_interactions/tests/",
     "src/openforms/contrib/objects_api/tests/",
     "src/openforms/contrib/objects_api/json_schema.py",
     "src/openforms/formio/formatters/tests/",

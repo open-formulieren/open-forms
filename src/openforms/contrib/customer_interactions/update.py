@@ -1,12 +1,17 @@
+from collections.abc import Mapping
 from typing import TypedDict
 
 import structlog
 from openklant_client.types.methods.maak_klant_contact import MaakKlantContactResponse
 from openklant_client.types.resources.betrokkene import Betrokkene
-from openklant_client.types.resources.digitaal_adres import DigitaalAdres
+from openklant_client.types.resources.digitaal_adres import (
+    DigitaalAdres,
+    SoortDigitaalAdres,
+)
 from openklant_client.types.resources.klant_contact import KlantContact
 from openklant_client.types.resources.onderwerp_object import OnderwerpObject
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.formio.typing.custom import DigitalAddress, SupportedChannels
 from openforms.prefill.contrib.customer_interactions.typing import CommunicationChannel
 from openforms.prefill.contrib.customer_interactions.variables import (
@@ -83,7 +88,7 @@ def update_customer_interaction_data(
 
     # submission profile data
     state = submission.load_submission_value_variables_state()
-    profile_submission_data: list[DigitalAddress] = state.get_data()[profile_key]
+    profile_submission_data: list[DigitalAddress] = state.get_data()[profile_key]  # pyright: ignore[reportAssignmentType]
 
     # prefill config
     prefill_form_variable = fetch_user_variable_from_profile_component(
@@ -93,7 +98,9 @@ def update_customer_interaction_data(
         logger.info("missing_prefill_variable", component=profile_key)
         return
 
-    prefill_value = state.get_data(include_unsaved=True)[prefill_form_variable.key]
+    prefill_value: list[CommunicationChannel] = state.get_data(include_unsaved=True)[
+        prefill_form_variable.key
+    ]  # pyright: ignore[reportAssignmentType]
 
     plugin = prefill_registry[prefill_form_variable.prefill_plugin]
     options_serializer = plugin.options(data=prefill_form_variable.prefill_options)
@@ -101,12 +108,14 @@ def update_customer_interaction_data(
     plugin_options = options_serializer.validated_data
     api_group = plugin_options["customer_interactions_api_group"]
 
-    channels_to_address_types = {v: k for k, v in ADDRESS_TYPES_TO_CHANNELS.items()}
+    channels_to_address_types: Mapping[SupportedChannels, SoortDigitaalAdres] = {
+        v: k for k, v in ADDRESS_TYPES_TO_CHANNELS.items()
+    }
 
     with get_customer_interactions_client(api_group) as client:
         if submission.is_authenticated:
             auth_value = submission.auth_info.value
-            auth_attribute = submission.auth_info.attribute
+            auth_attribute: AuthAttribute = submission.auth_info.attribute
 
             # link authenticated user to the party
             party, created = client.get_or_create_party(auth_attribute, auth_value)
@@ -117,6 +126,8 @@ def update_customer_interaction_data(
         customer_contact: MaakKlantContactResponse = client.create_customer_contact(
             submission, party_uuid
         )
+        assert customer_contact["betrokkene"] is not None
+        assert customer_contact["onderwerpobject"] is not None
 
         created_addresses: list[DigitaalAdres] = []
         updated_addresses: list[DigitaalAdres] = []
@@ -156,7 +167,7 @@ def update_customer_interaction_data(
                     address=address_value,
                     address_type=channels_to_address_types[address_channel],
                     betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
-                    party_uuid=party_uuid if is_address_new_preferred else None,
+                    party_uuid=party_uuid if is_address_new_preferred else "",
                     is_preferred=is_address_new_preferred,
                 )
                 created_addresses.append(created_address)
