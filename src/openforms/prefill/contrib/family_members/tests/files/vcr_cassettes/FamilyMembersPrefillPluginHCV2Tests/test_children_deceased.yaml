@@ -8,8 +8,6 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDU2MDA0MDAsImV4cCI6MTc0NTY0MzYwMCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.evMnJNbFpKVZ2HBhohPUd4DWSjG1RszGog8ZJxE1Oek
       Connection:
       - keep-alive
       Content-Length:
@@ -41,7 +39,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 16 Sep 2025 09:39:55 GMT
+      - Fri, 19 Dec 2025 13:11:14 GMT
       Server:
       - Kestrel
     status:
@@ -56,8 +54,6 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDU2MDA0MDAsImV4cCI6MTc0NTY0MzYwMCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.evMnJNbFpKVZ2HBhohPUd4DWSjG1RszGog8ZJxE1Oek
       Connection:
       - keep-alive
       Content-Length:
@@ -87,7 +83,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 16 Sep 2025 09:39:55 GMT
+      - Fri, 19 Dec 2025 13:11:14 GMT
       Server:
       - Kestrel
     status:
