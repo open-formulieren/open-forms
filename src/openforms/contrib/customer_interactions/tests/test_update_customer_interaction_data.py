@@ -74,7 +74,7 @@ class UpdateCustomerInteractionDataTests(
         )
         self.assertFalse("partij" in result)
 
-        self.assertEqual(len(digital_addresses), 2)
+        self.assertEqual(len(digital_addresses["created"]), 2)
         expected_addresses: list[ExpectedDigitalAddress] = [
             {
                 "adres": "some@email.com",
@@ -100,7 +100,11 @@ class UpdateCustomerInteractionDataTests(
 
         for expected_address in expected_addresses:
             with self.subTest(expected_address):
-                self.assertAddressPresent(digital_addresses, expected_address)
+                self.assertAddressPresent(
+                    digital_addresses["created"], expected_address
+                )
+
+        self.assertEqual(len(digital_addresses["updated"]), 0)
 
     def test_auth_user_not_known_in_openklant(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
@@ -180,7 +184,7 @@ class UpdateCustomerInteractionDataTests(
             betrokkene["wasPartij"], {"url": partij["url"], "uuid": partij["uuid"]}
         )
 
-        self.assertEqual(len(digital_addresses), 2)
+        self.assertEqual(len(digital_addresses["created"]), 2)
         expected_addresses: list[ExpectedDigitalAddress] = [
             {
                 "adres": "some@email.com",
@@ -205,7 +209,11 @@ class UpdateCustomerInteractionDataTests(
         ]
         for expected_address in expected_addresses:
             with self.subTest(expected_address):
-                self.assertAddressPresent(digital_addresses, expected_address)
+                self.assertAddressPresent(
+                    digital_addresses["created"], expected_address
+                )
+
+        self.assertEqual(len(digital_addresses["updated"]), 0)
 
     def test_auth_user_known_in_openklant_new_address(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
@@ -282,7 +290,7 @@ class UpdateCustomerInteractionDataTests(
             {"url": existing_party["url"], "uuid": existing_party["uuid"]},
         )
 
-        self.assertEqual(len(digital_addresses), 2)
+        self.assertEqual(len(digital_addresses["created"]), 2)
         expected_addresses: list[ExpectedDigitalAddress] = [
             {
                 "adres": "some@email.com",
@@ -310,7 +318,11 @@ class UpdateCustomerInteractionDataTests(
         ]
         for expected_address in expected_addresses:
             with self.subTest(expected_address):
-                self.assertAddressPresent(digital_addresses, expected_address)
+                self.assertAddressPresent(
+                    digital_addresses["created"], expected_address
+                )
+
+        self.assertEqual(len(digital_addresses["updated"]), 0)
 
     def test_auth_user_known_in_openklant_known_addresses(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
@@ -387,7 +399,8 @@ class UpdateCustomerInteractionDataTests(
         )
 
         # no new address is added
-        self.assertEqual(digital_addresses, [])
+        self.assertEqual(digital_addresses["created"], [])
+        self.assertEqual(digital_addresses["updated"], [])
 
     def test_auth_user_known_in_openklant_known_addresses_with_different_preference(
         self,
@@ -396,10 +409,10 @@ class UpdateCustomerInteractionDataTests(
         even if we change the preference for the known address - we don't update it
         """
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
-        # both addresses are known in the Open Klant
+        # both addresses are known in the Open Klant and both are not preferred
         profile_data: list[DigitalAddress] = [
             {
-                "address": "someemail@example.org",
+                "address": "devilkiller@example.org",
                 "type": "email",
                 "preferenceUpdate": "isNewPreferred",
             },
@@ -454,8 +467,8 @@ class UpdateCustomerInteractionDataTests(
             onderwerpobject["onderwerpobjectidentificator"],
             {
                 "objectId": "OF-12346",
-                "codeObjecttype": "form",
-                "codeRegister": "openforms",
+                "codeObjecttype": "formulierinzending",
+                "codeRegister": "Open Formulieren",
                 "codeSoortObjectId": "public_registration_reference",
             },
         )
@@ -471,7 +484,34 @@ class UpdateCustomerInteractionDataTests(
         )
 
         # no new address is added
-        self.assertEqual(digital_addresses, [])
+        self.assertEqual(digital_addresses["created"], [])
+        # 2 addresses are updated
+        self.assertEqual(len(digital_addresses["updated"]), 2)
+        expected_addresses: list[ExpectedDigitalAddress] = [
+            {
+                "adres": "devilkiller@example.org",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": True,
+                "verstrektDoorPartij": {
+                    "url": existing_party["url"],
+                    "uuid": existing_party["uuid"],
+                },
+            },
+            {
+                "adres": "0687654321",
+                "soortDigitaalAdres": "telefoonnummer",
+                "isStandaardAdres": True,
+                "verstrektDoorPartij": {
+                    "url": existing_party["url"],
+                    "uuid": existing_party["uuid"],
+                },
+            },
+        ]
+        for expected_address in expected_addresses:
+            with self.subTest(expected_address):
+                self.assertAddressPresent(
+                    digital_addresses["updated"], expected_address
+                )
 
     def test_no_prefill_var_configured(self):
         """
