@@ -15,6 +15,7 @@ from openklant_client.types.resources import (
 from openklant_client.types.resources.digitaal_adres import (
     DigitaalAdres,
     DigitaalAdresCreateData,
+    DigitaalAdresPartialUpdateData,
     ListDigitaalAdresParams,
     SoortDigitaalAdres,
 )
@@ -54,6 +55,18 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         }
         response = self.digitaal_adres.list_iter(params=params)
         yield from response
+
+    def get_digital_address_for_party(
+        self, address: str, party_uuid: str
+    ) -> DigitaalAdres:
+        params: ListDigitaalAdresParams = {
+            "verstrektDoorPartij__uuid": party_uuid,
+            "adres": address,
+        }
+        response = self.digitaal_adres.list_iter(params=params)
+
+        address = next(response)
+        return address
 
     def create_customer_contact(
         self,
@@ -103,6 +116,19 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
             verstrektDoorPartij=party_data,
         )
         return self.digitaal_adres.create(data=data)
+
+    def update_digital_address_for_party(
+        self, address: str, party_uuid: str, is_preferred: bool
+    ) -> DigitaalAdres:
+        """
+        find an address for the party and update its preference
+        """
+        digital_address = self.get_digital_address_for_party(address, party_uuid)
+
+        data = DigitaalAdresPartialUpdateData(isStandaardAdres=is_preferred)
+        return self.digitaal_adres.partial_update(
+            uuid=digital_address["uuid"], data=data
+        )
 
     def find_party_for_bsn(self, bsn: str) -> Partij | None:
         """

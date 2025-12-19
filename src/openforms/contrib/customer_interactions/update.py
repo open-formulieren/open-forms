@@ -22,11 +22,16 @@ from .constants import ADDRESS_TYPES_TO_CHANNELS
 logger = structlog.stdlib.get_logger(__name__)
 
 
+class DigitalAddressResults(TypedDict):
+    created: list[DigitaalAdres]
+    updated: list[DigitaalAdres]
+
+
 class UpdateCustomerInteractionsResult(TypedDict):
     klantcontact: KlantContact
     betrokkene: Betrokkene
     onderwerpobject: OnderwerpObject
-    digital_addresses: list[DigitaalAdres]
+    digital_addresses: DigitalAddressResults
     partij: NotRequired[Partij]
 
 
@@ -65,6 +70,16 @@ def update_customer_interaction_data(
         to the found ``partij``
       * create ``digitaalAdres`` records linked to the created ``betrokkene`` for the new addresses.
         If the address is submitted as ``isNewPreferred``, then it's also linked to the ``partij``
+
+    5. User is authenticated, known in the API and submits existing addresses with the changed preference:
+
+      * find ``partij`` for the user
+      * create ``contactMoment``, ``betrokkene`` and ``onderwerpObject`` and link ``betrokkene``
+        to the found ``partij``
+      * if the address is submitted as ``useOnlyOnce``, then we don't update it
+      * if the address is submitted as ``isNewPreferred``, and the existing address is not
+        preferred (``isStandaardAdres`` == False) then we update it with ``isStandaardAdres`` = True
+
     """
 
     # submission profile data
@@ -110,8 +125,15 @@ def update_customer_interaction_data(
         )
 
         created_addresses: list[DigitaalAdres] = []
+        updated_addresses: list[DigitaalAdres] = []
         for digital_address in profile_submission_data:
+            # submitted data
+            address_value = digital_address["address"]
             address_channel: SupportedChannels = digital_address["type"]
+            is_address_new_preferred: bool = bool(
+                digital_address.get("preferenceUpdate") == "isNewPreferred"
+            )
+            # prefill values
             prefill_communication_channel: CommunicationChannel | None = next(
                 (value for value in prefill_value if value["type"] == address_channel),
                 None,
@@ -121,29 +143,39 @@ def update_customer_interaction_data(
                 if prefill_communication_channel
                 else []
             )
-            if digital_address["address"] in prefill_channel_options:
-                # used value from prefill, so it already exists in Open Klant
-                # we don't update existing addresses
-                continue
-
-            is_address_new_preferred: bool = bool(
-                digital_address.get("preferenceUpdate") == "isNewPreferred"
+            prefill_preferred = (
+                prefill_communication_channel["preferred"]
+                if prefill_communication_channel
+                else None
             )
-            created_address = client.create_digital_address(
-                address=digital_address["address"],
-                address_type=channels_to_address_types[address_channel],
-                betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
-                party_uuid=party_uuid if is_address_new_preferred else None,
-                is_preferred=is_address_new_preferred,
-            )
-            created_addresses.append(created_address)
 
+            if address_value in prefill_channel_options:
+                # we update it only if it's marked as "isNewPreferred"
+                if is_address_new_preferred and address_value != prefill_preferred:
+                    updated_address = client.update_digital_address_for_party(
+                        address=address_value, party_uuid=party_uuid, is_preferred=True
+                    )
+                    updated_addresses.append(updated_address)
+
+            else:
+                created_address = client.create_digital_address(
+                    address=address_value,
+                    address_type=channels_to_address_types[address_channel],
+                    betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
+                    party_uuid=party_uuid if is_address_new_preferred else None,
+                    is_preferred=is_address_new_preferred,
+                )
+                created_addresses.append(created_address)
+
+        digital_address_results = DigitalAddressResults(
+            created=created_addresses, updated=updated_addresses
+        )
         result.update(
             {
                 "klantcontact": customer_contact["klantcontact"],
                 "betrokkene": customer_contact["betrokkene"],
                 "onderwerpobject": customer_contact["onderwerpobject"],
-                "digital_addresses": created_addresses,
+                "digital_addresses": digital_address_results,
             }
         )
         return result
