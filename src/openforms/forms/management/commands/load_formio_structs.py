@@ -24,6 +24,7 @@ class Command(BaseCommand):
             components = fd.configuration["components"]
             try:
                 msgspec.convert(components, type=Sequence[AnyComponent])
-            except:
+            except Exception as exc:
+                print(exc)
                 breakpoint()
                 raise
