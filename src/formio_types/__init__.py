@@ -8,6 +8,7 @@ from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
 from .date import Date
 from .fieldset import Fieldset as BaseFieldSet
+from .postcode import Postcode
 from .textfield import TextField
 
 # ordered as they are displayed in the formio builder UI
@@ -32,7 +33,7 @@ __all__ = [
     # special
     # "IBAN",
     # "LicensePlate",
-    # "Postcode",
+    "Postcode",
     "BSN",
     # "Signature",
     # "Cosign",
@@ -69,4 +70,6 @@ class Columns(BaseColumns):
 # Discriminated union of all possible component types - ordered as they are displayed
 # in the formio builder UI
 
-type AnyComponent = TextField | Date | Checkbox | BSN | Content | Columns | Fieldset
+type AnyComponent = (
+    TextField | Date | Checkbox | Postcode | BSN | Content | Columns | Fieldset
+)
