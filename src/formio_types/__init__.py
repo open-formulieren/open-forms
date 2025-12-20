@@ -11,6 +11,7 @@ from .email import Email
 from .fieldset import Fieldset as BaseFieldSet
 from .phone_number import PhoneNumber
 from .postcode import Postcode
+from .radio import Radio
 from .textfield import TextField
 
 # ordered as they are displayed in the formio builder UI
@@ -31,7 +32,7 @@ __all__ = [
     # "Selectboxes",
     # "Select",
     # "Currency",
-    # "Radio",
+    "Radio",
     # special
     # "IBAN",
     # "LicensePlate",
@@ -78,6 +79,7 @@ type AnyComponent = (
     | Date
     | PhoneNumber
     | Checkbox
+    | Radio
     | Postcode
     | BSN
     | Content
