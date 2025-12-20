@@ -10,24 +10,10 @@ import openforms.utils.validators
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("zgw_apis", "0001_initial_to_v280"),
-        ("zgw_apis", "0015_explicit_objects_api_groups"),
-        ("zgw_apis", "0016_zgwapigroupconfig_identifier"),
-        ("zgw_apis", "0017_alter_zgwapigroupconfig_identifier"),
-        ("zgw_apis", "0018_alter_zgwapigroupconfig_drc_service_and_more"),
-        ("zgw_apis", "0019_alter_zgwapigroupconfig_catalogue_domain"),
-        ("zgw_apis", "0019_alter_zgwapigroupconfig_auteur"),
-        ("zgw_apis", "0020_merge_20250204_1209"),
-        ("zgw_apis", "0015_delete_zgwconfig"),
-        ("zgw_apis", "0019_merge_20250317_1606"),
-        ("zgw_apis", "0021_merge_20250317_1609"),
-    ]
-
     dependencies = [
         ("registrations_objects_api", "0001_initial_to_v267"),
         ("zgw_consumers", "0022_set_default_service_slug"),
-        ("forms", "0097_v267_to_v270"),
+        ("forms", "0001_initial_to_v320"),
     ]
 
     operations = [

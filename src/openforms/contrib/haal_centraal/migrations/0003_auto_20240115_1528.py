@@ -8,7 +8,7 @@ import openforms.contrib.haal_centraal.validators
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("forms", "0001_initial_to_v250"),
+        ("forms", "0001_initial_to_v320"),
         ("haalcentraal", "0002_copy_config_from_prefill"),
     ]
 

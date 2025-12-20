@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("forms", "0106_remove_form_authentication_backend_options"),
+        ("forms", "0001_initial_to_v320"),
     ]
 
     operations = [

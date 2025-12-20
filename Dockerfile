@@ -98,11 +98,6 @@ RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle
 COPY \
     ./bin/check_celery_worker_liveness.py \
     ./bin/report_component_problems.py \
-    ./bin/report_form_registration_problems.py \
-    ./bin/report_duplicate_merchant_pspids.py \
-    ./bin/fix_selectboxes_component_default_values.py \
-    ./bin/fix_component_default_values.py \
-    ./bin/fix_objects_api_form_registration_variables_mapping.py \
     ./bin/fix_submission_value_variable_missing_fields.py \
     ./bin/
 
