@@ -8,6 +8,7 @@ from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
 from .date import Date
 from .fieldset import Fieldset as BaseFieldSet
+from .phone_number import PhoneNumber
 from .postcode import Postcode
 from .textfield import TextField
 
@@ -20,7 +21,7 @@ __all__ = [
     "Date",
     # "DateTime",
     # "Time",
-    # "PhoneNumber",
+    "PhoneNumber",
     # "File",
     # "Textarea",
     # "Number",
@@ -71,5 +72,13 @@ class Columns(BaseColumns):
 # in the formio builder UI
 
 type AnyComponent = (
-    TextField | Date | Checkbox | Postcode | BSN | Content | Columns | Fieldset
+    TextField
+    | Date
+    | PhoneNumber
+    | Checkbox
+    | Postcode
+    | BSN
+    | Content
+    | Columns
+    | Fieldset
 )
