@@ -7,6 +7,7 @@ from .checkbox import Checkbox
 from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
 from .date import Date
+from .email import Email
 from .fieldset import Fieldset as BaseFieldSet
 from .phone_number import PhoneNumber
 from .postcode import Postcode
@@ -17,7 +18,7 @@ __all__ = [
     "AnyComponent",
     # basic
     "TextField",
-    # "Email",
+    "Email",
     "Date",
     # "DateTime",
     # "Time",
@@ -73,6 +74,7 @@ class Columns(BaseColumns):
 
 type AnyComponent = (
     TextField
+    | Email
     | Date
     | PhoneNumber
     | Checkbox
