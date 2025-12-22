@@ -16,7 +16,7 @@ interactions:
     uri: http://localhost:8001/api/v2/objecttypes?page=1&pageSize=1
   response:
     body:
-      string: '{"count":7,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/59cdc902-576b-495f-ae63-c9c78b8afc09","uuid":"59cdc902-576b-495f-ae63-c9c78b8afc09","name":"Partners","namePlural":"Partners","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-07-22","modifiedAt":"2025-07-22","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/59cdc902-576b-495f-ae63-c9c78b8afc09/versions/1"]}]}'
+      string: '{"count":8,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298","uuid":"db4e8653-1f84-4df7-82bd-96787c52b298","name":"Children","namePlural":"Children","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-09-15","modifiedAt":"2025-09-15","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/db4e8653-1f84-4df7-82bd-96787c52b298/versions/1"]}]}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -29,11 +29,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 16 Sep 2025 09:38:29 GMT
+      - Mon, 22 Dec 2025 16:44:52 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.5
+      - nginx/1.29.1
       Vary:
       - origin
       X-Content-Type-Options:
