@@ -84,9 +84,9 @@ Technical
 =========
 
 ========================= ==================
-API                       Supported versions
+Service                   Supported versions
 ========================= ==================
-Customer Interactions API 0.5.0
+Open Klant                2.14
 ========================= ==================
 
 
