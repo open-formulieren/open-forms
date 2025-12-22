@@ -37,7 +37,6 @@ from openforms.contrib.reference_lists.client import (
     Table,
     TableItem,
 )
-from openforms.prefill.contrib.customer_interactions.plugin import PLUGIN_IDENTIFIER as CP_PLUGIN_IDENTIFIER
 from openforms.formio.constants import DataSrcOptions
 from openforms.formio.typing import Component
 from openforms.formio.typing.map import Overlay
@@ -47,6 +46,9 @@ from openforms.forms.models.form_registration_backend import FormRegistrationBac
 from openforms.forms.models.logic import FormLogic
 from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.prefill.contrib.customer_interactions.plugin import (
+    PLUGIN_IDENTIFIER as CP_PLUGIN_IDENTIFIER,
+)
 from openforms.prefill.contrib.family_members.service import (
     check_hc_config_for_family_members,
     check_unmatched_variables,
@@ -851,7 +853,7 @@ def check_absent_user_variables_for_profile() -> list[InvalidComponentConfigurat
         "The component is configured to require updates, but the prefill variable is missing"
     )
 
-    for form in Form.objects.prefetch_related("formvariable_set").live():
+    for form in Form.objects.prefetch_related("formvariable_set").live():  # pyright: ignore[ reportAttributeAccessIssue]
         for component in form.iter_components():
             if component["type"] != "customerProfile":
                 continue
