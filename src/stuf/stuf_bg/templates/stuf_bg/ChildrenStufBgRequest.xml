@@ -17,6 +17,7 @@
     </ns:gelijk>
     <ns:scope>
         <ns:object StUF:entiteittype="NPS">
+            <ns:inp.bsn xsi:nil="true"/>
             <ns:inp.heeftAlsKinderen StUF:entiteittype="NPSNPSKND">
                 <ns:gerelateerde StUF:entiteittype="NPS">
                     <ns:inp.bsn xsi:nil="true" />
