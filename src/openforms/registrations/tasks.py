@@ -505,9 +505,9 @@ def execute_component_pre_registration_group(task, submission_id: int) -> None:
 
 @app.task
 def process_component_pre_registration(submission_id: int) -> None:
-    submission = Submission.objects.get(id=submission_id)
+    submission: Submission = Submission.objects.get(id=submission_id)
 
-    if submission.submissionvaluevariable_set.filter(
+    if submission.submissionvaluevariable_set.filter(  # pyright: ignore[reportAttributeAccessIssue]
         pre_registration_status=ComponentPreRegistrationStatuses.failed
     ).exists():
         submission.needs_on_completion_retry = True
