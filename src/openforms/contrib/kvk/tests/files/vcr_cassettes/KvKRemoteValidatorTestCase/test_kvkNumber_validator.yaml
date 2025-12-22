@@ -18,8 +18,8 @@ interactions:
     uri: https://api.kvk.nl/test/api/v2/zoeken?kvkNummer=69599084
   response:
     body:
-      string: '{"_links":{"self":{"href":"https://api.kvk.nl/test/api/v2/zoeken?kvknummer=69599084&pagina=1&resultatenperpagina=10"}},"pagina":1,"resultatenPerPagina":10,"totaal":2,"resultaten":[{"_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"}},"kvkNummer":"69599084","vestigingsnummer":"000038509520","naam":"Test
-        EMZ Nevenvestiging Govert","adres":{"binnenlandsAdres":{"type":"bezoekadres","straatnaam":"Geneinde","plaats":"Maastricht"}},"type":"nevenvestiging"},{"_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"}},"kvkNummer":"69599084","vestigingsnummer":"000038509504","naam":"Test
+      string: '{"links":[{"rel":"self","href":"https://api.kvk.nl/test/api/v2/zoeken?kvknummer=69599084&pagina=1&resultatenperpagina=10"}],"pagina":1,"resultatenPerPagina":10,"totaal":2,"resultaten":[{"links":[{"rel":"basisprofiel","href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},{"rel":"vestigingsprofiel","href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"}],"kvkNummer":"69599084","vestigingsnummer":"000038509520","naam":"Test
+        EMZ Nevenvestiging Govert","adres":{"binnenlandsAdres":{"type":"bezoekadres","straatnaam":"Geneinde","plaats":"Maastricht"}},"type":"nevenvestiging"},{"links":[{"rel":"basisprofiel","href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},{"rel":"vestigingsprofiel","href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"}],"kvkNummer":"69599084","vestigingsnummer":"000038509504","naam":"Test
         EMZ Dagobert","adres":{"binnenlandsAdres":{"type":"bezoekadres","straatnaam":"Abebe
         Bikilalaan","plaats":"Amsterdam"}},"type":"hoofdvestiging"}]}'
     headers:
@@ -34,7 +34,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Tue, 16 Sep 2025 09:35:39 GMT
+      - Mon, 22 Dec 2025 16:46:07 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
@@ -48,7 +48,7 @@ interactions:
       X-Frame-Options:
       - DENY
       content-length:
-      - '991'
+      - '1018'
       strict-transport-security:
       - max-age=157680000 ; includeSubDomains
       - max-age=0; includeSubDomains
@@ -74,21 +74,23 @@ interactions:
     uri: https://api.kvk.nl/test/api/v2/zoeken?kvkNummer=90004333
   response:
     body:
-      string: '{"fout":[{"code":"IPD0004","omschrijving":"Het KVK-nummer 90004333
-        is niet valide."}]}'
+      string: '{"fout":[{"code":"IPD5200","omschrijving":"Er zijn geen gegevens gevonden
+        die voldoen aan de opgegeven zoekparameters."}]}'
     headers:
       Cache-Control:
       - no-store
       Connection:
-      - close
+      - keep-alive
       Content-Security-Policy:
       - frame-ancestors 'none', default-src 'none'
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Sep 2025 09:35:40 GMT
+      - Mon, 22 Dec 2025 16:46:08 GMT
       Feature-Policy:
       - '''none'''
+      Keep-Alive:
+      - timeout=60
       Referrer-Policy:
       - no-referrer
       Server:
@@ -98,11 +100,11 @@ interactions:
       X-Frame-Options:
       - DENY
       content-length:
-      - '86'
+      - '122'
       strict-transport-security:
       - max-age=157680000 ; includeSubDomains
       - max-age=0; includeSubDomains
     status:
-      code: 400
+      code: 404
       message: ''
 version: 1

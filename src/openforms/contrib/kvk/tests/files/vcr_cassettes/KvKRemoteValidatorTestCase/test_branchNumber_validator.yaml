@@ -18,7 +18,7 @@ interactions:
     uri: https://api.kvk.nl/test/api/v2/zoeken?vestigingsnummer=990000541921
   response:
     body:
-      string: '{"_links":{"self":{"href":"https://api.kvk.nl/test/api/v2/zoeken?vestigingsnummer=990000541921&pagina=1&resultatenperpagina=10"}},"pagina":1,"resultatenPerPagina":10,"totaal":1,"resultaten":[{"_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90001354"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/990000541921"}},"kvkNummer":"90001354","vestigingsnummer":"990000541921","naam":"Grand
+      string: '{"links":[{"rel":"self","href":"https://api.kvk.nl/test/api/v2/zoeken?vestigingsnummer=990000541921&pagina=1&resultatenperpagina=10"}],"pagina":1,"resultatenPerPagina":10,"totaal":1,"resultaten":[{"links":[{"rel":"basisprofiel","href":"https://api.kvk.nl/test/api/v1/basisprofielen/90001354"},{"rel":"vestigingsprofiel","href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/990000541921"}],"kvkNummer":"90001354","vestigingsnummer":"990000541921","naam":"Grand
         Joyflex B.V.","adres":{"binnenlandsAdres":{"type":"postadres","plaats":"Sterksel"}},"type":"hoofdvestiging"}]}'
     headers:
       API-Version:
@@ -32,7 +32,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Tue, 16 Sep 2025 09:35:38 GMT
+      - Mon, 22 Dec 2025 16:46:07 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
@@ -46,7 +46,7 @@ interactions:
       X-Frame-Options:
       - DENY
       content-length:
-      - '560'
+      - '576'
       strict-transport-security:
       - max-age=157680000 ; includeSubDomains
       - max-age=0; includeSubDomains
@@ -84,7 +84,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Sep 2025 09:35:39 GMT
+      - Mon, 22 Dec 2025 16:46:07 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
