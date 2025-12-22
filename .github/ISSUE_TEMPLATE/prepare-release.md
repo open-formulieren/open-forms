@@ -36,7 +36,6 @@ assignees: sergei-maertens
     - [ ] `openforms.contrib.kvk`
     - [ ] `openforms.contrib.objects_api`
     - [ ] `openforms.contrib.reference_lists`
-    - [ ] `soap.tests.test_client.ClientTransportTests`
 
   - Email digest
 
