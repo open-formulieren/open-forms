@@ -476,8 +476,6 @@ def execute_component_pre_registration(
         component_var.pre_registration_status = ComponentPreRegistrationStatuses.failed
         component_var.pre_registration_result = {"traceback": traceback.format_exc()}
 
-        submission.needs_on_completion_retry = True
-        submission.save(update_fields=["needs_on_completion_retry"])
     else:
         logevent.component_pre_registration_success(
             submission, component_key=component_key
@@ -503,3 +501,14 @@ def execute_component_pre_registration_group(task, submission_id: int) -> None:
     )
 
     return task.replace(task_group)
+
+
+@app.task
+def process_component_pre_registration(submission_id: int) -> None:
+    submission: Submission = Submission.objects.get(id=submission_id)
+
+    if submission.submissionvaluevariable_set.filter(  # pyright: ignore[reportAttributeAccessIssue]
+        pre_registration_status=ComponentPreRegistrationStatuses.failed
+    ).exists():
+        submission.needs_on_completion_retry = True
+        submission.save(update_fields=["needs_on_completion_retry"])

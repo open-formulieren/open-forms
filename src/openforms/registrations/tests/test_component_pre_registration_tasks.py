@@ -16,6 +16,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from ..tasks import (
     execute_component_pre_registration,
     execute_component_pre_registration_group,
+    process_component_pre_registration,
 )
 
 
@@ -97,7 +98,6 @@ class PreRegistrationTaskTests(TestCase):
             [failed_hook_component],
             {"failedHook": "foo"},
         )
-        assert submission.needs_on_completion_retry is False
 
         execute_component_pre_registration(
             component=failed_hook_component, submission_id=submission.id
@@ -111,9 +111,6 @@ class PreRegistrationTaskTests(TestCase):
             ComponentPreRegistrationStatuses.failed,
         )
         self.assertIn("traceback", component_var.pre_registration_result)
-
-        submission.refresh_from_db()
-        self.assertTrue(submission.needs_on_completion_retry)
 
     def test_reregistration_task_skipped(self):
         hook_component: Component = {
@@ -198,7 +195,6 @@ class PreRegistrationTaskTests(TestCase):
             [no_hook_component, failed_hook_component],
             {"withoutHook": "foo", "failedHook": "bar"},
         )
-        assert submission.needs_on_completion_retry is False
 
         execute_component_pre_registration_group.delay(submission_id=submission.id)
 
@@ -218,9 +214,6 @@ class PreRegistrationTaskTests(TestCase):
         )
         self.assertIn("traceback", failed_hook_var.pre_registration_result)
 
-        submission.refresh_from_db()
-        self.assertTrue(submission.needs_on_completion_retry)
-
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_pre_registration_group_one_component_succeed_and_another_failed(self):
         hook_component: Component = {
@@ -239,7 +232,6 @@ class PreRegistrationTaskTests(TestCase):
             [hook_component, failed_hook_component],
             {"withHook": "foo", "failedHook": "bar"},
         )
-        assert submission.needs_on_completion_retry is False
 
         execute_component_pre_registration_group.delay(submission_id=submission.id)
 
@@ -259,9 +251,6 @@ class PreRegistrationTaskTests(TestCase):
         )
         self.assertIn("traceback", failed_hook_var.pre_registration_result)
 
-        submission.refresh_from_db()
-        self.assertTrue(submission.needs_on_completion_retry)
-
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_pre_registration_group_component_failed_retried_and_succeed(self):
         hook_component: Component = {
@@ -274,7 +263,6 @@ class PreRegistrationTaskTests(TestCase):
             [hook_component],
             {"withHook": "foo"},
         )
-        assert submission.needs_on_completion_retry is False
 
         # 1st run - fail
         with patch(
@@ -292,9 +280,6 @@ class PreRegistrationTaskTests(TestCase):
         )
         self.assertIn("traceback", hook_var.pre_registration_result)
 
-        submission.refresh_from_db()
-        self.assertTrue(submission.needs_on_completion_retry)
-
         # 2nd run - success
         execute_component_pre_registration_group.delay(submission_id=submission.id)
 
@@ -304,3 +289,85 @@ class PreRegistrationTaskTests(TestCase):
             ComponentPreRegistrationStatuses.success,
         )
         self.assertEqual(hook_var.pre_registration_result, {"data": "something"})
+
+    def test_process_pre_registration_task_succeed(self):
+        hook_component: Component = {
+            "key": "withHook",
+            "type": "hook",
+            "label": "With Hook",
+            "validate": {"required": False},
+        }
+        submission = SubmissionFactory.from_components(
+            [hook_component],
+            {"withHook": "foo"},
+        )
+        assert submission.needs_on_completion_retry is False
+
+        state = submission.load_submission_value_variables_state()
+        hook_var = state.variables["withHook"]
+        hook_var.pre_registration_status = ComponentPreRegistrationStatuses.success
+        hook_var.save()
+
+        process_component_pre_registration(submission_id=submission.id)
+
+        submission.refresh_from_db()
+        self.assertFalse(submission.needs_on_completion_retry)
+
+    def test_process_pre_registration_task_failed(self):
+        failed_hook_component: Component = {
+            "key": "failedHook",
+            "type": "failHook",
+            "label": "Failed Hook",
+            "validate": {"required": False},
+        }
+
+        submission = SubmissionFactory.from_components(
+            [failed_hook_component],
+            {"failedHook": "bar"},
+        )
+
+        state = submission.load_submission_value_variables_state()
+        failed_hook_var = state.variables["failedHook"]
+        failed_hook_var.pre_registration_status = (
+            ComponentPreRegistrationStatuses.failed
+        )
+        failed_hook_var.save()
+
+        process_component_pre_registration(submission_id=submission.id)
+
+        submission.refresh_from_db()
+        self.assertTrue(submission.needs_on_completion_retry)
+
+    def test_process_pre_registration_task_one_component_succeeded_another_failed(self):
+        hook_component: Component = {
+            "key": "withHook",
+            "type": "hook",
+            "label": "With Hook",
+            "validate": {"required": False},
+        }
+        failed_hook_component: Component = {
+            "key": "failedHook",
+            "type": "failHook",
+            "label": "Failed Hook",
+            "validate": {"required": False},
+        }
+        submission = SubmissionFactory.from_components(
+            [hook_component, failed_hook_component],
+            {"withHook": "foo", "failedHook": "bar"},
+        )
+
+        state = submission.load_submission_value_variables_state()
+        hook_var = state.variables["withHook"]
+        hook_var.pre_registration_status = ComponentPreRegistrationStatuses.success
+        hook_var.save()
+
+        failed_hook_var = state.variables["failedHook"]
+        failed_hook_var.pre_registration_status = (
+            ComponentPreRegistrationStatuses.failed
+        )
+        failed_hook_var.save()
+
+        process_component_pre_registration(submission_id=submission.id)
+
+        submission.refresh_from_db()
+        self.assertTrue(submission.needs_on_completion_retry)

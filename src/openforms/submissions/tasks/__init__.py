@@ -41,7 +41,11 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
     # just set a submission reference (if it hasn't already been set)
     pre_registration_task = pre_registration.si(submission_id, event)
 
+    # Execute pre-registration hook specified in the Formio component plugin
     component_pre_registration_group = execute_component_pre_registration_group.si(
+        submission_id
+    )
+    process_component_pre_registration_task = process_component_pre_registration.si(
         submission_id
     )
 
@@ -63,6 +67,7 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
         register_appointment_task,
         pre_registration_task,
         component_pre_registration_group,
+        process_component_pre_registration_task,
         generate_report_task,
         register_submission_task,
         payment_status_update_task,
