@@ -46,6 +46,9 @@ from openforms.forms.models.form_registration_backend import FormRegistrationBac
 from openforms.forms.models.logic import FormLogic
 from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.prefill.contrib.customer_interactions.checks import (
+    check_absent_user_variables_for_profile,
+)
 from openforms.prefill.contrib.family_members.service import (
     check_hc_config_for_family_members,
     check_unmatched_variables,
@@ -189,6 +192,22 @@ class InvalidMapComponentOverlay:
     overlay_name: str
     component_name: str
     exception_message: StrOrPromise = ""
+
+    @property
+    def admin_link(self) -> str:
+        form_relative_admin_url = reverse(
+            "admin:forms_form_change", kwargs={"object_id": self.form_id}
+        )
+        return build_absolute_uri(form_relative_admin_url)
+
+
+@dataclass
+class InvalidComponentConfiguration:
+    form_id: int
+    form_name: str
+    component_key: str
+    component_type: str
+    exception_message: StrOrPromise
 
     @property
     def admin_link(self) -> str:
@@ -813,3 +832,12 @@ def collect_invalid_map_component_overlays() -> list[InvalidMapComponentOverlay]
                 )
 
     return problems
+
+
+def collect_invalid_component_configuration() -> list[InvalidComponentConfiguration]:
+    """
+    Collects invalid formio component configurations for custom components.
+    """
+    invalid_component_configurations = check_absent_user_variables_for_profile()
+
+    return invalid_component_configurations

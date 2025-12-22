@@ -246,3 +246,24 @@
     </ul>
 {% endif %}
 
+{% if invalid_component_configurations %}
+<h5>{% trans "Invalid component configurations" %}</h5>
+    <ul>
+        {% for invalid_component_configuration in invalid_component_configurations %}
+            <li>
+                <p>
+                    {% blocktranslate with
+                       component_key=invalid_component_configuration.component_key
+                       component_type=invalid_component_configuration.component_type
+                       form_name=invalid_component_configuration.form_name
+                       message=invalid_component_configuration.exception_message
+                    trimmed %}
+                        The configuration of {{ component_type }} component '{{ component_key }}' of the form '{{ form_name }}' is invalid.<br>
+                        ({{ message }})<br>
+                    {% endblocktranslate %}
+                </p>
+                <p><a href="{{ invalid_component_configuration.admin_link }}">{% trans "View form" %}</a></p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
