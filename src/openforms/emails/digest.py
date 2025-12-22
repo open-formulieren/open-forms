@@ -37,6 +37,7 @@ from openforms.contrib.reference_lists.client import (
     Table,
     TableItem,
 )
+from openforms.prefill.contrib.customer_interactions.plugin import PLUGIN_IDENTIFIER as CP_PLUGIN_IDENTIFIER
 from openforms.formio.constants import DataSrcOptions
 from openforms.formio.typing import Component
 from openforms.formio.typing.map import Overlay
@@ -46,9 +47,6 @@ from openforms.forms.models.form_registration_backend import FormRegistrationBac
 from openforms.forms.models.logic import FormLogic
 from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import InvalidPluginConfiguration
-from openforms.prefill.contrib.customer_interactions.checks import (
-    check_absent_user_variables_for_profile,
-)
 from openforms.prefill.contrib.family_members.service import (
     check_hc_config_for_family_members,
     check_unmatched_variables,
@@ -63,7 +61,7 @@ from openforms.typing import StrOrPromise
 from openforms.utils.json_logic.datastructures import InputVar
 from openforms.utils.json_logic.introspection import introspect_json_logic
 from openforms.utils.urls import build_absolute_uri
-from openforms.variables.constants import FormVariableDataTypes
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.service import get_static_variables
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -841,3 +839,40 @@ def collect_invalid_component_configuration() -> list[InvalidComponentConfigurat
     invalid_component_configurations = check_absent_user_variables_for_profile()
 
     return invalid_component_configurations
+
+
+def check_absent_user_variables_for_profile() -> list[InvalidComponentConfiguration]:
+    """
+    Check if `customerProfile` component with `shouldUpdateCustomerData = True` exists, but
+    the related user variable with prefill configuration is not added.
+    """
+    invalid_configurations: list[InvalidComponentConfiguration] = []
+    error_message = _(
+        "The component is configured to require updates, but the prefill variable is missing"
+    )
+
+    for form in Form.objects.prefetch_related("formvariable_set").live():
+        for component in form.iter_components():
+            if component["type"] != "customerProfile":
+                continue
+
+            if not component["shouldUpdateCustomerData"]:
+                continue
+
+            component_key = component["key"]
+            if not form.formvariable_set.filter(
+                source=FormVariableSources.user_defined,
+                prefill_plugin=CP_PLUGIN_IDENTIFIER,
+                prefill_options__profile_form_variable=component_key,
+            ).exists():
+                invalid_configurations.append(
+                    InvalidComponentConfiguration(
+                        form_id=form.id,
+                        form_name=form.name,
+                        component_key=component_key,
+                        component_type=component["type"],
+                        exception_message=error_message,
+                    )
+                )
+
+    return invalid_configurations
