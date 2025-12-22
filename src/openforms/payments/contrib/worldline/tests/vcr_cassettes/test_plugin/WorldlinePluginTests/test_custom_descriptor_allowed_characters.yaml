@@ -1,10 +1,12 @@
 interactions:
 - request:
-    body: "{\n    \"hostedCheckoutSpecificInput\": {\n        \"returnUrl\": \"http://testserver/payment/1362fc91-05ad-477c-80d8-808d42396150/return\"\n
+    body: "{\n    \"cardPaymentMethodSpecificInput\": {\n        \"authorizationMode\":
+      \"SALE\"\n    },\n    \"hostedCheckoutSpecificInput\": {\n        \"returnUrl\":
+      \"http://testserver/payment/d19b6950-c2f5-4eea-a26a-7cfe7960cac9/return\"\n
       \   },\n    \"order\": {\n        \"amountOfMoney\": {\n            \"amount\":
       1135,\n            \"currencyCode\": \"EUR\"\n        },\n        \"references\":
-      {\n            \"descriptor\": \"1a-*_^~` OF-CV6VXY\",\n            \"merchantReference\":
-      \"2025/OF-CV6VXY/1\"\n        }\n    }\n}"
+      {\n            \"descriptor\": \"1a-*_^~` OF-VX9KXB\",\n            \"merchantReference\":
+      \"2025/OF-VX9KXB/6\"\n        }\n    }\n}"
     headers:
       Accept:
       - '*/*'
@@ -13,20 +15,20 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '395'
+      - '478'
       Content-Type:
       - application/json
       Date:
-      - Mon, 29 Sep 2025 13:31:20 GMT
+      - Mon, 22 Dec 2025 16:49:21 GMT
       User-Agent:
       - python-requests/2.32.4
       X-GCS-ServerMetaInfo:
-      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE2LjUtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMDQgU2VwIDIwMjUgMjM6MTg6MTMgKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE4LjEtYXJjaDEtMi8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFNhdCwgMTMgRGVjIDIwMjUgMTg6MjM6MjEgKzAwMDAgUHl0aG9uLzMuMTIuMTIgKENQeXRob247IEdDQyAxNS4yLjEgMjAyNTExMTIpIiwKICAgICJzZGtJZGVudGlmaWVyIjogIlB5dGhvblNlcnZlclNESy92NS4xLjAiLAogICAgInNka0NyZWF0b3IiOiAiT25saW5lUGF5bWVudHMiLAogICAgImludGVncmF0b3IiOiAib3BlbmZvcm1zIgp9
     method: POST
     uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/hostedcheckouts
   response:
     body:
-      string: '{"RETURNMAC":"d1e23f76-205f-4575-8f1c-aaf9f47a6d81","hostedCheckoutId":"4376957236","merchantReference":"2025/OF-CV6VXY/1","redirectUrl":"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/ba0a5df413f34571b8d0e46af22dd99b","partialRedirectUrl":"preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/ba0a5df413f34571b8d0e46af22dd99b"}'
+      string: '{"RETURNMAC":"8fdbe3f7-76a1-4224-8210-a8cd9e166fb0","hostedCheckoutId":"4454893638","merchantReference":"2025/OF-VX9KXB/6","redirectUrl":"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/ca1b7341612a4f61a6a45a6198f0c251","partialRedirectUrl":"preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/ca1b7341612a4f61a6a45a6198f0c251"}'
     headers:
       api_auth:
       - 'true'
@@ -57,7 +59,7 @@ interactions:
         https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-eHTRyv+TaNQ=''  ; style-src-attr ''unsafe-inline'';
+        https://applepay.cdn-apple.com ''nonce-jJXm8bVt6lc=''  ; style-src-attr ''unsafe-inline'';
         style-src-elem ''unsafe-inline'' ''self'' https://assets.test.cdn.v-psp.com
         https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
         https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
@@ -74,16 +76,16 @@ interactions:
         https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-eHTRyv+TaNQ=''; object-src ''none'';'
+        https://applepay.cdn-apple.com ''nonce-jJXm8bVt6lc=''; object-src ''none'';'
       content-type:
       - application/json; charset=utf-8
       correlation-id:
-      - a5909d16-451f-448c-b4ca-f11d607084a3
-      - a5909d16-451f-448c-b4ca-f11d607084a3
+      - 9b51225d-1b5a-463a-9a62-3745e0aab315
+      - 9b51225d-1b5a-463a-9a62-3745e0aab315
       date:
-      - Mon, 29 Sep 2025 13:31:20 GMT
+      - Mon, 22 Dec 2025 16:49:21 GMT
       strict-transport-security:
-      - max-age=16000000; includeSubDomains; preload;
+      - max-age=31536000; includeSubDomains; preload;
     status:
       code: 200
       message: OK
@@ -99,7 +101,7 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/ba0a5df413f34571b8d0e46af22dd99b
+    uri: https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Payment/Form/ca1b7341612a4f61a6a45a6198f0c251
   response:
     body:
       string: ''
@@ -131,7 +133,7 @@ interactions:
         https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-5F/u0ZOHqt8=''  ; style-src-attr ''unsafe-inline'';
+        https://applepay.cdn-apple.com ''nonce-B0Latd19Aeg=''  ; style-src-attr ''unsafe-inline'';
         style-src-elem ''unsafe-inline'' ''self'' https://assets.test.cdn.v-psp.com
         https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
         https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
@@ -148,16 +150,16 @@ interactions:
         https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-5F/u0ZOHqt8=''; object-src ''none'';'
+        https://applepay.cdn-apple.com ''nonce-B0Latd19Aeg=''; object-src ''none'';'
       correlation-id:
-      - 56364747-99b9-45cd-9621-90a4e91f62d8
-      - 56364747-99b9-45cd-9621-90a4e91f62d8
+      - 71af50aa-c5bf-4e9d-bc46-6f0e4727e4a4
+      - 71af50aa-c5bf-4e9d-bc46-6f0e4727e4a4
       date:
-      - Mon, 29 Sep 2025 13:31:20 GMT
+      - Mon, 22 Dec 2025 16:49:22 GMT
       location:
-      - https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3a%2f%2fpayment.preprod.direct.worldline-solutions.com%2fhostedcheckout%2fRedirect%2fReturn%2fb72a5a5d02f04c47bb2863e06e956ede
+      - https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3a%2f%2fpayment.preprod.direct.worldline-solutions.com%2fhostedcheckout%2fRedirect%2fReturn%2fead1bd6099394c8bb1ce675ffcecca5f
       strict-transport-security:
-      - max-age=16000000; includeSubDomains; preload;
+      - max-age=31536000; includeSubDomains; preload;
     status:
       code: 302
       message: Found
@@ -173,7 +175,7 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3A%2F%2Fpayment.preprod.direct.worldline-solutions.com%2Fhostedcheckout%2FRedirect%2FReturn%2Fb72a5a5d02f04c47bb2863e06e956ede
+    uri: https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3A%2F%2Fpayment.preprod.direct.worldline-solutions.com%2Fhostedcheckout%2FRedirect%2FReturn%2Fead1bd6099394c8bb1ce675ffcecca5f
   response:
     body:
       string: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <meta charset=\"utf-8\"
@@ -182,7 +184,7 @@ interactions:
         rel=\"stylesheet\" type=\"text/css\" />\r\n</head>\r\n<body>\r\n\r\n    <div
         id=\"header\">\r\n        <h1>iDEAL</h1>\r\n        <p>This page simulates
         iDEAL payments</p>\r\n    </div>\r\n\r\n    <div id=\"main\">\r\n        \r\n<form
-        action=\"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Redirect/Return/b72a5a5d02f04c47bb2863e06e956ede\"
+        action=\"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Redirect/Return/ead1bd6099394c8bb1ce675ffcecca5f\"
         method=\"GET\" name=\"redirectForm\" id=\"redirectForm\">\r\n        <input
         type=\"hidden\" name=\"ec\" />\r\n        <input type=\"hidden\" name=\"trxid\"
         value=\"0\" />\r\n\r\n    <div class=\"section first\">\r\n        <h2>Redirection</h2>\r\n
@@ -201,14 +203,14 @@ interactions:
       content-type:
       - text/html; charset=utf-8
       correlation-id:
-      - 961e69be-cea7-43e2-9951-93860a92e85f
-      - 961e69be-cea7-43e2-9951-93860a92e85f
+      - 0855ced5-0c7c-434c-9637-30c9314f68e9
+      - 0855ced5-0c7c-434c-9637-30c9314f68e9
       date:
-      - Mon, 29 Sep 2025 13:31:20 GMT
+      - Mon, 22 Dec 2025 16:49:22 GMT
       pragma:
       - no-cache
       strict-transport-security:
-      - max-age=16000000; includeSubDomains; preload;
+      - max-age=31536000; includeSubDomains; preload;
       transfer-encoding:
       - chunked
       x-content-type-options:
@@ -232,10 +234,10 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Redirect/Return/b72a5a5d02f04c47bb2863e06e956ede?ec=&trxid=0
+    uri: https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/Redirect/Return/ead1bd6099394c8bb1ce675ffcecca5f?ec=&trxid=0
   response:
     body:
-      string: "<!DOCTYPE html>\r\n<html lang=\"NLBE\">\r\n<head>\r\n    <meta charset=\"utf-8\">\r\n
+      string: "<!DOCTYPE html>\r\n<html lang=\"NL\">\r\n<head>\r\n    <meta charset=\"utf-8\">\r\n
         \   <title>\r\n        DIRECT E-COMMERCE - Uw betaling is geaccepteerd\r\n
         \   </title>\r\n    <meta name=\"viewport\" content=\"width=device-width,
         initial-scale=1\">\r\n    <link rel=\"stylesheet\" href=\"https://assets.test.cdn.v-psp.com/otp/a5430296d43318471dbf/templates/hostedcheckout/wlop_direct/styles.css\"
@@ -247,9 +249,9 @@ interactions:
         \                   Maykin Media B.V.\r\n                </h1>\r\n            </div>\r\n
         \       </div>\r\n\r\n        <div class=\"row main-content\">\r\n\r\n            \r\n\r\n
         \           \r\n\r\n            <form class=\"payment-statuspage\" name=\"payment-statuspage\"
-        id=\"payment-statuspage\" method=\"get\" action=\"http://testserver/payment/1362fc91-05ad-477c-80d8-808d42396150/return\"
-        payment-js-autosubmit=\"3000\"><input type=\"hidden\" name=\"RETURNMAC\" value=\"d1e23f76-205f-4575-8f1c-aaf9f47a6d81\"><input
-        type=\"hidden\" name=\"hostedCheckoutId\" value=\"4376957236\">\r\n                <div
+        id=\"payment-statuspage\" method=\"get\" action=\"http://testserver/payment/d19b6950-c2f5-4eea-a26a-7cfe7960cac9/return\"
+        payment-js-autosubmit=\"3000\"><input type=\"hidden\" name=\"RETURNMAC\" value=\"8fdbe3f7-76a1-4224-8210-a8cd9e166fb0\"><input
+        type=\"hidden\" name=\"hostedCheckoutId\" value=\"4454893638\">\r\n                <div
         class=\"navigation\">\r\n                    <div class=\"progress-bar\">\r\n
         \                       <div aria-describedby=\"progress-bar-label-text\">\r\n
         \                           <span id=\"progress-bar-label-text\">Betalingsvoortgang</span>\r\n
@@ -299,7 +301,7 @@ interactions:
         \                   <span class=\"total-amount\">EUR&nbsp;11.35</span>\r\n
         \               </div>\r\n\r\n                \r\n\r\n                <div
         class=\"row order-ref order__reference\">\r\n                    Referentie
-        van de bestelling: 2025/OF-CV6VXY/1\r\n                </div>\r\n\r\n                \r\n\r\n
+        van de bestelling: 2025/OF-VX9KXB/6\r\n                </div>\r\n\r\n                \r\n\r\n
         \               \r\n\r\n                \r\n\r\n                \r\n            </div>\r\n
         \       </div>\r\n        <div id=\"buttons-part-mobile\">\r\n            <div
         class=\"payment-proceed-to-payment\"><span class=\"payment-error proceed-to-payment-label-error-id\"
@@ -316,7 +318,7 @@ interactions:
         kostprijs:&nbsp;</span>\r\n                    <span class=\"total-amount\">EUR&nbsp;11.35</span>\r\n
         \               </div>\r\n\r\n                \r\n\r\n                <div
         class=\"row order-ref order__reference\">\r\n                    Referentie
-        van de bestelling: 2025/OF-CV6VXY/1\r\n                </div>\r\n\r\n                \r\n\r\n
+        van de bestelling: 2025/OF-VX9KXB/6\r\n                </div>\r\n\r\n                \r\n\r\n
         \               \r\n\r\n                \r\n\r\n                \r\n\r\n\t\t\t\t<div
         id=\"payment-submit-switch\" payment-submit-all-valid-message=\"!\" payment-submit-all-invalid-message=\"!\"><div
         class=\"button button--raised button--secure\" role=\"button\" id=\"submit-all\"
@@ -337,17 +339,17 @@ interactions:
         id=\"payment-Betaling verwerkt door Worldline-image\" alt=\"Betaling verwerkt
         door Worldline\">\r\n            </div>\r\n            <div class=\"row\">\r\n
         \               <a href=\"https://worldline.com/?lang=3&amp;branding=WLOP_Direct\"
-        target=\"_blank\">Over Worldline</a><a href=\"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/SecurityContent/Get/ba0a5df413f34571b8d0e46af22dd99b\"
+        target=\"_blank\">Over Worldline</a><a href=\"https://payment.preprod.direct.worldline-solutions.com/hostedcheckout/SecurityContent/Get/ca1b7341612a4f61a6a45a6198f0c251\"
         target=\"_blank\">Veiligheid</a><a href=\"https://worldline.com/en/home/main-navigation/git/office-locations.html?lang=3&amp;branding=WLOP_Direct\"
         target=\"_blank\">Wettelijke informatie</a>\r\n            </div>\r\n            <div
         class=\"clear\"></div>\r\n        </div>\r\n    </div>\r\n    <script src=\"https://assets.test.cdn.v-psp.com/otp/a5430296d43318471dbf/templates/hostedcheckout/wlop_direct/script.js\"
         crossorigin=\"anonymous\" integrity=\"sha384-4eohHzepExeZrtUrREjDJTdnGHvmtFOzpIpyXaGBzYdjNqJbP1QJII3fV/4w4BAS\"></script>\r\n<script
-        type=\"text/javascript\" src=\"https://assets.test.cdn.v-psp.com/hpp/85b9028bf182ed61b2f0/js/cdn/ingenico-direct.min.js\"
-        crossorigin=\"anonymous\" integrity=\"sha384-gZpqnJARTg8QRgHRNpg2doOwarv1dn7twAHQ4H/kWsypc8MhhtNQA8Lbw0eoyTKH\"
-        nonce=\"IaKzU1jAhV8=\"></script>\r\n</body>\r\n</html>\r\n"
+        type=\"text/javascript\" src=\"https://assets.test.cdn.v-psp.com/hpp/41a7109ff2d47e4f873e/js/cdn/ingenico-direct.min.js\"
+        crossorigin=\"anonymous\" integrity=\"sha384-HPS8jxXxP7JJt3lwvi2Zrx2rBaAu3jLNnRbWHHnB2AQMTIP6R9uoyGZY0zXmE5h2\"
+        nonce=\"f7IoI47u/6U=\"></script>\r\n</body>\r\n</html>\r\n"
     headers:
       content-length:
-      - '9595'
+      - '9593'
       content-security-policy:
       - 'default-src ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
         https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
@@ -373,7 +375,7 @@ interactions:
         https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-IaKzU1jAhV8=''  ; style-src-attr ''unsafe-inline'';
+        https://applepay.cdn-apple.com ''nonce-f7IoI47u/6U=''  ; style-src-attr ''unsafe-inline'';
         style-src-elem ''unsafe-inline'' ''self'' https://assets.test.cdn.v-psp.com
         https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
         https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
@@ -390,16 +392,16 @@ interactions:
         https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-IaKzU1jAhV8=''; object-src ''none'';'
+        https://applepay.cdn-apple.com ''nonce-f7IoI47u/6U=''; object-src ''none'';'
       content-type:
       - text/html; charset=utf-8
       correlation-id:
-      - 65e0fa3c-da9a-425a-93ba-68da867e00ea
-      - 65e0fa3c-da9a-425a-93ba-68da867e00ea
+      - b65bf495-6998-4a9d-a4d2-0477bccb2aba
+      - b65bf495-6998-4a9d-a4d2-0477bccb2aba
       date:
-      - Mon, 29 Sep 2025 13:31:27 GMT
+      - Mon, 22 Dec 2025 16:49:27 GMT
       strict-transport-security:
-      - max-age=16000000; includeSubDomains; preload;
+      - max-age=31536000; includeSubDomains; preload;
     status:
       code: 200
       message: OK
@@ -413,21 +415,21 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Mon, 29 Sep 2025 13:31:28 GMT
+      - Mon, 22 Dec 2025 16:49:27 GMT
       User-Agent:
       - python-requests/2.32.4
       X-GCS-ServerMetaInfo:
-      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE2LjUtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMDQgU2VwIDIwMjUgMjM6MTg6MTMgKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE4LjEtYXJjaDEtMi8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFNhdCwgMTMgRGVjIDIwMjUgMTg6MjM6MjEgKzAwMDAgUHl0aG9uLzMuMTIuMTIgKENQeXRob247IEdDQyAxNS4yLjEgMjAyNTExMTIpIiwKICAgICJzZGtJZGVudGlmaWVyIjogIlB5dGhvblNlcnZlclNESy92NS4xLjAiLAogICAgInNka0NyZWF0b3IiOiAiT25saW5lUGF5bWVudHMiLAogICAgImludGVncmF0b3IiOiAib3BlbmZvcm1zIgp9
     method: GET
-    uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/hostedcheckouts/4376957236
+    uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/hostedcheckouts/4454893638
   response:
     body:
-      string: '{"createdPaymentOutput":{"payment":{"hostedCheckoutSpecificOutput":{"hostedCheckoutId":"4376957236"},"paymentOutput":{"amountOfMoney":{"amount":1135,"currencyCode":"EUR"},"references":{"merchantReference":"2025/OF-CV6VXY/1"},"acquiredAmount":{"amount":1135,"currencyCode":"EUR"},"customer":{"device":{"ipAddressCountryCode":"99"}},"paymentMethod":"redirect","redirectPaymentMethodSpecificOutput":{"paymentProductId":809,"fraudResults":{"fraudServiceResult":"no-advice"},"customerBankAccount":{"bic":"RABONL2U","accountHolderName":"Simulator"},"authorisationCode":"279347608438305"}},"status":"CAPTURED","statusOutput":{"isCancellable":false,"statusCategory":"COMPLETED","statusCode":9,"isAuthorized":false,"isRefundable":true},"id":"4376957236_0"},"paymentStatusCategory":"SUCCESSFUL"},"status":"PAYMENT_CREATED"}'
+      string: '{"createdPaymentOutput":{"payment":{"hostedCheckoutSpecificOutput":{"hostedCheckoutId":"4454893638"},"paymentOutput":{"amountOfMoney":{"amount":1135,"currencyCode":"EUR"},"references":{"merchantReference":"2025/OF-VX9KXB/6"},"acquiredAmount":{"amount":1135,"currencyCode":"EUR"},"customer":{"device":{"ipAddressCountryCode":"99"}},"paymentMethod":"redirect","redirectPaymentMethodSpecificOutput":{"paymentProductId":809,"fraudResults":{"fraudServiceResult":"no-advice"},"customerBankAccount":{"bic":"RABONL2U","accountHolderName":"Simulator"},"authorisationCode":"644264097855058"},"transactionDate":"2025-12-22T16:49:22.5601652Z"},"status":"CAPTURED","statusOutput":{"isCancellable":false,"statusCategory":"COMPLETED","statusCode":9,"isAuthorized":false,"isRefundable":true},"id":"4454893638_0"},"paymentStatusCategory":"SUCCESSFUL"},"status":"PAYMENT_CREATED"}'
     headers:
       api_auth:
       - 'true'
       content-length:
-      - '813'
+      - '862'
       content-security-policy:
       - 'default-src ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
         https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
@@ -453,7 +455,7 @@ interactions:
         https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-u48imJTqWno=''  ; style-src-attr ''unsafe-inline'';
+        https://applepay.cdn-apple.com ''nonce-VXJUFbZNPGI=''  ; style-src-attr ''unsafe-inline'';
         style-src-elem ''unsafe-inline'' ''self'' https://assets.test.cdn.v-psp.com
         https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
         https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
@@ -470,16 +472,16 @@ interactions:
         https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-u48imJTqWno=''; object-src ''none'';'
+        https://applepay.cdn-apple.com ''nonce-VXJUFbZNPGI=''; object-src ''none'';'
       content-type:
       - application/json; charset=utf-8
       correlation-id:
-      - 7c80a2b1-8647-4b62-bf4e-945a2093bf98
-      - 7c80a2b1-8647-4b62-bf4e-945a2093bf98
+      - b874fce0-0eeb-4b13-8f10-8c8004c9dbdf
+      - b874fce0-0eeb-4b13-8f10-8c8004c9dbdf
       date:
-      - Mon, 29 Sep 2025 13:31:27 GMT
+      - Mon, 22 Dec 2025 16:49:27 GMT
       strict-transport-security:
-      - max-age=16000000; includeSubDomains; preload;
+      - max-age=31536000; includeSubDomains; preload;
     status:
       code: 200
       message: OK
