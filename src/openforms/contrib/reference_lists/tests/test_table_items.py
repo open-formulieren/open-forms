@@ -3,6 +3,7 @@ from pathlib import Path
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
@@ -23,7 +24,9 @@ class ReferenceListsTableItemsEndpointTests(OFVCRMixin, APITestCase):
         cls.admin_user = StaffUserFactory.create()
 
         cls.service = ServiceFactory.create(
-            slug="reference-lists", api_root="http://localhost:8004/api/v1/"
+            slug="reference-lists",
+            api_root="http://localhost:8004/api/v1/",
+            auth_type=AuthTypes.no_auth,
         )
 
     def test_table_items_list_is_forbidden_for_normal_users(self):
