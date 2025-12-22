@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Token 9b17346dbb9493f967e6653bbcdb03ac2f7009fa
+    method: GET
+    uri: http://localhost:8005/klantinteracties/api/v1/digitaleadressen?verstrektDoorPartij__partijIdentificator__codeSoortObjectId=kvk_nummer&verstrektDoorPartij__partijIdentificator__codeRegister=hr&verstrektDoorPartij__partijIdentificator__codeObjecttype=niet_natuurlijk_persoon&verstrektDoorPartij__partijIdentificator__objectId=12345678
+  response:
+    body:
+      string: '{"count":2,"next":null,"previous":null,"results":[{"uuid":"d39fc2c1-39ab-4035-be31-bf1755ecec39","url":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen/d39fc2c1-39ab-4035-be31-bf1755ecec39","verstrektDoorBetrokkene":null,"verstrektDoorPartij":{"uuid":"3411535c-7c5e-4c05-b34d-52a60607dd8c","url":"http://localhost:8005/klantinteracties/api/v1/partijen/3411535c-7c5e-4c05-b34d-52a60607dd8c"},"adres":"0612345678","soortDigitaalAdres":"telefoonnummer","isStandaardAdres":true,"omschrijving":"","referentie":"","verificatieDatum":null,"_expand":{}},{"uuid":"6b0099b5-85ac-4f13-b138-26e123debe51","url":"http://localhost:8005/klantinteracties/api/v1/digitaleadressen/6b0099b5-85ac-4f13-b138-26e123debe51","verstrektDoorBetrokkene":null,"verstrektDoorPartij":{"uuid":"3411535c-7c5e-4c05-b34d-52a60607dd8c","url":"http://localhost:8005/klantinteracties/api/v1/partijen/3411535c-7c5e-4c05-b34d-52a60607dd8c"},"adres":"maykinmail@test.com","soortDigitaalAdres":"email","isStandaardAdres":true,"omschrijving":"","referentie":"","verificatieDatum":null,"_expand":{}}]}'
+    headers:
+      API-version:
+      - 0.4.1
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Content-Length:
+      - '1073'
+      Content-Security-Policy:
+      - 'form-action ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        base-uri ''self''; frame-ancestors ''none''; frame-src ''self''; worker-src
+        ''self'' blob:; object-src ''none''; font-src ''self'' fonts.gstatic.com;
+        default-src ''self''; img-src ''self'' data: cdn.redoc.ly; script-src ''self''
+        ''unsafe-inline'''
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+version: 1
