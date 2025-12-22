@@ -19,6 +19,9 @@ from openforms.config.models import GlobalConfiguration
 from openforms.config.tests.factories import MapWMSTileLayerFactory
 from openforms.contrib.brk.models import BRKConfig
 from openforms.contrib.brk.tests.base import BRK_SERVICE, INVALID_BRK_SERVICE
+from openforms.contrib.customer_interactions.tests.factories import (
+    CustomerInteractionsAPIGroupConfigFactory,
+)
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.contrib.kadaster.models import KadasterApiConfig
@@ -45,6 +48,7 @@ from stuf.stuf_bg.client import NoServiceConfigured
 from stuf.stuf_bg.models import StufBGConfig
 
 from ..digest import (
+    InvalidComponentConfiguration,
     InvalidLogicRule,
     InvalidMapComponentOverlay,
     collect_broken_configurations,
@@ -53,6 +57,7 @@ from ..digest import (
     collect_failed_prefill_plugins,
     collect_failed_registrations,
     collect_invalid_certificates,
+    collect_invalid_component_configuration,
     collect_invalid_logic_rules,
     collect_invalid_map_component_overlays,
     collect_invalid_registration_backends,
@@ -1973,3 +1978,95 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
             ),
             invalid_map_component_overlays[1],
         )
+
+
+class InvalidComponentConfigsTests(TestCase):
+    def test_inactive_form_does_not_trigger_checks(self):
+        FormFactory.create(
+            active=False,
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "digitalAddressTypes": ["email"],
+                        "shouldUpdateCustomerData": True,
+                    }
+                ],
+            },
+        )
+
+        invalid_configs = collect_invalid_component_configuration()
+
+        self.assertEqual(len(invalid_configs), 0)
+
+    def test_invalid_profile_component_triggers_checks(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "digitalAddressTypes": ["email"],
+                        "shouldUpdateCustomerData": True,
+                    }
+                ],
+            },
+        )
+
+        invalid_configs = collect_invalid_component_configuration()
+
+        self.assertEqual(len(invalid_configs), 1)
+
+        config = invalid_configs[0]
+        self.assertEqual(
+            config,
+            InvalidComponentConfiguration(
+                form_id=form.id,
+                form_name=form.name,
+                component_key="profile",
+                component_type="customerProfile",
+                exception_message=_(
+                    "The component is configured to require updates, but the prefill variable is missing"
+                ),
+            ),
+        )
+        self.assertEqual(
+            config.admin_link,
+            build_absolute_uri(
+                reverse("admin:forms_form_change", kwargs={"object_id": form.id})
+            ),
+        )
+
+    def test_valid_profile_component_not_trigger_checks(self):
+        api_group = CustomerInteractionsAPIGroupConfigFactory.create()
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "digitalAddressTypes": ["email"],
+                        "shouldUpdateCustomerData": True,
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            key="prefill-profile",
+            form=form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="communication_preferences",
+            prefill_options={
+                "customer_interactions_api_group": api_group.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+
+        invalid_configs = collect_invalid_component_configuration()
+
+        self.assertEqual(len(invalid_configs), 0)
