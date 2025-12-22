@@ -42,7 +42,7 @@ def get_customer_interactions_client(
 
 
 class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
-    def get_digital_addresses_for_bsn(self, bsn: str) -> Iterator[DigitaalAdres]:
+    def _get_digital_addresses_for_bsn(self, bsn: str) -> Iterator[DigitaalAdres]:
         """
         Search digital addresses by BSN of the party.
 
@@ -58,6 +58,41 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         }
         response = self.digitaal_adres.list_iter(params=params)
         yield from response
+
+    def _get_digital_addresses_for_kvk(self, kvk: str) -> Iterator[DigitaalAdres]:
+        """
+        Search digital addresses by KVK number of the party.
+
+        The selection of query params and their values are based on the OAS for the
+        "partij identificator":
+        https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/maykinmedia/open-klant/master/src/openklant/components/klantinteracties/openapi.yaml#tag/partij-identificatoren
+        """
+        params: ListDigitaalAdresParams = {
+            "verstrektDoorPartij__partijIdentificator__codeSoortObjectId": "kvk_nummer",
+            "verstrektDoorPartij__partijIdentificator__codeRegister": "hr",
+            "verstrektDoorPartij__partijIdentificator__codeObjecttype": "niet_natuurlijk_persoon",
+            "verstrektDoorPartij__partijIdentificator__objectId": kvk,
+        }
+        response = self.digitaal_adres.list_iter(params=params)
+        yield from response
+
+    def get_digital_addresses(
+        self, auth_attribute: AuthAttribute, auth_value: str
+    ) -> Iterator[DigitaalAdres]:
+        match auth_attribute:
+            case AuthAttribute.bsn:
+                return self._get_digital_addresses_for_bsn(bsn=auth_value)
+
+            case AuthAttribute.kvk:
+                return self._get_digital_addresses_for_kvk(kvk=auth_value)
+
+            case AuthAttribute.pseudo | AuthAttribute.employee_id:  # pragma: no cover
+                raise NotImplementedError(
+                    "Only bsn and kvk authentications are supported for Customer Interactions API"
+                )
+
+            case _:  # pragma: no cover
+                assert_never(auth_attribute)
 
     def get_digital_address_for_party(
         self, address: str, party_uuid: str

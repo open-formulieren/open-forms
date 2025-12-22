@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import get_customer_interactions_client
@@ -10,7 +11,11 @@ from .typing import ExpectedDigitalAddress
 class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, TestCase):
     def test_list_digital_addresses(self):
         with get_customer_interactions_client(self.config) as client:
-            data = list(client.get_digital_addresses_for_bsn(bsn="123456782"))
+            data = list(
+                client.get_digital_addresses(
+                    auth_attribute=AuthAttribute.bsn, auth_value="123456782"
+                )
+            )
 
         expected_addresses: list[ExpectedDigitalAddress] = [
             {
@@ -46,6 +51,10 @@ class CustomerInteractionsClientTest(CustomerInteractionsMixin, OFVCRMixin, Test
 
     def test_list_digital_addresses_empty(self):
         with get_customer_interactions_client(self.config) as client:
-            data = list(client.get_digital_addresses_for_bsn(bsn="123456780"))
+            data = list(
+                client.get_digital_addresses(
+                    auth_attribute=AuthAttribute.bsn, auth_value="123456780"
+                )
+            )
 
         self.assertEqual(len(data), 0)
