@@ -6,6 +6,53 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.4.0 "TBD" (2025-01-??)
+========================
+
+Open Forms 3.4.0 is a feature release.
+
+.. epigraph::
+
+   ...
+
+This contains the changes from the alpha releases and fixes applied until the stable version.
+BEFORE upgrading to 3.4.0, please read the release notes carefully and review the following
+instructions.
+
+Upgrade procedure
+-----------------
+
+To upgrade to 3.4, please:
+
+* ⚠️ Ensure you are currently on Open Forms 3.3.x or newer.
+* Review the detailed release notes in the documentation under **Installation** >
+  **Upgrade details to Open Forms 3.4.0** and prepare accordingly.
+* If you've built custom NL DS themes, please review the above upgrade details.
+
+.. warning:: If you've built dashboards using the metrics telemetry, you'll need to
+   update them with the updated metric names. The new names are in the documentation.
+
+Major features
+--------------
+
+...
+
+Detailed changes
+----------------
+
+**New features**
+
+...
+
+**Bugfixes**
+
+...
+
+**Project maintenance**
+
+...
+
+
 3.3.9 (2025-12-11)
 ==================
 
