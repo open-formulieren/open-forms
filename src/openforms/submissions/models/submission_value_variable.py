@@ -14,6 +14,7 @@ from django.utils.functional import cached_property, empty
 from django.utils.translation import gettext_lazy as _
 
 import structlog
+from typing_extensions import deprecated
 
 from openforms.formio.service import FormioData
 from openforms.formio.typing import Component
@@ -83,6 +84,7 @@ class SubmissionValueVariablesState:
             and variable.form_variable.source == FormVariableSources.user_defined
         }
 
+    @deprecated("Use `state.variables[key]` instead.")
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
 
