@@ -43,6 +43,17 @@
   // input-group
   --of-input-group-gap: 12px;
   --of-input-group-align-items: center;
+
+  // disabled -> readonly rework, ensure design tokens are set
+  --utrecht-textbox-read-only-background-color: var(--utrecht-textbox-disabled-background-color);
+  --utrecht-textbox-read-only-border-color: var(--utrecht-textbox-disabled-border-color);
+  --utrecht-textbox-read-only-color: var(--utrecht-textbox-disabled-color);
+
+  --utrecht-form-control-read-only-background-color: var(
+    --utrecht-form-control-disabled-background-color
+  );
+  --utrecht-form-control-read-only-border-color: var(--utrecht-form-control-disabled-border-color);
+  --utrecht-form-control-read-only-color: var(--utrecht-form-control-disabled-color);
 }
 
 // .utrecht-icon:has(.openforms-tooltip-icon) {
