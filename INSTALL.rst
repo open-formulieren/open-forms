@@ -163,7 +163,9 @@ this particular SDK build for local backend dev and testing.
       cd /path/to/code/
       git clone git@github.com:open-formulieren/open-forms-sdk.git
       cd open-forms-sdk
+      git submodule update --init
       npm install
+      npm run build:design-tokens
       npm run build
 
    This produces the production build artifacts in the ``dist/bundles`` folder, it should
