@@ -20,7 +20,7 @@ from ..validators import (
     validate_branchNumber,
     validate_kvk,
 )
-from .base import TEST_FILES, KVKTestMixin
+from .base import KVKTestMixin
 
 
 class KvKValidatorTestCase(SimpleTestCase):
@@ -56,8 +56,6 @@ class KvKValidatorTestCase(SimpleTestCase):
 @override_settings(CACHES=NOOP_CACHES)
 @temp_private_root()
 class KvKRemoteValidatorTestCase(OFVCRMixin, KVKTestMixin, SimpleTestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     def test_kvkNumber_validator(self):
         # valid-existing kvkNummer
         validator = partial(KVKNumberRemoteValidator("id"), submission=Submission())

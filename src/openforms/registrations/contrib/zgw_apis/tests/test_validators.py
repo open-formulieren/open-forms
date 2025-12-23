@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from django.test import TestCase, override_settings
 
 from typing_extensions import deprecated
@@ -9,8 +7,6 @@ from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..plugin import ZaakOptionsSerializer
 from .factories import ZGWApiGroupConfigFactory
-
-FILES_DIR = Path(__file__).parent / "files"
 
 
 @override_settings(LANGUAGE_CODE="en")
@@ -28,8 +24,6 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
 
     See the relevant README to load the necessary data into the instance.
     """
-
-    VCR_TEST_FILES = FILES_DIR
 
     @classmethod
     def setUpTestData(cls):

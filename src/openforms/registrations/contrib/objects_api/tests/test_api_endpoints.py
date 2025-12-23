@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from rest_framework import status
 from rest_framework.reverse import reverse_lazy
 from rest_framework.test import APITestCase
@@ -11,11 +9,8 @@ from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigF
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
 
-TEST_FILES = Path(__file__).parent / "files"
-
 
 class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
-    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:objects_api:object-types")
 
     @classmethod
@@ -71,7 +66,6 @@ class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
 
 
 class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
-    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy(
         "api:objects_api:object-type-versions",
         args=["3edfdaf7-f469-470b-a391-bb7ea015bd6f"],
@@ -127,7 +121,6 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
 
 
 class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
-    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:registrations_objects_api:target-paths")
 
     @classmethod
@@ -200,7 +193,6 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
 
 
 class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
-    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:objects_api:catalogue-list")
 
     @classmethod
@@ -252,7 +244,6 @@ class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
 
 
 class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
-    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:objects_api:document-type-list")
 
     @classmethod

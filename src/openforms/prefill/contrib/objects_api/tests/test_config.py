@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import patch
 
 from rest_framework.test import APITestCase
@@ -14,15 +13,11 @@ from ....registry import register
 
 plugin = register["objects_api"]
 
-VCR_TEST_FILES = Path(__file__).parent / "files"
-
 
 class ObjectsAPIPrefillPluginConfigTests(OFVCRMixin, APITestCase):
     """This test case requires the Objects & Objecttypes API to be running.
     See the relevant Docker compose in the ``docker/`` folder.
     """
-
-    VCR_TEST_FILES = VCR_TEST_FILES
 
     def setUp(self):
         super().setUp()

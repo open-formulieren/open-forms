@@ -1,6 +1,4 @@
-from pathlib import Path
-
-from django.urls import Resolver404, resolve, reverse
+from django.urls import resolve, reverse
 
 from asgiref.sync import sync_to_async
 from furl import furl
@@ -15,18 +13,13 @@ from openforms.tests.e2e.base import (
     create_superuser,
     rs_select_option,
 )
-from openforms.tests.utils import log_flaky
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..factories import FormFactory
 from .helpers import close_modal, open_component_options_modal, phase
 
-VCR_CASSETTES = (Path(__file__).parent).resolve()
-
 
 class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
-    VCR_TEST_FILES = VCR_CASSETTES
-
     async def test_configuring_zgw_api_group(self):
         """
         Test that the admin editor dynamically changes the request to InformatieObjectTypenListView based on the registration backend configuration.
@@ -92,13 +85,7 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
             if url.scheme == "about":
                 return
 
-            try:
-                match = resolve(str(url.path))
-            except Resolver404:
-                print(f"Failed to resolve URL: {request.url}")
-                log_flaky()
-                return
-
+            match = resolve(str(url.path))
             if match.view_name == "api:zgw_apis:document-type-list":
                 requests_to_endpoint.append(request)
 
@@ -228,13 +215,7 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
             if url.scheme == "about":
                 return
 
-            try:
-                match = resolve(str(url.path))
-            except Resolver404:
-                print(f"Failed to resolve URL: {request.url}")
-                log_flaky()
-                return
-
+            match = resolve(str(url.path))
             if match.view_name == "api:objects_api:document-type-list":
                 requests_to_endpoint.append(request)
 

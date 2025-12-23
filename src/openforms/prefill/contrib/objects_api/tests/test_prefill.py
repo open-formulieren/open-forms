@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import patch
 
 from django.core.exceptions import PermissionDenied
@@ -18,15 +17,11 @@ from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....service import prefill_variables
 
-VCR_TEST_FILES = Path(__file__).parent / "files"
-
 
 class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
     """This test case requires the Objects & Objecttypes API to be running.
     See the relevant Docker compose in the ``docker/`` folder.
     """
-
-    VCR_TEST_FILES = VCR_TEST_FILES
 
     def setUp(self):
         super().setUp()

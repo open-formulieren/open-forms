@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from django.test import TransactionTestCase
@@ -49,8 +48,6 @@ class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
     traffic is recorded using VCR and we are making use of the prefill feature, although any other feature
     making use of the BRP API could have been used.
     """
-
-    VCR_TEST_FILES = Path(__file__).parent / "files"
 
     def setUp(self) -> None:
         super().setUp()

@@ -1,5 +1,4 @@
 import textwrap
-from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
 
@@ -29,13 +28,11 @@ from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..submission_registration import ObjectsAPIV1Handler
 from ..typing import RegistrationOptionsV1
 
-TEST_FILES = Path(__file__).parent / "files"
 FIXED_SUBMISSION_UUID = UUID(hex="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
 
 class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
     maxDiff = None
-    VCR_TEST_FILES = TEST_FILES
 
     def setUp(self):
         super().setUp()

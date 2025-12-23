@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
 
@@ -22,8 +21,6 @@ from ..typing import RegistrationOptionsV2
 
 @freeze_time("2020-02-02")
 class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = Path(__file__).parent / "files"
-
     def setUp(self):
         super().setUp()
 

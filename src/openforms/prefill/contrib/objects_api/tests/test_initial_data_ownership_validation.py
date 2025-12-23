@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase, tag
 
@@ -13,13 +11,9 @@ from openforms.prefill.service import prefill_variables
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin, with_setup_test_data_vcr
 
-TEST_FILES = (Path(__file__).parent / "files").resolve()
-
 
 @tag("gh-4398")
 class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     @classmethod
     def setUpTestData(cls):
         """
@@ -40,17 +34,18 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
         )
         cls.objects_api_group_unused = ObjectsAPIGroupConfigFactory.create()
 
-        assert cls.VCR_TEST_FILES is not None
-        with with_setup_test_data_vcr(cls.VCR_TEST_FILES, cls.__qualname__):
-            with get_objects_client(cls.objects_api_group_used) as client:
-                object = client.create_object(
-                    record_data=prepare_data_for_registration(
-                        data={"bsn": "111222333", "some": {"path": "foo"}},
-                        objecttype_version=1,
-                    ),
-                    objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
-                )
-            cls.object_ref = object["uuid"]
+        with (
+            with_setup_test_data_vcr(cls),
+            get_objects_client(cls.objects_api_group_used) as client,
+        ):
+            obj = client.create_object(
+                record_data=prepare_data_for_registration(
+                    data={"bsn": "111222333", "some": {"path": "foo"}},
+                    objecttype_version=1,
+                ),
+                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+            )
+            cls.object_ref = obj["uuid"]
 
         cls.form = FormFactory.create(
             generate_minimal_setup=True,

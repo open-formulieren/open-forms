@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse_lazy
@@ -13,11 +11,8 @@ from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..tests.factories import ZGWApiGroupConfigFactory
 
-TEST_FILES = Path(__file__).parent / "files"
-
 
 class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
-    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:zgw_apis:catalogue-list")
 
     @classmethod
@@ -69,7 +64,6 @@ class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
 
 
 class GetCaseTypesViewTests(OFVCRMixin, APITestCase):
-    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:zgw_apis:case-type-list")
 
     @classmethod
@@ -187,7 +181,6 @@ class GetCaseTypesViewTests(OFVCRMixin, APITestCase):
 
 
 class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
-    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:zgw_apis:document-type-list")
 
     @classmethod
@@ -318,7 +311,6 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
 
 class GetRoleTypesViewTests(OFVCRMixin, APITestCase):
-    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:zgw_apis:role-type-list")
 
     @classmethod
@@ -439,7 +431,6 @@ class GetRoleTypesViewTests(OFVCRMixin, APITestCase):
 
 
 class GetProductsListViewTests(OFVCRMixin, APITestCase):
-    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:zgw_apis:product-list")
 
     @classmethod

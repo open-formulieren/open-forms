@@ -7,13 +7,11 @@ from privates.test import temp_private_root
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import get_kvk_profile_client, get_kvk_search_client
-from .base import TEST_FILES, KVKTestMixin
+from .base import KVKTestMixin
 
 
 @temp_private_root()
 class KVKSearchClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     def test_client(self):
         with get_kvk_search_client() as client:
             # exists
@@ -40,8 +38,6 @@ class KVKSearchClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
 
 @temp_private_root()
 class KVKProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     def test_client(self):
         with get_kvk_profile_client() as client:
             # exists

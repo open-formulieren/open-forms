@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -9,13 +7,8 @@ from zgw_consumers.test.factories import ServiceFactory
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
-TESTS_DIR = Path(__file__).parent.resolve()
-TEST_FILES = TESTS_DIR / "files"
-
 
 class ReferenceListsTablesEndpointTests(OFVCRMixin, APITestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

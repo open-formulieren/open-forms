@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import patch
 
 from django.contrib.auth.models import Group
@@ -25,8 +24,6 @@ from openforms.utils.tests.concurrent import mock_parallel_executor
 from openforms.utils.tests.keycloak import keycloak_login
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.utils.urls import reverse_plus
-
-TEST_FILES = (Path(__file__).parent / "data").resolve()
 
 CONFIGURATION = {
     "display": "form",
@@ -58,8 +55,6 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(
     Here we test the full flow of an employee using OIDC to login to a form,
     enter a clients BSN, start the form and have the prefill machinery add data about the client
     """
-
-    VCR_TEST_FILES = TEST_FILES
 
     csrf_checks = False
     extra_environ = {"HTTP_HOST": "example.com"}

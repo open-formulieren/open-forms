@@ -1,5 +1,4 @@
 import textwrap
-from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
 
@@ -18,12 +17,8 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 
-TEST_FILES = Path(__file__).parent / "files"
-
 
 class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     def setUp(self):
         super().setUp()
 

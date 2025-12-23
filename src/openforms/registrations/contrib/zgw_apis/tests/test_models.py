@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.test import TestCase, override_settings
@@ -7,8 +5,6 @@ from django.test import TestCase, override_settings
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from .factories import ZGWApiGroupConfigFactory
-
-VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
 class ZGWApiGroupModelTests(TestCase):
@@ -59,8 +55,6 @@ class ZGWApiGroupModelTests(TestCase):
 
 @override_settings(LANGUAGE_CODE="en")
 class ZGWAPIGroupValidationTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = VCR_TEST_FILES
-
     def test_validate_no_catalogue_specified(self):
         config = ZGWApiGroupConfigFactory.create(catalogue_domain="", catalogue_rsin="")
 
