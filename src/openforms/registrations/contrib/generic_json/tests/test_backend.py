@@ -39,7 +39,9 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.json_dump_service = ServiceFactory.create(api_root="http://localhost:80/")
+        cls.json_dump_service = ServiceFactory.create(
+            api_root="http://localhost:80/", auth_type=AuthTypes.no_auth
+        )
         cls.referencelists_service = ServiceFactory.create(
             api_root="http://localhost:8004/api/v1/",
             slug="referentielijsten",

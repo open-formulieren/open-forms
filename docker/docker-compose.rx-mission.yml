@@ -3,10 +3,10 @@ version: '3.8'
 name: rx-mission
 
 services:
-  flask_app:
+  rx_mission:
     build: ./rx-mission
     ports:
-      - "80:80"
+      - "81:81"
     volumes:
       - ./rx-mission/:/app/
 

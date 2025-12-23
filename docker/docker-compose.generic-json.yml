@@ -3,7 +3,7 @@ version: '3.8'
 name: generic-json
 
 services:
-  flask_app:
+  generic_json:
     build: ./generic-json
     ports:
       - "80:80"

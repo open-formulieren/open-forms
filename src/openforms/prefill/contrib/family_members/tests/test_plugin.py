@@ -10,6 +10,7 @@ from django.utils import timezone
 import requests_mock
 from freezegun import freeze_time
 from lxml import etree
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.constants import AuthAttribute
@@ -52,7 +53,8 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
 
         hc_config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
-                api_root="http://localhost:5010/haalcentraal/api/brp/"
+                api_root="http://localhost:5010/haalcentraal/api/brp/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=BRPVersions.v20,
         )

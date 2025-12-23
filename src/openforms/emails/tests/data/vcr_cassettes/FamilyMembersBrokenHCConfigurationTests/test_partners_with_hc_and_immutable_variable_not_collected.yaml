@@ -7,8 +7,6 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTgwMTU5MjAsImV4cCI6MTc1ODA1OTEyMCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.v21-C5GMu5_AD1zzcQjO4UBzja6o7zS4ib380UNG-Xg
       Connection:
       - keep-alive
       Content-Length:
@@ -39,7 +37,7 @@ interactions:
       Content-Type:
       - application/problem+json
       Date:
-      - Tue, 16 Sep 2025 09:45:19 GMT
+      - Fri, 19 Dec 2025 12:54:38 GMT
       Server:
       - Kestrel
     status:

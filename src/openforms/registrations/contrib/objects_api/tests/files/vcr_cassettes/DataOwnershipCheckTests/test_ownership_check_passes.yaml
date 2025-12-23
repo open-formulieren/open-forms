@@ -24,7 +24,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/c16f8ed8-0430-4eab-9d7f-8e159b5a79fa","uuid":"c16f8ed8-0430-4eab-9d7f-8e159b5a79fa","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bsn":"111222333","some":{"path":"foo"}},"geometry":null,"startAt":"2024-12-04","endAt":null,"registrationAt":"2025-09-16","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/fe12d0a9-df0e-4880-b5ed-a0a6f02ba24a","uuid":"fe12d0a9-df0e-4880-b5ed-a0a6f02ba24a","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bsn":"111222333","some":{"path":"foo"}},"geometry":null,"startAt":"2024-12-04","endAt":null,"registrationAt":"2025-12-19","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -39,13 +39,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 16 Sep 2025 10:26:18 GMT
+      - Fri, 19 Dec 2025 14:47:36 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/c16f8ed8-0430-4eab-9d7f-8e159b5a79fa
+      - http://localhost:8002/api/v2/objects/fe12d0a9-df0e-4880-b5ed-a0a6f02ba24a
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.5
+      - nginx/1.29.1
       Vary:
       - origin
       X-Content-Type-Options:
@@ -71,10 +71,10 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: http://localhost:8002/api/v2/objects/c16f8ed8-0430-4eab-9d7f-8e159b5a79fa
+    uri: http://localhost:8002/api/v2/objects/fe12d0a9-df0e-4880-b5ed-a0a6f02ba24a
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/c16f8ed8-0430-4eab-9d7f-8e159b5a79fa","uuid":"c16f8ed8-0430-4eab-9d7f-8e159b5a79fa","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bsn":"111222333","some":{"path":"foo"}},"geometry":null,"startAt":"2024-12-04","endAt":null,"registrationAt":"2025-09-16","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/fe12d0a9-df0e-4880-b5ed-a0a6f02ba24a","uuid":"fe12d0a9-df0e-4880-b5ed-a0a6f02ba24a","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bsn":"111222333","some":{"path":"foo"}},"geometry":null,"startAt":"2024-12-04","endAt":null,"registrationAt":"2025-12-19","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -89,11 +89,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 16 Sep 2025 10:26:18 GMT
+      - Fri, 19 Dec 2025 14:47:36 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.5
+      - nginx/1.29.1
       Vary:
       - origin
       X-Content-Type-Options:

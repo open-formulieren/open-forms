@@ -12,6 +12,7 @@ from freezegun import freeze_time
 from lxml import etree
 from privates.test import temp_private_root
 from requests import ConnectTimeout
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
@@ -3290,7 +3291,7 @@ class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
         super().setUpTestData()
 
         cls.zds_service = StufServiceFactory.create(
-            soap_service__url="http://localhost/stuf-zds"
+            soap_service__url="http://localhost:82/stuf-zds"
         )
         config = StufZDSConfig.get_solo()
         config.service = cls.zds_service
@@ -3555,7 +3556,7 @@ class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
         super().setUpTestData()
 
         cls.zds_service = StufServiceFactory.create(
-            soap_service__url="http://localhost/stuf-zds"
+            soap_service__url="http://localhost:82/stuf-zds"
         )
         config = StufZDSConfig.get_solo()
         config.service = cls.zds_service
@@ -3700,7 +3701,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
 
         cls.plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
         cls.zds_service = StufServiceFactory.create(
-            soap_service__url="http://localhost/stuf-zds"
+            soap_service__url="http://localhost:82/stuf-zds"
         )
         config = StufZDSConfig.get_solo()
         config.service = cls.zds_service
@@ -4111,7 +4112,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
 
         cls.plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
         cls.zds_service = StufServiceFactory.create(
-            soap_service__url="http://localhost/stuf-zds"
+            soap_service__url="http://localhost:82/stuf-zds"
         )
         config = StufZDSConfig.get_solo()
         config.service = cls.zds_service
@@ -4127,7 +4128,8 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
 
         hc_config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
-                api_root="http://localhost:5010/haalcentraal/api/brp/"
+                api_root="http://localhost:5010/haalcentraal/api/brp/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=BRPVersions.v20,
         )
@@ -5379,7 +5381,7 @@ class StufZDSConfirmationEmailVCRTests(OFVCRMixin, StUFZDSTestBase):
         super().setUpTestData()
 
         cls.zds_service = StufServiceFactory.create(
-            soap_service__url="http://localhost/stuf-zds"
+            soap_service__url="http://localhost:82/stuf-zds"
         )
         config = StufZDSConfig.get_solo()
         config.service = cls.zds_service

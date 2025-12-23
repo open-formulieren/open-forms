@@ -22,11 +22,10 @@ interactions:
       Content-Length:
       - '234'
       Content-Security-Policy:
-      - 'font-src ''self'' fonts.gstatic.com; worker-src ''self'' blob:; style-src
-        ''self'' ''unsafe-inline'' fonts.googleapis.com; img-src ''self'' data: cdn.redoc.ly;
-        base-uri ''self''; script-src ''self'' ''unsafe-inline''; frame-ancestors
-        ''none''; frame-src ''self''; form-action ''self''; default-src ''self'';
-        object-src ''none'''
+      - 'object-src ''none''; font-src ''self'' fonts.gstatic.com; form-action ''self'';
+        base-uri ''self''; worker-src ''self'' blob:; frame-ancestors ''none''; style-src
+        ''self'' ''unsafe-inline'' fonts.googleapis.com; frame-src ''self''; script-src
+        ''self'' ''unsafe-inline''; default-src ''self''; img-src ''self'' data: cdn.redoc.ly'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
