@@ -49,6 +49,20 @@ services:
     networks:
       - open-forms-dev
 
+  # there's no built-in support for fixture loading, so use a bootstrap step
+  openklant-web-fixtures:
+    image: maykinmedia/open-klant:${OPENKLANT_VERSION:-2.13.0}
+    environment: *openklant_web_env
+    volumes: &openklant_web_volumes
+      - ./open-klant/fixtures/:/app/fixtures
+      - ./open-klant/load_fixtures.sh:/load_fixtures.sh
+    command: /load_fixtures.sh
+    depends_on:
+      - openklant-db
+      - openklant-redis
+    networks:
+      - open-forms-dev
+
   celery:
     image: maykinmedia/open-klant:${OPENKLANT_VERSION:-2.13.0}
     environment: *openklant_web_env
