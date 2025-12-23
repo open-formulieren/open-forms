@@ -23,7 +23,7 @@ Formulierstappen
 
     * **Naam**: Communicatievoorkeur
     * Bij *Inloggen* > *Authenticatiemethode*: vink één van de inlogopties aan
-      die ``biedt bsn aan`` bevat.
+      die ``biedt bsn aan`` of ``biedt kvk aan`` bevat.
 
 #. Navigeer naar de tab *Stappen en velden* en voeg een nieuwe stap toe. Kies
    *Maak een nieuwe formulierdefinitie*:
