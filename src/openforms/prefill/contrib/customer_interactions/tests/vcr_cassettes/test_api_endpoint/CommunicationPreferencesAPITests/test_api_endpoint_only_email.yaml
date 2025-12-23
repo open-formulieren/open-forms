@@ -17,11 +17,10 @@ interactions:
       Content-Length:
       - '2616'
       Content-Security-Policy:
-      - 'img-src ''self'' data: cdn.redoc.ly; frame-src ''self''; worker-src ''self''
-        blob:; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; base-uri
-        ''self''; form-action ''self''; frame-ancestors ''none''; script-src ''self''
-        ''unsafe-inline''; font-src ''self'' fonts.gstatic.com; object-src ''none'';
-        default-src ''self'''
+      - 'script-src ''self'' ''unsafe-inline''; img-src ''self'' data: cdn.redoc.ly;
+        default-src ''self''; base-uri ''self''; object-src ''none''; font-src ''self''
+        fonts.gstatic.com; frame-ancestors ''none''; form-action ''self''; worker-src
+        ''self'' blob:; frame-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
