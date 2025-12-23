@@ -233,6 +233,12 @@
       "value": "BRP Personen 'verwerking' header-waarde"
     }
   ],
+  "137M7W": [
+    {
+      "type": 0,
+      "value": "Schakel de nieuwe renderer in die sneller is en betere toegankelijkheid biedt."
+    }
+  ],
   "1ArmQ5": [
     {
       "type": 0,
@@ -1443,12 +1449,6 @@
     {
       "type": 0,
       "value": "'Groep verwijderen'-tekst"
-    }
-  ],
-  "AzBz1q": [
-    {
-      "type": 0,
-      "value": "Schakel de EXPERIMENTELE nieuwe renderer in. Merk op: nog niet alle functionaliteiten zijn beschikbaar in de nieuwe renderer én er zijn hoogstwaarschijnlijk bugs. Schakel dit niet in op een productie-omgeving."
     }
   ],
   "B/A1Bk": [

@@ -755,9 +755,8 @@ const FormConfigurationFields = ({
             helpText={
               <FormattedMessage
                 description="New renderer enabled feature flag help text"
-                defaultMessage={`Enable the EXPERIMENTAL new renderer. Disclaimer: the
-                new renderer is not feature complete and is very likely to contain bugs.
-                You should not enable this in production.`}
+                defaultMessage={`Enable the new renderer, which is more performant
+                and has better accessibility.`}
               />
             }
             checked={newRendererEnabled}
