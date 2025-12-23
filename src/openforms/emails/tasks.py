@@ -16,6 +16,7 @@ from .digest import (
     collect_failed_prefill_plugins,
     collect_failed_registrations,
     collect_invalid_certificates,
+    collect_invalid_component_configuration,
     collect_invalid_logic_rules,
     collect_invalid_map_component_overlays,
     collect_invalid_registration_backends,
@@ -39,6 +40,7 @@ class Digest:
             collect_expired_or_near_expiry_reference_lists_data()
         )
         invalid_map_component_overlays = collect_invalid_map_component_overlays()
+        invalid_component_configurations = collect_invalid_component_configuration()
 
         return {
             "failed_emails": failed_emails,
@@ -50,6 +52,7 @@ class Digest:
             "invalid_logic_rules": invalid_logic_rules,
             "expired_or_near_expiry_reference_lists_data": expired_or_near_expiry_reference_lists_data,
             "invalid_map_component_overlays": invalid_map_component_overlays,
+            "invalid_component_configurations": invalid_component_configurations,
         }
 
     def render(self) -> str:
