@@ -9,11 +9,11 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Thu, 18 Sep 2025 10:30:59 GMT
+      - Mon, 22 Dec 2025 16:49:21 GMT
       User-Agent:
       - python-requests/2.32.4
       X-GCS-ServerMetaInfo:
-      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE2LjUtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMDQgU2VwIDIwMjUgMjM6MTg6MTMgKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE4LjEtYXJjaDEtMi8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFNhdCwgMTMgRGVjIDIwMjUgMTg6MjM6MjEgKzAwMDAgUHl0aG9uLzMuMTIuMTIgKENQeXRob247IEdDQyAxNS4yLjEgMjAyNTExMTIpIiwKICAgICJzZGtJZGVudGlmaWVyIjogIlB5dGhvblNlcnZlclNESy92NS4xLjAiLAogICAgInNka0NyZWF0b3IiOiAiT25saW5lUGF5bWVudHMiLAogICAgImludGVncmF0b3IiOiAib3BlbmZvcm1zIgp9
     method: GET
     uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/services/testconnection
   response:
@@ -30,19 +30,19 @@ interactions:
         data: https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
         https://devicefingerprint.pay.checkout.worldline-solutions.com; style-src
         ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
-        https://devicefingerprint.pay.checkout.worldline-solutions.com ''nonce-gcx6MiaJA0U='';
+        https://devicefingerprint.pay.checkout.worldline-solutions.com ''nonce-ThvaHJdJSbs='';
         style-src-attr ''unsafe-inline''; script-src ''self'' https://assets.test.cdn.v-psp.com
         https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com
-        ''nonce-gcx6MiaJA0U=''; object-src ''none'';'
+        ''nonce-ThvaHJdJSbs=''; object-src ''none'';'
       content-type:
       - application/json; charset=utf-8
       correlation-id:
-      - c9920765-cea4-4a8d-bdbd-a4a45d2280b5
-      - c9920765-cea4-4a8d-bdbd-a4a45d2280b5
+      - 561048af-fc11-4bce-ae9c-d6e5a8a5ed88
+      - 561048af-fc11-4bce-ae9c-d6e5a8a5ed88
       date:
-      - Thu, 18 Sep 2025 10:30:59 GMT
+      - Mon, 22 Dec 2025 16:49:21 GMT
       strict-transport-security:
-      - max-age=16000000; includeSubDomains; preload;
+      - max-age=31536000; includeSubDomains; preload;
     status:
       code: 200
       message: OK
@@ -56,16 +56,16 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Thu, 18 Sep 2025 10:30:59 GMT
+      - Mon, 22 Dec 2025 16:49:21 GMT
       User-Agent:
       - python-requests/2.32.4
       X-GCS-ServerMetaInfo:
-      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE2LjUtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMDQgU2VwIDIwMjUgMjM6MTg6MTMgKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE4LjEtYXJjaDEtMi8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFNhdCwgMTMgRGVjIDIwMjUgMTg6MjM6MjEgKzAwMDAgUHl0aG9uLzMuMTIuMTIgKENQeXRob247IEdDQyAxNS4yLjEgMjAyNTExMTIpIiwKICAgICJzZGtJZGVudGlmaWVyIjogIlB5dGhvblNlcnZlclNESy92NS4xLjAiLAogICAgInNka0NyZWF0b3IiOiAiT25saW5lUGF5bWVudHMiLAogICAgImludGVncmF0b3IiOiAib3BlbmZvcm1zIgp9
     method: GET
     uri: https://payment.preprod.direct.worldline-solutions.com/v2/dummy/services/testconnection
   response:
     body:
-      string: "{\r\n  \"errorId\": \"574a4546-3909-49b3-a6dd-5938b838e2b0\",\r\n  \"errors\":
+      string: "{\r\n  \"errorId\": \"c835c282-2f91-4647-ad94-64b2dcffeaf9\",\r\n  \"errors\":
         [\r\n    {\r\n      \"code\": \"9007\",\r\n      \"id\": \"ACCESS_TO_MERCHANT_NOT_ALLOWED\",\r\n
         \     \"category\": \"DIRECT_PLATFORM_ERROR\",\r\n      \"message\": \"ACCESS_TO_MERCHANT_NOT_ALLOWED\",\r\n
         \     \"httpStatusCode\": 403\r\n    }\r\n  ],\r\n  \"status\": 403\r\n}"
@@ -73,12 +73,12 @@ interactions:
       content-type:
       - application/json
       correlation-id:
-      - 574a4546-3909-49b3-a6dd-5938b838e2b0
-      - 574a4546-3909-49b3-a6dd-5938b838e2b0
+      - c835c282-2f91-4647-ad94-64b2dcffeaf9
+      - c835c282-2f91-4647-ad94-64b2dcffeaf9
       date:
-      - Thu, 18 Sep 2025 10:30:59 GMT
+      - Mon, 22 Dec 2025 16:49:21 GMT
       strict-transport-security:
-      - max-age=16000000; includeSubDomains; preload;
+      - max-age=31536000; includeSubDomains; preload;
       transfer-encoding:
       - chunked
     status:

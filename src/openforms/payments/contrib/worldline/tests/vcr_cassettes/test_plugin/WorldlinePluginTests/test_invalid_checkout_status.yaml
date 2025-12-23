@@ -9,16 +9,16 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Thu, 18 Sep 2025 10:31:05 GMT
+      - Mon, 22 Dec 2025 16:49:34 GMT
       User-Agent:
       - python-requests/2.32.4
       X-GCS-ServerMetaInfo:
-      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE2LjUtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMDQgU2VwIDIwMjUgMjM6MTg6MTMgKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE4LjEtYXJjaDEtMi8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFNhdCwgMTMgRGVjIDIwMjUgMTg6MjM6MjEgKzAwMDAgUHl0aG9uLzMuMTIuMTIgKENQeXRob247IEdDQyAxNS4yLjEgMjAyNTExMTIpIiwKICAgICJzZGtJZGVudGlmaWVyIjogIlB5dGhvblNlcnZlclNESy92NS4xLjAiLAogICAgInNka0NyZWF0b3IiOiAiT25saW5lUGF5bWVudHMiLAogICAgImludGVncmF0b3IiOiAib3BlbmZvcm1zIgp9
     method: GET
     uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/hostedcheckouts/foobar
   response:
     body:
-      string: '{"errorId":"a47a6b69-7e31-4fe6-86d9-0d8fc1f5d8eb","errors":[{"errorCode":"20001101","category":"DIRECT_PLATFORM_ERROR","code":"9999","httpStatusCode":500,"id":"UNKNOWN_SERVER_ERROR","message":"UNKNOWN_SERVER_ERROR","retriable":false}]}'
+      string: '{"errorId":"93e7d3aa-695d-4ad2-909b-a3573f4f3b6b","errors":[{"errorCode":"20001101","category":"DIRECT_PLATFORM_ERROR","code":"9999","httpStatusCode":500,"id":"UNKNOWN_SERVER_ERROR","message":"UNKNOWN_SERVER_ERROR","retriable":false}]}'
     headers:
       content-length:
       - '235'
@@ -47,7 +47,7 @@ interactions:
         https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-XlGlOv012PA=''  ; style-src-attr ''unsafe-inline'';
+        https://applepay.cdn-apple.com ''nonce-Ex1+5xaPGZU=''  ; style-src-attr ''unsafe-inline'';
         style-src-elem ''unsafe-inline'' ''self'' https://assets.test.cdn.v-psp.com
         https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
         https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
@@ -64,16 +64,16 @@ interactions:
         https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-XlGlOv012PA=''; object-src ''none'';'
+        https://applepay.cdn-apple.com ''nonce-Ex1+5xaPGZU=''; object-src ''none'';'
       content-type:
       - application/json; charset=utf-8
       correlation-id:
-      - a47a6b69-7e31-4fe6-86d9-0d8fc1f5d8eb
-      - a47a6b69-7e31-4fe6-86d9-0d8fc1f5d8eb
+      - 93e7d3aa-695d-4ad2-909b-a3573f4f3b6b
+      - 93e7d3aa-695d-4ad2-909b-a3573f4f3b6b
       date:
-      - Thu, 18 Sep 2025 10:31:05 GMT
+      - Mon, 22 Dec 2025 16:49:33 GMT
       strict-transport-security:
-      - max-age=16000000; includeSubDomains; preload;
+      - max-age=31536000; includeSubDomains; preload;
     status:
       code: 404
       message: Not Found

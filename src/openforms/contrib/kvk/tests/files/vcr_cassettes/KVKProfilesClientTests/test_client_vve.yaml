@@ -20,14 +20,14 @@ interactions:
     body:
       string: '{"kvkNummer":"90000749","indNonMailing":"Ja","naam":"Global Conron","formeleRegistratiedatum":"20100208","materieleRegistratie":{"datumAanvang":"19991103"},"statutaireNaam":"Global
         Conron","sbiActiviteiten":[{"sbiCode":"94997","sbiOmschrijving":"Overige belangenbehartiging
-        (rest)","indHoofdactiviteit":"Ja"}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749"}},"_embedded":{"eigenaar":{"rsin":"992340597","rechtsvorm":"Vereniging
+        (rest)","indHoofdactiviteit":"Ja"}],"links":[{"rel":"self","href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749"}],"_embedded":{"eigenaar":{"rsin":"992340597","rechtsvorm":"Vereniging
         van Eigenaars","uitgebreideRechtsvorm":"Vereniging van Eigenaars","adressen":[{"type":"bezoekadres","indAfgeschermd":"Nee","volledigAdres":"Blaauwweg
-        163 3328XD Dordrecht","straatnaam":"Blaauwweg","huisnummer":163,"postcode":"3328XD","plaats":"Dordrecht","land":"Nederland"}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749/eigenaar"},"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749"}}}}}'
+        163 3328XD Dordrecht","straatnaam":"Blaauwweg","huisnummer":163,"postcode":"3328XD","plaats":"Dordrecht","land":"Nederland"}],"links":[{"rel":"self","href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749/eigenaar"},{"rel":"basisprofiel","href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749"}]}}}'
     headers:
       API-Version:
-      - 1.4.5
+      - 1.5.0
       Cache-Control:
-      - no-cache, no-store, max-age=0, must-revalidate
+      - no-store
       Connection:
       - keep-alive
       Content-Security-Policy:
@@ -35,7 +35,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Tue, 16 Sep 2025 09:35:38 GMT
+      - Mon, 22 Dec 2025 16:46:07 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
@@ -49,7 +49,7 @@ interactions:
       X-Frame-Options:
       - DENY
       content-length:
-      - '915'
+      - '931'
       strict-transport-security:
       - max-age=157680000 ; includeSubDomains
       - max-age=0; includeSubDomains

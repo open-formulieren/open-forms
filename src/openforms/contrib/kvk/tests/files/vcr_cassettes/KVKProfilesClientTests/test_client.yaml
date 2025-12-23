@@ -25,15 +25,15 @@ interactions:
         handelsnaam Vestiging2","volgorde":6},{"naam":"Vierde handelsnaam Vestiging2","volgorde":7}],"sbiActiviteiten":[{"sbiCode":"10110","sbiOmschrijving":"Verwerking
         en conservering van vlees, met uitzondering van vlees van gevogelte","indHoofdactiviteit":"Ja"},{"sbiCode":"10120","sbiOmschrijving":"Verwerking
         en conservering van vlees van gevogelte","indHoofdactiviteit":"Nee"},{"sbiCode":"10130","sbiOmschrijving":"Vervaardiging
-        van vleesproducten","indHoofdactiviteit":"Nee"}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingen":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/vestigingen"}},"_embedded":{"hoofdvestiging":{"vestigingsnummer":"000038509504","kvkNummer":"69599084","formeleRegistratiedatum":"20200828","materieleRegistratie":{"datumAanvang":"20150828"},"eersteHandelsnaam":"Test
+        van vleesproducten","indHoofdactiviteit":"Nee"}],"links":[{"rel":"self","href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},{"rel":"vestigingen","href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/vestigingen"}],"_embedded":{"hoofdvestiging":{"vestigingsnummer":"000038509504","kvkNummer":"69599084","formeleRegistratiedatum":"20200828","materieleRegistratie":{"datumAanvang":"20150828"},"eersteHandelsnaam":"Test
         EMZ Dagobert","indHoofdvestiging":"Ja","indCommercieleVestiging":"Ja","totaalWerkzamePersonen":1,"adressen":[{"type":"bezoekadres","indAfgeschermd":"Nee","volledigAdres":"Abebe
         Bikilalaan 17 M                                 1034WL Amsterdam","straatnaam":"Abebe
-        Bikilalaan","huisnummer":17,"huisletter":"M","postcode":"1034WL","plaats":"Amsterdam","land":"Nederland"}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/hoofdvestiging"},"vestigingen":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/vestigingen"},"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"}}},"eigenaar":{"rechtsvorm":"Eenmanszaak","uitgebreideRechtsvorm":"Eenmanszaak","_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/eigenaar"},"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"}}}}}'
+        Bikilalaan","huisnummer":17,"huisletter":"M","postcode":"1034WL","plaats":"Amsterdam","land":"Nederland"}],"links":[{"rel":"self","href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/hoofdvestiging"},{"rel":"vestigingen","href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/vestigingen"},{"rel":"basisprofiel","href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},{"rel":"vestigingsprofiel","href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"}]},"eigenaar":{"rechtsvorm":"Eenmanszaak","uitgebreideRechtsvorm":"Eenmanszaak","links":[{"rel":"self","href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/eigenaar"},{"rel":"basisprofiel","href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"}]}}}'
     headers:
       API-Version:
-      - 1.4.5
+      - 1.5.0
       Cache-Control:
-      - no-cache, no-store, max-age=0, must-revalidate
+      - no-store
       Connection:
       - keep-alive
       Content-Security-Policy:
@@ -41,7 +41,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Tue, 16 Sep 2025 09:35:38 GMT
+      - Mon, 22 Dec 2025 16:46:06 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
@@ -55,7 +55,7 @@ interactions:
       X-Frame-Options:
       - DENY
       content-length:
-      - '2354'
+      - '2399'
       strict-transport-security:
       - max-age=157680000 ; includeSubDomains
       - max-age=0; includeSubDomains
