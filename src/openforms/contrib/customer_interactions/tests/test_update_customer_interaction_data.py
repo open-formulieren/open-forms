@@ -107,7 +107,7 @@ class UpdateCustomerInteractionDataTests(
 
         self.assertEqual(len(digital_addresses["updated"]), 0)
 
-    def test_auth_user_not_known_in_openklant(self):
+    def test_auth_with_bsn_user_not_known_in_openklant(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
         profile_data: list[DigitalAddress] = [
             {
@@ -211,7 +211,7 @@ class UpdateCustomerInteractionDataTests(
 
         self.assertEqual(len(digital_addresses["updated"]), 0)
 
-    def test_auth_user_known_in_openklant_new_address(self):
+    def test_auth_with_bsn_user_known_in_openklant_new_address(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
         profile_data: list[DigitalAddress] = [
             {
@@ -320,7 +320,7 @@ class UpdateCustomerInteractionDataTests(
 
         self.assertEqual(len(digital_addresses["updated"]), 0)
 
-    def test_auth_user_known_in_openklant_known_addresses(self):
+    def test_auth_with_bsn_user_known_in_openklant_known_addresses(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
         # both addresses are known in the Open Klant
         profile_data: list[DigitalAddress] = [
@@ -398,7 +398,7 @@ class UpdateCustomerInteractionDataTests(
         self.assertEqual(digital_addresses["created"], [])
         self.assertEqual(digital_addresses["updated"], [])
 
-    def test_auth_user_known_in_openklant_known_addresses_with_different_preference(
+    def test_auth_with_bsn_user_known_in_openklant_known_addresses_with_different_preference(
         self,
     ):
         """
@@ -508,6 +508,219 @@ class UpdateCustomerInteractionDataTests(
                 self.assertAddressPresent(
                     digital_addresses["updated"], expected_address
                 )
+
+    def test_auth_with_kvk_organization_not_known_in_openklant(self):
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        profile_data: list[DigitalAddress] = [
+            {
+                "address": "some@email.com",
+                "type": "email",
+                "preferenceUpdate": "useOnlyOnce",
+            },
+            {
+                "address": "0612345678",
+                "type": "phoneNumber",
+                "preferenceUpdate": "isNewPreferred",
+            },
+        ]
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "digitalAddressTypes": profile_channels,
+                    "shouldUpdateCustomerData": True,
+                }
+            ],
+            submitted_data={
+                "profile": profile_data,
+            },
+            public_registration_reference="OF-12346",
+            form__name="With profile",
+            kvk="11122233",
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+
+        result = update_customer_interaction_data(submission, "profile")
+
+        klantcontact = result["klantcontact"]
+        betrokkene = result["betrokkene"]
+        onderwerpobject = result["onderwerpobject"]
+        partij_uuid = result["partij_uuid"]
+        digital_addresses = result["digital_addresses"]
+
+        with get_customer_interactions_client(self.config) as client:
+            party = client.find_party_for_kvk("11122233")
+
+        # check that party is linked to the organization
+        self.assertEqual(party["uuid"], partij_uuid)
+        self.assertEqual(klantcontact["kanaal"], "Webformulier")
+        self.assertEqual(klantcontact["onderwerp"], "With profile")
+        self.assertEqual(betrokkene["rol"], "klant")
+        self.assertTrue(betrokkene["initiator"])
+        self.assertEqual(
+            onderwerpobject["onderwerpobjectidentificator"],
+            {
+                "objectId": "OF-12346",
+                "codeObjecttype": "formulierinzending",
+                "codeRegister": "Open Formulieren",
+                "codeSoortObjectId": "public_registration_reference",
+            },
+        )
+        self.assertEqual(
+            betrokkene["wasPartij"], {"url": party["url"], "uuid": partij_uuid}
+        )
+
+        self.assertEqual(len(digital_addresses["created"]), 2)
+        expected_addresses: list[ExpectedDigitalAddress] = [
+            {
+                "adres": "some@email.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+                "verstrektDoorBetrokkene": {
+                    "url": betrokkene["url"],
+                    "uuid": betrokkene["uuid"],
+                },
+                "verstrektDoorPartij": None,
+            },
+            {
+                "adres": "0612345678",
+                "soortDigitaalAdres": "telefoonnummer",
+                "isStandaardAdres": True,
+                "verstrektDoorBetrokkene": {
+                    "url": betrokkene["url"],
+                    "uuid": betrokkene["uuid"],
+                },
+                "verstrektDoorPartij": {"url": party["url"], "uuid": partij_uuid},
+            },
+        ]
+        for expected_address in expected_addresses:
+            with self.subTest(expected_address):
+                self.assertAddressPresent(
+                    digital_addresses["created"], expected_address
+                )
+
+        self.assertEqual(len(digital_addresses["updated"]), 0)
+
+    def test_auth_with_kvk_organization_known_in_openklant_new_address(self):
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        profile_data: list[DigitalAddress] = [
+            {
+                "address": "some@email.com",
+                "type": "email",
+                "preferenceUpdate": "useOnlyOnce",
+            },
+            {
+                "address": "0611111111",
+                "type": "phoneNumber",
+                "preferenceUpdate": "isNewPreferred",
+            },
+        ]
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "digitalAddressTypes": profile_channels,
+                    "shouldUpdateCustomerData": True,
+                }
+            ],
+            submitted_data={
+                "profile": profile_data,
+            },
+            public_registration_reference="OF-12346",
+            form__name="With profile",
+            kvk="12345678",
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+        prefill_variables(submission=submission)
+
+        result = update_customer_interaction_data(submission, "profile")
+
+        klantcontact = result["klantcontact"]
+        betrokkene = result["betrokkene"]
+        onderwerpobject = result["onderwerpobject"]
+        digital_addresses = result["digital_addresses"]
+        partij_uuid = result["partij_uuid"]
+
+        with get_customer_interactions_client(self.config) as client:
+            party = client.find_party_for_kvk("12345678")
+
+        self.assertEqual(party["uuid"], partij_uuid)
+        self.assertEqual(klantcontact["kanaal"], "Webformulier")
+        self.assertEqual(klantcontact["onderwerp"], "With profile")
+        self.assertEqual(betrokkene["rol"], "klant")
+        self.assertTrue(betrokkene["initiator"])
+        self.assertEqual(
+            onderwerpobject["onderwerpobjectidentificator"],
+            {
+                "objectId": "OF-12346",
+                "codeObjecttype": "formulierinzending",
+                "codeRegister": "Open Formulieren",
+                "codeSoortObjectId": "public_registration_reference",
+            },
+        )
+
+        self.assertEqual(
+            betrokkene["wasPartij"],
+            {"url": party["url"], "uuid": partij_uuid},
+        )
+
+        self.assertEqual(len(digital_addresses["created"]), 2)
+        expected_addresses: list[ExpectedDigitalAddress] = [
+            {
+                "adres": "some@email.com",
+                "soortDigitaalAdres": "email",
+                "isStandaardAdres": False,
+                "verstrektDoorBetrokkene": {
+                    "url": betrokkene["url"],
+                    "uuid": betrokkene["uuid"],
+                },
+                "verstrektDoorPartij": None,
+            },
+            {
+                "adres": "0611111111",
+                "soortDigitaalAdres": "telefoonnummer",
+                "isStandaardAdres": True,
+                "verstrektDoorBetrokkene": {
+                    "url": betrokkene["url"],
+                    "uuid": betrokkene["uuid"],
+                },
+                "verstrektDoorPartij": {
+                    "url": party["url"],
+                    "uuid": partij_uuid,
+                },
+            },
+        ]
+        for expected_address in expected_addresses:
+            with self.subTest(expected_address):
+                self.assertAddressPresent(
+                    digital_addresses["created"], expected_address
+                )
+
+        self.assertEqual(len(digital_addresses["updated"]), 0)
 
     def test_no_prefill_var_configured(self):
         """
