@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import patch
 
 from rest_framework import status
@@ -10,15 +9,12 @@ from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigF
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.utils.tests.vcr import OFVCRMixin
 
-VCR_TEST_FILES = Path(__file__).parent / "files"
-
 
 class ObjectsAPIPrefillPluginEndpointTests(OFVCRMixin, APITestCase):
     """This test case requires the Objects & Objecttypes API to be running.
     See the relevant Docker compose in the ``docker/`` folder.
     """
 
-    VCR_TEST_FILES = VCR_TEST_FILES
     endpoints = {
         "objecttype_list": reverse_lazy(
             "api:objects_api:object-types",

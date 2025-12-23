@@ -1109,8 +1109,6 @@ class FamilyMembersBrokenHCConfigurationTests(OFVCRMixin, TestCase):
     README.md file of the relevant container.
     """
 
-    VCR_TEST_FILES = TEST_FILES
-
     def setUp(self):
         super().setUp()
 

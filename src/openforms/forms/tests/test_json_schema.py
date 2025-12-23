@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from django.test import TestCase, tag
 
 from zgw_consumers.constants import AuthTypes
@@ -17,8 +15,6 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..json_schema import generate_json_schema
-
-VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
 class GenerateJsonSchemaTests(TestCase):
@@ -515,8 +511,6 @@ class GenerateJsonSchemaTests(TestCase):
 
 
 class GenerateJsonSchemaReferenceListsTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = VCR_TEST_FILES
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

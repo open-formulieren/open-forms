@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from django.test import TestCase
 
 from zgw_consumers.constants import APITypes, AuthTypes
@@ -12,8 +10,6 @@ from ..models import ObjectsAPIGroupConfig
 
 
 class ObjecttypesClientTest(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = Path(__file__).parent / "files"
-
     @classmethod
     def setUpTestData(cls) -> None:
         super().setUpTestData()

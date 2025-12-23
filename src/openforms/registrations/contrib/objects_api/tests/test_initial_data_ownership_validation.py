@@ -1,4 +1,3 @@
-from pathlib import Path
 from uuid import UUID
 
 from django.core.exceptions import PermissionDenied
@@ -19,8 +18,6 @@ from ..typing import RegistrationOptionsV2
 
 @tag("gh-4398")
 class DataOwnershipCheckTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = Path(__file__).parent / "files"
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

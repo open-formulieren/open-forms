@@ -1,6 +1,5 @@
 from datetime import UTC, datetime
 from decimal import Decimal
-from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID, uuid4
 
@@ -40,8 +39,6 @@ from ..plugin import ObjectsAPIRegistration
 from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2
 
-VCR_TEST_FILES = Path(__file__).parent / "files"
-
 
 @freeze_time("2024-03-19T13:40:34.222258+00:00")
 class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
@@ -51,7 +48,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
     """
 
     maxDiff = None
-    VCR_TEST_FILES = VCR_TEST_FILES
 
     def setUp(self):
         super().setUp()

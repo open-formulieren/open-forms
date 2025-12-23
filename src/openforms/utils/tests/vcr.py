@@ -67,6 +67,12 @@ from vcr.config import VCR
 RECORD_MODE = os.environ.get("VCR_RECORD_MODE", "none")
 
 
+def get_default_path_for_cls(klass: type) -> Path:
+    class_name = klass.__qualname__
+    path = Path(inspect.getfile(klass))
+    return path.parent / "vcr_cassettes" / path.stem / class_name
+
+
 class OFVCRMixin(VCRMixin):
     """
     Mixin to use VCR in your unit tests.
@@ -77,23 +83,18 @@ class OFVCRMixin(VCRMixin):
     def _get_cassette_library_dir(self):
         if self.VCR_TEST_FILES:
             return super()._get_cassette_library_dir()
-
         # skip intermediate directories and keep cassettes close to the test module
-        class_name = self.__class__.__qualname__
-        path = Path(inspect.getfile(self.__class__))
-        return str(path.parent / "vcr_cassettes" / path.stem / class_name)
+        return str(get_default_path_for_cls(self.__class__))
 
 
 @contextmanager
-def with_setup_test_data_vcr(base_path: Path | str, class_name: str) -> Iterator[None]:
+def with_setup_test_data_vcr(cls: type) -> Iterator[None]:
     """
     Context manager to explicitly use VCR (inside setUpTestData for instance)
 
     :param base_path: The base directory for VCR test files.
     :param class_name: The qualified name of the test class.
     """
-    cassette_path = (
-        Path(base_path) / "vcr_cassettes" / class_name / "setUpTestData.yaml"
-    )
-    with VCR().use_cassette(cassette_path):
+    base_path = get_default_path_for_cls(cls)
+    with VCR().use_cassette(base_path / "setUpTestData.yaml"):
         yield

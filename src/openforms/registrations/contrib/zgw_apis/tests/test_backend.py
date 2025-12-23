@@ -2,7 +2,6 @@ import json
 import textwrap
 from datetime import UTC, date, datetime
 from decimal import Decimal
-from pathlib import Path
 from unittest import expectedFailure
 from unittest.mock import patch
 from uuid import uuid4
@@ -46,8 +45,6 @@ from ..client import get_documents_client, get_zaken_client
 from ..plugin import ZGWRegistration
 from ..typing import RegistrationOptions
 from .factories import ZGWApiGroupConfigFactory
-
-TEST_FILES = Path(__file__).parent.resolve() / "files"
 
 
 @temp_private_root()
@@ -1416,8 +1413,6 @@ class ZGWBackendTests(TestCase):
 
 @temp_private_root()
 class ZGWBackendVCRTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

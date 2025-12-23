@@ -1864,8 +1864,6 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
     See the relevant Docker compose in the ``docker/`` folder.
     """
 
-    VCR_TEST_FILES = PATH / "files"
-
     def test_import_form_with_objects_registration_backend_no_group(self):
         resources = {
             "forms": [
@@ -2248,8 +2246,6 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
 
     See the relevant Docker compose in the ``docker/`` folder.
     """
-
-    VCR_TEST_FILES = PATH / "files"
 
     @staticmethod
     def _create_export(filepath: Path, *backends: dict):

@@ -310,8 +310,6 @@ class EmailDigestTaskIntegrationTests(TestCase):
 
 @override_settings(LANGUAGE_CODE="en")
 class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from django.test import TestCase, tag
 from django.utils.translation import gettext as _
 
@@ -26,14 +24,9 @@ from openforms.submissions.tests.mixins import SubmissionsMixin
 from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 
-TESTS_DIR = Path(__file__).parent.resolve()
-TEST_FILES = TESTS_DIR / "files"
-
 
 @tag("gh-4993")
 class SelectReferenceListsOptionsTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     def setUp(self):
         super().setUp()
 
@@ -294,8 +287,6 @@ class SelectReferenceListsOptionsTests(OFVCRMixin, TestCase):
 
 @tag("gh-4993")
 class SelectboxesReferenceListsOptionsTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     def setUp(self):
         super().setUp()
 
@@ -538,8 +529,6 @@ class SelectboxesReferenceListsOptionsTests(OFVCRMixin, TestCase):
 
 @tag("gh-4993")
 class RadioReferenceListsOptionsTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     def setUp(self):
         super().setUp()
 

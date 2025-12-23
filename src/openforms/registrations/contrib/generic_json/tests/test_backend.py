@@ -1,7 +1,6 @@
 import datetime
 import json
 from base64 import b64decode
-from pathlib import Path
 from uuid import uuid4
 
 from django.core.exceptions import SuspiciousOperation
@@ -28,13 +27,9 @@ from openforms.variables.constants import FormVariableDataTypes
 from ..plugin import GenericJSONRegistration
 from ..typing import GenericJSONOptions
 
-VCR_TEST_FILES = Path(__file__).parent / "files"
-
 
 class GenericJSONBackendTests(OFVCRMixin, TestCase):
     maxDiff = None
-
-    VCR_TEST_FILES = VCR_TEST_FILES
 
     @classmethod
     def setUpTestData(cls):

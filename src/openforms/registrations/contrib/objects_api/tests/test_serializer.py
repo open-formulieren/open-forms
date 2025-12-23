@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import PropertyMock, patch
 
 from django.test import TestCase
@@ -7,8 +6,6 @@ from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigF
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..config import ObjectsAPIOptionsSerializer
-
-FILES_DIR = Path(__file__).parent / "files"
 
 
 class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
@@ -26,8 +23,6 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
 
     See the relevant READMEs to load the necessary data into the instances.
     """
-
-    VCR_TEST_FILES = FILES_DIR
 
     @classmethod
     def setUpTestData(cls) -> None:

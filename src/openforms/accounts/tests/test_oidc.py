@@ -11,8 +11,6 @@ Some of hese tests use VCR. When re-recording, making sure to:
 to bring up a Keycloak instance.
 """
 
-from pathlib import Path
-
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -28,8 +26,6 @@ from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import User
 from .factories import StaffUserFactory
-
-TEST_FILES = (Path(__file__).parent / "data").resolve()
 
 
 class OIDCLoginButtonTestCase(OIDCMixin, WebTest):
@@ -76,8 +72,6 @@ class OIDCLoginButtonTestCase(OIDCMixin, WebTest):
 
 
 class OIDCFlowTests(OIDCMixin, OFVCRMixin, WebTest):
-    VCR_TEST_FILES = TEST_FILES
-
     def test_duplicate_email_unique_constraint_violated(self):
         """
         Assert that duplicate email addresses result in usable user feedback.

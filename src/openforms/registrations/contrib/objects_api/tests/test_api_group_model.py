@@ -1,5 +1,4 @@
 from copy import copy
-from pathlib import Path
 
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
@@ -11,8 +10,6 @@ from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigF
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..utils import apply_defaults_to
-
-VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
 class ObjectsAPIGroupTests(TestCase):
@@ -231,8 +228,6 @@ class ObjectsAPIGroupTests(TestCase):
 
 @override_settings(LANGUAGE_CODE="en")
 class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = VCR_TEST_FILES
-
     def test_validate_no_catalogue_specified(self):
         config = ObjectsAPIGroupConfigFactory.create(
             catalogue_domain="", catalogue_rsin=""

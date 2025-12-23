@@ -1,5 +1,4 @@
 import textwrap
-from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
 
@@ -21,12 +20,9 @@ from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..typing import RegistrationOptionsV1
 
-TEST_FILES = Path(__file__).parent / "files"
-
 
 class JSONTemplatingTests(OFVCRMixin, TestCase):
     maxDiff = None
-    VCR_TEST_FILES = TEST_FILES
 
     @classmethod
     def setUpTestData(cls):
@@ -364,8 +360,6 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
 
 
 class JSONTemplatingRegressionTests(OFVCRMixin, SubmissionsMixin, TestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

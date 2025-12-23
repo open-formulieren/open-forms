@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
 
@@ -237,8 +236,6 @@ class ObjectsAPIBackendTests(TestCase):
 
 
 class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = Path(__file__).parent / "files"
-
     def setUp(self):
         super().setUp()
 

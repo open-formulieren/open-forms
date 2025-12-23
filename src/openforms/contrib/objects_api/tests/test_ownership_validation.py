@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import patch
 
 from django.core.exceptions import PermissionDenied
@@ -17,9 +16,6 @@ from ..helpers import prepare_data_for_registration
 from ..ownership_validation import validate_object_ownership
 from .factories import ObjectsAPIGroupConfigFactory
 
-TEST_FILES = (Path(__file__).parent / "files").resolve()
-
-
 PLUGIN = ObjectsAPIRegistration("test")
 
 
@@ -29,8 +25,6 @@ PLUGIN = ObjectsAPIRegistration("test")
     CORS_ALLOWED_ORIGINS=["http://testserver.com"],
 )
 class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = TEST_FILES
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -39,16 +33,18 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             for_test_docker_compose=True
         )
 
-        with with_setup_test_data_vcr(cls.VCR_TEST_FILES, cls.__qualname__):
-            with get_objects_client(cls.objects_api_group_used) as client:
-                object = client.create_object(
-                    record_data=prepare_data_for_registration(
-                        data={"bsn": "111222333", "foo": "bar"},
-                        objecttype_version=1,
-                    ),
-                    objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
-                )
-            cls.object_ref = object["uuid"]
+        with (
+            with_setup_test_data_vcr(cls),
+            get_objects_client(cls.objects_api_group_used) as client,
+        ):
+            obj = client.create_object(
+                record_data=prepare_data_for_registration(
+                    data={"bsn": "111222333", "foo": "bar"},
+                    objecttype_version=1,
+                ),
+                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+            )
+        cls.object_ref = obj["uuid"]
 
     @tag("gh-4398")
     def test_user_is_owner_of_object(self):

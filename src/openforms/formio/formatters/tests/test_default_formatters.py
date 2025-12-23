@@ -339,7 +339,6 @@ class DefaultFormatterTestCase(SimpleTestCase):
 
 @patch.dict(os.environ, {"_MAP_GENERATION_MAX_WORKERS": "1"})
 class MapFormatterTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = FILES_DIR
     maxDiff = None
 
     @classmethod

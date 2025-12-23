@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -11,13 +9,9 @@ from openforms.utils.tests.vcr import OFVCRMixin
 
 from .factories import ObjectsAPIGroupConfigFactory
 
-TEST_FILES = Path(__file__).parent / "files"
-
 
 @disable_admin_mfa()
 class ObjectsAPIGroupConfigAdminTest(OFVCRMixin, WebTest):
-    VCR_TEST_FILES = TEST_FILES
-
     def test_name(self):
         ObjectsAPIGroupConfigFactory.create(name="test group")
         user = SuperUserFactory.create()
