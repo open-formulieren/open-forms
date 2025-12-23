@@ -14,7 +14,7 @@ populate the "customerProfile" form component.
    municipality. The API specifications aren't standardized, therefore Open Forms follows the
    `Customer Interactions API`_ specifications of `Open Klant`_.
 
-   Information about the architecture and the vision of the API can be also found on the
+   Information about the architecture and the vision of the API can also be found on the
    `VNG github`_.
 
 
