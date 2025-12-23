@@ -11,6 +11,7 @@ from openklant_client.types.methods.maak_klant_contact import (
     MaakKlantContactResponse,
 )
 from openklant_client.types.resources import (
+    CreatePartijOrganisatieData,
     CreatePartijPersoonData,
     Partij,
     PartijListParams,
@@ -197,6 +198,33 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
 
         return response["results"][0]
 
+    def find_party_for_kvk(self, kvk: str) -> Partij | None:
+        """
+        Search parties by KVK number.
+
+        The selection of query params and their values are based on the OAS for the
+        "partij identificator":
+        https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/maykinmedia/open-klant/master/src/openklant/components/klantinteracties/openapi.yaml#tag/partij-identificatoren
+        """
+
+        params: PartijListParams = {
+            "partijIdentificator__codeSoortObjectId": "kvk_nummer",
+            "partijIdentificator__codeRegister": "hr",
+            "partijIdentificator__codeObjecttype": "niet_natuurlijk_persoon",
+            "partijIdentificator__objectId": kvk,
+        }
+        response = self.partij.list(params=params)
+
+        if (num_results := len(response["results"])) > 1:
+            raise StandardViolation(
+                "Combination of 'codeObjecttype', 'codeSoortObjectId', 'objectId' and 'codeRegister' "
+                "must be unique according to the standards."
+            )
+        if num_results == 0:
+            return None
+
+        return response["results"][0]
+
     def create_party_for_bsn(self, bsn: str) -> Partij:
         data: CreatePartijPersoonData = {
             "soortPartij": "persoon",
@@ -221,6 +249,30 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         }
         return self.partij.create_persoon(data=data)
 
+    def create_party_for_kvk(self, kvk: str) -> Partij:
+        data: CreatePartijOrganisatieData = {
+            "soortPartij": "organisatie",
+            "voorkeurstaal": "nld",
+            "indicatieActief": True,
+            "digitaleAdressen": None,
+            "voorkeursDigitaalAdres": None,
+            "rekeningnummers": None,
+            "voorkeursRekeningnummer": None,
+            "indicatieGeheimhouding": False,
+            "partijIdentificatoren": [
+                {
+                    "partijIdentificator": {
+                        "codeSoortObjectId": "kvk_nummer",
+                        "codeRegister": "hr",
+                        "codeObjecttype": "niet_natuurlijk_persoon",
+                        "objectId": kvk,
+                    }
+                }
+            ],
+            "partijIdentificatie": {"naam": ""},
+        }
+        return self.partij.create_organisatie(data=data)
+
     def get_or_create_party(
         self, auth_attribute: AuthAttribute, auth_value: str
     ) -> tuple[Partij, bool]:
@@ -240,11 +292,21 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
 
                 return party, created
 
-            case (
-                AuthAttribute.kvk | AuthAttribute.pseudo | AuthAttribute.employee_id
-            ):  # pragma: no cover
+            case AuthAttribute.kvk:
+                existing_party = self.find_party_for_kvk(auth_value)
+                if existing_party:
+                    party = existing_party
+                    created = False
+
+                else:
+                    party = self.create_party_for_kvk(auth_value)
+                    created = True
+
+                return party, created
+
+            case AuthAttribute.pseudo | AuthAttribute.employee_id:  # pragma: no cover
                 raise NotImplementedError(
-                    "Only bsn authentication is supported for Customer Interactions API"
+                    "Only bsn and kvk authentications are supported for Customer Interactions API"
                 )
 
             case _:  # pragma: no cover
