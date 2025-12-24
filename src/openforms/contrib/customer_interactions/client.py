@@ -304,7 +304,7 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
 
                 return party, created
 
-            case AuthAttribute.pseudo | AuthAttribute.employee_id:  # pragma: no cover
+            case AuthAttribute.pseudo | AuthAttribute.employee_id:
                 raise NotImplementedError(
                     "Only bsn and kvk authentications are supported for Customer Interactions API"
                 )
