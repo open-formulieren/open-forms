@@ -17,7 +17,7 @@ The testsuite uses Django's standard test mechanism:
 
 .. code-block:: bash
 
-    python src/manage.py test src --exclude-tag=e2e --exclude-tag=migrations
+    python src/manage.py test src --exclude-tag=e2e --exclude-tag=migration_test
 
 will run all the tests discovered in the ``src`` directory, excluding slow tests like
 :ref:`end-to-end <developers_backend_tests_e2e>` and migration tests.
