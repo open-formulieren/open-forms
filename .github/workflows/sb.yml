@@ -4,10 +4,10 @@ name: Build and publish storybook
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
     types:
       - opened
       - reopened
@@ -57,7 +57,7 @@ jobs:
       id-token: write
 
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push' # Exclude PRs
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' # Exclude PRs
     needs: storybook
     steps:
       - name: Setup Pages
@@ -98,7 +98,7 @@ jobs:
         uses: chromaui/action@latest
         if: github.event.pull_request.draft == false || github.event.push
         with:
-          autoAcceptChanges: master
+          autoAcceptChanges: main
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           storybookBuildDir: ./storybook-static
           onlyChanged: true

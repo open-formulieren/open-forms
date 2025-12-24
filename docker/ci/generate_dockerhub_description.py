@@ -29,8 +29,8 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 ROOT = Path(__file__).parent.resolve()
 
 GITHUB_ORG = "https://github.com/open-formulieren"
-CONFIG_FILE_MASTER = (
-    "https://raw.githubusercontent.com/open-formulieren/open-forms/master/"
+CONFIG_FILE_MAIN = (
+    "https://raw.githubusercontent.com/open-formulieren/open-forms/main/"
     "docker/ci/config.json"
 )
 STABLE_PREFIX = "stable/"
@@ -134,11 +134,11 @@ def get_available_extensions(
 
 def _get_config(current_branch: str | None):
     # no branch specified -> not on CI -> grab local config
-    if current_branch is None or current_branch == "master":
+    if current_branch is None or current_branch == "main":
         with (ROOT / "config.json").open("r") as config_file:
             return json.load(config_file)
 
-    response = requests.get(CONFIG_FILE_MASTER)
+    response = requests.get(CONFIG_FILE_MAIN)
     response.raise_for_status()
     return response.json()
 

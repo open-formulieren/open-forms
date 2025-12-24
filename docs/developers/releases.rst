@@ -26,7 +26,7 @@ Preparing a release
 -------------------
 
 For new releases, a release branch is created, named: ``release/<new-version>``.
-For minor and major releases, checkout from ``master``. For patch releases, checkout
+For minor and major releases, checkout from ``main``. For patch releases, checkout
 from ``stable/<major>.<minor>.x``. All release-related actions are concentrated in this branch.
 
 **Updating translation strings**
@@ -162,7 +162,7 @@ Publishing a release
 
 Once the PR has been reviewed and approved, merge it to:
 
-* the ``master`` branch for minor and major releases
+* the ``main`` branch for minor and major releases
 * the ``stable/<major>.<minor>.x`` branch for patch releases.
 
 Then proceed to tagging the release.
@@ -195,9 +195,9 @@ entry. This ensures the changes are also visible from the Github releases page.
 
 The CI workflow will ensure that a Docker image with the same release tag is published.
 
-**Create a PR with the changelog entries for the master branch**
+**Create a PR with the changelog entries for the main branch**
 
-After publishing the release make sure to create a PR to the master branch with
+After publishing the release make sure to create a PR to the main branch with
 the newly added changelogs entries.
 
 **Announce the release in communication channels**
@@ -210,20 +210,20 @@ This is to be fleshed out more, but some existing channels are:
 
 **Forward port changelog for patch releases**
 
-For patch releases only, update the ``CHANGELOG.rst`` on the master branch with the new summary of changes.
+For patch releases only, update the ``CHANGELOG.rst`` on the main branch with the new summary of changes.
 Order the entries by date (most recent first). If multiple patch versions are done on the same day, order them by
 version (most recent first).
 
 Stable releases and on-going development
 ----------------------------------------
 
-Open Forms follows the one-flow branching model: the ``master`` branch is the main
+Open Forms follows the one-flow branching model: the ``main`` branch is the main
 branch. Features and bugfixes are developed in separate branches (e.g. ``feature/foo``
-and ``issue/bar``) with a pull request to ``master``.
+and ``issue/bar``) with a pull request to ``main``.
 
 Supported stable (and upcoming) releases have their own branch following the pattern
 ``stable/<major>.<minor>.x``. Conforming to the :ref:`developers_releases_versioning`,
-bugfixes merged into ``master`` must be backported to the respective release branch(es).
+bugfixes merged into ``main`` must be backported to the respective release branch(es).
 Pull requests with bugfixes must be tagged with the **needs-backport** label. The
 release branches are tested in CI as well.
 

@@ -39,9 +39,9 @@ Getting started
 
    .. code:: bash
 
-      $ wget https://github.com/open-formulieren/open-forms/archive/refs/heads/master.zip -O
-      $ unzip master.zip
-      $ cd open-forms-master
+      $ wget https://github.com/open-formulieren/open-forms/archive/refs/heads/main.zip -O
+      $ unzip main.zip
+      $ cd open-forms-main
 
 2. Start the docker containers with ``docker compose``. If you want to run the
    containers in the background, add the ``-d`` option to the command below:
@@ -50,17 +50,17 @@ Getting started
 
       docker compose up
 
-      Creating network "open-forms-master_default" with the default driver
-      Creating volume "open-forms-master_db" with default driver
-      Creating volume "open-forms-master_private_media" with default driver
-      Creating open-forms-master_db_1 ... done
-      Creating open-forms-master_redis_1 ... done
-      Creating open-forms-master_sdk_1 ... done
-      Creating open-forms-master_web_1 ... done
-      Creating open-forms-master_nginx_1 ... done
-      Creating open-forms-master_celery_1 ... done
-      Creating open-forms-master_celery-beat_1 ... done
-      Creating open-forms-master_celery-flower_1 ... done
+      Creating network "open-forms-main_default" with the default driver
+      Creating volume "open-forms-main_db" with default driver
+      Creating volume "open-forms-main_private_media" with default driver
+      Creating open-forms-main_db_1 ... done
+      Creating open-forms-main_redis_1 ... done
+      Creating open-forms-main_sdk_1 ... done
+      Creating open-forms-main_web_1 ... done
+      Creating open-forms-main_nginx_1 ... done
+      Creating open-forms-main_celery_1 ... done
+      Creating open-forms-main_celery-beat_1 ... done
+      Creating open-forms-main_celery-flower_1 ... done
       ...
 
 3. Create a super-user.

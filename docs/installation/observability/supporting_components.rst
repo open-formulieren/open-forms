@@ -110,7 +110,7 @@ Traces
 nginx provides the `ngx_otel_module <https://nginx.org/en/docs/ngx_otel_module.html>`_
 for distributed tracing - which is not compiled/enabled by default. The Open Forms team
 does not publish an image with this module enabled - you can opt-into doing this
-yourself. Our `docker-compose.yml <https://github.com/open-formulieren/open-forms/tree/master/docker-compose.yml>`_ can provide inspiration.
+yourself. Our `docker-compose.yml <https://github.com/open-formulieren/open-forms/tree/main/docker-compose.yml>`_ can provide inspiration.
 
 Follow the upstream documentation on how to enable this - it should be pretty straight
 forward to send the OTLP traces to the collector receiver since this is the same

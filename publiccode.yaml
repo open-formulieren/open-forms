@@ -9,7 +9,7 @@ url: 'http://github.com/open-formulieren/open-forms.git'
 softwareType: standalone/backend
 softwareVersion: 3.4.0-alpha.2
 releaseDate: '2022-03-10'
-logo: 'https://github.com/open-formulieren/open-forms/blob/master/docs/logo.svg'
+logo: 'https://github.com/open-formulieren/open-forms/blob/main/docs/logo.svg'
 platforms:
   - web
   - linux
@@ -22,7 +22,7 @@ description:
   nl:
     shortDescription: Formulieren bouwen en ontsluiten
     documentation: 'https://open-forms.readthedocs.io/'
-    apiDocumentation: 'https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml'
+    apiDocumentation: 'https://raw.githubusercontent.com/open-formulieren/open-forms/main/src/openapi.yaml'
     features:
       - Bouw slimme formulieren
       - Ontsluit formulieren via een API
@@ -44,7 +44,7 @@ description:
   en:
     shortDescription: Build end expose forms
     documentation: 'https://open-forms.readthedocs.io/'
-    apiDocumentation: 'https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml'
+    apiDocumentation: 'https://raw.githubusercontent.com/open-formulieren/open-forms/main/src/openapi.yaml'
     features:
       - Build smart forms
       - Expose forms via an API

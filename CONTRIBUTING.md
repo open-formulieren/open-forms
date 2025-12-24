@@ -88,10 +88,10 @@ documentation for the type you are using, a deprecation notice will be indicated
 ### Making a pull request
 
 If all changes have been committed, you can push the branch to your fork of the repository and
-create a pull request to the `master` branch of this project's repository. Your pull request will be
+create a pull request to the `main` branch of this project's repository. Your pull request will be
 reviewed, if applicable, feedback will be given and if everything is approved, it will be merged.
 
-Pull requests should always be made to the `master` branch, even if they are bugfixes for any of the
+Pull requests should always be made to the `main` branch, even if they are bugfixes for any of the
 `stable/*` branches. If they are relevant for older versions, please add the _needs-backport_ label
 to the pull request and/or issue. Release managers will then ensure the fix also lands in the
 supported older versions.
