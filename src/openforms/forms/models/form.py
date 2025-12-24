@@ -394,11 +394,7 @@ class Form(models.Model):
     new_renderer_enabled = models.BooleanField(
         _("enable new renderer"),
         default=False,
-        help_text=_(
-            "Enable the EXPERIMENTAL new renderer. Disclaimer: the new renderer "
-            "is not feature complete and is very likely to contain bugs. You should "
-            "not enable this in production.",
-        ),
+        help_text=_("Enable the new renderer."),
     )
 
     objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]

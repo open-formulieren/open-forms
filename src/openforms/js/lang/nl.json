@@ -100,6 +100,11 @@
     "description": "Form 'BRP Personen processing header value' field label",
     "originalDefault": "BRP Personen processing header value"
   },
+  "137M7W": {
+    "defaultMessage": "Schakel de nieuwe renderer in die sneller is en betere toegankelijkheid biedt.",
+    "description": "New renderer enabled feature flag help text",
+    "originalDefault": "Enable the new renderer, which is more performant and has better accessibility."
+  },
   "1ArmQ5": {
     "defaultMessage": "Bevestigen",
     "description": "Camunda complex process variables confirm button",
@@ -626,11 +631,6 @@
     "defaultMessage": "Bevestigen",
     "description": "Form definition select confirm button",
     "originalDefault": "Confirm"
-  },
-  "AzBz1q": {
-    "defaultMessage": "Schakel de EXPERIMENTELE nieuwe renderer in. Merk op: nog niet alle functionaliteiten zijn beschikbaar in de nieuwe renderer én er zijn hoogstwaarschijnlijk bugs. Schakel dit niet in op een productie-omgeving.",
-    "description": "New renderer enabled feature flag help text",
-    "originalDefault": "Enable the EXPERIMENTAL new renderer. Disclaimer: the new renderer is not feature complete and is very likely to contain bugs. You should not enable this in production."
   },
   "B/A1Bk": {
     "defaultMessage": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier.",
