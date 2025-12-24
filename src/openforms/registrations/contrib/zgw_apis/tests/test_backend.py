@@ -3323,3 +3323,98 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "subVerblijfBuitenland": None,
             },
         )
+
+    @tag("gh-5840")
+    def test_submission_with_children_component_and_manually_added_data(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "children",
+                    "type": "children",
+                    "enableSelection": False,
+                    "registration": {
+                        "attribute": RegistrationAttribute.children,
+                    },
+                }
+            ],
+            auth_info__value="123456782",
+            auth_info__attribute=AuthAttribute.bsn,
+            completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+            submitted_data={
+                "children": [
+                    {
+                        "bsn": "999970409",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                        "selected": None,
+                        "__id": str(uuid4()),
+                        "__addedManually": True,
+                    },
+                ]
+            },
+        )
+
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "CHILD",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZAAKTYPE-2020-0000000002",
+            "document_type_description": "Children PDF Informatieobjecttype",
+            "zaaktype": f"{catalogi_root}zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35",
+            "product_url": "",
+            "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "Children role type",
+            "children_description": "",
+        }
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # perform the actual registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(len(result["intermediate"]["child_rol"]), 1)
+        self.assertEqual(
+            result["intermediate"]["initiator_rol"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "123456782",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "",
+                "voornamen": "",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+        self.assertEqual(
+            result["intermediate"]["child_rol"]["1"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "999970409",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "",
+                "voornamen": "Pero",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "2023-02-01",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
