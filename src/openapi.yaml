@@ -8080,9 +8080,7 @@ components:
         newRendererEnabled:
           type: boolean
           title: Enable new renderer
-          description: 'Enable the EXPERIMENTAL new renderer. Disclaimer: the new
-            renderer is not feature complete and is very likely to contain bugs. You
-            should not enable this in production.'
+          description: Enable the new renderer.
       required:
       - communicationPreferencesPortalUrl
       - cosignHasLinkInEmail
@@ -9747,9 +9745,7 @@ components:
         newRendererEnabled:
           type: boolean
           title: Enable new renderer
-          description: 'Enable the EXPERIMENTAL new renderer. Disclaimer: the new
-            renderer is not feature complete and is very likely to contain bugs. You
-            should not enable this in production.'
+          description: Enable the new renderer.
     PatchedFormDefinition:
       type: object
       properties:
