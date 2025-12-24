@@ -2,109 +2,6 @@
 
 from django.db import migrations
 
-from digid_eherkenning.oidc.migrations_operations import migrate_config_forward
-from glom import glom
-
-from ..oidc_plugins.constants import OIDC_YIVI_IDENTIFIER
-
-
-def move_data_forward(apps, schema_editor):
-    YiviOpenIDConnectConfig = apps.get_model("yivi_oidc", "YiviOpenIDConnectConfig")
-
-    # Solo model, there should be only one
-    yivi_config_old = YiviOpenIDConnectConfig.objects.first()
-    if yivi_config_old:
-        options = {
-            "loa_settings": {
-                "bsn_loa_claim_path": yivi_config_old.bsn_loa_claim,
-                "bsn_default_loa": yivi_config_old.bsn_default_loa,
-                "bsn_loa_value_mapping": yivi_config_old.bsn_loa_value_mapping,
-                "kvk_loa_claim_path": yivi_config_old.kvk_loa_claim,
-                "kvk_default_loa": yivi_config_old.kvk_default_loa,
-                "kvk_loa_value_mapping": yivi_config_old.kvk_loa_value_mapping,
-            },
-            "identity_settings": {
-                "bsn_claim_path": yivi_config_old.bsn_claim,
-                "kvk_claim_path": yivi_config_old.kvk_claim,
-                "pseudo_claim_path": yivi_config_old.pseudo_claim,
-            },
-        }
-        migrate_config_forward(yivi_config_old, OIDC_YIVI_IDENTIFIER, options, apps)
-
-
-def move_data_backwards(apps, schema_editor):
-    OIDCClient = apps.get_model("mozilla_django_oidc_db", "OIDCClient")
-
-    YiviOpenIDConnectConfig = apps.get_model("yivi_oidc", "YiviOpenIDConnectConfig")
-
-    yivi_config = (
-        OIDCClient.objects.select_related("oidc_provider")
-        .filter(identifier=OIDC_YIVI_IDENTIFIER)
-        .first()
-    )
-    if yivi_config and yivi_config.oidc_provider:
-        YiviOpenIDConnectConfig.objects.create(
-            enabled=yivi_config.enabled,
-            # Provider settings
-            oidc_op_discovery_endpoint=(
-                yivi_config.oidc_provider.oidc_op_discovery_endpoint
-            ),
-            oidc_op_jwks_endpoint=yivi_config.oidc_provider.oidc_op_jwks_endpoint,
-            oidc_op_authorization_endpoint=(
-                yivi_config.oidc_provider.oidc_op_authorization_endpoint
-            ),
-            oidc_op_token_endpoint=yivi_config.oidc_provider.oidc_op_token_endpoint,
-            oidc_op_user_endpoint=yivi_config.oidc_provider.oidc_op_user_endpoint,
-            oidc_op_logout_endpoint=(yivi_config.oidc_provider.oidc_op_logout_endpoint),
-            oidc_token_use_basic_auth=yivi_config.oidc_provider.oidc_token_use_basic_auth,
-            oidc_use_nonce=yivi_config.oidc_provider.oidc_use_nonce,
-            oidc_nonce_size=yivi_config.oidc_provider.oidc_nonce_size,
-            oidc_state_size=yivi_config.oidc_provider.oidc_state_size,
-            # Client settings
-            oidc_rp_client_id=yivi_config.oidc_rp_client_id,
-            oidc_rp_client_secret=yivi_config.oidc_rp_client_secret,
-            oidc_rp_sign_algo=yivi_config.oidc_rp_sign_algo,
-            oidc_rp_scopes_list=yivi_config.oidc_rp_scopes_list,
-            oidc_rp_idp_sign_key=yivi_config.oidc_rp_idp_sign_key,
-            oidc_keycloak_idp_hint=yivi_config.oidc_keycloak_idp_hint,
-            userinfo_claims_source=yivi_config.userinfo_claims_source,
-            # Options
-            loa_claim=[],
-            default_loa="",
-            loa_value_mapping=[],
-            bsn_claim=glom(
-                yivi_config.options, "identity_settings.bsn_claim_path", default=[]
-            ),
-            bsn_loa_claim=glom(
-                yivi_config.options, "loa_settings.bsn_loa_claim_path", default=[]
-            ),
-            bsn_default_loa=glom(
-                yivi_config.options, "loa_settings.bsn_default_loa", default=""
-            ),
-            bsn_loa_value_mapping=glom(
-                yivi_config.options,
-                "loa_settings.bsn_loa_value_mapping",
-                default=[],
-            ),
-            kvk_claim=glom(
-                yivi_config.options, "identity_settings.kvk_claim_path", default=[]
-            ),
-            kvk_loa_claim=glom(
-                yivi_config.options, "loa_settings.kvk_loa_claim_path", default=[]
-            ),
-            kvk_default_loa=glom(
-                yivi_config.options, "loa_settings.kvk_default_loa", default=""
-            ),
-            kvk_loa_value_mapping=glom(
-                yivi_config.options,
-                "loa_settings.kvk_loa_value_mapping",
-                default=[],
-            ),
-            pseudo_claim=glom(
-                yivi_config.options, "identity_settings.pseudo_claim_path", default=[]
-            ),
-        )
-
 
 class Migration(migrations.Migration):
     dependencies = [
@@ -126,4 +23,6 @@ class Migration(migrations.Migration):
         ("mozilla_django_oidc_db", "0008_delete_openidconnectconfig"),
     ]
 
-    operations = [migrations.RunPython(move_data_forward, move_data_backwards)]
+    # Emptied as part of the 3.4 release cycle - they're guaranteed to have been
+    # executed on 3.3.x.
+    operations = []
