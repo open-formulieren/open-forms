@@ -5,8 +5,8 @@ Communication preferences
 =========================
 
 The **Communication preferences** prefill plugin stores data records for digital addresses based
-on a person's BSN, retrieved from a `Customer Interactions API`_. These records can be used to
-populate the "customerProfile" form component.
+on a person's BSN or organization's KVK number, retrieved from a `Customer Interactions API`_.
+These records can be used to populate the "customerProfile" form component.
 
 .. note::
 

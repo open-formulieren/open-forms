@@ -31,7 +31,50 @@
         "soort_partij": "persoon",
         "indicatie_geheimhouding": null,
         "voorkeurstaal": "nld",
-        "indicatie_actief": false
+        "indicatie_actief": true
+    }
+},
+{
+    "model": "klantinteracties.partij",
+    "pk": 2,
+    "fields": {
+        "bezoekadres_nummeraanduiding_id": "",
+        "bezoekadres_straatnaam": "",
+        "bezoekadres_huisnummer": null,
+        "bezoekadres_huisnummertoevoeging": "",
+        "bezoekadres_postcode": "",
+        "bezoekadres_stad": "",
+        "bezoekadres_adresregel1": "",
+        "bezoekadres_adresregel2": "",
+        "bezoekadres_adresregel3": "",
+        "bezoekadres_land": "",
+        "correspondentieadres_nummeraanduiding_id": "",
+        "correspondentieadres_straatnaam": "",
+        "correspondentieadres_huisnummer": null,
+        "correspondentieadres_huisnummertoevoeging": "",
+        "correspondentieadres_postcode": "",
+        "correspondentieadres_stad": "",
+        "correspondentieadres_adresregel1": "",
+        "correspondentieadres_adresregel2": "",
+        "correspondentieadres_adresregel3": "",
+        "correspondentieadres_land": "",
+        "uuid": "3411535c-7c5e-4c05-b34d-52a60607dd8c",
+        "voorkeurs_digitaal_adres": null,
+        "voorkeurs_rekeningnummer": null,
+        "nummer": "0000000002",
+        "interne_notitie": "",
+        "soort_partij": "organisatie",
+        "indicatie_geheimhouding": null,
+        "voorkeurstaal": "nld",
+        "indicatie_actief": true
+    }
+},
+{
+    "model": "klantinteracties.organisatie",
+    "pk": 1,
+    "fields": {
+        "partij": 2,
+        "naam": "Maykin Media"
     }
 },
 {
@@ -57,6 +100,20 @@
         "partij_identificator_code_soort_object_id": "bsn",
         "partij_identificator_object_id": "123456782",
         "partij_identificator_code_register": "brp"
+    }
+},
+{
+    "model": "klantinteracties.partijidentificator",
+    "pk": 2,
+    "fields": {
+        "uuid": "e6aebb92-0050-4d12-bfc3-415aa4473bc5",
+        "sub_identificator_van": null,
+        "partij": 2,
+        "andere_partij_identificator": "",
+        "partij_identificator_code_objecttype": "niet_natuurlijk_persoon",
+        "partij_identificator_code_soort_object_id": "kvk_nummer",
+        "partij_identificator_object_id": "12345678",
+        "partij_identificator_code_register": "hr"
     }
 },
 {
@@ -135,6 +192,36 @@
     }
 },
 {
+    "model": "klantinteracties.digitaaladres",
+    "pk": 6,
+    "fields": {
+        "uuid": "6b0099b5-85ac-4f13-b138-26e123debe51",
+        "partij": 2,
+        "betrokkene": null,
+        "soort_digitaal_adres": "email",
+        "is_standaard_adres": true,
+        "adres": "maykinmail@test.com",
+        "omschrijving": "",
+        "referentie": "",
+        "verificatie_datum": null
+    }
+},
+{
+    "model": "klantinteracties.digitaaladres",
+    "pk": 7,
+    "fields": {
+        "uuid": "d39fc2c1-39ab-4035-be31-bf1755ecec39",
+        "partij": 2,
+        "betrokkene": null,
+        "soort_digitaal_adres": "telefoonnummer",
+        "is_standaard_adres": true,
+        "adres": "0612345678",
+        "omschrijving": "",
+        "referentie": "",
+        "verificatie_datum": null
+    }
+},
+{
     "model": "token.tokenauth",
     "pk": 1,
     "fields": {
@@ -154,7 +241,7 @@
     "pk": 1,
     "fields": {
         "password": "pbkdf2_sha256$1000000$XymCZ3jfG526ZKdmcX2hMw$dd4+txbydv9bIRcTF3+5SA3jli3o5pGVVpYjj6PlVIw=",
-        "last_login": null,
+        "last_login": "2025-12-22T17:06:44.657Z",
         "is_superuser": true,
         "username": "admin",
         "first_name": "",

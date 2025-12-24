@@ -1,8 +1,11 @@
+from collections.abc import Iterator
+
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import requests
 import structlog
+from openklant_client.types.resources.digitaal_adres import DigitaalAdres
 
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.customer_interactions.client import (
@@ -32,7 +35,10 @@ logger = structlog.stdlib.get_logger(__name__)
 @register(PLUGIN_IDENTIFIER)
 class CommunicationPreferences(BasePlugin[CommunicationPreferencesOptions]):
     verbose_name = _("Communication preferences (customer interactions API)")
-    requires_auth = (AuthAttribute.bsn,)
+    requires_auth = (
+        AuthAttribute.bsn,
+        AuthAttribute.kvk,
+    )
     options = CommunicationPreferencesSerializer
 
     @classmethod
@@ -43,7 +49,7 @@ class CommunicationPreferences(BasePlugin[CommunicationPreferencesOptions]):
         submission_value_variable: SubmissionValueVariable,
     ) -> dict[str, JSONEncodable]:
         if not (
-            bsn_value := cls.get_identifier_value(
+            identifier_value := cls.get_identifier_value(
                 submission, identifier_role=IdentifierRoles.main
             )
         ):
@@ -52,7 +58,7 @@ class CommunicationPreferences(BasePlugin[CommunicationPreferencesOptions]):
                 submission_uuid=str(submission.uuid),
                 plugin=cls,
             )
-            raise PrefillSkipped("No BSN available.")
+            raise PrefillSkipped("No identifier available.")
 
         assert submission_value_variable.form_variable
         prefill_variable = str(submission_value_variable.form_variable.key)
@@ -74,7 +80,9 @@ class CommunicationPreferences(BasePlugin[CommunicationPreferencesOptions]):
         with get_customer_interactions_client(
             options["customer_interactions_api_group"]
         ) as client:
-            digital_addresses = client.get_digital_addresses_for_bsn(bsn=bsn_value)
+            digital_addresses: Iterator[DigitaalAdres] = client.get_digital_addresses(
+                submission.auth_info.attribute, identifier_value
+            )
 
         result = transform_digital_addresses(digital_addresses, address_types)
         return {prefill_variable: result}  # pyright: ignore[reportReturnType]
