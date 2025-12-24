@@ -475,14 +475,16 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                         {
                             "roltype": roltype["url"],
                             "betrokkeneType": "natuurlijk_persoon",
+                            "roltoelichting": children_description
+                            or "natuurlijk_persoon",
                             "betrokkeneIdentificatie": {
-                                "inpBsn": data.get("bsn"),
-                                "voorvoegselGeslachtsnaam": data.get("affixes"),
-                                "voorletters": data.get("initials"),
-                                "geslachtsnaam": data.get("lastName"),
-                                "voornamen": data.get("firstNames"),
-                                "geboortedatum": data.get("dateOfBirth").isoformat(),
-                                "roltoelichting": children_description,
+                                "inpBsn": data.get("bsn") or "",
+                                "voorvoegselGeslachtsnaam": data.get("affixes") or "",
+                                "voorletters": data.get("initials") or "",
+                                "geslachtsnaam": data.get("lastName") or "",
+                                "voornamen": data.get("firstNames") or "",
+                                "geboortedatum": data.get("dateOfBirth").isoformat()
+                                or "",
                             },
                         }
                     )
