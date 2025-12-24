@@ -1,12 +1,18 @@
-from openforms.utils.tests.test_migrations import TestMigrations
+from django_test_migrations.contrib.unittest_case import MigratorTestCase
 
 
-class StufZdsVariablesMappingMigrationTests(TestMigrations):
-    migrate_from = "0116_formvariable_unique_form_id_and_profile_form_variable_for_prefill_plugin_communication_preferences"
-    migrate_to = "0117_stuf_zds_variables_mapping"
-    app = "forms"
+class StufZdsVariablesMappingMigrationTests(MigratorTestCase):
+    migrate_from = (
+        "forms",
+        "0116_formvariable_unique_form_id_and_profile_form_variable_for_prefill_plugin_communication_preferences",
+    )
+    migrate_to = (
+        "forms",
+        "0117_stuf_zds_variables_mapping",
+    )
 
-    def setUpBeforeMigration(self, apps):
+    def prepare(self):
+        apps = self.old_state.apps
         Form = apps.get_model("forms", "Form")
         FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
 
@@ -45,7 +51,7 @@ class StufZdsVariablesMappingMigrationTests(TestMigrations):
         """
         Ensure that the data migration succeeds and we have the same variables in the form.
         """
-        FormRegistrationBackend = self.apps.get_model(
+        FormRegistrationBackend = self.new_state.apps.get_model(
             "forms", "FormRegistrationBackend"
         )
 
@@ -79,12 +85,18 @@ class StufZdsVariablesMappingMigrationTests(TestMigrations):
         )
 
 
-class StufZdsReverseVariablesMappingMigrationTests(TestMigrations):
-    migrate_from = "0117_stuf_zds_variables_mapping"
-    migrate_to = "0116_formvariable_unique_form_id_and_profile_form_variable_for_prefill_plugin_communication_preferences"
-    app = "forms"
+class StufZdsReverseVariablesMappingMigrationTests(MigratorTestCase):
+    migrate_from = (
+        "forms",
+        "0117_stuf_zds_variables_mapping",
+    )
+    migrate_to = (
+        "forms",
+        "0116_formvariable_unique_form_id_and_profile_form_variable_for_prefill_plugin_communication_preferences",
+    )
 
-    def setUpBeforeMigration(self, apps):
+    def prepare(self):
+        apps = self.old_state.apps
         Form = apps.get_model("forms", "Form")
         FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
 
@@ -123,7 +135,7 @@ class StufZdsReverseVariablesMappingMigrationTests(TestMigrations):
         """
         Ensure that the data migration succeeds and we have the same variables in the form.
         """
-        FormRegistrationBackend = self.apps.get_model(
+        FormRegistrationBackend = self.new_state.apps.get_model(
             "forms", "FormRegistrationBackend"
         )
 

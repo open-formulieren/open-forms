@@ -42,12 +42,6 @@ Frontend redirects
 .. automodule:: openforms.frontend.tests
    :members:
 
-Migrations
-----------
-
-.. automodule:: openforms.utils.tests.test_migrations
-   :members:
-
 Formio assertions
 -----------------
 

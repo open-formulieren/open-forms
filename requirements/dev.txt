@@ -403,6 +403,10 @@ django-structlog==9.1.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+django-test-migrations==1.5.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-timeline-logger==5.0.0
     # via
     #   -c requirements/ci.txt
@@ -1312,6 +1316,7 @@ typing-extensions==4.12.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   anyio
+    #   django-test-migrations
     #   mozilla-django-oidc-db
     #   opentelemetry-api
     #   opentelemetry-exporter-otlp-proto-grpc
