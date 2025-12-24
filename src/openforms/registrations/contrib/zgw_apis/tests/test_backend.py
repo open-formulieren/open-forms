@@ -2686,6 +2686,104 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             },
         )
 
+    @tag("gh-5840")
+    def test_submission_with_partners_component_and_manually_added_data(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "partners",
+                    "type": "partners",
+                    "registration": {
+                        "attribute": RegistrationAttribute.partners,
+                    },
+                }
+            ],
+            auth_info__value="123456782",
+            auth_info__attribute=AuthAttribute.bsn,
+            completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+            # mimic the frontend data we receive
+            submitted_data={
+                "partners": [
+                    {
+                        "bsn": "999970409",
+                        "affixes": "",
+                        "initials": "",
+                        "lastName": "Paassen",
+                        "dateOfBirth": "2023-02-01",
+                        "__addedManually": True,
+                    },
+                ]
+            },
+        )
+
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "PARTN",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZAAKTYPE-2020-0000000001",
+            "document_type_description": "Partners PDF Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "product_url": "",
+            "objects_api_group": None,
+            "partners_roltype": "Partner role type",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+        }
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # perform the actual registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(len(result["intermediate"]["partner_rol"]), 1)
+        self.assertEqual(
+            result["intermediate"]["initiator_rol"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "123456782",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "",
+                "voornamen": "",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+        self.assertEqual(
+            result["intermediate"]["partner_rol"]["1"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "999970409",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "Paassen",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "",
+                "voornamen": "",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "2023-02-01",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+        self.assertEqual(
+            result["intermediate"]["partner_rol"]["1"]["roltoelichting"],
+            "natuurlijk_persoon",
+        )
+
     @patch(
         "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
         return_value=HaalCentraalConfig(
