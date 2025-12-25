@@ -30,7 +30,7 @@ from openforms.utils.json_logic.api.views import GenerateLogicDescriptionView
 from openforms.utils.urls import decorator_include
 from openforms.variables.api.viewsets import ServiceFetchConfigurationViewSet
 
-from .views import PingView
+from .views import PingView, health_check_view
 
 # from .schema import schema_view
 
@@ -98,6 +98,7 @@ urlpatterns = [
             never_cache,
             [
                 path("ping", PingView.as_view(), name="ping"),
+                path("health", health_check_view, name="health"),
                 path("submissions/", include("openforms.submissions.api.urls")),
                 path("analytics/", include("openforms.analytics_tools.api.urls")),
                 path("forms-import", FormsImportAPIView.as_view(), name="forms-import"),
