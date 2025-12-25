@@ -1,3 +1,4 @@
+from copy import deepcopy
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import TypedDict
@@ -24,7 +25,10 @@ from openforms.emails.utils import render_email_template, send_mail_html
 from openforms.formio.api.fields import FormioDataField
 from openforms.formio.service import FormioData, build_serializer
 from openforms.formio.utils import iter_components
-from openforms.forms.api.serializers import FormDefinitionSerializer
+from openforms.forms.api.serializers import (
+    FormDefinitionSerializer,
+    FormLogicSerializer,
+)
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
 from openforms.forms.validators import validate_not_deleted
@@ -211,10 +215,11 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer[Submission]):
 
 class ContextAwareFormStepSerializer(serializers.ModelSerializer):
     configuration = serializers.SerializerMethodField()
+    logic_rules = FormLogicSerializer(read_only=True, many=True)
 
     class Meta:
         model = FormStep
-        fields = ("index", "configuration")
+        fields = ("index", "configuration", "logic_rules")
         extra_kwargs = {
             "index": {"source": "order"},
         }
@@ -238,6 +243,8 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         allow_null=True,
         validators=[ValidatePrefillData()],
     )
+    configuration = serializers.JSONField(label=_("configuration"), read_only=True)
+    all_data = FormioDataField(source="submission.data", read_only=True)
 
     parent_lookup_kwargs = {
         "submission_uuid": "submission__uuid",
@@ -255,6 +262,8 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "is_applicable",
             "completed",
             "can_submit",
+            "configuration",
+            "all_data",
         )
 
         extra_kwargs = {
@@ -281,6 +290,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
 
     @elasticapm.capture_span(span_type="app.api.serialization")
     def to_representation(self, instance):
+        configuration = deepcopy(instance.form_step.form_definition.configuration)
         # invoke the configured form logic to dynamically update the Formio.js configuration
         new_configuration = evaluate_form_logic(instance.submission, instance)
 
@@ -305,6 +315,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             serialized_data[key] = variable.to_json(data[key])
 
         representation["data"] = serialized_data.data
+        representation["configuration"] = configuration
 
         return representation
 

@@ -4,6 +4,7 @@ import json
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
+from itertools import chain
 from typing import Any, Self, TypedDict
 
 from django.core.cache import cache
@@ -20,8 +21,12 @@ from openforms.formio.service import (
 )
 from openforms.formio.typing.custom import ChildProperties
 from openforms.forms.constants import LogicActionTypes
-from openforms.forms.models import FormLogic
+from openforms.forms.models import FormLogic, FormStep
+from openforms.forms.models.logic import _resolve_key
+from openforms.template import extract_variables_used
 from openforms.typing import DataMapping, JSONObject
+from openforms.utils.json_logic import introspect_json_logic
+from openforms.variables.models import ServiceFetchConfiguration
 
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
@@ -54,6 +59,60 @@ def compile_action_operation(action: ActionDict) -> ActionOperation:
 
 class ActionOperation:
     rule: FormLogic
+
+    @property
+    def unresolved_input_variables(self) -> set[str]:
+        """
+        Return a set of input variable names that are used in the action.
+
+        Here, "unresolved" refers to the fact that the variable names are extracted
+        directly from the action configuration, and might not represent actual available
+        form variables.
+
+        Should be overridden in the child class.
+        """
+        raise NotImplementedError
+
+    @property
+    def unresolved_output_variables(self) -> set[str]:
+        """
+        Return a set of output variable names that are used in the action.
+
+        Here, "unresolved" refers to the fact that the variable names are extracted
+        directly from the action configuration, and might not represent actual available
+        form variables.
+
+        Should be overridden in the child class
+        """
+        raise NotImplementedError
+
+    @property
+    def steps(self) -> set[FormStep]:
+        """
+        Relevant step(s) on which this rule should be executed.
+
+        Should be overridden in the child class.
+        """
+        raise NotImplementedError()
+
+    def _get_steps(self, keys: set[str]) -> set[FormStep]:
+        """
+        Get the form steps for a set of unresolved variable keys.
+
+        :param keys: Set of (unresolved) variable keys.
+        """
+        steps = set()
+        for key in keys:
+            # If we can't resolve it, the key does not belong to a form variable.
+            # HOWEVER, it might be a component, so we try to resolve a step for it
+            # anyway.
+            resolved_key = _resolve_key(key, self.rule.form.all_form_variables) or key
+
+            step = self.rule.form.get_form_step(resolved_key)
+            if step:
+                steps.add(step)
+
+        return steps
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -89,6 +148,22 @@ class PropertyAction(ActionOperation):
     property: str
     value: Any
 
+    @property
+    def unresolved_input_variables(self) -> set[str]:
+        return set()
+
+    @property
+    def unresolved_output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        # TODO-2409: is it worth only returning this for the "hidden" property action,
+        #  as marking a field as "required" or "disabled" doesn't affect the data?
+        # Also need to include children, as it might be a layout component. Note that
+        # these include all component keys, and should still be resolved against the
+        # available form variables
+        return {self.component} | self.rule.form.get_child_component_keys(
+            self.component
+        )
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(
@@ -96,6 +171,10 @@ class PropertyAction(ActionOperation):
             property=action["action"]["property"]["value"],
             value=action["action"]["state"],
         )
+
+    @property
+    def steps(self):
+        return self._get_steps(self.unresolved_output_variables)
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -135,9 +214,23 @@ class PropertyAction(ActionOperation):
 
 
 class DisableNextAction(ActionOperation):
+    @property
+    def unresolved_input_variables(self) -> set[str]:
+        return set()
+
+    @property
+    def unresolved_output_variables(self) -> set[str]:
+        return set()
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls()
+
+    @property
+    def steps(self):
+        steps = self._get_steps(self.rule.unresolved_input_variables_from_trigger)
+        # Return last step
+        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -149,11 +242,41 @@ class DisableNextAction(ActionOperation):
 class StepNotApplicableAction(ActionOperation):
     form_step_identifier: str
 
+    @property
+    def unresolved_input_variables(self) -> set[str]:
+        return set()
+
+    @property
+    def unresolved_output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        # TODO-2409: once we resolve against all form variables, it will remove all
+        #  components that have no variable. Is that OK for this action? Feels like it
+        #  might introduce some edge cases. Perhaps worth considering to not resolve
+        #  against the variables at all?
+        # TODO-2409: do we need to speed up data access here?
+        # TODO-2409: ALSO, perhaps all this is not even necessary, as we will get all
+        #  rules per step anyway. Meaning all other rules related to that step will not
+        #  get executed, since we never reach it. And the step of this action will be
+        #  determined based on the input variables, so it will definitely be
+        #  executed before the step which is marked as (not) applicable.
+        #  Though it makes sense to include them from a graph-building perspective. It
+        #  will be incomplete otherwise.
+        #  These comments also apply to the "make applicable" and "disable next" actions
+        form_step = self.rule.form.formstep_set.get(uuid=self.form_step_identifier)
+        configuration = form_step.form_definition.configuration_wrapper
+        return set(configuration.component_map.keys())
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(
             form_step_identifier=action["form_step_uuid"],
         )
+
+    @property
+    def steps(self):
+        steps = self._get_steps(self.rule.unresolved_input_variables_from_trigger)
+        # Return last step to make sure all data will be available
+        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -178,11 +301,28 @@ class StepNotApplicableAction(ActionOperation):
 class StepApplicableAction(ActionOperation):
     form_step_identifier: str
 
+    @property
+    def unresolved_input_variables(self) -> set[str]:
+        return set()
+
+    @property
+    def unresolved_output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        form_step = self.rule.form.formstep_set.get(uuid=self.form_step_identifier)
+        configuration = form_step.form_definition.configuration_wrapper
+        return set(configuration.component_map.keys())
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(
             form_step_identifier=action["form_step_uuid"],
         )
+
+    @property
+    def steps(self):
+        steps = self._get_steps(self.rule.unresolved_input_variables_from_trigger)
+        # Return last step to make sure all data will be available
+        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -200,6 +340,43 @@ class StepApplicableAction(ActionOperation):
 class VariableAction(ActionOperation):
     variable: str
     value: JSONObject
+
+    @property
+    def unresolved_input_variables(self) -> set[str]:
+        """Return a set of input variable names that are used in the action."""
+
+        # The value can be a JSON logic expression that takes other variables and
+        # performs operations on them. This means we need to introspect it to find
+        # variable names. Note that they should still be resolved against all available
+        # form variables.
+        return {var.key for var in introspect_json_logic(self.value).get_input_keys()}
+
+    @property
+    def unresolved_output_variables(self) -> set[str]:
+        """Return a set of output variable names that are used in the action."""
+        return {self.variable}
+
+    @property
+    def steps(self):
+        steps = self._get_steps(self.unresolved_output_variables)
+        if steps:
+            return steps
+
+        # TODO-2409: ideally we would only do this if there is a user-defined variable
+        #  involved, AND we weren't able to determine a step from the other actions on
+        #  the corresponding logic rule.
+        #  It might be risky to determine the step based on the other actions, though, as
+        #  we have no view on how the user-defined variable is used. E.g. it might be
+        #  used in dynamic configuration of radio/select/selectboxes components. Relying
+        #  on other actions could result in the wrong step
+        # If we cannot resolve a step from the output variables (we are setting a value
+        # on a user-defined variable), try to resolve it from the input variables.
+        # Select the last step to make sure we have all data
+        steps = self._get_steps(
+            self.rule.unresolved_input_variables_from_trigger
+            | self.unresolved_input_variables
+        )
+        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -233,6 +410,32 @@ class SynchronizeVariablesAction(ActionOperation):
     destination_variable: str
     identifier_variable: str
     data_mappings: list[DataMappingsConfig]
+
+    @property
+    def unresolved_input_variables(self) -> set[str]:
+        """
+        Return a set of input variable names that are used in the action.
+
+        Note that ``data_mappings`` maps properties from the value of source variable to
+        the value of destination variable, so it's not necessary to include them here.
+        """
+        return {self.source_variable}
+
+    @property
+    def unresolved_output_variables(self) -> set[str]:
+        """
+        Return a set of output variable names that are used in the action.
+
+        Note that ``data_mappings`` maps properties from the value of source variable to
+        the value of destination variable, so it's not necessary to include them here.
+        """
+        return {self.destination_variable}
+
+    @property
+    def steps(self):
+        # Note that at the time of writing this, it is not possible to use a
+        # user-defined variable as a destination variable.
+        return self._get_steps(self.unresolved_output_variables)
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -331,6 +534,42 @@ class SynchronizeVariablesAction(ActionOperation):
 class ServiceFetchAction(ActionOperation):
     variable: str
 
+    @property
+    def unresolved_input_variables(self) -> set[str]:
+        var = self.rule.form.formvariable_set.get(key=self.variable)
+        fetch_config: ServiceFetchConfiguration = var.service_fetch_configuration
+
+        # The path, query parameters, and header values support templating, so we have
+        # to extract the variables from them.
+        return {
+            variable
+            for value in chain(
+                fetch_config.query_params.values(),
+                fetch_config.headers.values(),
+                [fetch_config.path],
+            )
+            for variable in extract_variables_used(value)
+        }
+
+    @property
+    def unresolved_output_variables(self) -> set[str]:
+        return {self.variable}
+
+    @property
+    def steps(self):
+        steps = self._get_steps(self.unresolved_output_variables)
+        if steps:
+            return steps
+
+        # If we cannot resolve a step from the output variables (we are setting a value
+        # on a user-defined variable), try to resolve it from the input variables.
+        # Select the last step to make sure we have all data
+        steps = self._get_steps(
+            self.rule.unresolved_input_variables_from_trigger
+            | self.unresolved_input_variables
+        )
+        return {max(steps, key=lambda step: step.order)} if steps else steps
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(variable=action["variable"])
@@ -370,6 +609,29 @@ class EvaluateDMNAction(ActionOperation):
     # DigiD sessions expire after 15 mins of inactivity, so we multiply that a couple
     # times for a long-enought-but-still-soon-expiring cache entry.
     cache_timeout: int = 60 * 15 * 4  # 1 hour
+
+    @property
+    def unresolved_input_variables(self) -> set[str]:
+        return {item["form_variable"] for item in self.input_mapping}
+
+    @property
+    def unresolved_output_variables(self) -> set[str]:
+        return {item["form_variable"] for item in self.output_mapping}
+
+    @property
+    def steps(self):
+        steps = self._get_steps(self.unresolved_output_variables)
+        if steps:
+            return steps
+
+        # If we cannot resolve a step from the output variables (we are setting a value
+        # on a user-defined variable), try to resolve it from the input variables.
+        # Select the last step to make sure we have all data
+        steps = self._get_steps(
+            self.rule.unresolved_input_variables_from_trigger
+            | self.unresolved_input_variables
+        )
+        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -423,6 +685,18 @@ class EvaluateDMNAction(ActionOperation):
 @dataclass
 class SetRegistrationBackendAction(ActionOperation):
     registration_backend_key: str
+
+    @property
+    def unresolved_input_variables(self) -> set[str]:
+        return set()
+
+    @property
+    def unresolved_output_variables(self) -> set[str]:
+        return set()
+
+    @property
+    def steps(self):
+        return self._get_steps(self.rule.unresolved_input_variables_from_trigger)
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:

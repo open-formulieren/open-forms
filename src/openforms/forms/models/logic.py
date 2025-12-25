@@ -1,10 +1,15 @@
 import uuid as _uuid
+from collections.abc import Collection
+from functools import cached_property
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from ordered_model.models import OrderedModel
+
+from openforms.forms.models import FormStep
+from openforms.utils.json_logic import introspect_json_logic
 
 
 class FormLogic(OrderedModel):
@@ -19,6 +24,13 @@ class FormLogic(OrderedModel):
         to="forms.Form",
         on_delete=models.CASCADE,
         help_text=_("Form to which the JSON logic applies."),
+    )
+    form_steps = models.ManyToManyField(
+        FormStep,
+        verbose_name=_("form steps"),
+        help_text=_("List of form steps on which this logic rule should be executed."),
+        blank=True,
+        related_name="logic_rules",
     )
     trigger_from_step = models.ForeignKey(
         "FormStep",
@@ -91,3 +103,88 @@ class FormLogic(OrderedModel):
     def components_in_hidden_actions(self) -> set[str]:
         """Set of components for which an action changes the "hidden" property."""
         return {action.component for action in self.hidden_actions}
+
+    @property
+    def unresolved_input_variables_from_trigger(self) -> set[str]:
+        """Set of unresolved input variables from the JSON logic trigger."""
+        return {
+            var.key
+            for var in introspect_json_logic(self.json_logic_trigger).get_input_keys()
+        }
+
+    @property
+    def steps(self) -> set[FormStep]:
+        """
+        Set of steps (determined by the actions) on which this rule should be executed.
+        """
+        if getattr(self, "_steps", None) is not None:
+            return self._steps
+
+        self._steps = set()
+        for action in self.action_operations:
+            self._steps |= action.steps
+
+        return self._steps
+
+    # TODO-2409: perhaps rename to `determine_steps_from_graph(graph: DiGraph)`? Putting
+    #  graph-specific operations inside this model might not be a good idea though
+    @steps.setter
+    def steps(self, v: set[FormStep]):
+        # We cannot determine a step if both the input and output variables are
+        # user-defined. In this case, we need to manually check the predecessors of this
+        # logic rule in the graph, determine a step from them, and set it to the rule.
+        self._steps = v
+
+    @cached_property
+    def input_variable_keys(self) -> Collection[str]:
+        """
+        Set of input form variable keys, determined from the json logic trigger and all
+        actions.
+        """
+        raw_input_keys = self.unresolved_input_variables_from_trigger
+        for action in self.action_operations:
+            raw_input_keys |= action.unresolved_input_variables
+
+        return {
+            resolved_key
+            for key in raw_input_keys
+            if (resolved_key := _resolve_key(key, self.form.all_form_variables))
+            is not None
+        }
+
+    @cached_property
+    def output_variable_keys(self) -> Collection[str]:
+        """Set of output form variable keys, determined from all actions."""
+        raw_output_keys = set()
+        for action in self.action_operations:
+            raw_output_keys |= action.unresolved_output_variables
+
+        # Resolving the key here should not be necessary, as we do not support changing
+        # values inside editgrids items (and also selectboxes, partners, children), so
+        # it should already be the top-level key. We do need to do the check on all
+        # form variables, as they might still include components for which we don't have
+        # a variable (e.g. layout components).
+        return {key for key in raw_output_keys if key in self.form.all_form_variables}
+
+
+# TODO-2409: move this to `Form`, add as staticmethod here, or perhaps in
+#  `openforms.variables.service`?
+def _resolve_key(input_key: str, all_form_variable_keys: Collection[str]) -> str | None:
+    """Resolve a JSON logic variable key to its corresponding form variable key."""
+    # There is a variable with this exact key, so it is a valid reference.
+    if input_key in all_form_variable_keys:
+        return input_key
+
+    # Process nested paths (editgrid, selectboxes, partners, children). Note that this
+    # doesn't include other nested fields anymore, e.g. a textfield component with key
+    # "foo.bar" will have already been resolved. We process all slices, as these keys
+    # could also include dots.
+    parts = input_key.split(".")
+    for i in range(1, len(parts)):
+        if (key := ".".join(parts[:i])) in all_form_variable_keys:
+            return key
+
+    # If the combining the nested paths also do not result in a valid form variable key,
+    # we cannot resolve it, so we just return `None`. Note that the digest email will
+    # already notify the user of any invalid logic rules.
+    return None
