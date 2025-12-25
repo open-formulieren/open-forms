@@ -5,7 +5,7 @@ import os
 import sys
 
 from .dev import LOGGING
-from .utils import config, mute_logging
+from .utils import config
 
 # Configure your database via the DB_* envvars in .env, see also dotenv.example file.
 
@@ -46,7 +46,7 @@ if log_level := os.environ.get("LOG_LEVEL"):
 
 
 # make the language code configurable via envvars
-LANGUAGE_CODE = config("LANGUAGE_CODE", "nl")
+LANGUAGE_CODE = config("LANGUAGE_CODE", default="nl")
 
 # allow SPA dev server and API on different ports
 # CORS_ALLOW_ALL_ORIGINS = True

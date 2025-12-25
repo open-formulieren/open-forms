@@ -166,6 +166,8 @@ cssselect2==0.7.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
+decouple-types==1.0.2
+    # via -r requirements/type-checking.in
 defusedxml==0.7.1
     # via
     #   -c requirements/ci.txt

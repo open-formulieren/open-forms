@@ -102,5 +102,5 @@ jobs:
             -r requirements/type-checking.txt
       - uses: jakebailey/pyright-action@v1
         with:
-          version: 1.1.369
+          version: 1.1.407
           project: pyright.pyproject.toml

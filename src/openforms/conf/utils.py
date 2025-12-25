@@ -1,12 +1,15 @@
 import logging  # noqa: TID251 - only used for the log levels
 import re
-from typing import Any
+from collections.abc import Callable, MutableMapping, Sequence
+from typing import ClassVar, Literal, assert_never, overload
 
-from decouple import Csv, config as _config, undefined
+from decouple import Csv, Undefined, config as _config, undefined
 from sentry_sdk.integrations import DidNotEnable, django, redis
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-S_SI = {
+type ConverterMapping = MutableMapping[str, Callable[[int], int]]
+
+S_SI: ConverterMapping = {
     "B": lambda val: val,
     "KB": lambda val: val * 1_000,
     "MB": lambda val: val * 1_000_000,
@@ -17,7 +20,7 @@ S_SI = {
 }
 S_SI["b"] = S_SI["B"]
 
-S_NGINX = {
+S_NGINX: ConverterMapping = {
     "k": S_SI["KiB"],
     "K": S_SI["KiB"],
     "m": S_SI["MiB"],
@@ -26,7 +29,7 @@ S_NGINX = {
     "G": S_SI["GiB"],
 }
 
-S_BINARY = {
+S_BINARY: ConverterMapping = {
     "B": lambda val: val,
     "KB": lambda val: val << 10,
     "MB": lambda val: val << 20,
@@ -47,14 +50,14 @@ class Filesize:
 
     PATTERN = re.compile(r"^(?P<numbers>[0-9]+)( )*(?P<unit>[a-zA-Z]+)?$")
 
-    S_SI = S_SI
-    S_NGINX = S_NGINX
-    S_BINARY = S_BINARY
+    S_SI: ClassVar[ConverterMapping] = S_SI
+    S_NGINX: ClassVar[ConverterMapping] = S_NGINX
+    S_BINARY: ClassVar[ConverterMapping] = S_BINARY
 
-    def __init__(self, system=None):
-        self.system = system or {**self.S_SI, **self.S_NGINX}
+    def __init__(self, system: ConverterMapping | None = None):
+        self.system: ConverterMapping = system or {**self.S_SI, **self.S_NGINX}
 
-    def __call__(self, value) -> int:
+    def __call__(self, value: str | int) -> int:
         if isinstance(value, int):
             return value
 
@@ -74,7 +77,34 @@ class Filesize:
         return converter(numbers)
 
 
-def config(option: str, default: Any = undefined, *args, **kwargs) -> Any:
+type Cast[T] = Callable[[str], T]
+
+
+@overload
+def config[T, U](option: str) -> str: ...
+
+
+@overload
+def config[T, U](
+    option: str, *, default: Sequence[T], split: Literal[True]
+) -> list[T]: ...
+
+
+@overload
+def config[T, U](option: str, *, default: T | Undefined = undefined) -> T: ...
+
+
+@overload
+def config[T, U](option: str, *, default: object = undefined, cast: Cast[U]) -> U: ...
+
+
+def config[T, U](
+    option: str,
+    *,
+    default: T | None | Undefined = undefined,
+    split: bool = False,
+    cast: Cast[U] | Undefined = undefined,
+) -> str | None | T | Sequence[T] | U:
     """
     Pull a config parameter from the environment.
 
@@ -82,18 +112,46 @@ def config(option: str, default: Any = undefined, *args, **kwargs) -> Any:
     Input is automatically cast to the correct type, where the type is derived from the
     default value if possible.
 
-    Pass ``split=True`` to split the comma-separated input into a list.
-    """
-    if "split" in kwargs:
-        kwargs.pop("split")
-        kwargs["cast"] = Csv()
-        if isinstance(default, list):
-            default = ",".join(default)
+    Note that ``default=None`` does not mean there's no default, omit the kwarg entirely
+    instead.
 
-    if default is not undefined and default is not None:
-        kwargs.setdefault("cast", type(default))
-    kwargs["default"] = default
-    return _config(option, *args, **kwargs)
+    Pass ``split=True`` to split the comma-separated input into a list. If a default is
+    provided, it must be a list.
+    """
+
+    if split:
+        assert isinstance(default, Undefined | Sequence), (
+            "You must provide a sequence default argument"
+        )
+        match default:
+            case Sequence():
+                # python-decouple Csv cast expects the default as a string, so, serialize
+                # it again.
+                return _config(option, cast=Csv(), default=",".join(default))
+            case _:
+                return _config(option, cast=Csv())
+
+    # infer the ``cast`` from the default if not provided explicitly
+    match (cast, default):
+        #
+        # cases without explicit cast
+        #
+        case Undefined(), Undefined():
+            return _config(option)
+        case Undefined(), None:
+            # explicit `None` default values cannot be used as cast, ignore it.
+            return _config(option, default=default)
+        case Undefined(), _:
+            return _config(option, default=default, cast=type(default))
+        #
+        # with explicit cast
+        #
+        case _, Undefined():
+            return _config(option, cast=cast)
+        case _, _:
+            return _config(option, default=default, cast=cast)
+        case _:  # pragma: no cover
+            assert_never((cast, default))
 
 
 def get_sentry_integrations() -> list:
