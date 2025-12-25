@@ -6,8 +6,9 @@ from pathlib import Path
 from django.conf import settings
 from django.test import TestCase
 
+from maykin_common.config import config
+
 from openforms.celery import READINESS_FILE
-from openforms.conf.utils import config
 
 # real, working Celery broker URL. In CI, the envvar CELERY_BROKER_URL is deliberately
 # set to a broken configuration to prevent broken test isolation, but the tests here

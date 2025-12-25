@@ -1,12 +1,14 @@
 import logging  # noqa: TID251 - only used for the log levels
 import re
-from typing import Any
+from collections.abc import Callable, MutableMapping
+from typing import ClassVar
 
-from decouple import Csv, config as _config, undefined
 from sentry_sdk.integrations import DidNotEnable, django, redis
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-S_SI = {
+type ConverterMapping = MutableMapping[str, Callable[[int], int]]
+
+S_SI: ConverterMapping = {
     "B": lambda val: val,
     "KB": lambda val: val * 1_000,
     "MB": lambda val: val * 1_000_000,
@@ -17,7 +19,7 @@ S_SI = {
 }
 S_SI["b"] = S_SI["B"]
 
-S_NGINX = {
+S_NGINX: ConverterMapping = {
     "k": S_SI["KiB"],
     "K": S_SI["KiB"],
     "m": S_SI["MiB"],
@@ -26,7 +28,7 @@ S_NGINX = {
     "G": S_SI["GiB"],
 }
 
-S_BINARY = {
+S_BINARY: ConverterMapping = {
     "B": lambda val: val,
     "KB": lambda val: val << 10,
     "MB": lambda val: val << 20,
@@ -47,14 +49,14 @@ class Filesize:
 
     PATTERN = re.compile(r"^(?P<numbers>[0-9]+)( )*(?P<unit>[a-zA-Z]+)?$")
 
-    S_SI = S_SI
-    S_NGINX = S_NGINX
-    S_BINARY = S_BINARY
+    S_SI: ClassVar[ConverterMapping] = S_SI
+    S_NGINX: ClassVar[ConverterMapping] = S_NGINX
+    S_BINARY: ClassVar[ConverterMapping] = S_BINARY
 
-    def __init__(self, system=None):
-        self.system = system or {**self.S_SI, **self.S_NGINX}
+    def __init__(self, system: ConverterMapping | None = None):
+        self.system: ConverterMapping = system or {**self.S_SI, **self.S_NGINX}
 
-    def __call__(self, value) -> int:
+    def __call__(self, value: str | int) -> int:
         if isinstance(value, int):
             return value
 
@@ -72,28 +74,6 @@ class Filesize:
             raise ValueError(f"Unknown/unsupported unit: '{unit}'")
 
         return converter(numbers)
-
-
-def config(option: str, default: Any = undefined, *args, **kwargs) -> Any:
-    """
-    Pull a config parameter from the environment.
-
-    Read the config variable ``option``. If it's optional, use the ``default`` value.
-    Input is automatically cast to the correct type, where the type is derived from the
-    default value if possible.
-
-    Pass ``split=True`` to split the comma-separated input into a list.
-    """
-    if "split" in kwargs:
-        kwargs.pop("split")
-        kwargs["cast"] = Csv()
-        if isinstance(default, list):
-            default = ",".join(default)
-
-    if default is not undefined and default is not None:
-        kwargs.setdefault("cast", type(default))
-    kwargs["default"] = default
-    return _config(option, *args, **kwargs)
 
 
 def get_sentry_integrations() -> list:

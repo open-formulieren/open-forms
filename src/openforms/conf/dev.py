@@ -2,6 +2,8 @@
 import os
 import warnings
 
+from maykin_common.config import config
+
 os.environ.setdefault("DEBUG", "yes")
 os.environ.setdefault("ALLOWED_HOSTS", "*")
 os.environ.setdefault(

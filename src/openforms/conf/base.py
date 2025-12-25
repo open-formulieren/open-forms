@@ -14,13 +14,14 @@ from celery.schedules import crontab
 from corsheaders.defaults import default_headers as default_cors_headers
 from log_outgoing_requests.datastructures import ContentType
 from log_outgoing_requests.formatters import HttpFormatter
+from maykin_common.config import config
 from upgrade_check import UpgradeCheck, VersionRange
 from upgrade_check.constraints import UpgradePaths
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
 from openforms.logging.processors import drop_user_agent_in_dev
 
-from .utils import Filesize, config, get_sentry_integrations
+from .utils import Filesize, get_sentry_integrations
 
 # Build paths inside the project, so further paths can be defined relative to
 # the code root. Gets the abspath to src/openforms
@@ -39,7 +40,7 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False)
 
 # = domains we're running on
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="", split=True)
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default=[], split=True)
 USE_X_FORWARDED_HOST = config("USE_X_FORWARDED_HOST", default=False)
 
 IS_HTTPS = config("IS_HTTPS", default=not DEBUG)
@@ -77,12 +78,12 @@ USE_THOUSAND_SEPARATOR = True
 #
 DATABASES = {
     "default": {
-        "ENGINE": config("DB_ENGINE", "django.db.backends.postgresql"),
-        "NAME": config("DB_NAME", "openforms"),
-        "USER": config("DB_USER", "openforms"),
-        "PASSWORD": config("DB_PASSWORD", "openforms"),
-        "HOST": config("DB_HOST", "localhost"),
-        "PORT": config("DB_PORT", 5432),
+        "ENGINE": config("DB_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": config("DB_NAME", default="openforms"),
+        "USER": config("DB_USER", default="openforms"),
+        "PASSWORD": config("DB_PASSWORD", default="openforms"),
+        "HOST": config("DB_HOST", default="localhost"),
+        "PORT": config("DB_PORT", default=5432),
     }
 }
 
@@ -93,7 +94,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{config('CACHE_DEFAULT', 'localhost:6379/0')}",
+        "LOCATION": f"redis://{config('CACHE_DEFAULT', default='localhost:6379/0')}",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": True,
@@ -101,7 +102,7 @@ CACHES = {
     },
     "axes": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{config('CACHE_AXES', 'localhost:6379/0')}",
+        "LOCATION": f"redis://{config('CACHE_AXES', default='localhost:6379/0')}",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": True,
@@ -111,7 +112,7 @@ CACHES = {
     # redis locks?
     "portalocker": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{config('CACHE_PORTALOCKER', 'localhost:6379/4')}",
+        "LOCATION": f"redis://{config('CACHE_PORTALOCKER', default='localhost:6379/4')}",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": False,
@@ -385,7 +386,7 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=False)
 EMAIL_TIMEOUT = config("EMAIL_TIMEOUT", default=10)
 
-DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", "openforms@example.com")
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="openforms@example.com")
 
 #
 # LOGGING
@@ -558,7 +559,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = config(
     "SESSION_EXPIRE_AT_BROWSER_CLOSE", default=False
 )
-SESSION_COOKIE_DOMAIN = config("SESSION_COOKIE_DOMAIN", default=None)
+SESSION_COOKIE_DOMAIN: str | None = config("SESSION_COOKIE_DOMAIN", default=None)
 
 LOGIN_URL = reverse_lazy("admin:login")
 LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
@@ -605,16 +606,16 @@ FIXTURE_DIRS = (DJANGO_PROJECT_DIR / "fixtures",)
 # Custom settings
 #
 PROJECT_NAME = "Open Formulieren"
-ENVIRONMENT = config("ENVIRONMENT", "")
+ENVIRONMENT = config("ENVIRONMENT", default="")
 
 # Displaying environment information
-ENVIRONMENT_LABEL = config("ENVIRONMENT_LABEL", ENVIRONMENT)
-ENVIRONMENT_BACKGROUND_COLOR = config("ENVIRONMENT_BACKGROUND_COLOR", "orange")
-ENVIRONMENT_FOREGROUND_COLOR = config("ENVIRONMENT_FOREGROUND_COLOR", "black")
+ENVIRONMENT_LABEL = config("ENVIRONMENT_LABEL", default=ENVIRONMENT)
+ENVIRONMENT_BACKGROUND_COLOR = config("ENVIRONMENT_BACKGROUND_COLOR", default="orange")
+ENVIRONMENT_FOREGROUND_COLOR = config("ENVIRONMENT_FOREGROUND_COLOR", default="black")
 SHOW_ENVIRONMENT = config("SHOW_ENVIRONMENT", default=True)
 
 if "GIT_SHA" in os.environ:
-    GIT_SHA = config("GIT_SHA", "")
+    GIT_SHA = config("GIT_SHA", default="")
 # in docker (build) context, there is no .git directory
 elif (BASE_DIR / ".git").exists():
     try:
@@ -627,18 +628,18 @@ elif (BASE_DIR / ".git").exists():
 else:
     GIT_SHA = None
 
-RELEASE = config("RELEASE", GIT_SHA)
+RELEASE = config("RELEASE", default=GIT_SHA)
 
 sdk_release_default = (BASE_DIR / ".sdk-release").read_text().strip()
 SDK_RELEASE = config("SDK_RELEASE", default=sdk_release_default)
 
-NUM_PROXIES = config(
+NUM_PROXIES: int | None = config(
     "NUM_PROXIES",
-    default=1,
+    default="1",
     cast=lambda val: int(val) if val is not None else None,
 )
 
-BASE_URL = config("BASE_URL", "https://open-forms.test.maykin.opengem.nl")
+BASE_URL = config("BASE_URL", default="https://open-forms.test.maykin.opengem.nl")
 
 # Submission download: how long-lived should the one-time URL be:
 SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS = config(
@@ -655,7 +656,9 @@ FORMS_EXPORT_REMOVED_AFTER_DAYS = config("FORMS_EXPORT_REMOVED_AFTER_DAYS", defa
 # :mod:`openforms.setup`. Value is in seconds.
 DEFAULT_TIMEOUT_REQUESTS = config("DEFAULT_TIMEOUT_REQUESTS", default=10.0)
 
-MAX_FILE_UPLOAD_SIZE = config("MAX_FILE_UPLOAD_SIZE", default="50M", cast=Filesize())
+MAX_FILE_UPLOAD_SIZE: int = config(
+    "MAX_FILE_UPLOAD_SIZE", default="50M", cast=Filesize()
+)
 
 # Deal with being hosted on a subpath
 SUBPATH = config("SUBPATH", default="")
@@ -673,7 +676,7 @@ if SUBPATH:
 
 # Registration backend maximum JSON body size in bytes
 MAX_UNTRUSTED_JSON_PARSE_SIZE = config(
-    "MAX_UNTRUSTED_JSON_PARSE_SIZE", 1_000_000
+    "MAX_UNTRUSTED_JSON_PARSE_SIZE", default=1_000_000
 )  # 1mb in bytes
 # Perform HTML escaping on user's data-input
 ESCAPE_REGISTRATION_OUTPUT = config("ESCAPE_REGISTRATION_OUTPUT", default=False)
@@ -859,7 +862,7 @@ CELERY_TASK_ACKS_LATE = True
 # *should* have the same effect...
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
-CELERY_ONCE_REDIS_URL = config("CELERY_ONCE_REDIS_URL", CELERY_BROKER_URL)
+CELERY_ONCE_REDIS_URL = config("CELERY_ONCE_REDIS_URL", default=CELERY_BROKER_URL)
 
 #
 # DJANGO-CORS-MIDDLEWARE
@@ -901,7 +904,7 @@ CSRF_TRUSTED_ORIGINS = config(
 #
 # SENTRY - error monitoring
 #
-SENTRY_DSN = config("SENTRY_DSN", "")
+SENTRY_DSN = config("SENTRY_DSN", default="")
 
 if SENTRY_DSN:
     SENTRY_CONFIG = {
@@ -915,16 +918,16 @@ if SENTRY_DSN:
     )
 
 # Sentry for the Open-Forms SDK
-SDK_SENTRY_DSN = config("SDK_SENTRY_DSN", "")
-SDK_SENTRY_ENVIRONMENT = config("SDK_SENTRY_ENVIRONMENT", ENVIRONMENT)
+SDK_SENTRY_DSN = config("SDK_SENTRY_DSN", default="")
+SDK_SENTRY_ENVIRONMENT = config("SDK_SENTRY_ENVIRONMENT", default=ENVIRONMENT)
 
 #
 # Elastic APM
 #
-ELASTIC_APM_SERVER_URL = config("ELASTIC_APM_SERVER_URL", None)
+ELASTIC_APM_SERVER_URL = config("ELASTIC_APM_SERVER_URL", default="") or None
 ELASTIC_APM = {
     "SERVICE_NAME": f"Open Forms - {ENVIRONMENT}",
-    "SECRET_TOKEN": config("ELASTIC_APM_SECRET_TOKEN", "default"),
+    "SECRET_TOKEN": config("ELASTIC_APM_SECRET_TOKEN", default="default"),
     "SERVER_URL": ELASTIC_APM_SERVER_URL,
 }
 if not ELASTIC_APM_SERVER_URL:
@@ -1085,7 +1088,9 @@ SOLO_CACHE_TIMEOUT = 60 * 5  # 5 minutes
 #
 # Self-Certifi
 #
-SELF_CERTIFI_DIR = config("SELF_CERTIFI_DIR", str(BASE_DIR / "certifi_ca_bundle"))
+SELF_CERTIFI_DIR = config(
+    "SELF_CERTIFI_DIR", default=str(BASE_DIR / "certifi_ca_bundle")
+)
 
 #
 # Django Cookie-Consent
@@ -1193,17 +1198,19 @@ CSP_EXCLUDE_URL_PREFIXES = (
 # CSP_CHILD_SRC
 
 # report to our own django-csp-reports
-CSP_REPORT_ONLY = config("CSP_REPORT_ONLY", False)  # enforce by default
+CSP_REPORT_ONLY = config("CSP_REPORT_ONLY", default=False)  # enforce by default
 CSP_REPORT_URI = reverse_lazy("report_csp")
 
 #
 # Django CSP-report settings
 #
-CSP_REPORTS_SAVE = config("CSP_REPORTS_SAVE", False)  # save as model
-CSP_REPORTS_LOG = config("CSP_REPORTS_LOG", True)  # logging
+CSP_REPORTS_SAVE = config("CSP_REPORTS_SAVE", default=False)  # save as model
+CSP_REPORTS_LOG = config("CSP_REPORTS_LOG", default=True)  # logging
 CSP_REPORTS_LOG_LEVEL = "warning"
 CSP_REPORTS_EMAIL_ADMINS = False
-CSP_REPORT_PERCENTAGE = config("CSP_REPORT_PERCENTAGE", 1.0)  # float between 0 and 1
+CSP_REPORT_PERCENTAGE = config(
+    "CSP_REPORT_PERCENTAGE", default=1.0
+)  # float between 0 and 1
 CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
 
 #

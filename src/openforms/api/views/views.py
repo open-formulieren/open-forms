@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 import sentry_sdk
 from drf_spectacular.utils import extend_schema
+from maykin_common.config import config
 from rest_framework import (
     authentication,
     exceptions as drf_exceptions,
@@ -17,7 +18,6 @@ from rest_framework import (
 from rest_framework.response import Response
 from rest_framework.views import APIView, exception_handler as drf_exception_handler
 
-from openforms.conf.utils import config
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 
 from ..exception_handling import HandledException
