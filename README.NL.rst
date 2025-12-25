@@ -88,7 +88,7 @@ Licensed under the `EUPL`_.
     :target: https://open-forms.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation status
 
-.. |coverage| image:: https://codecov.io/github/open-formulieren/open-forms/branch/master/graphs/badge.svg?branch=master
+.. |coverage| image:: https://codecov.io/github/open-formulieren/open-forms/branch/main/graphs/badge.svg?branch=main
     :alt: Coverage
     :target: https://codecov.io/gh/open-formulieren/open-forms
 

@@ -12,7 +12,7 @@ container you can follow the instructions to copy it from the project source.
 
 .. code-block:: bash
 
-    $ wget https://github.com/open-formulieren/open-forms/blob/master/<name_of_the_file>
+    $ wget https://github.com/open-formulieren/open-forms/blob/main/<name_of_the_file>
 
 2.  Copy the downloaded file to the `/app/bin` folder in the container
 

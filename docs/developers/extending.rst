@@ -16,7 +16,7 @@ We support two ways to add new plugins:
 #. Adding 'external' plugins. These are extensions that are extremely specific or can't be open-sourced.
    Instructions on how to implement such 'external plugins' are described below.
 
-.. _CONTRIBUTING.md: https://github.com/open-formulieren/open-forms/blob/master/CONTRIBUTING.md
+.. _CONTRIBUTING.md: https://github.com/open-formulieren/open-forms/blob/main/CONTRIBUTING.md
 
 Creating an external plugin
 ===========================

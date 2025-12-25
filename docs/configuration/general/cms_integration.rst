@@ -116,4 +116,4 @@ can do with the API token.
    security risks and can lead to submissions being exposed to the world.
 
 
-.. _`Open API Specification`: https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml
+.. _`Open API Specification`: https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/main/src/openapi.yaml
