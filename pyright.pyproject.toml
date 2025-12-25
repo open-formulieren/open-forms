@@ -1,6 +1,7 @@
 [tool.pyright]
 include = [
     "src/openforms/api/urls.py",
+    "src/openforms/conf",
     # plugin/registry-related code (base classes etc.)
     "src/openforms/plugins",
     "src/openforms/appointments/base.py",
@@ -33,7 +34,7 @@ include = [
     "src/openforms/formio/dynamic_config/reference_lists.py",
     # Core forms app
     "src/openforms/forms/api/serializers/logic/action_serializers.py",
-    "src/openforms/forms/management/commands/set_forms_new_renderer_enabled",
+    "src/openforms/forms/management/commands/set_forms_new_renderer_enabled.py",
     # Payments
     "src/openforms/payments/",
     # Interaction with the outside world
