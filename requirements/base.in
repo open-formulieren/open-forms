@@ -16,6 +16,7 @@ lxml
 lxml-html-clean
 onlinepayments-sdk-python3 # Worldline SDK
 O365  # microsoft graph
+phonenumberslite
 Pillow  # handle images
 portalocker[redis]
 psycopg  # database driver
@@ -26,6 +27,7 @@ python-magic
 tablib[xlsx]
 tinycss2
 xmltodict
+qrcode
 referencing
 self-certifi
 semantic-version
