@@ -658,6 +658,10 @@ mozilla-django-oidc-db==1.1.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+msgspec==0.20.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 multidict==6.6.3
     # via yarl
 numpy==2.3.3
