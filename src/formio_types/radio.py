@@ -52,7 +52,7 @@ class Radio(Component, tag="radio"):
     description: str = ""
     errors: Errors[RadioValidatorKeys] | None = None
     hidden: bool = False
-    is_sensitive_data: bool = True
+    is_sensitive_data: bool = False
     label: str
     open_forms: RadioExtensions | None = None
     registration: Registration | None = None
