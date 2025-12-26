@@ -9,6 +9,7 @@ from .content import Content
 from .date import Date
 from .email import Email
 from .fieldset import Fieldset as BaseFieldSet
+from .file import File
 from .phone_number import PhoneNumber
 from .postcode import Postcode
 from .radio import Radio
@@ -24,7 +25,7 @@ __all__ = [
     # "DateTime",
     # "Time",
     "PhoneNumber",
-    # "File",
+    "File",
     # "Textarea",
     # "Number",
     # "Map",
@@ -78,6 +79,7 @@ type AnyComponent = (
     | Email
     | Date
     | PhoneNumber
+    | File
     | Checkbox
     | Radio
     | Postcode
