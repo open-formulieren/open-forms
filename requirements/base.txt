@@ -237,7 +237,7 @@ django-tinymce==4.1.0
     # via -r requirements/base.in
 django-treebeard==4.7
     # via -r requirements/base.in
-django-two-factor-auth==1.16.0
+django-two-factor-auth==1.18.1
     # via maykin-2fa
 django-upgrade-check==1.0.0
     # via -r requirements/base.in
@@ -350,7 +350,7 @@ mail-parser==3.15.0
     # via django-yubin
 markuppy==1.14
     # via tablib
-maykin-2fa==1.0.0
+maykin-2fa==2.0.0
     # via
     #   -r requirements/base.in
     #   maykin-common
@@ -446,7 +446,7 @@ packaging==23.1
 pathable==0.4.3
     # via jsonschema-spec
 phonenumberslite==8.13.29
-    # via django-two-factor-auth
+    # via -r requirements/base.in
 pillow==10.3.0
     # via
     #   -r requirements/base.in
@@ -490,8 +490,6 @@ pyopenssl==25.0.0
     #   webauthn
 pyphen==0.14.0
     # via weasyprint
-pypng==0.20220715.0
-    # via qrcode
 pyproj==3.7.2
     # via -r requirements/base.in
 python-dateutil==2.9.0.post0
@@ -523,8 +521,10 @@ pyyaml==6.0.1
     #   jsonschema-spec
     #   pydantic-settings
     #   tablib
-qrcode==7.4.2
-    # via django-two-factor-auth
+qrcode==8.2
+    # via
+    #   -r requirements/base.in
+    #   django-two-factor-auth
 redis==4.5.4
     # via
     #   celery-once
@@ -641,7 +641,6 @@ typing-extensions==4.12.2
     #   pydantic
     #   pydantic-core
     #   pyopenssl
-    #   qrcode
     #   zgw-consumers
 tzdata==2025.2
     # via
