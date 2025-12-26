@@ -33,7 +33,16 @@ class ComponentMeta(msgspec.StructMeta):
         return super().__new__(mcls, name, bases, namespace, **struct_config)
 
 
+@dataclass_transform(kw_only_default=True)
+class FormioStructMeta(msgspec.StructMeta):
+    def __new__(mcls, name, bases, namespace, **struct_config):
+        struct_config.setdefault("rename", "camel")
+        struct_config["kw_only"] = True
+        return super().__new__(mcls, name, bases, namespace, **struct_config)
+
+
 type Key = Annotated[str, msgspec.Meta(pattern=r"^(\w|\w[\w.\-]*\w)$")]
+type MaybeEmptyKey = Annotated[str, msgspec.Meta(pattern=r"(^(\w|\w[\w.\-]*\w)$)|(^$)")]
 
 
 class Component(msgspec.Struct, metaclass=ComponentMeta):
@@ -50,8 +59,7 @@ class Component(msgspec.Struct, metaclass=ComponentMeta):
         return f"{self.__class__.__name__}(key={self.key!r})"
 
 
-@dataclass_transform(kw_only_default=True)
-class FormioStruct(msgspec.Struct, kw_only=True, rename="camel"):
+class FormioStruct(msgspec.Struct, metaclass=FormioStructMeta):
     """
     Base struct that applies camel case conversion and only accepts keyword arguments.
     """
@@ -67,8 +75,7 @@ class Conditional(FormioStruct):
 
     # FIXME: empty strings in existing data
     show: bool | None | Literal[""] = None
-    # FIXME: empty strings in existing data, ideally this would use ``Key``
-    when: str | None = None
+    when: MaybeEmptyKey | None = None
     eq: str | bool | int | float | None = ""  # formio defaults to empty string
 
 
