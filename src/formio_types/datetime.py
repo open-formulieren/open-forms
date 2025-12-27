@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from datetime import datetime
-from typing import Literal
+from typing import Literal, Self, assert_never
+
+from msgspec import field
 
 from ._base import (
     BaseOpenFormsExtensions,
@@ -96,13 +98,44 @@ class DateTimePickerConfig(FormioStruct):
     max_date: datetime | None
 
 
+class FormioDateTime:
+    actual_value: datetime | Sequence[datetime] | None
+
+    def __init__(self, actual_value: datetime | Sequence[datetime] | None):
+        self.actual_value = actual_value
+
+    @classmethod
+    def fromstr(cls, raw_value: str | Sequence[str]) -> Self:
+        match raw_value:
+            case "":
+                return cls(actual_value=None)
+            case str():
+                return cls(actual_value=datetime.fromisoformat(raw_value))
+            case Sequence():
+                actual_value = [datetime.fromisoformat(x) for x in raw_value]
+                return cls(actual_value=actual_value)
+            case _:  # pragma: no cover
+                assert_never(raw_value)
+
+    # # doesn't work, descriptors don't seem supported :(
+    # # https://github.com/jcrist/msgspec/issues/864
+    # def __get__(self, obj, objtype=None):
+    #     breakpoint()
+    #     return self.actual_value
+
+    def __eq__(self, other) -> bool:
+        return self.actual_value == other
+
+
 class DateTime(Component, tag="datetime"):
     clear_on_hide: bool = True
     conditional: Conditional | None = None
     # TODO not relevant anymore in new renderer
     custom_options: PickerCustomOptions = PickerCustomOptions()
     date_picker: DateTimePickerConfig | None = None
-    default_value: datetime | Sequence[datetime] | None = None
+    default_value: FormioDateTime = field(
+        default_factory=lambda: FormioDateTime(actual_value=None)
+    )
     description: str = ""
     disabled: bool = False  # should be 'read_only'
     errors: Errors[DateTimeValidatorKeys] | None = None
@@ -123,11 +156,10 @@ class DateTime(Component, tag="datetime"):
     multiple: bool = False
 
     def __post_init__(self):
-        # TODO: remove the string types when we have proper date parsing
         match (self.multiple, self.default_value):
-            case True, datetime() | None:
+            case True, FormioDateTime(actual_value=datetime() | None):
                 raise ValueError("You must pass a list of values when multiple=True")
-            case False, Sequence():
+            case False, FormioDateTime(actual_value=Sequence()):
                 raise ValueError(
                     "You must pass a date default_value when multiple=False"
                 )

@@ -21,7 +21,10 @@ from ._base import (
 
 class FormioDate(date):
     @classmethod
-    def fromstr(cls, datestr: str) -> Self:
+    def fromstr(cls, datestr: str) -> Self | None:
+        # FIXME: this doesn't work...
+        if datestr == "":
+            return None
         if "T" in datestr:
             # convert to NL timezone, assuming the date should be in NL
             dt = datetime_in_amsterdam(datetime.fromisoformat(datestr))
