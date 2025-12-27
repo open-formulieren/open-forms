@@ -7,6 +7,7 @@ from .checkbox import Checkbox
 from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
 from .date import Date
+from .editgrid import EditGrid as BaseEditGrid
 from .email import Email
 from .fieldset import Fieldset as BaseFieldSet
 from .file import File
@@ -41,7 +42,7 @@ __all__ = [
     "BSN",
     # "Signature",
     # "Cosign",
-    # "EditGrid",
+    "EditGrid",
     # "AddressNL",
     # "Partners",
     # "Children",
@@ -71,10 +72,15 @@ class Columns(BaseColumns):
     columns: Sequence[Column]
 
 
+class EditGrid(BaseEditGrid):
+    components: Sequence[AnyComponent]
+
+
 # Discriminated union of all possible component types - ordered as they are displayed
 # in the formio builder UI
 
 type AnyComponent = (
+    # basic
     TextField
     | Email
     | Date
@@ -82,9 +88,12 @@ type AnyComponent = (
     | File
     | Checkbox
     | Radio
+    # special
     | Postcode
     | BSN
+    | EditGrid
     | Content
     | Columns
     | Fieldset
+    # deprecated
 )
