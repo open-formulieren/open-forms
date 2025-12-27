@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from datetime import date, datetime
-from typing import Literal
+from typing import Literal, Self
+
+from openforms.utils.date import datetime_in_amsterdam
 
 from ._base import (
     BaseOpenFormsExtensions,
@@ -15,6 +17,16 @@ from ._base import (
     Registration,
     TranslatedErrors,
 )
+
+
+class FormioDate(date):
+    @classmethod
+    def fromstr(cls, datestr: str) -> Self:
+        if "T" in datestr:
+            # convert to NL timezone, assuming the date should be in NL
+            dt = datetime_in_amsterdam(datetime.fromisoformat(datestr))
+            return cls(year=dt.year, month=dt.month, day=dt.day)
+        return cls.fromisoformat(datestr)
 
 
 class NoDateConstraint(FormioStruct, tag="", tag_field="mode"):
@@ -91,9 +103,8 @@ class DatePickerConfig(FormioStruct):
     max_mode: Literal["day", "month", "year"]
     year_rows: int
     year_columns: int
-    # FIXME: datetime should not be accepted - instead this should normalize to date?
-    min_date: datetime | None
-    max_date: datetime | None
+    min_date: FormioDate | None
+    max_date: FormioDate | None
 
 
 # FIXME: should convert str -> date, but can't do `date | Literal[""] | None` in msgspec
