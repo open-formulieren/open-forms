@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from datetime import date
+from datetime import date, datetime
 from typing import Literal
 
 from ._base import (
@@ -91,8 +91,9 @@ class DatePickerConfig(FormioStruct):
     max_mode: Literal["day", "month", "year"]
     year_rows: int
     year_columns: int
-    min_date: date | None
-    max_date: date | None
+    # FIXME: datetime should not be accepted - instead this should normalize to date?
+    min_date: datetime | None
+    max_date: datetime | None
 
 
 # FIXME: should convert str -> date, but can't do `date | Literal[""] | None` in msgspec
