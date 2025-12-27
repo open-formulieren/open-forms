@@ -8,6 +8,7 @@ from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
 from .currency import Currency
 from .date import Date
+from .datetime import DateTime
 from .editgrid import EditGrid as BaseEditGrid
 from .email import Email
 from .fieldset import Fieldset as BaseFieldSet
@@ -28,7 +29,7 @@ __all__ = [
     "TextField",
     "Email",
     "Date",
-    # "DateTime",
+    "DateTime",
     # "Time",
     "PhoneNumber",
     "File",
@@ -89,6 +90,7 @@ type AnyComponent = (
     TextField
     | Email
     | Date
+    | DateTime
     | PhoneNumber
     | File
     | Textarea
