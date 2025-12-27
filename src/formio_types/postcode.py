@@ -34,7 +34,8 @@ class Postcode(Component, tag="postcode"):
     autocomplete: str = ""
     clear_on_hide: bool = True
     conditional: Conditional | None = None
-    default_value: str | Sequence[str] = ""
+    # FIXME: migration + convert to normalize empty default value
+    default_value: str | Sequence[str] | None = ""
     description: str = ""
     disabled: bool = False  # should be 'read_only'
     errors: Errors[PostcodeValidatorKeys] | None = None
@@ -54,6 +55,9 @@ class Postcode(Component, tag="postcode"):
     multiple: bool = False
 
     def __post_init__(self):
+        if self.default_value is None:
+            self.default_value = "" if not self.multiple else []
+
         match (self.multiple, self.default_value):
             case True, str():
                 raise ValueError("You must pass a list of values when multiple=True")
