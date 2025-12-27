@@ -6,6 +6,7 @@ from .bsn import BSN
 from .checkbox import Checkbox
 from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
+from .currency import Currency
 from .date import Date
 from .editgrid import EditGrid as BaseEditGrid
 from .email import Email
@@ -34,7 +35,7 @@ __all__ = [
     "Checkbox",
     # "Selectboxes",
     "Select",
-    # "Currency",
+    "Currency",
     "Radio",
     # special
     # "IBAN",
@@ -89,6 +90,7 @@ type AnyComponent = (
     | File
     | Checkbox
     | Select
+    | Currency
     | Radio
     # special
     | Postcode
