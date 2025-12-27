@@ -22,7 +22,7 @@ class RadioExtensions(
 ):
     data_src: Literal["manual", "variable", "referenceLists"] = "manual"
     # for variable
-    itemsExpression: str | Mapping[str, object] = ""
+    items_expression: str | Mapping[str, object] = ""
     # for reference lists
     service: str = ""
     code: str = ""
@@ -32,7 +32,7 @@ class RadioExtensions(
             case "manual":
                 pass
             case "variable":
-                if not self.itemsExpression:
+                if not self.items_expression:
                     raise ValueError("You must provide an items expression.")
             case "referenceLists":
                 if not (self.service and self.code):
