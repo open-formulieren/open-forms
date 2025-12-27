@@ -34,7 +34,6 @@ class Currency(Component, tag="currency"):
     decimal_limit: Annotated[int, Meta(ge=0, le=9)] | None = None
     default_value: float | None = None
     description: str = ""
-    disabled: bool = False  # should be 'read_only'
     errors: Errors[CurrencyValidatorKeys] | None = None
     hidden: bool = False
     is_sensitive_data: bool = False

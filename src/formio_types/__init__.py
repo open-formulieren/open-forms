@@ -12,6 +12,7 @@ from .editgrid import EditGrid as BaseEditGrid
 from .email import Email
 from .fieldset import Fieldset as BaseFieldSet
 from .file import File
+from .number import Number
 from .phone_number import PhoneNumber
 from .postcode import Postcode
 from .radio import Radio
@@ -31,7 +32,7 @@ __all__ = [
     "PhoneNumber",
     "File",
     # "Textarea",
-    # "Number",
+    "Number",
     # "Map",
     "Checkbox",
     "Selectboxes",
@@ -89,6 +90,7 @@ type AnyComponent = (
     | Date
     | PhoneNumber
     | File
+    | Number
     | Checkbox
     | Selectboxes
     | Select
