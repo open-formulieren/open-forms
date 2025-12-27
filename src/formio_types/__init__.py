@@ -16,6 +16,7 @@ from .phone_number import PhoneNumber
 from .postcode import Postcode
 from .radio import Radio
 from .select import Select
+from .selectboxes import Selectboxes
 from .textfield import TextField
 
 # ordered as they are displayed in the formio builder UI
@@ -33,7 +34,7 @@ __all__ = [
     # "Number",
     # "Map",
     "Checkbox",
-    # "Selectboxes",
+    "Selectboxes",
     "Select",
     "Currency",
     "Radio",
@@ -89,6 +90,7 @@ type AnyComponent = (
     | PhoneNumber
     | File
     | Checkbox
+    | Selectboxes
     | Select
     | Currency
     | Radio
