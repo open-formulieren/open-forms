@@ -20,6 +20,7 @@ from .postcode import Postcode
 from .radio import Radio
 from .select import Select
 from .selectboxes import Selectboxes
+from .soft_required_errors import SoftRequiredErrors
 from .textarea import Textarea
 from .textfield import TextField
 from .time import Time
@@ -59,7 +60,7 @@ __all__ = [
     "Content",
     "Columns",
     "Fieldset",
-    # "SoftRequiredErrors",
+    "SoftRequiredErrors",
     # deprecated
     # "CosignOld",
 ]
@@ -108,8 +109,10 @@ type AnyComponent = (
     | Postcode
     | BSN
     | EditGrid
+    # layout
     | Content
     | Columns
     | Fieldset
+    | SoftRequiredErrors
     # deprecated
 )
