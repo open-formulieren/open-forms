@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from datetime import date, datetime
-from typing import Literal, Self
-
-from openforms.utils.date import datetime_in_amsterdam
+from datetime import date
+from typing import Literal
 
 from ._base import (
     BaseOpenFormsExtensions,
@@ -17,20 +15,6 @@ from ._base import (
     Registration,
     TranslatedErrors,
 )
-
-
-class FormioDate(date):
-    @classmethod
-    def fromstr(cls, datestr: str) -> Self | None:
-        # FIXME: this doesn't work - `None` does not satisfy the `FormioDate` type and
-        # msgspec rejects it
-        if datestr == "":
-            return None
-        if "T" in datestr:
-            # convert to NL timezone, assuming the date should be in NL
-            dt = datetime_in_amsterdam(datetime.fromisoformat(datestr))
-            return cls(year=dt.year, month=dt.month, day=dt.day)
-        return cls.fromisoformat(datestr)
 
 
 class NoDateConstraint(FormioStruct, tag="", tag_field="mode"):
@@ -107,8 +91,11 @@ class DatePickerConfig(FormioStruct):
     max_mode: Literal["day", "month", "year"]
     year_rows: int
     year_columns: int
-    min_date: FormioDate | None
-    max_date: FormioDate | None
+    # FIXME: should be date instances, but we have a mix of date, datetimes and empty
+    # strings which msgspec can't handle properly yet. we need to fix the source
+    # configuration
+    min_date: str | None
+    max_date: str | None
 
 
 # FIXME: should convert str -> date, but can't do `date | Literal[""] | None` in msgspec
@@ -145,7 +132,7 @@ class Date(Component, tag="date"):
     def __post_init__(self):
         # TODO: remove the string types when we have proper date parsing
         match (self.multiple, self.default_value):
-            case True, str() | date() | None:
+            case True, str() | None:
                 raise ValueError("You must pass a list of values when multiple=True")
             case False, str():
                 pass
