@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from .address_nl import AddressNL
 from .bsn import BSN
 from .checkbox import Checkbox
 from .columns import Column as BaseColumn, Columns as BaseColumns
@@ -57,7 +58,7 @@ __all__ = [
     "CosignV2",
     "Map",
     "EditGrid",
-    # "AddressNL",
+    "AddressNL",
     # "Partners",
     # "Children",
     # "CustomerProfile",
@@ -118,6 +119,7 @@ type AnyComponent = (
     | CosignV2
     | Map
     | EditGrid
+    | AddressNL
     # layout
     | Content
     | Columns
