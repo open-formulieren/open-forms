@@ -13,6 +13,7 @@ from .editgrid import EditGrid as BaseEditGrid
 from .email import Email
 from .fieldset import Fieldset as BaseFieldSet
 from .file import File
+from .licenseplate import LicensePlate
 from .number import Number
 from .phone_number import PhoneNumber
 from .postcode import Postcode
@@ -44,7 +45,7 @@ __all__ = [
     "Radio",
     # special
     # "IBAN",
-    # "LicensePlate",
+    "LicensePlate",
     "Postcode",
     "BSN",
     # "Signature",
@@ -103,6 +104,7 @@ type AnyComponent = (
     | Currency
     | Radio
     # special
+    | LicensePlate
     | Postcode
     | BSN
     | EditGrid
