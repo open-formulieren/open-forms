@@ -15,6 +15,7 @@ from .fieldset import Fieldset as BaseFieldSet
 from .file import File
 from .iban import Iban
 from .licenseplate import LicensePlate
+from .map import Map
 from .number import Number
 from .phone_number import PhoneNumber
 from .postcode import Postcode
@@ -52,7 +53,7 @@ __all__ = [
     # "npFamilyMembers",
     # "Signature",
     # "Cosign",
-    # "Map",
+    "Map",
     "EditGrid",
     # "AddressNL",
     # "Partners",
@@ -111,6 +112,7 @@ type AnyComponent = (
     | Iban
     | LicensePlate
     | BSN
+    | Map
     | EditGrid
     # layout
     | Content
