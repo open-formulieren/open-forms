@@ -36,10 +36,10 @@ __all__ = [
     "DateTime",
     "Time",
     "PhoneNumber",
+    "Postcode",
     "File",
     "Textarea",
     "Number",
-    # "Map",
     "Checkbox",
     "Selectboxes",
     "Select",
@@ -48,10 +48,11 @@ __all__ = [
     # special
     "Iban",
     "LicensePlate",
-    "Postcode",
     "BSN",
+    # "npFamilyMembers",
     # "Signature",
     # "Cosign",
+    # "Map",
     "EditGrid",
     # "AddressNL",
     # "Partners",
@@ -97,6 +98,7 @@ type AnyComponent = (
     | DateTime
     | Time
     | PhoneNumber
+    | Postcode
     | File
     | Textarea
     | Number
@@ -108,7 +110,6 @@ type AnyComponent = (
     # special
     | Iban
     | LicensePlate
-    | Postcode
     | BSN
     | EditGrid
     # layout
