@@ -23,6 +23,7 @@ from .postcode import Postcode
 from .radio import Radio
 from .select import Select
 from .selectboxes import Selectboxes
+from .signature import Signature
 from .soft_required_errors import SoftRequiredErrors
 from .textarea import Textarea
 from .textfield import TextField
@@ -52,7 +53,7 @@ __all__ = [
     "LicensePlate",
     "BSN",
     # "npFamilyMembers",
-    # "Signature",
+    "Signature",
     "CosignV2",
     "Map",
     "EditGrid",
@@ -113,6 +114,7 @@ type AnyComponent = (
     | Iban
     | LicensePlate
     | BSN
+    | Signature
     | CosignV2
     | Map
     | EditGrid
