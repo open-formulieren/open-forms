@@ -21,6 +21,7 @@ from .select import Select
 from .selectboxes import Selectboxes
 from .textarea import Textarea
 from .textfield import TextField
+from .time import Time
 
 # ordered as they are displayed in the formio builder UI
 __all__ = [
@@ -30,7 +31,7 @@ __all__ = [
     "Email",
     "Date",
     "DateTime",
-    # "Time",
+    "Time",
     "PhoneNumber",
     "File",
     "Textarea",
@@ -91,6 +92,7 @@ type AnyComponent = (
     | Email
     | Date
     | DateTime
+    | Time
     | PhoneNumber
     | File
     | Textarea
