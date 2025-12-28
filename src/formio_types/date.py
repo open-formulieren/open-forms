@@ -22,7 +22,8 @@ from ._base import (
 class FormioDate(date):
     @classmethod
     def fromstr(cls, datestr: str) -> Self | None:
-        # FIXME: this doesn't work...
+        # FIXME: this doesn't work - `None` does not satisfy the `FormioDate` type and
+        # msgspec rejects it
         if datestr == "":
             return None
         if "T" in datestr:
