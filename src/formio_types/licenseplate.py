@@ -32,7 +32,8 @@ class LicensePlate(Component, tag="licenseplate"):
     conditional: Conditional | None = None
     default_value: str | Sequence[str] = ""
     description: str = ""
-    errors: Errors[LicensePlateValidatorKeys] | None = None
+    # FIXME: some existing data has persisted `errors`
+    errors: Errors[LicensePlateValidatorKeys | Literal["pattern"]] | None = None
     hidden: bool = False
     is_sensitive_data: bool = True
     label: str
