@@ -14,9 +14,12 @@ from ._base import (
 )
 
 type EmailValidatorKeys = Literal["required"]
-type EmailExtensions = BaseOpenFormsExtensions[
-    Literal["label", "description", "tooltip"]
-]
+
+
+class EmailExtensions(
+    BaseOpenFormsExtensions[Literal["label", "description", "tooltip"]]
+):
+    require_verification: bool = False
 
 
 class EmailValidate(FormioStruct):
