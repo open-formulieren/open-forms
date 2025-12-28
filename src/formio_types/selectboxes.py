@@ -55,7 +55,7 @@ class SelectboxesValidate(FormioStruct):
 class Selectboxes(Component, tag="selectboxes"):
     clear_on_hide: bool = True
     conditional: Conditional | None = None
-    default_value: Mapping[str, bool] | None
+    default_value: Mapping[str, bool] | None = None
     description: str = ""
     errors: Errors[SelectboxesValidatorKeys] | None = None
     hidden: bool = False
