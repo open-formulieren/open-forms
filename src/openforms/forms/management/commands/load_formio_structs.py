@@ -13,7 +13,6 @@ from django.core.management import BaseCommand
 import msgspec
 
 from formio_types import AnyComponent
-from formio_types.date import FormioDate
 from formio_types.datetime import FormioDateTime
 
 from ...models import FormDefinition
@@ -38,10 +37,6 @@ class Command(BaseCommand):
 
 
 def fixup_component_properties(type_: type, obj: Any):
-    # sometimes an ISO-8601 date, sometimes an ISO-8601 datetime...
-    if type_ is FormioDate and isinstance(obj, str):
-        return FormioDate.fromstr(obj)
-
     if type_ is FormioDateTime and isinstance(obj, str):
         return FormioDateTime.fromstr(obj)
 
