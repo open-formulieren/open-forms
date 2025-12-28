@@ -6,6 +6,7 @@ from .bsn import BSN
 from .checkbox import Checkbox
 from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
+from .cosign import CosignV2
 from .currency import Currency
 from .date import Date
 from .datetime import DateTime
@@ -52,7 +53,7 @@ __all__ = [
     "BSN",
     # "npFamilyMembers",
     # "Signature",
-    # "Cosign",
+    "CosignV2",
     "Map",
     "EditGrid",
     # "AddressNL",
@@ -112,6 +113,7 @@ type AnyComponent = (
     | Iban
     | LicensePlate
     | BSN
+    | CosignV2
     | Map
     | EditGrid
     # layout
