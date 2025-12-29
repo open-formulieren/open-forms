@@ -419,7 +419,7 @@ django-treebeard==4.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-two-factor-auth==1.16.0
+django-two-factor-auth==1.18.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -682,7 +682,7 @@ markupsafe==2.1.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   jinja2
-maykin-2fa==1.0.0
+maykin-2fa==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -860,7 +860,6 @@ phonenumberslite==8.13.29
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   django-two-factor-auth
 pillow==10.3.0
     # via
     #   -c requirements/ci.txt
@@ -976,11 +975,6 @@ pyphen==0.14.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
-pypng==0.20220715.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   qrcode
 pyproj==3.7.2
     # via
     #   -c requirements/ci.txt
@@ -1040,7 +1034,7 @@ pyyaml==6.0.1
     #   tablib
     #   vcrpy
     #   zgw-consumers-oas
-qrcode==7.4.2
+qrcode==8.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1328,7 +1322,6 @@ typing-extensions==4.12.2
     #   pydantic-core
     #   pyee
     #   pyopenssl
-    #   qrcode
     #   rich-click
     #   zgw-consumers
     #   zgw-consumers-oas
