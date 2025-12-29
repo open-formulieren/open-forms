@@ -13,7 +13,8 @@ from ._base import (
     TranslatedErrors,
 )
 
-type EmailValidatorKeys = Literal["required"]
+# FIXME: should be Literal["required"], but there is garbage data
+type EmailValidatorKeys = str
 
 
 class EmailExtensions(

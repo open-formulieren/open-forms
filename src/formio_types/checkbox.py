@@ -12,8 +12,8 @@ from ._base import (
     TranslatedErrors,
 )
 
-# FIXME: only 'required' should be present
-type CheckboxValidatorKeys = Literal["required", "pattern", "maxLength"]
+# FIXME: should be Literal["required"], but there is garbage data
+type CheckboxValidatorKeys = str
 
 type CheckboxExtensions = BaseOpenFormsExtensions[
     Literal["label", "description", "tooltip"]

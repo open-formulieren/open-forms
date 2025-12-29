@@ -19,7 +19,7 @@ SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
 
 
-def check_component(component: Component) -> str | Sequence[str] | None:
+def check_component(component) -> str | Sequence[str] | None:
     from rest_framework.exceptions import ValidationError
 
     from openforms.api.geojson import GeoJsonGeometryPolymorphicSerializer
@@ -115,8 +115,11 @@ def check_component(component: Component) -> str | Sequence[str] | None:
                 errs.append("validate.maxDate is a datetime rather than date.")
             return errs
 
-        case {"type": "datetime", "validate": dict() as validate}:
+        case {"type": "datetime"}:
             errs = []
+            validate = component.get("validate", {})
+            date_picker = component.get("datePicker", {})
+
             min_datetime = validate.get("minDate")
             if min_datetime == "":
                 errs.append("validate.minDate is empty string instead of null.")
@@ -124,6 +127,23 @@ def check_component(component: Component) -> str | Sequence[str] | None:
             max_datetime = validate.get("maxDate")
             if max_datetime == "":
                 errs.append("validate.maxDate is empty string instead of null.")
+
+            dp_min_date = date_picker.get("minDate")
+            if dp_min_date == "":
+                errs.append("datePicker.minDate is empty string instead of null.")
+            if dp_min_date and 11 <= len(dp_min_date) <= 16:
+                errs.append(
+                    "datePicker.minDate is not a valid RFC3339 encoded datetime."
+                )
+
+            dp_max_date = date_picker.get("maxDate")
+            if dp_max_date == "":
+                errs.append("datePicker.maxDate is empty string instead of null.")
+            if dp_max_date and 11 <= len(dp_max_date) <= 16:
+                errs.append(
+                    "datePicker.maxDate is not a valid RFC3339 encoded datetime."
+                )
+
             return errs
 
 

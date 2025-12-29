@@ -94,8 +94,10 @@ class DateTimePickerConfig(FormioStruct):
     max_mode: Literal["day", "month", "year"]
     year_rows: int
     year_columns: int
-    min_date: datetime | None
-    max_date: datetime | None
+    # TODO: should be datetime instead of str, but they're not all valid RFC3339 encoded.
+    min_date: str | None
+    # TODO: should be datetime instead of str, but they're not all valid RFC3339 encoded.
+    max_date: str | None
 
 
 class FormioDateTime:
