@@ -10,6 +10,7 @@ from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
 from .cosign import CosignV2
 from .currency import Currency
+from .customer_profile import CustomerProfile
 from .date import Date
 from .datetime import DateTime
 from .editgrid import EditGrid as BaseEditGrid
@@ -64,7 +65,7 @@ __all__ = [
     "AddressNL",
     "Partners",
     "Children",
-    # "CustomerProfile",
+    "CustomerProfile",
     # layout
     "Content",
     "Columns",
@@ -126,6 +127,7 @@ type AnyComponent = (
     | AddressNL
     | Partners
     | Children
+    | CustomerProfile
     # layout
     | Content
     | Columns
