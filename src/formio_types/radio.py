@@ -14,7 +14,8 @@ from ._base import (
     TranslatedErrors,
 )
 
-type RadioValidatorKeys = Literal["required"]
+# FIXME: only 'required' should be present
+type RadioValidatorKeys = Literal["required", "pattern", "maxLength"]
 
 
 class RadioExtensions(

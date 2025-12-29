@@ -12,7 +12,9 @@ from ._base import (
     TranslatedErrors,
 )
 
-type CheckboxValidatorKeys = Literal["required"]
+# FIXME: only 'required' should be present
+type CheckboxValidatorKeys = Literal["required", "pattern", "maxLength"]
+
 type CheckboxExtensions = BaseOpenFormsExtensions[
     Literal["label", "description", "tooltip"]
 ]
