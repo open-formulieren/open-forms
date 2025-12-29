@@ -19,7 +19,7 @@ SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
 
 
-def check_component(component: Component) -> str | None:
+def check_component(component: Component) -> str | Sequence[str] | None:
     from rest_framework.exceptions import ValidationError
 
     from openforms.api.geojson import GeoJsonGeometryPolymorphicSerializer
@@ -92,6 +92,40 @@ def check_component(component: Component) -> str | None:
             # Any other value is automatically invalid
             return f"Default value '{default_value}' is not valid."
 
+        case {"type": "time", "validate": dict() as validate}:
+            errs = []
+            if validate.get("minTime") == "":
+                errs.append("validate.minTime is empty string instead of null.")
+            if validate.get("maxTime") == "":
+                errs.append("validate.maxTime is empty string instead of null.")
+            return errs
+
+        case {"type": "date", "validate": dict() as validate}:
+            errs = []
+            min_date = validate.get("minDate")
+            if min_date == "":
+                errs.append("validate.minDate is empty string instead of null.")
+            if min_date and "T" in min_date:
+                errs.append("validate.minDate is a datetime rather than date.")
+
+            max_date = validate.get("maxDate")
+            if max_date == "":
+                errs.append("validate.maxDate is empty string instead of null.")
+            if max_date and "T" in max_date:
+                errs.append("validate.maxDate is a datetime rather than date.")
+            return errs
+
+        case {"type": "datetime", "validate": dict() as validate}:
+            errs = []
+            min_datetime = validate.get("minDate")
+            if min_datetime == "":
+                errs.append("validate.minDate is empty string instead of null.")
+
+            max_datetime = validate.get("maxDate")
+            if max_datetime == "":
+                errs.append("validate.maxDate is empty string instead of null.")
+            return errs
+
 
 def check_component_html_usage(component: Component) -> list[str]:
     messages = []
@@ -124,7 +158,10 @@ def report_problems(component_types: Sequence[str], check_html_usage: bool) -> b
 
             messages = []
             if check_component_message := check_component(component):
-                messages.append(check_component_message)
+                if isinstance(check_component_message, str):
+                    messages.append(check_component_message)
+                else:
+                    messages.extend(check_component_message)
             if check_html_usage:
                 messages.extend(check_component_html_usage(component))
 
