@@ -5,6 +5,7 @@ from collections.abc import Sequence
 from .address_nl import AddressNL
 from .bsn import BSN
 from .checkbox import Checkbox
+from .children import Children
 from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
 from .cosign import CosignV2
@@ -62,7 +63,7 @@ __all__ = [
     "EditGrid",
     "AddressNL",
     "Partners",
-    # "Children",
+    "Children",
     # "CustomerProfile",
     # layout
     "Content",
@@ -124,6 +125,7 @@ type AnyComponent = (
     | EditGrid
     | AddressNL
     | Partners
+    | Children
     # layout
     | Content
     | Columns
