@@ -25,8 +25,8 @@ class DateTimeValidate(FormioStruct):
     # time, nor is conversion to non viable at this point.
     # We should be pretty flexible in updating the JS types as this is our own feature,
     # it's not vanilla Formio.
-    min_time: str = ""
-    max_time: str = ""
+    min_time: str | None = ""
+    max_time: str | None = ""
 
 
 class Time(Component, tag="time"):
