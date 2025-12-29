@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+import msgspec
+
 from .address_nl import AddressNL
 from .bsn import BSN
 from .checkbox import Checkbox
@@ -37,6 +39,7 @@ from .time import Time
 # ordered as they are displayed in the formio builder UI
 __all__ = [
     "AnyComponent",
+    "FormioConfiguration",
     # basic
     "TextField",
     "Email",
@@ -136,3 +139,7 @@ type AnyComponent = (
     # deprecated
     | CosignV1
 )
+
+
+class FormioConfiguration(msgspec.Struct, kw_only=True):
+    components: Sequence[AnyComponent]
