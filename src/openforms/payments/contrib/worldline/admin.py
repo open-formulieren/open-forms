@@ -35,8 +35,6 @@ class WorldlineWebhookConfigurationAdmin(admin.ModelAdmin):
         "webhook_key_secret",
         "feedback_url",
     )
-
-    list_display = ("webhook_key_id",)
     search_fields = ("webhook_key_id",)
     readonly_fields = ("feedback_url",)
 
