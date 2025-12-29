@@ -48,3 +48,4 @@ To get you started, you might find some of these links relevant:
    changelog-nl
    changelog-sdk
    archive/index
+   security
