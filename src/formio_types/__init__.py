@@ -18,6 +18,7 @@ from .file import File
 from .iban import Iban
 from .licenseplate import LicensePlate
 from .map import Map
+from .np_family_members import NpFamilyMembers
 from .number import Number
 from .phone_number import PhoneNumber
 from .postcode import Postcode
@@ -53,7 +54,7 @@ __all__ = [
     "Iban",
     "LicensePlate",
     "BSN",
-    # "npFamilyMembers",
+    "NpFamilyMembers",
     "Signature",
     "CosignV2",
     "Map",
@@ -115,6 +116,7 @@ type AnyComponent = (
     | Iban
     | LicensePlate
     | BSN
+    | NpFamilyMembers
     | Signature
     | CosignV2
     | Map
