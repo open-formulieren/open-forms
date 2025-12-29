@@ -134,6 +134,9 @@ def update_customer_interaction_data(
         for digital_address in profile_submission_data:
             # submitted data
             address_value = digital_address["address"]
+            if not address_value:
+                continue
+
             address_channel: SupportedChannels = digital_address["type"]
             is_address_new_preferred: bool = bool(
                 digital_address.get("preferenceUpdate") == "isNewPreferred"
