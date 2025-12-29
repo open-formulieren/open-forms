@@ -21,9 +21,9 @@ Globally, the various actions and plugin categories are processed in order:
 #. Pre-registration step. Each :ref:`registration plugin <developers_registration_plugins>` can perform
    pre-registration task, like for example generating and setting a submission reference ID. If no registration backend
    is configured, then an internal ID is generated and set on the submission.
-#. Component pre-registration step. A group of tasks run in parallel for all components that have
+#. Component pre-registration step. A group of tasks run in parallel for all components that implement the
    :ref:`pre-registration hook <developers_backend_core_formio_pre_registration>`. The results are processed
-   after all component tasks are completed.
+   after all component pre-registration tasks are completed.
 #. A PDF is created that the user can download.
    This PDF is also uploaded to most
    :ref:`registration backends <developers_registration_plugins>`, depending
@@ -56,10 +56,12 @@ This method schedules the following tasks/chains:
 
   - :meth:`openforms.appointments.tasks.maybe_register_appointment`
   - :meth:`openforms.registrations.tasks.pre_registration`
-  - group :meth:`openforms.registrations.tasks.execute_component_pre_registration_group`, which run the
+  - :meth:`openforms.registrations.tasks.execute_component_pre_registration_group` which runs the
     following tasks in parallel:
 
-    - :meth:`openforms.registrations.tasks.execute_component_pre_registration`
+    - :meth:`openforms.registrations.tasks.execute_component_pre_registration`, one for each
+      component implementing
+      :ref:`pre-registration hook <developers_backend_core_formio_pre_registration>`
 
   - :meth:`openforms.registrations.tasks.process_component_pre_registration`
   - :meth:`openforms.submissions.tasks.pdf.generate_report_task`

@@ -138,12 +138,13 @@ Pre-registration of components
 ------------------------------
 
 Some component types have specific logic which should be executed after the form is submitted,
-for example updating external service with the submission information.
+for example updating an external service using the submission data.
 
 This logic can be implemented in the :meth:`openforms.formio.registry.BasePlugin.pre_registration_hook`.
 
-This method is called for all components between pre-pregistration and registration steps, so the
-submission reference ID is already generated and can be used.
+This method is called for all components during the
+:meth:`openforms.submissions.tasks.on_post_submission_event` proces, between the pre-pregistration
+and registration steps, so the submission reference ID is already generated and can be used.
 
 For an example of a custom field type, see :class:`openforms.formio.components.custom.CustomerProfile`.
 
