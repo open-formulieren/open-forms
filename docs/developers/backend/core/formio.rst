@@ -129,7 +129,27 @@ For an example of a custom field type, see :class:`openforms.formio.components.c
 Finally, the resulting resolved component definitions are evaluated with the template
 engine where variable values are evaluated for compoment labels, descriptions... and
 configuration based on the HTTP request is performed (see
-:func:`openforms.formmio.service.rewrite_formio_components_for_request`).
+:func:`openforms.formio.service.rewrite_formio_components_for_request`).
+
+
+.. _developers_backend_core_formio_pre_registration:
+
+Pre-registration of components
+------------------------------
+
+Some component types have specific logic which should be executed after the form is submitted,
+for example updating an external service using the submission data.
+
+This logic can be implemented in the :meth:`openforms.formio.registry.BasePlugin.pre_registration_hook`.
+
+This method is called for all components during the
+:meth:`openforms.submissions.tasks.on_post_submission_event` proces, between the pre-pregistration
+and registration steps, so the submission reference ID is already generated and can be used.
+
+For an example of a custom field type, see :class:`openforms.formio.components.custom.CustomerProfile`.
+
+The complete registration flow is described in the :ref:`developers_backend_core_submissions`.
+
 
 Reference
 =========
