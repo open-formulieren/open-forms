@@ -1949,6 +1949,12 @@
       "value": "Indication of the level to which extent the case is meant to be public. The value selected here will override the default configured on the case type."
     }
   ],
+  "DbpUVv": [
+    {
+      "type": 0,
+      "value": "Value in decimal degrees, between 50.5 and 54."
+    }
+  ],
   "DcI1VF": [
     {
       "type": 0,
@@ -3845,6 +3851,12 @@
     {
       "type": 0,
       "value": "Do not ask"
+    }
+  ],
+  "Tpg442": [
+    {
+      "type": 0,
+      "value": "Value in decimal degrees, between 3 and 7.5."
     }
   ],
   "TtqZa0": [
@@ -5951,12 +5963,6 @@
       "value": "No"
     }
   ],
-  "jiDz2v": [
-    {
-      "type": 0,
-      "value": "Value in decimal degrees, between -90 and +90."
-    }
-  ],
   "jitewC": [
     {
       "type": 0,
@@ -7777,12 +7783,6 @@
     {
       "type": 0,
       "value": "Action"
-    }
-  ],
-  "z45pcO": [
-    {
-      "type": 0,
-      "value": "Value in decimal degrees, between -180 and +180."
     }
   ],
   "z4zEf7": [
