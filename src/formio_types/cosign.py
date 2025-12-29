@@ -13,6 +13,17 @@ from ._base import (
     TranslatedErrors,
 )
 
+type CosignV1Extensions = BaseOpenFormsExtensions[Literal["label", "description"]]
+
+
+class CosignV1(Component, tag="coSign"):
+    auth_plugin: str
+    description: str = ""
+    hidden: bool = False
+    label: str
+    open_forms: CosignV1Extensions | None = None
+
+
 type CosignV2ValidatorKeys = Literal["required"]
 type CosignV2Extensions = BaseOpenFormsExtensions[
     Literal["label", "description", "tooltip"]

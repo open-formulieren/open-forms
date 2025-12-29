@@ -8,7 +8,7 @@ from .checkbox import Checkbox
 from .children import Children
 from .columns import Column as BaseColumn, Columns as BaseColumns
 from .content import Content
-from .cosign import CosignV2
+from .cosign import CosignV1, CosignV2
 from .currency import Currency
 from .customer_profile import CustomerProfile
 from .date import Date
@@ -72,7 +72,7 @@ __all__ = [
     "Fieldset",
     "SoftRequiredErrors",
     # deprecated
-    # "CosignOld",
+    "CosignV1",
 ]
 
 # Component types - these cannot be split into the layout modules due to circular
@@ -134,4 +134,5 @@ type AnyComponent = (
     | Fieldset
     | SoftRequiredErrors
     # deprecated
+    | CosignV1
 )
