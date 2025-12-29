@@ -20,6 +20,7 @@ from .licenseplate import LicensePlate
 from .map import Map
 from .np_family_members import NpFamilyMembers
 from .number import Number
+from .partners import Partners
 from .phone_number import PhoneNumber
 from .postcode import Postcode
 from .radio import Radio
@@ -60,7 +61,7 @@ __all__ = [
     "Map",
     "EditGrid",
     "AddressNL",
-    # "Partners",
+    "Partners",
     # "Children",
     # "CustomerProfile",
     # layout
@@ -122,6 +123,7 @@ type AnyComponent = (
     | Map
     | EditGrid
     | AddressNL
+    | Partners
     # layout
     | Content
     | Columns
