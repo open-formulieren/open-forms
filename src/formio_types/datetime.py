@@ -135,7 +135,7 @@ class DateTime(Component, tag="datetime"):
     # TODO not relevant anymore in new renderer
     custom_options: PickerCustomOptions = PickerCustomOptions()
     date_picker: DateTimePickerConfig | None = None
-    default_value: FormioDateTime = field(
+    default_value: FormioDateTime | None = field(
         default_factory=lambda: FormioDateTime(actual_value=None)
     )
     description: str = ""
