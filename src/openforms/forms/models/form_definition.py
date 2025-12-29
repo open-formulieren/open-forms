@@ -15,6 +15,7 @@ from autoslug import AutoSlugField
 from openforms.formio.utils import iter_components
 from openforms.utils.helpers import get_charfield_max_length, truncate_str_if_needed
 
+from ..fields import FormioConfigurationField
 from ..models import Form
 from ..validators import validate_template_expressions
 
@@ -183,3 +184,16 @@ class FormDefinition(models.Model):
     @property
     def admin_name(self):
         return self.internal_name or self.name
+
+
+class FormDefinitionView(models.Model):
+    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    name = models.CharField(_("name"), max_length=50)
+    configuration = FormioConfigurationField()
+
+    class Meta:
+        db_table = "forms_formdefinitionview"
+        managed = False
+
+    def __str__(self):
+        return self.name
