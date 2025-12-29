@@ -15,7 +15,8 @@ from ._base import (
     TranslatedErrors,
 )
 
-type SelectValidatorKeys = Literal["required"]
+# FIXME: should be Literal["required"], but there is garbage data
+type SelectValidatorKeys = str
 
 
 class SelectExtensions(
