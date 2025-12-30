@@ -62,7 +62,15 @@ class DefaultFormatterTestCase(SimpleTestCase):
                 "'lastName': 'Paassen', 'firstNames': 'Pero', 'dateOfBirth': '2023-02-01', "
                 "'dateOfBirthPrecision': 'date', 'selected': False}]"
             ),
-            "profile": "test@mail.com; 06 12345678 (will become preferred phone number)",
+            "profile": "; ".join(
+                [
+                    "test@mail.com",
+                    _("{address} (will become preferred {address_type})").format(
+                        address="06 12345678",
+                        address_type=_("phone number"),
+                    ),
+                ]
+            ),
         }
 
         for component in all_components:

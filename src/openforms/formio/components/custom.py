@@ -43,12 +43,12 @@ from ..dynamic_config.date import mutate as mutate_min_max_validation
 from ..formatters.custom import (
     AddressNLFormatter,
     CosignFormatter,
+    CustomerProfileFormatter,
     DateFormatter,
     DateTimeFormatter,
     MapFormatter,
 )
 from ..formatters.formio import (
-    CustomerProfileFormatter,
     DefaultFormatter,
     TextFieldFormatter,
 )
