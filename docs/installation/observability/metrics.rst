@@ -102,8 +102,9 @@ see the :ref:`Submission <installation_observability_metrics_submissions>` metri
     moved into the trash. Additional attributes are:
 
     - ``scope`` - fixed, set to ``global`` to enable de-duplication.
-    - ``type`` - one of ``total``, ``live``, ``translation_enabled``, ``is_appointment``
-      or ``trash``. For all but ``trash`` the forms in the trash are excluded.
+    - ``type`` - one of ``total``, ``live``, ``new_renderer_enabled``,
+      ``translation_enabled``, ``is_appointment`` or ``trash``. For all but ``trash``
+      the forms in the trash are excluded.
 
 ``openforms.form_component_count``
     Keeps track of how often a Formio component type is used in a form. This is only
