@@ -51,6 +51,7 @@ x-app-env: &x-app-env
   - ENVIRONMENT_FOREGROUND_COLOR=white
   # Django-setup-configuration
   - RUN_SETUP_CONFIG=${RUN_SETUP_CONFIG:-True}
+  - UWSGI_MEMORY_REPORT=1
 
   # Enabling Open Telemetry requires the services in docker/docker-compose.observability.yml
   # to be up and running.

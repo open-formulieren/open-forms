@@ -4,10 +4,6 @@ set -ex
 
 fixtures_dir=${FIXTURES_DIR:-/app/fixtures}
 
-uwsgi_port=${UWSGI_PORT:-8000}
-uwsgi_processes=${UWSGI_PROCESSES:-4}
-uwsgi_threads=${UWSGI_THREADS:-1}
-
 mountpoint=${SUBPATH:-/}
 
 # Figure out abspath of this script
@@ -29,12 +25,18 @@ export OTEL_SERVICE_NAME="${OTEL_SERVICE_NAME:-openforms}"
 >&2 echo "Apply database migrations"
 OTEL_SDK_DISABLED=True python src/manage.py migrate
 
+export UWSGI_PROCESSES=${UWSGI_PROCESSES:-4}
+export UWSGI_THREADS=${UWSGI_THREADS:-1}
+
+# Periodically recycle workers - recover memory in the event of memory leaks
+export UWSGI_MAX_REQUESTS=${UWSGI_MAX_REQUESTS:-1000}
+
 # Start server
 >&2 echo "Starting server"
 exec uwsgi \
     --strict \
     --ini "${SCRIPTPATH}/uwsgi.ini" \
-    --http :$uwsgi_port \
+    --http :8000 \
     --http-keepalive \
     --mount $mountpoint=openforms.wsgi:application \
     --manage-script-name \
@@ -47,8 +49,6 @@ exec uwsgi \
     --die-on-term \
     --optimize 1 \
     --need-app \
-    --processes $uwsgi_processes \
-    --threads $uwsgi_threads \
     --post-buffering=8192 \
     --buffer-size=65535
     # processes & threads are needed for concurrency without nginx sitting inbetween
