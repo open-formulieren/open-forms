@@ -6,14 +6,19 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
-3.4.0 "TBD" (2025-01-??)
-========================
+3.4.0 "Gemeentegoed" (2025-01-05)
+=================================
 
 Open Forms 3.4.0 is a feature release.
 
 .. epigraph::
 
-   ...
+   "Gemeentegoed" is a pun on the Dutch word for "municipality" and "gemeengoed", loosely
+   translating to "common property". It highlights the roots in the local governments and
+   emphasizes that Open Formulieren belongs to all of us. Parallel to the technical
+   improvements, the past months have seen big efforts to build up the community around
+   Open Formulieren and establish "source control management (broncodebeheer)" to keep
+   the Open Source project healthy.
 
 This contains the changes from the alpha releases and fixes applied until the stable version.
 BEFORE upgrading to 3.4.0, please read the release notes carefully and review the following
@@ -25,9 +30,10 @@ Upgrade procedure
 To upgrade to 3.4, please:
 
 * ⚠️ Ensure you are currently on Open Forms 3.3.x or newer.
-* Review the detailed release notes in the documentation under **Installation** >
-  **Upgrade details to Open Forms 3.4.0** and prepare accordingly.
-* If you've built custom NL DS themes, please review the above upgrade details.
+* Review the :ref:`detailed release notes <installation_upgrade_340>` in the
+  documentation under **Installation** > **Upgrade details to Open Forms 3.4.0** and
+  prepare accordingly, especially if you've built custom NL DS themes, please review
+  the above upgrade details.
 
 .. warning:: If you've built dashboards using the metrics telemetry, you'll need to
    update them with the updated metric names. The new names are in the documentation.
@@ -35,23 +41,231 @@ To upgrade to 3.4, please:
 Major features
 --------------
 
-...
+**⚙️ New render engine**
+
+We have replaced the engine responsible for displaying the form fields, managing the
+submission data and keeping track of part of the form logic. The result is snappier
+user interaction, improved accessibility and (lightly) updating styling, while
+integrating more closely with NL Design System.
+
+Both the old and new render engines are available, and you can enable the new engine on
+an individual form basis.
+
+We now have a solid foundation to pick up some long-standing issues and feature requests.
+
+**🗨️ Open Klant 2 integration**
+
+It's now possible to specify communication preferences in form submissions, making it
+easier to comply with WMEBV requirements. While the pattern is generic and open to
+support other vendors, we specifically support Open Klant 2 at this point.
+
+Deprecations
+------------
+
+See the :ref:`detailed release notes <installation_upgrade_340>`.
 
 Detailed changes
 ----------------
 
 **New features**
 
-...
+* New render engine:
+
+  - Implemented all remaining existing components in the new renderer.
+  - Optimized performance.
+  - Accessibility of the ``textfield`` and ``textarea`` components with
+    ``showCharCount: true`` is improved.
+  - In the email verificaton flow you now have feedback that the email is verified.
+  - Some custom validation error messages set in the backend are now supported.
+  - The default validation error messages are improved and provide better user feedback.
+  - Validation errors for an item in a repeating group are now displayed "for the item"
+    rather than near the first field in the item.
+  - Components that are "read only" are now marked as such in an accessible manner
+    instead of being "disabled" and removed from the accessibility tree.
+  - Applied a number of quality-of-life improvements to components that weren't possible
+    before, notably for ``addressNL`` .
+  - Added support for the new ``customerProfile`` component for interaction with Open
+    Klant 2/customer interaction services.
+  - Map component geometry validation now restricts geometries to the bounds of The
+    Netherlands.
+  - The date picker for ``date`` and ``datetime`` components is now accessible through
+    keyboard navigation and for screen reader users.
+  - Added preparations to lazy-load more functionality to improve loading times for users
+    on slow network connections.
+  - Accessibility of ``number`` components with prefix/suffix is improved.
+  - [:backend:`5815`] Added a management command to enable the new renderer in bulk for
+    DevOps.
+  - [:backend:`5814`] Implemented shims for backwards compatibility due to new design
+    tokens being used.
+
+* Customer profile/communication preferences:
+
+  - Supports BSN and KVK based authentication and customer profiles.
+  - [:backend:`5707`] Implemented prefill plugin to retrieve the preferences for the
+    customer profile from customer interaction APIs like Open Klant.
+  - [:backend:`5772`] Added API endpoint to retrieve customer profile communication
+    preferences from prefilled data.
+  - [:backend:`5708`] Added new ``customerProfile`` form component where users can
+    specify there communication preferences.
+  - [:backend:`5711`] Implemented writing back component data to Open Klant when updates
+    are requested.
+  - [:backend:`5795`] Added a global configuration options for the "portal" URL where
+    users can update their preferences.
+
+* Admin interface:
+
+  - [:backend:`5704`] You can now filter forms based on the payment backend used.
+  - [:backend:`4357`] You can now use theme-specific favicons, organization names and
+    logos.
+
+* Registration:
+
+  - [:backend:`5643`] Added ``heeftAlsAanspreekpunt`` to the StUF-ZDS registration plugin.
+  - The registration flow now supports a per-component registration hook.
+  - [:backend:`5776`] You can now map any static or user defined variable to a StUF-ZDS
+    ``extraElementen`` entry.
+
+* [:backend:`5683`] The form import endpoint now returns the UUID of the imported form.
+* [:backend:`5546`] Improved the accessibility toolbar layout:
+
+  - Moved the "print page" button to the footer.
+  - Aligned the "back to top" link with the navigation controls.
+  - Added an optional visual separator between the form and accessibility toolbar.
+  - Fixed the toolbar not being shown on mobile devices.
+  - Added the missing navigation role label.
+  - The appearance can be tweaked with a number of new design tokens.
+
+* [:backend:`5598`] It is no longer possible to cosign your own submission.
+
+* Performance:
+
+  - [:backend:`2409`] User-defined variables are now persisted upon step submission
+    rather than only when the submission is completed. In case of issues, the old
+    behaviour can be reinstated with the
+    ``PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION=False`` feature flag.
+  - [:backend:`5747`] Rework how submission variables are stored to prepare for further
+    improvements.
+
+* Appointments:
+
+  - [:backend:`5687`] Added the initial structure of JCC (REST) API appointment plugin,
+    which will eventually replace the SOAP API variant.
+  - [:backend:`5694`] Address details for appointment locations are now available for display.
 
 **Bugfixes**
 
-...
+* [:backend:`5134`] Fixed deriving the correct "empty value" value for date/time/datetime
+  variables.
+* Fixed a crash when trying to save a form with a component where the ``multiple``
+  property was changed.
+* [:backend:`3640`] Fixed a theoretical case where a submission would be able to be
+  suspended while registration is in progress or completed.
+* [:backend:`5429`] Fixed component label being truncated in the preview panel of the
+  configuration modal.
+* [:backend:`5391`] Fixed submission logs (incorrectly) reporting empty results for
+  skipped prefill operations.
+* [:backend:`3544`] Fixed submission pruning potentially deleting submissions that still
+  have future appointments associated with them.
+* Fixed a crash in the upgrade migrations for form variables pointing to a component
+  that cannot be resolved.
+* [:backend:`5722`] Fixed Worldline configuration not taking into account multiple
+  webhook key ID + secret combinations when multiple PSPIDs are used.
+* [Sentry#453174] Fixed a crash in the configuration overview for invalid Worldline
+  merchants.
+* [:backend:`5737`] Fixed a crash in the form builder UI when the "synchronize variables"
+  logic action is used and fieldset components are present.
+* [:backend:`5735`] Fixed a crash when converting raw JSON data to the Python types when
+  variables don't exist in the database in certain circumstances.
+* [:cve:`CVE-2025-64515`] Fixed missing logic evaluation before validating (step data)
+  user input. See :ghsa:`GHSA-cp63-63mq-5wvf` for details.
+* Fixed the performance of the email verifications page in the admin.
+* Fixed some crashes due to enabling certain optimizations, notably when:
+
+  - Looking up the nearest address for map coordinates.
+  - Looking up addresses in the Kadaster API.
+  - Processing (single) file attachments in the generic registration plugin.
+
+* [:backend:`5757`] Fixed a crash when attempting to submit a submission step with file
+  upload attachments.
+* [:backend:`5754`] Fixed a date/datetime/time formatting regression in the
+  ``extraElementen`` of the StUF-ZDS registration plugin.
+* Fixed crash in the MS Graph/Sharepoint registration plugin because it couldn't handle
+  date/datetime/time objects in the JSON serialization.
+* Fixed a bug in the OpenID library breaking our legacy callback endpoint compatibility
+  layer.
+* Fixed a crash in the processing of family members components data because of a
+  difference in data format between StUF-BG and Haal Centraal Personen bevragen.
+* [:backend:`5748`] Fixed the handling of a difference in data between Haal Centraal
+  Personen Bevragen API and StUF-BG when retrieving family members data, preventing
+  valid submission data from being accepted in children and partners components.
+* [:backend:`5756`] Fixed an issue where at most one child would be retrieved for the
+  children prefill when using StUF-BG.
+* [:backend:`5765`] Fixed a regression introduced in the 3.3.3 security fix that would
+  prevent valid values from being accepted in radio, select and selectboxes components
+  with options sourced from a variable.
+* Fixed the Token Exchange extension no longer functioning due to the OpenID library rework.
+* [:backend:`5770`] Fixed a crash when registering data for the ``partners`` component
+  with StUF-ZDS.
+* [:backend:`5778`] Fixed crashes during registration with Objects API when there are
+  date or datetime fields inside a repeating group.
+* [:backend:`5784`] Fixed Worldline credit card payments authorization mode not being
+  set to ``SALE``.
+* [:backend:`5733`] Fixed outgoing requests for the Generic JSON registration not being logged.
+* [:backend:`5803`] Worked around date/time/datetime objects in submission data being automatically
+  formatted according to the locale in Objects API V1 templates.
+* [:backend:`5818`] Added missing ``bsn`` element in StUF-BG XML request to retrieve
+  children.
+* [:backend:`5840`] Fixed ``null`` values being sent to ZGW APIs when nested values are
+  empty in partners/children data.
+* [:backend:`5835`] Fixed the Worldline webhook admin not displaying the PSPID.
 
 **Project maintenance**
 
-...
+* Updated and improved the form embedding documentation.
+* Removed the deprecated privacy policy config endpoint.
+* Removed some stale documentation.
+* Updated compatible versions (backend/API/SDK) documentation.
+* [:sdk:`445`] Updated the references to the new static assets locations in the SDK.
+* [:backend:`5134`] Addressed some edge cases where logic rule evaluations could yield
+  unexpected results, by fixing the ``clearOnHide`` behaviour implementation.
+* Renamed the metrics to comply with OTel naming conventions.
+* Updated zgw-consumers to support OAUTH2-enabled services.
+* The container image is now also published to
+  `ghcr.io <https://github.com/open-formulieren/open-forms/pkgs/container/open-forms>`_.
+* Removed incorrect deprecation marker on address autocomplete endpoint.
+* Upgraded frontend dependencies with their latest security updates, affecting
+  development tooling.
+* Upgraded to mozilla-django-oidc-db and its improved type annotations.
+* Added ``openforms.authentication``, ``openforms.data_removal`` and ``openforms.emails``
+  to type-checked packages in CI.
+* Added documentation on how to develop UI components.
+* Bumped security update versions:
 
+  - Django
+  - brotli
+  - fonttools
+  - urllib3
+
+* [DH#817] Added more logging and error information captures in case the Worldline
+  payment flow errors.
+* Updated (development) frontend dependencies with their latest security fixes.
+* Tweaked the CI pipeline to include a test run with stripped out ``assert`` statements.
+* Enabled a linter rule that checks for possible bugs due to stripped out ``assert``
+  statements.
+* Banned ``typing.cast`` usage through linter rule.
+* Enabled an option in the type checker to error when error suppression is no longer
+  necessary.
+* Cleaned up CI pipelines by using our own reusable actions.
+* Docker Hub image description generation is now a fully standalone script, run with
+  ``uv``.
+* Updated VCR checklist template and added utility script to spin up all necessary
+  scripts, using isolated port numbers.
+* [:backend:`5739`] Removed/cleaned up obsolete migrations.
+* Removed obsoleted fix/diagnostics scripts.
+* Switched to django-test-migrations to test migrations.
+* Removed NLX from the repo submodules.
+* Added guards to recycle application worker processes in the event of memory leaks.
+  We're investigating root causes.
 
 3.3.9 (2025-12-11)
 ==================
