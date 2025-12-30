@@ -432,7 +432,7 @@ def update_registration_with_confirmation_email(submission_id: int) -> None:
     log.info("done")
 
 
-@app.task
+@app.task(ignore_result=True)
 def execute_component_pre_registration(
     submission_id: int, component: Component
 ) -> None:

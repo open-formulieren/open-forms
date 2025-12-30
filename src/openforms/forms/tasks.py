@@ -12,7 +12,7 @@ from .models import Form
 logger = structlog.stdlib.get_logger(__name__)
 
 
-@app.task()
+@app.task(ignore_result=True)
 def activate_forms():
     """Activate all the forms that should be activated by the specific date and time."""
     from openforms.logging import logevent
@@ -38,7 +38,7 @@ def activate_forms():
                 transaction.on_commit(partial(logevent.form_activated, form))
 
 
-@app.task()
+@app.task(ignore_result=True)
 def deactivate_forms():
     """Deactivate all the forms that should be deactivated by the specific date and time."""
     from openforms.logging import logevent
