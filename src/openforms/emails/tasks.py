@@ -63,7 +63,7 @@ class Digest:
         return render_to_string("emails/admin_digest.html", context)
 
 
-@app.task
+@app.task(ignore_result=True)
 def send_email_digest() -> None:
     config = GlobalConfiguration.get_solo()
     if not (recipients := config.recipients_email_digest):

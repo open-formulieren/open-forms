@@ -89,7 +89,7 @@ def send_confirmation_email(submission_id: int) -> None:
         on_confirmation_email_sent.delay(submission.pk)
 
 
-@app.task()
+@app.task(ignore_result=True)
 def send_email_cosigner(submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
 

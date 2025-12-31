@@ -27,7 +27,7 @@ from ..utils import export_form, import_form
 logger = structlog.stdlib.get_logger(__name__)
 
 
-@app.task
+@app.task(ignore_result=True)
 def process_forms_export(forms_uuids: list, user_id: int) -> None:
     forms = Form.objects.filter(uuid__in=forms_uuids)
 
@@ -74,7 +74,7 @@ def process_forms_export(forms_uuids: list, user_id: int) -> None:
         )
 
 
-@app.task
+@app.task(ignore_result=True)
 def process_forms_import(import_file: str, user_id: int) -> None:
     user = User.objects.get(id=user_id)
     failed_files = []
