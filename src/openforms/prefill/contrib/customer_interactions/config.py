@@ -42,7 +42,7 @@ class CommunicationPreferencesSerializer(
                 raise serializers.ValidationError(
                     {
                         "profile_form_variable": _(
-                            "Form variable '{key}' is not found."
+                            "No form variable with key '{key}' exists in the form."
                         ).format(key=profile_form_variable),
                     }
                 )

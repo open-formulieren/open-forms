@@ -1,4 +1,5 @@
 from django.test import TestCase, tag
+from django.utils.translation import gettext_lazy as _
 
 from openforms.contrib.customer_interactions.tests.factories import (
     CustomerInteractionsAPIGroupConfigFactory,
@@ -42,4 +43,9 @@ class CommunicationPreferencesOptionsTests(TestCase):
 
         error = serializer.errors["profile_form_variable"][0]
         self.assertEqual(error.code, "invalid")
-        self.assertEqual(error, "Form variable 'profileOld' is not found.")
+        self.assertEqual(
+            error,
+            _("No form variable with key '{key}' exists in the form.").format(
+                key="profileOld"
+            ),
+        )
