@@ -34,9 +34,18 @@ class CommunicationPreferencesSerializer(
         form = self.context.get("form")
 
         if form:
-            form_variable = FormVariable.objects.get(
-                form=form, key=profile_form_variable
-            )
+            try:
+                form_variable = FormVariable.objects.get(
+                    form=form, key=profile_form_variable
+                )
+            except FormVariable.DoesNotExist:
+                raise serializers.ValidationError(
+                    {
+                        "profile_form_variable": _(
+                            "No form variable with key '{key}' exists in the form."
+                        ).format(key=profile_form_variable),
+                    }
+                )
 
             component = form_variable.form_definition.configuration_wrapper[
                 profile_form_variable
