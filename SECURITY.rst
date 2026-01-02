@@ -1,4 +1,4 @@
-.. _security:
+.. _security_policy:
 
 Security policy
 ===============

@@ -1689,7 +1689,7 @@
     "originalDefault": "Save text"
   },
   "QWOU1l": {
-    "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>.",
+    "defaultMessage": "Deze koppelingen laten je toe om variabelen mee te sturen in de XML voor StUF-ZDS. De opgegeven sleutels en waarden uit de inzendingsgegevens komen terecht in <code>extraElementen</code>.",
     "description": "StUF-ZDS registration variablesMapping message",
     "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>."
   },
@@ -2359,7 +2359,7 @@
     "originalDefault": "Product request type"
   },
   "csTJIN": {
-    "defaultMessage": "Variables mapping",
+    "defaultMessage": "Variabelekoppelingen",
     "description": "StUF-ZDS registration variablesMapping label",
     "originalDefault": "Variables mapping"
   },
