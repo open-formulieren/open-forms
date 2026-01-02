@@ -34,6 +34,10 @@ def check_component(component) -> Iterator[str]:
             yield "Unexpected non-empty component.errors."
 
     match component:
+        case {"openForms": {"dataSrc": "variable", "itemsExpression": str()}}:
+            yield "String itemsExpression instead of JSON Logic expression."
+
+    match component:
         case {"type": "file", "defaultValue": list() as default_value}:
             if None in default_value:
                 yield "'null' in file default value"
@@ -70,6 +74,9 @@ def check_component(component) -> Iterator[str]:
             expected_values = [radio_value["value"] for radio_value in values]
             if default_value not in expected_values:
                 yield f"Default value '{default_value}' is not valid."
+
+        case {"type": "radio" | "select"} if component.get("defaultValue") is None:
+            yield "'null' default value."
 
         case {
             "type": "textfield" | "textarea",
