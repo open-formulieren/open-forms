@@ -6,6 +6,18 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.10 (2026-01-05)
+===================
+
+Regular bugfix release.
+
+* [:backend:`5723`] Fixed automatic closing of map overlay configuration when changing
+  the label.
+* [:backend:`5818`] Added missing ``bsn`` element in StUF-BG XML request to retrieve
+  children.
+* [:backend:`5840`] Fixed ``null`` values being sent to ZGW APIs when nested values are
+  empty in partners/children data.
+
 3.3.9 (2025-12-11)
 ==================
 
