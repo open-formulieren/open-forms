@@ -6,12 +6,12 @@
       "hasExtensionsVariant": true
     },
     {
-      "gitRef": "stable/3.3.x",
+      "gitRef": "stable/3.4.x",
       "tag": null,
       "hasExtensionsVariant": true
     },
     {
-      "gitRef": "stable/3.2.x",
+      "gitRef": "stable/3.3.x",
       "tag": null,
       "hasExtensionsVariant": true
     }
