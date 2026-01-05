@@ -6,6 +6,18 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.2.9 (2026-01-05)
+==================
+
+Final bugfix release in the ``3.2.x`` series.
+
+* [:backend:`5770`] Fixed a crash when registering data for the partners component with
+  StUF-ZDS.
+* [:backend:`5733`] Fixed outgoing requests for the Generic JSON registration not being
+  logged.
+* [:backend:`5818`] Added missing bsn element in StUF-BG XML request to retrieve
+  children.
+
 3.2.8 (2025-11-20)
 ==================
 
