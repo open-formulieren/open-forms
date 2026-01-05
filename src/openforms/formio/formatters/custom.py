@@ -1,16 +1,25 @@
 # TODO implement: iban, bsn, postcode, licenseplate, npFamilyMembers, cosign
+from collections.abc import Mapping
 from datetime import date, datetime
-from typing import NotRequired, TypedDict
+from typing import ClassVar, NotRequired, TypedDict
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from geo_visualization import generate_map_image_with_geojson
 from openforms.api.geojson import LineStringGeometry, PointGeometry, PolygonGeometry
 from openforms.config.models import MapTileLayer
+from openforms.typing import StrOrPromise
 
-from ..typing import AddressNLComponent, Component, MapComponent
+from ..typing import (
+    AddressNLComponent,
+    Component,
+    CustomerProfileComponent,
+    MapComponent,
+)
+from ..typing.custom import DigitalAddress, SupportedChannels
 from .base import FormatterBase
 
 MAP_IMAGE_SIZE = (400, 300)  # width and height in number of pixels
@@ -114,3 +123,39 @@ class AddressNLFormatter(FormatterBase):
 class CosignFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
         return str(value)
+
+
+class CustomerProfileFormatter(FormatterBase):
+    ADDRESS_TYPE_LABELS: ClassVar[Mapping[SupportedChannels, StrOrPromise]] = {
+        "email": _("email address"),
+        "phoneNumber": _("phone number"),
+    }
+
+    def format(
+        self, component: CustomerProfileComponent, value: list[DigitalAddress]
+    ) -> str:
+        # Gather all filled-in addresses and possibly add "as preferred" suffix
+        addresses: list[str] = [
+            _("{address} (will become preferred {address_type})").format(
+                address=address["address"],
+                address_type=self.ADDRESS_TYPE_LABELS[address["type"]],
+            )
+            if address.get("preferenceUpdate") == "isNewPreferred"
+            else address["address"]
+            for address in value
+            if address["address"] != ""
+        ]
+        if len(addresses) == 0:
+            return ""
+
+        if not self.as_html:
+            return self.multiple_separator.join(addresses)
+
+        return format_html(
+            "<ul>{values}</ul>",
+            values=format_html_join(
+                "",
+                "<li>{}</li>",
+                ((address,) for address in addresses),
+            ),
+        )

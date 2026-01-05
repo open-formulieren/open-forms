@@ -1936,6 +1936,12 @@
       "value": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Als je hier een waarde selecteert, dan overschrijft die de vertrouwelijkheidaanduiding van het geselecteerde zaaktype."
     }
   ],
+  "DbpUVv": [
+    {
+      "type": 0,
+      "value": "Waarde in decimale graden, tussen 50.5 en 54."
+    }
+  ],
   "DcI1VF": [
     {
       "type": 0,
@@ -3423,7 +3429,7 @@
   "QWOU1l": [
     {
       "type": 0,
-      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
+      "value": "Deze koppelingen laten je toe om variabelen mee te sturen in de XML voor StUF-ZDS. De opgegeven sleutels en waarden uit de inzendingsgegevens komen terecht in "
     },
     {
       "children": [
@@ -3828,6 +3834,12 @@
     {
       "type": 0,
       "value": "Niet uitvragen"
+    }
+  ],
+  "Tpg442": [
+    {
+      "type": 0,
+      "value": "Waarde in decimale graden, tussen 3 en 7.5."
     }
   ],
   "TtqZa0": [
@@ -4970,7 +4982,7 @@
   "csTJIN": [
     {
       "type": 0,
-      "value": "Variables mapping"
+      "value": "Variabelekoppelingen"
     }
   ],
   "cuivC6": [
@@ -5937,12 +5949,6 @@
     {
       "type": 0,
       "value": "Nee"
-    }
-  ],
-  "jiDz2v": [
-    {
-      "type": 0,
-      "value": "Waarde in decimale graden, tussen -90 en +90."
     }
   ],
   "jitewC": [
@@ -7761,12 +7767,6 @@
     {
       "type": 0,
       "value": "Actie"
-    }
-  ],
-  "z45pcO": [
-    {
-      "type": 0,
-      "value": "Waarde in decimale graden, tussen -180 en +180."
     }
   ],
   "z4zEf7": [

@@ -9,6 +9,274 @@ Changelog (NL)
     This is the Dutch version of the changelog. The English version can be
     found :ref:`here <changelog>`.
 
+
+3.4.0 "Gemeentegoed" (2025-01-05)
+=================================
+
+Open Forms 3.4.0 is een feature release.
+
+.. epigraph::
+
+   "Gemeentegoed" benadrukt de oorsprong in de gemeentelijke wereld en de filosofie dat
+   Open Formulieren van iedereen is - ofwel, gemeengoed. Naast de techniek is er in
+   deze release ook hard gewerkt aan het opbouwen van de community om Open Formulieren,
+   en het oprichten van "Broncodebeheer" om de gezondheid van dit Open Source project
+   te borgen.
+
+Deze release bevat wijzigingen van de alpha-versies en opgeloste bugs tot aan de
+stabiele versie. Lees de release-opmerkingen aandachtig voor het upgraden naar versie
+3.4.0 en volg de instructies zoals hieronder beschreven:
+
+Update-procedure
+----------------
+
+Om naar 3.4.0 te upgraden, let dan op:
+
+* ⚠️ Zorg dat de huidige versie 3.3.x is. We raden altijd de meest recente patch release
+  aan, op het moment van schrijven is dit 3.3.9.
+* Bekijk de :ref:`gedetailleerde release notes <installation_upgrade_340>` (Engels) in
+  de documentatie onder **Installation** > **Upgrade details to Open Forms 3.4.0** en
+  bereid je hierop voor. Heb je eigen NL DS-thema’s gebouwd, lees dan zeker de
+  bovenstaande documentatie zorgvuldig door.
+
+.. warning:: Als je dashboards hebt gebouwd op basis van de metrics-telemetrie, dan moet
+   je deze bijwerken met de nieuwe namen. De nieuwe namen vind je in de documentatie.
+
+Belangrijkste verbeteringen
+---------------------------
+
+**⚙️ Nieuwe render-engine**
+
+We hebben een nieuwe "renderer" gebouwd die ervoor zorgt dat de formuliervelden juist
+weergegeven worden, de inzendingsgegevens bijgehouden worden en (een deel van) de
+formulierlogica uitvoert. Het resultaat is "snappier" gebruikersinteractie, verbeterde
+toegankelijkheid en een (lichte) update van de styling, met een nauwere integratie van
+NL Design System.
+
+Zowel de oude als de nieuwe renderer zijn beschikbaar, en je kunt de nieuwe renderer
+per formulier inschakelen.
+
+We hebben nu een goede basis om een aantal langlopende bugs en gewenste verbeteringen op
+te pakken.
+
+**🗨️ Open Klant 2-integratie**
+
+Het is nu mogelijk om communicatievoorkeuren vast te leggen in formulierinzendingen,
+waardoor het eenvoudiger wordt om te voldoen aan de WMEBV-eisen. Hoewel het patroon
+generiek is en klaar is voor ondersteuning van andere leveranciers, ondersteunen we
+op dit moment specifiek Open Klant 2.
+
+Uitfaseringen
+-------------
+
+Zie de :ref:`gedetailleerde release notes <installation_upgrade_340>` (Engels).
+
+Gedetailleerde wijzigingen
+--------------------------
+
+**Nieuwe functies**
+
+* Nieuwe render-engine:
+
+  - Alle resterende bestaande componenten zijn geïmplementeerd in de nieuwe renderer.
+  - Performance is verbeterd.
+  - De toegankelijkheid van de ``textfield``- en ``textarea``-componenten met
+    ``showCharCount: true`` is verbeterd.
+  - In de e-mailverificatie-flow krijg je nu feedback dat het e-mailadres is bevestigd.
+  - Een aantal custom validatiefoutmeldingen ingesteld in de backend worden nu ondersteund.
+  - De standaard validatiefoutmeldingen zijn verbeterd en geven betere gebruikersfeedback.
+  - Validatiefouten voor een item in een herhalende groep worden nu “bij het item” getoond
+    in plaats van bij het eerste veld in het item.
+  - Componenten die “alleen-lezen” zijn, worden nu op een toegankelijke manier als zodanig
+    gemarkeerd in plaats van "disabled" (wat ze onzichtbaar maakte voor screen readers).
+  - Een aantal gebruiksvriendelijkheidsverbeteringen zijn toegepast op componenten die
+    eerder niet mogelijk waren, met name voor ``addressNL``.
+  - Er is een nieuw Profiel-component voor interactie met Open Klant 2/klantinteractie-services.
+  - De validatie van de geometrie op kaarten laat nu enkel locaties binnen Nederland toe.
+  - De datumkiezer voor ``date``- en ``datetime``-componenten is nu toegankelijk via
+    toetsenbordnavigatie en voor screenreadergebruikers.
+  - Voorbereidingen toegevoegd om meer functionaliteit "op verzoek" te laden, zodat
+    laadtijden verbeterd kunnen worden voor gebruikers met trage netwerkverbindingen.
+  - Toegankelijkheid van ``number``-componenten met voorvoegsel en/of achtervoegsel is
+    verbeterd.
+  - [:backend:`5815`] Je kan nu via de command-line de nieuwe renderer in bulk
+    inschakelen (voor DevOps).
+  - [:backend:`5814`] Shims toegevoegd voor backwards compatibility vanwege het
+    gebruik van nieuwe design tokens.
+
+* Klantprofiel/communicatievoorkeuren:
+
+  - Ondersteunt authenticatie en klantprofielen op basis van BSN en KVK.
+  - [:backend:`5707`] Prefill-plugin geïmplementeerd om voorkeuren voor het klantprofiel
+    op te halen uit klantinteractie-API’s zoals Open Klant.
+  - [:backend:`5772`] API-endpoint toegevoegd om communicatievoorkeuren van het
+    klantprofiel op te halen uit vooraf ingevulde gegevens.
+  - [:backend:`5708`] Nieuwe ``customerProfile``-formuliercomponent toegevoegd waarin
+    gebruikers hun communicatievoorkeuren kunnen opgeven.
+  - [:backend:`5711`] Terugschrijven van componentgegevens naar Open Klant geïmplementeerd
+    wanneer updates ingeschakeld zijn.
+  - [:backend:`5795`] Algemene configuratieoptie toegevoegd voor de "klantportaal”-link
+    waar gebruikers hun voorkeuren kunnen bijwerken.
+
+* Beheerinterface:
+
+  - [:backend:`5704`] Formulieren kunnen nu gefilterd worden op gebruikte betaalprovider.
+  - [:backend:`4357`] Je kunt nu thema-specifieke favicons, organisatienamen en logo’s
+    gebruiken.
+
+* Registratie:
+
+  - [:backend:`5643`] ``heeftAlsAanspreekpunt`` is toegevoegd aan de StUF-ZDS-registratieplugin.
+  - De registratie ondersteunt nu een registratiestap per component in het formulier.
+  - [:backend:`5776`] Je kunt nu elke vaste en gebruikersvariabele koppelen aan een
+    StUF-ZDS-``extraElementen``-item.
+
+* [:backend:`5683`] Het formulier-import-endpoint geeft nu de UUID van het geïmporteerde
+  formulier terug.
+* [:backend:`5546`] De structuur van de toegankelijkheidstoolbar is verbeterd:
+
+  - De knop “pagina afdrukken” is verplaatst naar de footer.
+  - De link “terug naar boven” is uitgelijnd met de stapnavigatie.
+  - Er is een optionele visuele scheiding instelbaar tussen het formulier en de
+    toegankelijkheidstoolbar.
+  - De toolbar wordt nu ook weergegeven op mobiele apparaten.
+  - Het ontbrekende navigatierol-label is toegevoegd.
+  - De weergave kan worden aangepast met een aantal nieuwe design tokens.
+
+* [:backend:`5598`] Het is niet langer mogelijk om je eigen inzending te medeondertekenen.
+
+* Performance:
+
+  - [:backend:`2409`] Gebruikersvariabelen worden nu opgeslagen bij het indienen van een
+    stap, in plaats van alleen bij voltooien van de inzending. Bij problemen kan het
+    oude gedrag worden hersteld met de featureflag
+    ``PERSIST_USER_DEFINED_VARIABLES_UPON_STEP_COMPLETION=False``.
+  - [:backend:`5747`] Rework van de opslag van inzendingsvariabelen ter voorbereiding op
+    verdere verbeteringen.
+
+* Afspraken:
+
+  - [:backend:`5687`] Initiële structuur toegevoegd van de JCC (REST) API-afsprakenplugin,
+    die uiteindelijk de SOAP-API-variant zal vervangen.
+  - [:backend:`5694`] Adresgegevens voor afspraakhulplocaties zijn nu beschikbaar voor weergave.
+
+**Bugfixes**
+
+* [:backend:`5134`] Probleem met foute afleiding van de correcte “lege waarde” voor
+  date/time/datetime-variabelen opgelost.
+* Crash verholpen bij het opslaan van een formulier met een component waarvan de
+  ``multiple``-eigenschap was gewijzigd.
+* [:backend:`3640`] Theoretisch geval verholpen waarin een inzending gepauzeerd kon worden
+  terwijl registratie bezig was of al voltooid was.
+* [:backend:`5429`] Afkappen van componentlabels in het previewpaneel van de
+  configuratiemodal is verholpen.
+* [:backend:`5391`] Probleem opgelost waarbij inzendingslogs (onterecht) lege resultaten
+  rapporteerden voor overgeslagen prefill-operaties.
+* [:backend:`3544`] Probleem opgelost waarbij het opschonen van inzendingen mogelijk
+  inzendingen verwijderde die nog toekomstige afspraken hadden.
+* Crash verholpen in upgrade-migraties voor formuliervariabelen die naar een niet-bestaande
+  component verwezen.
+* [:backend:`5722`] Worldline-configuratie aangepast om rekening te houden met meerdere
+  webhook key ID + secret-combinaties bij gebruik van meerdere PSPID’s.
+* [Sentry#453174] Crash verholpen in het configuratieoverzicht voor ongeldige
+  Worldline-merchants.
+* [:backend:`5737`] Crash verholpen in de formulierbouwer-UI bij gebruik van de
+  logica-actie synchroniseer variabele” in combinatie met veldengroep-componenten.
+* [:backend:`5735`] Crash verholpen bij het omzetten van ruwe JSON-gegevens naar
+  Python-types wanneer variabelen in bepaalde situaties niet in de database aanwezig zijn.
+* [:cve:`CVE-2025-64515`] Ontbrekende logica-evaluatie vóór validatie van
+  (stap)gebruikersinvoer opgelost. Zie :ghsa:`GHSA-cp63-63mq-5wvf` voor details.
+* Performanceproblemen van de e-mailverificatiepagina in de beheeromgeving zijn opgelost.
+* Enkele crashes verholpen die ontstonden door het inschakelen van bepaalde
+  optimalisaties, met name bij:
+
+  - Het opzoeken van het dichtstbijzijnste adres voor kaartcoördinaten.
+  - Het opzoeken van adressen in de Kadaster API.
+  - Het verwerken van (enkelvoudige) bestanden in de generieke registratieplugin.
+
+* [:backend:`5757`] Crash verholpen bij het indienen van een inzendstap met bijlagen.
+* [:backend:`5754`] Regressie in datum/datetime/time-opmaak in de ``extraElementen`` van
+  de StUF-ZDS-registratieplugin verholpen.
+* Crash verholpen in de MS Graph/SharePoint-registratieplugin doordat deze geen
+  date/datetime/time-objecten naar JSON kon omzetten.
+* Bug verholpen in de OpenID-library die de compatibiliteitslaag van onze legacy
+  callback-endpoint stuk maakte.
+* Crash verholpen bij het verwerken van gegevens van gezinsledencomponenten door een
+  verschil in dataformaat tussen StUF-BG en Haal Centraal BRP Personen bevragen.
+* [:backend:`5748`] Afhandeling van verschillen tussen de Haal Centraal Personen Bevragen API
+  en StUF-BG bij het ophalen van gezinsleden hersteld, waardoor geldige inzendgegevens in
+  kinderen- en partnercomponenten weer worden geaccepteerd.
+* [:backend:`5756`] Probleem verholpen waarbij maximaal één kind werd opgehaald bij
+  kinderen-prefill bij gebruik van StUF-BG.
+* [:backend:`5765`] Probleem opgelost die was geïntroduceerd in de 3.3.3-beveiligingsfix,
+  waardoor geldige waarden niet werden geaccepteerd in radio-, select- en
+  selectboxes-componenten met opties afkomstig uit een variabele.
+* Verholpen dat de Token Exchange-extensie niet meer werkte door het rework van de OpenID-library.
+* [:backend:`5770`] Crash verholpen bij het registreren van gegevens voor de
+  ``partners``-component met StUF-ZDS.
+* [:backend:`5778`] Crashes verholpen tijdens registratie met de Objects API wanneer er
+  date- of datetime-velden in een herhalende groep zitten.
+* [:backend:`5784`] Probleem opgelost met Worldline-creditcardbetalingen waarbij de
+  autorisatiemode niet op ``SALE`` stond.
+* [:backend:`5733`] Verholpen dat uitgaande verzoeken voor de Generieke JSON-registratie
+  niet werden gelogd.
+* [:backend:`5803`] Workaround toegepast voor date/time/datetime-objecten in inzendgegevens
+  die automatisch volgens de actieve taal werden geformatteerd in Objects API V1-templates.
+* [:backend:`5818`] Ontbrekend ``bsn``-element toegevoegd in StUF-BG XML-verzoek om
+  kinderen op te halen.
+* [:backend:`5840`] Verholpen dat ``null``-waarden naar ZGW-API’s werden gestuurd wanneer
+  geneste waarden leeg waren in partner-/kindgegevens.
+* [:backend:`5835`] Worldline-webhookbeheer hersteld zodat de PSPID weer wordt weergegeven.
+
+**Projectonderhoud**
+
+* Documentatie voor het embedden van formulieren bijgewerkt en verbeterd.
+* Het verouderde privacy policy-configuratie-endpoint is verwijderd.
+* Verouderde documentatie opgeschoond.
+* Documentatie van compatibele versies (backend/API/SDK) bijgewerkt.
+* [:sdk:`445`] Verwijzingen naar de nieuwe locaties van JS en CSS assets in de SDK bijgewerkt.
+* [:backend:`5134`] Enkele bijzondere situaties opgelost waarbij evaluatie van logicaregels
+  onverwachte resultaten kon opleveren door de implementatie van ``clearOnHide`` te
+  corrigeren.
+* Metrics zijn hernoemd om te voldoen aan OTel-naamgevingsconventies.
+* zgw-consumers bijgewerkt om OAUTH2-authenticatie van services te ondersteunen.
+* De container image wordt nu ook gepubliceerd naar
+  `ghcr.io <https://github.com/open-formulieren/open-forms/pkgs/container/open-forms>`_.
+* De onjuiste uitfaseringsmarkering op het adres-autocomplete-endpoint is verwijderd.
+* Frontend-afhankelijkheden bijgewerkt met de nieuwste beveiligingsupdates (invloed op
+  ontwikkeltooling).
+* Upgrade uitgevoerd naar mozilla-django-oidc-db met verbeterde type-annotaties.
+* ``openforms.authentication``, ``openforms.data_removal`` en ``openforms.emails`` toegevoegd
+  aan type-checkerconfiguratie in CI.
+* Documentatie toegevoegd over het ontwikkelen van UI-componenten.
+* Beveiligingsupdates toegepast voor:
+
+  - Django
+  - brotli
+  - fonttools
+  - urllib3
+
+* [DH#817] Extra logging en foutinformatie toegevoegd voor het geval de
+  Worldline-betaalflow faalt.
+* (Ontwikkel)frontend-afhankelijkheden bijgewerkt met de nieuwste beveiligingsfixes.
+* CI-pipeline aangepast om ook een testrun zonder ``assert``-statements uit te voeren.
+* Linterregel ingeschakeld die controleert op mogelijke bugs door verwijderde
+  ``assert``-statements.
+* Gebruik van ``typing.cast`` verboden via een linterregel.
+* Optie ingeschakeld in de typechecker om een fout te geven wanneer foutonderdrukking
+  niet langer nodig is.
+* CI-pipeliens opgeschoond door gebruik te maken van eigen herbruikbare Github actions.
+* Generatie van Docker Hub imagebeschrijvingen is nu een volledig zelfstandig script,
+  uitgevoerd met ``uv``.
+* VCR-checklisttemplate bijgewerkt en een hulpscript toegevoegd om alle benodigde
+  containers te starten met geïsoleerde poortnummers.
+* [:backend:`5739`] Verouderde migraties verwijderd/opgeschoond.
+* Verouderde fix-/diagnosescripts verwijderd.
+* Overgestapt op django-test-migrations voor het testen van migraties.
+* NLX verwijderd uit de repo-submodules.
+* Workaround toegevoegd om applicatieworkerprocessen te recyclen bij geheugenlekken.
+  We onderzoeken de onderliggende oorzaken.
+
 3.3.0 "Donders mooi" (2025-10-02)
 =================================
 
