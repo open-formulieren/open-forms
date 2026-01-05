@@ -1620,7 +1620,7 @@ class FormDesignerMapComponentTests(E2ETestCase):
                             "lat": 52.1326332,
                             "lng": 5.291266,
                             "defaultZoom": 1,
-                            "initialCenter": {"lat": 52.132123, "lng": 12.123123},
+                            "initialCenter": {"lat": 52.132123, "lng": 6.5},
                             "useConfigDefaultMapSettings": False,
                         }
                     ]
