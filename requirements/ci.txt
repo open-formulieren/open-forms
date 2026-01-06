@@ -619,7 +619,7 @@ maykin-2fa==2.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   maykin-common
-maykin-common==0.10.0
+maykin-common==0.12.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -906,6 +906,7 @@ python-decouple==3.8
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   maykin-common
 python-dotenv==1.0.1
     # via
     #   -c requirements/base.txt

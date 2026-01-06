@@ -354,7 +354,7 @@ maykin-2fa==2.0.0
     # via
     #   -r requirements/base.in
     #   maykin-common
-maykin-common==0.10.0
+maykin-common==0.12.0
     # via -r requirements/base.in
 maykin-json-logic-py==0.13.0
     # via -r requirements/base.in
@@ -499,7 +499,9 @@ python-dateutil==2.9.0.post0
     #   django-relativedelta
     #   o365
 python-decouple==3.8
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   maykin-common
 python-dotenv==1.0.1
     # via
     #   -r requirements/base.in

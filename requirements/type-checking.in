@@ -1,9 +1,11 @@
 -c ci.txt
 -r ci.txt
 
+decouple-types
 django-stubs
 django-stubs-ext
 djangorestframework-stubs
+gitpython
 types-lxml
 types-pytz
 types-pyyaml

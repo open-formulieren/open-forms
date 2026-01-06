@@ -2,6 +2,8 @@
 import os
 import warnings
 
+from maykin_common.config import config
+
 os.environ.setdefault("DEBUG", "yes")
 os.environ.setdefault("ALLOWED_HOSTS", "*")
 os.environ.setdefault(
@@ -140,6 +142,6 @@ warnings.filterwarnings(
 
 # Override settings with local settings.
 try:
-    from .local import *  # noqa
+    from .local import *  # noqa: F403
 except ImportError:
     pass

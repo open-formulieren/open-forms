@@ -12,6 +12,7 @@ from django.urls import reverse
 from asgiref.sync import sync_to_async
 from furl import furl
 from maykin_2fa.test import disable_admin_mfa
+from maykin_common.config import config
 from playwright.async_api import (
     BrowserContext,
     BrowserType,
@@ -22,7 +23,6 @@ from playwright.async_api import (
 )
 
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.conf.utils import config
 
 type SupportedBrowser = Literal["chromium", "firefox", "webkit"]
 

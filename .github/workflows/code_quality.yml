@@ -100,7 +100,9 @@ jobs:
           uv pip install \
             --system \
             -r requirements/type-checking.txt
+      - name: Create dummy local.py settings file
+        run: touch src/openforms/conf/local.py
       - uses: jakebailey/pyright-action@v1
         with:
-          version: 1.1.369
+          version: 1.1.407
           project: pyright.pyproject.toml
