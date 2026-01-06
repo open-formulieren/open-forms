@@ -526,7 +526,7 @@ furl==2.1.2
     #   django-digid-eherkenning
 gitdb==4.0.7
     # via gitpython
-gitpython==3.1.41
+gitpython==3.1.46
     # via -r requirements/dev.in
 glom==23.5.0
     # via

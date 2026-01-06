@@ -142,6 +142,6 @@ warnings.filterwarnings(
 
 # Override settings with local settings.
 try:
-    from .local import *  # noqa
+    from .local import *  # noqa: F403
 except ImportError:
     pass

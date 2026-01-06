@@ -515,6 +515,10 @@ furl==2.1.2
     #   -r requirements/ci.txt
     #   ape-pie
     #   django-digid-eherkenning
+gitdb==4.0.12
+    # via gitpython
+gitpython==3.1.46
+    # via -r requirements/type-checking.in
 glom==23.5.0
     # via
     #   -c requirements/ci.txt
@@ -1133,6 +1137,8 @@ six==1.16.0
     #   requests-file
     #   rfc3339-validator
     #   webtest
+smmap==5.0.2
+    # via gitdb
 snowballstemmer==2.1.0
     # via
     #   -c requirements/ci.txt
