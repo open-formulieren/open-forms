@@ -81,12 +81,22 @@ services:
     volumes:
       - ./docker-init-db.sql:/docker-entrypoint-initdb.d/init_db.sql
       - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - open-forms-dev
 
   redis:
     image: redis:8
     command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 1s
+      retries: 3
     networks:
       - open-forms-dev
     volumes:
@@ -99,6 +109,12 @@ services:
 
   clamav:
     image: clamav/clamav:1.0.0
+    healthcheck:
+      test: ["CMD", "clamdcheck.sh"]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+      start_period: 6m
     networks:
       - open-forms-dev
 
@@ -159,6 +175,12 @@ services:
       - '9000:80'
     depends_on:
       - web
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:80/_healthz/livez/']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     networks:
       - open-forms-dev
 

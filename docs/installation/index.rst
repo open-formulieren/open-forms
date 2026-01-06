@@ -24,6 +24,7 @@ After installation, follow the :ref:`configuration_index` instructions to enable
    docker_compose
    security
    config
+   health_checks
    observability/index
    setup_configuration
    file_uploads
