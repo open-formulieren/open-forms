@@ -924,9 +924,11 @@ class FormLogicAPITests(APITestCase):
         )
         self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
 
-    def test_cant_have_both_empty_form_step_uuid_and_form_step_in_mark_step_as_not_applicable(
-        self,
-    ):
+    def test_empty_form_step_uuid_in_relevant_actions(self):
+        """
+        Ensure a validation error is raised when the "step applicable", "step not
+        applicable", and "disable next" actions have an empty form step uuid.
+        """
         user = SuperUserFactory.create()
         self.client.force_authenticate(user=user)
         form = FormFactory.create(
@@ -953,15 +955,17 @@ class FormLogicAPITests(APITestCase):
                 "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
                 "actions": [
                     {
-                        "formStep": "",  # Missing form step / form step UUID
                         "formStepUuid": "",  # Empty form step uuid
-                        "action": {
-                            "name": "Mark step as not applicable",
-                            "type": "step-not-applicable",
-                            "property": {"value": "", "type": ""},
-                            "state": "",
-                        },
-                    }
+                        "action": {"type": "step-not-applicable"},
+                    },
+                    {
+                        "formStepUuid": "",  # Empty form step uuid
+                        "action": {"type": "step-applicable"},
+                    },
+                    {
+                        "formStepUuid": "",  # Empty form step uuid
+                        "action": {"type": "disable-next"},
+                    },
                 ],
                 "is_advanced": False,
             }
@@ -971,14 +975,18 @@ class FormLogicAPITests(APITestCase):
         response = self.client.put(url, data=form_logic_data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(
-            "0.actions.0.formStepUuid", response.json()["invalidParams"][0]["name"]
-        )
-        self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
 
-    def test_can_null_form_step_and_form_step_uuid(
-        self,
-    ):
+        invalid_params = response.json()["invalidParams"]
+        for i, action_type in enumerate(
+            ("step-not-applicable", "step-applicable", "disable-next")
+        ):
+            with self.subTest(action_type=action_type):
+                self.assertEqual(
+                    f"0.actions.{i}.formStepUuid", invalid_params[i]["name"]
+                )
+                self.assertEqual("blank", invalid_params[i]["code"])
+
+    def test_can_null_form_step_uuid(self):
         user = SuperUserFactory.create()
         self.client.force_authenticate(user=user)
         form = FormFactory.create(
@@ -1005,7 +1013,6 @@ class FormLogicAPITests(APITestCase):
                 "json_logic_trigger": {"==": [{"var": "text1"}, "test"]},
                 "actions": [
                     {
-                        "formStep": None,
                         "formStepUuid": None,
                         "variable": "text2",
                         "action": {
