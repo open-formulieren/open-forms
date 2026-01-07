@@ -16,6 +16,7 @@ from openforms.variables.constants import FormVariableDataTypes
 
 from ....constants import (
     LOGIC_ACTION_TYPES_REQUIRING_COMPONENT,
+    LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_UUID,
     LOGIC_ACTION_TYPES_REQUIRING_VARIABLE,
     LogicActionTypes,
     PropertyTypes,
@@ -196,6 +197,10 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
     }
 
 
+def _join_action_types(action_types):
+    return f"`{'`, `'.join(sorted(action_types))}`"
+
+
 @extend_schema_serializer(deprecate_fields=["form_step"])
 class LogicComponentActionSerializer(serializers.Serializer):
     # TODO: validate that the component is present on the form
@@ -212,12 +217,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
             "Key of the Form.io component that the action applies to. This field is "
             "required for the action types {action_types} - otherwise it's optional."
         ).format(
-            action_types=", ".join(
-                [
-                    f"`{action_type}`"
-                    for action_type in sorted(LOGIC_ACTION_TYPES_REQUIRING_COMPONENT)
-                ]
-            )
+            action_types=_join_action_types(LOGIC_ACTION_TYPES_REQUIRING_COMPONENT)
         ),
     )
     variable = serializers.CharField(
@@ -228,12 +228,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
             "Key of the target variable whose value will be changed. This field is "
             "required for the action types {action_types} - otherwise it's optional."
         ).format(
-            action_types=", ".join(
-                [
-                    f"`{action_type}`"
-                    for action_type in sorted(LOGIC_ACTION_TYPES_REQUIRING_VARIABLE)
-                ]
-            )
+            action_types=_join_action_types(LOGIC_ACTION_TYPES_REQUIRING_VARIABLE)
         ),
     )
     form_step_uuid = ActionFormStepUUIDField(
@@ -241,10 +236,11 @@ class LogicComponentActionSerializer(serializers.Serializer):
         required=False,  # validated against the action.type
         label=_("form step"),
         help_text=_(
-            "The UUID of the form step that will be affected by the action. This field is "
-            "required if the action type is `%(action_type)s`, otherwise optional."
-        )
-        % {"action_type": LogicActionTypes.step_not_applicable},
+            "The UUID of the form step that will be affected by the action. This field "
+            "is required for action types {action_types} - otherwise it's optional."
+        ).format(
+            action_types=_join_action_types(LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_UUID)
+        ),
     )
     action = LogicActionPolymorphicSerializer()
 
@@ -317,8 +313,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
                     ) from ex
 
         if (
-            action_type
-            and action_type == LogicActionTypes.step_not_applicable
+            action_type in LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_UUID
             and not form_step_uuid
         ):
             raise serializers.ValidationError(
