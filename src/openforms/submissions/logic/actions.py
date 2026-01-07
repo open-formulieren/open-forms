@@ -134,15 +134,22 @@ class PropertyAction(ActionOperation):
         return None
 
 
+@dataclass
 class DisableNextAction(ActionOperation):
+    form_step_identifier: str
+
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
-        return cls()
+        return cls(form_step_identifier=action["form_step_uuid"])
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
-        step._can_submit = False
+        execution_state = step.submission.load_execution_state()
+        submission_step_to_modify = execution_state.resolve_step(
+            self.form_step_identifier
+        )
+        submission_step_to_modify.can_submit = False
 
 
 @dataclass
@@ -151,9 +158,7 @@ class StepNotApplicableAction(ActionOperation):
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
-        return cls(
-            form_step_identifier=action["form_step_uuid"],
-        )
+        return cls(form_step_identifier=action.get("form_step_uuid", ""))
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper

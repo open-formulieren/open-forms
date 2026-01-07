@@ -188,6 +188,10 @@ class SubmissionStep(models.Model):  # noqa: DJ008
     def can_submit(self) -> bool:
         return self._can_submit
 
+    @can_submit.setter
+    def can_submit(self, value: bool) -> None:
+        self._can_submit = value
+
     @property
     def is_applicable(self) -> bool:
         if self._is_applicable is not None:

@@ -33,6 +33,11 @@ class LogicActionTypes(models.TextChoices):
 
 LOGIC_ACTION_TYPES_REQUIRING_COMPONENT: Set[str] = {LogicActionTypes.property.value}
 LOGIC_ACTION_TYPES_REQUIRING_VARIABLE: Set[str] = {LogicActionTypes.variable.value}
+LOGIC_ACTION_TYPES_REQUIRING_FORM_STEP_UUID: Set[str] = {
+    LogicActionTypes.step_applicable.value,
+    LogicActionTypes.step_not_applicable.value,
+    LogicActionTypes.disable_next.value,
+}
 
 
 class PropertyTypes(models.TextChoices):

@@ -409,6 +409,22 @@ const ActionEvaluateDMN = ({action, errors, onChange}) => {
   );
 };
 
+const ActionDisableStep = ({action, errors, onChange}) => {
+  return (
+    <>
+      <DSLEditorNode errors={errors.formStepUuid}>
+        <label className="required">
+          <FormattedMessage
+            defaultMessage="Execute on step"
+            description="Disable next action execute on step message"
+          />
+        </label>
+        <StepSelection name="formStepUuid" value={action.formStepUuid} onChange={onChange} />
+      </DSLEditorNode>
+    </>
+  );
+};
+
 const ActionComponent = ({action, errors, onChange}) => {
   let Component;
   switch (action.action.type) {
@@ -424,9 +440,9 @@ const ActionComponent = ({action, errors, onChange}) => {
       Component = ActionFetchFromService;
       break;
     }
-    case '':
     case 'disable-next': {
-      return null;
+      Component = ActionDisableStep;
+      break;
     }
     case 'step-not-applicable': {
       Component = ActionStepNotApplicable;
@@ -448,6 +464,8 @@ const ActionComponent = ({action, errors, onChange}) => {
       Component = ActionSynchronizeVariables;
       break;
     }
+    case '':
+      return null;
     default: {
       throw new Error(`Unknown action type: ${action.action.type}`);
     }
