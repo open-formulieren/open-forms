@@ -36,6 +36,15 @@ services:
     networks:
       - open-forms-dev
 
+  # traces backend
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - 16686:16686 # UI
+    networks:
+      - open-forms-dev
+
+
   # open telemetry collector, receives metrics from the application instance(s)
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.131.0
