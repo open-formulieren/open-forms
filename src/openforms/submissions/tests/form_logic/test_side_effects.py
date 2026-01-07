@@ -151,7 +151,9 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
                     {"var": "fieldB"},
                 ]
             },
-            actions=[{"action": {"type": "disable-next"}}],
+            actions=[
+                {"form_step_uuid": str(step2.uuid), "action": {"type": "disable-next"}}
+            ],
             trigger_from_step=step2,
         )
 

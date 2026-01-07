@@ -470,9 +470,8 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             },
             actions=[
                 {
-                    "action": {
-                        "type": "disable-next",
-                    },
+                    "form_step_uuid": str(form_step.uuid),
+                    "action": {"type": "disable-next"},
                 }
             ],
         )

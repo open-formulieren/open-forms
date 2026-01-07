@@ -7,7 +7,7 @@
                 {
                     "type": "disable-next"
                 },
-                "component": "test"
+                "form_step_uuid": "3ca01601-cd20-4746-bce5-baab47636823"
             }
         ],
         "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",

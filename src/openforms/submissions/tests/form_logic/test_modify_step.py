@@ -49,7 +49,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
-                    "component": "step2_textfield1",
+                    "form_step_uuid": str(step2.uuid),
                     "action": {
                         "name": "Hide element",
                         "type": "disable-next",
@@ -230,6 +230,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
@@ -247,7 +248,6 @@ class StepModificationTests(TestCase):
         self.assertTrue(submission_step.can_submit)
 
         evaluate_form_logic(submission, submission_step)
-
         self.assertFalse(submission_step.can_submit)
 
     def test_date_of_birth_trigger(self):
@@ -273,6 +273,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
@@ -377,6 +378,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
@@ -425,6 +427,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
@@ -463,6 +466,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
@@ -535,6 +539,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
