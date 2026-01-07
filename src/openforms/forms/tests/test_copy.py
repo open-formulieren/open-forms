@@ -194,9 +194,15 @@ class CopyFormTests(TestCase):
             form=form,
             json_logic_trigger={"==": [{"var": "test-key"}, 1]},
             actions=[
-                {"action": {"type": "disable-next"}},
-                {"action": {"type": "disable-next"}, "form_step_uuid": None},
-                {"action": {"type": "disable-next"}, "form_step_uuid": ""},
+                {"action": {"type": "set-registration-backend", "value": "foo"}},
+                {
+                    "action": {"type": "set-registration-backend", "value": "foo"},
+                    "form_step_uuid": None,
+                },
+                {
+                    "action": {"type": "set-registration-backend", "value": "foo"},
+                    "form_step_uuid": "",
+                },
             ],
         )
 

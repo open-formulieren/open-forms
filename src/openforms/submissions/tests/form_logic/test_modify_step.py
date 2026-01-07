@@ -49,7 +49,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
-                    "component": "step2_textfield1",
+                    "form_step_uuid": str(step2.uuid),
                     "action": {
                         "name": "Hide element",
                         "type": "disable-next",
@@ -73,7 +73,11 @@ class StepModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step_2)
 
-        self.assertFalse(submission_step_2.can_submit)
+        submission_state = submission.load_execution_state()
+        updated_step_2 = submission_state.get_submission_step(
+            form_step_uuid=str(step2.uuid)
+        )
+        self.assertFalse(updated_step_2.can_submit)
 
     def test_step_not_applicable(self):
         form = FormFactory.create()
@@ -230,6 +234,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
@@ -247,8 +252,11 @@ class StepModificationTests(TestCase):
         self.assertTrue(submission_step.can_submit)
 
         evaluate_form_logic(submission, submission_step)
-
-        self.assertFalse(submission_step.can_submit)
+        submission_state = submission.load_execution_state()
+        updated_step = submission_state.get_submission_step(
+            form_step_uuid=str(step.uuid)
+        )
+        self.assertFalse(updated_step.can_submit)
 
     def test_date_of_birth_trigger(self):
         form = FormFactory.create()
@@ -273,6 +281,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
@@ -292,7 +301,11 @@ class StepModificationTests(TestCase):
         with freeze_time("2020-01-01"):
             evaluate_form_logic(submission, submission_step)
 
-        self.assertFalse(submission_step.can_submit)
+        submission_state = submission.load_execution_state()
+        updated_step = submission_state.get_submission_step(
+            form_step_uuid=str(step.uuid)
+        )
+        self.assertFalse(updated_step.can_submit)
 
     def test_only_diff_data_returned(self):
         form = FormFactory.create()
@@ -377,6 +390,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
@@ -395,7 +409,11 @@ class StepModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step)
 
-        self.assertFalse(submission_step.can_submit)
+        submission_state = submission.load_execution_state()
+        updated_step = submission_state.get_submission_step(
+            form_step_uuid=str(step.uuid)
+        )
+        self.assertFalse(updated_step.can_submit)
 
     def test_select_boxes_trigger_with_dot_in_key_name(self):
         form = FormFactory.create()
@@ -425,6 +443,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
@@ -443,7 +462,11 @@ class StepModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step)
 
-        self.assertFalse(submission_step.can_submit)
+        submission_state = submission.load_execution_state()
+        updated_step = submission_state.get_submission_step(
+            form_step_uuid=str(step.uuid)
+        )
+        self.assertFalse(updated_step.can_submit)
 
     def test_normal_component_trigger_with_dot_in_key_name(self):
         form = FormFactory.create()
@@ -463,6 +486,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
@@ -481,7 +505,11 @@ class StepModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step)
 
-        self.assertFalse(submission_step.can_submit)
+        submission_state = submission.load_execution_state()
+        updated_step = submission_state.get_submission_step(
+            form_step_uuid=str(step.uuid)
+        )
+        self.assertFalse(updated_step.can_submit)
 
     def test_component_removed_from_definition(self):
         # Test for issue #1568
@@ -535,6 +563,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
+                    "form_step_uuid": str(step.uuid),
                     "action": {
                         "name": "Disable next",
                         "type": "disable-next",
@@ -556,4 +585,8 @@ class StepModificationTests(TestCase):
         ):  # The start of construction is 48h in the future
             evaluate_form_logic(submission, submission_step)
 
-        self.assertFalse(submission_step.can_submit)
+        submission_state = submission.load_execution_state()
+        updated_step = submission_state.get_submission_step(
+            form_step_uuid=str(step.uuid)
+        )
+        self.assertFalse(updated_step.can_submit)

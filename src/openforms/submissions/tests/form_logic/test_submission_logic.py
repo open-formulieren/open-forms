@@ -197,6 +197,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             json_logic_trigger={"!=": [{"var": "var3"}, 15]},
             actions=[
                 {
+                    "form_step_uuid": str(step2.uuid),
                     "action": {
                         "type": "disable-next",
                     },
@@ -266,9 +267,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             json_logic_trigger={"==": [{"var": "text1"}, "trigger-rule"]},
             actions=[
                 {
-                    "component": "",
                     "variable": "verdergaan",
-                    "formStepUuid": None,
                     "action": {"type": "variable", "value": "nee"},
                 }
             ],
@@ -280,8 +279,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             json_logic_trigger={"==": [{"var": "verdergaan"}, "nee"]},
             actions=[
                 {
-                    "component": "",
-                    "formStepUuid": None,
+                    "form_step_uuid": str(step2.uuid),
                     "action": {"type": "disable-next"},
                 }
             ],

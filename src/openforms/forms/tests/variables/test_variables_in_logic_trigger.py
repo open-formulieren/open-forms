@@ -62,8 +62,9 @@ class VariablesInLogicBulkAPITests(APITestCase):
                 "actions": [
                     {
                         "action": {
-                            "type": "disable-next",
-                        }
+                            "type": "set-registration-backend",
+                            "value": "foo"
+                        },
                     }
                 ],
             }
@@ -93,9 +94,10 @@ class VariablesInLogicBulkAPITests(APITestCase):
                 },
                 "actions": [
                     {
-                        "action": {
-                            "type": "disable-next",
-                        }
+                         "action": {
+                            "type": "set-registration-backend",
+                            "value": "foo"
+                        },
                     }
                 ],
             }
@@ -210,9 +212,10 @@ class VariablesInLogicBulkAPITests(APITestCase):
                 },
                 "actions": [
                     {
-                        "action": {
-                            "type": "disable-next",
-                        }
+                         "action": {
+                            "type": "set-registration-backend",
+                            "value": "foo"
+                        },
                     }
                 ],
             }
