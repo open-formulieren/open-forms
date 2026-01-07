@@ -38,7 +38,7 @@ services:
 
   # traces backend
   jaeger:
-    image: jaegertracing/all-in-one:latest
+    image: jaegertracing/jaeger:2.14.0
     ports:
       - 16686:16686 # UI
     networks:
