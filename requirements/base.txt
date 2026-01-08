@@ -652,7 +652,7 @@ tzlocal==4.3.1
     # via o365
 uritemplate==3.0.1
     # via drf-spectacular
-urllib3==2.6.2
+urllib3==2.6.3
     # via
     #   elastic-apm
     #   requests
