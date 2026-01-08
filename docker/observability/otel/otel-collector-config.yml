@@ -77,13 +77,18 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true
 
+  otlp/jaeger:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
 service:
   extensions: [basicauth/server]
   pipelines:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [debug]
+      exporters: [debug, otlp/jaeger]
     metrics:
       receivers: [otlp, postgresql, redis, nginx, prometheus]
       processors: [memory_limiter, transform, batch]
