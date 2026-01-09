@@ -54,6 +54,7 @@ urlpatterns = [
     path("cookies/", include("cookie_consent.urls")),
     path("tinymce/", decorator_include(login_required, "tinymce.urls")),  # type: ignore
     path("api/", include("openforms.api.urls", namespace="api")),
+    path("", include("maykin_common.health_checks.urls")),
     *_legacy_oidc_urls,
     path("auth/oidc/", include("mozilla_django_oidc.urls")),
     path("auth/", include("openforms.authentication.urls", namespace="authentication")),
