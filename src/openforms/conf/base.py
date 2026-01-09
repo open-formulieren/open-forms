@@ -779,9 +779,32 @@ MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS = [
 # CELERY - async task queue
 #
 CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="redis://localhost:6379/0")
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    # only used when the broker uses redis sentinel. Failing to specify a master name
+    # when the broker is configured with sentinel will trigger a `ValueError` in workers.
+    "master_name": config("REDIS_BROKER_SENTINEL_MASTER", default="") or None,
+    # Optional authentication parameters
+    "sentinel_kwargs": {
+        "password": config("REDIS_BROKER_SENTINEL_PASSWORD", default="") or None,
+        "username": config("REDIS_BROKER_SENTINEL_USERNAME", default="") or None,
+    },
+}
+
 CELERY_RESULT_BACKEND = config(
     "CELERY_RESULT_BACKEND", default="redis://localhost:6379/0"
 )
+CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS = {
+    # only used when the broker uses redis sentinel. Failing to specify a master name
+    # when the broker is configured with sentinel will trigger a `ValueError` in workers.
+    "master_name": config("REDIS_RESULT_BACKEND_SENTINEL_MASTER", default="") or None,
+    # Optional authentication parameters
+    "sentinel_kwargs": {
+        "password": config("REDIS_RESULT_BACKEND_SENTINEL_PASSWORD", default="")
+        or None,
+        "username": config("REDIS_RESULT_BACKEND_SENTINEL_USERNAME", default="")
+        or None,
+    },
+}
 
 # Add (by default) 5 (soft), 15 (hard) minute timeouts to all Celery tasks.
 CELERY_TASK_TIME_LIMIT = config("CELERY_TASK_HARD_TIME_LIMIT", default=15 * 60)  # hard
@@ -868,7 +891,17 @@ CELERY_TASK_ACKS_LATE = True
 # *should* have the same effect...
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
+#
+# CELERY-ONCE
+#
 CELERY_ONCE_REDIS_URL = config("CELERY_ONCE_REDIS_URL", default=CELERY_BROKER_URL)
+CELERY_ONCE = {
+    "backend": "celery_once.backends.Redis",
+    "settings": {
+        "url": CELERY_ONCE_REDIS_URL,
+        "default_timeout": 60 * 60,  # one hour
+    },
+}
 
 #
 # DJANGO-CORS-MIDDLEWARE
