@@ -67,6 +67,7 @@ click==8.1.7
     #   click-didyoumean
     #   click-plugins
     #   click-repl
+    #   typer
 click-didyoumean==0.3.0
     # via celery
 click-plugins==1.1.1
@@ -105,6 +106,7 @@ django==4.2.27
     #   django-filter
     #   django-flags
     #   django-formtools
+    #   django-health-check
     #   django-hijack
     #   django-import-export
     #   django-jsonform
@@ -177,6 +179,8 @@ django-flags==5.0.13
     # via -r requirements/base.in
 django-formtools==2.5.1
     # via django-two-factor-auth
+django-health-check==3.20.8
+    # via maykin-common
 django-hijack==3.4.1
     # via -r requirements/base.in
 django-import-export==3.3.7
@@ -348,18 +352,22 @@ mail-cleaner==2.0.0
     # via -r requirements/base.in
 mail-parser==3.15.0
     # via django-yubin
+markdown-it-py==4.0.0
+    # via rich
 markuppy==1.14
     # via tablib
 maykin-2fa==2.0.0
     # via
     #   -r requirements/base.in
     #   maykin-common
-maykin-common==0.12.0
+maykin-common==0.13.0
     # via -r requirements/base.in
 maykin-json-logic-py==0.13.0
     # via -r requirements/base.in
 maykin-python3-saml==1.16.1
     # via django-digid-eherkenning
+mdurl==0.1.2
+    # via markdown-it-py
 mozilla-django-oidc==4.0.0
     # via mozilla-django-oidc-db
 mozilla-django-oidc-db==1.1.1
@@ -482,6 +490,8 @@ pydantic-settings==2.6.1
     # via django-setup-configuration
 pydyf==0.8.0
     # via weasyprint
+pygments==2.19.2
+    # via rich
 pyjwt==2.6.0
     # via zgw-consumers
 pyopenssl==25.0.0
@@ -544,6 +554,7 @@ requests==2.32.4
     #   django-camunda
     #   django-log-outgoing-requests
     #   jsonschema-spec
+    #   maykin-common
     #   maykin-python3-saml
     #   mozilla-django-oidc
     #   o365
@@ -567,6 +578,8 @@ requests-toolbelt==1.0.0
     #   zeep
 rfc3339-validator==0.1.4
     # via openapi-schema-validator
+rich==14.2.0
+    # via typer
 rpds-py==0.18.0
     # via
     #   jsonschema
@@ -591,6 +604,8 @@ sentry-sdk==2.10.0
     # via -r requirements/base.in
 shapely==2.1.1
     # via -r requirements/base.in
+shellingham==1.5.4
+    # via typer
 simplejson==3.19.3
     # via mail-parser
 six==1.16.0
@@ -630,6 +645,8 @@ tornado==6.5
     # via flower
 tqdm==4.67.1
     # via -r requirements/base.in
+typer==0.21.1
+    # via maykin-common
 typing-extensions==4.12.2
     # via
     #   -r requirements/base.in
@@ -643,6 +660,7 @@ typing-extensions==4.12.2
     #   pydantic
     #   pydantic-core
     #   pyopenssl
+    #   typer
     #   zgw-consumers
 tzdata==2025.2
     # via

@@ -15,6 +15,10 @@ from corsheaders.defaults import default_headers as default_cors_headers
 from log_outgoing_requests.datastructures import ContentType
 from log_outgoing_requests.formatters import HttpFormatter
 from maykin_common.config import config
+from maykin_common.health_checks import (
+    default_health_check_apps,
+    default_health_check_subsets,
+)
 from upgrade_check import UpgradeCheck, VersionRange
 from upgrade_check.constraints import UpgradePaths
 
@@ -197,6 +201,8 @@ INSTALLED_APPS = [
     "django_setup_configuration",
     "rangefilter",
     "upgrade_check",
+    # health check + plugins
+    *default_health_check_apps,
     # Project applications.
     "openforms.accounts",
     "openforms.analytics_tools",
@@ -1308,6 +1314,13 @@ UPGRADE_CHECK_PATHS: UpgradePaths = {
     ),
 }
 UPGRADE_CHECK_STRICT = False
+
+#
+# DJANGO-HEALTH-CHECK
+#
+HEALTH_CHECK = {
+    "SUBSETS": default_health_check_subsets,
+}
 
 #
 # DJANGO-STRUCTLOG
