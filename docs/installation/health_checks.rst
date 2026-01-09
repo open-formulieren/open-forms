@@ -32,7 +32,38 @@ Open Forms containers
 HTTP service
 ------------
 
-.. todo:: TODO
+The Open Forms web service listens on port 8000 inside the container and accepts HTTP
+traffic. Three endpoints are exposed for health checks.
+
+``http://localhost:8000/_healthz/livez/``
+    The liveness endpoint - checks that HTTP requests can be handled. Suitable for
+    liveness (and readiness) probes. This is the check with lowest overhead.
+
+``http://localhost:8000/_healthz/``
+    Endpoint that checks connections with database, caches, database migration state...
+
+    Suitable for the startup probe. The most expensive check to run, as it checks all
+    dependencies of the application.
+
+``http://localhost:8000/_healthz/readyz/``
+    The readiness endpoint - checks that requests can be handled and tests that the
+    default cache (used by for sessions) and database connection function. Slightly
+    more expensive than the liveness check, but it's a good candidate for the readiness
+    probe.
+
+.. tip:: Ensure the ``ALLOWED_HOSTS`` environment variable contains ``localhost``. See
+    :ref:`installation_environment_config` for more details.
+
+.. tip:: The executable ``maykin-common`` is available in the container which can be
+   used to perform the health checks, as an alternative to HTTP probes.
+
+   .. code-block:: bash
+
+        maykin-common health-check
+            --endpoint=http://localhost:8000/_healthz/livez/ \
+            --timeout=3
+
+.. versionadded:: 3.5.0
 
 Celery workers
 --------------
