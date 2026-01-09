@@ -126,6 +126,7 @@ click==8.1.7
     #   click-didyoumean
     #   click-plugins
     #   click-repl
+    #   typer
 click-didyoumean==0.3.0
     # via
     #   -c requirements/ci.txt
@@ -194,6 +195,7 @@ django==4.2.27
     #   django-filter
     #   django-flags
     #   django-formtools
+    #   django-health-check
     #   django-hijack
     #   django-import-export
     #   django-jsonform
@@ -297,6 +299,10 @@ django-formtools==2.5.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-two-factor-auth
+django-health-check==3.20.8
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-hijack==3.4.1
     # via
     #   -c requirements/ci.txt
@@ -651,6 +657,11 @@ mail-parser==3.15.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-yubin
+markdown-it-py==4.0.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   rich
 markuppy==1.14
     # via
     #   -c requirements/ci.txt
@@ -665,7 +676,7 @@ maykin-2fa==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-common==0.12.0
+maykin-common==0.13.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -678,6 +689,11 @@ maykin-python3-saml==1.16.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
+mdurl==0.1.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   markdown-it-py
 mozilla-django-oidc==4.0.0
     # via
     #   -c requirements/ci.txt
@@ -922,10 +938,11 @@ pyee==12.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   playwright
-pygments==2.17.2
+pygments==2.19.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   rich
     #   sphinx
     #   sphinx-tabs
 pyjwt==2.6.0
@@ -1069,6 +1086,11 @@ rfc3339-validator==0.1.4
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   openapi-schema-validator
+rich==14.2.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   typer
 rpds-py==0.18.0
     # via
     #   -c requirements/ci.txt
@@ -1116,6 +1138,11 @@ shapely==2.1.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+shellingham==1.5.4
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   typer
 simplejson==3.19.3
     # via
     #   -c requirements/ci.txt
@@ -1255,6 +1282,10 @@ tqdm==4.67.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+typer==0.21.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 types-beautifulsoup4==4.12.0.20240511
     # via types-lxml
 types-html5lib==1.1.11.20240228
@@ -1293,6 +1324,7 @@ typing-extensions==4.12.2
     #   pydantic-core
     #   pyee
     #   pyopenssl
+    #   typer
     #   types-lxml
     #   zgw-consumers
     #   zgw-consumers-oas

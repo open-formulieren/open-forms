@@ -113,6 +113,7 @@ click==8.1.7
     #   click-didyoumean
     #   click-plugins
     #   click-repl
+    #   typer
 click-didyoumean==0.3.0
     # via
     #   -c requirements/base.txt
@@ -170,6 +171,7 @@ django==4.2.27
     #   django-filter
     #   django-flags
     #   django-formtools
+    #   django-health-check
     #   django-hijack
     #   django-import-export
     #   django-jsonform
@@ -272,6 +274,10 @@ django-formtools==2.5.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-two-factor-auth
+django-health-check==3.20.8
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-hijack==3.4.1
     # via
     #   -c requirements/base.txt
@@ -567,6 +573,11 @@ mail-parser==3.15.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-yubin
+markdown-it-py==4.0.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   rich
 markuppy==1.14
     # via
     #   -c requirements/base.txt
@@ -576,7 +587,7 @@ maykin-2fa==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-maykin-common==0.12.0
+maykin-common==0.13.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -589,6 +600,11 @@ maykin-python3-saml==1.16.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-digid-eherkenning
+mdurl==0.1.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   markdown-it-py
 mozilla-django-oidc==4.0.0
     # via
     #   -c requirements/base.txt
@@ -817,6 +833,11 @@ pydyf==0.8.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   weasyprint
+pygments==2.19.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   rich
 pyjwt==2.6.0
     # via
     #   -c requirements/base.txt
@@ -942,6 +963,11 @@ rfc3339-validator==0.1.4
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   openapi-schema-validator
+rich==14.2.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   typer
 rpds-py==0.18.0
     # via
     #   -c requirements/base.txt
@@ -985,6 +1011,11 @@ shapely==2.1.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+shellingham==1.5.4
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   typer
 simplejson==3.19.3
     # via
     #   -c requirements/base.txt
@@ -1049,6 +1080,10 @@ tqdm==4.67.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+typer==0.21.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 typing-extensions==4.12.2
     # via
     #   -c requirements/base.txt
@@ -1063,6 +1098,7 @@ typing-extensions==4.12.2
     #   pydantic
     #   pydantic-core
     #   pyopenssl
+    #   typer
     #   zgw-consumers
 tzdata==2025.2
     # via

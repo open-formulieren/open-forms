@@ -137,6 +137,7 @@ click==8.1.7
     #   click-plugins
     #   click-repl
     #   rich-click
+    #   typer
 click-didyoumean==0.3.0
     # via
     #   -c requirements/ci.txt
@@ -205,6 +206,7 @@ django==4.2.27
     #   django-filter
     #   django-flags
     #   django-formtools
+    #   django-health-check
     #   django-hijack
     #   django-import-export
     #   django-jsonform
@@ -312,6 +314,10 @@ django-formtools==2.5.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-two-factor-auth
+django-health-check==3.20.8
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-hijack==3.4.1
     # via
     #   -c requirements/ci.txt
@@ -670,8 +676,11 @@ mail-parser==3.15.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-yubin
-markdown-it-py==3.0.0
-    # via rich
+markdown-it-py==4.0.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   rich
 markuppy==1.14
     # via
     #   -c requirements/ci.txt
@@ -686,7 +695,7 @@ maykin-2fa==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-common==0.12.0
+maykin-common==0.13.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -700,7 +709,10 @@ maykin-python3-saml==1.16.1
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
 mdurl==0.1.2
-    # via markdown-it-py
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   markdown-it-py
 mozilla-django-oidc==4.0.0
     # via
     #   -c requirements/ci.txt
@@ -952,7 +964,7 @@ pyee==12.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   playwright
-pygments==2.17.2
+pygments==2.19.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1102,10 +1114,13 @@ rfc3339-validator==0.1.4
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   openapi-schema-validator
-rich==13.9.4
+rich==14.2.0
     # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
     #   bump-my-version
     #   rich-click
+    #   typer
 rich-click==1.8.8
     # via bump-my-version
 rpds-py==0.18.0
@@ -1155,6 +1170,11 @@ shapely==2.1.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+shellingham==1.5.4
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   typer
 simplejson==3.19.3
     # via
     #   -c requirements/ci.txt
@@ -1302,6 +1322,10 @@ tqdm==4.67.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+typer==0.21.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 types-requests==2.32.4.20250611
     # via
     #   -c requirements/ci.txt
@@ -1324,6 +1348,7 @@ typing-extensions==4.12.2
     #   pyee
     #   pyopenssl
     #   rich-click
+    #   typer
     #   zgw-consumers
     #   zgw-consumers-oas
 tzdata==2025.2
