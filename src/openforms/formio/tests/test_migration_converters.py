@@ -120,6 +120,37 @@ class PostCodeTests(SimpleTestCase):
 
         self.assertFalse(changed)
 
+    def test_null_default_value(self):
+        component: Component = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_null_default_value_multiple(self):
+        component: Component = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "multiple": True,
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])
+
 
 class DatetimeTests(SimpleTestCase):
     def test_update(self):
@@ -169,6 +200,33 @@ class SelectTests(SimpleTestCase):
         }
 
         changed = fix_multiple_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])
+
+    def test_null_default_value(self):
+        component: Component = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_null_default_value_multiple(self):
+        component: Component = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "multiple": True,
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
@@ -937,3 +995,32 @@ class EditGridTests(SimpleTestCase):
         changed = fix_empty_default_value(component)
 
         self.assertFalse(changed)
+
+
+class BSNTests(SimpleTestCase):
+    def test_null_default_value(self):
+        component: Component = {
+            "type": "bsn",
+            "key": "bsn",
+            "label": "BSN",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_null_default_value_multiple(self):
+        component: Component = {
+            "type": "bsn",
+            "key": "bsn",
+            "label": "BSN",
+            "multiple": True,
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])

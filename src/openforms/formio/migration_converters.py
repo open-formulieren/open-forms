@@ -368,6 +368,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "ensure_validate_pattern": ensure_postcode_validate_pattern,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "file": {
         "fix_default_value": fix_file_default_value,
@@ -387,6 +388,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "set_openforms_datasrc": set_openforms_datasrc,
         "fix_multiple_empty_default_value": fix_multiple_empty_default_value,
         "set_datatype_string": set_datatype_string,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "selectboxes": {"set_openforms_datasrc": set_openforms_datasrc},
     "currency": {
@@ -413,6 +415,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "alter_prefill_default_values": alter_prefill_default_values,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "cosign": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
