@@ -15,7 +15,7 @@ from openforms.submissions.models import Submission
 from ..base import BasePlugin, Product
 from ..models import Appointment, AppointmentProduct, AppointmentsConfig
 from ..utils import get_plugin
-from .fields import LocationIDField, ProductIDField
+from .fields import LocationIDField, ProductIDListField
 
 
 class AppointmentOptionsSerializer(serializers.Serializer):
@@ -61,9 +61,7 @@ class ProductSerializer(serializers.Serializer):
 
 
 class ProductInputSerializer(serializers.Serializer):
-    product_id = serializers.ListField(
-        child=ProductIDField(help_text=_("ID of a selected product.")),
-        label=_("Product IDs"),
+    product_id = ProductIDListField(
         help_text=_(
             "One or more product IDs already selected, which may limit the collection "
             "of additional products to select."
@@ -95,18 +93,14 @@ class LocationSerializer(serializers.Serializer):
 
 
 class LocationInputSerializer(serializers.Serializer):
-    product_id = serializers.ListField(
-        child=ProductIDField(help_text=_("ID of the product to get locations for")),
-        label=_("Product IDs"),
+    product_id = ProductIDListField(
         help_text=_("One or more product IDs to get available locations for."),
         min_length=1,
     )
 
 
 class DateInputSerializer(serializers.Serializer):
-    product_id = serializers.ListField(
-        child=ProductIDField(help_text=_("ID of the product to get dates for")),
-        label=_("Product IDs"),
+    product_id = ProductIDListField(
         help_text=_("One or more product IDs to get available dates for."),
         min_length=1,
     )
@@ -118,9 +112,7 @@ class DateSerializer(serializers.Serializer):
 
 
 class TimeInputSerializer(serializers.Serializer):
-    product_id = serializers.ListField(
-        child=ProductIDField(help_text=_("ID of the product to get times for")),
-        label=_("Product IDs"),
+    product_id = ProductIDListField(
         help_text=_("One or more product IDs to get available times for."),
         min_length=1,
     )
@@ -139,11 +131,7 @@ class CancelAppointmentInputSerializer(serializers.Serializer):
 
 
 class CustomerFieldsInputSerializer(serializers.Serializer):
-    product_id = serializers.ListField(
-        child=ProductIDField(
-            help_text=_("ID of the product to get required fields for")
-        ),
-        label=_("Product IDs"),
+    product_id = ProductIDListField(
         help_text=_("One or more product IDs to get required fields for."),
         min_length=1,
     )
