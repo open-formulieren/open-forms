@@ -60,6 +60,29 @@ class ProductListTests(SubmissionsMixin, APITestCase):
             ]
         )
 
+    @patch("openforms.appointments.api.views.get_plugin")
+    def test_list_products_with_existing_duplicate_products(self, mock_get_plugin):
+        mock_plugin = mock_get_plugin.return_value
+        config_patcher = patch(
+            "openforms.appointments.utils.AppointmentsConfig.get_solo",
+            return_value=AppointmentsConfig(plugin="demo"),
+        )
+        config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+        self._add_submission_to_session(self.submission)
+
+        # Note that the SDK will add the product IDs like this according to the
+        # specified amount.
+        response = self.client.get(self.endpoint, {"product_id": ["123", "123", "456"]})
+
+        self.assertEqual(response.status_code, 200)
+        mock_plugin.get_available_products.assert_called_once_with(
+            current_products=[
+                Product(identifier="123", name="", amount=2),
+                Product(identifier="456", name="", amount=1),
+            ]
+        )
+
     def test_list_products_with_existing_product_invalid_query_param(self):
         self._add_submission_to_session(self.submission)
 
