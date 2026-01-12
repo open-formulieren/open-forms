@@ -67,4 +67,5 @@ Traces can be sent using OTLP to the collector at http://localhost:4317 (gRPC).
 The `maykin_common.otel` module takes care of setting everything up, just make sure to set the
 environment variable `OTEL_SDK_DISABLED=false` in development (it's disabled by default).
 
-The collector ingests the traces and prints them out to stdout.
+The collector ingests the traces and they are then exported to Grafana Tempo. They're also
+printed to stdout.

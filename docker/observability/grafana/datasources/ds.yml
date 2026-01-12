@@ -26,3 +26,13 @@ datasources:
     disableRecordingRules: false
     timeInterval: 15s   # Prometheus scrape interval
     incrementalQueryOverlapWindow: 10m
+- name: Tempo
+  type: tempo
+  access: proxy
+  url: http://tempo:3200
+  basicAuth: false
+  isDefault: false
+  version: 1
+  editable: false
+  jsonData:
+    httpMethod: GET
