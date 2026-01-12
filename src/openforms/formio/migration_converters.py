@@ -275,6 +275,23 @@ def convert_simple_conditionals(configuration: JSONObject) -> bool:
     return config_modified
 
 
+def remove_empty_conditional_values(component: Component) -> bool:
+    config_modified = False
+
+    if "conditional" not in component:
+        return False
+
+    conditional = component["conditional"]
+    for known_key in ("eq", "when", "show"):
+        if not (known_key in conditional and conditional[known_key] == ""):
+            continue
+
+        conditional.pop(known_key)
+        config_modified = True
+
+    return config_modified
+
+
 def ensure_addressnl_has_deriveAddress(component: Component) -> bool:
     component = cast(AddressNLComponent, component)
 
@@ -341,14 +358,17 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "email": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "date": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "datetime": {
         "alter_prefill_default_values": alter_prefill_default_values,
@@ -358,10 +378,12 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "time": {
         "move_time_validators": move_time_validators,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "phoneNumber": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "postcode": {
         "alter_prefill_default_values": alter_prefill_default_values,
@@ -369,34 +391,43 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "file": {
         "fix_default_value": fix_file_default_value,
         "ensure_extra_zip_mimetypes_exist_in_file_type": ensure_extra_zip_mimetypes_exist_in_file_type,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "textarea": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "map": {
         "ensure_map_has_interactions": ensure_map_has_interactions,
     },
     "number": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "select": {
         "set_openforms_datasrc": set_openforms_datasrc,
         "fix_multiple_empty_default_value": fix_multiple_empty_default_value,
         "set_datatype_string": set_datatype_string,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
-    "selectboxes": {"set_openforms_datasrc": set_openforms_datasrc},
+    "selectboxes": {
+        "set_openforms_datasrc": set_openforms_datasrc,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+    },
     "currency": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
     },
     "radio": {
         "set_openforms_datasrc": set_openforms_datasrc,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "checkbox": {
         "fix_empty_default_value": fix_empty_default_value,
@@ -405,17 +436,20 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "iban": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "licenseplate": {
         "ensure_validate_pattern": ensure_licensplate_validate_pattern,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "bsn": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "cosign": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
@@ -428,6 +462,12 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "signature": {
         "fix_empty_default_value": fix_empty_default_value,
+    },
+    "content": {
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+    },
+    "fieldset": {
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     # Layout components
     "columns": {

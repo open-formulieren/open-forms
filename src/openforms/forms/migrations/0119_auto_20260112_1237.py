@@ -12,6 +12,23 @@ class Migration(migrations.Migration):
 
     operations = [
         ConvertComponentsOperation("bsn", "fix_empty_default_value"),
+        ConvertComponentsOperation("bsn", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("content", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("date", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("email", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("fieldset", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("file", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("iban", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("licenseplate", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("number", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("phoneNumber", "remove_empty_conditional_values"),
         ConvertComponentsOperation("postcode", "fix_empty_default_value"),
+        ConvertComponentsOperation("postcode", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("radio", "remove_empty_conditional_values"),
         ConvertComponentsOperation("select", "fix_empty_default_value"),
+        ConvertComponentsOperation("select", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("selectboxes", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("textarea", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("textfield", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("time", "remove_empty_conditional_values"),
     ]

@@ -9,6 +9,7 @@ from ..migration_converters import (
     fix_file_default_value,
     fix_multiple_empty_default_value,
     prevent_datetime_components_from_emptying_invalid_values,
+    remove_empty_conditional_values,
 )
 from ..typing import AddressNLComponent, Component, MapComponent
 
@@ -105,6 +106,67 @@ class LicensePlateTests(SimpleTestCase):
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
 
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "validate": {
+                "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
+            },
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
+
 
 class PostCodeTests(SimpleTestCase):
     def test_noop(self):
@@ -150,6 +212,70 @@ class PostCodeTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
+
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
 
 
 class DatetimeTests(SimpleTestCase):
@@ -230,6 +356,64 @@ class SelectTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
+
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
 
 
 class TextTests(SimpleTestCase):
@@ -324,6 +508,64 @@ class TextTests(SimpleTestCase):
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
 
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
+
 
 class EmailTests(SimpleTestCase):
     def test_multiple_noop(self):
@@ -402,6 +644,64 @@ class EmailTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
+
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
 
 
 class TimeTests(SimpleTestCase):
@@ -482,6 +782,64 @@ class TimeTests(SimpleTestCase):
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["11:11", "", "22:22"])
 
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "time",
+            "key": "time",
+            "label": "Time",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "time",
+            "key": "time",
+            "label": "Time",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "time",
+            "key": "time",
+            "label": "Time",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
+
 
 class PhoneNumberTests(SimpleTestCase):
     def test_multiple_noop(self):
@@ -560,6 +918,64 @@ class PhoneNumberTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["0612345678", "", "0687654321"])
+
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
 
 
 class TextareaTests(SimpleTestCase):
@@ -640,6 +1056,64 @@ class TextareaTests(SimpleTestCase):
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
 
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "textarea",
+            "key": "textArea",
+            "label": "Textarea",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "textarea",
+            "key": "textArea",
+            "label": "Textarea",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "textarea",
+            "key": "textArea",
+            "label": "Textarea",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
+
 
 class IBANTests(SimpleTestCase):
     def test_multiple_noop(self):
@@ -718,6 +1192,64 @@ class IBANTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
+
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "iban",
+            "key": "iban",
+            "label": "iban",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "iban",
+            "key": "iban",
+            "label": "iban",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "iban",
+            "key": "iban",
+            "label": "iban",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
 
 
 class AddressNLTests(SimpleTestCase):
@@ -814,6 +1346,64 @@ class RadioTests(SimpleTestCase):
 
         self.assertFalse(changed)
 
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Radio field",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Radio field",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Radio field",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
+
 
 class FileTests(SimpleTestCase):
     def test_none_as_default_value_does_change(self):
@@ -881,6 +1471,64 @@ class FileTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
+
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "file",
+            "key": "file",
+            "label": "File",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "file",
+            "key": "file",
+            "label": "File",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "file",
+            "key": "file",
+            "label": "File",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
 
 
 class CheckboxTests(SimpleTestCase):
@@ -1024,3 +1672,397 @@ class BSNTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
+
+    def test_empty_conditional_value(self):
+        empty_eq_component: Component = {
+            "type": "bsn",
+            "key": "bsn",
+            "label": "BSN",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: Component = {
+            "type": "bsn",
+            "key": "bsn",
+            "label": "BSN",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: Component = {
+            "type": "bsn",
+            "key": "bsn",
+            "label": "BSN",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
+
+
+class ContentTyests(SimpleTestCase):
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "content",
+            "key": "content",
+            "label": "Content",
+            "html": "<p>Nope</p>",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "content",
+            "key": "content",
+            "label": "Content",
+            "html": "<p>Nope</p>",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "content",
+            "key": "content",
+            "label": "Content",
+            "html": "<p>Nope</p>",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
+
+
+class DateTests(SimpleTestCase):
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "key": "date",
+            "type": "date",
+            "label": "Date",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "key": "date",
+            "type": "date",
+            "label": "Date",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "key": "date",
+            "type": "date",
+            "label": "Date",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
+
+
+class FieldSetTests(SimpleTestCase):
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "fieldset",
+            "key": "fieldset",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "field2",
+                    "label": "Field 2",
+                },
+            ],
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "fieldset",
+            "key": "fieldset",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "field2",
+                    "label": "Field 2",
+                },
+            ],
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "fieldset",
+            "key": "fieldset",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "field2",
+                    "label": "Field 2",
+                },
+            ],
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
+
+
+class NumberTests(SimpleTestCase):
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "type": "number",
+            "key": "number1",
+            "label": "Number 1",
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "type": "number",
+            "key": "number1",
+            "label": "Number 1",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "type": "number",
+            "key": "number1",
+            "label": "Number 1",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
+
+
+class SelectBoxTests(SimpleTestCase):
+    def test_empty_conditional_value(self):
+        empty_eq_component: ContentComponent = {
+            "key": "person.pets",
+            "type": "selectboxes",
+            "label": "Pets",
+            "values": [
+                {"value": "cat", "label": "Cat"},
+                {"value": "dog", "label": "Dog"},
+                {"value": "bird", "label": "Bird"},
+            ],
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertTrue(changed)
+            self.assertFalse("eq" in empty_eq_component)
+            self.assertEqual(empty_eq_component["conditional"]["show"], True)
+            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+
+        empty_show_component: ContentComponent = {
+            "key": "person.pets",
+            "type": "selectboxes",
+            "label": "Pets",
+            "values": [
+                {"value": "cat", "label": "Cat"},
+                {"value": "dog", "label": "Dog"},
+                {"value": "bird", "label": "Bird"},
+            ],
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
+            self.assertFalse("show" in empty_show_component)
+            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+
+        empty_when_component: ContentComponent = {
+            "key": "person.pets",
+            "type": "selectboxes",
+            "label": "Pets",
+            "values": [
+                {"value": "cat", "label": "Cat"},
+                {"value": "dog", "label": "Dog"},
+                {"value": "bird", "label": "Bird"},
+            ],
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
+            self.assertEqual(empty_when_component["conditional"]["show"], True)
+            self.assertFalse("when" in empty_when_component)
