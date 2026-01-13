@@ -248,6 +248,16 @@ services:
     depends_on:
       - redis
       - celery
+    healthcheck:
+      test: [
+        "CMD",
+        "maykin-common",
+        "health-check",
+        "--endpoint=http://localhost:5555/"
+      ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
     networks:
       - open-forms-dev
 
