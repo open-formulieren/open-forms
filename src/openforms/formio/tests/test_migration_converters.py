@@ -10,6 +10,7 @@ from ..migration_converters import (
     fix_multiple_empty_default_value,
     prevent_datetime_components_from_emptying_invalid_values,
     remove_empty_conditional_values,
+    replace_empty_datepicker_properties,
 )
 from ..typing import AddressNLComponent, Component, MapComponent
 
@@ -289,6 +290,30 @@ class DatetimeTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertTrue(component["customOptions"]["allowInvalidPreload"])
+
+    def test_empty_min_date_property(self):
+        component: ContentComponent = {
+            "type": "datetime",
+            "key": "datetime",
+            "datePicker": {"minDate": ""},
+        }
+
+        changed = replace_empty_datepicker_properties(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["datePicker"]["minDate"], None)
+
+    def test_empty_max_date_property(self):
+        component: ContentComponent = {
+            "type": "datetime",
+            "key": "datetime",
+            "datePicker": {"maxDate": ""},
+        }
+
+        changed = replace_empty_datepicker_properties(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["datePicker"]["maxDate"], None)
 
 
 class SelectTests(SimpleTestCase):
@@ -1853,6 +1878,32 @@ class DateTests(SimpleTestCase):
             self.assertEqual(empty_when_component["conditional"]["eq"], 0)
             self.assertEqual(empty_when_component["conditional"]["show"], True)
             self.assertFalse("when" in empty_when_component)
+
+    def test_empty_min_date_property(self):
+        component: ContentComponent = {
+            "key": "date",
+            "type": "date",
+            "label": "Date",
+            "datePicker": {"minDate": ""},
+        }
+
+        changed = replace_empty_datepicker_properties(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["datePicker"]["minDate"], None)
+
+    def test_empty_max_date_property(self):
+        component: ContentComponent = {
+            "key": "date",
+            "type": "date",
+            "label": "Date",
+            "datePicker": {"maxDate": ""},
+        }
+
+        changed = replace_empty_datepicker_properties(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["datePicker"]["maxDate"], None)
 
 
 class FieldSetTests(SimpleTestCase):

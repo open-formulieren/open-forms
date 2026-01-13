@@ -346,6 +346,25 @@ def fix_empty_default_value(component: Component) -> bool:
     return changed
 
 
+def replace_empty_datepicker_properties(component: Component) -> bool:
+    config_modified = False
+
+    date_picker_config = component.get("datePicker", {})
+    if "minDate" not in date_picker_config and "maxDate" not in date_picker_config:
+        return False
+
+    for property in ("minDate", "maxDate"):
+        value = date_picker_config.get(property)
+
+        if not (value == ""):
+            continue
+
+        date_picker_config[property] = None
+        config_modified = True
+
+    return config_modified
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -369,11 +388,13 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "alter_prefill_default_values": alter_prefill_default_values,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "remove_empty_conditional_values": remove_empty_conditional_values,
+        "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
     },
     "datetime": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "prevent_datetime_components_from_emptying_invalid_values": prevent_datetime_components_from_emptying_invalid_values,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
+        "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
     },
     "time": {
         "move_time_validators": move_time_validators,

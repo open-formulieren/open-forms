@@ -15,6 +15,8 @@ class Migration(migrations.Migration):
         ConvertComponentsOperation("bsn", "remove_empty_conditional_values"),
         ConvertComponentsOperation("content", "remove_empty_conditional_values"),
         ConvertComponentsOperation("date", "remove_empty_conditional_values"),
+        ConvertComponentsOperation("date", "replace_empty_datepicker_properties"),
+        ConvertComponentsOperation("datetime", "replace_empty_datepicker_properties"),
         ConvertComponentsOperation("email", "remove_empty_conditional_values"),
         ConvertComponentsOperation("fieldset", "remove_empty_conditional_values"),
         ConvertComponentsOperation("file", "remove_empty_conditional_values"),
