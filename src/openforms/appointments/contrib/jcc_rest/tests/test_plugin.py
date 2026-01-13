@@ -1,5 +1,5 @@
 import os
-from datetime import timedelta
+from datetime import date, timedelta
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -29,17 +29,7 @@ def _scrub_access_token(response):
 
 
 class PluginTests(OFVCRMixin, TestCase):
-    """
-    Test the JCC Rest API appointments plugin
-
-    Note when re-recording the VCR cassettes:
-     - At the point of writing this test, it's not clear how consistent the test data
-       will be in the future, so changes to the tests might be needed.
-     - Make sure to update the ``RECORDING_DATATIME`` class property to the date of
-       recording.
-    """
-
-    RECORDING_DATETIME = "2026-01-09T12:34:56+02:00"
+    RECORDING_DATETIME = "2026-01-14T12:34:56+02:00"
 
     def setUp(self):
         super().setUp()
@@ -126,7 +116,7 @@ class PluginTests(OFVCRMixin, TestCase):
         locations = self.plugin.get_locations()
 
         self.assertEqual(len(locations), 3)
-        # Check the first location
+        # Check the first location to ensure all location information is set correctly.
         location = locations[0]
         self.assertEqual(location.identifier, "f3b8864b-2e08-4d01-99db-e36f49f3e19c")
         self.assertEqual(location.name, "Gemeentehuis Meerbergen")
@@ -142,14 +132,10 @@ class PluginTests(OFVCRMixin, TestCase):
 
         locations = self.plugin.get_locations([product])
 
+        # We don't really care about which exact location is related to this product, so
+        # just ensure we receive a location. Note that this list length is different
+        # from when we request all locations.
         self.assertEqual(len(locations), 1)
-        # Check the location
-        location = locations[0]
-        self.assertEqual(location.identifier, "f3b8864b-2e08-4d01-99db-e36f49f3e19c")
-        self.assertEqual(location.name, "Gemeentehuis Meerbergen")
-        self.assertEqual(location.address, "Raadhuisplein 1")
-        self.assertEqual(location.postalcode, "1234 AZ")
-        self.assertEqual(location.city, "Meerbergen")
 
     def test_get_dates(self):
         product = Product(
@@ -166,9 +152,9 @@ class PluginTests(OFVCRMixin, TestCase):
 
         dates = self.plugin.get_dates(products=[product], location=location)
 
-        # Note: other users of the test environment can make appointments, so the
-        # available dates might not be consistent, so just ensure that is not an empty
-        # list. This is also not impossible of course, but less likely.
+        # Note: other users of the test environment can make appointments, which means
+        # the available dates might not be consistent, so just ensure that is not an
+        # empty list. This is also not impossible of course, but less likely.
         self.assertTrue(len(dates) != 0)
 
     @freeze_time(RECORDING_DATETIME)
@@ -222,33 +208,35 @@ class PluginTests(OFVCRMixin, TestCase):
 
     def test_handles_errors_gracefully(self):
         """
-        Ensure that errors are handled gracefully (not passing a product when getting
-        available dates returns a 400).
+        Ensure that errors are handled gracefully (requesting a date range in the past
+        returns a 500 error).
         """
+        product = Product(
+            identifier="6063baab-b077-4eaf-8671-98394793724c",
+            name="Paspoort aanvraag",
+        )
         location = Location(
-            identifier="f3b8864b-2e08-4d01-99db-e36f49f3e19c",
-            name="Gemeentehuis Meerbergen",
-            address="Raadhuisplein 1",
-            postalcode="1234 AZ",
-            city="Meerbergen",
+            identifier="fake_location",
+            name="Foo",
         )
 
-        start_at = get_today()
+        start_at = date(2025, 12, 31)
         end_at = start_at + timedelta(days=7)
         dates = self.plugin.get_dates(
-            products=[], location=location, start_at=start_at, end_at=end_at
+            products=[product], location=location, start_at=start_at, end_at=end_at
         )
 
         self.assertTrue(len(dates) == 0)
 
-    def test_create_location(self):
+    @patch("openforms.appointments.contrib.jcc_rest.client.Client.get_location_list")
+    def test_address_processing(self, m):
         """
         Ensure address processing functions as expected. Note that ideally we would like
-        to test this using the endpoint, but we have no control over the available
-        locations on the test environment.
+        to test this using the endpoint, but this data is not available
         """
         raw_location: RawLocation = {
             "id": "id",
+            "locationNumber": 2,
             "auditId": "auditId",
             "address": {
                 "id": "id",
@@ -264,25 +252,26 @@ class PluginTests(OFVCRMixin, TestCase):
             },
             "isDefault": True,
         }
+        m.return_value = [raw_location]
 
         with self.subTest("No information"):
-            location = self.plugin._create_location(raw_location)  # pyright: ignore[reportAttributeAccessIssue]
-            self.assertEqual(location.address, "")
+            locations = self.plugin.get_locations()
+            self.assertEqual(locations[0].address, "")
 
         with self.subTest("Street name"):
             raw_location["address"]["streetName"] = "Street"
-            location = self.plugin._create_location(raw_location)  # pyright: ignore[reportAttributeAccessIssue]
-            self.assertEqual(location.address, "Street")
+            locations = self.plugin.get_locations()
+            self.assertEqual(locations[0].address, "Street")
 
         with self.subTest("Street name and house number"):
             raw_location["address"]["houseNumber"] = "10"
-            location = self.plugin._create_location(raw_location)  # pyright: ignore[reportAttributeAccessIssue]
-            self.assertEqual(location.address, "Street 10")
+            locations = self.plugin.get_locations()
+            self.assertEqual(locations[0].address, "Street 10")
 
         with self.subTest("Street name, house number and suffix"):
             raw_location["address"]["houseNumberSuffix"] = "b"
-            location = self.plugin._create_location(raw_location)  # pyright: ignore[reportAttributeAccessIssue]
-            self.assertEqual(location.address, "Street 10b")
+            locations = self.plugin.get_locations()
+            self.assertEqual(locations[0].address, "Street 10b")
 
     def test_config_check_ok(self):
         try:

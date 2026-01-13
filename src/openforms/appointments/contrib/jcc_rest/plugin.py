@@ -134,8 +134,7 @@ class JccRestPlugin(BasePlugin):
                 location.identifier,
                 start_at,
                 end_at,
-                [product.identifier for product in products],
-                [product.amount for product in products],
+                [(product.identifier, product.amount) for product in products],
             )
         return [datetime_.date() for datetime_ in data]
 
@@ -154,8 +153,7 @@ class JccRestPlugin(BasePlugin):
                     location.identifier,
                     day,
                     day + timedelta(days=1),
-                    [product.identifier for product in products],
-                    [product.amount for product in products],
+                    [(product.identifier, product.amount) for product in products],
                 )
             )
 
