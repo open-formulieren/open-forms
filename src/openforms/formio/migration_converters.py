@@ -407,6 +407,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "fix_empty_default_value": fix_empty_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
         "empty_errors_property": empty_errors_property,
+        "remove_default_value_translation": remove_default_value_translation,
     },
     "email": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
