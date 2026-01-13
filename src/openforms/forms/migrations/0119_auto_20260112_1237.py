@@ -38,5 +38,6 @@ class Migration(migrations.Migration):
         ConvertComponentsOperation("textarea", "remove_empty_conditional_values"),
         ConvertComponentsOperation("textfield", "remove_empty_conditional_values"),
         ConvertComponentsOperation("textfield", "empty_errors_property"),
+        ConvertComponentsOperation("textfield", "remove_default_value_translation"),
         ConvertComponentsOperation("time", "remove_empty_conditional_values"),
     ]

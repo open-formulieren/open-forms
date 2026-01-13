@@ -10,6 +10,7 @@ from ..migration_converters import (
     fix_file_default_value,
     fix_multiple_empty_default_value,
     prevent_datetime_components_from_emptying_invalid_values,
+    remove_default_value_translation,
     remove_empty_conditional_values,
     replace_empty_datepicker_properties,
 )
@@ -635,6 +636,35 @@ class TextTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["errors"], {})
+
+    def test_default_value_translation(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "openForms": {
+                "translations": {
+                    "nl": {
+                        "defaultValue": "Foobar",
+                        "label": "Tekstveld",
+                    },
+                    "en": {
+                        "defaultValue": "Foobar",
+                        "label": "Text field",
+                    },
+                }
+            },
+        }
+
+        changed = remove_default_value_translation(component)
+
+        self.assertTrue(changed)
+        self.assertTrue(
+            "defaultValue" not in component["openForms"]["translations"]["nl"]
+        )
+        self.assertTrue(
+            "defaultValue" not in component["openForms"]["translations"]["en"]
+        )
 
 
 class EmailTests(SimpleTestCase):

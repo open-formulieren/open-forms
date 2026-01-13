@@ -376,6 +376,23 @@ def empty_errors_property(component: Component) -> bool:
     return False
 
 
+def remove_default_value_translation(component: Component) -> bool:
+    config_modified = False
+
+    translations = component.get("openForms", {}).get("translations", {})
+    if not translations:
+        return False
+
+    for _, properties in translations.items():
+        if "defaultValue" not in properties:
+            continue
+
+        properties.pop("defaultValue")
+        config_modified = True
+
+    return config_modified
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
