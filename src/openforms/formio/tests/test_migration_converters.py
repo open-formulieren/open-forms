@@ -1,6 +1,7 @@
 from django.test import SimpleTestCase
 
 from ..migration_converters import (
+    empty_errors_property,
     ensure_addressnl_has_deriveAddress,
     ensure_licensplate_validate_pattern,
     ensure_map_has_interactions,
@@ -168,6 +169,22 @@ class LicensePlateTests(SimpleTestCase):
             self.assertEqual(empty_when_component["conditional"]["show"], True)
             self.assertFalse("when" in empty_when_component)
 
+    def test_non_empty_errors(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "validate": {
+                "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
+            },
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
 
 class PostCodeTests(SimpleTestCase):
     def test_noop(self):
@@ -277,6 +294,21 @@ class PostCodeTests(SimpleTestCase):
             self.assertEqual(empty_when_component["conditional"]["eq"], 0)
             self.assertEqual(empty_when_component["conditional"]["show"], True)
             self.assertFalse("when" in empty_when_component)
+
+    def test_non_empty_errors(self):
+        component: Component = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
 
 
 class DatetimeTests(SimpleTestCase):
@@ -591,6 +623,19 @@ class TextTests(SimpleTestCase):
             self.assertEqual(empty_when_component["conditional"]["show"], True)
             self.assertFalse("when" in empty_when_component)
 
+    def test_non_empty_errors(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
 
 class EmailTests(SimpleTestCase):
     def test_multiple_noop(self):
@@ -727,6 +772,19 @@ class EmailTests(SimpleTestCase):
             self.assertEqual(empty_when_component["conditional"]["eq"], 0)
             self.assertEqual(empty_when_component["conditional"]["show"], True)
             self.assertFalse("when" in empty_when_component)
+
+    def test_non_empty_errors(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
 
 
 class TimeTests(SimpleTestCase):
@@ -1001,6 +1059,19 @@ class PhoneNumberTests(SimpleTestCase):
             self.assertEqual(empty_when_component["conditional"]["eq"], 0)
             self.assertEqual(empty_when_component["conditional"]["show"], True)
             self.assertFalse("when" in empty_when_component)
+
+    def test_non_empty_errors(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
 
 
 class TextareaTests(SimpleTestCase):
@@ -2117,3 +2188,21 @@ class SelectBoxTests(SimpleTestCase):
             self.assertEqual(empty_when_component["conditional"]["eq"], 0)
             self.assertEqual(empty_when_component["conditional"]["show"], True)
             self.assertFalse("when" in empty_when_component)
+
+    def test_non_empty_errors(self):
+        component: Component = {
+            "key": "person.pets",
+            "type": "selectboxes",
+            "label": "Pets",
+            "values": [
+                {"value": "cat", "label": "Cat"},
+                {"value": "dog", "label": "Dog"},
+                {"value": "bird", "label": "Bird"},
+            ],
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})

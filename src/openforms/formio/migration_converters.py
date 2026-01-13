@@ -365,6 +365,17 @@ def replace_empty_datepicker_properties(component: Component) -> bool:
     return config_modified
 
 
+def empty_errors_property(component: Component) -> bool:
+    if "errors" not in component:
+        return False
+
+    if len(component["errors"]) > 0:
+        component["errors"] = {}
+        return True
+
+    return False
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -378,11 +389,13 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "fix_empty_default_value": fix_empty_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
     },
     "email": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
     },
     "date": {
         "alter_prefill_default_values": alter_prefill_default_values,
@@ -405,6 +418,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
     },
     "postcode": {
         "alter_prefill_default_values": alter_prefill_default_values,
@@ -413,6 +427,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "fix_empty_default_value": fix_empty_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
     },
     "file": {
         "fix_default_value": fix_file_default_value,
@@ -441,6 +456,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "selectboxes": {
         "set_openforms_datasrc": set_openforms_datasrc,
         "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
     },
     "currency": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
@@ -464,6 +480,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
     },
     "bsn": {
         "alter_prefill_default_values": alter_prefill_default_values,
