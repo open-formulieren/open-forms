@@ -221,6 +221,17 @@ services:
     depends_on:
       - db
       - redis
+    healthcheck:
+      test: [
+        "CMD",
+        "maykin-common",
+        "beat-health-check",
+        "--file=/app/tmp/celery_beat.live",
+        "--max-age=120"
+      ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
     networks:
       - open-forms-dev
 

@@ -203,6 +203,7 @@ INSTALLED_APPS = [
     "upgrade_check",
     # health check + plugins
     *default_health_check_apps,
+    "maykin_common.health_checks.celery",
     # Project applications.
     "openforms.accounts",
     "openforms.analytics_tools",
@@ -1354,6 +1355,11 @@ UPGRADE_CHECK_STRICT = False
 HEALTH_CHECK = {
     "SUBSETS": default_health_check_subsets,
 }
+
+#
+# MAYKIN-COMMON health checks
+#
+MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE = BASE_DIR / "tmp" / "celery_beat.live"
 
 #
 # DJANGO-STRUCTLOG
