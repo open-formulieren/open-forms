@@ -14,6 +14,7 @@ from ..migration_converters import (
     prevent_datetime_components_from_emptying_invalid_values,
     remove_default_value_translation,
     remove_empty_conditional_values,
+    remove_unused_error_keys,
     replace_empty_datepicker_properties,
 )
 from ..typing import AddressNLComponent, Component, MapComponent
@@ -475,6 +476,40 @@ class SelectTests(SimpleTestCase):
             self.assertEqual(empty_when_component["conditional"]["show"], True)
             self.assertFalse("when" in empty_when_component)
 
+    def test_unused_error_keys(self):
+        component: Component = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "translatedErrors": {
+                "en": {
+                    "pattern": "{{ field }} has the wrong pattern!!!",
+                    "required": "{{ field }} is required!!!",
+                    "maxLength": "{{ field }} is too long!!!",
+                },
+                "nl": {
+                    "pattern": "{{ field }} komt niet overeen met de regex!!!",
+                    "required": "{{ field }} is verplicht!!!",
+                    "maxLength": "{{ field }} is te lang!!!",
+                },
+            },
+        }
+
+        changed = remove_unused_error_keys(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(
+            component["translatedErrors"],
+            {
+                "en": {
+                    "required": "{{ field }} is required!!!",
+                },
+                "nl": {
+                    "required": "{{ field }} is verplicht!!!",
+                },
+            },
+        )
+
 
 class TextTests(SimpleTestCase):
     def test_multiple_noop(self):
@@ -817,6 +852,40 @@ class EmailTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["errors"], {})
+
+    def test_unused_error_keys(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "translatedErrors": {
+                "en": {
+                    "pattern": "{{ field }} has the wrong pattern!!!",
+                    "required": "{{ field }} is required!!!",
+                    "maxLength": "{{ field }} is too long!!!",
+                },
+                "nl": {
+                    "pattern": "{{ field }} komt niet overeen met de regex!!!",
+                    "required": "{{ field }} is verplicht!!!",
+                    "maxLength": "{{ field }} is te lang!!!",
+                },
+            },
+        }
+
+        changed = remove_unused_error_keys(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(
+            component["translatedErrors"],
+            {
+                "en": {
+                    "required": "{{ field }} is required!!!",
+                },
+                "nl": {
+                    "required": "{{ field }} is verplicht!!!",
+                },
+            },
+        )
 
 
 class TimeTests(SimpleTestCase):
@@ -1532,6 +1601,40 @@ class RadioTests(SimpleTestCase):
             self.assertEqual(empty_when_component["conditional"]["show"], True)
             self.assertFalse("when" in empty_when_component)
 
+    def test_unused_error_keys(self):
+        component: Component = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Radio field",
+            "translatedErrors": {
+                "en": {
+                    "pattern": "{{ field }} has the wrong pattern!!!",
+                    "required": "{{ field }} is required!!!",
+                    "maxLength": "{{ field }} is too long!!!",
+                },
+                "nl": {
+                    "pattern": "{{ field }} komt niet overeen met de regex!!!",
+                    "required": "{{ field }} is verplicht!!!",
+                    "maxLength": "{{ field }} is te lang!!!",
+                },
+            },
+        }
+
+        changed = remove_unused_error_keys(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(
+            component["translatedErrors"],
+            {
+                "en": {
+                    "required": "{{ field }} is required!!!",
+                },
+                "nl": {
+                    "required": "{{ field }} is verplicht!!!",
+                },
+            },
+        )
+
 
 class FileTests(SimpleTestCase):
     def test_none_as_default_value_does_change(self):
@@ -1695,6 +1798,40 @@ class CheckboxTests(SimpleTestCase):
         changed = fix_empty_default_value(component)
 
         self.assertFalse(changed)
+
+    def test_unused_error_keys(self):
+        component: Component = {
+            "type": "checkbox",
+            "key": "checkbox",
+            "label": "Checkbox",
+            "translatedErrors": {
+                "en": {
+                    "pattern": "{{ field }} has the wrong pattern!!!",
+                    "required": "{{ field }} is required!!!",
+                    "maxLength": "{{ field }} is too long!!!",
+                },
+                "nl": {
+                    "pattern": "{{ field }} komt niet overeen met de regex!!!",
+                    "required": "{{ field }} is verplicht!!!",
+                    "maxLength": "{{ field }} is te lang!!!",
+                },
+            },
+        }
+
+        changed = remove_unused_error_keys(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(
+            component["translatedErrors"],
+            {
+                "en": {
+                    "required": "{{ field }} is required!!!",
+                },
+                "nl": {
+                    "required": "{{ field }} is verplicht!!!",
+                },
+            },
+        )
 
 
 class SignatureTests(SimpleTestCase):

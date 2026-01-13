@@ -393,6 +393,24 @@ def remove_default_value_translation(component: Component) -> bool:
     return config_modified
 
 
+def remove_unused_error_keys(component: Component) -> bool:
+    config_modified = False
+
+    error_translations = component.get("translatedErrors", {})
+    if not error_translations:
+        return False
+
+    for _, properties in error_translations.items():
+        for property in ("maxLength", "pattern"):
+            if property not in properties:
+                continue
+
+            properties.pop(property)
+            config_modified = True
+
+    return config_modified
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -414,6 +432,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "fix_empty_default_value": fix_empty_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
         "empty_errors_property": empty_errors_property,
+        "remove_unused_error_keys": remove_unused_error_keys,
     },
     "date": {
         "alter_prefill_default_values": alter_prefill_default_values,
@@ -470,6 +489,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "set_datatype_string": set_datatype_string,
         "fix_empty_default_value": fix_empty_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
+        "remove_unused_error_keys": remove_unused_error_keys,
     },
     "selectboxes": {
         "set_openforms_datasrc": set_openforms_datasrc,
@@ -483,9 +503,11 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "set_openforms_datasrc": set_openforms_datasrc,
         "fix_empty_default_value": fix_empty_default_value,
         "remove_empty_conditional_values": remove_empty_conditional_values,
+        "remove_unused_error_keys": remove_unused_error_keys,
     },
     "checkbox": {
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_unused_error_keys": remove_unused_error_keys,
     },
     # Special components
     "iban": {
