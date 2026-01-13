@@ -189,6 +189,22 @@ class LicensePlateTests(SimpleTestCase):
         self.assertTrue(changed)
         self.assertEqual(component["errors"], {})
 
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "validate": {
+                "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
+            },
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
+        self.assertEqual(component["errors"], {})
+
 
 class PostCodeTests(SimpleTestCase):
     def test_noop(self):
@@ -312,6 +328,21 @@ class PostCodeTests(SimpleTestCase):
         changed = empty_errors_property(component)
 
         self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
         self.assertEqual(component["errors"], {})
 
 
@@ -510,6 +541,25 @@ class SelectTests(SimpleTestCase):
             },
         )
 
+    def test_used_error_keys(self):
+        component: Component = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "translatedErrors": {
+                "en": {
+                    "required": "{{ field }} is required!!!",
+                },
+                "nl": {
+                    "required": "{{ field }} is verplicht!!!",
+                },
+            },
+        }
+
+        changed = remove_unused_error_keys(component)
+
+        self.assertFalse(changed)
+
 
 class TextTests(SimpleTestCase):
     def test_multiple_noop(self):
@@ -674,6 +724,19 @@ class TextTests(SimpleTestCase):
         self.assertTrue(changed)
         self.assertEqual(component["errors"], {})
 
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
+        self.assertEqual(component["errors"], {})
+
     def test_default_value_translation(self):
         component: Component = {
             "type": "textfield",
@@ -702,6 +765,27 @@ class TextTests(SimpleTestCase):
         self.assertTrue(
             "defaultValue" not in component["openForms"]["translations"]["en"]
         )
+
+    def test_translation(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "openForms": {
+                "translations": {
+                    "nl": {
+                        "label": "Tekstveld",
+                    },
+                    "en": {
+                        "label": "Text field",
+                    },
+                }
+            },
+        }
+
+        changed = remove_default_value_translation(component)
+
+        self.assertFalse(changed)
 
 
 class EmailTests(SimpleTestCase):
@@ -851,6 +935,19 @@ class EmailTests(SimpleTestCase):
         changed = empty_errors_property(component)
 
         self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
         self.assertEqual(component["errors"], {})
 
     def test_unused_error_keys(self):
@@ -1172,6 +1269,19 @@ class PhoneNumberTests(SimpleTestCase):
         changed = empty_errors_property(component)
 
         self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
         self.assertEqual(component["errors"], {})
 
 
@@ -2374,4 +2484,17 @@ class SelectBoxTests(SimpleTestCase):
         changed = empty_errors_property(component)
 
         self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
         self.assertEqual(component["errors"], {})
