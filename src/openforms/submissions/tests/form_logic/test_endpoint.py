@@ -1022,8 +1022,8 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
             "https://example.com/test?"
             "date=2026-01-13&"
             "time=12%3A34%3A56&"
-            "number=None&"
-            "datetime=2026-01-13+12%3A34%3A56%2B01%3A00&"
+            "number=&"
+            "datetime=2026-01-13T12%3A34%3A56%2B01%3A00&"
             "date_empty=&"
             "date_multiple=%5B%272026-01-13%27%2C+%272026-01-15%27%5D&"
             "date_single_value_from_multiple=2026-01-15",
