@@ -13,6 +13,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ...api.viewsets import SubmissionStepViewSet
@@ -403,3 +404,112 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # No changes during logic evaluation, so the returned data should be empty
         self.assertEqual(response.json()["step"]["data"], {})
+
+    @tag("gh-5888")
+    @requests_mock.Mocker()
+    def test_date_related_vales_in_service_fetch_configuration(self, m):
+        """
+        Ensure that date-related objects are properly formatted when they are used in
+        templates in the service fetch configuration.
+        """
+        service = ServiceFactory.create(api_root="https://example.com/")
+        m.get("https://example.com/test", json="foo")
+
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date",
+                        "label": "Date",
+                    },
+                    {
+                        "type": "time",
+                        "key": "time",
+                        "label": "Date",
+                    },
+                    {
+                        "type": "datetime",
+                        "key": "datetime",
+                        "label": "Datetime",
+                    },
+                    {
+                        "type": "date",
+                        "key": "date_multiple",
+                        "label": "Date multiple",
+                        "multiple": True,
+                    },
+                    {
+                        "type": "date",
+                        "key": "date_empty",
+                        "label": "Date empty",
+                    },
+                    {
+                        "type": "number",
+                        "key": "number",
+                        "label": "Number",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            name="foo",
+            key="foo",
+            user_defined=True,
+            data_type=FormVariableDataTypes.string,
+            service_fetch_configuration=ServiceFetchConfigurationFactory.create(
+                service=service,
+                path="test",
+                query_params={
+                    "date": "{{date}}",
+                    "time": "{{time}}",
+                    "datetime": "{{datetime}}",
+                    "date_multiple": "{{date_multiple}}",
+                    "date_single_value_from_multiple": "{{date_multiple.1}}",
+                    "date_empty": "{{date_empty}}",
+                    "number": "{{number}}",
+                },
+            ),
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[{"action": {"type": "fetch-from-service"}, "variable": "foo"}],
+        )
+        submission = SubmissionFactory.create(form=form)
+
+        # Perform logic check
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.post(
+            endpoint,
+            data={
+                "data": {
+                    "date": "2026-01-13",
+                    "time": "12:34:56",
+                    "datetime": "2026-01-13T12:34:56+01:00",
+                    "date_multiple": ["2026-01-13", "2026-01-15"],
+                    "date_empty": "",
+                    "number": None,
+                }
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            m.request_history[-1].url,
+            "https://example.com/test?"
+            "date=2026-01-13&"
+            "time=12%3A34%3A56&"
+            "number=&"
+            "datetime=2026-01-13T12%3A34%3A56%2B01%3A00&"
+            "date_empty=&"
+            "date_multiple=%5B%272026-01-13%27%2C+%272026-01-15%27%5D&"
+            "date_single_value_from_multiple=2026-01-15",
+        )

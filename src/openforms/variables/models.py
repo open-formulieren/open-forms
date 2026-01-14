@@ -1,9 +1,12 @@
+from datetime import date, datetime, time
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from openforms.formio.service import FormioData, recursive_apply
 from openforms.template import render_from_string, sandbox_backend
+from openforms.typing import JSONPrimitive
 
 from .constants import DataMappingTypes, ServiceFetchMethods
 from .validators import (
@@ -13,6 +16,18 @@ from .validators import (
     validate_path_context_values,
     validate_request_body,
 )
+
+
+def _convert_to_string(value: JSONPrimitive | date | datetime | time) -> str:
+    match value:
+        case date() | time() | datetime():
+            return value.isoformat()
+
+        case None:
+            return ""
+
+        case _:
+            return str(value)
 
 
 class ServiceFetchConfiguration(models.Model):
@@ -126,7 +141,7 @@ class ServiceFetchConfiguration(models.Model):
         # extra knowledge not in the RFC: latin1 is a different name for ISO-8859-1
 
         # Explicitly cast values to strings to avoid localization
-        ctx = recursive_apply(context.data, str, transform_leaf=True)
+        ctx = recursive_apply(context.data, _convert_to_string, transform_leaf=True)
 
         headers = {
             # map all unicode into what the RFC allows with utf-8; remove padding space
