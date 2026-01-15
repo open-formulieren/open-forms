@@ -222,7 +222,7 @@ class PrefillVariablesTests(TestCase):
 
         FormVariable.objects.all().delete()
 
-        prefill_variables = submission_value_variables_state.get_prefill_variables()
+        prefill_variables = submission_value_variables_state.prefilled_variables
         self.assertEqual(2, len(prefill_variables))
 
 
