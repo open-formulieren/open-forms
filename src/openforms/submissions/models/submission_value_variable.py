@@ -84,6 +84,14 @@ class SubmissionValueVariablesState:
             and variable.form_variable.source == FormVariableSources.user_defined
         }
 
+    @property
+    def prefilled_variables(self) -> dict[str, SubmissionValueVariable]:
+        return {
+            variable.key: variable
+            for variable in self.variables.values()
+            if variable.is_initially_prefilled
+        }
+
     @deprecated("Use `state.variables[key]` instead.")
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
@@ -132,6 +140,14 @@ class SubmissionValueVariablesState:
             )
 
         return data
+
+    def get_prefilled_data(self) -> FormioData:
+        """Return the values of prefilled variables in a ``FormioData`` instance."""
+        data = {
+            variable_key: variable.to_python()
+            for variable_key, variable in self.prefilled_variables.items()
+        }
+        return FormioData(data)
 
     def get_variables_in_submission_step(
         self,
@@ -279,13 +295,6 @@ class SubmissionValueVariablesState:
             )
         return self._static_data
 
-    def get_prefill_variables(self) -> list[SubmissionValueVariable]:
-        prefill_vars = []
-        for variable in self.variables.values():
-            if not variable.is_initially_prefilled:
-                continue
-            prefill_vars.append(variable)
-        return prefill_vars
 
     def save_prefill_data(self, data: dict[str, Any]) -> None:
         # The way we retrieve the variables has been changed here, since
