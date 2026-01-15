@@ -124,6 +124,8 @@ class PrefillVariablesTests(TestCase):
             SubmissionValueVariableSources.prefill, submission_variable.source
         )
 
+    # TODO-5885: add user-defined variable here to confirm we can now also normalize
+    #  those when prefilling.
     @patch(
         "openforms.prefill.service.fetch_prefill_values_from_attribute",
         return_value={"postcode": "1015CJ", "birthDate": "19990615"},

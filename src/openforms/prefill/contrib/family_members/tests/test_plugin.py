@@ -652,6 +652,8 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
 
         state = submission.load_submission_value_variables_state()
 
+        # TODO-5885: are these changes OK? Seems like we can't do anything with these
+        #  partial dates right now, anyway.
         expected_data = [
             {
                 "bsn": "456789123",
