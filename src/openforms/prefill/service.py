@@ -34,14 +34,12 @@ So, to recap:
    form field default values.
 """
 
-from collections import defaultdict
-
 import elasticapm
 import structlog
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
-    normalize_value_for_component,
+    FormioData,
 )
 from openforms.submissions.models import Submission
 from openforms.submissions.models.submission_value_variable import (
@@ -108,75 +106,54 @@ def inject_prefill(
 
 @elasticapm.capture_span(span_type="app.prefill")
 def prefill_variables(submission: Submission, register: Registry | None = None) -> None:
-    """Update the submission variables state with the fetched attribute values.
+    """
+    Update the submission variables state with the fetched attribute values.
 
-    For each submission value variable that need to be prefilled, the according plugin will
-    be used to fetch the value. If ``register`` is not specified, the default registry instance
-    will be used.
+    For each submission value variable that needs to be prefilled, the according plugin
+    will be used to fetch the value. If ``register`` is not specified, the default
+    registry instance will be used.
     """
     register = register or default_register
 
     state = submission.load_submission_value_variables_state()
-    variables_to_prefill = state.get_prefill_variables()
-
-    key_source_mappings: defaultdict[str, str] = defaultdict()
-    if state.variables:
-        for variable_key, variable in state.variables.items():
-            assert variable.form_variable is not None
-            key_source_mappings[variable_key] = variable.form_variable.source
 
     variables_with_attribute: list[SubmissionValueVariable] = []
     variables_with_options: list[SubmissionValueVariable] = []
-    prefill_data: defaultdict[str, JSONEncodable] = defaultdict(dict)
+    prefill_data: dict[str, JSONEncodable] = {}
 
-    for variable in variables_to_prefill:
-        assert variable.form_variable is not None
-        key_source_mappings[variable.form_variable.key] = variable.form_variable.source
+    for variable in state.prefilled_variables.values():
+        form_variable = variable.form_variable
+        assert form_variable is not None
         # variables which have prefill enabled via the component's configuration
         if (
-            variable.form_variable.source == FormVariableSources.component
-            and variable.form_variable.prefill_plugin
-            and variable.form_variable.prefill_attribute
+            form_variable.source == FormVariableSources.component
+            and form_variable.prefill_plugin
+            and form_variable.prefill_attribute
         ):
             variables_with_attribute.append(variable)
+            continue
 
-        if variable.form_variable.source == FormVariableSources.user_defined:
-            # variables which have prefill enabled via the variables tab and define prefill options
-            if (
-                variable.form_variable.prefill_plugin
-                and variable.form_variable.prefill_options
-            ):
+        if form_variable.source == FormVariableSources.user_defined:
+            # variables which have prefill enabled via the variables tab and define
+            # prefill options
+            if form_variable.prefill_plugin and form_variable.prefill_options:
                 variables_with_options.append(variable)
 
-            # variables which have prefill enabled via the variables tab and define prefill attribute
-            if (
-                variable.form_variable.prefill_plugin
-                and variable.form_variable.prefill_attribute
-            ):
+            # variables which have prefill enabled via the variables tab and define
+            # prefill attribute
+            if form_variable.prefill_plugin and form_variable.prefill_attribute:
                 variables_with_attribute.append(variable)
 
-    if variables_with_attribute and (
-        results_from_attribute := fetch_prefill_values_from_attribute(
+    if variables_with_attribute:
+        results_from_attribute = fetch_prefill_values_from_attribute(
             submission, register, variables_with_attribute
         )
-    ):
         prefill_data.update(**results_from_attribute)
-    if variables_with_options and (
-        results_from_options := fetch_prefill_values_from_options(
+
+    if variables_with_options:
+        results_from_options = fetch_prefill_values_from_options(
             submission, register, variables_with_options
         )
-    ):
         prefill_data.update(**results_from_options)
 
-    total_config_wrapper = submission.total_configuration_wrapper
-    for variable_key, prefill_value in prefill_data.items():
-        if key_source_mappings[variable_key] == FormVariableSources.component:
-            component = total_config_wrapper[variable_key]
-            normalized_prefill_value = normalize_value_for_component(
-                component, prefill_value
-            )
-            prefill_value = normalized_prefill_value
-
-        prefill_data[variable_key] = prefill_value
-
-    state.save_prefill_data(prefill_data)
+    state.save_prefill_data(FormioData(prefill_data))
