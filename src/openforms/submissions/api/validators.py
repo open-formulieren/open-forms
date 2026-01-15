@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.serializers import JSONField
 
-from openforms.formio.service import normalize_value_for_component
+from openforms.formio.service import FormioData
 from openforms.forms.models import Form
 
 from ..exceptions import FormMaintenance
@@ -17,10 +17,11 @@ class ValidatePrefillData:
     default_message = _("The prefill data may not be altered.")
     requires_context = True
 
-    def __call__(self, data: dict, field: JSONField):
+    def __call__(self, data: FormioData, field: JSONField):
         instance: SubmissionStep = field.parent.instance
         assert instance._form_logic_evaluated, "Logic must be evaluated"
-        prefill_data = instance.submission.get_prefilled_data()
+        state = instance.submission.load_submission_value_variables_state()
+        prefilled_data = state.get_prefilled_data()
 
         errors = {}
         for component in instance.form_step.iter_components():
@@ -39,16 +40,18 @@ class ValidatePrefillData:
             if component_key not in data:
                 continue
 
-            original_prefill_value = prefill_data.get(component_key)
-            if original_prefill_value is None:
-                # the value will be `None` if there is no actual prefill data available, so there is nothing to compare to. This
-                # especially applies to test-environments without real prefill-connections.
+            prefill_value = prefilled_data.get(component_key)
+            if prefill_value is None:
+                # The value will be `None` if there is no actual prefill data available,
+                # or if the normalization has failed. E.g., if we receive a "date"
+                # '1985', conversion to a date object will result in `None`. There is
+                # no use in comparing it to the new value. This especially applies to
+                # test-environments without real prefill-connections.
                 continue
 
-            prefill_value = normalize_value_for_component(
-                component, original_prefill_value
-            )
-            new_value = data.get(component_key)
+            # Prefilled values fetched from the state are in native Python types, so
+            # we need to convert the new value before doing a comparison.
+            new_value = state.variables[component_key].to_python(data[component_key])
             if new_value != prefill_value:
                 errors[component_key] = serializers.ErrorDetail(
                     self.default_message, code=self.code
