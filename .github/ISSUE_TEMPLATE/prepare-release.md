@@ -15,6 +15,10 @@ assignees: sergei-maertens
 
     - [ ] `openforms.accounts.tests.test_oidc`
 
+  - Appointments
+
+    - [ ] `openforms.appointments.contrib.jcc_rest.tests.test_plugin`
+
   - Authentication:
 
     - [ ] `openforms.authentication.contrib.digid.tests.test_signicat_integration`

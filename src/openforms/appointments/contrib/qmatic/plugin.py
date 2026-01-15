@@ -273,13 +273,13 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
     def get_required_customer_fields(
         self,
         products: list[Product],
-    ) -> list[Component]:
+    ) -> tuple[list[Component], None]:
         config = QmaticConfig.get_solo()
         components = [
             FIELD_TO_FORMIO_COMPONENT[field]
             for field in config.required_customer_fields
         ]
-        return components
+        return components, None
 
     def create_appointment(
         self,

@@ -1,21 +1,24 @@
 import os
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from unittest.mock import patch
 
 from django.test import TestCase
+from django.utils import timezone
 
 from freezegun import freeze_time
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
-from openforms.utils.date import get_today
+from openforms.utils.date import TIMEZONE_AMS, get_today
 from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ....base import Location, Product
+from ....base import AppointmentDetails, CustomerDetails, Location, Product
+from ....exceptions import AppointmentCreateFailed, AppointmentDeleteFailed
 from ..client import Location as RawLocation
-from ..exceptions import JccRestException
+from ..constants import CustomerFields
+from ..exceptions import GracefulJccRestException, JccRestException
 from ..models import JccRestConfig
 from ..plugin import JccRestPlugin
 
@@ -29,7 +32,39 @@ def _scrub_access_token(response):
 
 
 class PluginTests(OFVCRMixin, TestCase):
-    RECORDING_DATETIME = "2026-01-14T12:34:56+02:00"
+    """
+    Test the JCC Rest API appointments plugin
+
+    Instead of mocking responses, we do real requests to a JCC test environment *once*
+    and record the responses with VCR.
+
+    When JCC update their service, responses on VCR cassettes might be stale, and
+    we'll need to re-test against the real service to assert everything still works.
+
+    To do so:
+
+    #. Define the required environmental variables and their values (`JCC_REST_CLIENT_ID`,`JCC_REST_SECRET`)
+    #. Ensure the config is still valid:
+       - `token` needs to be valid
+       - endpoints must work as expected
+       - data is still valid
+    #. Delete the VCR cassettes
+    #. Run the tests
+    #. Inspect the diff of the new cassettes
+    #. Make sure sensitive information related to tokens or credentials are not present
+    #  in the cassettes.
+
+    The default dev settings set the record mode to 'once', but if you need a different
+    one, see the :module:`openforms.utils.tests.vcr` documentation.
+
+    Note when re-recording the VCR cassettes:
+     - At the point of writing these tests, it's not clear how consistent the test data
+       will be in the future, so changes to the tests might be needed.
+     - Make sure to update the ``RECORDING_DATATIME`` class attribute to the date of
+       recording.
+    """
+
+    RECORDING_DATETIME: str = "2026-01-15T08:32:56+02:00"
 
     def setUp(self):
         super().setUp()
@@ -278,6 +313,823 @@ class PluginTests(OFVCRMixin, TestCase):
             self.plugin.check_config()
         except InvalidPluginConfiguration:
             self.failureException("Config check should have passed.")
+
+    def test_required_customer_fields_with_existing_products(self):
+        product1 = Product(
+            identifier="c956d136-57a0-4c53-9673-378f41044631",
+            name="Schuldhulpverlening",
+        )
+        product2 = Product(
+            identifier="53410a47-6ede-4225-81e0-4ebffaae0ef3",
+            name="Geboorteaangifte",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1, product2])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Achternaam",
+                        "autocomplete": "family-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "socialSecurityNumber",
+                        "label": "Social security number",
+                        "autocomplete": "social-security-number",
+                        "validate": {"maxLength": 16, "required": True},
+                    },
+                ],
+                None,
+            ),
+        )
+
+    @patch(
+        "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
+    )
+    def test_required_customer_fields_when_optional_fields_are_present(self, m):
+        # TODO
+        # Check if such an example has been added to the JCC test instance and replace
+        # the mocked response
+
+        # at this moment no such example exists in the JCC API
+        m.return_value = {
+            "birthDate": 0,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "mainPhoneNumber": 1,
+            "mobilePhoneNumber": 2,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
+        }
+
+        product1 = Product(
+            identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
+            name="Bouwvergunning aanvraag",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Achternaam",
+                        "autocomplete": "family-name",
+                        "validate": {"required": True, "maxLength": 128},
+                    },
+                    {
+                        "type": "date",
+                        "key": "birthDate",
+                        "label": "Geboortedatum",
+                        "autocomplete": "date-of-birth",
+                        "validate": {"required": False},
+                        "openForms": {"widget": "inputGroup"},
+                    },
+                    {
+                        "type": "phoneNumber",
+                        "key": "mobilePhoneNumber",
+                        "label": "Mobiele telefoonnummer",
+                        "autocomplete": "mobile-phone-number",
+                        "validate": {"required": True, "maxLength": 16},
+                    },
+                ],
+                None,
+            ),
+        )
+
+    def test_required_customer_fields_when_required_fields_are_present(self):
+        product1 = Product(
+            identifier="637474a7-ea52-43f8-9e8a-30f3e0c13cf4",
+            name="Partnerschap met toespraak - eigen BABS",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Achternaam",
+                        "autocomplete": "family-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "email",
+                        "key": "emailAddress",
+                        "label": "e-mailadres",
+                        "autocomplete": "email-address",
+                        "validate": {"maxLength": 254, "required": True},
+                    },
+                    {
+                        "type": "phoneNumber",
+                        "key": "phoneNumber",
+                        "label": "Telefoonnummer",
+                        "autocomplete": "phone-number",
+                        "validate": {"required": True},
+                    },
+                ],
+                None,
+            ),
+        )
+
+    def test_required_customer_fields_when_all_fields_hidden(self):
+        product1 = Product(
+            identifier="53410a47-6ede-4225-81e0-4ebffaae0ef3",
+            name="Geboorteaangifte",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Achternaam",
+                        "autocomplete": "family-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                ],
+                None,
+            ),
+        )
+
+    @patch(
+        "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
+    )
+    def test_required_customer_fields_with_areFirstNameOrInitialsRequired_and_both_fields_visible(
+        self, m
+    ):
+        # TODO
+        # Check if such an example has been added to the JCC test instance and replace
+        # the mocked response
+
+        # at this moment no such example exists in the JCC API
+        m.return_value = {
+            "firstName": 0,
+            "initials": 0,
+            "areFirstNameOrInitialsRequired": True,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "mainPhoneNumber": 1,
+            "mobilePhoneNumber": 2,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
+        }
+
+        product1 = Product(
+            identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
+            name="Bouwvergunning aanvraag",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Achternaam",
+                        "autocomplete": "family-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "firstName",
+                        "label": "Voornaam",
+                        "autocomplete": "first-name",
+                        "validate": {"maxLength": 128, "required": False},
+                        "description": "At least one of the firstName, initials must be filled in",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "initials",
+                        "label": "Initialen",
+                        "autocomplete": "initials",
+                        "validate": {"maxLength": 128, "required": False},
+                        "description": "At least one of the firstName, initials must be filled in",
+                    },
+                    {
+                        "type": "phoneNumber",
+                        "key": "mobilePhoneNumber",
+                        "label": "Mobiele telefoonnummer",
+                        "autocomplete": "mobile-phone-number",
+                        "validate": {"maxLength": 16, "required": True},
+                    },
+                ],
+                [
+                    {
+                        "type": "require_one_of",
+                        "fields": ("firstName", "initials"),
+                        "error_message": "At least one of the firstName, initials is required.",
+                    }
+                ],
+            ),
+        )
+
+    @patch(
+        "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
+    )
+    def test_required_customer_fields_with_areFirstNameOrInitialsRequired_and_both_fields_hidden(
+        self, m
+    ):
+        # TODO
+        # Check if such an example has been added to the JCC test instance and replace
+        # the mocked response
+
+        # at this moment no such example exists in the JCC API
+        m.return_value = {
+            "firstName": 1,
+            "initials": 1,
+            "areFirstNameOrInitialsRequired": True,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "mainPhoneNumber": 1,
+            "mobilePhoneNumber": 2,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
+        }
+
+        product1 = Product(
+            identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
+            name="Bouwvergunning aanvraag",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "firstName",
+                        "label": "Voornaam",
+                        "autocomplete": "first-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Achternaam",
+                        "autocomplete": "family-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "phoneNumber",
+                        "key": "mobilePhoneNumber",
+                        "label": "Mobiele telefoonnummer",
+                        "autocomplete": "mobile-phone-number",
+                        "validate": {"maxLength": 16, "required": True},
+                    },
+                ],
+                None,
+            ),
+        )
+
+    @patch(
+        "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
+    )
+    def test_required_customer_fields_with_areFirstNameOrInitialsRequired_and_both_fields_required(
+        self, m
+    ):
+        """
+        There is the possibility to have areFirstNameOrInitialsRequired set to True
+        and both firstName and initials set to required (2). In this situation we should
+        see both fields in the form as required.
+        """
+        # TODO
+        # Check if such an example has been added to the JCC test instance and replace
+        # the mocked response
+
+        # at this moment no such example exists in the JCC API
+        m.return_value = {
+            "initials": 2,
+            "firstName": 2,
+            "areFirstNameOrInitialsRequired": True,
+            "birthDate": 0,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "mainPhoneNumber": 1,
+            "mobilePhoneNumber": 1,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
+        }
+
+        product1 = Product(
+            identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
+            name="Bouwvergunning aanvraag",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Achternaam",
+                        "autocomplete": "family-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "initials",
+                        "label": "Initialen",
+                        "autocomplete": "initials",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "firstName",
+                        "label": "Voornaam",
+                        "autocomplete": "first-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "date",
+                        "key": "birthDate",
+                        "label": "Geboortedatum",
+                        "autocomplete": "date-of-birth",
+                        "validate": {"required": False},
+                        "openForms": {"widget": "inputGroup"},
+                    },
+                ],
+                None,
+            ),
+        )
+
+    @patch(
+        "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
+    )
+    def test_required_customer_fields_with_isAnyPhoneNumberRequired_and_both_fields_visible(
+        self, m
+    ):
+        # TODO
+        # Check if such an example has been added to the JCC test instance and replace
+        # the mocked response
+
+        # at this moment no such example exists in the JCC API
+        m.return_value = {
+            "initials": 1,
+            "isAnyPhoneNumberRequired": True,
+            "birthDate": 0,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "mobilePhoneNumber": 0,
+            "mainPhoneNumber": 0,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
+        }
+        product1 = Product(
+            identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
+            name="Bouwvergunning aanvraag",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Achternaam",
+                        "autocomplete": "family-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "date",
+                        "key": "birthDate",
+                        "label": "Geboortedatum",
+                        "autocomplete": "date-of-birth",
+                        "validate": {"required": False},
+                        "openForms": {"widget": "inputGroup"},
+                    },
+                    {
+                        "type": "phoneNumber",
+                        "key": "mobilePhoneNumber",
+                        "label": "Mobiele telefoonnummer",
+                        "autocomplete": "mobile-phone-number",
+                        "validate": {"maxLength": 16, "required": False},
+                        "description": "At least one of the phoneNumber, mobilePhoneNumber must be filled in",
+                    },
+                    {
+                        "type": "phoneNumber",
+                        "key": "phoneNumber",
+                        "label": "Telefoonnummer",
+                        "autocomplete": "phone-number",
+                        "validate": {"required": False},
+                        "description": "At least one of the phoneNumber, mobilePhoneNumber must be filled in",
+                    },
+                ],
+                [
+                    {
+                        "type": "require_one_of",
+                        "fields": ("phoneNumber", "mobilePhoneNumber"),
+                        "error_message": "At least one of the phoneNumber, mobilePhoneNumber is required.",
+                    }
+                ],
+            ),
+        )
+
+    @patch(
+        "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
+    )
+    def test_required_customer_fields_with_isAnyPhoneNumberRequired_and_both_fields_required(
+        self, m
+    ):
+        # TODO
+        # Check if such an example has been added to the JCC test instance and replace
+        # the mocked response
+
+        # at this moment no such example exists in the JCC API
+        m.return_value = {
+            "isAnyPhoneNumberRequired": True,
+            "birthDate": 0,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "mainPhoneNumber": 2,
+            "mobilePhoneNumber": 2,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
+        }
+
+        product1 = Product(
+            identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
+            name="Bouwvergunning aanvraag",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Achternaam",
+                        "autocomplete": "family-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "date",
+                        "key": "birthDate",
+                        "label": "Geboortedatum",
+                        "autocomplete": "date-of-birth",
+                        "validate": {"required": False},
+                        "openForms": {"widget": "inputGroup"},
+                    },
+                    {
+                        "type": "phoneNumber",
+                        "key": "mobilePhoneNumber",
+                        "label": "Mobiele telefoonnummer",
+                        "autocomplete": "mobile-phone-number",
+                        "validate": {"maxLength": 16, "required": True},
+                    },
+                    {
+                        "type": "phoneNumber",
+                        "key": "phoneNumber",
+                        "label": "Telefoonnummer",
+                        "autocomplete": "phone-number",
+                        "validate": {"required": True},
+                    },
+                ],
+                None,
+            ),
+        )
+
+    @patch(
+        "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
+    )
+    def test_required_customer_fields_with_isAnyPhoneNumberRequired_and_both_fields_hidden(
+        self, m
+    ):
+        # TODO
+        # Check if such an example has been added to the JCC test instance and replace
+        # the mocked response
+
+        # at this moment no such example exists in the JCC API
+        m.return_value = {
+            "isAnyPhoneNumberRequired": True,
+            "birthDate": 0,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "mainPhoneNumber": 1,
+            "mobilePhoneNumber": 1,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
+        }
+
+        product1 = Product(
+            identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
+            name="Bouwvergunning aanvraag",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Achternaam",
+                        "autocomplete": "family-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "phoneNumber",
+                        "key": "phoneNumber",
+                        "label": "Telefoonnummer",
+                        "autocomplete": "phone-number",
+                        "validate": {"required": True},
+                    },
+                    {
+                        "type": "date",
+                        "key": "birthDate",
+                        "label": "Geboortedatum",
+                        "autocomplete": "date-of-birth",
+                        "validate": {"required": False},
+                        "openForms": {"widget": "inputGroup"},
+                    },
+                ],
+                None,
+            ),
+        )
+
+    @freeze_time(RECORDING_DATETIME)
+    def test_create_retrieve_and_cancel_appointment_flow(self):
+        product = Product(
+            identifier="2e656741-db4d-4c75-ae57-97fda6ce5ce8",
+            name="Omgevingsvergunning (aanvraag)",
+        )
+        location = Location(
+            identifier="f3b8864b-2e08-4d01-99db-e36f49f3e19c", name="test1"
+        )
+        customer = CustomerDetails(
+            details={
+                CustomerFields.first_name: "Vat",
+                CustomerFields.last_name: "Boei",
+                CustomerFields.date_of_birth: "2000-02-02",
+                CustomerFields.gender: 0,
+            }
+        )
+
+        # 1. fetch the available dates
+        available_dates = self.plugin.get_dates(
+            products=[product], location=location, start_at=get_today()
+        )
+        assert available_dates != []
+
+        # 2. fetch the available times
+        available_times = self.plugin.get_times(
+            products=[product], location=location, day=available_dates[0]
+        )
+        assert available_times != []
+
+        # 3. create the appointment
+        appointment_id = self.plugin.create_appointment(
+            products=[product],
+            location=location,
+            start_at=available_times[0],
+            client=customer,
+        )
+
+        self.assertIsInstance(appointment_id, str)
+
+        # 4. fetch the appointment's details
+        appointment_details = self.plugin.get_appointment_details(appointment_id)
+
+        self.assertEqual(type(appointment_details), AppointmentDetails)
+
+        self.assertEqual(len(appointment_details.products), 1)
+        self.assertEqual(appointment_details.identifier, appointment_id)
+        self.assertEqual(
+            appointment_details.products[0].identifier,
+            "2e656741-db4d-4c75-ae57-97fda6ce5ce8",
+        )
+        self.assertEqual(
+            appointment_details.products[0].name, "Omgevingsvergunning (aanvraag)"
+        )
+        self.assertEqual(appointment_details.products[0].amount, 1)
+
+        self.assertEqual(
+            appointment_details.location.identifier,
+            "f3b8864b-2e08-4d01-99db-e36f49f3e19c",
+        )
+        self.assertEqual(appointment_details.location.name, "Gemeentehuis Meerbergen")
+        self.assertEqual(appointment_details.location.address, "Raadhuisplein 1")
+        self.assertEqual(appointment_details.location.postalcode, "1234 AZ")
+        self.assertEqual(appointment_details.location.city, "Meerbergen")
+
+        self.assertEqual(
+            appointment_details.start_at, available_times[0].replace(tzinfo=None)
+        )
+        self.assertIsNotNone(appointment_details.end_at)
+        self.assertEqual(appointment_details.remarks, None)
+        self.assertIsNotNone(appointment_details.other)
+
+        # 5. cancel the appointment
+        self.plugin.delete_appointment(appointment_id)
+
+    @freeze_time(RECORDING_DATETIME)
+    def test_create_appointment_with_multiple_products(self):
+        product1 = Product(
+            identifier="637474a7-ea52-43f8-9e8a-30f3e0c13cf4",
+            name="Partnerschap met toespraak - eigen BABS",
+        )
+        product2 = Product(
+            identifier="27535042-9f33-498f-b559-39137639bad3",
+            name="Huwelijk met toespraak - BABS3",
+        )
+        location = Location(identifier="f9332b85-2ca3-4b42-aaa9-07e37c010a83", name="")
+        customer = CustomerDetails(
+            details={
+                CustomerFields.last_name: "Boei",
+                CustomerFields.email_address: "testBoei@example.com",
+                CustomerFields.phone_number: "0612345678",
+                CustomerFields.gender: 0,
+            }
+        )
+
+        # 1. fetch the available dates
+        available_dates = self.plugin.get_dates(
+            products=[product1, product2], location=location, start_at=get_today()
+        )
+        assert available_dates != []
+
+        # 2. fetch the available times
+        available_times = self.plugin.get_times(
+            products=[product1, product2], location=location, day=available_dates[0]
+        )
+        assert available_times != []
+
+        # 3. create the appointment
+        appointment_id = self.plugin.create_appointment(
+            products=[product1, product2],
+            location=location,
+            start_at=available_times[0],
+            client=customer,
+        )
+
+        self.assertTrue(isinstance(appointment_id, str))
+
+    @freeze_time(RECORDING_DATETIME)
+    def test_appointment_with_multiple_persons(self):
+        product = Product(
+            identifier="2e656741-db4d-4c75-ae57-97fda6ce5ce8",
+            name="Omgevingsvergunning (aanvraag)",
+            amount=2,
+        )
+        location = Location(
+            identifier="f3b8864b-2e08-4d01-99db-e36f49f3e19c",
+            name="Gemeentehuis Meerbergen",
+        )
+        customer = CustomerDetails(
+            details={
+                CustomerFields.first_name: "Vat",
+                CustomerFields.last_name: "Boei",
+                CustomerFields.date_of_birth: "2000-02-02",
+                CustomerFields.gender: 0,
+            }
+        )
+
+        # 1. fetch the available dates
+        available_dates = self.plugin.get_dates(
+            products=[product], location=location, start_at=get_today()
+        )
+        assert available_dates != []
+
+        # 2. fetch the available times
+        available_times = self.plugin.get_times(
+            products=[product], location=location, day=available_dates[0]
+        )
+        assert available_times != []
+
+        # 3. create the appointment
+        appointment_id = self.plugin.create_appointment(
+            products=[product],
+            location=location,
+            start_at=available_times[0],
+            client=customer,
+        )
+
+        self.assertTrue(isinstance(appointment_id, str))
+
+    def test_create_appointment_fails_with_missing_body_data(self):
+        """Missing the products"""
+        customer = CustomerDetails(
+            details={
+                CustomerFields.last_name: "Boei",
+                CustomerFields.date_of_birth: "2000-02-02",
+            }
+        )
+        location = Location(
+            identifier="f3b8864b-2e08-4d01-99db-e36f49f3e19c", name="test1"
+        )
+        start_at = timezone.make_aware(
+            datetime(2025, 10, 21, 8, 0, 0), timezone=TIMEZONE_AMS
+        )
+
+        with self.assertRaises(GracefulJccRestException):
+            self.plugin.create_appointment(
+                products=[], location=location, start_at=start_at, client=customer
+            )
+
+    @patch("openforms.appointments.contrib.jcc_rest.client.Client.add_appointment")
+    def test_create_appointment_with_error_returned(self, m):
+        # simulate an unexpected return value in the appointment create (with a 200 response)
+        m.return_value = {"id": "an-id", "code": "33333", "acknowledgeIsSuccess": False}
+
+        product = Product(
+            identifier="2e656741-db4d-4c75-ae57-97fda6ce5ce8",
+            name="Omgevingsvergunning (aanvraag)",
+        )
+        location = Location(
+            identifier="f3b8864b-2e08-4d01-99db-e36f49f3e19c", name="test1"
+        )
+        customer = CustomerDetails(
+            details={
+                CustomerFields.first_name: "Vat",
+                CustomerFields.last_name: "Boei",
+                CustomerFields.date_of_birth: "2000-02-02",
+                CustomerFields.gender: 0,
+            }
+        )
+
+        # 3. create the appointment
+        with self.assertRaises(AppointmentCreateFailed):
+            self.plugin.create_appointment(
+                products=[product],
+                location=location,
+                start_at=datetime.fromisoformat("2026-01-16T09:30:00"),
+                client=customer,
+            )
+
+    @patch("openforms.appointments.contrib.jcc_rest.client.Client.cancel_appointment")
+    def test_delete_appointment_with_error_returned(self, m):
+        # simulate an unexpected return value in the appointment delete (with a 200 response)
+        m.return_value = {"code": "222222"}
+
+        with self.assertRaises(AppointmentDeleteFailed):
+            self.plugin.delete_appointment("invalid-id")
 
 
 class FailedConfigCheckTests(TestCase):
