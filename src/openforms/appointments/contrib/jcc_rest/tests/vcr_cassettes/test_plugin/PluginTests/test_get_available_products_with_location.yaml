@@ -1,0 +1,119 @@
+interactions:
+- request:
+    body: grant_type=client_credentials&scope=warp-api
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '44'
+      Content-Type:
+      - application/x-www-form-urlencoded;charset=UTF-8
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
+  response:
+    body:
+      string: '{"access_token": "fake_access_token"}'
+    headers:
+      content-length:
+      - '937'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Wed, 14 Jan 2026 15:07:41 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+      language:
+      - nl
+    method: GET
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/activity/listforappointment?locationId=f9332b85-2ca3-4b42-aaa9-07e37c010a83
+  response:
+    body:
+      string: "[\r\n  {\r\n    \"id\": \"637474a7-ea52-43f8-9e8a-30f3e0c13cf4\",\r\n
+        \   \"number\": 40,\r\n    \"description\": \"Partnerschap met toespraak -
+        eigen BABS\",\r\n    \"appointmentDuration\": 3600,\r\n    \"maxCountForEvent\":
+        1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"27535042-9f33-498f-b559-39137639bad3\",\r\n    \"number\":
+        35,\r\n    \"description\": \"Huwelijk met toespraak - BABS3\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"136cb70e-dda7-4383-bdf7-3c990a74e9be\",\r\n    \"number\":
+        39,\r\n    \"description\": \"Partnerschap met toespraak - BABS3\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"57f93f17-1f1e-4f5e-bbda-4536e3a1357f\",\r\n    \"number\":
+        33,\r\n    \"description\": \"Huwelijk met toespraak - BABS1\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"cf7a0dd7-2122-4924-b478-53f87798ea3d\",\r\n    \"number\":
+        34,\r\n    \"description\": \"Huwelijk met toespraak - BABS2\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"b82534f7-e55a-4973-bb31-86b384256f4b\",\r\n    \"number\":
+        36,\r\n    \"description\": \"Huwelijk met toespraak - eigen BABS\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"9a70b3cc-619d-4138-8f6c-a90b09d54180\",\r\n    \"number\":
+        37,\r\n    \"description\": \"Partnerschap met toespraak - BABS1\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"38d1165a-680f-45bd-af50-ba4383896d0a\",\r\n    \"number\":
+        38,\r\n    \"description\": \"Partnerschap met toespraak - BABS2\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ }\r\n]"
+    headers:
+      content-length:
+      - '2109'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Wed, 14 Jan 2026 15:07:43 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

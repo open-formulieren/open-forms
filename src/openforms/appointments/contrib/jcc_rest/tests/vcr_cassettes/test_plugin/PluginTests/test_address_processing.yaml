@@ -1,0 +1,49 @@
+interactions:
+- request:
+    body: grant_type=client_credentials&scope=warp-api
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '44'
+      Content-Type:
+      - application/x-www-form-urlencoded;charset=UTF-8
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
+  response:
+    body:
+      string: '{"access_token": "fake_access_token"}'
+    headers:
+      content-length:
+      - '937'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Wed, 14 Jan 2026 15:07:40 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

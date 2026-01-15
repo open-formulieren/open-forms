@@ -1,0 +1,184 @@
+interactions:
+- request:
+    body: grant_type=client_credentials&scope=warp-api
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '44'
+      Content-Type:
+      - application/x-www-form-urlencoded;charset=UTF-8
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
+  response:
+    body:
+      string: '{"access_token": "fake_access_token"}'
+    headers:
+      content-length:
+      - '937'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Wed, 14 Jan 2026 15:07:41 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+      language:
+      - nl
+    method: GET
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/activity/listforappointment
+  response:
+    body:
+      string: "[\r\n  {\r\n    \"id\": \"2d03b4bf-c56f-41fd-bce2-621f174c8df2\",\r\n
+        \   \"number\": 24,\r\n    \"description\": \"Bouwvergunning aanvraag\",\r\n
+        \   \"appointmentDuration\": 1200,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\":
+        \"6ab268cc-f663-4d4c-bf74-41032eae39a5\"\r\n  },\r\n  {\r\n    \"id\": \"2e656741-db4d-4c75-ae57-97fda6ce5ce8\",\r\n
+        \   \"number\": 13,\r\n    \"description\": \"Omgevingsvergunning (aanvraag)\",\r\n
+        \   \"appointmentDuration\": 1800,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\":
+        \"6ab268cc-f663-4d4c-bf74-41032eae39a5\"\r\n  },\r\n  {\r\n    \"id\": \"8c91b619-8bd4-4ba3-a40f-d5feed643952\",\r\n
+        \   \"number\": 9,\r\n    \"description\": \"Naturalisatie\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"91435629-82d2-4021-b36a-8c49576a029d\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"ee302bc8-46ef-425d-8b4e-fa93246c3bc0\",\r\n    \"number\":
+        25,\r\n    \"description\": \"Parkeervergunning aanvraag\",\r\n    \"appointmentDuration\":
+        900,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"6ab268cc-f663-4d4c-bf74-41032eae39a5\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"da902580-303b-4ec3-ae06-fc25acee4b6a\",\r\n    \"number\":
+        41,\r\n    \"description\": \"Woonloket\",\r\n    \"appointmentDuration\":
+        900,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"6ab268cc-f663-4d4c-bf74-41032eae39a5\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"637474a7-ea52-43f8-9e8a-30f3e0c13cf4\",\r\n    \"number\":
+        40,\r\n    \"description\": \"Partnerschap met toespraak - eigen BABS\",\r\n
+        \   \"appointmentDuration\": 3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\":
+        \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n  },\r\n  {\r\n    \"id\": \"27535042-9f33-498f-b559-39137639bad3\",\r\n
+        \   \"number\": 35,\r\n    \"description\": \"Huwelijk met toespraak - BABS3\",\r\n
+        \   \"appointmentDuration\": 3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\":
+        \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n  },\r\n  {\r\n    \"id\": \"136cb70e-dda7-4383-bdf7-3c990a74e9be\",\r\n
+        \   \"number\": 39,\r\n    \"description\": \"Partnerschap met toespraak -
+        BABS3\",\r\n    \"appointmentDuration\": 3600,\r\n    \"maxCountForEvent\":
+        1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"57f93f17-1f1e-4f5e-bbda-4536e3a1357f\",\r\n    \"number\":
+        33,\r\n    \"description\": \"Huwelijk met toespraak - BABS1\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"cf7a0dd7-2122-4924-b478-53f87798ea3d\",\r\n    \"number\":
+        34,\r\n    \"description\": \"Huwelijk met toespraak - BABS2\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"b82534f7-e55a-4973-bb31-86b384256f4b\",\r\n    \"number\":
+        36,\r\n    \"description\": \"Huwelijk met toespraak - eigen BABS\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"9a70b3cc-619d-4138-8f6c-a90b09d54180\",\r\n    \"number\":
+        37,\r\n    \"description\": \"Partnerschap met toespraak - BABS1\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"38d1165a-680f-45bd-af50-ba4383896d0a\",\r\n    \"number\":
+        38,\r\n    \"description\": \"Partnerschap met toespraak - BABS2\",\r\n    \"appointmentDuration\":
+        3600,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"596a3d22-e72c-4bff-9b6a-49f82018b327\",\r\n    \"number\":
+        32,\r\n    \"description\": \"Partnerschap zonder toespraak\",\r\n    \"appointmentDuration\":
+        900,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"704fb429-01f3-408f-8ed9-dda9316c6e03\",\r\n    \"number\":
+        31,\r\n    \"description\": \"Huwelijk zonder toespraak\",\r\n    \"appointmentDuration\":
+        900,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"c956d136-57a0-4c53-9673-378f41044631\",\r\n    \"number\":
+        27,\r\n    \"description\": \"Schuldhulpverlening\",\r\n    \"appointmentDuration\":
+        1800,\r\n    \"maxCountForEvent\": 1,\r\n    \"activityGroupId\": \"7500d645-c467-417b-b548-23e007d830b2\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"3b659fb1-99e2-492f-9d90-610747ce7b0d\",\r\n    \"number\":
+        28,\r\n    \"description\": \"Schuldhulpverlening - Digitaal gesprek\",\r\n
+        \   \"appointmentDuration\": 1800,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\":
+        \"19b85e5b-dd57-4979-bc50-75f088557cc3\"\r\n  },\r\n  {\r\n    \"id\": \"53410a47-6ede-4225-81e0-4ebffaae0ef3\",\r\n
+        \   \"number\": 7,\r\n    \"description\": \"Geboorteaangifte\",\r\n    \"appointmentDuration\":
+        900,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"dafb7ce5-8ba1-4fee-ac44-edfb333a9404\",\r\n
+        \   \"synonyms\": [\r\n      \"Geboorte inschrijving\"\r\n    ]\r\n  },\r\n
+        \ {\r\n    \"id\": \"d726a90f-0c00-4395-9ed2-501e6d0ae63d\",\r\n    \"number\":
+        8,\r\n    \"description\": \"Overlijdensaangifte\",\r\n    \"appointmentDuration\":
+        1200,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"dafb7ce5-8ba1-4fee-ac44-edfb333a9404\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"2040d2d6-8862-4f68-a60e-1db50ee66be8\",\r\n    \"number\":
+        6,\r\n    \"description\": \"Rijbewijs afhalen\",\r\n    \"appointmentDuration\":
+        300,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"91435629-82d2-4021-b36a-8c49576a029d\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"79c372cf-01fc-4fca-8381-488b66bfb682\",\r\n    \"number\":
+        3,\r\n    \"description\": \"Rijbewijs (aanvraag)\",\r\n    \"appointmentDuration\":
+        300,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"91435629-82d2-4021-b36a-8c49576a029d\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"9f335d78-8c63-40f0-8342-58f87ab41304\",\r\n    \"number\":
+        5,\r\n    \"description\": \"Identiteitskaart afhalen\",\r\n    \"appointmentDuration\":
+        300,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"91435629-82d2-4021-b36a-8c49576a029d\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"6063baab-b077-4eaf-8671-98394793724c\",\r\n    \"number\":
+        1,\r\n    \"description\": \"Paspoort (aanvraag)\",\r\n    \"necessities\":
+        \"<P>Wat heeft u nodig?</P>\\r\\n<UL>\\r\\n<LI>uw oude reisdocument(en)</LI>\\r\\n<LI>uw
+        huidige (nog geldige) reisdocument(en)</LI>\\r\\n<LI>recente pasfoto*</LI>\\r\\n<LI>bij
+        minderjarigheid: een toestemmingsverklaring van de ouders + originele legitimatie</LI></UL>\\r\\n<P>&nbsp;</P>\\r\\n<P>Let
+        op: u betaalt meteen bij de aanvraag</P>\",\r\n    \"appointmentDuration\":
+        600,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"91435629-82d2-4021-b36a-8c49576a029d\",\r\n
+        \   \"synonyms\": [\r\n      \"Legitimatie\",\r\n      \"Persoonsbewijs\",\r\n
+        \     \"Reispas\"\r\n    ]\r\n  },\r\n  {\r\n    \"id\": \"e19f5085-60b0-4f4e-8ec5-b2494f7e1cb2\",\r\n
+        \   \"number\": 10,\r\n    \"description\": \"Gezondheidsverklaring\",\r\n
+        \   \"appointmentDuration\": 600,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\":
+        \"91435629-82d2-4021-b36a-8c49576a029d\"\r\n  },\r\n  {\r\n    \"id\": \"e4dc7942-d394-4c39-a153-bdabc62634f8\",\r\n
+        \   \"number\": 2,\r\n    \"description\": \"Identiteitskaart (aanvraag)\",\r\n
+        \   \"necessities\": \"<P>Wat heeft u nodig?</P>\\r\\n<UL>\\r\\n<LI>uw oude
+        reisdocument(en)</LI>\\r\\n<LI>uw huidige (nog geldige) reisdocument(en)</LI>\\r\\n<LI>recente
+        pasfoto*</LI>\\r\\n<LI>bij minderjarigheid: een toestemmingsverklaring van
+        de ouders + originele legitimatie</LI></UL>\\r\\n<P>&nbsp;</P>\\r\\n<P>Let
+        op: u betaalt meteen bij de aanvraag</P>\",\r\n    \"appointmentDuration\":
+        600,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"91435629-82d2-4021-b36a-8c49576a029d\"\r\n
+        \ },\r\n  {\r\n    \"id\": \"14a83e4c-d722-4f5f-9766-c15e428c06fb\",\r\n    \"number\":
+        4,\r\n    \"description\": \"Paspoort afhalen\",\r\n    \"appointmentDuration\":
+        300,\r\n    \"maxCountForEvent\": 0,\r\n    \"activityGroupId\": \"91435629-82d2-4021-b36a-8c49576a029d\"\r\n
+        \ }\r\n]"
+    headers:
+      content-length:
+      - '7464'
+      content-security-policy:
+      - frame-ancestors 'self'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Wed, 14 Jan 2026 15:07:41 GMT
+      permissions-policy:
+      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
+        microphone=(), payment=(), usb=()
+      referrer-policy:
+      - same-origin
+      strict-transport-security:
+      - max-age=31536000
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-powered-by:
+      - ASP.NET
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
