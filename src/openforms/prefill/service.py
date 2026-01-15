@@ -64,16 +64,18 @@ def inject_prefill(
     Mutates each component found in configuration according to the prefilled values.
 
     :param configuration_wrapper: The Formiojs JSON schema wrapper describing an entire
-    form or an individual component within the form.
+      form or an individual component within the form.
     :param submission: The :class:`openforms.submissions.models.Submission` instance
-    that holds the values of the prefill data. The prefill data was fetched earlier,
-    see :func:`prefill_variables`.
+      that holds the values of the prefill data. The prefill data was fetched earlier,
+      see :func:`prefill_variables`.
 
     The prefill values are looped over by key: value, and for each value the matching
     component is looked up to normalize it in the context of the component.
     """
-    prefilled_data = submission.get_prefilled_data()
-    for key, prefill_value in prefilled_data.items():
+    state = submission.load_submission_value_variables_state()
+    prefilled_data = state.get_prefilled_data()
+    for key, variable in state.prefilled_variables.items():
+        prefill_value = prefilled_data[key]
         try:
             component = configuration_wrapper[key]
         except KeyError:
@@ -87,11 +89,9 @@ def inject_prefill(
         if not prefill.get("attribute"):
             continue
 
-        default_value = component.get("defaultValue")
-        # 1693: we need to normalize values according to the format expected by the
-        # component. For example, (some) prefill plugins return postal codes without
-        # space between the digits and the letters.
-        prefill_value = normalize_value_for_component(component, prefill_value)
+        # Prefill values fetched from the state are in native Python types, so we need
+        # to convert the default value before doing a comparison.
+        default_value = variable.to_python(component.get("defaultValue"))
 
         if prefill_value != default_value and default_value is not None:
             logger.info(
@@ -101,7 +101,10 @@ def inject_prefill(
                 default_value=default_value,
                 component_id=component.get("id"),
             )
-        component["defaultValue"] = prefill_value
+        # Component configuration is still in JSON, so we need to convert the value
+        # back. Would be nice if this was no longer necessary with the (maybe planned)
+        # formio configuration msgspec rework :)
+        component["defaultValue"] = variable.to_json(prefill_value)
 
 
 @elasticapm.capture_span(span_type="app.prefill")
