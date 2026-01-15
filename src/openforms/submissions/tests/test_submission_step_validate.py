@@ -229,7 +229,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                         "prefill": {"plugin": "test-prefill", "attribute": "name"},
                         "disabled": True,
                         "defaultValue": "",
-                        "hidden": False,
+                        "hidden": True,
                     },
                     {
                         "type": "textfield",
@@ -238,7 +238,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                         "prefill": {"plugin": "test-prefill", "attribute": "surname"},
                         "disabled": True,
                         "defaultValue": "",
-                        "hidden": True,
+                        "hidden": False,
                     },
                 ],
             },

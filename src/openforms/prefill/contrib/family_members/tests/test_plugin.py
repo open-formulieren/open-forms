@@ -668,7 +668,7 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
                 "initials": "K",
                 "affixes": "van",
                 "lastName": "Doe",
-                "dateOfBirth": "1985",
+                "dateOfBirth": "",
                 "deceased": False,
             },
             {
@@ -677,7 +677,7 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
                 "initials": "K",
                 "affixes": "van",
                 "lastName": "Doe",
-                "dateOfBirth": "198503",
+                "dateOfBirth": "",
                 "deceased": False,
             },
             {

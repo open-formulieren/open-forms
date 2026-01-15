@@ -161,13 +161,10 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(
             submission = Submission.objects.get()
             state = submission.load_submission_value_variables_state()
 
-            variables = state.get_prefill_variables()
-
-            self.assertEqual(len(variables), 1)
-            self.assertEqual(variables[0].key, "voornamen")
-
+            data = state.get_prefilled_data()
+            self.assertEqual(len(data), 1)
             # check we got the name from the haalcentraal JSON mock
-            self.assertEqual(variables[0].value, "Cornelia Francisca")
+            self.assertEqual(data["voornamen"], "Cornelia Francisca")
 
             # test registrator data
             self.assertEqual(submission.auth_info.value, "999990676")
