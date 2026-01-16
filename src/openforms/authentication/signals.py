@@ -19,7 +19,7 @@ from openforms.submissions.signals import (
 
 from .constants import FORM_AUTH_SESSION_KEY, REGISTRATOR_SUBJECT_SESSION_KEY
 from .registry import register
-from .typing import BaseAuth, FormAuth
+from .typing import FormAuth
 from .utils import (
     logout_submission,
     remove_auth_info_from_session,
@@ -113,7 +113,15 @@ def set_auth_attribute_on_session(
                 # TODO we don't have a plugin to define here? things break if this doesn't exist (like the logout view)
                 "plugin": registrator_subject.get("plugin", "registrator"),
             }
-            registrator_save: BaseAuth = {
+
+            if "branch_number" in registrator_subject:
+                auth_save.update(
+                    additional_claims={
+                        "branch_number": registrator_subject["branch_number"]
+                    }
+                )
+
+            registrator_save: FormAuth = {
                 "value": form_auth["value"],
                 "attribute": form_auth["attribute"],
                 "plugin": form_auth["plugin"],

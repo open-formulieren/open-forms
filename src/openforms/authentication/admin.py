@@ -150,12 +150,14 @@ class RegistratorInfoAdminForm(forms.ModelForm):
             "plugin",
             "attribute",
             "value",
+            "branch_number",
             "submission",
             "attribute_hashed",
         )
         widgets = {
             "plugin": forms.TextInput(attrs={"size": 20}),
             "value": forms.TextInput(attrs={"size": 20}),
+            "branch_number": forms.TextInput(attrs={"size": 20}),
         }
 
 
