@@ -395,3 +395,31 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         data = response.json()
 
         self.assertEqual(2, len(data))
+
+    @tag("gh-5885")
+    def test_summary_with_date_prefill(self):
+        form = FormFactory.create()
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "date",
+                        "type": "date",
+                        "label": "Date",
+                        "prefill": {
+                            "plugin": "test-prefill",
+                            "attribute": "dateOfBirth",
+                        },
+                    }
+                ]
+            },
+            data={"date": "2000-01-01"},
+        )
+        self._add_submission_to_session(submission)
+
+        url = reverse("api:submission-summary", kwargs={"uuid": submission.uuid})
+        response = self.client.get(url)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
