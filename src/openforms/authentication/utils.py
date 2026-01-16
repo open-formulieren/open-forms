@@ -17,7 +17,7 @@ from .constants import (
 )
 from .models import AuthInfo, RegistratorInfo
 from .registry import register as auth_register
-from .typing import BaseAuth, FormAuth
+from .typing import FormAuth
 
 logger = structlog.stdlib.get_logger()
 
@@ -36,13 +36,13 @@ def store_auth_details(
 
 
 def store_registrator_details(
-    submission: Submission, registrator_auth: BaseAuth
+    submission: Submission, registrator_auth: FormAuth
 ) -> None:
     attribute = registrator_auth["attribute"]
     if attribute not in AuthAttribute.values:
         raise ValueError(f"Unexpected auth attribute {attribute} specified")
 
-    RegistratorInfo.objects.update_or_create(
+    RegistratorInfo.objects.update_or_create(  # pyright: ignore[reportAttributeAccessIssue]
         submission=submission, defaults={**registrator_auth}
     )
 
