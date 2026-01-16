@@ -15,6 +15,7 @@ from openforms.formio.service import FormioData
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.utils.tests.nlx import DisableNLXRewritingMixin
 from openforms.variables.constants import DataMappingTypes
+from openforms.variables.models import _convert_to_string
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 from openforms.variables.validators import HeaderValidator, ValidationError
 
@@ -178,9 +179,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         # https://swagger.io/docs/specification/serialization/
         ...
 
-    @given(
-        field_value=data_mapping_values(),
-    )
+    @given(field_value=data_mapping_values())
     def test_it_can_construct_simple_query_parameters(self, field_value):
         # https://swagger.io/docs/specification/describing-parameters/#query-parameters
         context = FormioData({"some_field": field_value})
@@ -196,7 +195,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         with requests_mock.Mocker(case_sensitive=True) as m:
             m.get(
                 furl("https://httpbin.org/response-headers")
-                .set({"freeform": field_value})
+                .set({"freeform": _convert_to_string(field_value)})
                 .url,
                 json={},
             )
@@ -230,7 +229,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         with requests_mock.Mocker(case_sensitive=True) as m:
             m.get(
                 furl("https://httpbin.org/redirect-to")
-                .set({"url": some_text, "status_code": some_value})
+                .set({"url": some_text, "status_code": _convert_to_string(some_value)})
                 .url,
                 json={},
             )
