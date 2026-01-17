@@ -34,8 +34,14 @@ logger = structlog.stdlib.get_logger(__name__)
 
 mimetypes.init()
 
+_env_setup_done = False
+
 
 def setup_env():
+    global _env_setup_done
+    if _env_setup_done:
+        return
+
     # install defusedxml - note that this monkeypatches the stdlib and is experimental.
     # xmltodict only supports defusedexpat, which hasn't been updated since python 3.3
     defusedxml.defuse_stdlib()
@@ -60,6 +66,8 @@ def setup_env():
     monkeypatch_requests()
     monkeypatch_mozilla_django_oidc_get_from_settings()
     monkeypatch_json_logic()
+
+    _env_setup_done = True
 
 
 def load_self_signed_certs() -> None:

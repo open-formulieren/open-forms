@@ -26,6 +26,11 @@ You can find code examples of these health checks in our `docker-compose.yml`_ o
 
 .. _docker-compose.yml: https://github.com/open-formulieren/open-forms/blob/main/docker-compose.yml
 
+.. contents:: Jump to
+    :local:
+    :depth: 2
+    :backlinks: none
+
 Open Forms containers
 =====================
 
@@ -59,7 +64,7 @@ traffic. Three endpoints are exposed for health checks.
 
    .. code-block:: bash
 
-        maykin-common health-check
+        maykin-common health-check \
             --endpoint=http://localhost:8000/_healthz/livez/ \
             --timeout=3
 
@@ -73,12 +78,42 @@ Celery workers
 Celery beat
 -----------
 
-.. todo:: TODO
+The Open Forms Beat service is responsible for periodically scheduling background
+tasks. It touches a liveness file at ``/app/tmp/celery_beat.live`` in
+the container every time a task is successfully scheduled.
+
+Liveness and readiness can be checked with the ``maykin-common`` CLI:
+
+.. code-block:: bash
+
+     maykin-common beat-health-check \
+         --file=/app/tmp/celery_beat.live \
+         --max-age=120
+
+The ``CELERY_BEAT_SCHEDULE`` setting (in :mod:`openforms.conf.base`) contains some tasks
+that run every minute (60 seconds). The ``--max-age`` of 120 seconds covers 2 minutes
+and should account for some time skew.
+
+.. tip:: On Kubernetes, you can use this same check for the startup probe, but with a
+   larger ``--max-age`` or delay the probe about 10 seconds to allow the application
+   some time to load and initialize.
+
+.. versionadded:: 3.5.0
 
 Celery flower
 -------------
 
-.. todo:: TODO
+Celery Flower is a web-app which binds to port ``5555`` by default. You can use the
+generic HTTP health check utility from ``maykin-common``, or set up an equivalent
+HTTP probe:
+
+.. code-block:: bash
+
+     maykin-common health-check \
+         --endpoint=http://localhost:5555/ \
+         --timeout=3
+
+.. versionadded:: 3.5.0
 
 Third party containers
 ======================

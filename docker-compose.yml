@@ -151,7 +151,7 @@ services:
       # web-init:
       #   condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "maykin-common health-check"]
+      test: ["CMD", "maykin-common", "health-check"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -221,6 +221,17 @@ services:
     depends_on:
       - db
       - redis
+    healthcheck:
+      test: [
+        "CMD",
+        "maykin-common",
+        "beat-health-check",
+        "--file=/app/tmp/celery_beat.live",
+        "--max-age=120"
+      ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
     networks:
       - open-forms-dev
 
@@ -237,6 +248,16 @@ services:
     depends_on:
       - redis
       - celery
+    healthcheck:
+      test: [
+        "CMD",
+        "maykin-common",
+        "health-check",
+        "--endpoint=http://localhost:5555/"
+      ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
     networks:
       - open-forms-dev
 
