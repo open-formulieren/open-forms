@@ -1201,7 +1201,7 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         self.assertIsInstance(fixed_components[3]["conditional"]["eq"], int)
         self.assertIsInstance(fixed_components[4]["conditional"]["eq"], float)
-        self.assertIsInstance(fixed_components[5]["conditional"]["eq"], str)
+        self.assertTrue("eq" not in fixed_components[5]["conditional"])
         self.assertIsInstance(fixed_components[6]["conditional"]["eq"], float)
         self.assertIsInstance(fixed_components[7]["conditional"]["eq"], float)
         self.assertIsInstance(fixed_components[8]["conditional"]["eq"], str)
