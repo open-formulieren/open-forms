@@ -28,6 +28,21 @@ from rest_framework.reverse import reverse
 from rest_framework.utils.formatting import lazy_format
 
 from csp_post_processor import post_process_html
+from formio_types import (
+    Checkbox,
+    Columns,
+    Currency,
+    EditGrid,
+    Fieldset,
+    File,
+    Radio,
+    Select,
+    Selectboxes,
+    Signature,
+    Textarea,
+    TextField,
+    Time,
+)
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
@@ -93,11 +108,11 @@ class Default(BasePlugin):
 
 
 @register("textfield")
-class TextField(BasePlugin[TextFieldComponent]):
+class TextFieldPlugin(BasePlugin[TextFieldComponent, TextField]):
     formatter = TextFieldFormatter
 
     @staticmethod
-    def normalizer(component: Component, value: str) -> str:
+    def normalizer(component: TextField, value: str | float) -> str:
         if isinstance(value, int | float):
             return str(value)
         return value
@@ -264,7 +279,7 @@ class TimeBetweenValidator:
 
 
 @register("time")
-class Time(BasePlugin[Component]):
+class TimePlugin(BasePlugin[Component, Time]):
     formatter = TimeFormatter
 
     def build_serializer_field(
@@ -455,7 +470,7 @@ class FileSerializer(serializers.Serializer):
 
 
 @register("file")
-class File(BasePlugin[FileComponent]):
+class FilePlugin(BasePlugin[FileComponent, File]):
     formatter = FileFormatter
 
     @staticmethod
@@ -534,7 +549,7 @@ class File(BasePlugin[FileComponent]):
 
 
 @register("textarea")
-class TextArea(BasePlugin[Component]):
+class TextAreaPlugin(BasePlugin[Component, Textarea]):
     formatter = TextAreaFormatter
 
     def build_serializer_field(
@@ -630,7 +645,7 @@ def validate_required_checkbox(value: bool) -> None:
 
 
 @register("checkbox")
-class Checkbox(BasePlugin[Component]):
+class CheckboxPlugin(BasePlugin[Component, Checkbox]):
     formatter = CheckboxFormatter
 
     def build_serializer_field(self, component: Component) -> serializers.BooleanField:
@@ -701,7 +716,7 @@ class SelectboxesField(serializers.Serializer):
 
 
 @register("selectboxes")
-class SelectBoxes(BasePlugin[SelectBoxesComponent]):
+class SelectBoxesPlugin(BasePlugin[SelectBoxesComponent, Selectboxes]):
     formatter = SelectBoxesFormatter
 
     def mutate_config_dynamically(
@@ -775,7 +790,7 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
 
 
 @register("select")
-class Select(BasePlugin[SelectComponent]):
+class SelectPlugin(BasePlugin[SelectComponent, Select]):
     formatter = SelectFormatter
 
     def mutate_config_dynamically(
@@ -845,7 +860,7 @@ class Select(BasePlugin[SelectComponent]):
 
 
 @register("currency")
-class Currency(BasePlugin[Component]):
+class CurrencyPlugin(BasePlugin[Component, Currency]):
     formatter = CurrencyFormatter
 
     def build_serializer_field(self, component: Component) -> serializers.FloatField:
@@ -883,7 +898,7 @@ class Currency(BasePlugin[Component]):
 
 
 @register("radio")
-class Radio(BasePlugin[RadioComponent]):
+class RadioPlugin(BasePlugin[RadioComponent, Radio]):
     formatter = RadioFormatter
 
     def mutate_config_dynamically(
@@ -934,7 +949,7 @@ class Radio(BasePlugin[RadioComponent]):
 
 
 @register("signature")
-class Signature(BasePlugin[Component]):
+class SignaturePlugin(BasePlugin[Component, Signature]):
     formatter = SignatureFormatter
 
     def build_serializer_field(self, component: Component) -> serializers.CharField:
@@ -1076,7 +1091,7 @@ class EditGridField(serializers.Field):
 
 
 @register("editgrid")
-class EditGrid(BasePlugin[EditGridComponent]):
+class EditGridPlugin(BasePlugin[EditGridComponent, EditGrid]):
     def build_serializer_field(self, component: EditGridComponent) -> EditGridField:
         validate = component.get("validate", {})
         required = validate.get("required", False)
@@ -1182,7 +1197,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
 
 
 @register("columns")
-class Columns(BasePlugin[ColumnsComponent]):
+class ColumnsPlugin(BasePlugin[ColumnsComponent, Columns]):
     @staticmethod
     def apply_visibility(
         component: ColumnsComponent,
@@ -1213,7 +1228,7 @@ class Columns(BasePlugin[ColumnsComponent]):
 
 
 @register("fieldset")
-class Fieldset(BasePlugin[FieldsetComponent]):
+class FieldsetPlugin(BasePlugin[FieldsetComponent, Fieldset]):
     @staticmethod
     def apply_visibility(
         component: FieldsetComponent,

@@ -27,9 +27,11 @@ from typing import (
 
 from django.utils.translation import gettext as _
 
+import msgspec
 from rest_framework import serializers
 from rest_framework.request import Request
 
+from formio_types import AnyComponent
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
 from openforms.typing import JSONObject, JSONValue, VariableValue
@@ -42,6 +44,7 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 ComponentT = TypeVar("ComponentT", bound=Component, contravariant=True)
+NewComponentT = TypeVar("NewComponentT", bound=AnyComponent)
 
 
 class ComponentPreRegistrationResult(TypedDict):
@@ -54,7 +57,7 @@ class FormatterProtocol(Protocol[ComponentT]):
     def __call__(self, component: ComponentT, value: Any) -> str: ...
 
 
-class NormalizerProtocol(Protocol[ComponentT]):
+class NormalizerProtocol[ComponentT: AnyComponent](Protocol):
     def __call__(self, component: ComponentT, value: Any) -> Any: ...
 
 
@@ -68,7 +71,7 @@ class PreRegistrationHookProtocol(Protocol[ComponentT]):
     ) -> ComponentPreRegistrationResult: ...
 
 
-class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
+class BasePlugin(Generic[ComponentT, NewComponentT], AbstractBasePlugin):
     """
     Base class for Formio component plugins.
     """
@@ -80,7 +83,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
     Formatter (class) implementation, used by
     :meth:`openforms.formio.registry.ComponentRegistry.format`.
     """
-    normalizer: NormalizerProtocol[ComponentT] | None = None
+    normalizer: NormalizerProtocol[NewComponentT] | None = None
     """
     Specify the normalizer callable to use for value normalization.
     """
@@ -195,7 +198,9 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         normalizer = self[component_type].normalizer
         if normalizer is None:
             return value
-        return normalizer(component, value)
+        # TODO: lift up the conversion?
+        _component = msgspec.convert(component, type=AnyComponent)
+        return normalizer(_component, value)
 
     def format(self, component: Component, value: Any, as_html=False) -> str:
         """

@@ -15,6 +15,7 @@ from glom import glom
 from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
 
+from formio_types import BSN, AddressNL, Children, Date, Map, Partners, Postcode
 from openforms.api.geojson import (
     GeoJsonGeometryPolymorphicSerializer,
     GeoJsonGeometryTypes,
@@ -62,7 +63,6 @@ from ..typing import (
     DatetimeComponent,
     MapComponent,
 )
-from ..utils import conform_to_mask
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
 from .utils import _normalize_pattern, salt_location_message
@@ -94,11 +94,11 @@ class FormioDateField(serializers.DateField):
 
 
 @register("date")
-class Date(BasePlugin[DateComponent]):
+class DatePlugin(BasePlugin[DateComponent, Date]):
     formatter = DateFormatter
 
     @staticmethod
-    def normalizer(component: DateComponent, value: str) -> str:
+    def normalizer(component: Date, value: str) -> str:
         return format_date_value(value)
 
     def mutate_config_dynamically(
@@ -248,7 +248,7 @@ class Datetime(BasePlugin):
 
 
 @register("map")
-class Map(BasePlugin[MapComponent]):
+class MapPlugin(BasePlugin[MapComponent, Map]):
     formatter = MapFormatter
 
     def mutate_config_dynamically(
@@ -332,29 +332,24 @@ class Map(BasePlugin[MapComponent]):
 
 
 @register("postcode")
-class Postcode(BasePlugin[Component]):
+class PostcodePlugin(BasePlugin[Component, Postcode]):
     formatter = TextFieldFormatter
 
     @staticmethod
-    def normalizer(component: Component, value: str) -> str:
+    def normalizer(component: Postcode, value: str) -> str:
+        """
+        A postcode must be 4 digits followed by a space and two uppercase letters.
+        """
         if not value:
             return value
 
-        input_mask = component.get("inputMask")
-        if not input_mask:
-            return value
+        value = value.upper()
+        # insert a space if the fifth char is not a space, leave all the rest of
+        # the input untouched to not tamper with user input.
+        if len(value) >= 5 and value[4] != " ":
+            value = f"{value[:4]} {value[4:]}"
 
-        try:
-            return conform_to_mask(value, input_mask)
-        except ValueError as exc:
-            logger.warning(
-                "formio.postcode_to_mask_failure",
-                input_mask=input_mask,
-                value=value,
-                component=component,
-                exc_info=exc,
-            )
-            return value
+        return value
 
     def build_serializer_field(
         self, component: Component
@@ -495,7 +490,7 @@ class NPFamilyMembers(BasePlugin):
 
 
 @register("bsn")
-class BSN(BasePlugin[Component]):
+class BSNPlugin(BasePlugin[Component, BSN]):
     formatter = TextFieldFormatter
 
     def build_serializer_field(
@@ -626,7 +621,7 @@ class AddressValueSerializer(serializers.Serializer):
 
 
 @register("addressNL")
-class AddressNL(BasePlugin[AddressNLComponent]):
+class AddressNLPlugin(BasePlugin[AddressNLComponent, AddressNL]):
     formatter = AddressNLFormatter
 
     def build_serializer_field(
@@ -774,7 +769,7 @@ class PartnerListField(serializers.Field):
 
 
 @register("partners")
-class Partners(BasePlugin[Component]):
+class PartnersPlugin(BasePlugin[Component, Partners]):
     formatter = DefaultFormatter
 
     def build_serializer_field(self, component: Component) -> PartnerListField:
@@ -930,7 +925,7 @@ class ChildListField(serializers.Field):
 
 
 @register("children")
-class Children(BasePlugin[ChildrenComponent]):
+class ChildrenPlugin(BasePlugin[ChildrenComponent, Children]):
     formatter = DefaultFormatter
 
     def build_serializer_field(self, component: ChildrenComponent) -> ChildListField:
