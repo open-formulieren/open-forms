@@ -1,6 +1,7 @@
 from datetime import datetime, time
 from unittest.mock import patch
 
+from django.test import override_settings
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -638,3 +639,314 @@ class AppointmentCreateValidationErrorTests(
             self.assertEqual(invalid_params[0]["code"], "max_length")
             self.assertEqual(invalid_params[1]["name"], "contactDetails.email")
             self.assertEqual(invalid_params[1]["code"], "max_length")
+
+    @override_settings(LANGUAGE_CODE="en")
+    @patch(
+        "openforms.appointments.contrib.demo.plugin.DemoAppointment.get_required_customer_fields"
+    )
+    def test_require_one_of_rule_in_contact_details(self, m):
+        m.return_value = (
+            [
+                {
+                    "type": "textfield",
+                    "key": "lastName",
+                    "label": "Last name",
+                    "validate": {
+                        "required": False,
+                        "maxLength": 20,
+                    },
+                    "description": "At least one of the lastName, email must be filled in",
+                },
+                {
+                    "type": "email",
+                    "key": "email",
+                    "label": "Email",
+                    "validate": {
+                        "required": False,
+                        "maxLength": 100,
+                    },
+                    "description": "At least one of the lastName, email must be filled in",
+                },
+                {
+                    "type": "textfield",
+                    "key": "firstName",
+                    "label": "First name",
+                    "validate": {
+                        "required": False,
+                        "maxLength": 20,
+                    },
+                    "description": "At least one of the firstName, initials must be filled in",
+                },
+                {
+                    "type": "textfield",
+                    "key": "initials",
+                    "label": "Initialen",
+                    "autocomplete": "initials",
+                    "validate": {"maxLength": 128, "required": False},
+                    "description": "At least one of the firstName, initials must be filled in",
+                },
+            ],
+            [
+                {
+                    "type": "require_one_of",
+                    "fields": ("lastName", "email"),
+                    "error_message": _(
+                        "At least one of the {fields} is required."
+                    ).format(fields=", ".join(("lastName", "email"))),
+                },
+                {
+                    "type": "require_one_of",
+                    "fields": ("firstName", "initials"),
+                    "error_message": _(
+                        "At least one of the {fields} is required."
+                    ).format(fields=", ".join(("firstName", "initials"))),
+                },
+            ],
+        )
+
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
+        base = {
+            "submission": reverse(
+                "api:submission-detail", kwargs={"uuid": self.submission.uuid}
+            ),
+            "products": [{"productId": "1", "amount": 1}],
+            "location": "1",
+            "date": TODAY.isoformat(),
+            "datetime": appointment_datetime.isoformat(),
+            "privacyPolicyAccepted": True,
+        }
+
+        data = {
+            **base,
+            "contactDetails": {
+                "lastName": "",
+                "email": "",
+                "firstName": "",
+                "initials": "",
+            },
+        }
+
+        response = self.client.post(ENDPOINT, data)
+
+        invalid_params = response.json()["invalidParams"]
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(invalid_params), 4)
+        self.assertEqual(invalid_params[0]["name"], "contactDetails.lastName")
+        self.assertEqual(
+            invalid_params[0]["reason"],
+            "At least one of the lastName, email is required.",
+        )
+        self.assertEqual(invalid_params[1]["name"], "contactDetails.email")
+        self.assertEqual(
+            invalid_params[1]["reason"],
+            "At least one of the lastName, email is required.",
+        )
+        self.assertEqual(invalid_params[2]["name"], "contactDetails.firstName")
+        self.assertEqual(
+            invalid_params[2]["reason"],
+            "At least one of the firstName, initials is required.",
+        )
+        self.assertEqual(invalid_params[3]["name"], "contactDetails.initials")
+        self.assertEqual(
+            invalid_params[3]["reason"],
+            "At least one of the firstName, initials is required.",
+        )
+
+    @override_settings(LANGUAGE_CODE="en")
+    @patch(
+        "openforms.appointments.contrib.demo.plugin.DemoAppointment.get_required_customer_fields"
+    )
+    def test_require_one_of_rule_with_no_specific_error_message_in_contact_details(
+        self, m
+    ):
+        m.return_value = (
+            [
+                {
+                    "type": "textfield",
+                    "key": "lastName",
+                    "label": "Last name",
+                    "validate": {
+                        "required": False,
+                        "maxLength": 20,
+                    },
+                    "description": "At least one of the lastName, email must be filled in",
+                },
+                {
+                    "type": "email",
+                    "key": "email",
+                    "label": "Email",
+                    "validate": {
+                        "required": False,
+                        "maxLength": 100,
+                    },
+                    "description": "At least one of the lastName, email must be filled in",
+                },
+            ],
+            [
+                {
+                    "type": "require_one_of",
+                    "fields": ("lastName", "email"),
+                    "error_message": "",
+                }
+            ],
+        )
+
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
+        base = {
+            "submission": reverse(
+                "api:submission-detail", kwargs={"uuid": self.submission.uuid}
+            ),
+            "products": [{"productId": "1", "amount": 1}],
+            "location": "1",
+            "date": TODAY.isoformat(),
+            "datetime": appointment_datetime.isoformat(),
+            "privacyPolicyAccepted": True,
+        }
+
+        data = {
+            **base,
+            "contactDetails": {
+                "lastName": "",
+                "email": "",
+            },
+        }
+
+        response = self.client.post(ENDPOINT, data)
+
+        invalid_params = response.json()["invalidParams"]
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(invalid_params), 2)
+        self.assertEqual(invalid_params[0]["name"], "contactDetails.lastName")
+        self.assertEqual(invalid_params[0]["reason"], "This field may not be blank.")
+        self.assertEqual(invalid_params[1]["name"], "contactDetails.email")
+        self.assertEqual(invalid_params[1]["reason"], "This field may not be blank.")
+
+    @patch(
+        "openforms.appointments.contrib.demo.plugin.DemoAppointment.get_required_customer_fields"
+    )
+    def test_require_one_of_rule_with_required_values_present(self, m):
+        m.return_value = (
+            [
+                {
+                    "type": "textfield",
+                    "key": "lastName",
+                    "label": "Last name",
+                    "validate": {
+                        "required": False,
+                        "maxLength": 20,
+                    },
+                    "description": "At least one of the lastName, email must be filled in",
+                },
+                {
+                    "type": "email",
+                    "key": "email",
+                    "label": "Email",
+                    "validate": {
+                        "required": False,
+                        "maxLength": 100,
+                    },
+                    "description": "At least one of the lastName, email must be filled in",
+                },
+            ],
+            [
+                {
+                    "type": "require_one_of",
+                    "fields": ("lastName", "email"),
+                    "error_message": "A message",
+                }
+            ],
+        )
+
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
+        base = {
+            "submission": reverse(
+                "api:submission-detail", kwargs={"uuid": self.submission.uuid}
+            ),
+            "products": [{"productId": "1", "amount": 1}],
+            "location": "1",
+            "date": TODAY.isoformat(),
+            "datetime": appointment_datetime.isoformat(),
+            "privacyPolicyAccepted": True,
+        }
+
+        data = {
+            **base,
+            "contactDetails": {
+                "lastName": "Boei",
+                "email": "",
+            },
+        }
+
+        response = self.client.post(ENDPOINT, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    @patch(
+        "openforms.appointments.contrib.demo.plugin.DemoAppointment.get_required_customer_fields"
+    )
+    def test_unknown_rule_is_ignored(self, m):
+        m.return_value = (
+            [
+                {
+                    "type": "textfield",
+                    "key": "lastName",
+                    "label": "Last name",
+                    "validate": {
+                        "required": False,
+                        "maxLength": 20,
+                    },
+                    "description": "At least one of the lastName, email must be filled in",
+                },
+                {
+                    "type": "email",
+                    "key": "email",
+                    "label": "Email",
+                    "validate": {
+                        "required": False,
+                        "maxLength": 100,
+                    },
+                    "description": "At least one of the lastName, email must be filled in",
+                },
+            ],
+            [
+                {
+                    "type": "non_existing",
+                    "fields": ("lastName", "email"),
+                    "error_message": "A message",
+                }
+            ],
+        )
+
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
+        base = {
+            "submission": reverse(
+                "api:submission-detail", kwargs={"uuid": self.submission.uuid}
+            ),
+            "products": [{"productId": "1", "amount": 1}],
+            "location": "1",
+            "date": TODAY.isoformat(),
+            "datetime": appointment_datetime.isoformat(),
+            "privacyPolicyAccepted": True,
+        }
+
+        data = {
+            **base,
+            "contactDetails": {
+                "lastName": "",
+                "email": "",
+            },
+        }
+
+        response = self.client.post(ENDPOINT, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)

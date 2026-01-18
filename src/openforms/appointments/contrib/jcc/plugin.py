@@ -218,7 +218,7 @@ class JccAppointment(BasePlugin[CustomerFields]):
     def get_required_customer_fields(
         self,
         products: list[Product],
-    ) -> list[Component]:
+    ) -> tuple[list[Component], None]:
         product_ids = squash_ids(products)
 
         client = get_client()
@@ -226,7 +226,11 @@ class JccAppointment(BasePlugin[CustomerFields]):
             field_names = client.service.GetRequiredClientFields(productID=product_ids)
 
         last_name = FIELD_TO_FORMIO_COMPONENT[CustomerFields.last_name]
-        return [last_name] + [FIELD_TO_FORMIO_COMPONENT[field] for field in field_names]
+        components_list = [last_name] + [
+            FIELD_TO_FORMIO_COMPONENT[field] for field in field_names
+        ]
+
+        return components_list, None
 
     def create_appointment(
         self,

@@ -63,8 +63,10 @@ class NoEmailPlugin(BasePlugin):
             for day in self.get_dates()
         ]
 
-    def get_required_customer_fields(self, *args, **kwargs) -> list[Component]:
-        return [LAST_NAME]
+    def get_required_customer_fields(
+        self, *args, **kwargs
+    ) -> tuple[list[Component], None]:
+        return [LAST_NAME], None
 
     def create_appointment(self, *args, **kwargs):
         return "dummy-identifier"
@@ -91,8 +93,10 @@ class NoEmailPlugin(BasePlugin):
 
 @register("with-email")
 class WithEmailPlugin(NoEmailPlugin):
-    def get_required_customer_fields(self, *args, **kwargs) -> list[Component]:
-        return [LAST_NAME, EMAIL]
+    def get_required_customer_fields(
+        self, *args, **kwargs
+    ) -> tuple[list[Component], None]:
+        return [LAST_NAME, EMAIL], None
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)

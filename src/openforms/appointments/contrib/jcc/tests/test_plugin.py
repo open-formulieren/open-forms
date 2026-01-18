@@ -203,7 +203,9 @@ class PluginTests(MockConfigMixin, TestCase):
             ),
         ]
 
-        fields = self.plugin.get_required_customer_fields(products)
+        fields, required_group_fields = self.plugin.get_required_customer_fields(
+            products
+        )
 
         self.assertEqual(len(fields), 4)
         last_name, dob, tel, email = fields

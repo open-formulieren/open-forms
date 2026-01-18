@@ -21,6 +21,8 @@ class CustomerFieldsListTests(SubmissionsMixin, APITestCase):
     @patch("openforms.appointments.api.views.get_plugin")
     def test_list_fields_for_multiple_products(self, mock_get_plugin):
         mock_plugin = mock_get_plugin.return_value
+        mock_plugin.get_required_customer_fields.return_value = ([], [])
+
         config_patcher = patch(
             "openforms.appointments.utils.AppointmentsConfig.get_solo",
             return_value=AppointmentsConfig(plugin="demo"),

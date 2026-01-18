@@ -27,7 +27,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 15 Jan 2026 13:40:17 GMT
+      - Thu, 15 Jan 2026 13:40:19 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
@@ -60,35 +60,22 @@ interactions:
       language:
       - nl
     method: GET
-    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/location/forappointment?selectedActivityId=6063baab-b077-4eaf-8671-98394793724c
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/customer/customerfields/required?selectedActivityId=53410a47-6ede-4225-81e0-4ebffaae0ef3
   response:
     body:
-      string: "[\r\n  {\r\n    \"isDefault\": true,\r\n    \"locationNumber\": 1,\r\n
-        \   \"phoneNumberList\": [\r\n      {\r\n        \"phoneNumber\": {\r\n          \"value\":
-        \"0123-456789\",\r\n          \"auditId\": \"c03c22e4-0c34-4c63-bf2b-4f88a7c0a648\",\r\n
-        \         \"id\": \"76a7f13a-04f5-43f0-bfd2-b735f074681e\"\r\n        },\r\n
-        \       \"phoneNumberType\": {\r\n          \"name\": \"WorkPhoneNumber\",\r\n
-        \         \"auditId\": \"6bf6c82c-f3b8-4f53-9cdb-7dd29ada777e\",\r\n          \"id\":
-        \"825b7a38-115a-49c1-8104-0d849aae1be6\"\r\n        },\r\n        \"auditId\":
-        \"51163ccb-a41e-4d69-a884-4211dd3a455b\",\r\n        \"id\": \"e7e1358d-4030-4d0c-bb2a-9881d01f5093\"\r\n
-        \     }\r\n    ],\r\n    \"description\": \"Gemeentehuis Meerbergen\",\r\n
-        \   \"address\": {\r\n      \"streetName\": \"Raadhuisplein\",\r\n      \"houseNumber\":
-        \"1\",\r\n      \"postalCode\": \"1234 AZ\",\r\n      \"city\": \"Meerbergen\",\r\n
-        \     \"country\": {\r\n        \"id\": \"c59f75c0-1106-4423-b7d2-5d2b7c41c7bc\",\r\n
-        \       \"isoCode\": \"NL\",\r\n        \"name\": \"Nederland\"\r\n      },\r\n
-        \     \"auditId\": \"ca8cdf7f-9cce-43ea-91ad-46c1e05a724f\",\r\n      \"id\":
-        \"2410125a-5b9d-4223-90ab-5e11cbe02d08\"\r\n    },\r\n    \"isActive\": true,\r\n
-        \   \"auditId\": \"bdc3b77e-a3d2-4a27-993f-8f2f15d62619\",\r\n    \"id\":
-        \"f3b8864b-2e08-4d01-99db-e36f49f3e19c\"\r\n  }\r\n]"
+      string: "{\r\n  \"initials\": 1,\r\n  \"socialSecurityNumber\": 1,\r\n  \"nationality\":
+        1,\r\n  \"language\": 1,\r\n  \"mainPhoneNumber\": 1,\r\n  \"mobilePhoneNumber\":
+        1,\r\n  \"streetName\": 1,\r\n  \"houseNumber\": 1,\r\n  \"houseNumberSuffix\":
+        1,\r\n  \"postalCode\": 1,\r\n  \"city\": 1,\r\n  \"country\": 1\r\n}"
     headers:
       content-length:
-      - '1197'
+      - '261'
       content-security-policy:
       - frame-ancestors 'self'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 15 Jan 2026 13:40:17 GMT
+      - Thu, 15 Jan 2026 13:40:19 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()

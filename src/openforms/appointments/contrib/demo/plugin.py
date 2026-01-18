@@ -6,7 +6,12 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from openforms.formio.typing import Component
 
-from ...base import AppointmentDetails, BasePlugin, Location, Product
+from ...base import (
+    AppointmentDetails,
+    BasePlugin,
+    Location,
+    Product,
+)
 from ...registry import register
 
 
@@ -49,7 +54,7 @@ class DemoAppointment(BasePlugin[CustomerFields]):
     def get_required_customer_fields(
         self,
         products: list[Product],
-    ) -> list[Component]:
+    ) -> tuple[list[Component], None]:
         last_name: Component = {
             "type": "textfield",
             "key": "lastName",
@@ -68,7 +73,8 @@ class DemoAppointment(BasePlugin[CustomerFields]):
                 "maxLength": 100,
             },
         }
-        return [last_name, email]
+        components = [last_name, email]
+        return components, None
 
     def create_appointment(self, products, location, start_at, client, remarks=""):
         print(

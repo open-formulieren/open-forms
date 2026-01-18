@@ -27,7 +27,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Wed, 14 Jan 2026 15:07:46 GMT
+      - Thu, 15 Jan 2026 13:40:18 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
@@ -60,23 +60,40 @@ interactions:
       language:
       - nl
     method: GET
-    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/availabletimelist?locationId=f3b8864b-2e08-4d01-99db-e36f49f3e19c&fromDate=2026-01-14&toDate=2026-01-15&activityId=6063baab-b077-4eaf-8671-98394793724c&amount=1
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/availabletimelist?locationId=f3b8864b-2e08-4d01-99db-e36f49f3e19c&fromDate=2026-01-15&toDate=2026-01-16&activityId=6063baab-b077-4eaf-8671-98394793724c&amount=1
   response:
     body:
-      string: "{\r\n  \"availableTimesList\": [\r\n    \"2026-01-14T16:10:00\",\r\n
-        \   \"2026-01-14T16:15:00\",\r\n    \"2026-01-14T16:20:00\",\r\n    \"2026-01-14T16:25:00\",\r\n
-        \   \"2026-01-14T16:30:00\",\r\n    \"2026-01-14T16:35:00\",\r\n    \"2026-01-14T16:40:00\",\r\n
-        \   \"2026-01-14T16:45:00\",\r\n    \"2026-01-14T16:50:00\"\r\n  ],\r\n  \"appointmentDuration\":
-        600\r\n}"
+      string: "{\r\n  \"availableTimesList\": [\r\n    \"2026-01-15T14:45:00\",\r\n
+        \   \"2026-01-15T14:50:00\",\r\n    \"2026-01-15T14:55:00\",\r\n    \"2026-01-15T15:00:00\",\r\n
+        \   \"2026-01-15T15:05:00\",\r\n    \"2026-01-15T15:10:00\",\r\n    \"2026-01-15T15:15:00\",\r\n
+        \   \"2026-01-15T15:20:00\",\r\n    \"2026-01-15T15:25:00\",\r\n    \"2026-01-15T15:30:00\",\r\n
+        \   \"2026-01-15T15:35:00\",\r\n    \"2026-01-15T15:40:00\",\r\n    \"2026-01-15T15:45:00\",\r\n
+        \   \"2026-01-15T15:50:00\",\r\n    \"2026-01-15T15:55:00\",\r\n    \"2026-01-15T16:00:00\",\r\n
+        \   \"2026-01-15T16:05:00\",\r\n    \"2026-01-15T16:10:00\",\r\n    \"2026-01-15T16:15:00\",\r\n
+        \   \"2026-01-15T16:20:00\",\r\n    \"2026-01-15T16:25:00\",\r\n    \"2026-01-15T16:30:00\",\r\n
+        \   \"2026-01-15T16:35:00\",\r\n    \"2026-01-15T16:40:00\",\r\n    \"2026-01-15T16:45:00\",\r\n
+        \   \"2026-01-15T16:50:00\",\r\n    \"2026-01-15T16:55:00\",\r\n    \"2026-01-15T17:00:00\",\r\n
+        \   \"2026-01-15T17:05:00\",\r\n    \"2026-01-15T17:10:00\",\r\n    \"2026-01-15T17:15:00\",\r\n
+        \   \"2026-01-15T17:20:00\",\r\n    \"2026-01-15T17:25:00\",\r\n    \"2026-01-15T17:30:00\",\r\n
+        \   \"2026-01-15T17:35:00\",\r\n    \"2026-01-15T17:40:00\",\r\n    \"2026-01-15T17:45:00\",\r\n
+        \   \"2026-01-15T17:50:00\",\r\n    \"2026-01-15T17:55:00\",\r\n    \"2026-01-15T18:00:00\",\r\n
+        \   \"2026-01-15T18:05:00\",\r\n    \"2026-01-15T18:10:00\",\r\n    \"2026-01-15T18:15:00\",\r\n
+        \   \"2026-01-15T18:20:00\",\r\n    \"2026-01-15T18:25:00\",\r\n    \"2026-01-15T18:30:00\",\r\n
+        \   \"2026-01-15T18:35:00\",\r\n    \"2026-01-15T18:40:00\",\r\n    \"2026-01-15T18:45:00\",\r\n
+        \   \"2026-01-15T18:50:00\",\r\n    \"2026-01-15T18:55:00\",\r\n    \"2026-01-15T19:00:00\",\r\n
+        \   \"2026-01-15T19:05:00\",\r\n    \"2026-01-15T19:10:00\",\r\n    \"2026-01-15T19:15:00\",\r\n
+        \   \"2026-01-15T19:20:00\",\r\n    \"2026-01-15T19:25:00\",\r\n    \"2026-01-15T19:30:00\",\r\n
+        \   \"2026-01-15T19:35:00\",\r\n    \"2026-01-15T19:40:00\",\r\n    \"2026-01-15T19:45:00\",\r\n
+        \   \"2026-01-15T19:50:00\"\r\n  ],\r\n  \"appointmentDuration\": 600\r\n}"
     headers:
       content-length:
-      - '318'
+      - '1802'
       content-security-policy:
       - frame-ancestors 'self'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Wed, 14 Jan 2026 15:07:46 GMT
+      - Thu, 15 Jan 2026 13:40:18 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
