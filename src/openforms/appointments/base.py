@@ -74,13 +74,6 @@ class AppointmentDetails:
         return self.identifier
 
 
-@dataclass
-class RequireOneOfRule:
-    enabled: bool
-    fields: tuple[str, ...]
-    labels: tuple[str, ...]
-
-
 TYPE_OF_RULE = Literal["require_one_of"]
 
 

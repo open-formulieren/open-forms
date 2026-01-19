@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from django.db import transaction
 from django.utils.functional import cached_property
 from django.utils.timezone import localdate
@@ -297,7 +295,6 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
                 if group["type"] != "require_one_of":
                     continue
 
-                contact_details_meta = deepcopy(contact_details_meta)
                 fields = group["fields"]
 
                 has_value = any(
@@ -311,7 +308,7 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
                     continue
 
                 for component in contact_details_meta:
-                    key = component.get("key")
+                    key = component["key"]
                     if key not in fields:
                         continue
 

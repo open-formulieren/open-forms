@@ -126,9 +126,9 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "label": CustomerFields.gender.label,
         "validate": {},
         "values": [  # pyright: ignore[reportAssignmentType]
-            {"value": GenderType.other, "label": _("Other")},
-            {"value": GenderType.male, "label": _("Male")},
-            {"value": GenderType.female, "label": _("Female")},
+            {"value": GenderType.male.value, "label": GenderType.male.label},
+            {"value": GenderType.female.value, "label": GenderType.female.label},
+            {"value": GenderType.other.value, "label": GenderType.other.label},
         ],
     },
     CustomerFields.first_name: {
@@ -285,7 +285,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
 
 def get_component(component_type: CustomerFields, required: bool) -> Component:
     component = deepcopy(FIELD_TO_FORMIO_COMPONENT[component_type])
-    component.get("validate", {})["required"] = required
+    component.setdefault("validate", {})["required"] = required
     return component
 
 

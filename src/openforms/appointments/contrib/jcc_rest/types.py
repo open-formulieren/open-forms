@@ -2,6 +2,8 @@ from typing import Literal, NotRequired, TypedDict
 
 from openforms.typing import JSONPrimitive
 
+from .constants import FieldState, GenderType
+
 # Source for the typed dict definitions:
 # https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api-docs-v1/index.html
 # Asked JCC: "string or null" means that the field can be missing entirely. Which is
@@ -10,19 +12,6 @@ from openforms.typing import JSONPrimitive
 # Note that the documentation defines a "revision" key for most of these dicts, but
 # NONE of the example data from their test environment include this, so decided to leave
 # it out
-
-
-# Fields with state Literal[0, 1, 2]
-# 0: visible (it can be submitted without a value)
-# 1: hidden (it's not shown and it's not required)
-# 2: required (should be shown and should have a value)
-FIELD_STATE = Literal[0, 1, 2]
-
-# Fields with gender type Literal[0, 1, 2]
-# 0: Other
-# 1: male
-# 2: female
-GENDER_TYPE = Literal[0, 1, 2]
 
 
 class Version(TypedDict):
@@ -107,25 +96,25 @@ class Location(BaseLocation):
 class CustomerFields(TypedDict):
     auditId: str
     id: NotRequired[str]
-    gender: GENDER_TYPE
-    firstName: FIELD_STATE
-    initials: FIELD_STATE
+    gender: FieldState
+    firstName: FieldState
+    initials: FieldState
     areFirstNameOrInitialsRequired: bool
-    lastNamePrefix: FIELD_STATE
-    birthDate: FIELD_STATE
-    socialSecurityNumber: FIELD_STATE
-    nationality: FIELD_STATE
-    language: FIELD_STATE
-    emailAddress: FIELD_STATE
-    mainPhoneNumber: FIELD_STATE
-    mobilePhoneNumber: FIELD_STATE
+    lastNamePrefix: FieldState
+    birthDate: FieldState
+    socialSecurityNumber: FieldState
+    nationality: FieldState
+    language: FieldState
+    emailAddress: FieldState
+    mainPhoneNumber: FieldState
+    mobilePhoneNumber: FieldState
     isAnyPhoneNumberRequired: bool
-    streetName: FIELD_STATE
-    houseNumber: FIELD_STATE
-    houseNumberSuffix: FIELD_STATE
-    postalCode: FIELD_STATE
-    city: FIELD_STATE
-    country: FIELD_STATE
+    streetName: FieldState
+    houseNumber: FieldState
+    houseNumberSuffix: FieldState
+    postalCode: FieldState
+    city: FieldState
+    country: FieldState
     isDefault: bool
 
 
@@ -150,7 +139,7 @@ class CancelledAppointment(BaseAppointment):
 class Customer(TypedDict):
     id: NotRequired[str]
     isMainCustomer: bool
-    gender: GENDER_TYPE
+    gender: GenderType
     firstName: NotRequired[str]
     initials: NotRequired[str]
     lastNamePrefix: NotRequired[str]

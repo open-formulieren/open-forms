@@ -27,7 +27,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 15 Jan 2026 13:40:12 GMT
+      - Mon, 19 Jan 2026 07:24:47 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
@@ -58,7 +58,7 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
       language:
-      - nl
+      - en
     method: GET
     uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/activity/listforappointment/additional?selectedActivityId=637474a7-ea52-43f8-9e8a-30f3e0c13cf4&includeSelectedActivities=False
   response:
@@ -82,7 +82,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 15 Jan 2026 13:40:12 GMT
+      - Mon, 19 Jan 2026 07:24:47 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()

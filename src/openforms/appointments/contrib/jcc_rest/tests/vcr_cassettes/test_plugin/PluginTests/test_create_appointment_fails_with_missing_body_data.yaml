@@ -27,7 +27,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 15 Jan 2026 13:39:59 GMT
+      - Mon, 19 Jan 2026 07:24:34 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
@@ -58,15 +58,17 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
       language:
-      - nl
+      - en
     method: GET
-    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/calculateduration?dateTime=2025-10-21
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/calculateduration?activityId=&amount=1&dateTime=2025-10-21
   response:
     body:
-      string: "{\r\n  \"title\": \"ActivityId and amount lists have to be filled\",\r\n
-        \ \"detail\": \"ActivityId and amount lists have to be filled\",\r\n  \"instance\":
-        \"/api/warp/v1/appointment/calculateduration\",\r\n  \"type\": \"http://www.jccsoftware.nl/rfc7807/bad-request-exception\",\r\n
-        \ \"status\": 400,\r\n  \"code\": 6001,\r\n  \"errors\": []\r\n}"
+      string: "{\r\n  \"title\": \"InternalException\",\r\n  \"detail\": \"InternalException:
+        code -1\",\r\n  \"instance\": \"/api/warp/v1/appointment/calculateduration\",\r\n
+        \ \"type\": \"http://www.jccsoftware.nl/rfc7807/internal-exception\",\r\n
+        \ \"status\": 500,\r\n  \"code\": -1,\r\n  \"errors\": [\r\n    {\r\n      \"code\":
+        -1,\r\n      \"name\": \"InternalException\",\r\n      \"detail\": \"InternalException:
+        code -1\"\r\n    }\r\n  ]\r\n}"
     headers:
       cache-control:
       - no-cache,no-store
@@ -75,7 +77,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 15 Jan 2026 13:39:59 GMT
+      - Mon, 19 Jan 2026 07:24:36 GMT
       expires:
       - '-1'
       permissions-policy:
@@ -98,6 +100,6 @@ interactions:
       x-xss-protection:
       - 1; mode=block
     status:
-      code: 400
-      message: Bad Request
+      code: 500
+      message: Internal Server Error
 version: 1

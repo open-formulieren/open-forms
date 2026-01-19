@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from functools import wraps
 
@@ -18,7 +19,6 @@ from ...base import (
     Location,
     Product,
     RequiredGroupFields,
-    RequireOneOfRule,
 )
 from ...exceptions import (
     AppointmentCreateFailed,
@@ -28,7 +28,7 @@ from ...exceptions import (
 from ...registry import register
 from ...utils import create_base64_qrcode
 from .client import JccRestClient, NoServiceConfigured
-from .constants import CustomerFields, FieldState, get_component
+from .constants import CustomerFields, FieldState, GenderType, get_component
 from .exceptions import GracefulJccRestException, JccRestException
 from .models import JccRestConfig
 from .types import (
@@ -38,6 +38,13 @@ from .types import (
 )
 
 logger = structlog.stdlib.get_logger(__name__)
+
+
+@dataclass
+class RequireOneOfRule:
+    enabled: bool
+    fields: tuple[str, ...]
+    labels: tuple[str, ...]
 
 
 def with_graceful_default[T, **P](
@@ -178,7 +185,10 @@ class JccRestPlugin(BasePlugin):
             )
 
     def _get_default_component(
-        self, condition: bool, *field_values: int, component_factory
+        self,
+        condition: bool | None,
+        *field_values: FieldState | None,
+        component_factory,
     ) -> list[Component]:
         """
         Returns a list with the default component when isAnyPhoneNumberRequired or
@@ -193,8 +203,8 @@ class JccRestPlugin(BasePlugin):
         self, required_fields: RawCustomerFields
     ) -> dict[str, bool]:
         """
-        Based on the retrieved fields returns a dict with the fields and whether they are
-        required or not.
+        Based on the retrieved fields returns a dict with the fields and that should be
+        rendered and whether they are required or not.
         """
         return {
             field: state == FieldState.required
@@ -224,16 +234,16 @@ class JccRestPlugin(BasePlugin):
                 enabled=required_fields.get("isAnyPhoneNumberRequired"),
                 fields=("phoneNumber", "mobilePhoneNumber"),
                 labels=(
-                    CustomerFields.phone_number.value,
-                    CustomerFields.mobile_phone_number.value,
+                    CustomerFields.phone_number.label,
+                    CustomerFields.mobile_phone_number.label,
                 ),
             ),
             RequireOneOfRule(
                 enabled=required_fields.get("areFirstNameOrInitialsRequired"),
                 fields=("firstName", "initials"),
                 labels=(
-                    CustomerFields.first_name.value,
-                    CustomerFields.initials.value,
+                    CustomerFields.first_name.label,
+                    CustomerFields.initials.label,
                 ),
             ),
         ]
@@ -291,14 +301,14 @@ class JccRestPlugin(BasePlugin):
                 continue
 
             active_labels = [
-                label
+                str(label)
                 for field, label in zip(rule.fields, rule.labels, strict=True)
                 if field in rendered_keys
             ]
 
-            description = _("At least one of the {fields} must be filled in").format(
-                fields=", ".join(active_labels)
-            )
+            description = _(
+                "At least one of the following fields must be filled in: {fields}"
+            ).format(fields=", ".join(active_labels))
 
             for component in components:
                 if component["key"] in active_fields:
@@ -309,7 +319,7 @@ class JccRestPlugin(BasePlugin):
                     "type": "require_one_of",
                     "fields": tuple(active_fields),
                     "error_message": _(
-                        "At least one of the {fields} is required."
+                        "At least one of the following fields is required: {fields}."
                     ).format(fields=", ".join(active_labels)),
                 }
             )
@@ -325,28 +335,28 @@ class JccRestPlugin(BasePlugin):
         remarks: str = "",
     ) -> str:
         with JccRestClient() as jcc_client:
-            product_ids: list[str] = []
-            product_amounts: list[int] = []
-            for product in products:
-                product_ids.append(product.identifier)
-                product_amounts.append(product.amount)
+            activities = [(product.identifier, product.amount) for product in products]
 
             # We have to use an extra endpoint to find the duration (in minutes) for an
             # appointment
             appointment_duration = jcc_client.get_duration_for_appointment(
-                start_at.date(), product_ids, product_amounts
+                start_at.date(), activities
             )
 
             appointment_data: AppointmentData = {
                 "id": None,  # id (as null) is required by JCC even for a new appointment
                 "activityList": [
-                    {"activityId": id_, "amount": amount}
-                    for id_, amount in zip(product_ids, product_amounts, strict=True)
+                    {"activityId": id_, "amount": amount} for id_, amount in activities
                 ],
                 "customerList": [
-                    # We send a default to 0 (None) gender because it's a required field in JCC
-                    # (0=none, 1=male, 2=female)
-                    {"gender": 0, **client.details, "id": None, "isMainCustomer": True},
+                    # We send a default to 0 (other) gender because it's a required field in JCC
+                    # (0=other, 1=male, 2=female)
+                    {
+                        "gender": GenderType.other.value,
+                        **client.details,
+                        "id": None,
+                        "isMainCustomer": True,
+                    },
                 ],
                 "fromDateTime": start_at.isoformat(),
                 "toDateTime": (
@@ -368,7 +378,7 @@ class JccRestPlugin(BasePlugin):
 
             logger.error(
                 "appointment_create_failure",
-                products=product_ids,
+                products=activities,
                 location=location,
                 start_at=start_at,
                 code=result["code"],

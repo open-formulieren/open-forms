@@ -2,7 +2,7 @@ import os
 from datetime import date, datetime, timedelta
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from freezegun import freeze_time
@@ -31,6 +31,7 @@ def _scrub_access_token(response):
     return response
 
 
+@override_settings(LANGUAGE_CODE="en")
 class PluginTests(OFVCRMixin, TestCase):
     """
     Test the JCC Rest API appointments plugin
@@ -49,6 +50,7 @@ class PluginTests(OFVCRMixin, TestCase):
        - endpoints must work as expected
        - data is still valid
     #. Delete the VCR cassettes
+    #. Update the ``RECORDING_DATATIME`` class attribute to the date of recording.
     #. Run the tests
     #. Inspect the diff of the new cassettes
     #. Make sure sensitive information related to tokens or credentials are not present
@@ -60,11 +62,9 @@ class PluginTests(OFVCRMixin, TestCase):
     Note when re-recording the VCR cassettes:
      - At the point of writing these tests, it's not clear how consistent the test data
        will be in the future, so changes to the tests might be needed.
-     - Make sure to update the ``RECORDING_DATATIME`` class attribute to the date of
-       recording.
     """
 
-    RECORDING_DATETIME: str = "2026-01-15T08:32:56+02:00"
+    RECORDING_DATETIME: str = "2026-01-19T08:32:56+02:00"
 
     def setUp(self):
         super().setUp()
@@ -333,7 +333,7 @@ class PluginTests(OFVCRMixin, TestCase):
                     {
                         "type": "textfield",
                         "key": "lastName",
-                        "label": "Achternaam",
+                        "label": "Last name",
                         "autocomplete": "family-name",
                         "validate": {"maxLength": 128, "required": True},
                     },
@@ -355,23 +355,9 @@ class PluginTests(OFVCRMixin, TestCase):
     def test_required_customer_fields_when_optional_fields_are_present(self, m):
         # TODO
         # Check if such an example has been added to the JCC test instance and replace
-        # the mocked response
+        # the mocked response (we need at least one optional field)
 
-        # at this moment no such example exists in the JCC API
-        m.return_value = {
-            "birthDate": 0,
-            "socialSecurityNumber": 1,
-            "nationality": 1,
-            "language": 1,
-            "mainPhoneNumber": 1,
-            "mobilePhoneNumber": 2,
-            "streetName": 1,
-            "houseNumber": 1,
-            "houseNumberSuffix": 1,
-            "postalCode": 1,
-            "city": 1,
-            "country": 1,
-        }
+        m.return_value = {"birthDate": 0}
 
         product1 = Product(
             identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
@@ -387,24 +373,17 @@ class PluginTests(OFVCRMixin, TestCase):
                     {
                         "type": "textfield",
                         "key": "lastName",
-                        "label": "Achternaam",
+                        "label": "Last name",
                         "autocomplete": "family-name",
                         "validate": {"required": True, "maxLength": 128},
                     },
                     {
                         "type": "date",
                         "key": "birthDate",
-                        "label": "Geboortedatum",
+                        "label": "Date of birth",
                         "autocomplete": "date-of-birth",
                         "validate": {"required": False},
                         "openForms": {"widget": "inputGroup"},
-                    },
-                    {
-                        "type": "phoneNumber",
-                        "key": "mobilePhoneNumber",
-                        "label": "Mobiele telefoonnummer",
-                        "autocomplete": "mobile-phone-number",
-                        "validate": {"required": True, "maxLength": 16},
                     },
                 ],
                 None,
@@ -426,21 +405,21 @@ class PluginTests(OFVCRMixin, TestCase):
                     {
                         "type": "textfield",
                         "key": "lastName",
-                        "label": "Achternaam",
+                        "label": "Last name",
                         "autocomplete": "family-name",
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
                         "type": "email",
                         "key": "emailAddress",
-                        "label": "e-mailadres",
+                        "label": "Email address",
                         "autocomplete": "email-address",
                         "validate": {"maxLength": 254, "required": True},
                     },
                     {
                         "type": "phoneNumber",
                         "key": "phoneNumber",
-                        "label": "Telefoonnummer",
+                        "label": "Phone number",
                         "autocomplete": "phone-number",
                         "validate": {"required": True},
                     },
@@ -464,7 +443,7 @@ class PluginTests(OFVCRMixin, TestCase):
                     {
                         "type": "textfield",
                         "key": "lastName",
-                        "label": "Achternaam",
+                        "label": "Last name",
                         "autocomplete": "family-name",
                         "validate": {"maxLength": 128, "required": True},
                     },
@@ -481,24 +460,13 @@ class PluginTests(OFVCRMixin, TestCase):
     ):
         # TODO
         # Check if such an example has been added to the JCC test instance and replace
-        # the mocked response
+        # the mocked response (we need both firstName and initials to be visible and
+        # areFirstNameOrInitialsRequired to be True)
 
-        # at this moment no such example exists in the JCC API
         m.return_value = {
             "firstName": 0,
             "initials": 0,
             "areFirstNameOrInitialsRequired": True,
-            "socialSecurityNumber": 1,
-            "nationality": 1,
-            "language": 1,
-            "mainPhoneNumber": 1,
-            "mobilePhoneNumber": 2,
-            "streetName": 1,
-            "houseNumber": 1,
-            "houseNumberSuffix": 1,
-            "postalCode": 1,
-            "city": 1,
-            "country": 1,
         }
 
         product1 = Product(
@@ -515,39 +483,32 @@ class PluginTests(OFVCRMixin, TestCase):
                     {
                         "type": "textfield",
                         "key": "lastName",
-                        "label": "Achternaam",
+                        "label": "Last name",
                         "autocomplete": "family-name",
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
                         "type": "textfield",
                         "key": "firstName",
-                        "label": "Voornaam",
+                        "label": "First name",
                         "autocomplete": "first-name",
                         "validate": {"maxLength": 128, "required": False},
-                        "description": "At least one of the firstName, initials must be filled in",
+                        "description": "At least one of the following fields must be filled in: First name, Initials",
                     },
                     {
                         "type": "textfield",
                         "key": "initials",
-                        "label": "Initialen",
+                        "label": "Initials",
                         "autocomplete": "initials",
                         "validate": {"maxLength": 128, "required": False},
-                        "description": "At least one of the firstName, initials must be filled in",
-                    },
-                    {
-                        "type": "phoneNumber",
-                        "key": "mobilePhoneNumber",
-                        "label": "Mobiele telefoonnummer",
-                        "autocomplete": "mobile-phone-number",
-                        "validate": {"maxLength": 16, "required": True},
+                        "description": "At least one of the following fields must be filled in: First name, Initials",
                     },
                 ],
                 [
                     {
                         "type": "require_one_of",
                         "fields": ("firstName", "initials"),
-                        "error_message": "At least one of the firstName, initials is required.",
+                        "error_message": "At least one of the following fields is required: First name, Initials.",
                     }
                 ],
             ),
@@ -561,24 +522,13 @@ class PluginTests(OFVCRMixin, TestCase):
     ):
         # TODO
         # Check if such an example has been added to the JCC test instance and replace
-        # the mocked response
+        # the mocked response (we need both firstName and initials to be hidden and
+        # areFirstNameOrInitialsRequired to be True)
 
-        # at this moment no such example exists in the JCC API
         m.return_value = {
             "firstName": 1,
             "initials": 1,
             "areFirstNameOrInitialsRequired": True,
-            "socialSecurityNumber": 1,
-            "nationality": 1,
-            "language": 1,
-            "mainPhoneNumber": 1,
-            "mobilePhoneNumber": 2,
-            "streetName": 1,
-            "houseNumber": 1,
-            "houseNumberSuffix": 1,
-            "postalCode": 1,
-            "city": 1,
-            "country": 1,
         }
 
         product1 = Product(
@@ -595,23 +545,16 @@ class PluginTests(OFVCRMixin, TestCase):
                     {
                         "type": "textfield",
                         "key": "firstName",
-                        "label": "Voornaam",
+                        "label": "First name",
                         "autocomplete": "first-name",
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
                         "type": "textfield",
                         "key": "lastName",
-                        "label": "Achternaam",
+                        "label": "Last name",
                         "autocomplete": "family-name",
                         "validate": {"maxLength": 128, "required": True},
-                    },
-                    {
-                        "type": "phoneNumber",
-                        "key": "mobilePhoneNumber",
-                        "label": "Mobiele telefoonnummer",
-                        "autocomplete": "mobile-phone-number",
-                        "validate": {"maxLength": 16, "required": True},
                     },
                 ],
                 None,
@@ -624,32 +567,15 @@ class PluginTests(OFVCRMixin, TestCase):
     def test_required_customer_fields_with_areFirstNameOrInitialsRequired_and_both_fields_required(
         self, m
     ):
-        """
-        There is the possibility to have areFirstNameOrInitialsRequired set to True
-        and both firstName and initials set to required (2). In this situation we should
-        see both fields in the form as required.
-        """
         # TODO
         # Check if such an example has been added to the JCC test instance and replace
-        # the mocked response
+        # the mocked response (we need both firstName and initials to be required and
+        # areFirstNameOrInitialsRequired to be True)
 
-        # at this moment no such example exists in the JCC API
         m.return_value = {
             "initials": 2,
             "firstName": 2,
             "areFirstNameOrInitialsRequired": True,
-            "birthDate": 0,
-            "socialSecurityNumber": 1,
-            "nationality": 1,
-            "language": 1,
-            "mainPhoneNumber": 1,
-            "mobilePhoneNumber": 1,
-            "streetName": 1,
-            "houseNumber": 1,
-            "houseNumberSuffix": 1,
-            "postalCode": 1,
-            "city": 1,
-            "country": 1,
         }
 
         product1 = Product(
@@ -666,31 +592,23 @@ class PluginTests(OFVCRMixin, TestCase):
                     {
                         "type": "textfield",
                         "key": "lastName",
-                        "label": "Achternaam",
+                        "label": "Last name",
                         "autocomplete": "family-name",
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
                         "type": "textfield",
                         "key": "initials",
-                        "label": "Initialen",
+                        "label": "Initials",
                         "autocomplete": "initials",
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
                         "type": "textfield",
                         "key": "firstName",
-                        "label": "Voornaam",
+                        "label": "First name",
                         "autocomplete": "first-name",
                         "validate": {"maxLength": 128, "required": True},
-                    },
-                    {
-                        "type": "date",
-                        "key": "birthDate",
-                        "label": "Geboortedatum",
-                        "autocomplete": "date-of-birth",
-                        "validate": {"required": False},
-                        "openForms": {"widget": "inputGroup"},
                     },
                 ],
                 None,
@@ -705,24 +623,13 @@ class PluginTests(OFVCRMixin, TestCase):
     ):
         # TODO
         # Check if such an example has been added to the JCC test instance and replace
-        # the mocked response
+        # the mocked response (we need both mobilePhoneNumber and mainPhoneNumber to be
+        # visible and isAnyPhoneNumberRequired to be True)
 
-        # at this moment no such example exists in the JCC API
         m.return_value = {
-            "initials": 1,
-            "isAnyPhoneNumberRequired": True,
-            "birthDate": 0,
-            "socialSecurityNumber": 1,
-            "nationality": 1,
-            "language": 1,
             "mobilePhoneNumber": 0,
             "mainPhoneNumber": 0,
-            "streetName": 1,
-            "houseNumber": 1,
-            "houseNumberSuffix": 1,
-            "postalCode": 1,
-            "city": 1,
-            "country": 1,
+            "isAnyPhoneNumberRequired": True,
         }
         product1 = Product(
             identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
@@ -738,40 +645,32 @@ class PluginTests(OFVCRMixin, TestCase):
                     {
                         "type": "textfield",
                         "key": "lastName",
-                        "label": "Achternaam",
+                        "label": "Last name",
                         "autocomplete": "family-name",
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
-                        "type": "date",
-                        "key": "birthDate",
-                        "label": "Geboortedatum",
-                        "autocomplete": "date-of-birth",
-                        "validate": {"required": False},
-                        "openForms": {"widget": "inputGroup"},
-                    },
-                    {
                         "type": "phoneNumber",
                         "key": "mobilePhoneNumber",
-                        "label": "Mobiele telefoonnummer",
+                        "label": "Mobile phone number",
                         "autocomplete": "mobile-phone-number",
                         "validate": {"maxLength": 16, "required": False},
-                        "description": "At least one of the phoneNumber, mobilePhoneNumber must be filled in",
+                        "description": "At least one of the following fields must be filled in: Phone number, Mobile phone number",
                     },
                     {
                         "type": "phoneNumber",
                         "key": "phoneNumber",
-                        "label": "Telefoonnummer",
+                        "label": "Phone number",
                         "autocomplete": "phone-number",
                         "validate": {"required": False},
-                        "description": "At least one of the phoneNumber, mobilePhoneNumber must be filled in",
+                        "description": "At least one of the following fields must be filled in: Phone number, Mobile phone number",
                     },
                 ],
                 [
                     {
                         "type": "require_one_of",
                         "fields": ("phoneNumber", "mobilePhoneNumber"),
-                        "error_message": "At least one of the phoneNumber, mobilePhoneNumber is required.",
+                        "error_message": "At least one of the following fields is required: Phone number, Mobile phone number.",
                     }
                 ],
             ),
@@ -785,23 +684,13 @@ class PluginTests(OFVCRMixin, TestCase):
     ):
         # TODO
         # Check if such an example has been added to the JCC test instance and replace
-        # the mocked response
+        # the mocked response (we need both mobilePhoneNumber and mainPhoneNumber to be
+        # required and isAnyPhoneNumberRequired to be True)
 
-        # at this moment no such example exists in the JCC API
         m.return_value = {
-            "isAnyPhoneNumberRequired": True,
-            "birthDate": 0,
-            "socialSecurityNumber": 1,
-            "nationality": 1,
-            "language": 1,
             "mainPhoneNumber": 2,
             "mobilePhoneNumber": 2,
-            "streetName": 1,
-            "houseNumber": 1,
-            "houseNumberSuffix": 1,
-            "postalCode": 1,
-            "city": 1,
-            "country": 1,
+            "isAnyPhoneNumberRequired": True,
         }
 
         product1 = Product(
@@ -818,29 +707,21 @@ class PluginTests(OFVCRMixin, TestCase):
                     {
                         "type": "textfield",
                         "key": "lastName",
-                        "label": "Achternaam",
+                        "label": "Last name",
                         "autocomplete": "family-name",
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
-                        "type": "date",
-                        "key": "birthDate",
-                        "label": "Geboortedatum",
-                        "autocomplete": "date-of-birth",
-                        "validate": {"required": False},
-                        "openForms": {"widget": "inputGroup"},
-                    },
-                    {
                         "type": "phoneNumber",
                         "key": "mobilePhoneNumber",
-                        "label": "Mobiele telefoonnummer",
+                        "label": "Mobile phone number",
                         "autocomplete": "mobile-phone-number",
                         "validate": {"maxLength": 16, "required": True},
                     },
                     {
                         "type": "phoneNumber",
                         "key": "phoneNumber",
-                        "label": "Telefoonnummer",
+                        "label": "Phone number",
                         "autocomplete": "phone-number",
                         "validate": {"required": True},
                     },
@@ -857,23 +738,13 @@ class PluginTests(OFVCRMixin, TestCase):
     ):
         # TODO
         # Check if such an example has been added to the JCC test instance and replace
-        # the mocked response
+        # the mocked response (we need both mobilePhoneNumber and mainPhoneNumber to be
+        # hidden and isAnyPhoneNumberRequired to be True)
 
-        # at this moment no such example exists in the JCC API
         m.return_value = {
-            "isAnyPhoneNumberRequired": True,
-            "birthDate": 0,
-            "socialSecurityNumber": 1,
-            "nationality": 1,
-            "language": 1,
             "mainPhoneNumber": 1,
             "mobilePhoneNumber": 1,
-            "streetName": 1,
-            "houseNumber": 1,
-            "houseNumberSuffix": 1,
-            "postalCode": 1,
-            "city": 1,
-            "country": 1,
+            "isAnyPhoneNumberRequired": True,
         }
 
         product1 = Product(
@@ -890,24 +761,16 @@ class PluginTests(OFVCRMixin, TestCase):
                     {
                         "type": "textfield",
                         "key": "lastName",
-                        "label": "Achternaam",
+                        "label": "Last name",
                         "autocomplete": "family-name",
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
                         "type": "phoneNumber",
                         "key": "phoneNumber",
-                        "label": "Telefoonnummer",
+                        "label": "Phone number",
                         "autocomplete": "phone-number",
                         "validate": {"required": True},
-                    },
-                    {
-                        "type": "date",
-                        "key": "birthDate",
-                        "label": "Geboortedatum",
-                        "autocomplete": "date-of-birth",
-                        "validate": {"required": False},
-                        "openForms": {"widget": "inputGroup"},
                     },
                 ],
                 None,
@@ -1075,6 +938,11 @@ class PluginTests(OFVCRMixin, TestCase):
 
     def test_create_appointment_fails_with_missing_body_data(self):
         """Missing the products"""
+        product = Product(
+            identifier="",
+            name="",
+            amount=1,
+        )
         customer = CustomerDetails(
             details={
                 CustomerFields.last_name: "Boei",
@@ -1090,7 +958,10 @@ class PluginTests(OFVCRMixin, TestCase):
 
         with self.assertRaises(GracefulJccRestException):
             self.plugin.create_appointment(
-                products=[], location=location, start_at=start_at, client=customer
+                products=[product],
+                location=location,
+                start_at=start_at,
+                client=customer,
             )
 
     @patch("openforms.appointments.contrib.jcc_rest.client.Client.add_appointment")

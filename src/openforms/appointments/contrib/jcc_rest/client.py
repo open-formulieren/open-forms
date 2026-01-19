@@ -207,15 +207,11 @@ class Client(LoggingClient):
     def get_duration_for_appointment(
         self,
         date: date,
-        activity_ids: Sequence[str],
-        amounts: Sequence[int],
+        activities: Collection[tuple[str, int]],
     ) -> int:
         """Retrieve the duration (in minutes) for an appointment."""
-        assert len(activity_ids) == len(amounts), (
-            "Number of activity IDs and amounts must be equal"
-        )
+        activity_ids, amounts = zip(*activities, strict=False)
 
-        # TODO make sure this is the way that we want and not as a list
         params = {
             "activityId": activity_ids,
             "amount": amounts,

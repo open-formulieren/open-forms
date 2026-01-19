@@ -27,7 +27,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 15 Jan 2026 13:40:18 GMT
+      - Mon, 19 Jan 2026 07:24:52 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
@@ -58,12 +58,12 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
       language:
-      - nl
+      - en
     method: GET
     uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/activity/appointmentdaterange?activityId=6063baab-b077-4eaf-8671-98394793724c
   response:
     body:
-      string: "{\r\n  \"minDate\": \"2026-01-15T00:00:00\",\r\n  \"maxDate\": \"2027-01-15T00:00:00\"\r\n}"
+      string: "{\r\n  \"minDate\": \"2026-01-19T00:00:00\",\r\n  \"maxDate\": \"2027-01-19T00:00:00\"\r\n}"
     headers:
       content-length:
       - '77'
@@ -72,7 +72,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 15 Jan 2026 13:40:18 GMT
+      - Mon, 19 Jan 2026 07:24:54 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
@@ -103,9 +103,9 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
       language:
-      - nl
+      - en
     method: GET
-    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/availabletimelist?locationId=fake_location&fromDate=2026-01-15&toDate=2026-01-07&activityId=6063baab-b077-4eaf-8671-98394793724c&amount=1
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/availabletimelist?locationId=fake_location&fromDate=2026-01-19&toDate=2026-01-07&activityId=6063baab-b077-4eaf-8671-98394793724c&amount=1
   response:
     body:
       string: "{\r\n  \"title\": \"InternalException\",\r\n  \"detail\": \"InternalException:
@@ -122,7 +122,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 15 Jan 2026 13:40:19 GMT
+      - Mon, 19 Jan 2026 07:24:55 GMT
       expires:
       - '-1'
       permissions-policy:
