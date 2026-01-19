@@ -41,7 +41,7 @@ def get_submission_price(submission: Submission) -> Decimal:
         "Price cannot be calculated on a submission without the form relation set"
     )
     assert submission.form.product, "Form must have a related product"
-    assert submission.form.product.price, (
+    assert submission.form.product.price_options, (
         "get_submission_price' may only be called for forms that require payment"
     )
     with structlog.contextvars.bound_contextvars(
@@ -82,7 +82,21 @@ def get_submission_price(submission: Submission) -> Decimal:
         #
         assert price is None
         logger.debug("fallback_to_product_price")
-        return form.product.price
+
+        def get_price_option_key():
+            for step in form.formstep_set.all():
+                for component in step.form_definition.configuration["components"]:
+                    if component["type"] == "productPrice":
+                        return component["key"]
+            raise ValueError("Form does not have a productPrice component")
+
+        price_option_key = get_price_option_key()
+
+        data = submission.data
+        if not data.get(price_option_key):
+            return Decimal("0")
+
+        return form.product.price_options.get(uuid=data[price_option_key]).amount
 
 
 def _price_from_variable(submission: Submission) -> Decimal | None:

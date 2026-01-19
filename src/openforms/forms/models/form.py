@@ -514,7 +514,9 @@ class Form(models.Model):
     @property
     def payment_required(self) -> bool:
         # this will later be more dynamic and determined from oa. the linked Product
-        return bool(self.payment_backend and self.product and self.product.price)
+        return bool(
+            self.payment_backend and self.product and len(self.product.price_options)
+        )
 
     @transaction.atomic
     def copy(self):
