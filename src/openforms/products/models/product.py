@@ -21,6 +21,16 @@ class Product(models.Model):
         help_text=_("Globally unique identifier"),
         unique=True,
     )
+    product_type_uuid = models.UUIDField(
+        _("product type UUID"),
+        blank=True,
+        null=True,
+        unique=True,
+        editable=False,
+        help_text=_(
+            "Unique identifier of the product type (originates from Open Product)."
+        ),
+    )
     name = models.CharField(_("name"), max_length=50)
     price = models.DecimalField(
         _("price"),
