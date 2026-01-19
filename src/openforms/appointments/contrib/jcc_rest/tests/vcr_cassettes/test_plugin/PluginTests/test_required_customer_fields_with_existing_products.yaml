@@ -27,7 +27,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 19 Jan 2026 07:24:48 GMT
+      - Mon, 19 Jan 2026 07:24:58 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
@@ -60,23 +60,22 @@ interactions:
       language:
       - en
     method: GET
-    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/activity/listforappointment/additional?selectedActivityId=637474a7-ea52-43f8-9e8a-30f3e0c13cf4&includeSelectedActivities=False&locationId=f9332b85-2ca3-4b42-aaa9-07e37c010a83
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/customer/customerfields/required?selectedActivityId=c956d136-57a0-4c53-9673-378f41044631&selectedActivityId=53410a47-6ede-4225-81e0-4ebffaae0ef3
   response:
     body:
-      string: "[\r\n  {\r\n    \"id\": \"b82534f7-e55a-4973-bb31-86b384256f4b\",\r\n
-        \   \"number\": 36,\r\n    \"description\": \"Huwelijk met toespraak - eigen
-        BABS\",\r\n    \"appointmentDuration\": 3600,\r\n    \"maxCountForEvent\":
-        1,\r\n    \"activityGroupId\": \"e06e9567-47c2-4618-93ad-2664c9bbeabe\"\r\n
-        \ }\r\n]"
+      string: "{\r\n  \"initials\": 1,\r\n  \"socialSecurityNumber\": 2,\r\n  \"nationality\":
+        1,\r\n  \"language\": 1,\r\n  \"mainPhoneNumber\": 1,\r\n  \"mobilePhoneNumber\":
+        1,\r\n  \"streetName\": 1,\r\n  \"houseNumber\": 1,\r\n  \"houseNumberSuffix\":
+        1,\r\n  \"postalCode\": 1,\r\n  \"city\": 1,\r\n  \"country\": 1\r\n}"
     headers:
       content-length:
-      - '268'
+      - '261'
       content-security-policy:
       - frame-ancestors 'self'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 19 Jan 2026 07:24:48 GMT
+      - Mon, 19 Jan 2026 07:24:58 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()

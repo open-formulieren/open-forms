@@ -8,6 +8,7 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from openforms.formio.service import build_serializer
+from openforms.formio.utils import get_component_empty_value
 from openforms.forms.models import Form
 from openforms.submissions.api.fields import PrivacyPolicyAcceptedField
 from openforms.submissions.models import Submission
@@ -282,7 +283,38 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
             )
 
         # 5. Validate contact details against product(s)
-        contact_details_meta = plugin.get_required_customer_fields(products)
+        contact_details_meta, required_group_fields = (
+            plugin.get_required_customer_fields(products)
+        )
+
+        # Plugins may require combined fields validation so we handle these situations
+        # based on specific rules (for now only JCC_REST uses it so we use just an if statement)
+        specific_errors = {}
+        if required_group_fields:
+            for group in required_group_fields:
+                if group["type"] != "require_one_of":
+                    continue
+
+                fields = group["fields"]
+
+                has_value = any(
+                    attrs["contact_details"].get(component["key"])
+                    != get_component_empty_value(component)
+                    for component in contact_details_meta
+                    if component["key"] in fields
+                )
+
+                if has_value:
+                    continue
+
+                for component in contact_details_meta:
+                    key = component["key"]
+                    if key not in fields:
+                        continue
+
+                    component.setdefault("validate", {})["required"] = True
+                    specific_errors[key] = group["error_message"]
+
         contact_details_serializer = build_serializer(
             contact_details_meta,
             data=attrs["contact_details"],
@@ -293,6 +325,11 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
         )
         if not contact_details_serializer.is_valid():
             errors = contact_details_serializer.errors
+            if specific_errors:
+                for field, message in specific_errors.items():
+                    if field in errors and message:
+                        errors[field] = [message]
+
             raise serializers.ValidationError({"contact_details": errors})
 
         # expose additional metadata

@@ -1,5 +1,8 @@
-from typing import NotRequired, TypedDict
+from typing import Literal, NotRequired, TypedDict
 
+from openforms.typing import JSONPrimitive
+
+from .constants import FieldState, GenderType
 
 # Source for the typed dict definitions:
 # https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api-docs-v1/index.html
@@ -9,6 +12,8 @@ from typing import NotRequired, TypedDict
 # Note that the documentation defines a "revision" key for most of these dicts, but
 # NONE of the example data from their test environment include this, so decided to leave
 # it out
+
+
 class Version(TypedDict):
     warpApiVersion: NotRequired[str]
     afsprakenVersion: NotRequired[str]
@@ -66,13 +71,16 @@ class Address(TypedDict):
     customCountryIso: NotRequired[str]
 
 
-class Location(TypedDict):
-    auditId: str
+class BaseLocation(TypedDict):
     id: str
+    description: NotRequired[str]
+
+
+class Location(BaseLocation):
+    auditId: str
     isActive: NotRequired[bool]
     code: NotRequired[str]
     phoneNumberList: NotRequired[list[LocationPhoneNumber]]
-    description: NotRequired[str]
     address: Address
     # not listed as optional in the documentation, but none of the example locations
     # include it
@@ -83,3 +91,119 @@ class Location(TypedDict):
     smtpFromName: NotRequired[str]
     internetAppointmentBaseUrl: NotRequired[str]
     locationNumber: int  # will be removed completely in the future, use "id" instead
+
+
+class CustomerFields(TypedDict):
+    auditId: str
+    id: NotRequired[str]
+    gender: FieldState
+    firstName: FieldState
+    initials: FieldState
+    areFirstNameOrInitialsRequired: bool
+    lastNamePrefix: FieldState
+    birthDate: FieldState
+    socialSecurityNumber: FieldState
+    nationality: FieldState
+    language: FieldState
+    emailAddress: FieldState
+    mainPhoneNumber: FieldState
+    mobilePhoneNumber: FieldState
+    isAnyPhoneNumberRequired: bool
+    streetName: FieldState
+    houseNumber: FieldState
+    houseNumberSuffix: FieldState
+    postalCode: FieldState
+    city: FieldState
+    country: FieldState
+    isDefault: bool
+
+
+class BaseAppointment(TypedDict):
+    id: str
+    code: int
+    message: NotRequired[str]
+    validateErrors: NotRequired[list[str]]
+    acknowledgeIsSuccess: bool
+    exception: NotRequired[str]
+    logLevel: Literal[0, 1, 2, 3, 4]
+
+
+class CreatedAppointment(BaseAppointment):
+    pass
+
+
+class CancelledAppointment(BaseAppointment):
+    pass
+
+
+class Customer(TypedDict):
+    id: NotRequired[str]
+    isMainCustomer: bool
+    gender: GenderType
+    firstName: NotRequired[str]
+    initials: NotRequired[str]
+    lastNamePrefix: NotRequired[str]
+    lastName: NotRequired[str]
+    birthDate: NotRequired[str]  # ISO 8601 format
+    emailAddress: NotRequired[str]
+    phoneNumber: NotRequired[str]
+    mobilePhoneNumber: NotRequired[str]
+    streetName: NotRequired[str]
+    houseNumber: NotRequired[int]
+    houseNumberSuffix: NotRequired[str]
+    postalCode: NotRequired[str]
+    city: NotRequired[str]
+    socialSecurityNumber: NotRequired[str]
+    ssnCountryId: NotRequired[str]
+    nationalityId: NotRequired[str]
+    customNationality: NotRequired[str]
+    languageId: NotRequired[str]
+    addressCountryId: NotRequired[str]
+    customCountryIso: NotRequired[str]
+
+
+class Field(TypedDict):
+    id: str
+    fileName: NotRequired[str]
+    file: NotRequired[str]
+    value: NotRequired[str]
+    fieldDefinitionId: str
+
+
+class Payment(TypedDict):
+    transactionId: NotRequired[str]
+    transactionState: Literal[0, 1, 2, 3, 4]
+    paymentAmount: NotRequired[float]
+    transactionNumber: NotRequired[str]
+
+
+class ExistingAppointment(TypedDict):
+    id: str
+    startDateTime: str  # ISO 8601 format
+    endDateTime: str  # ISO 8601 format
+    number: int
+    caseId: NotRequired[str]
+    acitivityList: list[Activity]
+    customerList: NotRequired[list[Customer]]
+    location: BaseLocation
+    fieldList: NotRequired[list[Field]]
+    message: NotRequired[str]
+    creationDateTime: NotRequired[str]  # ISO 8601 format
+    paymentStatus: Payment
+
+
+# Specific to the body of appointment data sent to the API (POST: \appointment)
+class AppointmentActivity(TypedDict):
+    activityId: str
+    amount: int
+
+
+class AppointmentData(TypedDict):
+    id: None
+    activityList: list[AppointmentActivity]
+    customerList: list[dict[CustomerFields | str, JSONPrimitive]]
+    fromDateTime: str
+    toDateTime: str
+    locationId: str
+    message: NotRequired[str]
+    fieldList: None

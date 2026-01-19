@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from collections.abc import Callable
+from collections.abc import Callable, Collection
 from dataclasses import dataclass
 from datetime import date, datetime
+from typing import Literal, TypedDict
 
 from django.db.models import TextChoices
 from django.urls import reverse
@@ -71,6 +72,15 @@ class AppointmentDetails:
 
     def __str__(self):
         return self.identifier
+
+
+TYPE_OF_RULE = Literal["require_one_of"]
+
+
+class RequiredGroupFields(TypedDict):
+    type: TYPE_OF_RULE
+    fields: Collection[str]
+    error_message: str
 
 
 class BasePlugin[F: TextChoices](ABC, AbstractBasePlugin):
@@ -158,9 +168,10 @@ class BasePlugin[F: TextChoices](ABC, AbstractBasePlugin):
     def get_required_customer_fields(
         self,
         products: list[Product],
-    ) -> list[Component]:
+    ) -> tuple[list[Component], list[RequiredGroupFields] | None]:
         """
-        Given a list of products, return the additional required customer fields.
+        Given a list of products, return the additional required customer fields and their
+        specific rules for a group of fields (if exists).
 
         The fields are returned as a Form.io components array, including possible useful
         autocomplete attributes. This should make it easy to render the fields using

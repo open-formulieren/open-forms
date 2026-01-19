@@ -27,7 +27,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 19 Jan 2026 07:24:52 GMT
+      - Mon, 19 Jan 2026 07:24:34 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
@@ -60,56 +60,11 @@ interactions:
       language:
       - en
     method: GET
-    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/activity/appointmentdaterange?activityId=6063baab-b077-4eaf-8671-98394793724c
-  response:
-    body:
-      string: "{\r\n  \"minDate\": \"2026-01-19T00:00:00\",\r\n  \"maxDate\": \"2027-01-19T00:00:00\"\r\n}"
-    headers:
-      content-length:
-      - '77'
-      content-security-policy:
-      - frame-ancestors 'self'
-      content-type:
-      - application/json; charset=utf-8
-      date:
-      - Mon, 19 Jan 2026 07:24:54 GMT
-      permissions-policy:
-      - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
-        microphone=(), payment=(), usb=()
-      referrer-policy:
-      - same-origin
-      strict-transport-security:
-      - max-age=31536000
-      x-content-type-options:
-      - nosniff
-      x-frame-options:
-      - SAMEORIGIN
-      x-powered-by:
-      - ASP.NET
-      x-xss-protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, br
-      Connection:
-      - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
-      language:
-      - en
-    method: GET
-    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/availabletimelist?locationId=fake_location&fromDate=2026-01-19&toDate=2026-01-07&activityId=6063baab-b077-4eaf-8671-98394793724c&amount=1
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/calculateduration?activityId=&amount=1&dateTime=2025-10-21
   response:
     body:
       string: "{\r\n  \"title\": \"InternalException\",\r\n  \"detail\": \"InternalException:
-        code -1\",\r\n  \"instance\": \"/api/warp/v1/appointment/availabletimelist\",\r\n
+        code -1\",\r\n  \"instance\": \"/api/warp/v1/appointment/calculateduration\",\r\n
         \ \"type\": \"http://www.jccsoftware.nl/rfc7807/internal-exception\",\r\n
         \ \"status\": 500,\r\n  \"code\": -1,\r\n  \"errors\": [\r\n    {\r\n      \"code\":
         -1,\r\n      \"name\": \"InternalException\",\r\n      \"detail\": \"InternalException:
@@ -122,7 +77,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 19 Jan 2026 07:24:55 GMT
+      - Mon, 19 Jan 2026 07:24:36 GMT
       expires:
       - '-1'
       permissions-policy:

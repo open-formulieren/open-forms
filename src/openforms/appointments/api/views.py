@@ -270,8 +270,9 @@ class RequiredCustomerFieldsListView(APIView):
     Note that this requires valid querystring parameters to get results. You will get
     an HTTP 400 on invalid input parameters.
 
-    The required fields are returned as an array of Form.io component definitions,
-    with ready to use component keys, labels and relevant validators.
+    The required fields are returned as a tuple of Form.io component definitions,
+    with ready to use component keys, labels and relevant validators and an array of
+    specific group fields rules or None.
     """
 
     authentication_classes = ()
@@ -295,7 +296,9 @@ class RequiredCustomerFieldsListView(APIView):
                 span_type="app.appointments.get_required_customer_fields",
             ),
         ):
-            fields = plugin.get_required_customer_fields(products)
+            fields, required_group_fields = plugin.get_required_customer_fields(
+                products
+            )
 
         return Response(fields)
 

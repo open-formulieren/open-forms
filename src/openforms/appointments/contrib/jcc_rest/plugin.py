@@ -1,8 +1,10 @@
 from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from functools import wraps
 
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 import structlog
@@ -10,14 +12,39 @@ import structlog
 from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from ...base import AppointmentDetails, BasePlugin, CustomerDetails, Location, Product
+from ...base import (
+    AppointmentDetails,
+    BasePlugin,
+    CustomerDetails,
+    Location,
+    Product,
+    RequiredGroupFields,
+)
+from ...exceptions import (
+    AppointmentCreateFailed,
+    AppointmentDeleteFailed,
+    AppointmentException,
+)
 from ...registry import register
-from .client import JccRestClient, Location as RawLocation, NoServiceConfigured
-from .constants import CustomerFields
+from ...utils import create_base64_qrcode
+from .client import JccRestClient, NoServiceConfigured
+from .constants import CustomerFields, FieldState, GenderType, get_component
 from .exceptions import GracefulJccRestException, JccRestException
 from .models import JccRestConfig
+from .types import (
+    AppointmentData,
+    CustomerFields as RawCustomerFields,
+    Location as RawLocation,
+)
 
 logger = structlog.stdlib.get_logger(__name__)
+
+
+@dataclass
+class RequireOneOfRule:
+    enabled: bool
+    fields: tuple[str, ...]
+    labels: tuple[str, ...]
 
 
 def with_graceful_default[T, **P](
@@ -157,12 +184,147 @@ class JccRestPlugin(BasePlugin):
                 )
             )
 
-    @with_graceful_default(default=[])
+    def _get_default_component(
+        self,
+        condition: bool | None,
+        *field_values: FieldState | None,
+        component_factory,
+    ) -> list[Component]:
+        """
+        Returns a list with the default component when isAnyPhoneNumberRequired or
+        areFirstNameOrInitialsRequired are set to True.
+        """
+        if condition and all(v is None or v == FieldState.hidden for v in field_values):
+            return [component_factory]
+
+        return []
+
+    def _extract_rendered_fields(
+        self, required_fields: RawCustomerFields
+    ) -> dict[str, bool]:
+        """
+        Based on the retrieved fields returns a dict with the fields and that should be
+        rendered and whether they are required or not.
+        """
+        return {
+            field: state == FieldState.required
+            for field, state in required_fields.items()
+            if state in (FieldState.visible, FieldState.required)
+        }
+
+    @with_graceful_default(default=tuple([]))
     def get_required_customer_fields(
         self,
         products: list[Product],
-    ) -> list[Component]:
-        return []
+    ) -> tuple[list[Component], list[RequiredGroupFields] | None]:
+        product_ids = [product.identifier for product in products]
+        with JccRestClient() as client:
+            # Each field from the API has a value which determines if it's visible, hidden
+            # or required. We need only the visible (optional fields in the form) and the
+            # required ones (required fields in the form). See FieldState in constants
+            required_fields = client.get_required_customer_fields(product_ids)
+
+        # If 'areFirstNameOrInitialsRequired' and 'isAnyPhoneNumberRequired' are set
+        # to 'true' in the configuration and both fields are set to 'required' by the
+        # municipality, then both must still be completed. The municipality can specify
+        # in the application whether a field should only be 'visible' or whether a
+        # field should be 'required.'
+        GROUP_RULES = [
+            RequireOneOfRule(
+                enabled=required_fields.get("isAnyPhoneNumberRequired"),
+                fields=("phoneNumber", "mobilePhoneNumber"),
+                labels=(
+                    CustomerFields.phone_number.label,
+                    CustomerFields.mobile_phone_number.label,
+                ),
+            ),
+            RequireOneOfRule(
+                enabled=required_fields.get("areFirstNameOrInitialsRequired"),
+                fields=("firstName", "initials"),
+                labels=(
+                    CustomerFields.first_name.label,
+                    CustomerFields.initials.label,
+                ),
+            ),
+        ]
+
+        rendered_fields = self._extract_rendered_fields(required_fields)
+
+        components = []
+        # Name / initials defaults
+        components.extend(
+            self._get_default_component(
+                required_fields.get("areFirstNameOrInitialsRequired"),
+                required_fields.get("initials"),
+                required_fields.get("firstName"),
+                component_factory=get_component(CustomerFields.first_name, True),
+            )
+        )
+
+        # Last name is always required
+        components.append(get_component(CustomerFields.last_name, True))
+
+        # Phone defaults
+        components.extend(
+            self._get_default_component(
+                required_fields.get("isAnyPhoneNumberRequired"),
+                required_fields.get("mainPhoneNumber"),
+                required_fields.get("mobilePhoneNumber"),
+                component_factory=get_component(CustomerFields.phone_number, True),
+            )
+        )
+        # JCC has different names for the main phone number in the `customer/customerfields/required`
+        # and the POST `appointment` endpoints, so we use `mainPhoneNumber` to find
+        # it in the response of the required fields but we send `phoneNumber` when we
+        # create the body for the appointment
+        if "mainPhoneNumber" in rendered_fields:
+            rendered_fields["phoneNumber"] = rendered_fields.pop("mainPhoneNumber")
+
+        # Explicitly declared visible fields
+        for field, is_required in rendered_fields.items():
+            components.append(get_component(CustomerFields(field), is_required))
+
+        rendered_keys = {component["key"] for component in components}
+        required_group_fields = []
+
+        for rule in GROUP_RULES:
+            if not rule.enabled:
+                continue
+
+            active_fields = [field for field in rule.fields if field in rendered_keys]
+
+            if len(active_fields) < 2:
+                continue
+
+            # Do not apply require_one_of if all fields are already required
+            if all(rendered_fields.get(field) for field in active_fields):
+                continue
+
+            active_labels = [
+                str(label)
+                for field, label in zip(rule.fields, rule.labels, strict=True)
+                if field in rendered_keys
+            ]
+
+            description = _(
+                "At least one of the following fields must be filled in: {fields}"
+            ).format(fields=", ".join(active_labels))
+
+            for component in components:
+                if component["key"] in active_fields:
+                    component["description"] = description
+
+            required_group_fields.append(
+                {
+                    "type": "require_one_of",
+                    "fields": tuple(active_fields),
+                    "error_message": _(
+                        "At least one of the following fields is required: {fields}."
+                    ).format(fields=", ".join(active_labels)),
+                }
+            )
+
+        return components, required_group_fields or None
 
     def create_appointment(
         self,
@@ -172,15 +334,129 @@ class JccRestPlugin(BasePlugin):
         client: CustomerDetails[CustomerFields],
         remarks: str = "",
     ) -> str:
-        return ""
+        with JccRestClient() as jcc_client:
+            activities = [(product.identifier, product.amount) for product in products]
+
+            # We have to use an extra endpoint to find the duration (in minutes) for an
+            # appointment
+            appointment_duration = jcc_client.get_duration_for_appointment(
+                start_at.date(), activities
+            )
+
+            appointment_data: AppointmentData = {
+                "id": None,  # id (as null) is required by JCC even for a new appointment
+                "activityList": [
+                    {"activityId": id_, "amount": amount} for id_, amount in activities
+                ],
+                "customerList": [
+                    # We send a default to 0 (other) gender because it's a required field in JCC
+                    # (0=other, 1=male, 2=female)
+                    {
+                        "gender": GenderType.other.value,
+                        **client.details,
+                        "id": None,
+                        "isMainCustomer": True,
+                    },
+                ],
+                "fromDateTime": start_at.isoformat(),
+                "toDateTime": (
+                    start_at + timedelta(minutes=appointment_duration)
+                ).isoformat(),
+                "locationId": location.identifier,
+                "message": remarks,
+                "fieldList": None,
+            }
+
+            result = jcc_client.add_appointment(appointment_data)
+
+            if result.get("acknowledgeIsSuccess"):
+                return result["id"]
+
+            error = AppointmentCreateFailed(
+                f"Could not create appointment, got code={result['code']}"
+            )
+
+            logger.error(
+                "appointment_create_failure",
+                products=activities,
+                location=location,
+                start_at=start_at,
+                code=result["code"],
+                message=result.get("message"),
+                exc_info=error,
+            )
+
+            raise error
 
     def delete_appointment(self, identifier: str) -> None:
-        return None
+        with JccRestClient() as client:
+            result = client.cancel_appointment(identifier)
+
+            # JCC is supposed to return a boolean `acknowledgeIsSuccess` (required field
+            # according to the specification) in the successful response. This is not the
+            # case in the test instance so asserting the id is the next logical "required"
+            # field
+            if not result.get("id"):
+                error = AppointmentDeleteFailed(
+                    f"Could not delete appointment, got code={result['code']}"
+                )
+
+                logger.error(
+                    "appointment_delete_failure",
+                    appointment_identifier=identifier,
+                    code=result["code"],
+                    message=result.get("message"),
+                    exc_info=error,
+                )
+
+                raise error
 
     def get_appointment_details(self, identifier: str) -> AppointmentDetails:
-        # TODO
-        # Fix the wrong return and remove the comment
-        return None  # type: ignore [reportIncompatibleMethodOverride]
+        with JccRestClient() as client:
+            appointment_details = client.get_appointment(identifier)
+            if not appointment_details:
+                raise AppointmentException("No appointment details could be retrieved.")
+
+            products = [
+                Product(
+                    identifier=product.get("activity", {}).get("id"),
+                    name=product.get("activity", {}).get("description"),
+                    amount=product.get("amount"),
+                )
+                for product in appointment_details.get("activityList", {})
+            ]
+
+            # The details of the appointment only have the id and the description available.
+            # Do another request to retrieve all the extra information.
+            location_id = appointment_details.get("location", {}).get("id")
+            location_details = client.get_location(location_id)
+
+            location = self._create_location(location_details)
+
+            qrcode = client.get_appointment_qr_code(identifier)
+            qrcode_base64 = create_base64_qrcode(qrcode)
+            qr_label = _("QR-code")
+            qr_value = format_html(
+                '<img src="data:image/png;base64,{qrcode_base64}" alt="{qrcode}" />',
+                qrcode_base64=qrcode_base64,
+                qrcode=qrcode,
+            )
+
+            result = AppointmentDetails(
+                identifier=identifier,
+                products=products,
+                location=location,
+                start_at=datetime.fromisoformat(
+                    appointment_details.get("startDateTime", "")
+                ),
+                end_at=datetime.fromisoformat(
+                    appointment_details.get("endDateTime", "")
+                ),
+                remarks=appointment_details.get("message"),
+                other={qr_label: qr_value},
+            )
+
+            return result
 
     def check_config(self) -> None:
         try:
