@@ -96,7 +96,9 @@ def get_submission_price(submission: Submission) -> Decimal:
         if not data.get(price_option_key):
             return Decimal("0")
 
-        return form.product.price_options.get(uuid=data[price_option_key]).amount
+        return form.product.price_options.get(
+            price_option_uuid=data[price_option_key]
+        ).price
 
 
 def _price_from_variable(submission: Submission) -> Decimal | None:

@@ -1113,19 +1113,12 @@ class ProductPrice(BasePlugin):
             logger.error("Form is not linked to product.")
 
         else:
-            current_price = submission.form.product.open_producten_price
+            current_prices = submission.form.product.price_options.all()
 
-            if not current_price:
-                logger.error("Product does not have an active price.")
-
-            elif not current_price.options.count():
-                logger.error("Product does not have price options.")
-
-            else:
-                component["values"] = [
-                    {
-                        "label": f"{option.description}: € {option.amount}",
-                        "value": option.uuid,
-                    }
-                    for option in current_price.options.all()
-                ]
+            component["values"] = [
+                {
+                    "label": f"{option.name}: € {option.price}",
+                    "value": str(option.price_option_uuid),
+                }
+                for option in current_prices
+            ]

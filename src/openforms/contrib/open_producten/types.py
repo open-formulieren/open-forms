@@ -25,6 +25,7 @@ class ProductType(Model):
     naam: str
     prijzen: list[Prijs]
     parameters: dict
+    samenvatting: str
 
 
 @dataclass

@@ -48,7 +48,7 @@ def update_products():
                 product_type_uuid=str(product_type.uuid),
                 defaults={
                     "name": product_type.naam,
-                    "information": "",
+                    "information": product_type.samenvatting,
                 },
             )
             current_price = client.get_current_price(product_type.uuid)
@@ -56,7 +56,7 @@ def update_products():
             if not created:
                 logger.info("update_product_type", product_type_uuid=product_type.uuid)
                 product.name = product_type.naam
-                # TODO: product.information = product_type.naam
+                product.information = product_type.naam
                 product.save()
 
             update_product_prices(product, current_price)
