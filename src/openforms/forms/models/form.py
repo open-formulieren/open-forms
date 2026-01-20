@@ -515,7 +515,7 @@ class Form(models.Model):
     def payment_required(self) -> bool:
         # this will later be more dynamic and determined from oa. the linked Product
         return bool(
-            self.payment_backend and self.product and len(self.product.price_options)
+            self.payment_backend and self.product and self.product.price_options.count()
         )
 
     @transaction.atomic

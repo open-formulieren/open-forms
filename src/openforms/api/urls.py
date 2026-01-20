@@ -22,7 +22,7 @@ from openforms.forms.api.viewsets import (
     FormVersionViewSet,
     FormViewSet,
 )
-from openforms.products.api.viewsets import ProductViewSet
+from openforms.products.api.viewsets import PriceOptionViewSet, ProductViewSet
 from openforms.services.api.viewsets import ServiceViewSet
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 from openforms.utils.decorators import never_cache
@@ -60,6 +60,7 @@ submissions_router.register(
 
 # products
 router.register("products", ProductViewSet)
+router.register("price-options", PriceOptionViewSet)
 
 # services
 router.register("services", ServiceViewSet)
