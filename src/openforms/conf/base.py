@@ -878,7 +878,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     "update-products": {
         "task": "openforms.products.tasks.update_products",
-        "schedule": crontab(hour=0, minute=0, day_of_week="*"),
+        "schedule": crontab(minute="*"),
     },
 }
 

@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 class OpenProductenClient(APIClient):
     def get_current_price(self, product_type_uuid: str) -> ActuelePrijsItem:
         try:
-            response = self.get(f"producttypen/{product_type_uuid}/actuele-prijs")
+            response = self.get(
+                f"producttypen/api/v1/producttypen/{product_type_uuid}/actuele-prijs"
+            )
             response.raise_for_status()
         except requests.RequestException as exc:
             logger.exception(
@@ -30,7 +32,7 @@ class OpenProductenClient(APIClient):
 
     def get_product_types(self) -> list[ProductType]:
         try:
-            response = self.get("producttypen")
+            response = self.get("producttypen/api/v1/producttypen")
             response.raise_for_status()
         except requests.RequestException as exc:
             logger.exception(
