@@ -1,11 +1,13 @@
+from decimal import Decimal
+
 import structlog
+
+from openforms.celery import app
+from openforms.submissions.models import Submission
 
 from ..contrib.open_producten.client import get_open_producten_client
 from ..contrib.open_producten.types import ActuelePrijsItem
 from .models import PriceOption, Product
-
-from openforms.celery import app
-from openforms.submissions.models import Submission
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -67,7 +69,7 @@ def update_products():
 def create_product(submission_id: str):
     try:
         submission = Submission.objects.get(pk=submission_id)
-    except Submission.DoesNotExist:
+    except Submission.DoesNotExist as exc:
         logger.exception(
             "Exception while creating products from Open Producten",
             exc_info=exc,
@@ -79,8 +81,6 @@ def create_product(submission_id: str):
         if submission.is_authenticated and submission.auth_info
         else ""
     )
-    prijs = submission.data.get("")
-
     form = submission.form
 
     def get_price_option_key():
