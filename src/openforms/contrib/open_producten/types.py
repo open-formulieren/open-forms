@@ -46,3 +46,18 @@ class ActuelePrijs(Model):
 class ActuelePrijsItem(Model):
     uuid: str
     actuele_prijs: Optional[ActuelePrijs]
+
+
+@dataclass
+class Eigenaar(Model):
+    bsn: Optional[str]
+    kvk_nummer: Optional[str]
+    vestigingsnummer: Optional[str]
+    klantnummer: Optional[str]
+
+
+@dataclass
+class Product(Model):
+    producttype_uuid: str
+    eigenaren: list[Eigenaar]
+    prijs: str

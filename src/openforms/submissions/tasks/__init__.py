@@ -11,6 +11,7 @@ from celery.result import AsyncResult
 from openforms.appointments.tasks import maybe_register_appointment
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
+from openforms.products.tasks import create_product
 
 from ..constants import PostSubmissionEvents, RegistrationStatuses
 from ..models import PostCompletionMetadata, Submission
@@ -60,6 +61,9 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
         submission_id, event
     )
 
+    # Product creation
+    product_create_task = create_product.si(submission_id)
+
     # Finalise completion: schedule confirmation emails and maybe hash identifying attributes
     finalise_completion_task = finalise_completion.si(submission_id)
 
@@ -71,6 +75,7 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
         generate_report_task,
         register_submission_task,
         payment_status_update_task,
+        product_create_task,
         finalise_completion_task,
     )
 

@@ -5,6 +5,7 @@ from ..contrib.open_producten.types import ActuelePrijsItem
 from .models import PriceOption, Product
 
 from openforms.celery import app
+from openforms.submissions.models import Submission
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -60,3 +61,44 @@ def update_products():
                 product.save()
 
             update_product_prices(product, current_price)
+
+
+@app.task(ignore_result=True)
+def create_product(submission_id: str):
+    try:
+        submission = Submission.objects.get(pk=submission_id)
+    except Submission.DoesNotExist:
+        logger.exception(
+            "Exception while creating products from Open Producten",
+            exc_info=exc,
+        )
+        return
+
+    bsn = (
+        submission.auth_info.value
+        if submission.is_authenticated and submission.auth_info
+        else ""
+    )
+    prijs = submission.data.get("")
+
+    form = submission.form
+
+    def get_price_option_key():
+        for step in form.formstep_set.all():
+            for component in step.form_definition.configuration["components"]:
+                if component["type"] == "productPrice":
+                    return component["key"]
+        raise ValueError("Form does not have a productPrice component")
+
+    price_option_key = get_price_option_key()
+
+    data = submission.data
+    if not data.get(price_option_key):
+        return Decimal("0")
+
+    prijs = form.product.price_options.get(
+        price_option_uuid=data[price_option_key]
+    ).price
+
+    with get_open_producten_client() as client:
+        client.create_product(submission.form.product, str(prijs), bsn=bsn)
