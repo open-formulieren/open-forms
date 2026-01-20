@@ -52,8 +52,11 @@ class OpenProductenClient(APIClient):
     ) -> APIProduct:
         data = {
             "producttype_uuid": str(product_type.product_type_uuid),
+            "naam": product_type.name,
             "prijs": prijs,
             "eigenaren": [{"bsn": "111222333"}],
+            "status": "initieel",
+            "aanvraag_zaak_url": "https://maykin.ztc.com/zaken/d42613cd-ee22-4455-808c-c19c7b8442a2",
         }
 
         try:
