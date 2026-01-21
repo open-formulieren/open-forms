@@ -12,6 +12,7 @@ from openforms.utils.urls import reverse_plus
 from ...base import BasePlugin, LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...registry import register
+from .config import OIDCOptions, OIDCOptionsSerializer
 from .oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 
 PLUGIN_IDENTIFIER = "org-oidc"
@@ -23,7 +24,7 @@ org_oidc_init = OIDCAuthenticationRequestInitView.as_view(
 
 
 @register(PLUGIN_IDENTIFIER)
-class OIDCAuthentication(BasePlugin):
+class OIDCAuthentication(BasePlugin[OIDCOptions]):
     """
     Authentication plugin using the global mozilla-django-oidc-db (as used for the admin)
     """
@@ -32,6 +33,7 @@ class OIDCAuthentication(BasePlugin):
     provides_auth = (AuthAttribute.employee_id,)
     oidc_plugin_identifier = OIDC_ORG_IDENTIFIER
     init_view = staticmethod(org_oidc_init)
+    configuration_options = OIDCOptionsSerializer
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str, options):
         return_url = reverse_plus(
