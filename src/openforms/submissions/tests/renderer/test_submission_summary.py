@@ -412,10 +412,19 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                             "plugin": "test-prefill",
                             "attribute": "dateOfBirth",
                         },
-                    }
+                    },
+                    {
+                        "key": "date_empty",
+                        "type": "date",
+                        "label": "Date empty",
+                        "prefill": {
+                            "plugin": "test-prefill",
+                            "attribute": "dateOfBirth",
+                        },
+                    },
                 ]
             },
-            data={"date": "2000-01-01"},
+            data={"date": "2000-01-01", "date_empty": ""},
         )
         self._add_submission_to_session(submission)
 
