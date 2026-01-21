@@ -15,7 +15,9 @@ logger = structlog.stdlib.get_logger(__name__)
 TIMEZONE_AMS = ZoneInfo("Europe/Amsterdam")
 
 
-def format_date_value(date_value: str | date) -> str:
+def format_date_value(date_value: str | date | None) -> str:
+    if date_value is None:
+        return ""
     if isinstance(date_value, date):
         return date_value.isoformat()
 
