@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 import elasticapm
 import structlog
+from opentelemetry import trace
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRF_ValidationError
 
@@ -18,6 +19,7 @@ from openforms.typing import JSONValue
 from .base import BasePlugin
 
 logger = structlog.stdlib.get_logger(__name__)
+tracer = trace.get_tracer("openforms.validations.registry")
 
 type StrOrIterable = str | Iterable["StrOrIterable"]
 
@@ -55,6 +57,14 @@ class Registry(BaseRegistry[BasePlugin[JSONValue]]):
 
     module = "validations"
 
+    @tracer.start_as_current_span(
+        name="validate",
+        attributes={
+            "span.type": "app",
+            "span.subtype": "validations",
+            "span.action": "validate",
+        },
+    )
     @elasticapm.capture_span("app.validations.validate")
     def validate(
         self, plugin_id: str, value: JSONValue, submission: Submission

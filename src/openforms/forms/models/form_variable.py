@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 
 import elasticapm
 import structlog
+from opentelemetry import trace
 
 from openforms.formio.utils import (
     get_component_data_subtype,
@@ -61,6 +62,7 @@ UPSERT_ATTRIBUTES_TO_COMPARE: tuple[str, ...] = (
 
 
 logger = structlog.stdlib.get_logger(__name__)
+tracer = trace.get_tracer("openforms.forms.models.form_variable")
 
 
 class FormVariableManager(models.Manager["FormVariable"]):
@@ -75,6 +77,14 @@ class FormVariableManager(models.Manager["FormVariable"]):
         for form_step in form_steps:
             self.synchronize_for(form_step.form_definition)
 
+    @tracer.start_as_current_span(
+        name="synchronize-for",
+        attributes={
+            "span.type": "app",
+            "span.subtype": "core",
+            "span.action": "models",
+        },
+    )
     @elasticapm.capture_span(span_type="app.core.models")
     @transaction.atomic(savepoint=False)
     def synchronize_for(self, form_definition: FormDefinition):

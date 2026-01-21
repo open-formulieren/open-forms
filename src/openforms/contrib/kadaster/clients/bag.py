@@ -3,11 +3,13 @@ from dataclasses import dataclass
 import elasticapm
 import requests
 import structlog
+from opentelemetry import trace
 
 from openforms.contrib.hal_client import HALClient
 from openforms.formio.components.utils import salt_location_message
 
 logger = structlog.stdlib.get_logger(__name__)
+tracer = trace.get_tracer("openforms.contrib.kadaster.clients.bag")
 
 
 @dataclass
@@ -29,6 +31,10 @@ class BAGClient(HALClient):
     This client is expected to work with both v1 and v2 of the API's.
     """
 
+    @tracer.start_as_current_span(
+        name="get-address",
+        attributes={"span.type": "app", "span.subtype": "bag", "span.action": "query"},
+    )
     @elasticapm.capture_span(span_type="app.bag.query")
     def get_address(
         self, postcode: str, house_number: str, reraise_errors: bool = False

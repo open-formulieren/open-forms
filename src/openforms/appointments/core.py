@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 import elasticapm
 import structlog
+from opentelemetry import trace
 
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
@@ -26,6 +27,7 @@ from .registry import register
 __all__ = ["book_for_submission"]
 
 logger = structlog.stdlib.get_logger(__name__)
+tracer = trace.get_tracer("openforms.appointments.core")
 
 
 def _get_plugin(appointment: Appointment) -> BasePlugin:
@@ -67,6 +69,14 @@ def book(appointment: Appointment, remarks: str = "") -> str:
     return appointment_id
 
 
+@tracer.start_as_current_span(
+    name="book-for-submission",
+    attributes={
+        "span.type": "app",
+        "span.subtype": "appointments",
+        "span.action": "book_for_submission",
+    },
+)
 @elasticapm.capture_span(span_type="app.appointments.book_for_submission")
 def book_for_submission(submission: Submission) -> str:
     """

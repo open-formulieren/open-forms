@@ -20,6 +20,7 @@ import elasticapm
 import structlog
 from django_jsonform.models.fields import ArrayField
 from furl import furl
+from opentelemetry import trace
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
@@ -55,6 +56,7 @@ if TYPE_CHECKING:
     from .submission_value_variable import SubmissionValueVariablesState
 
 logger = structlog.stdlib.get_logger(__name__)
+tracer = trace.get_tracer("openforms.submissions.models.submission")
 
 
 @dataclass
@@ -566,6 +568,14 @@ class Submission(models.Model):
 
         self.save()
 
+    @tracer.start_as_current_span(
+        name="load-submission-value-variables-state",
+        attributes={
+            "span.type": "app",
+            "span.subtype": "data",
+            "span.action": "loading",
+        },
+    )
     @elasticapm.capture_span(span_type="app.data.loading")
     def load_submission_value_variables_state(
         self, refresh: bool = False
@@ -579,6 +589,14 @@ class Submission(models.Model):
         self._variables_state = SubmissionValueVariablesState(submission=self)
         return self._variables_state
 
+    @tracer.start_as_current_span(
+        name="load-execution-state",
+        attributes={
+            "span.type": "app",
+            "span.subtype": "data",
+            "span.action": "loading",
+        },
+    )
     @elasticapm.capture_span(span_type="app.data.loading")
     def load_execution_state(self, refresh: bool = False) -> SubmissionState:
         """

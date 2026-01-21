@@ -5,6 +5,7 @@ from typing import Literal, TypedDict
 import elasticapm
 import requests
 import structlog
+from opentelemetry import trace
 from zgw_consumers.client import build_client
 
 from openforms.contrib.hal_client import HALClient
@@ -13,6 +14,7 @@ from .api_models.basisprofiel import BasisProfiel
 from .models import KVKConfig
 
 logger = structlog.stdlib.get_logger(__name__)
+tracer = trace.get_tracer("openforms.contrib.kvk.client")
 
 
 def get_kvk_profile_client() -> KVKProfileClient:
@@ -52,6 +54,9 @@ class SearchParams(TypedDict, total=False):
 
 
 class KVKProfileClient(HALClient):
+    @tracer.start_as_current_span(
+        name="get-profile", attributes={"span.type": "app", "span.subtype": "kvk"}
+    )
     @elasticapm.capture_span("app.kvk")
     def get_profile(self, kvk_nummer: str) -> BasisProfiel:
         """
@@ -74,6 +79,10 @@ class KVKProfileClient(HALClient):
 
 
 class KVKSearchClient(HALClient):
+    @tracer.start_as_current_span(
+        name="get-search-results",
+        attributes={"span.type": "app", "span.subtype": "kvk"},
+    )
     @elasticapm.capture_span("app.kvk")
     def get_search_results(self, query_params: SearchParams):
         """

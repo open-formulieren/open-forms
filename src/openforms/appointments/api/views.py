@@ -8,6 +8,7 @@ import structlog
 from drf_spectacular.plumbing import build_array_type, build_basic_type
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
+from opentelemetry import trace
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.generics import CreateAPIView, GenericAPIView
 from rest_framework.request import Request
@@ -48,6 +49,7 @@ from .serializers import (
     TimeSerializer,
 )
 
+tracer = trace.get_tracer("openforms.appointments.api.views")
 # TODO: see openforms.validations.api.serializers.ValidatorsFilterSerializer.as_openapi_params
 # and https://github.com/open-formulieren/open-forms/issues/611
 
@@ -105,6 +107,14 @@ class ProductsListView(ListMixin, APIView):
                 location_id=location_id,
                 current_products=products,
             ),
+            tracer.start_as_current_span(
+                name="get-available-products",
+                attributes={
+                    "span.type": "app",
+                    "span.subtype": "appointments",
+                    "span.action": "get_products",
+                },
+            ),
             elasticapm.capture_span(
                 name="get-available-products",
                 span_type="app.appointments.get_products",
@@ -141,6 +151,14 @@ class LocationsListView(ListMixin, APIView):
                 action="appointments.get_locations",
                 plugin=plugin,
                 products=products,
+            ),
+            tracer.start_as_current_span(
+                name="get-available-locations",
+                attributes={
+                    "span.type": "app",
+                    "span.subtype": "appointments",
+                    "span.action": "get_locations",
+                },
             ),
             elasticapm.capture_span(
                 name="get-available-locations",
@@ -184,6 +202,14 @@ class DatesListView(ListMixin, APIView):
                 plugin=plugin,
                 products=products,
                 location=location,
+            ),
+            tracer.start_as_current_span(
+                name="get-available-dates",
+                attributes={
+                    "span.type": "app",
+                    "span.subtype": "appointments",
+                    "span.action": "get_dates",
+                },
             ),
             elasticapm.capture_span(
                 name="get-available-dates", span_type="app.appointments.get_dates"
@@ -236,6 +262,14 @@ class TimesListView(ListMixin, APIView):
                 products=products,
                 location=location,
                 date=date,
+            ),
+            tracer.start_as_current_span(
+                name="get-available-times",
+                attributes={
+                    "span.type": "app",
+                    "span.subtype": "appointments",
+                    "span.action": "get_times",
+                },
             ),
             elasticapm.capture_span(
                 name="get-available-times", span_type="app.appointments.get_times"
@@ -290,6 +324,14 @@ class RequiredCustomerFieldsListView(APIView):
                 action="appointments.get_required_customer_fields",
                 plugin=plugin,
                 products=products,
+            ),
+            tracer.start_as_current_span(
+                name="get-required-customer-fields",
+                attributes={
+                    "span.type": "app",
+                    "span.subtype": "appointments",
+                    "span.action": "get_required_customer_fields",
+                },
             ),
             elasticapm.capture_span(
                 name="get-required-customer-fields",

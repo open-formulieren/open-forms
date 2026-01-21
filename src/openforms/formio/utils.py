@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 import elasticapm
 import structlog
 from glom import Coalesce, Path, glom
+from opentelemetry import trace
 from typing_extensions import TypeIs
 
 from openforms.typing import JSONObject, JSONValue
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
     from .datastructures import FormioData
 
 logger = structlog.stdlib.get_logger(__name__)
+tracer = trace.get_tracer("openforms.formio.utils")
 
 # XXX: we should probably be able to narrow this in Python 3.11 with non-total typed
 # dicts.
@@ -31,6 +33,14 @@ def _is_column_component(component: ComponentLike) -> TypeIs[ColumnsComponent]:
     return component.get("type") == "columns"
 
 
+@tracer.start_as_current_span(
+    name="iter-components",
+    attributes={
+        "span.type": "app",
+        "span.subtype": "formio",
+        "span.action": "configuration",
+    },
+)
 @elasticapm.capture_span(span_type="app.formio.configuration")
 def iter_components(
     configuration: ComponentLike,
@@ -94,6 +104,14 @@ def iterate_components_with_configuration_path(
             )
 
 
+@tracer.start_as_current_span(
+    name="flatten-by-path",
+    attributes={
+        "span.type": "app",
+        "span.subtype": "formio",
+        "span.action": "configuration",
+    },
+)
 @elasticapm.capture_span(span_type="app.formio.configuration")
 def flatten_by_path(configuration: JSONObject) -> dict[str, Component]:
     """
