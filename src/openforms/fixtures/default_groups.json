@@ -1144,6 +1144,26 @@
                 "domain"
             ],
             [
+                "add_translationsmetadata",
+                "of_translations",
+                "translationsmetadata"
+            ],
+            [
+                "change_translationsmetadata",
+                "of_translations",
+                "translationsmetadata"
+            ],
+            [
+                "delete_translationsmetadata",
+                "of_translations",
+                "translationsmetadata"
+            ],
+            [
+                "view_translationsmetadata",
+                "of_translations",
+                "translationsmetadata"
+            ],
+            [
                 "add_staticdevice",
                 "otp_static",
                 "staticdevice"
