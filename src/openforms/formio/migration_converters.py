@@ -275,6 +275,28 @@ def convert_simple_conditionals(configuration: JSONObject) -> bool:
     return config_modified
 
 
+def remove_empty_conditional_values(component: Component) -> bool:
+    config_modified = False
+
+    if "conditional" not in component:
+        return False
+
+    conditional = component["conditional"]
+    known_keys = {"eq", "when", "show"}
+    for known_key in known_keys:
+        if not (known_key in conditional and conditional[known_key] == ""):
+            continue
+        elif known_key == "eq" and all(
+            conditional.get(key) for key in known_keys - {"eq"}
+        ):
+            continue
+
+        conditional.pop(known_key)
+        config_modified = True
+
+    return config_modified
+
+
 def ensure_addressnl_has_deriveAddress(component: Component) -> bool:
     component = cast(AddressNLComponent, component)
 
@@ -329,6 +351,71 @@ def fix_empty_default_value(component: Component) -> bool:
     return changed
 
 
+def replace_empty_datepicker_properties(component: Component) -> bool:
+    config_modified = False
+
+    date_picker_config = component.get("datePicker", {})
+    if "minDate" not in date_picker_config and "maxDate" not in date_picker_config:
+        return False
+
+    for property in ("minDate", "maxDate"):
+        value = date_picker_config.get(property)
+
+        if not (value == ""):
+            continue
+
+        date_picker_config[property] = None
+        config_modified = True
+
+    return config_modified
+
+
+def empty_errors_property(component: Component) -> bool:
+    if "errors" not in component:
+        return False
+
+    if len(component["errors"]) > 0:
+        component["errors"] = {}
+        return True
+
+    return False
+
+
+def remove_default_value_translation(component: Component) -> bool:
+    config_modified = False
+
+    translations = component.get("openForms", {}).get("translations", {})
+    if not translations:
+        return False
+
+    for _, properties in translations.items():
+        if "defaultValue" not in properties:
+            continue
+
+        properties.pop("defaultValue")
+        config_modified = True
+
+    return config_modified
+
+
+def remove_unused_error_keys(component: Component) -> bool:
+    config_modified = False
+
+    error_translations = component.get("translatedErrors", {})
+    if not error_translations:
+        return False
+
+    for _, properties in error_translations.items():
+        for property in ("maxLength", "pattern"):
+            if property not in properties:
+                continue
+
+            properties.pop(property)
+            config_modified = True
+
+    return config_modified
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -341,78 +428,111 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
+        "remove_default_value_translation": remove_default_value_translation,
     },
     "email": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
+        "remove_unused_error_keys": remove_unused_error_keys,
     },
     "date": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+        "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
     },
     "datetime": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "prevent_datetime_components_from_emptying_invalid_values": prevent_datetime_components_from_emptying_invalid_values,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
+        "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
     },
     "time": {
         "move_time_validators": move_time_validators,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "phoneNumber": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
     },
     "postcode": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "ensure_validate_pattern": ensure_postcode_validate_pattern,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
+        "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
     },
     "file": {
         "fix_default_value": fix_file_default_value,
         "ensure_extra_zip_mimetypes_exist_in_file_type": ensure_extra_zip_mimetypes_exist_in_file_type,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "textarea": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "map": {
         "ensure_map_has_interactions": ensure_map_has_interactions,
     },
     "number": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "select": {
         "set_openforms_datasrc": set_openforms_datasrc,
         "fix_multiple_empty_default_value": fix_multiple_empty_default_value,
         "set_datatype_string": set_datatype_string,
+        "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+        "remove_unused_error_keys": remove_unused_error_keys,
     },
-    "selectboxes": {"set_openforms_datasrc": set_openforms_datasrc},
+    "selectboxes": {
+        "set_openforms_datasrc": set_openforms_datasrc,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
+    },
     "currency": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
     },
     "radio": {
         "set_openforms_datasrc": set_openforms_datasrc,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+        "remove_unused_error_keys": remove_unused_error_keys,
     },
     "checkbox": {
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_unused_error_keys": remove_unused_error_keys,
     },
     # Special components
     "iban": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "licenseplate": {
         "ensure_validate_pattern": ensure_licensplate_validate_pattern,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+        "empty_errors_property": empty_errors_property,
     },
     "bsn": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
+        "fix_empty_default_value": fix_empty_default_value,
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     "cosign": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
@@ -425,6 +545,12 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "signature": {
         "fix_empty_default_value": fix_empty_default_value,
+    },
+    "content": {
+        "remove_empty_conditional_values": remove_empty_conditional_values,
+    },
+    "fieldset": {
+        "remove_empty_conditional_values": remove_empty_conditional_values,
     },
     # Layout components
     "columns": {

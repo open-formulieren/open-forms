@@ -1,6 +1,7 @@
 from django.test import SimpleTestCase
 
 from ..migration_converters import (
+    empty_errors_property,
     ensure_addressnl_has_deriveAddress,
     ensure_licensplate_validate_pattern,
     ensure_map_has_interactions,
@@ -9,6 +10,10 @@ from ..migration_converters import (
     fix_file_default_value,
     fix_multiple_empty_default_value,
     prevent_datetime_components_from_emptying_invalid_values,
+    remove_default_value_translation,
+    remove_empty_conditional_values,
+    remove_unused_error_keys,
+    replace_empty_datepicker_properties,
 )
 from ..typing import AddressNLComponent, Component, MapComponent
 
@@ -105,6 +110,102 @@ class LicensePlateTests(SimpleTestCase):
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
 
+    def test_empty_conditional_value(self):
+        empty_eq_component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "validate": {
+                "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
+            },
+            "conditional": {
+                "eq": "",
+                "show": True,
+                "when": "textfield",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_eq_component)
+
+        with self.subTest(component=empty_eq_component):
+            self.assertFalse(changed)
+            self.assertEqual(
+                empty_eq_component["conditional"],
+                {"show": True, "when": "textfield", "eq": ""},
+            )
+
+        empty_show_component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "conditional": {
+                "eq": 0,
+                "show": "",
+                "when": "number",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_show_component)
+
+        with self.subTest(component=empty_show_component):
+            self.assertTrue(changed)
+            self.assertEqual(
+                empty_show_component["conditional"],
+                {"when": "number", "eq": 0},
+            )
+
+        empty_when_component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "conditional": {
+                "eq": 0,
+                "show": True,
+                "when": "",
+            },
+        }
+
+        changed = remove_empty_conditional_values(empty_when_component)
+
+        with self.subTest(component=empty_when_component):
+            self.assertTrue(changed)
+            self.assertEqual(
+                empty_when_component["conditional"],
+                {"eq": 0, "show": True},
+            )
+
+    def test_non_empty_errors(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "validate": {
+                "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
+            },
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "validate": {
+                "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
+            },
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
+        self.assertEqual(component["errors"], {})
+
 
 class PostCodeTests(SimpleTestCase):
     def test_noop(self):
@@ -120,6 +221,67 @@ class PostCodeTests(SimpleTestCase):
 
         self.assertFalse(changed)
 
+    def test_null_default_value(self):
+        component: Component = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_null_default_value_multiple(self):
+        component: Component = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "multiple": True,
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])
+
+    def test_non_empty_errors(self):
+        component: Component = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
+        self.assertEqual(component["errors"], {})
+
 
 class DatetimeTests(SimpleTestCase):
     def test_update(self):
@@ -132,6 +294,30 @@ class DatetimeTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertTrue(component["customOptions"]["allowInvalidPreload"])
+
+    def test_empty_min_date_property(self):
+        component: Component = {
+            "type": "datetime",
+            "key": "datetime",
+            "datePicker": {"minDate": ""},
+        }
+
+        changed = replace_empty_datepicker_properties(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["datePicker"]["minDate"], None)
+
+    def test_empty_max_date_property(self):
+        component: Component = {
+            "type": "datetime",
+            "key": "datetime",
+            "datePicker": {"maxDate": ""},
+        }
+
+        changed = replace_empty_datepicker_properties(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["datePicker"]["maxDate"], None)
 
 
 class SelectTests(SimpleTestCase):
@@ -172,6 +358,86 @@ class SelectTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
+
+    def test_null_default_value(self):
+        component: Component = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_null_default_value_multiple(self):
+        component: Component = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "multiple": True,
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])
+
+    def test_unused_error_keys(self):
+        component: Component = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "translatedErrors": {
+                "en": {
+                    "pattern": "{{ field }} has the wrong pattern!!!",
+                    "required": "{{ field }} is required!!!",
+                    "maxLength": "{{ field }} is too long!!!",
+                },
+                "nl": {
+                    "pattern": "{{ field }} komt niet overeen met de regex!!!",
+                    "required": "{{ field }} is verplicht!!!",
+                    "maxLength": "{{ field }} is te lang!!!",
+                },
+            },
+        }
+
+        changed = remove_unused_error_keys(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(
+            component["translatedErrors"],
+            {
+                "en": {
+                    "required": "{{ field }} is required!!!",
+                },
+                "nl": {
+                    "required": "{{ field }} is verplicht!!!",
+                },
+            },
+        )
+
+    def test_used_error_keys(self):
+        component: Component = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "translatedErrors": {
+                "en": {
+                    "required": "{{ field }} is required!!!",
+                },
+                "nl": {
+                    "required": "{{ field }} is verplicht!!!",
+                },
+            },
+        }
+
+        changed = remove_unused_error_keys(component)
+
+        self.assertFalse(changed)
 
 
 class TextTests(SimpleTestCase):
@@ -266,6 +532,94 @@ class TextTests(SimpleTestCase):
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
 
+    def test_non_empty_errors(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_default_value_translation(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "openForms": {
+                "translations": {
+                    "nl": {
+                        "defaultValue": "Foobar",
+                        "label": "Tekstveld",
+                    },
+                    "en": {
+                        "defaultValue": "Foobar",
+                        "label": "Text field",
+                    },
+                }
+            },
+        }
+
+        changed = remove_default_value_translation(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(
+            component,
+            {
+                "type": "textfield",
+                "key": "textField",
+                "label": "Text field",
+                "openForms": {
+                    "translations": {
+                        "nl": {
+                            "label": "Tekstveld",
+                        },
+                        "en": {
+                            "label": "Text field",
+                        },
+                    }
+                },
+            },
+        )
+
+    def test_translation(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "openForms": {
+                "translations": {
+                    "nl": {
+                        "label": "Tekstveld",
+                    },
+                    "en": {
+                        "label": "Text field",
+                    },
+                }
+            },
+        }
+
+        changed = remove_default_value_translation(component)
+
+        self.assertFalse(changed)
+
 
 class EmailTests(SimpleTestCase):
     def test_multiple_noop(self):
@@ -344,6 +698,66 @@ class EmailTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
+
+    def test_non_empty_errors(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_unused_error_keys(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "translatedErrors": {
+                "en": {
+                    "pattern": "{{ field }} has the wrong pattern!!!",
+                    "required": "{{ field }} is required!!!",
+                    "maxLength": "{{ field }} is too long!!!",
+                },
+                "nl": {
+                    "pattern": "{{ field }} komt niet overeen met de regex!!!",
+                    "required": "{{ field }} is verplicht!!!",
+                    "maxLength": "{{ field }} is te lang!!!",
+                },
+            },
+        }
+
+        changed = remove_unused_error_keys(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(
+            component["translatedErrors"],
+            {
+                "en": {
+                    "required": "{{ field }} is required!!!",
+                },
+                "nl": {
+                    "required": "{{ field }} is verplicht!!!",
+                },
+            },
+        )
 
 
 class TimeTests(SimpleTestCase):
@@ -502,6 +916,32 @@ class PhoneNumberTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["0612345678", "", "0687654321"])
+
+    def test_non_empty_errors(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
+        self.assertEqual(component["errors"], {})
 
 
 class TextareaTests(SimpleTestCase):
@@ -756,6 +1196,40 @@ class RadioTests(SimpleTestCase):
 
         self.assertFalse(changed)
 
+    def test_unused_error_keys(self):
+        component: Component = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Radio field",
+            "translatedErrors": {
+                "en": {
+                    "pattern": "{{ field }} has the wrong pattern!!!",
+                    "required": "{{ field }} is required!!!",
+                    "maxLength": "{{ field }} is too long!!!",
+                },
+                "nl": {
+                    "pattern": "{{ field }} komt niet overeen met de regex!!!",
+                    "required": "{{ field }} is verplicht!!!",
+                    "maxLength": "{{ field }} is te lang!!!",
+                },
+            },
+        }
+
+        changed = remove_unused_error_keys(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(
+            component["translatedErrors"],
+            {
+                "en": {
+                    "required": "{{ field }} is required!!!",
+                },
+                "nl": {
+                    "required": "{{ field }} is verplicht!!!",
+                },
+            },
+        )
+
 
 class FileTests(SimpleTestCase):
     def test_none_as_default_value_does_change(self):
@@ -862,6 +1336,40 @@ class CheckboxTests(SimpleTestCase):
 
         self.assertFalse(changed)
 
+    def test_unused_error_keys(self):
+        component: Component = {
+            "type": "checkbox",
+            "key": "checkbox",
+            "label": "Checkbox",
+            "translatedErrors": {
+                "en": {
+                    "pattern": "{{ field }} has the wrong pattern!!!",
+                    "required": "{{ field }} is required!!!",
+                    "maxLength": "{{ field }} is too long!!!",
+                },
+                "nl": {
+                    "pattern": "{{ field }} komt niet overeen met de regex!!!",
+                    "required": "{{ field }} is verplicht!!!",
+                    "maxLength": "{{ field }} is te lang!!!",
+                },
+            },
+        }
+
+        changed = remove_unused_error_keys(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(
+            component["translatedErrors"],
+            {
+                "en": {
+                    "required": "{{ field }} is required!!!",
+                },
+                "nl": {
+                    "required": "{{ field }} is verplicht!!!",
+                },
+            },
+        )
+
 
 class SignatureTests(SimpleTestCase):
     def test_no_default_value_doesnt_change(self):
@@ -937,3 +1445,93 @@ class EditGridTests(SimpleTestCase):
         changed = fix_empty_default_value(component)
 
         self.assertFalse(changed)
+
+
+class BSNTests(SimpleTestCase):
+    def test_null_default_value(self):
+        component: Component = {
+            "type": "bsn",
+            "key": "bsn",
+            "label": "BSN",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_null_default_value_multiple(self):
+        component: Component = {
+            "type": "bsn",
+            "key": "bsn",
+            "label": "BSN",
+            "multiple": True,
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])
+
+
+class DateTests(SimpleTestCase):
+    def test_empty_min_date_property(self):
+        component: Component = {
+            "key": "date",
+            "type": "date",
+            "label": "Date",
+            "datePicker": {"minDate": ""},
+        }
+
+        changed = replace_empty_datepicker_properties(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["datePicker"]["minDate"], None)
+
+    def test_empty_max_date_property(self):
+        component: Component = {
+            "key": "date",
+            "type": "date",
+            "label": "Date",
+            "datePicker": {"maxDate": ""},
+        }
+
+        changed = replace_empty_datepicker_properties(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["datePicker"]["maxDate"], None)
+
+
+class SelectBoxTests(SimpleTestCase):
+    def test_non_empty_errors(self):
+        component: Component = {
+            "key": "person.pets",
+            "type": "selectboxes",
+            "label": "Pets",
+            "values": [
+                {"value": "cat", "label": "Cat"},
+                {"value": "dog", "label": "Dog"},
+                {"value": "bird", "label": "Bird"},
+            ],
+            "errors": {"foo": "bar"},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["errors"], {})
+
+    def test_empty_errors(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "errors": {},
+        }
+
+        changed = empty_errors_property(component)
+
+        self.assertFalse(changed)
+        self.assertEqual(component["errors"], {})
