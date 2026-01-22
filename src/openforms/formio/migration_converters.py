@@ -374,7 +374,8 @@ def empty_errors_property(component: Component) -> bool:
     if "errors" not in component:
         return False
 
-    if len(component["errors"]) > 0:
+    errors = component["errors"]
+    if type(errors) is not dict or len(component["errors"]) > 0:
         component["errors"] = {}
         return True
 
