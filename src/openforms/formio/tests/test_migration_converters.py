@@ -131,9 +131,10 @@ class LicensePlateTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"],
+                {"show": True, "when": "number"},
+            )
 
         empty_show_component: Component = {
             "type": "licenseplate",
@@ -150,9 +151,10 @@ class LicensePlateTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"],
+                {"when": "number", "eq": 0},
+            )
 
         empty_when_component: Component = {
             "type": "licenseplate",
@@ -169,9 +171,10 @@ class LicensePlateTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"],
+                {"eq": 0, "show": True},
+            )
 
     def test_non_empty_errors(self):
         component: Component = {
@@ -269,9 +272,9 @@ class PostCodeTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "postcode",
@@ -290,9 +293,9 @@ class PostCodeTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "postcode",
@@ -311,9 +314,9 @@ class PostCodeTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"show": True, "eq": 0}
+            )
 
     def test_non_empty_errors(self):
         component: Component = {
@@ -465,9 +468,9 @@ class SelectTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "select",
@@ -484,9 +487,9 @@ class SelectTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "select",
@@ -503,9 +506,9 @@ class SelectTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
     def test_unused_error_keys(self):
         component: Component = {
@@ -669,9 +672,9 @@ class TextTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "textfield",
@@ -688,9 +691,9 @@ class TextTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "textfield",
@@ -707,9 +710,9 @@ class TextTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
     def test_non_empty_errors(self):
         component: Component = {
@@ -759,11 +762,23 @@ class TextTests(SimpleTestCase):
         changed = remove_default_value_translation(component)
 
         self.assertTrue(changed)
-        self.assertTrue(
-            "defaultValue" not in component["openForms"]["translations"]["nl"]
-        )
-        self.assertTrue(
-            "defaultValue" not in component["openForms"]["translations"]["en"]
+        self.assertEqual(
+            component,
+            {
+                "type": "textfield",
+                "key": "textField",
+                "label": "Text field",
+                "openForms": {
+                    "translations": {
+                        "nl": {
+                            "label": "Tekstveld",
+                        },
+                        "en": {
+                            "label": "Text field",
+                        },
+                    }
+                },
+            },
         )
 
     def test_translation(self):
@@ -882,9 +897,9 @@ class EmailTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "email",
@@ -901,9 +916,9 @@ class EmailTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "email",
@@ -920,9 +935,9 @@ class EmailTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
     def test_non_empty_errors(self):
         component: Component = {
@@ -1079,9 +1094,9 @@ class TimeTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "time",
@@ -1098,9 +1113,9 @@ class TimeTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "time",
@@ -1117,9 +1132,9 @@ class TimeTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
 
 class PhoneNumberTests(SimpleTestCase):
@@ -1216,9 +1231,9 @@ class PhoneNumberTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "phoneNumber",
@@ -1235,9 +1250,9 @@ class PhoneNumberTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "phoneNumber",
@@ -1254,9 +1269,9 @@ class PhoneNumberTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
     def test_non_empty_errors(self):
         component: Component = {
@@ -1379,9 +1394,9 @@ class TextareaTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "textarea",
@@ -1398,9 +1413,9 @@ class TextareaTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "textarea",
@@ -1417,9 +1432,9 @@ class TextareaTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
 
 class IBANTests(SimpleTestCase):
@@ -1516,9 +1531,9 @@ class IBANTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "iban",
@@ -1535,9 +1550,9 @@ class IBANTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "iban",
@@ -1554,9 +1569,9 @@ class IBANTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
 
 class AddressNLTests(SimpleTestCase):
@@ -1669,9 +1684,9 @@ class RadioTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "radio",
@@ -1688,9 +1703,9 @@ class RadioTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "radio",
@@ -1707,9 +1722,9 @@ class RadioTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
     def test_unused_error_keys(self):
         component: Component = {
@@ -1829,9 +1844,9 @@ class FileTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "file",
@@ -1848,9 +1863,9 @@ class FileTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "file",
@@ -1867,9 +1882,9 @@ class FileTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
 
 class CheckboxTests(SimpleTestCase):
@@ -2064,9 +2079,9 @@ class BSNTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "bsn",
@@ -2083,9 +2098,9 @@ class BSNTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "bsn",
@@ -2102,9 +2117,9 @@ class BSNTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
 
 class ContentTypeTests(SimpleTestCase):
@@ -2125,9 +2140,9 @@ class ContentTypeTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: ContentComponent = {
             "type": "content",
@@ -2145,9 +2160,9 @@ class ContentTypeTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: ContentComponent = {
             "type": "content",
@@ -2165,9 +2180,9 @@ class ContentTypeTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
 
 class DateTests(SimpleTestCase):
@@ -2187,9 +2202,9 @@ class DateTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "key": "date",
@@ -2206,9 +2221,9 @@ class DateTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "key": "date",
@@ -2225,9 +2240,9 @@ class DateTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
     def test_empty_min_date_property(self):
         component: Component = {
@@ -2279,9 +2294,9 @@ class FieldSetTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "fieldset",
@@ -2304,9 +2319,9 @@ class FieldSetTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "fieldset",
@@ -2329,9 +2344,9 @@ class FieldSetTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
 
 class NumberTests(SimpleTestCase):
@@ -2351,9 +2366,9 @@ class NumberTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "type": "number",
@@ -2370,9 +2385,9 @@ class NumberTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "type": "number",
@@ -2389,9 +2404,9 @@ class NumberTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
 
 class SelectBoxTests(SimpleTestCase):
@@ -2416,9 +2431,9 @@ class SelectBoxTests(SimpleTestCase):
 
         with self.subTest(component=empty_eq_component):
             self.assertTrue(changed)
-            self.assertFalse("eq" in empty_eq_component)
-            self.assertEqual(empty_eq_component["conditional"]["show"], True)
-            self.assertEqual(empty_eq_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_eq_component["conditional"], {"show": True, "when": "number"}
+            )
 
         empty_show_component: Component = {
             "key": "person.pets",
@@ -2440,9 +2455,9 @@ class SelectBoxTests(SimpleTestCase):
 
         with self.subTest(component=empty_show_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_show_component["conditional"]["eq"], 0)
-            self.assertFalse("show" in empty_show_component)
-            self.assertEqual(empty_show_component["conditional"]["when"], "number")
+            self.assertEqual(
+                empty_show_component["conditional"], {"when": "number", "eq": 0}
+            )
 
         empty_when_component: Component = {
             "key": "person.pets",
@@ -2464,9 +2479,9 @@ class SelectBoxTests(SimpleTestCase):
 
         with self.subTest(component=empty_when_component):
             self.assertTrue(changed)
-            self.assertEqual(empty_when_component["conditional"]["eq"], 0)
-            self.assertEqual(empty_when_component["conditional"]["show"], True)
-            self.assertFalse("when" in empty_when_component)
+            self.assertEqual(
+                empty_when_component["conditional"], {"eq": 0, "show": True}
+            )
 
     def test_non_empty_errors(self):
         component: Component = {
