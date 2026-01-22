@@ -16,7 +16,7 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 from typing_extensions import deprecated
 
-from openforms.formio.service import FormioData
+from openforms.formio.service import FormioData, normalize_value_for_component
 from openforms.formio.typing import Component
 from openforms.formio.utils import (
     get_component_data_subtype,
@@ -84,6 +84,14 @@ class SubmissionValueVariablesState:
             and variable.form_variable.source == FormVariableSources.user_defined
         }
 
+    @property
+    def prefilled_variables(self) -> dict[str, SubmissionValueVariable]:
+        return {
+            variable.key: variable
+            for variable in self.variables.values()
+            if variable.is_initially_prefilled
+        }
+
     @deprecated("Use `state.variables[key]` instead.")
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
@@ -132,6 +140,14 @@ class SubmissionValueVariablesState:
             )
 
         return data
+
+    def get_prefilled_data(self) -> FormioData:
+        """Return the values of prefilled variables in a ``FormioData`` instance."""
+        data = {
+            variable_key: variable.to_python()
+            for variable_key, variable in self.prefilled_variables.items()
+        }
+        return FormioData(data)
 
     def get_variables_in_submission_step(
         self,
@@ -279,26 +295,32 @@ class SubmissionValueVariablesState:
             )
         return self._static_data
 
-    def get_prefill_variables(self) -> list[SubmissionValueVariable]:
-        prefill_vars = []
-        for variable in self.variables.values():
-            if not variable.is_initially_prefilled:
-                continue
-            prefill_vars.append(variable)
-        return prefill_vars
+    def save_prefill_data(self, data: FormioData) -> None:
+        """
+        Save the prefill data to the database.
 
-    def save_prefill_data(self, data: dict[str, Any]) -> None:
-        # The way we retrieve the variables has been changed here, since
-        # the new architecture of the prefill module requires access to all the
-        # variables at this point (the previous implementation with
-        # self.get_prefill_variables() gave us access to the component variables
-        # and not the user_defined ones).
+        Note that this method does not validate whether the data are related to
+        variables that have prefill configured. This is because a configured prefill
+        on one component/variable can result in other variables being prefilled as well.
+        This means we have to check all variables, and not just the ones in
+        ``self.prefilled_variables``.
+
+        Component and data-type normalization will be applied before saving.
+        """
         variables_to_create: list[SubmissionValueVariable] = []
         for variable in self.variables.values():
-            if variable.key not in data:
+            value = data.get(variable.key, empty)
+            if value is empty:
                 continue
 
-            variable.value = data[variable.key]
+            # Apply component-specific normalization
+            if variable.form_variable.source == FormVariableSources.component:
+                value = normalize_value_for_component(variable.configuration, value)
+
+            # Perform a conversion from Python/JSON -> Python -> JSON, to ensure
+            # the type is valid and to normalize any date-related strings (also covers
+            # user-defined variables).
+            variable.value = variable.to_json(variable.to_python(value))
             variable.source = SubmissionValueVariableSources.prefill
             variables_to_create.append(variable)
 

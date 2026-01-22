@@ -341,7 +341,6 @@ class Submission(models.Model):
     ] = SubmissionQuerySet.as_manager()
 
     _form_login_required: bool | None = None  # can be set via annotation
-    _prefilled_data = None
     _total_configuration_wrapper = None
 
     # type hints for (reverse) related fields
@@ -844,15 +843,6 @@ class Submission(models.Model):
             return ""
 
         return f"{self.auth_info.plugin} ({self.auth_info.attribute})"
-
-    def get_prefilled_data(self):
-        if self._prefilled_data is None:
-            values_state = self.load_submission_value_variables_state()
-            prefill_vars = values_state.get_prefill_variables()
-            self._prefilled_data = {
-                variable.key: variable.value for variable in prefill_vars
-            }
-        return self._prefilled_data
 
     @cached_property
     def cosign_state(self) -> CosignState:

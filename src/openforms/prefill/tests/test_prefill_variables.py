@@ -1,3 +1,4 @@
+from datetime import date
 from unittest.mock import patch
 
 from django.core.exceptions import PermissionDenied
@@ -126,7 +127,11 @@ class PrefillVariablesTests(TestCase):
 
     @patch(
         "openforms.prefill.service.fetch_prefill_values_from_attribute",
-        return_value={"postcode": "1015CJ", "birthDate": "19990615"},
+        return_value={
+            "postcode": "1015CJ",
+            "birthDate": "19990615",
+            "user_defined": "20000101",
+        },
     )
     def test_normalization_applied(self, m_prefill):
         form = FormFactory.create()
@@ -162,6 +167,15 @@ class PrefillVariablesTests(TestCase):
                     }
                 ]
             },
+        )
+        FormVariableFactory.create(
+            form=form,
+            name="user_defined",
+            key="user_defined",
+            data_type=FormVariableDataTypes.date,
+            user_defined=True,
+            prefill_plugin="birthDate",
+            prefill_attribute="static",
         )
         submission = SubmissionFactory.create(form=form)
         submission_step1 = SubmissionStepFactory.create(
@@ -202,11 +216,15 @@ class PrefillVariablesTests(TestCase):
         assert "defaultValue" in component_date
         self.assertEqual(component_date["defaultValue"], "1999-06-15")
 
-        variable_postcode = submission.submissionvaluevariable_set.get(key="postcode")
-        variable_date = submission.submissionvaluevariable_set.get(key="birthDate")
-
-        self.assertEqual(variable_postcode.value, "1015 CJ")
-        self.assertEqual(variable_date.value, "1999-06-15")
+        state = submission.load_submission_value_variables_state()
+        self.assertEqual(
+            state.get_prefilled_data().data,
+            {
+                "birthDate": date(1999, 6, 15),
+                "postcode": "1015 CJ",
+                "user_defined": date(2000, 1, 1),
+            },
+        )
 
     def test_prefill_variables_are_retrieved_when_form_variables_deleted(self):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
@@ -222,7 +240,7 @@ class PrefillVariablesTests(TestCase):
 
         FormVariable.objects.all().delete()
 
-        prefill_variables = submission_value_variables_state.get_prefill_variables()
+        prefill_variables = submission_value_variables_state.prefilled_variables
         self.assertEqual(2, len(prefill_variables))
 
 

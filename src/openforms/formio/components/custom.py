@@ -32,7 +32,7 @@ from openforms.prefill.contrib.family_members.plugin import (
 )
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject
-from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam, format_date_value
+from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam
 from openforms.utils.json_schema import GEO_JSON_COORDINATE_SCHEMAS, to_multiple
 from openforms.utils.validators import BSNValidator, IBANValidator
 from openforms.validations.service import PluginValidator
@@ -96,10 +96,6 @@ class FormioDateField(serializers.DateField):
 @register("date")
 class Date(BasePlugin[DateComponent]):
     formatter = DateFormatter
-
-    @staticmethod
-    def normalizer(component: DateComponent, value: str) -> str:
-        return format_date_value(value)
 
     def mutate_config_dynamically(
         self, component: DateComponent, submission: Submission, data: FormioData
@@ -741,7 +737,8 @@ class PartnerListField(serializers.Field):
     def validate_list(self, partners):
         component_key = self.component["key"]
         submission = self.context["submission"]
-        prefill_data = submission.get_prefilled_data()
+        state = submission.load_submission_value_variables_state()
+        prefill_data = state.get_prefilled_data()
 
         fm_immutable_variable = FormVariable.objects.filter(
             source=FormVariableSources.user_defined,
@@ -864,7 +861,8 @@ class ChildListField(serializers.Field):
     def validate_list(self, children):
         component_key = self.component["key"]
         submission = self.context["submission"]
-        prefill_data = submission.get_prefilled_data()
+        state = submission.load_submission_value_variables_state()
+        prefill_data = state.get_prefilled_data()
 
         fm_immutable_variable = FormVariable.objects.filter(
             source=FormVariableSources.user_defined,

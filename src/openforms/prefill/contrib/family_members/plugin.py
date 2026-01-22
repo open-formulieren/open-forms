@@ -1,4 +1,5 @@
 from collections.abc import Mapping, Sequence
+from copy import deepcopy
 from typing import Protocol, assert_never
 
 from django.urls import reverse
@@ -88,7 +89,7 @@ class FamilyMembersPrefill(BasePlugin[FamilyMemberOptions]):
         # prefill configuration and the mutable one) with the data that we have retrieved
         return {
             initial_data_form_variable: results,
-            form_variable_to_update: results,
+            form_variable_to_update: deepcopy(results),
         }
 
     def check_config(self):

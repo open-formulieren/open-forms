@@ -23,6 +23,7 @@ from openforms.logging.tests.utils import disable_timelinelog
 from openforms.prefill.service import prefill_variables
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
+from openforms.variables.constants import FormVariableDataTypes
 from stuf.constants import EndpointType
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
@@ -84,6 +85,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
             key="hc_prefill_partners_immutable",
             form=submission.form,
             user_defined=True,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "type": "partners",
@@ -131,6 +133,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
             key="hc_prefill_children_immutable",
             form=submission.form,
             user_defined=True,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "mutable_data_form_variable": "hc_prefill_children_mutable",
@@ -205,6 +208,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
             key="hc_prefill_children_immutable",
             form=submission.form,
             user_defined=True,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "mutable_data_form_variable": "hc_prefill_children_mutable",
@@ -254,6 +258,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
             key="hc_prefill_children_immutable",
             form=submission.form,
             user_defined=True,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "mutable_data_form_variable": "hc_prefill_children_mutable",
@@ -394,6 +399,7 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             key="stuf_bg_partners_immutable",
             form=submission.form,
             user_defined=True,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "type": "partners",
@@ -455,6 +461,7 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             key="stuf_bg_prefill_children_immutable",
             form=submission.form,
             user_defined=True,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "type": "children",
@@ -540,6 +547,7 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             key="stuf_bg_prefill_children_immutable",
             form=submission.form,
             user_defined=True,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "type": "children",
@@ -625,6 +633,7 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             key="stuf_bg_prefill_children_immutable",
             form=submission.form,
             user_defined=True,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "type": "children",
@@ -692,10 +701,15 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
         ]
 
         self.assertEqual(
-            state.variables["stuf_bg_prefill_children_mutable"].value, expected_data
-        )
-        self.assertEqual(
             state.variables["stuf_bg_prefill_children_immutable"].value, expected_data
+        )
+
+        # Partial dates will be converted to empty strings for the partner component.
+        expected_data[1]["dateOfBirth"] = ""
+        expected_data[2]["dateOfBirth"] = ""
+
+        self.assertEqual(
+            state.variables["stuf_bg_prefill_children_mutable"].value, expected_data
         )
 
     def test_children_with_incomplete_dateOfBirth_are_not_shown_when_filter(self):
@@ -719,6 +733,7 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             key="stuf_bg_prefill_children_immutable",
             form=submission.form,
             user_defined=True,
+            data_type=FormVariableDataTypes.array,
             prefill_plugin=PLUGIN_IDENTIFIER,
             prefill_options={
                 "type": "children",
