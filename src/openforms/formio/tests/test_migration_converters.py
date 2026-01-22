@@ -121,17 +121,17 @@ class LicensePlateTests(SimpleTestCase):
             "conditional": {
                 "eq": "",
                 "show": True,
-                "when": "number",
+                "when": "textfield",
             },
         }
 
         changed = remove_empty_conditional_values(empty_eq_component)
 
         with self.subTest(component=empty_eq_component):
-            self.assertTrue(changed)
+            self.assertFalse(changed)
             self.assertEqual(
                 empty_eq_component["conditional"],
-                {"show": True, "when": "number"},
+                {"show": True, "when": "textfield", "eq": ""},
             )
 
         empty_show_component: Component = {
