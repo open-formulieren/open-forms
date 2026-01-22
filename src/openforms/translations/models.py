@@ -19,7 +19,7 @@ def get_language_choices() -> list[tuple[str, str]]:
 
 class TranslationsMetaData(models.Model):
     language_code = models.CharField(
-        _("Selected language"),
+        _("language"),
         max_length=10,
         choices=get_language_choices(),
         help_text=_("Selected language."),
@@ -59,7 +59,7 @@ class TranslationsMetaData(models.Model):
         null=True,
         help_text=_(
             "Keeps track of the last successful processing of the uploaded file. "
-            "Basically this helps to understand since when the custom translations are "
+            "Useful for understanding since when the custom translations are "
             "active."
         ),
     )
@@ -90,4 +90,6 @@ class TranslationsMetaData(models.Model):
         verbose_name_plural = _("translation metadata")
 
     def __str__(self):
-        return f"Metadata for translations in {self.language_code}, last updated on {self.last_updated}"
+        return _("Metadata for translations in {language_code}").format(
+            language_code=self.language_code
+        )

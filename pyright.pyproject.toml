@@ -67,6 +67,11 @@ include = [
     "src/openforms/registrations/contrib/stuf_zds/plugin.py",
     "src/openforms/registrations/contrib/stuf_zds/typing.py",
     "src/openforms/registrations/contrib/zgw_apis/",
+    # Translations
+    "src/openforms/translations/admin.py",
+    "src/openforms/translations/constants.py",
+    "src/openforms/translations/models.py",
+    "src/openforms/translations/tests/test_admin.py",
     # core submissions app
     "src/openforms/submissions/api/validation.py",
     "src/openforms/submissions/cosigning.py",

@@ -1,5 +1,5 @@
-from django.conf import settings
 from django.contrib import admin
+from django.templatetags.static import static
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -44,6 +44,8 @@ class TranslationsMetaDataAdmin(admin.ModelAdmin):
         ),
     )
     readonly_fields = (
+        "processing_status",
+        "debug_output",
         "default_source_messages_link",
         "compiled_asset",
         "last_updated",
@@ -51,17 +53,15 @@ class TranslationsMetaDataAdmin(admin.ModelAdmin):
         "app_release",
     )
 
+    @admin.display(description=_("Default messages"))
     def default_source_messages_link(self, obj: TranslationsMetaData) -> str:
         if not obj or not obj.language_code:
             return "-"
 
         # default messages are already part of the static files
-        url = f"{settings.STATIC_URL}sdk/i18n/messages/{obj.language_code}.json"
-
+        url = static(f"sdk/i18n/messages/{obj.language_code}.json")
         return format_html(
             '<a href="{}" target="_blank">{}</a>',
             url,
             _("Download"),
         )
-
-    default_source_messages_link.short_description = _("Default messages")
