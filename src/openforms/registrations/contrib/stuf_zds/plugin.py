@@ -294,13 +294,16 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                     variable.key,
                     variable.prefill_options["mutable_data_form_variable"],
                 )
+                extra_data.pop(from_key, None)
+                # `extra_data` only contains data that was submitted, so we should skip
+                # if the key is not available (the component was hidden or part of a
+                # non-applicable step).
+                if to_key not in extra_data:
+                    continue
                 value = extra_data[to_key]
                 for item in value:
                     item.pop("dateOfBirthPrecision", None)
                     item["dateOfBirth"] = item["dateOfBirth"].isoformat()
-
-                extra_data[to_key] = value
-                extra_data.pop(from_key, None)
 
     def process_children(
         self,
@@ -371,6 +374,12 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                     variable.key,
                     variable.prefill_options["mutable_data_form_variable"],
                 )
+                extra_data.pop(from_key, None)
+                # `extra_data` only contains data that was submitted, so we should skip
+                # if the key is not available (the component was hidden or part of a
+                # non-applicable step).
+                if to_key not in extra_data:
+                    continue
                 value = extra_data[to_key]
 
                 updated = []
@@ -383,9 +392,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
 
                         updated.append(child)
 
-                value = updated
-                extra_data[to_key] = value
-                extra_data.pop(from_key, None)
+                extra_data[to_key] = updated
 
     def register_submission(
         self, submission: Submission, options: RegistrationOptions

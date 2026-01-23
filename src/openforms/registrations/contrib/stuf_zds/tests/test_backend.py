@@ -3982,6 +3982,80 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         except AttributeError as e:
             raise self.failureException("Registration failed unexpectedly") from e
 
+    @tag("gh-5827")
+    def test_registration_as_extra_elementen_when_partners_component_is_hidden(self):
+        """
+        Ensure registration as extra elementen does not crash if the component was
+        hidden or part of a non-applicable step. In both cases, the partners data is
+        initially prefilled and saved to the database, but deleted again when a logic
+        rule marks a step as not applicable or a step is submitted with the component
+        hidden.
+
+        Also ensure the prefilled form variable is not included as extra element in this
+        case.
+        """
+        submission = SubmissionFactory.from_components(
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
+            components_list=[
+                {
+                    "key": "textfield",
+                    "type": "textfield",
+                    "label": "Textfield",
+                },
+                {
+                    "key": "stuf_bg_partners_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                    "hidden": True,
+                },
+            ],
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+            submitted_data={"textfield": "foo"},
+            language_code="nl",
+            completed=True,
+        )
+
+        SubmissionValueVariableFactory.create(
+            key="stuf_bg_partners_immutable",
+            submission=submission,
+            form_variable__user_defined=True,
+            form_variable__prefill_plugin="family_members",
+            form_variable__prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "stuf_bg_partners_mutable",
+            },
+            value=[
+                {
+                    "bsn": "123123123",
+                    "firstNames": "Belly",
+                    "initials": "K",
+                    "affixes": "van",
+                    "lastName": "Doe",
+                    "dateOfBirth": "19850615",
+                    "deceased": None,
+                }
+            ],
+        )
+
+        try:
+            self.plugin.register_submission(submission, self.options)
+        except KeyError as e:
+            raise self.failureException("Registration failed unexpectedly") from e
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        extra_elements_dict = {
+            e.attrib["naam"]: e.text
+            for e in xml_doc.xpath(".//StUF:extraElement", namespaces=xml_doc.nsmap)
+        }
+        self.assertEqual(
+            extra_elements_dict, {"textfield": "foo", "language_code": "nl"}
+        )
+
 
 class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
     VCR_TEST_FILES = TESTS_DIR / "files"
@@ -5249,6 +5323,87 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                 "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.1.bsn']": "999970112",
                 "//stuf:extraElementen/stuf:extraElement[@naam='extraChildDetails.1.childName']": "Onne",
             },
+        )
+
+    @tag("gh-5827")
+    def test_registration_as_extra_elementen_when_children_component_is_hidden(self):
+        """
+        Ensure registration as extra elementen does not crash if the component was
+        hidden or part of a non-applicable step. In both cases, the children data is
+        initially prefilled and saved to the database, but deleted again when a logic
+        rule marks a step as not applicable or a step is submitted with the component
+        hidden.
+
+        Also ensure the prefilled form variable is not included as extra element in this
+        case.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "textfield",
+                    "type": "textfield",
+                    "label": "Textfield",
+                },
+                {
+                    "key": "children",
+                    "type": "children",
+                    "label": "Children",
+                    "enableSelection": False,
+                    "hidden": True,
+                },
+            ],
+            form__name="my-form",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="000009969",
+            language_code="nl",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+            submitted_data={"textfield": "foo"},
+        )
+
+        SubmissionValueVariableFactory.create(
+            key="stuf_bg_children_immutable",
+            submission=submission,
+            form_variable__user_defined=True,
+            form_variable__prefill_plugin="family_members",
+            form_variable__prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+                "min_age": None,
+                "max_age": None,
+            },
+            value=[
+                {
+                    "bsn": "999970409",
+                    "affixes": "van",
+                    "initials": "P.",
+                    "lastName": "Paassen",
+                    "firstNames": "Pero",
+                    "dateOfBirth": "2023-02-01",
+                    "dateOfBirthPrecision": "date",
+                    # Added by the frontend
+                    "selected": None,
+                    "__id": str(uuid4()),
+                    "__addedManually": False,
+                }
+            ],
+        )
+
+        try:
+            self.plugin.register_submission(submission, self.options)
+        except KeyError as e:
+            raise self.failureException("Registration failed unexpectedly") from e
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        extra_elements_dict = {
+            e.attrib["naam"]: e.text
+            for e in xml_doc.xpath(".//StUF:extraElement", namespaces=xml_doc.nsmap)
+        }
+        self.assertEqual(
+            extra_elements_dict, {"textfield": "foo", "language_code": "nl"}
         )
 
 
