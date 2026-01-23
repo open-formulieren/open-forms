@@ -13,6 +13,7 @@ import structlog
 from furl import furl
 from glom import assign
 
+from openforms.authentication.service import get_branch_number
 from openforms.config.data import Action
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
@@ -324,6 +325,11 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         betrokkene_identificatie = initiator_rol_data.get("betrokkeneIdentificatie", {})
         kvk = betrokkene_identificatie.get("innNnpId")
         vestigingsnummer = betrokkene_identificatie.get("vestigingsNummer")
+
+        if not vestigingsnummer and submission.is_authenticated:
+            auth_context = submission.auth_info.to_auth_context_data()
+            vestigingsnummer = get_branch_number(auth_context)
+            betrokkene_identificatie["vestigingsNummer"] = vestigingsnummer
 
         if kvk and vestigingsnummer:
             initiator_rol_data["betrokkeneType"] = "vestiging"
