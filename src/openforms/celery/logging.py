@@ -52,6 +52,10 @@ def receiver_setup_logging(
                     "handlers": ["console"],
                     "level": "INFO",
                 },
+                "maykin_common": {
+                    "handlers": ["console"],
+                    "level": "INFO",
+                },
             },
         }
     )

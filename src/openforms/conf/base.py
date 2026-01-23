@@ -1360,6 +1360,10 @@ HEALTH_CHECK = {
 # MAYKIN-COMMON health checks
 #
 MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE = BASE_DIR / "tmp" / "celery_beat.live"
+MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_LIVENESS_FILE = (
+    BASE_DIR / "tmp" / "celery_worker_event_loop.live"
+)
+MKN_HEALTH_CHECKS_WORKER_READINESS_FILE = BASE_DIR / "tmp" / "celery_worker.ready"
 
 #
 # DJANGO-STRUCTLOG
