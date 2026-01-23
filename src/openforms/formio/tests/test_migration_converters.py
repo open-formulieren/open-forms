@@ -185,10 +185,27 @@ class LicensePlateTests(SimpleTestCase):
             "errors": {"foo": "bar"},
         }
 
-        changed = empty_errors_property(component)
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
 
-        self.assertTrue(changed)
-        self.assertEqual(component["errors"], {})
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
+
+        component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "validate": {
+                "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
+            },
+            "errors": None,
+        }
+
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
+
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
 
     def test_empty_errors(self):
         component: Component = {
@@ -262,10 +279,26 @@ class PostCodeTests(SimpleTestCase):
             "errors": {"foo": "bar"},
         }
 
-        changed = empty_errors_property(component)
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
 
-        self.assertTrue(changed)
-        self.assertEqual(component["errors"], {})
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
+
+        component: Component = {
+            "type": "postcode",
+            "key": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+            },
+            "errors": None,
+        }
+
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
+
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
 
     def test_empty_errors(self):
         component: Component = {
@@ -540,10 +573,24 @@ class TextTests(SimpleTestCase):
             "errors": {"foo": "bar"},
         }
 
-        changed = empty_errors_property(component)
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
 
-        self.assertTrue(changed)
-        self.assertEqual(component["errors"], {})
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
+
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "errors": None,
+        }
+
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
+
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
 
     def test_empty_errors(self):
         component: Component = {
@@ -707,10 +754,24 @@ class EmailTests(SimpleTestCase):
             "errors": {"foo": "bar"},
         }
 
-        changed = empty_errors_property(component)
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
 
-        self.assertTrue(changed)
-        self.assertEqual(component["errors"], {})
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
+
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "errors": None,
+        }
+
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
+
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
 
     def test_empty_errors(self):
         component: Component = {
@@ -925,10 +986,24 @@ class PhoneNumberTests(SimpleTestCase):
             "errors": {"foo": "bar"},
         }
 
-        changed = empty_errors_property(component)
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
 
-        self.assertTrue(changed)
-        self.assertEqual(component["errors"], {})
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
+
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "errors": None,
+        }
+
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
+
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
 
     def test_empty_errors(self):
         component: Component = {
@@ -1518,10 +1593,29 @@ class SelectBoxTests(SimpleTestCase):
             "errors": {"foo": "bar"},
         }
 
-        changed = empty_errors_property(component)
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
 
-        self.assertTrue(changed)
-        self.assertEqual(component["errors"], {})
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
+
+        component: Component = {
+            "key": "person.pets",
+            "type": "selectboxes",
+            "label": "Pets",
+            "values": [
+                {"value": "cat", "label": "Cat"},
+                {"value": "dog", "label": "Dog"},
+                {"value": "bird", "label": "Bird"},
+            ],
+            "errors": None,
+        }
+
+        with self.subTest(component=component):
+            changed = empty_errors_property(component)
+
+            self.assertTrue(changed)
+            self.assertEqual(component["errors"], {})
 
     def test_empty_errors(self):
         component: Component = {
