@@ -96,6 +96,45 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(error_fields, ["data.surname"])
         self.assertEqual(invalid_params[0]["code"], "invalidPrefilledField")
 
+    @tag("gh-security-31")
+    def test_nested_prefilled_data_updated(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "sur.name",
+                        "label": "Surname",
+                        "prefill": {"plugin": "test-prefill", "attribute": "surname"},
+                        "disabled": True,
+                    }
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(
+            form=form, prefill_data={"sur": {"name": "Doe"}}
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            endpoint, {"data": {"sur": {"name": "Doe-MODIFIED"}}}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        invalid_params = response.json()["invalidParams"]
+        error_fields = [param["name"] for param in invalid_params]
+        self.assertEqual(error_fields, ["data.sur.name"])
+        self.assertEqual(invalid_params[0]["code"], "invalidPrefilledField")
+
     def test_prefilled_data_updated_not_disabled(self):
         form = FormFactory.create()
         step = FormStepFactory.create(
