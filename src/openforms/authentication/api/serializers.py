@@ -82,3 +82,8 @@ class LoginOptionSerializer(serializers.Serializer):
         ),
         read_only=True,
     )
+    visible = serializers.BooleanField(
+        label=_("Visible"),
+        read_only=True,
+        help_text=_("This authorization method is always shown when the form starts"),
+    )

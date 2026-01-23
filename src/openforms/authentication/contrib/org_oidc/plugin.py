@@ -101,5 +101,13 @@ class OIDCAuthentication(BasePlugin[OIDCOptions]):
             appearance=LogoAppearance.light,
         )
 
+    def get_visible(self, form: Form | None) -> bool:
+        assert form is not None
+
+        authentication_backend = form.auth_backends.get(backend=PLUGIN_IDENTIFIER)
+        serializer = self.configuration_options(data=authentication_backend.options)
+        serializer.is_valid(raise_exception=True)
+        return serializer.data["visible"]
+
 
 assert len(OIDCAuthentication.provides_auth) == 1
