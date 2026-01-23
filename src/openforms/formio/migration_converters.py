@@ -385,7 +385,7 @@ def empty_errors_property(component: Component) -> bool:
 def remove_default_value_translation(component: Component) -> bool:
     config_modified = False
 
-    translations = component.get("openForms", {}).get("translations", {})
+    translations = (component.get("openForms") or {}).get("translations", {})
     if not translations:
         return False
 
