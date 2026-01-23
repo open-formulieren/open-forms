@@ -7,6 +7,7 @@
 # which will be affected by the migration.
 #
 import sys
+from collections.abc import Collection
 from pathlib import Path
 
 import django
@@ -19,11 +20,42 @@ SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
 
 
+def resolve_key(input_key: str, all_form_variable_keys: Collection[str]) -> str | None:
+    """
+    Resolve a (nested) key to its corresponding form variable key.
+
+    Submission data of container-type components (e.g. editgrid, selectboxes, etc.)
+    can be accessed with dot notation in a ``FormioData`` instance, but also in JSON
+    logic. For example, key "selectboxes.a" with data ``{"a": "A", "b": "B"}``. This
+    routine resolves the form variable key that corresponds to this data access key.
+
+    :param input_key: The key to resolve.
+    :param all_form_variable_keys: Collection of form variable keys to resolve for.
+    :return: The resolved form variable key, or ``None`` if not resolved.
+    """
+    # There is a variable with this exact key, it is a valid reference.
+    if input_key in all_form_variable_keys:
+        return input_key
+
+    # Process nested paths (editgrid, selectboxes, partners, children). Note that this
+    # doesn't include other nested fields anymore, e.g. a textfield component with key
+    # "foo.bar" will have already been resolved. We process all slices, as these keys
+    # could also include dots.
+    parts = input_key.split(".")
+    for i in range(1, len(parts)):
+        if (key := ".".join(parts[:i])) in all_form_variable_keys:
+            return key
+
+    # If none of the slices exist, we cannot resolve the complete key, so we just
+    # return `None`. Note that the digest email should notify the user of invalid
+    # logic rules.
+    return None
+
+
 def report_disable_next_logic_action_manual_check(show_all=False):
     from openforms.formio.service import iter_components
     from openforms.forms.models import Form, FormLogic, FormStep, FormVariable
     from openforms.utils.json_logic import introspect_json_logic
-    from openforms.variables.service import resolve_key
 
     queryset = Form.objects.prefetch_related(
         "formlogic_set", "formvariable_set", "formstep_set"
