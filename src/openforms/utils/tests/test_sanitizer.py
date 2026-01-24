@@ -1,5 +1,6 @@
 import io
 
+from django.core.files import File
 from django.test import SimpleTestCase
 
 from ..sanitizer import sanitize_svg_content, sanitize_svg_file
@@ -18,12 +19,9 @@ class SanitizeSvgFileTests(SimpleTestCase):
             </g>
         </svg>
         """
-        sanitized_svg_content = b"""
+        sanitized_svg_content = """
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
             <circle cx="25" cy="25" r="25" fill="green"></circle>
-            //
-                alert("I am malicious &gt;:)")
-            //
             <g>
                 <rect x="0" y="0" width="10" height="10" fill="red"></rect>
             </g>
@@ -33,8 +31,11 @@ class SanitizeSvgFileTests(SimpleTestCase):
         temp_file = io.BytesIO(bad_svg_content.encode("utf-8"))
 
         # Assert that sanitize_svg_content removed the script tag
-        sanitized_svg_file = sanitize_svg_file(temp_file)
-        self.assertEqual(sanitized_svg_file.read(), sanitized_svg_content)
+        sanitized_svg_file = sanitize_svg_file(File(temp_file))
+        self.assertHTMLEqual(
+            sanitized_svg_file.read().decode("utf-8"),
+            sanitized_svg_content,
+        )
 
 
 class SanitizeSvgContentTests(SimpleTestCase):
@@ -53,9 +54,6 @@ class SanitizeSvgContentTests(SimpleTestCase):
         sanitized_svg_content = """
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
             <circle cx="25" cy="25" r="25" fill="green"></circle>
-            //
-                alert("I am malicious &gt;:)")
-            //
             <g>
                 <rect x="0" y="0" width="10" height="10" fill="red"></rect>
             </g>
@@ -64,7 +62,7 @@ class SanitizeSvgContentTests(SimpleTestCase):
 
         # Assert that sanitize_svg_content removed the script tag
         sanitized_bad_svg_content = sanitize_svg_content(bad_svg_content)
-        self.assertEqual(sanitized_svg_content, sanitized_bad_svg_content)
+        self.assertHTMLEqual(sanitized_svg_content, sanitized_bad_svg_content)
 
     def test_sanitize_svg_content_removes_event_handlers(self):
         bad_svg_content = """
@@ -86,4 +84,4 @@ class SanitizeSvgContentTests(SimpleTestCase):
 
         # Assert that sanitize_svg_content removed the event handlers
         sanitized_bad_svg_content = sanitize_svg_content(bad_svg_content)
-        self.assertEqual(sanitized_svg_content, sanitized_bad_svg_content)
+        self.assertHTMLEqual(sanitized_svg_content, sanitized_bad_svg_content)
