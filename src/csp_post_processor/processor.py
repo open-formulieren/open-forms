@@ -3,7 +3,6 @@ import hashlib
 from django.http import HttpRequest
 from django.utils.safestring import SafeString, mark_safe
 
-import html5lib
 import lxml.html
 import nh3
 import structlog
@@ -187,11 +186,8 @@ def post_process_html(
         logger.info("skip_processing", reason="nonce_not_found")
         return html
 
-    lxml_etree_document = html5lib.parse(
-        html,
-        treebuilder="lxml",
-        namespaceHTMLElements=False,
-    )
+    # mimick html5lib wrapping content in <html><body>...</body></html>
+    lxml_etree_document = lxml.html.fromstring(f"<html><body>{html}</body></html>")
     inline_styles: dict[str, str] = {}
 
     for node in lxml_etree_document.iter():
@@ -227,30 +223,11 @@ def post_process_html(
         # keep the ID and CSS
         inline_styles[html_id] = tinycss2.serialize(parsed_styles)
 
-    # did we extract style we want to keep?
-    if inline_styles:
-        style_element = etree.Element("style")
-        style_element.attrib["nonce"] = csp_nonce
-
-        # build the CSS from the inline styles
-        all_styles = ""
-        for unique_id, style in inline_styles.items():
-            all_styles += f"#{unique_id} {{\n    {style}\n}} \n"
-
-        style_element.text = f"\n{all_styles}\n"
-
-        # convert styles to html string
-        style_markup = lxml.html.tostring(
-            style_element, encoding="unicode", pretty_print=True
-        )
-        style_markup = f"{style_markup}\n"
-    else:
-        style_markup = ""
-
     # convert back to a string
-    root = lxml_etree_document.getroot()
-    body = root.find("body")  # parsers wrap snippet in <html><body>...</body></html>
-    parts = body.getchildren()
+    root = lxml_etree_document
+    body = root.find("body")
+    assert body is not None
+    parts = list(body)
     if not parts:  # no nested HTML/elements
         return body.text or ""
 
@@ -262,6 +239,27 @@ def post_process_html(
     )
     # sanitize the non-style part
     modified_html = sanitize_wysiwyg_content(modified_html)
+
+    # did we extract style we want to keep?
+    style_markup: str = ""
+    if inline_styles:
+        style_element = etree.Element("style")
+        style_element.attrib["nonce"] = csp_nonce
+
+        # build the CSS from the inline styles
+        all_styles = ""
+        for unique_id, style in inline_styles.items():
+            if f'id="{unique_id}"' not in modified_html:
+                continue
+            all_styles += f"#{unique_id} {{\n    {style}\n}} \n"
+
+        if all_styles:
+            style_element.text = f"\n{all_styles}\n"
+            # convert styles to html string
+            style_markup = lxml.html.tostring(
+                style_element, encoding="unicode", pretty_print=True
+            )
+            style_markup = f"{style_markup}\n"
 
     result = SafeStringWrapper(mark_safe(f"{style_markup}{modified_html}"))
 
