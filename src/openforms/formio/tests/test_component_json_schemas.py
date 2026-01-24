@@ -43,6 +43,7 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
         if multiple:
             with self.subTest(multiple=multiple):
                 component["multiple"] = True
+                component["defaultValue"] = []
                 schema = as_json_schema(component)
 
                 self.assertValidSchema(schema)
@@ -78,11 +79,13 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
             "key": "repeatingGroup",
             "label": "Repeating Group Outer",
             "type": "editgrid",
+            "groupLabel": "item",
             "components": [
                 {
                     "key": "repeatingGroupInner",
                     "label": "Repeating Group Inner",
                     "type": "editgrid",
+                    "groupLabel": "item",
                     "components": [
                         {
                             "key": "textFieldInner",
@@ -113,13 +116,17 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
             "url": "https://example.com",
             "useConfigFiletypes": False,
             "filePattern": "",
-            "file": {"allowedTypesLabels": []},
+            "file": {"type": [], "allowedTypesLabels": []},
         }
         self.assertComponentSchemaIsValid(component=component)
 
     def test_number(self):
-        component: Component = {"label": "Number", "key": "number", "type": "number"}
-        self.assertComponentSchemaIsValid(component=component, multiple=True)
+        component: Component = {
+            "label": "Number",
+            "key": "number",
+            "type": "number",
+        }
+        self.assertComponentSchemaIsValid(component=component)
 
     def test_phone_number(self):
         component: Component = {
@@ -299,10 +306,11 @@ class RadioTests(SimpleTestCase):
         component: RadioComponent = {
             "label": "Radio label",
             "key": "radio",
-            "values": [
-                {"label": "", "value": ""},
-            ],
-            "openForms": {"dataSrc": DataSrcOptions.variable},
+            "values": [{"label": "", "value": ""}],
+            "openForms": {
+                "dataSrc": DataSrcOptions.variable,
+                "itemsExpression": {"var": "foo"},
+            },
             "type": "radio",
         }
 
@@ -336,6 +344,7 @@ class SelectTests(SimpleTestCase):
 
         with self.subTest("multiple"):
             component["multiple"] = True
+            component["defaultValue"] = []
             expected_schema = {
                 "title": "Select label",
                 "type": "array",
@@ -353,7 +362,10 @@ class SelectTests(SimpleTestCase):
                     {"label": "", "value": ""},
                 ],
             },
-            "openForms": {"dataSrc": DataSrcOptions.variable},
+            "openForms": {
+                "dataSrc": DataSrcOptions.variable,
+                "itemsExpression": {"var": "foo"},
+            },
             "type": "select",
         }
 
@@ -364,6 +376,7 @@ class SelectTests(SimpleTestCase):
 
         with self.subTest("multiple"):
             component["multiple"] = True
+            component["defaultValue"] = []
             expected_schema = {
                 "title": "Select label",
                 "type": "array",
@@ -405,7 +418,10 @@ class SelectBoxesTests(SimpleTestCase):
             "values": [
                 {"label": "", "value": ""},
             ],
-            "openForms": {"dataSrc": DataSrcOptions.variable},
+            "openForms": {
+                "dataSrc": DataSrcOptions.variable,
+                "itemsExpression": {"var": "foo"},
+            },
             "type": "selectboxes",
         }
 
@@ -620,6 +636,7 @@ class TextFieldTests(SimpleTestCase):
 
         with self.subTest("multiple"):
             component["multiple"] = True
+            component["defaultValue"] = []
             schema = as_json_schema(component)
             self.assertEqual(schema["items"]["pattern"], "^[A-Z]$")
             self.assertEqual(schema["items"]["maxLength"], 10)
@@ -641,6 +658,7 @@ class TextAreaTests(SimpleTestCase):
 
         with self.subTest("multiple"):
             component["multiple"] = True
+            component["defaultValue"] = []
             schema = as_json_schema(component)
             self.assertEqual(schema["items"]["pattern"], "^[A-Z]$")
             self.assertEqual(schema["items"]["maxLength"], 10)
@@ -652,6 +670,9 @@ class PostcodeTests(SimpleTestCase):
             "label": "Postcode",
             "key": "postcode",
             "type": "postcode",
+            "validate": {
+                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
+            },
         }
 
         with self.subTest("single"):
@@ -660,25 +681,9 @@ class PostcodeTests(SimpleTestCase):
 
         with self.subTest("multiple"):
             component["multiple"] = True
+            component["defaultValue"] = []
             schema = as_json_schema(component)
             self.assertIn("pattern", schema["items"])
-
-    def test_includes_custom_pattern(self):
-        component: Component = {
-            "label": "Postcode",
-            "key": "postcode",
-            "type": "postcode",
-            "validate": {"pattern": r"\d{4} [A-Z]{2}"},
-        }
-
-        with self.subTest("single"):
-            schema = as_json_schema(component)
-            self.assertEqual(schema["pattern"], r"\d{4} [A-Z]{2}")
-
-        with self.subTest("multiple"):
-            component["multiple"] = True
-            schema = as_json_schema(component)
-            self.assertEqual(schema["items"]["pattern"], r"\d{4} [A-Z]{2}")
 
 
 class PhoneNumberTests(SimpleTestCase):
@@ -695,6 +700,7 @@ class PhoneNumberTests(SimpleTestCase):
 
         with self.subTest("multiple"):
             component["multiple"] = True
+            component["defaultValue"] = []
             schema = as_json_schema(component)
             self.assertIn("pattern", schema["items"])
 
@@ -712,6 +718,7 @@ class PhoneNumberTests(SimpleTestCase):
 
         with self.subTest("multiple"):
             component["multiple"] = True
+            component["defaultValue"] = []
             schema = as_json_schema(component)
             self.assertEqual(schema["items"]["pattern"], r"\d{10}")
 
@@ -725,16 +732,9 @@ class NumberTests(SimpleTestCase):
             "validate": {"min": 10, "max": 20},
         }
 
-        with self.subTest("single"):
-            schema = as_json_schema(component)
-            self.assertEqual(schema["minimum"], 10)
-            self.assertEqual(schema["maximum"], 20)
-
-        with self.subTest("multiple"):
-            component["multiple"] = True
-            schema = as_json_schema(component)
-            self.assertEqual(schema["items"]["minimum"], 10)
-            self.assertEqual(schema["items"]["maximum"], 20)
+        schema = as_json_schema(component)
+        self.assertEqual(schema["minimum"], 10)
+        self.assertEqual(schema["maximum"], 20)
 
 
 class CurrencyTests(SimpleTestCase):
@@ -759,11 +759,13 @@ class EditGridTests(SimpleTestCase):
             "key": "repeatingGroup",
             "label": "Repeating Group Outer",
             "type": "editgrid",
+            "groupLabel": "item",
             "components": [
                 {
                     "key": "repeatingGroupInner",
                     "label": "Repeating Group Inner",
                     "type": "editgrid",
+                    "groupLabel": "item",
                     "components": [
                         {
                             "key": "textFieldInner",
@@ -820,6 +822,7 @@ class EditGridTests(SimpleTestCase):
             "key": "repeatingGroup",
             "label": "Repeating Group",
             "type": "editgrid",
+            "groupLabel": "item",
             "components": [
                 {
                     "key": "textField",
@@ -838,6 +841,7 @@ class EditGridTests(SimpleTestCase):
             "key": "editgrid",
             "label": "editgrid",
             "type": "editgrid",
+            "groupLabel": "item",
             "components": [
                 {
                     "key": "fieldset",
@@ -873,6 +877,7 @@ class EditGridTests(SimpleTestCase):
             "key": "editgrid",
             "label": "editgrid",
             "type": "editgrid",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "columns",
@@ -926,6 +931,7 @@ class EditGridTests(SimpleTestCase):
             "key": "editgrid",
             "label": "editgrid",
             "type": "editgrid",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "content",
@@ -960,6 +966,7 @@ class EditGridTests(SimpleTestCase):
             "key": "editgrid",
             "label": "editgrid",
             "type": "editgrid",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "fieldset",
@@ -1001,6 +1008,7 @@ class EditGridTests(SimpleTestCase):
             "key": "editgrid",
             "label": "editgrid",
             "type": "editgrid",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "fieldset",

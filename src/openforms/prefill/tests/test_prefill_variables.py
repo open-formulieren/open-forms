@@ -142,6 +142,7 @@ class PrefillVariablesTests(TestCase):
                     {
                         "type": "postcode",
                         "key": "postcode",
+                        "label": "postcode",
                         "inputMask": "9999 AA",
                         "prefill": {
                             "plugin": "postcode",
@@ -159,6 +160,7 @@ class PrefillVariablesTests(TestCase):
                     {
                         "type": "date",
                         "key": "birthDate",
+                        "label": "birthDate",
                         "prefill": {
                             "plugin": "birthDate",
                             "attribute": "static",

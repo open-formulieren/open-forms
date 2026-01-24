@@ -44,11 +44,21 @@ class FormJsonSchemaAPITests(APITestCase):
                         "type": "textfield",
                         "multiple": True,
                         "label": "Last Name",
+                        "defaultValue": [],
                     },
-                    {"key": "file", "type": "file", "label": "File", "multiple": False},
+                    {
+                        "key": "file",
+                        "type": "file",
+                        "label": "File",
+                        "multiple": False,
+                        "file": {"type": []},
+                        "filePattern": "",
+                        "url": "",
+                    },
                     {
                         "type": "selectboxes",
                         "key": "selectboxes",
+                        "label": "Select boxes",
                         "values": [
                             {"label": "Option 1", "value": "option1"},
                             {"label": "Option 2", "value": "option2"},
@@ -180,11 +190,21 @@ class FormJsonSchemaAPITests(APITestCase):
                         "type": "textfield",
                         "multiple": True,
                         "label": "Last Name",
+                        "defaultValue": [],
                     },
-                    {"key": "file", "type": "file", "label": "File", "multiple": False},
+                    {
+                        "key": "file",
+                        "type": "file",
+                        "label": "File",
+                        "multiple": False,
+                        "file": {"type": []},
+                        "filePattern": "",
+                        "url": "",
+                    },
                     {
                         "type": "selectboxes",
                         "key": "selectboxes",
+                        "label": "Select boxes",
                         "values": [
                             {"label": "Option 1", "value": "option1"},
                             {"label": "Option 2", "value": "option2"},
@@ -367,6 +387,7 @@ class FormJsonSchemaAPITests(APITestCase):
                     {
                         "type": "selectboxes",
                         "key": "selectboxes",
+                        "label": "Select boxes",
                         "values": [
                             {"label": "Option a", "value": "option_a"},
                             {"label": "Option b", "value": "option_b"},

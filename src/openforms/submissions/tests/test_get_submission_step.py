@@ -402,6 +402,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             language_code="de",
         )
         form_step = submission.steps[0].form_step
+        assert form_step is not None
         form_step.form_definition.configuration["components"][0]["openForms"] = {
             "translations": {"de": {"label": "Kneipe"}}
         }

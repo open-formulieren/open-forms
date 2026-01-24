@@ -22,15 +22,18 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step1",
+                        "label": "step1",
                     },
                     {
                         "type": "date",
                         "key": "someDate",
+                        "label": "someDate",
                     },
                     {
                         "type": "editgrid",
                         "key": "editgrid",
                         "label": "Editgrid",
+                        "groupLabel": "item",
                         "components": [
                             {"key": "date", "type": "date", "label": "Date"},
                             {"key": "time", "type": "time", "label": "Time"},
@@ -51,6 +54,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step2",
+                        "label": "step2",
                     },
                 ]
             },
@@ -141,10 +145,12 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step1",
+                        "label": "step1",
                     },
                     {
                         "type": "date",
                         "key": "someDate",
+                        "label": "someDate",
                     },
                 ]
             },
@@ -156,6 +162,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step2",
+                        "label": "step2",
                     },
                 ]
             },
@@ -206,10 +213,12 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step1",
+                        "label": "step1",
                     },
                     {
                         "type": "date",
                         "key": "someDate",
+                        "label": "someDate",
                     },
                 ]
             },
@@ -221,6 +230,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step2",
+                        "label": "step2",
                     },
                 ]
             },

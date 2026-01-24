@@ -98,6 +98,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "type": "textfield",
                     "multiple": True,
                     "label": "some_list",
+                    "defaultValue": [],
                 },
                 {"key": "file1", "type": "file", "label": "file1"},
                 {"key": "file2", "type": "file", "label": "file2"},
@@ -711,6 +712,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "label": "Some list",
                     "type": "textfield",
                     "multiple": True,
+                    "defaultValue": [],
                 },
             ],
             submitted_data={"someField": "value0", "someList": ["value1", "value2"]},
@@ -809,6 +811,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "label": "Some list",
                     "type": "textfield",
                     "multiple": True,
+                    "defaultValue": [],
                 },
             ],
             submitted_data={"someField": "value0", "someList": ["value1", "value2"]},
@@ -871,6 +874,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "key": "favorieteComponenten",
                     "label": "Favoriete componenten?",
                     "multiple": True,
+                    "defaultValue": [],
                     "showInEmail": True,
                     "type": "textfield",
                 },
@@ -898,6 +902,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                                     "components": [
                                         {
                                             "key": "dev1taken",
+                                            "label": "dev1taken",
                                             "showInEmail": False,
                                             "type": "selectboxes",
                                             "values": [
@@ -1027,6 +1032,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "key": "some_list",
                     "type": "textfield",
                     "multiple": True,
+                    "defaultValue": [],
                     "label": "some_list",
                 },
                 {"key": "file1", "type": "file", "label": "file1"},

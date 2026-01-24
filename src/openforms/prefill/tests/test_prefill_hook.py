@@ -408,7 +408,7 @@ class PrefillHookTests(TransactionTestCase):
                         "attribute": "random_isodate",
                     },
                     "multiple": False,
-                    "defaultValue": None,
+                    "defaultValue": "",
                 }
             ],
         }
@@ -445,7 +445,7 @@ class PrefillHookTests(TransactionTestCase):
                         "attribute": "random_stufbg_date",
                     },
                     "multiple": False,
-                    "defaultValue": None,
+                    "defaultValue": "",
                 }
             ],
         }
@@ -482,7 +482,7 @@ class PrefillHookTests(TransactionTestCase):
                         "attribute": "invalid_date",
                     },
                     "multiple": False,
-                    "defaultValue": None,
+                    "defaultValue": "",
                 }
             ],
         }
@@ -556,6 +556,7 @@ class PrefillHookTests(TransactionTestCase):
                 {
                     "key": "textFieldA",
                     "type": "textfield",
+                    "label": "textFieldA",
                 }
             ],
         }
@@ -573,7 +574,7 @@ class PrefillHookTests(TransactionTestCase):
                         "attribute": "random_isodate",
                     },
                     "multiple": False,
-                    "defaultValue": None,
+                    "defaultValue": "",
                 }
             ],
         }
