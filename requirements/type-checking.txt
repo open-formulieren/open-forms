@@ -708,6 +708,10 @@ multidict==6.6.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   yarl
+nh3==0.3.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 numpy==2.3.3
     # via
     #   -c requirements/ci.txt

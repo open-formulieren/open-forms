@@ -614,6 +614,10 @@ mozilla-django-oidc-db==1.1.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+nh3==0.3.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 numpy==2.3.3
     # via
     #   -c requirements/base.txt
