@@ -294,9 +294,7 @@ googleapis-common-protos==1.70.0
 grpcio==1.74.0
     # via opentelemetry-exporter-otlp-proto-grpc
 html5lib==1.1
-    # via
-    #   -r requirements/base.in
-    #   weasyprint
+    # via weasyprint
 humanize==3.14.0
     # via flower
 idna==3.7

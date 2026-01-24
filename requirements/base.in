@@ -10,7 +10,6 @@ maykin-json-logic-py
 jsonschema
 jsonschema_specifications
 jq
-html5lib
 lxml
 lxml-html-clean
 nh3
