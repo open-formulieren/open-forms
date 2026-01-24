@@ -61,10 +61,6 @@ billiard==4.2.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   celery
-bleach==5.0.1
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 boltons==21.0.0
     # via
     #   -c requirements/ci.txt
@@ -1188,7 +1184,6 @@ six==1.16.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   bleach
     #   click-repl
     #   furl
     #   html5lib
@@ -1420,7 +1415,6 @@ webencodings==0.5.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   bleach
     #   cssselect2
     #   html5lib
     #   tinycss2
