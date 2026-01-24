@@ -3,11 +3,12 @@ from __future__ import annotations
 
 import re
 import sys
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import django
+from django.utils.text import Truncator
 
 import click
 from tabulate import tabulate
@@ -19,19 +20,43 @@ SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
 
 
-def check_component(component: Component) -> str | None:
+def check_component(component) -> Iterator[str]:
     from rest_framework.exceptions import ValidationError
 
     from openforms.api.geojson import GeoJsonGeometryPolymorphicSerializer
 
     match component:
+        case {"conditional": {"show": ""} | {"when": ""}}:
+            yield "Unexpected empty strings in conditional."
+
+    match component:
+        case {"errors": dict() as errors_dict} if len(errors_dict.keys()):
+            yield "Unexpected non-empty component.errors."
+
+    match component:
+        case {"openForms": {"dataSrc": "variable", "itemsExpression": str()}}:
+            yield "String itemsExpression instead of JSON Logic expression."
+
+    match component:
+        case {"type": "radio" | "selectboxes", "values": list() as values} if (
+            len(values) == 1
+        ):
+            if values[0]["value"] == "" and values[0]["label"] == "":
+                yield "A single option with blank label is present."
+        case {"type": "select", "data": {"values": list() as values}} if (
+            len(values) == 1
+        ):
+            if values[0]["value"] == "" and values[0]["label"] == "":
+                yield "A single option with blank label is present."
+
+    match component:
         case {"type": "file", "defaultValue": list() as default_value}:
             if None in default_value:
-                return "'null' in file default value"
+                yield "'null' in file default value"
 
         case {"type": "licenseplate"}:
             if "validate" not in component:
-                return "Missing validation configuration"
+                yield "Missing validation configuration"
 
         case {"type": "columns", "columns": list() as columns}:
             for col in columns:
@@ -51,7 +76,7 @@ def check_component(component: Component) -> str | None:
                     has_problem = True
 
                 if has_problem:
-                    return "column (mobile) size is not an integer"
+                    yield "column (mobile) size is not an integer"
 
         case {
             "type": "radio",
@@ -60,7 +85,10 @@ def check_component(component: Component) -> str | None:
         } if bool(default_value):
             expected_values = [radio_value["value"] for radio_value in values]
             if default_value not in expected_values:
-                return f"Default value '{default_value}' is not valid."
+                yield f"Default value '{default_value}' is not valid."
+
+        case {"type": "radio" | "select"} if component.get("defaultValue") is None:
+            yield "'null' default value."
 
         case {
             "type": "textfield" | "textarea",
@@ -68,15 +96,15 @@ def check_component(component: Component) -> str | None:
         }:
             for translation_dict in translations.values():
                 if not isinstance(translation_dict, dict):
-                    return "invalid translations structure"
+                    yield "invalid translations structure"
                 if bool(translation_dict.get("defaultValue")):
-                    return "defaultValue has a translation"
+                    yield "defaultValue has a translation"
 
         case {"type": "map"}:
             default_value = component.get("defaultValue")
             if default_value is None:
                 # No defaultValue is a-okay
-                return None
+                return
 
             try:
                 if isinstance(
@@ -87,10 +115,91 @@ def check_component(component: Component) -> str | None:
                     # This object has a valid Geometry shape
                     return None
             except ValidationError as error:
-                return f"Default value '{default_value}' is not valid.\nError: {error.detail}"
+                yield f"Default value '{default_value}' is not valid.\nError: {error.detail}"
 
             # Any other value is automatically invalid
-            return f"Default value '{default_value}' is not valid."
+            yield f"Default value '{default_value}' is not valid."
+
+        case {"type": "time", "validate": dict() as validate}:
+            if validate.get("minTime") == "":
+                yield "validate.minTime is empty string instead of null."
+            if validate.get("maxTime") == "":
+                yield "validate.maxTime is empty string instead of null."
+
+        case {"type": "date"}:
+            validate = component.get("validate", {})
+            date_picker = component.get("datePicker", {})
+
+            min_date = validate.get("minDate")
+            if min_date == "":
+                yield "validate.minDate is empty string instead of null."
+            if min_date and "T" in min_date:
+                yield "validate.minDate is a datetime rather than date."
+
+            max_date = validate.get("maxDate")
+            if max_date == "":
+                yield "validate.maxDate is empty string instead of null."
+            if max_date and "T" in max_date:
+                yield "validate.maxDate is a datetime rather than date."
+
+            dp_min_date = date_picker.get("minDate")
+            if dp_min_date == "":
+                yield "datePicker.minDate is empty string instead of null."
+            dp_max_date = date_picker.get("maxDate")
+            if dp_max_date == "":
+                yield "datePicker.maxDate is empty string instead of null."
+
+            if date_picker["initDate"] != "":
+                yield "datePicker.initDate is not empty string."
+
+        case {"type": "datetime"}:
+            validate = component.get("validate", {})
+            date_picker = component.get("datePicker", {})
+
+            min_datetime = validate.get("minDate")
+            if min_datetime == "":
+                yield "validate.minDate is empty string instead of null."
+
+            max_datetime = validate.get("maxDate")
+            if max_datetime == "":
+                yield "validate.maxDate is empty string instead of null."
+
+            dp_min_date = date_picker.get("minDate")
+            if dp_min_date == "":
+                yield "datePicker.minDate is empty string instead of null."
+            if dp_min_date and 11 <= len(dp_min_date) <= 16:
+                yield "datePicker.minDate is not a valid RFC3339 encoded datetime."
+
+            dp_max_date = date_picker.get("maxDate")
+            if dp_max_date == "":
+                yield "datePicker.maxDate is empty string instead of null."
+            if dp_max_date and 11 <= len(dp_max_date) <= 16:
+                yield "datePicker.maxDate is not a valid RFC3339 encoded datetime."
+
+            if date_picker["initDate"] != "":
+                yield "datePicker.initDate is not empty string."
+
+        case {"type": "time"}:
+            validate = component.get("validate", {})
+            min_time = validate.get("minTime")
+            if min_time == "":
+                yield "validate.minTime is empty string instead of null."
+            max_time = validate.get("maxTime")
+            if max_time == "":
+                yield "validate.maxTime is empty string instead of null."
+
+        case {"type": "bsn" | "postcode"}:
+            if "defaultValue" in component and component["defaultValue"] is None:
+                yield "Unexpected None defaultValue."
+
+        case {"type": "checkbox" | "email" | "radio" | "select"}:
+            if "translatedErrors" in component:
+                for language_code, errors in component["translatedErrors"].items():
+                    if (keys := set(errors.keys())) != {"required"}:
+                        yield (
+                            f"Unexpected error keys {keys - {'required'}} for lang "
+                            f"{language_code}."
+                        )
 
 
 def check_component_html_usage(component: Component) -> list[str]:
@@ -122,19 +231,19 @@ def report_problems(component_types: Sequence[str], check_html_usage: bool) -> b
             if component_types and component["type"] not in component_types:
                 continue
 
-            messages = []
-            if check_component_message := check_component(component):
-                messages.append(check_component_message)
+            messages = [msg for msg in check_component(component)]
             if check_html_usage:
                 messages.extend(check_component_html_usage(component))
 
             if len(messages) == 0:
                 continue
 
+            label = component.get("label") or component["key"]
             problems.append(
                 [
                     form_definition.admin_name,
-                    component.get("label") or component["key"],
+                    form_definition.pk,
+                    Truncator(label).chars(40),
                     component["type"],
                     "\n".join(messages),
                 ]
@@ -149,7 +258,13 @@ def report_problems(component_types: Sequence[str], check_html_usage: bool) -> b
     click.echo(
         tabulate(
             problems,
-            headers=("Form definition", "Component label", "Component type", "Problem"),
+            headers=(
+                "Form definition",
+                "ID",
+                "Component label",
+                "Component type",
+                "Problem",
+            ),
         )
     )
 

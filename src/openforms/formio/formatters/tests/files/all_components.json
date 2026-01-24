@@ -40,8 +40,8 @@
                 "minWords": "",
                 "multiple": false,
                 "required": false,
-                "maxLength": "",
-                "minLength": "",
+                "maxLength": null,
+                "minLength": null,
                 "customPrivate": false,
                 "strictDateValidation": false
             },
@@ -72,7 +72,7 @@
             "inputFormat": "html",
             "placeholder": "",
             "showInEmail": false,
-            "defaultValue": null,
+            "defaultValue": "",
             "dataGridLabel": false,
             "labelPosition": "top",
             "showCharCount": false,
@@ -122,8 +122,8 @@
                 "plugins": [],
                 "multiple": false,
                 "required": false,
-                "maxLength": "",
-                "minLength": "",
+                "maxLength": null,
+                "minLength": null,
                 "customPrivate": false,
                 "strictDateValidation": false
             },
@@ -154,7 +154,7 @@
             "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": false,
-            "defaultValue": null,
+            "defaultValue": "",
             "registration": {
                 "attribute": ""
             },
@@ -206,8 +206,8 @@
                 "plugins": [],
                 "multiple": false,
                 "required": false,
-                "maxLength": "",
-                "minLength": "",
+                "maxLength": null,
+                "minLength": null,
                 "customPrivate": false,
                 "strictDateValidation": false
             },
@@ -237,7 +237,7 @@
             "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": false,
-            "defaultValue": null,
+            "defaultValue": "",
             "registration": {
                 "attribute": ""
             },
@@ -404,8 +404,8 @@
                 "plugins": [],
                 "multiple": false,
                 "required": false,
-                "maxLength": "",
-                "minLength": "",
+                "maxLength": null,
+                "minLength": null,
                 "customPrivate": false,
                 "strictDateValidation": false
             },
@@ -436,7 +436,7 @@
             "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": false,
-            "defaultValue": null,
+            "defaultValue": "",
             "registration": {
                 "attribute": ""
             },
@@ -510,7 +510,7 @@
             "customClass": "",
             "suffix": "",
             "multiple": false,
-            "defaultValue": "",
+            "defaultValue": null,
             "protected": false,
             "unique": false,
             "persistent": true,
@@ -686,8 +686,8 @@
                 "strictDateValidation": false,
                 "multiple": false,
                 "unique": false,
-                "minLength": "",
-                "maxLength": "",
+                "minLength": null,
+                "maxLength": null,
                 "pattern": ""
             },
             "conditional": {
@@ -782,8 +782,8 @@
                 "strictDateValidation": false,
                 "multiple": false,
                 "unique": false,
-                "minLength": "",
-                "maxLength": "",
+                "minLength": null,
+                "maxLength": null,
                 "pattern": ""
             },
             "conditional": {
@@ -878,8 +878,8 @@
                 "strictDateValidation": false,
                 "multiple": false,
                 "unique": false,
-                "minLength": "",
-                "maxLength": "",
+                "minLength": null,
+                "maxLength": null,
                 "pattern": ""
             },
             "conditional": {
@@ -933,8 +933,8 @@
             "redrawOn": "",
             "tabindex": "",
             "validate": {
-                "max": "",
-                "min": "",
+                "max": null,
+                "min": null,
                 "step": "any",
                 "custom": "",
                 "unique": false,
@@ -1016,8 +1016,8 @@
                 "plugins": [],
                 "multiple": false,
                 "required": false,
-                "maxLength": "",
-                "minLength": "",
+                "maxLength": null,
+                "minLength": null,
                 "customPrivate": false,
                 "strictDateValidation": false
             },
@@ -1048,7 +1048,7 @@
             "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": false,
-            "defaultValue": null,
+            "defaultValue": "",
             "registration": {
                 "attribute": ""
             },
@@ -1101,8 +1101,8 @@
                 "plugins": [],
                 "multiple": false,
                 "required": false,
-                "maxLength": "",
-                "minLength": "",
+                "maxLength": null,
+                "minLength": null,
                 "customPrivate": false,
                 "strictDateValidation": false
             },
@@ -1120,7 +1120,7 @@
             "persistent": true,
             "properties": {},
             "spellcheck": true,
-            "validateOn": "change",
+            "validateOn": "blur",
             "clearOnHide": true,
             "conditional": {
                 "eq": "",
@@ -1132,7 +1132,7 @@
             "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": false,
-            "defaultValue": null,
+            "defaultValue": "",
             "registration": {
                 "attribute": ""
             },
@@ -1181,12 +1181,12 @@
             "validate": {
                 "custom": "",
                 "unique": false,
-                "pattern": "",
+                "pattern": "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
                 "plugins": [],
                 "multiple": false,
                 "required": false,
-                "maxLength": "",
-                "minLength": "",
+                "maxLength": null,
+                "minLength": null,
                 "customMessage": "Invalid Postcode",
                 "customPrivate": false,
                 "strictDateValidation": false
@@ -1217,7 +1217,7 @@
             "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": false,
-            "defaultValue": null,
+            "defaultValue": "",
             "registration": {
                 "attribute": ""
             },
@@ -1634,8 +1634,8 @@
                 "plugins": [],
                 "multiple": false,
                 "required": false,
-                "maxLength": "",
-                "minLength": "",
+                "maxLength": null,
+                "minLength": null,
                 "customPrivate": false,
                 "strictDateValidation": false
             },
@@ -1665,7 +1665,7 @@
             "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": false,
-            "defaultValue": null,
+            "defaultValue": "",
             "registration": {
                 "attribute": ""
             },
@@ -1718,8 +1718,8 @@
                 "plugins": [],
                 "multiple": false,
                 "required": false,
-                "maxLength": "",
-                "minLength": "",
+                "maxLength": null,
+                "minLength": null,
                 "customPrivate": false,
                 "strictDateValidation": false
             },
@@ -1749,7 +1749,7 @@
             "inputFormat": "plain",
             "placeholder": "",
             "showInEmail": false,
-            "defaultValue": null,
+            "defaultValue": "",
             "registration": {
                 "attribute": ""
             },
@@ -1795,8 +1795,8 @@
                 "plugins": [],
                 "multiple": false,
                 "required": false,
-                "maxLength": "",
-                "minLength": "",
+                "maxLength": null,
+                "minLength": null,
                 "customPrivate": false,
                 "strictDateValidation": false
             },

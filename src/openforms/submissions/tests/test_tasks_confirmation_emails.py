@@ -531,6 +531,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                             "components": [
                                 {
                                     "key": "radio1",
+                                    "label": "radio1",
                                     "type": "radio",
                                     "showInEmail": True,
                                     "values": [
@@ -566,6 +567,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                                 },
                                 {
                                     "key": "select1",
+                                    "label": "select1",
                                     "type": "select",
                                     "showInEmail": True,
                                     "data": {

@@ -75,7 +75,7 @@ class PreRegistrationTaskTests(TestCase):
         )
 
         execute_component_pre_registration(
-            component=hook_component, submission_id=submission.id
+            component=hook_component, submission_id=submission.pk
         )
 
         state = submission.load_submission_value_variables_state()
@@ -100,7 +100,7 @@ class PreRegistrationTaskTests(TestCase):
         )
 
         execute_component_pre_registration(
-            component=failed_hook_component, submission_id=submission.id
+            component=failed_hook_component, submission_id=submission.pk
         )
 
         state = submission.load_submission_value_variables_state()
@@ -129,7 +129,7 @@ class PreRegistrationTaskTests(TestCase):
         component_var.save()
 
         execute_component_pre_registration(
-            component=hook_component, submission_id=submission.id
+            component=hook_component, submission_id=submission.pk
         )
 
         # Assert that the pre-registration hook isn't run, as the pre-registration status
@@ -160,7 +160,7 @@ class PreRegistrationTaskTests(TestCase):
             {"withoutHook": "foo", "withHook": "bar"},
         )
 
-        execute_component_pre_registration_group.delay(submission_id=submission.id)
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
 
         state = submission.load_submission_value_variables_state()
         no_hook_var = state.variables["withoutHook"]
@@ -196,7 +196,7 @@ class PreRegistrationTaskTests(TestCase):
             {"withoutHook": "foo", "failedHook": "bar"},
         )
 
-        execute_component_pre_registration_group.delay(submission_id=submission.id)
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
 
         state = submission.load_submission_value_variables_state()
         no_hook_var = state.variables["withoutHook"]
@@ -233,7 +233,7 @@ class PreRegistrationTaskTests(TestCase):
             {"withHook": "foo", "failedHook": "bar"},
         )
 
-        execute_component_pre_registration_group.delay(submission_id=submission.id)
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
 
         state = submission.load_submission_value_variables_state()
         hook_var = state.variables["withHook"]
@@ -269,7 +269,7 @@ class PreRegistrationTaskTests(TestCase):
             "openforms.registrations.tests.test_component_pre_registration_tasks.Hook.pre_registration_hook"
         ) as mock_hook:
             mock_hook.side_effect = ValueError("something went wrong")
-            execute_component_pre_registration_group.delay(submission_id=submission.id)
+            execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
 
         state = submission.load_submission_value_variables_state()
         hook_var = state.variables["withHook"]
@@ -281,7 +281,7 @@ class PreRegistrationTaskTests(TestCase):
         self.assertIn("traceback", hook_var.pre_registration_result)
 
         # 2nd run - success
-        execute_component_pre_registration_group.delay(submission_id=submission.id)
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
 
         hook_var.refresh_from_db()
         self.assertEqual(
@@ -308,7 +308,7 @@ class PreRegistrationTaskTests(TestCase):
         hook_var.pre_registration_status = ComponentPreRegistrationStatuses.success
         hook_var.save()
 
-        process_component_pre_registration(submission_id=submission.id)
+        process_component_pre_registration(submission_id=submission.pk)
 
         submission.refresh_from_db()
         self.assertFalse(submission.needs_on_completion_retry)
@@ -333,7 +333,7 @@ class PreRegistrationTaskTests(TestCase):
         )
         failed_hook_var.save()
 
-        process_component_pre_registration(submission_id=submission.id)
+        process_component_pre_registration(submission_id=submission.pk)
 
         submission.refresh_from_db()
         self.assertTrue(submission.needs_on_completion_retry)
@@ -367,7 +367,7 @@ class PreRegistrationTaskTests(TestCase):
         )
         failed_hook_var.save()
 
-        process_component_pre_registration(submission_id=submission.id)
+        process_component_pre_registration(submission_id=submission.pk)
 
         submission.refresh_from_db()
         self.assertTrue(submission.needs_on_completion_retry)

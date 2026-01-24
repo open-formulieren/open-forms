@@ -51,6 +51,7 @@ class SubmissionReportGenerationTests(TestCase):
                     "label": "email",
                     "type": "email",
                     "multiple": True,
+                    "defaultValue": [],
                 }
             ],
             # a multiple email field with no value entered sends a [None]
@@ -338,6 +339,7 @@ class SubmissionReportGenerationTests(TestCase):
                     "key": "textfield-multiple",
                     "label": "Textfield multiple",
                     "multiple": True,
+                    "defaultValue": [],
                 },
             ],
             submitted_data={
@@ -389,6 +391,7 @@ class SubmissionReportGenerationTests(TestCase):
                     "key": "select-multiple",
                     "label": "Select multiple",
                     "multiple": True,
+                    "defaultValue": [],
                     "openForms": {
                         "dataSrc": DataSrcOptions.manual,
                     },

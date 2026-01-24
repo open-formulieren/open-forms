@@ -1214,6 +1214,7 @@ class FormNodeTests(TestCase):
                             "type": "date",
                             "label": "Nested date",
                             "multiple": True,
+                            "defaultValue": [],
                         }
                     ],
                 },

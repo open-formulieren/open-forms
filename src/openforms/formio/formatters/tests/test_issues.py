@@ -1,5 +1,7 @@
 from django.test import TestCase
 
+from openforms.formio.typing import Component
+
 from ...service import format_value
 
 
@@ -294,7 +296,7 @@ class IssuesTestCase(TestCase):
                     "searchField": "",
                     "showInEmail": False,
                     "authenticate": False,
-                    "defaultValue": "",
+                    "defaultValue": [],
                     "registration": {"attribute": ""},
                     "selectFields": "",
                     "customOptions": {},
@@ -385,7 +387,7 @@ class IssuesTestCase(TestCase):
         unexpected non-string option value. This appears to happen when values are
         numeric and Formio keeps the number datatype instead of converting to string.
         """
-        component = {
+        component: Component = {  # pyright: ignore[reportAssignmentType]
             "allowCalculateOverride": False,
             "allowMultipleMasks": False,
             "attributes": {},

@@ -52,7 +52,13 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             [
                 {"key": "firstName", "type": "textfield"},
                 {"key": "lastName", "type": "textfield"},
-                {"key": "file", "type": "file"},
+                {
+                    "key": "file",
+                    "type": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "url": "",
+                },
             ],
             completed=True,
             submitted_data={
@@ -176,7 +182,16 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
 
     def test_multiple_file_uploads(self):
         submission = SubmissionFactory.from_components(
-            [{"key": "file", "type": "file", "multiple": True}],
+            [
+                {
+                    "key": "file",
+                    "type": "file",
+                    "multiple": True,
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "url": "",
+                }
+            ],
             completed=True,
             submitted_data={
                 "file": [
@@ -276,7 +291,16 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
 
     def test_one_file_upload_for_multiple_files_component(self):
         submission = SubmissionFactory.from_components(
-            [{"key": "file", "type": "file", "multiple": True}],
+            [
+                {
+                    "key": "file",
+                    "type": "file",
+                    "multiple": True,
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "url": "",
+                }
+            ],
             completed=True,
             submitted_data={
                 "file": [
@@ -355,7 +379,15 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
 
     def test_no_file_upload_for_single_file_component(self):
         submission = SubmissionFactory.from_components(
-            [{"key": "file", "type": "file"}],
+            [
+                {
+                    "key": "file",
+                    "type": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "url": "",
+                }
+            ],
             completed=True,
             submitted_data={
                 "file": [],
@@ -400,7 +432,16 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
 
     def test_no_file_upload_for_multiple_files_component(self):
         submission = SubmissionFactory.from_components(
-            [{"key": "file", "type": "file", "multiple": True}],
+            [
+                {
+                    "key": "file",
+                    "type": "file",
+                    "multiple": True,
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "url": "",
+                }
+            ],
             completed=True,
             submitted_data={
                 "file": [],
@@ -759,6 +800,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                         "resource": "",
                         "custom": "",
                     },
+                    "defaultValue": [],
                 },
             ],
             completed=True,
@@ -806,6 +848,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                         "resource": "",
                         "custom": "",
                     },
+                    "defaultValue": [],
                 },
             ],
             completed=True,
@@ -863,6 +906,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                         "resource": "",
                         "custom": "",
                     },
+                    "defaultValue": [],
                 },
             ],
             completed=True,
@@ -1090,6 +1134,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "key": "repeatingGroup",
                     "label": "Repeating Group",
                     "type": "editgrid",
+                    "groupLabel": "item",
                     "components": [
                         {
                             "label": "Radio",
@@ -1204,17 +1249,28 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "type": "textfield",
                     "label": "Nested text field",
                 },
-                {"key": "nested.file", "type": "file", "label": "Nested file"},
+                {
+                    "key": "nested.file",
+                    "type": "file",
+                    "label": "Nested file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "url": "",
+                },
                 {
                     "key": "editgrid",
                     "label": "Edit grid",
                     "type": "editgrid",
+                    "groupLabel": "item",
                     "components": [
                         {
                             "key": "nested.file2",
                             "label": "File upload",
                             "type": "file",
                             "multiple": False,
+                            "file": {"type": []},
+                            "filePattern": "",
+                            "url": "",
                         },
                     ],
                 },
@@ -1444,12 +1500,16 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "key": "repeatingGroup",
                     "label": "Repeating Group",
                     "type": "editgrid",
+                    "groupLabel": "item",
                     "components": [
                         {
                             "key": "fileUploadInRepeating",
                             "label": "File upload",
                             "type": "file",
                             "multiple": True,
+                            "file": {"type": []},
+                            "filePattern": "",
+                            "url": "",
                         },
                     ],
                 }
@@ -2083,13 +2143,16 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 {
                     "key": "children",
                     "type": "children",
+                    "label": "Children",
                     "enableSelection": True,
                 },
                 {
                     "key": "extraChildDetails",
                     "type": "editgrid",
+                    "label": "Extrachilddetails",
+                    "groupLabel": "child",
                     "components": [
-                        {"type": "bsn", "key": "bsn"},
+                        {"type": "bsn", "key": "bsn", "label": "BSN"},
                         {
                             "type": "textfield",
                             "key": "childName",
@@ -2439,13 +2502,20 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 {
                     "key": "children",
                     "type": "children",
+                    "label": "Children",
                     "enableSelection": False,
                 },
                 {
                     "key": "extraChildDetails",
                     "type": "editgrid",
+                    "label": "Extrachilddetails",
+                    "groupLabel": "child",
                     "components": [
-                        {"type": "bsn", "key": "bsn"},
+                        {
+                            "type": "bsn",
+                            "key": "bsn",
+                            "label": "BSN",
+                        },
                         {
                             "type": "textfield",
                             "key": "childName",
@@ -2645,8 +2715,14 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 {
                     "key": "extraChildDetails",
                     "type": "editgrid",
+                    "label": "Extrachilddetails",
+                    "groupLabel": "child",
                     "components": [
-                        {"type": "bsn", "key": "bsn"},
+                        {
+                            "type": "bsn",
+                            "key": "bsn",
+                            "label": "BSN",
+                        },
                         {
                             "type": "textfield",
                             "key": "childName",

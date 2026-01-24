@@ -73,7 +73,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
                         "url": "",
                         "useConfigFiletypes": False,
                         "filePattern": "",
-                        "file": {"allowedTypesLabels": []},
+                        "file": {"type": [], "allowedTypesLabels": []},
                         "multiple": False,
                     },
                 ]
@@ -108,7 +108,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
                         "url": "",
                         "useConfigFiletypes": False,
                         "filePattern": "",
-                        "file": {"allowedTypesLabels": []},
+                        "file": {"type": [], "allowedTypesLabels": []},
                         "multiple": True,
                     },
                 ]
@@ -226,6 +226,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
                         "key": "editgrid",
                         "type": "editgrid",
                         "label": "Editgrid",
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "type": "file",
@@ -235,7 +236,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
                                 "url": "",
                                 "useConfigFiletypes": False,
                                 "filePattern": "",
-                                "file": {"allowedTypesLabels": []},
+                                "file": {"type": [], "allowedTypesLabels": []},
                                 "multiple": False,
                             },
                             {
@@ -246,7 +247,7 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
                                 "url": "",
                                 "useConfigFiletypes": False,
                                 "filePattern": "",
-                                "file": {"allowedTypesLabels": []},
+                                "file": {"type": [], "allowedTypesLabels": []},
                                 "multiple": True,
                             },
                             {
@@ -337,7 +338,7 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
                         "url": "",
                         "useConfigFiletypes": False,
                         "filePattern": "",
-                        "file": {"allowedTypesLabels": []},
+                        "file": {"type": [], "allowedTypesLabels": []},
                         "multiple": False,
                     },
                 ]
@@ -377,7 +378,7 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
                         "url": "",
                         "useConfigFiletypes": False,
                         "filePattern": "",
-                        "file": {"allowedTypesLabels": []},
+                        "file": {"type": [], "allowedTypesLabels": []},
                         "multiple": True,
                     },
                 ]
@@ -498,6 +499,7 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
                         "key": "editgrid",
                         "type": "editgrid",
                         "label": "Editgrid",
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "type": "file",
@@ -507,7 +509,7 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
                                 "url": "",
                                 "useConfigFiletypes": False,
                                 "filePattern": "",
-                                "file": {"allowedTypesLabels": []},
+                                "file": {"type": [], "allowedTypesLabels": []},
                                 "multiple": False,
                             },
                             {
@@ -518,7 +520,7 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
                                 "url": "",
                                 "useConfigFiletypes": False,
                                 "filePattern": "",
-                                "file": {"allowedTypesLabels": []},
+                                "file": {"type": [], "allowedTypesLabels": []},
                                 "multiple": True,
                             },
                             {

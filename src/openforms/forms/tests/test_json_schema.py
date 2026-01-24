@@ -29,6 +29,7 @@ class GenerateJsonSchemaTests(TestCase):
                         "type": "textfield",
                         "multiple": True,
                         "label": "Last Name",
+                        "defaultValue": [],
                     },
                     {
                         "label": "Select",
@@ -46,10 +47,12 @@ class GenerateJsonSchemaTests(TestCase):
                         },
                         "type": "select",
                         "multiple": True,
+                        "defaultValue": [],
                     },
                     {
                         "type": "selectboxes",
                         "key": "selectboxes",
+                        "label": "Select boxes",
                         "values": [
                             {"label": "Option 1", "value": "option1"},
                             {"label": "Option 2", "value": "option2"},
@@ -78,6 +81,9 @@ class GenerateJsonSchemaTests(TestCase):
                         "type": "file",
                         "label": "File",
                         "validate": {"required": True},
+                        "file": {"type": []},
+                        "filePattern": "",
+                        "url": "",
                     },
                     {
                         "key": "notIncluded",
@@ -367,6 +373,7 @@ class GenerateJsonSchemaTests(TestCase):
                         "label": "Edit grid",
                         "key": "editgrid",
                         "type": "editgrid",
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "label": "Text field A",

@@ -300,6 +300,14 @@ class DownloadSubmissionReportTests(APITestCase):
 
             # but massage the weirder components into shape
             match component:
+                case {"type": "file"}:
+                    component.update(
+                        {
+                            "file": {"type": []},
+                            "filePattern": "",
+                            "url": "",
+                        }
+                    )
                 case {"type": "radio"}:
                     component["values"] = [
                         {

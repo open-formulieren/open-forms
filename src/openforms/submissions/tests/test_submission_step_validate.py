@@ -453,6 +453,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "postcode",
                         "key": "postcode",
+                        "label": "postcode",
                         "inputMask": "9999 AA",
                         "prefill": {
                             "plugin": "postcode",

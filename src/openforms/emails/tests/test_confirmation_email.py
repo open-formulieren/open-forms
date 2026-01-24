@@ -194,6 +194,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 "type": "file",
                 "label": "File",
                 "showInEmail": True,
+                "file": {"type": []},
+                "filePattern": "",
+                "url": "",
             }
         )
         submission = SubmissionFactory.from_components(
