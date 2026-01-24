@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.api.geojson import LineStringGeometry, PointGeometry, PolygonGeometry
 from openforms.config.tests.factories import MapTileLayerFactory
+from openforms.formio.typing import Component
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ...service import format_value
@@ -87,6 +88,7 @@ class DefaultFormatterTestCase(SimpleTestCase):
             component for component in all_components if component["key"] == "time"
         )
         time_component["multiple"] = True
+        time_component["defaultValue"] = []
 
         # The data we pass to the formatter should be native Python objects
         data = [time(16, 26), time(8, 42), time(23, 1)]
@@ -105,15 +107,17 @@ class DefaultFormatterTestCase(SimpleTestCase):
 
         self.assertEqual(formatted, "")
 
-    def run_test_cases(self, component, cases):
+    def run_test_cases(self, component: Component, cases):
         for value, expected in cases:
             with self.subTest(value=value, expected=expected):
                 actual = format_value(component, value)
                 self.assertEqual(actual, expected)
 
     def test_formatter_number(self):
-        component = {
+        component: Component = {
             "type": "number",
+            "key": "number",
+            "label": "number",
         }
         expected = [
             ("", ""),
@@ -126,8 +130,10 @@ class DefaultFormatterTestCase(SimpleTestCase):
         self.run_test_cases(component, expected)
 
     def test_formatter_checkbox(self):
-        component = {
+        component: Component = {
             "type": "checkbox",
+            "key": "checkbox",
+            "label": "checkbox",
         }
         yes, no, maybe = _("yes,no,maybe").split(",")
         expected = [
@@ -138,23 +144,12 @@ class DefaultFormatterTestCase(SimpleTestCase):
         ]
         self.run_test_cases(component, expected)
 
-    def test_formatter_currency_multiple(self):
-        component = {
-            "type": "currency",
-            "multiple": True,
-        }
-        expected = [
-            ([None], ""),
-            ([0, 1, 2], "0,00; 1,00; 2,00"),
-            ([1234.56, 1, 0], "1.234,56; 1,00; 0,00"),
-        ]
-        self.run_test_cases(component, expected)
-
     def test_signature_as_html(self):
-        component = {
+        component: Component = {
             "type": "signature",
-            "multiple": False,
             "key": "signature",
+            "label": "signature",
+            "multiple": False,
         }
         value = "data:image/png;base64,iVBO[truncated]"
 
@@ -166,10 +161,11 @@ class DefaultFormatterTestCase(SimpleTestCase):
         )
 
     def test_addressnl_missing_keys(self):
-        component = {
+        component: Component = {
             "type": "addressNL",
             "multiple": False,
             "key": "addressNL",
+            "label": "Address NL",
         }
 
         value = {"postcode": "1234AA", "houseNumber": "1"}
@@ -180,9 +176,10 @@ class DefaultFormatterTestCase(SimpleTestCase):
         )
 
     def test_addressnl_html(self):
-        component = {
+        component: Component = {
             "type": "addressNL",
             "key": "addressNL",
+            "label": "Address NL",
         }
 
         value = {

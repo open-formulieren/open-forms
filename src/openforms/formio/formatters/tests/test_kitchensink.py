@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from typing import Any
 
 from django.utils.translation import gettext as _
@@ -9,10 +10,16 @@ from openforms.submissions.tests.factories import (
 )
 
 from ...service import format_value
+from ...typing import Component
 from ...utils import iter_components
-from ..printable import filter_printable
 from .mixins import BaseFormatterTestCase
 from .utils import load_json
+
+NON_PRINTABLE_COMPONENT_TYPES = ("content", "columns", "fieldset")
+
+
+def filter_printable(components: Iterable[Component]) -> Iterable[Component]:
+    return filter(lambda c: c["type"] not in NON_PRINTABLE_COMPONENT_TYPES, components)
 
 
 def _get_printable_data(submission: Submission) -> list[tuple[str, Any]]:
@@ -76,7 +83,7 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         submission = SubmissionFactory.from_components(
             configuration["components"], submitted_data=data, completed=True
         )
-        submission_step = submission.submissionstep_set.get()
+        submission_step = submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
 
         # these must match the components
         self.assertComponentKeyExists(configuration, "file")

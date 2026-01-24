@@ -13,19 +13,6 @@
   "checkboxEmpty": false,
   "currency": 1234.56,
   "currencyDecimal": 1234.56,
-  "currencyDecimalMulti": [
-    1234.56,
-    1,
-    0
-  ],
-  "currencyMulti": [
-    1234.56,
-    1,
-    0
-  ],
-  "currencyMultiEmpty": [
-    null
-  ],
   "date": "2022-02-14",
   "dateEmpty": "",
   "dateMulti": [
@@ -170,22 +157,6 @@
   },
   "number": 1234,
   "numberDecimal": 1234.56,
-  "numberDecimalMulti": [
-    1234.56,
-    100,
-    12.3,
-    1,
-    0
-  ],
-  "numberMulti": [
-    123123123,
-    123,
-    1,
-    0
-  ],
-  "numberMultiEmpty": [
-    null
-  ],
   "phoneNumber": "0123456789",
   "phoneNumberEmpty": "",
   "phoneNumberMulti": [
