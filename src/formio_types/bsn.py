@@ -20,6 +20,7 @@ type BSNExtensions = BaseOpenFormsExtensions[Literal["label", "description", "to
 
 class BSNValidate(FormioStruct):
     required: bool = False
+    plugins: Sequence[str] = []
 
 
 class BSN(Component, tag="bsn"):

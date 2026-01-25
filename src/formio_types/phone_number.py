@@ -22,6 +22,9 @@ type PhoneNumberExtensions = BaseOpenFormsExtensions[
 class PhoneNumberValidate(FormioStruct):
     required: bool = False
     pattern: str = ""
+    plugins: Sequence[str] = []
+    # not in the TS type defs!
+    max_length: int | None = None
 
 
 class PhoneNumber(Component, tag="phoneNumber"):

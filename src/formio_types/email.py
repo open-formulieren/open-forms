@@ -25,6 +25,8 @@ class EmailExtensions(
 
 class EmailValidate(FormioStruct):
     required: bool = False
+    max_length: int | None = None
+    plugins: Sequence[str] = []
 
 
 class Email(Component, tag="email"):

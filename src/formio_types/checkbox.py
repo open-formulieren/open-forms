@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Literal
 
 from ._base import (
@@ -22,6 +23,7 @@ type CheckboxExtensions = BaseOpenFormsExtensions[
 
 class CheckboxValidate(FormioStruct):
     required: bool = False
+    plugins: Sequence[str] = []
 
 
 class Checkbox(Component, tag="checkbox"):

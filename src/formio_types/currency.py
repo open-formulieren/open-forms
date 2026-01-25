@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Annotated, Literal
 
 from msgspec import Meta
@@ -24,6 +25,7 @@ class CurrencyValidate(FormioStruct):
     required: bool = False
     min: float | None = None
     max: float | None = None
+    plugins: Sequence[str] = []
 
 
 class Currency(Component, tag="currency"):
