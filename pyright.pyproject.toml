@@ -59,6 +59,7 @@ include = [
     "src/openforms/prefill/",
     # Registrations
     "src/openforms/registrations/tasks.py",
+    "src/openforms/registrations/tests/test_component_pre_registration_tasks.py",
     "src/openforms/registrations/contrib/demo/",
     "src/openforms/registrations/contrib/email/",
     "src/openforms/registrations/contrib/generic_json/",
@@ -100,7 +101,6 @@ exclude = [
     "src/openforms/contrib/customer_interactions/tests/",
     "src/openforms/contrib/objects_api/tests/",
     "src/openforms/contrib/objects_api/json_schema.py",
-    "src/openforms/formio/formatters/tests/",
     "src/openforms/payments/management/commands/checkpaymentemaildupes.py",
     "src/openforms/payments/tests/",
     "src/openforms/payments/contrib/demo/tests/",
