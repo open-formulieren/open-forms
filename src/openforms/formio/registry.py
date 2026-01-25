@@ -30,6 +30,8 @@ from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.request import Request
 
+from formio_types import TYPE_TO_TAG, AnyComponent
+from openforms.formio.formatters.formio import DefaultFormatter
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
 from openforms.typing import JSONObject, JSONValue, VariableValue
@@ -42,19 +44,20 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 ComponentT = TypeVar("ComponentT", bound=Component, contravariant=True)
+NewComponentT = TypeVar("NewComponentT", bound=AnyComponent)
 
 
 class ComponentPreRegistrationResult(TypedDict):
     data: NotRequired[JSONValue]
 
 
-class FormatterProtocol(Protocol[ComponentT]):
+class FormatterProtocol[ComponentT: AnyComponent](Protocol):
     def __init__(self, as_html: bool): ...
 
     def __call__(self, component: ComponentT, value: Any) -> str: ...
 
 
-class NormalizerProtocol(Protocol[ComponentT]):
+class NormalizerProtocol[ComponentT: AnyComponent](Protocol):
     def __call__(self, component: ComponentT, value: Any) -> Any: ...
 
 
@@ -68,19 +71,19 @@ class PreRegistrationHookProtocol(Protocol[ComponentT]):
     ) -> ComponentPreRegistrationResult: ...
 
 
-class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
+class BasePlugin(Generic[ComponentT, NewComponentT], AbstractBasePlugin):
     """
     Base class for Formio component plugins.
     """
 
-    formatter: type[FormatterProtocol[ComponentT]]
+    formatter: type[FormatterProtocol[NewComponentT]]
     """
     Specify the callable to use for formatting.
 
     Formatter (class) implementation, used by
     :meth:`openforms.formio.registry.ComponentRegistry.format`.
     """
-    normalizer: NormalizerProtocol[ComponentT] | None = None
+    normalizer: NormalizerProtocol[NewComponentT] | None = None
     """
     Specify the normalizer callable to use for value normalization.
     """
@@ -136,7 +139,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         return serializers.JSONField(required=required, allow_null=True)
 
     @staticmethod
-    def as_json_schema(component: ComponentT) -> JSONObject:
+    def as_json_schema(component: NewComponentT) -> JSONObject:
         """Return JSON schema for this formio component plugin. This routine should be
         implemented in the child class
         """
@@ -186,18 +189,19 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
 class ComponentRegistry(BaseRegistry[BasePlugin]):
     module = "formio_components"
 
-    def normalize(self, component: Component, value: Any) -> Any:
+    def normalize(self, component: AnyComponent, value: Any) -> Any:
         """
         Given a value from any source, normalize it according to the component rules.
         """
-        if (component_type := component["type"]) not in self:
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
             return value
         normalizer = self[component_type].normalizer
         if normalizer is None:
             return value
         return normalizer(component, value)
 
-    def format(self, component: Component, value: Any, as_html=False) -> str:
+    def format(self, component: AnyComponent, value: Any, as_html=False) -> str:
         """
         Format a given value in the appropriate way for the specified component.
 
@@ -205,11 +209,12 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         for the given component type, as it makes the best sense for that component
         type.
         """
-        if (component_type := component["type"]) not in self:
-            component_type = "default"
-
-        component_plugin = self[component_type]
-        formatter = component_plugin.formatter(as_html=as_html)
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
+            formatter = DefaultFormatter(as_html=as_html)
+        else:
+            component_plugin = self[component_type]
+            formatter = component_plugin.formatter(as_html=as_html)
         return formatter(component, value)
 
     def test_conditional(

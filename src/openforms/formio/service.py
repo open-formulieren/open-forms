@@ -11,11 +11,23 @@ apps/packages:
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any
+import itertools
+from collections.abc import Iterator, Sequence
+from typing import TYPE_CHECKING, Any, Protocol
 
 import elasticapm
+import msgspec
+import structlog
 
+from formio_types import (
+    TYPE_TO_TAG,
+    AnyComponent,
+    Columns,
+    Content,
+    Fieldset,
+    SoftRequiredErrors,
+)
+from formio_types.datetime import FormioDateTime
 from openforms.typing import JSONObject
 
 from .datastructures import FormioConfigurationWrapper, FormioData
@@ -27,12 +39,7 @@ from .dynamic_config import (
 )
 from .registry import ComponentRegistry, register
 from .serializers import build_serializer as _build_serializer
-from .typing import (
-    Column,
-    ColumnsComponent,
-    Component,
-    FieldsetComponent,
-)
+from .typing import Component
 from .utils import (
     get_component_empty_value,
     iter_components,
@@ -44,6 +51,8 @@ from .visibility import process_visibility
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
+
+logger = structlog.stdlib.get_logger()
 
 __all__ = [
     "get_dynamic_configuration",
@@ -64,11 +73,39 @@ __all__ = [
 ]
 
 
+def _fixup_component_properties(type_: type, obj: Any):
+    if type_ is FormioDateTime:
+        return FormioDateTime.fromstr(obj)
+    return obj
+
+
+def _convert_legacy_component(component: Component) -> AnyComponent:
+    try:
+        _component: AnyComponent = msgspec.convert(
+            component,
+            type=AnyComponent,
+            dec_hook=_fixup_component_properties,
+        )
+    except msgspec.ValidationError as exc:
+        logger.exception(
+            "component_conversion_failure",
+            type=component.get("type", "unknown"),
+            key=component.get("key", "unknown"),
+            exc_info=exc,
+        )
+        raise
+    return _component
+
+
 def format_value(component: Component, value: Any, *, as_html: bool = False):
     """
     Format a submitted value in a way that is most appropriate for the component type.
     """
-    return register.format(component, value, as_html=as_html)
+    try:
+        _component = _convert_legacy_component(component)
+    except msgspec.ValidationError:
+        return value
+    return register.format(_component, value, as_html=as_html)
 
 
 def normalize_value_for_component(component: Component, value: Any) -> Any:
@@ -76,7 +113,11 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
     Given a value (actual or default value) and the component, apply the component-
     specific normalization.
     """
-    return register.normalize(component, value)
+    try:
+        _component = _convert_legacy_component(component)
+    except msgspec.ValidationError:
+        return value
+    return register.normalize(_component, value)
 
 
 @elasticapm.capture_span(span_type="app.formio")
@@ -129,8 +170,9 @@ def build_serializer(
 
 
 def as_json_schema(
-    component: Component, _register: ComponentRegistry | None = None
-) -> JSONObject | list[JSONObject] | None:
+    component: Component | AnyComponent,
+    _register: ComponentRegistry | None = None,
+) -> JSONObject | Sequence[JSONObject] | None:
     """Return a JSON schema of a component.
 
     A description will be added if it is available.
@@ -148,45 +190,49 @@ def as_json_schema(
     :returns: None for content and softRequiredErrors components, list of JSON objects
       for columns and fieldsets, and a JSON object otherwise.
     """
-    from typing import cast  # noqa: TID251
-
     registry = _register or register
+    if isinstance(component, dict):
+        _component = _convert_legacy_component(component)
+    else:
+        _component = component
 
-    match component["type"]:
-        case "content" | "softRequiredErrors":
+    match _component:
+        case Content() | SoftRequiredErrors():
             return None
-        case "columns":
-            component = cast(ColumnsComponent, component)
-            schemas = []
-            for column in component["columns"]:
-                _add_child_schemas_to_schema_list(column, schemas)
-            return schemas
-        case "fieldset":
-            component = cast(FieldsetComponent, component)
-            schemas = []
-            _add_child_schemas_to_schema_list(component, schemas)
-            return schemas
+        case Columns():
+            return [
+                *itertools.chain.from_iterable(
+                    _iter_child_schemas(column) for column in _component.columns
+                )
+            ]
+        case Fieldset():
+            return [*_iter_child_schemas(_component)]
         case _:
-            component_plugin = registry[component["type"]]
-            schema = component_plugin.as_json_schema(component)
-            if description := component.get("description"):
+            component_type = TYPE_TO_TAG[type(_component)]
+            component_plugin = registry[component_type]
+            schema = component_plugin.as_json_schema(_component)
+            if description := getattr(_component, "description", ""):
                 schema["description"] = description
             return schema
 
 
-def _add_child_schemas_to_schema_list(
-    nested_component_with_children: FieldsetComponent | Column,
-    schema_list: list[JSONObject],
-):
-    """Generate and add the children's schemas to the passed schema list."""
-    for child in nested_component_with_children.get("components", []):
+class ParentComponent(Protocol):
+    components: Sequence[AnyComponent]
+
+
+def _iter_child_schemas(parent: ParentComponent) -> Iterator[JSONObject]:
+    """
+    Generate the children's schemas.
+    """
+    for child in parent.components:
         child_schema = as_json_schema(child)
-        if child_schema is None:
-            # None for content and softRequiredErrors components
-            continue
-        if isinstance(child_schema, list):
+        match child_schema:
+            # Layout components produce no schema at all
+            case None:
+                continue
             # Columns and fieldset components return a list of children
-            schema_list.extend(child_schema)
-        else:
-            # Other components get added to the list as a dict with their key
-            schema_list.append({child["key"]: child_schema})
+            case Sequence():
+                yield from child_schema
+            case _:
+                # Other components get added to the list as a dict with their key
+                yield {child.key: child_schema}

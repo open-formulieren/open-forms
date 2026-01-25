@@ -28,12 +28,33 @@ from rest_framework.reverse import reverse
 from rest_framework.utils.formatting import lazy_format
 
 from csp_post_processor import post_process_html
+from formio_types import (
+    AnyComponent,
+    Checkbox,
+    Columns,
+    Content,
+    Currency,
+    EditGrid,
+    Email,
+    Fieldset,
+    File,
+    Number,
+    PhoneNumber,
+    Radio,
+    Select,
+    Selectboxes,
+    Signature,
+    SoftRequiredErrors,
+    Textarea,
+    TextField,
+    Time,
+)
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.form_logic import process_visibility
 from openforms.submissions.models import EmailVerification
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, VariableValue
 from openforms.utils.json_schema import to_multiple
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
@@ -84,7 +105,7 @@ logger = structlog.stdlib.get_logger(__name__)
 
 
 @register("default")
-class Default(BasePlugin):
+class DefaultPlugin(BasePlugin[Component, AnyComponent]):
     """
     Fallback for unregistered component types, implementing default behaviour.
     """
@@ -93,11 +114,11 @@ class Default(BasePlugin):
 
 
 @register("textfield")
-class TextField(BasePlugin[TextFieldComponent]):
+class TextFieldPlugin(BasePlugin[TextFieldComponent, TextField]):
     formatter = TextFieldFormatter
 
     @staticmethod
-    def normalizer(component: Component, value: str) -> str:
+    def normalizer(component: TextField, value: str | float) -> str:
         if isinstance(value, int | float):
             return str(value)
         return value
@@ -143,18 +164,15 @@ class TextField(BasePlugin[TextFieldComponent]):
         return serializers.ListField(child=base) if multiple else base
 
     @staticmethod
-    def as_json_schema(component: TextFieldComponent) -> JSONObject:
-        label = component.get("label", "Text")
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
+    def as_json_schema(component: TextField) -> JSONObject:
+        base: JSONObject = {"title": component.label, "type": "string"}
+        if validate := component.validate:
+            if pattern := validate.pattern:
+                base["pattern"] = pattern
+            if max_length := validate.max_length:
+                base["maxLength"] = max_length
 
-        base = {"title": label, "type": "string"}
-        if pattern := validate.get("pattern"):
-            base["pattern"] = pattern
-        if validate.get("maxLength"):
-            base["maxLength"] = validate["maxLength"]
-
-        return to_multiple(base) if multiple else base
+        return to_multiple(base) if component.multiple else base
 
 
 class EmailVerificationValidator:
@@ -179,7 +197,7 @@ class EmailVerificationValidator:
 
 
 @register("email")
-class Email(BasePlugin):
+class EmailPlugin(BasePlugin[Component, Email]):
     formatter = EmailFormatter
 
     def build_serializer_field(
@@ -217,12 +235,13 @@ class Email(BasePlugin):
         return serializers.ListField(child=base) if multiple else base
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Email")
-        multiple = component.get("multiple", False)
-
-        base = {"title": label, "type": "string", "format": "email"}
-        return to_multiple(base) if multiple else base
+    def as_json_schema(component: Email) -> JSONObject:
+        base: JSONObject = {
+            "title": component.label,
+            "type": "string",
+            "format": "email",
+        }
+        return to_multiple(base) if component.multiple else base
 
 
 class FormioTimeField(serializers.TimeField):
@@ -264,7 +283,7 @@ class TimeBetweenValidator:
 
 
 @register("time")
-class Time(BasePlugin[Component]):
+class TimePlugin(BasePlugin[Component, Time]):
     formatter = TimeFormatter
 
     def build_serializer_field(
@@ -309,16 +328,17 @@ class Time(BasePlugin[Component]):
         return serializers.ListField(child=base) if multiple else base
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Time")
-        multiple = component.get("multiple", False)
-
-        base = {"title": label, "type": "string", "format": "time"}
-        return to_multiple(base) if multiple else base
+    def as_json_schema(component: Time) -> JSONObject:
+        base: JSONObject = {
+            "title": component.label,
+            "type": "string",
+            "format": "time",
+        }
+        return to_multiple(base) if component.multiple else base
 
 
 @register("phoneNumber")
-class PhoneNumber(BasePlugin):
+class PhoneNumberPlugin(BasePlugin[Component, PhoneNumber]):
     formatter = PhoneNumberFormatter
 
     def build_serializer_field(
@@ -364,17 +384,17 @@ class PhoneNumber(BasePlugin):
         return serializers.ListField(child=base) if multiple else base
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Phone number")
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
+    def as_json_schema(component: PhoneNumber) -> JSONObject:
+        pattern: str = r"^\+?[\d\s]+$"
+        if (validate := component.validate) and validate.pattern:
+            pattern = validate.pattern
 
-        base = {
-            "title": label,
+        base: JSONObject = {
+            "title": component.label,
             "type": "string",
-            "pattern": validate.get("pattern", r"^\+?[\d\s]+$"),
+            "pattern": pattern,
         }
-        return to_multiple(base) if multiple else base
+        return to_multiple(base) if component.multiple else base
 
 
 class FileDataSerializer(serializers.Serializer):
@@ -455,7 +475,7 @@ class FileSerializer(serializers.Serializer):
 
 
 @register("file")
-class File(BasePlugin[FileComponent]):
+class FilePlugin(BasePlugin[FileComponent, File]):
     formatter = FileFormatter
 
     @staticmethod
@@ -497,12 +517,10 @@ class File(BasePlugin[FileComponent]):
         )
 
     @staticmethod
-    def as_json_schema(component: FileComponent) -> JSONObject:
-        label = component.get("label", "File")
-
+    def as_json_schema(component: File) -> JSONObject:
         # fmt: off
-        base = {
-            "title": label,
+        base: JSONObject = {
+            "title": component.label,
             "type": "array",
             "items": {
                 "type": "object",
@@ -534,7 +552,7 @@ class File(BasePlugin[FileComponent]):
 
 
 @register("textarea")
-class TextArea(BasePlugin[Component]):
+class TextAreaPlugin(BasePlugin[Component, Textarea]):
     formatter = TextAreaFormatter
 
     def build_serializer_field(
@@ -560,22 +578,18 @@ class TextArea(BasePlugin[Component]):
         return serializers.ListField(child=base) if multiple else base
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Text area")
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-
-        base = {"title": label, "type": "string"}
-        if pattern := validate.get("pattern"):
-            base["pattern"] = pattern
-        if validate.get("maxLength"):
-            base["maxLength"] = validate["maxLength"]
-
-        return to_multiple(base) if multiple else base
+    def as_json_schema(component: Textarea) -> JSONObject:
+        base: JSONObject = {"title": component.label, "type": "string"}
+        if validate := component.validate:
+            if pattern := validate.pattern:
+                base["pattern"] = pattern
+            if max_length := validate.max_length:
+                base["maxLength"] = max_length
+        return to_multiple(base) if component.multiple else base
 
 
 @register("number")
-class Number(BasePlugin):
+class NumberPlugin(BasePlugin[Component, Number]):
     formatter = NumberFormatter
 
     def build_serializer_field(
@@ -605,18 +619,14 @@ class Number(BasePlugin):
         return serializers.ListField(child=base) if multiple else base
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Number")
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-
-        base = {"title": label, "type": "number"}
-        if min_value := validate.get("min"):
-            base["minimum"] = min_value
-        if max_value := validate.get("max"):
-            base["maximum"] = max_value
-
-        return to_multiple(base) if multiple else base
+    def as_json_schema(component: Number) -> JSONObject:
+        base: JSONObject = {"title": component.label, "type": "number"}
+        if validate := component.validate:
+            if min_value := validate.min:
+                base["minimum"] = min_value
+            if max_value := validate.max:
+                base["maximum"] = max_value
+        return base
 
 
 def validate_required_checkbox(value: bool) -> None:
@@ -630,7 +640,7 @@ def validate_required_checkbox(value: bool) -> None:
 
 
 @register("checkbox")
-class Checkbox(BasePlugin[Component]):
+class CheckboxPlugin(BasePlugin[Component, Checkbox]):
     formatter = CheckboxFormatter
 
     def build_serializer_field(self, component: Component) -> serializers.BooleanField:
@@ -652,10 +662,8 @@ class Checkbox(BasePlugin[Component]):
         return serializers.BooleanField(**extra)
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Checkbox")
-
-        base = {"title": label, "type": "boolean"}
+    def as_json_schema(component: Checkbox) -> JSONObject:
+        base: JSONObject = {"title": component.label, "type": "boolean"}
         return base
 
 
@@ -701,7 +709,7 @@ class SelectboxesField(serializers.Serializer):
 
 
 @register("selectboxes")
-class SelectBoxes(BasePlugin[SelectBoxesComponent]):
+class SelectBoxesPlugin(BasePlugin[SelectBoxesComponent, Selectboxes]):
     formatter = SelectBoxesFormatter
 
     def mutate_config_dynamically(
@@ -737,17 +745,16 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
         return serializer
 
     @staticmethod
-    def as_json_schema(component: SelectBoxesComponent) -> JSONObject:
-        label = component.get("label", "Select boxes")
-        values = component["values"]
+    def as_json_schema(component: Selectboxes) -> JSONObject:
+        values = component.values
 
-        base = {"title": label, "type": "object"}
+        base: JSONObject = {"title": component.label, "type": "object"}
         # Note: the 'values' will be a list with a single empty option if the data
         # source is another variable or reference lists, AND the configuration was not
         # updated before generating the schema.
-        if not (len(values) == 1 and values[0]["label"] == ""):
-            properties = {
-                options["value"]: {"type": "boolean"} for options in component["values"]
+        if values and not (len(values) == 1 and values[0].label == ""):
+            properties: JSONObject = {
+                option.value: {"type": "boolean"} for option in values
             }
             base.update(
                 {
@@ -763,7 +770,9 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
 
     @staticmethod
     def test_conditional(
-        component: SelectComponent, value: dict[str, str], compare_value: str
+        component: SelectBoxesComponent,
+        value: VariableValue,
+        compare_value: VariableValue,
     ) -> bool:
         # Selectboxes need some special attention as we need to check whether the
         # value corresponding to the key ``compare_value`` is set to ``True`` in the
@@ -771,11 +780,15 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
         # NOTE: the previous implementation defaulted to the direct comparison, but
         # this is not useful for selectboxes components, because a user can only set
         # a single compare value, not an object.
-        return value.get(compare_value, False)
+        assert isinstance(value, dict)
+        assert isinstance(compare_value, str)
+        result = value.get(compare_value, False)
+        assert isinstance(result, bool)
+        return result
 
 
 @register("select")
-class Select(BasePlugin[SelectComponent]):
+class SelectPlugin(BasePlugin[SelectComponent, Select]):
     formatter = SelectFormatter
 
     def mutate_config_dynamically(
@@ -823,29 +836,26 @@ class Select(BasePlugin[SelectComponent]):
         )
 
     @staticmethod
-    def as_json_schema(component: SelectComponent) -> JSONObject:
-        multiple = component.get("multiple", False)
-        label = component.get("label", "Select")
-        values = component["data"]["values"]
+    def as_json_schema(component: Select) -> JSONObject:
+        values = component.data.values
 
-        base = {"type": "string"}
+        base: JSONObject = {"type": "string"}
         # Note: the 'values' will be a list with a single empty option if the data
         # source is another variable or reference lists, AND the configuration was not
         # updated before generating the schema.
-        if not (len(values) == 1 and values[0]["label"] == ""):
-            choices = [options["value"] for options in component["data"]["values"]]
-            choices.append("")  # Take into account an unfilled field
-            base["enum"] = choices
+        if values and not (len(values) == 1 and values[0].label == ""):
+            # Take into account an unfilled field
+            base["enum"] = [option.value for option in values] + [""]
 
-        if multiple:
+        if component.multiple:
             base = {"type": "array", "items": base}
-        base["title"] = label
 
+        base["title"] = component.label
         return base
 
 
 @register("currency")
-class Currency(BasePlugin[Component]):
+class CurrencyPlugin(BasePlugin[Component, Currency]):
     formatter = CurrencyFormatter
 
     def build_serializer_field(self, component: Component) -> serializers.FloatField:
@@ -870,20 +880,18 @@ class Currency(BasePlugin[Component]):
         )
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Currency")
-        validate = component.get("validate", {})
-
-        base = {"title": label, "type": "number"}
-        if min_value := validate.get("min"):
-            base["minimum"] = min_value
-        if max_value := validate.get("max"):
-            base["maximum"] = max_value
+    def as_json_schema(component: Currency) -> JSONObject:
+        base: JSONObject = {"title": component.label, "type": "number"}
+        if validate := component.validate:
+            if min_value := validate.min:
+                base["minimum"] = min_value
+            if max_value := validate.max:
+                base["maximum"] = max_value
         return base
 
 
 @register("radio")
-class Radio(BasePlugin[RadioComponent]):
+class RadioPlugin(BasePlugin[RadioComponent, Radio]):
     formatter = RadioFormatter
 
     def mutate_config_dynamically(
@@ -917,24 +925,24 @@ class Radio(BasePlugin[RadioComponent]):
         )
 
     @staticmethod
-    def as_json_schema(component: RadioComponent) -> JSONObject:
-        label = component.get("label", "Radio")
-        values = component["values"]
+    def as_json_schema(component: Radio) -> JSONObject:
+        values = component.values
 
-        base = {"title": label, "type": "string"}
+        base: JSONObject = {"title": component.label, "type": "string"}
         # Note: the 'values' will be a list with a single empty option if the data
         # source is another variable or reference lists, AND the configuration was not
         # updated before generating the schema.
-        if not (len(values) == 1 and values[0]["label"] == ""):
-            choices = [options["value"] for options in component["values"]]
-            choices.append("")  # Take into account an unfilled field
-            base["enum"] = choices
+        # FIXME: this single empty option should not be present with the builder - fixup
+        # the data/configuration that violates this assumption.
+        if values and not (len(values) == 1 and values[0].label == ""):
+            # Take into account an unfilled field
+            base["enum"] = [option.value for option in values] + [""]
 
         return base
 
 
 @register("signature")
-class Signature(BasePlugin[Component]):
+class SignaturePlugin(BasePlugin[Component, Signature]):
     formatter = SignatureFormatter
 
     def build_serializer_field(self, component: Component) -> serializers.CharField:
@@ -943,15 +951,17 @@ class Signature(BasePlugin[Component]):
         return serializers.CharField(required=required, allow_blank=not required)
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Signature")
-        base = {"title": label, "type": "string", "format": "base64"}
-
+    def as_json_schema(component: Signature) -> JSONObject:
+        base: JSONObject = {
+            "title": component.label,
+            "type": "string",
+            "format": "base64",
+        }
         return base
 
 
 @register("content")
-class Content(BasePlugin):
+class ContentPlugin(BasePlugin[ContentComponent, Content]):
     """
     Formio's WYSIWYG component.
     """
@@ -972,11 +982,6 @@ class Content(BasePlugin):
            security risk.
         """
         component["html"] = post_process_html(component["html"], request)
-
-    @staticmethod
-    def as_json_schema(component: ContentComponent) -> JSONObject:
-        # Not relevant as content components don't have values
-        raise NotImplementedError()
 
 
 class EditGridField(serializers.Field):
@@ -1076,7 +1081,7 @@ class EditGridField(serializers.Field):
 
 
 @register("editgrid")
-class EditGrid(BasePlugin[EditGridComponent]):
+class EditGridPlugin(BasePlugin[EditGridComponent, EditGrid]):
     def build_serializer_field(self, component: EditGridComponent) -> EditGridField:
         validate = component.get("validate", {})
         required = validate.get("required", False)
@@ -1094,27 +1099,23 @@ class EditGrid(BasePlugin[EditGridComponent]):
         )
 
     @staticmethod
-    def as_json_schema(component: EditGridComponent) -> JSONObject:
-        label = component.get("label", "Edit grid")
-        validate = component.get("validate", {})
-
+    def as_json_schema(component: EditGrid) -> JSONObject:
         # Build the edit grid object properties by iterating over the child components
         properties = {}
-        for child in component["components"]:
+        for child in component.components:
             schema = as_json_schema(child)
-
-            match child["type"]:
-                case "content" | "softRequiredErrors":
+            match child:
+                case Content() | SoftRequiredErrors():
                     continue
-                case "fieldset" | "columns":
+                case Fieldset() | Columns():
                     assert isinstance(schema, list)
                     for child_schema in schema:
                         properties.update(child_schema)
                 case _:
-                    properties[child["key"]] = schema
+                    properties[child.key] = schema
 
-        base = {
-            "title": label,
+        base: JSONObject = {
+            "title": component.label,
             "type": "array",
             "items": {
                 "type": "object",
@@ -1123,8 +1124,10 @@ class EditGrid(BasePlugin[EditGridComponent]):
                 "additionalProperties": False,
             },
         }
-        if max_length := validate.get("maxLength"):
-            base["maxItems"] = max_length
+
+        if validate := component.validate:
+            if max_length := validate.max_length:
+                base["maxItems"] = max_length
 
         return base
 
@@ -1182,7 +1185,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
 
 
 @register("columns")
-class Columns(BasePlugin[ColumnsComponent]):
+class ColumnsPlugin(BasePlugin[ColumnsComponent, Columns]):
     @staticmethod
     def apply_visibility(
         component: ColumnsComponent,
@@ -1213,7 +1216,7 @@ class Columns(BasePlugin[ColumnsComponent]):
 
 
 @register("fieldset")
-class Fieldset(BasePlugin[FieldsetComponent]):
+class FieldsetPlugin(BasePlugin[FieldsetComponent, Fieldset]):
     @staticmethod
     def apply_visibility(
         component: FieldsetComponent,
