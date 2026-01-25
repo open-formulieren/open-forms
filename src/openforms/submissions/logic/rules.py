@@ -205,7 +205,7 @@ def _handle_clear_on_hide_for_untriggered_rule(
         # cleared before, we need to restore the original input data, so we must always
         # call this (see #6005).
         process_visibility(
-            {"components": [component]},
+            [component],
             data,
             configuration,
             data_for_visible_state=data_for_visible_state,

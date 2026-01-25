@@ -83,6 +83,7 @@ def evaluate_form_logic(
 
     """
     # grab the configuration that will be mutated
+    assert step.form_step is not None
     config_wrapper = step.form_step.form_definition.configuration_wrapper
     # 1. we have `submission` and `step` available and ...
     # 2. the prefilled variables are already recorded in the variables state
@@ -236,7 +237,11 @@ def evaluate_conditional_logic(
             raise RuntimeError("Potential infinite loop stopped!")
         _loop_count += 1
         processed_data = deepcopy(data)
-        process_visibility(configuration, data, wrapper)
+        process_visibility(
+            configuration["components"],
+            data,
+            wrapper,
+        )
 
 
 def check_submission_logic(

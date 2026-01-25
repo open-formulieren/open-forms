@@ -3,19 +3,20 @@ from __future__ import annotations
 import copy
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from django.conf import settings
 
+from formio_types import TYPE_TO_TAG, AnyComponent, Columns
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 
-from ..datastructures import FormioData
+from ..datastructures import FormioConfig, FormioData
 from ..service import format_value, get_component_empty_value, holds_submission_data
-from ..typing import Component
 from ..utils import iter_components
 from ..visibility import is_hidden
+from .constants import RenderConfigurationOptions
 
 if TYPE_CHECKING:
     from openforms.submissions.rendering import Renderer
@@ -32,24 +33,28 @@ class RenderConfiguration:
     landed), then fall back using the ``default``.
     """
 
-    key: str | None
+    key: RenderConfigurationOptions | None
     default: bool
 
 
 @dataclass
-class ComponentNode(Node):
-    component: Component
+class ComponentNode[ComponentT: AnyComponent](Node):
+    component: ComponentT
     step_data: FormioData
     depth: int = 0
     is_layout = False
     path: str = ""  # Path in the data (#TODO rename to data_path?)
     json_renderer_path: str = ""  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
     parent_node: Node | None = None
+    layout_modifier: ClassVar[str] = ""
+    """
+    For HTML based rendering, potentially emit a layout modifier.
+    """
 
     @staticmethod
     def build_node(
         step_data: FormioData,
-        component: Component,
+        component: ComponentT,
         renderer: Renderer,
         path: str = "",  # Path in the data
         json_renderer_path: str = "",
@@ -61,8 +66,8 @@ class ComponentNode(Node):
         """
         from .registry import register
 
-        assert "type" in component
-        node_cls = register[component["type"]]
+        component_type = TYPE_TO_TAG[type(component)]
+        node_cls = register[component_type]
         nested_node = node_cls(
             step_data=step_data,
             component=component,
@@ -116,8 +121,7 @@ class ComponentNode(Node):
         if self.mode in visible_modes:
             return True
 
-        formio_config_wrapper = self.renderer.submission.total_configuration_wrapper
-
+        formio_config = self.renderer.submission.formio_config
         # explicitly hidden components never show up. Note that this property can be set
         # by logic rules or by frontend logic!
         # We only pass the step data, since frontend logic only has access to the
@@ -136,14 +140,10 @@ class ComponentNode(Node):
                 artificial_repeating_group_data,
                 # we can pass the root config wrapper because all editgrid item component
                 # keys are already exposed in the config wrapper with their prefixed paths
-                configuration=formio_config_wrapper,
+                configuration=formio_config,
             ):
                 return False
-        elif is_hidden(
-            self.component,
-            self.step_data,
-            configuration=formio_config_wrapper,
-        ):
+        elif is_hidden(self.component, self.step_data, configuration=formio_config):
             return False
 
         render_configuration = RENDER_CONFIGURATION[self.mode]
@@ -154,25 +154,27 @@ class ComponentNode(Node):
 
         # if there is a property key, try to read it but fall back to the system default
         # if it's absent.
-        should_render = self.component.get(
-            render_configuration.key, render_configuration.default
+        attr = render_configuration.key.value
+        assert attr in ("show_in_summary", "show_in_pdf", "show_in_email")
+        should_render: bool = getattr(
+            self.component,
+            attr,
+            render_configuration.default,
         )
         return should_render
 
     @property
     def key(self):
-        assert "key" in self.component
-        return self.component["key"]
+        return self.component.key
 
     @property
     def label(self) -> str:
         """
         Obtain the (human-readable) label for the Formio component.
         """
-        assert "key" in self.component
         if self.mode == RenderModes.export:
-            return self.component["key"]
-        return self.component.get("label") or self.component["key"]
+            return self.component.key
+        return getattr(self.component, "label", "") or self.component.key
 
     @property
     def value(self) -> Any:
@@ -244,19 +246,15 @@ class ComponentNode(Node):
         """
         return False
 
-    @property
-    def layout_modifier(self) -> str:
-        """
-        For HTML based rendering, potentially emit a layout modifier.
-        """
-        return "root" if self.component.get("_is_root", False) else ""
-
     def apply_to_labels(self, f: Callable[[str], str]) -> None:
         """
         Apply a function f to all labels.
         """
-        if "label" in self.component:
-            self.component["label"] = f(self.component["label"])
+        match self.component:
+            case Columns():
+                pass
+            case _:
+                self.component.label = f(self.component.label)
 
     @property
     def display_value(self) -> str | Any:
@@ -291,11 +289,13 @@ class FormioNode(Node):
 
     def get_children(self) -> Iterator[ComponentNode]:
         assert self.step.form_step  # nosec: intended use of B101
-        configuration = self.step.form_step.form_definition.configuration
+        formio_config = self.step.form_step.form_definition.formio_config
+        assert isinstance(formio_config, FormioConfig)
 
         state = self.step.submission.variables_state
         data = state.get_data(include_unsaved=False, submission_step=self.step)
-        for component in iter_components(configuration, recursive=False):
+        for _node in formio_config.tree.children:
+            component: AnyComponent = _node.data
             child_node = ComponentNode.build_node(
                 step_data=data,
                 component=component,

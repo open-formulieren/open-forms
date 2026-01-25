@@ -1,19 +1,20 @@
 import json
+from typing import assert_never
 
 from django.template.defaultfilters import escape_filter as escape
 from django.utils.translation import gettext as _
 
-from glom import assign, glom
 from json_logic import jsonLogic
 
+from formio_types import Option, Radio, Select, Selectboxes
 from openforms.api.exceptions import ServiceUnavailable
 from openforms.formio.constants import DataSrcOptions
+from openforms.formio.service import dump_to_legacy
 from openforms.logging import audit_logger
 from openforms.submissions.models import Submission
 from openforms.typing import JSONValue
 
 from ..datastructures import FormioData
-from ..typing import Component
 from .reference_lists import fetch_options_from_reference_lists
 
 
@@ -31,7 +32,8 @@ def is_or_contains_none(option: JSONValue) -> bool:
 
 
 def escape_option(option: tuple[JSONValue, JSONValue]) -> tuple[str, str]:
-    return (escape(str(option[0])), escape(str(option[1])))
+    # convert to regular string instead of SafeString
+    return (escape(str(option[0]))[:], escape(str(option[1]))[:])
 
 
 def deduplicate_options(
@@ -45,14 +47,18 @@ def deduplicate_options(
 
 
 def get_options_from_variable(
-    component: Component, data: FormioData, submission: Submission
+    component: Radio | Select | Selectboxes, data: FormioData, submission: Submission
 ) -> list[tuple[str, str]] | None:
-    items_expression = glom(component, "openForms.itemsExpression")
+    assert component.open_forms is not None
+    items_expression = component.open_forms.items_expression
     items_array = jsonLogic(items_expression, data.data, use_var_undefined=True)  # pyright: ignore[reportArgumentType]
     if not items_array:
         return
 
-    audit_log = audit_logger.bind(form_id=submission.form.pk, component=component)
+    audit_log = audit_logger.bind(
+        form_id=submission.form.pk,
+        component=dump_to_legacy(component),
+    )
     if not isinstance(items_array, list):
         audit_log.warning(
             "form_configuration_error",
@@ -101,12 +107,14 @@ def get_options_from_variable(
 
 
 def add_options_to_config(
-    component: Component,
+    component: Radio | Select | Selectboxes,
     data: FormioData,
     submission: Submission,
-    options_path: str = "values",
 ) -> None:
-    data_src = glom(component, "openForms.dataSrc", default=None)
+    # normalize to enum so we still have type-checker help for match exhaustiveness
+    data_src = DataSrcOptions(
+        component.open_forms.data_src if component.open_forms else "manual"
+    )
     match data_src:
         case DataSrcOptions.reference_lists:
             items_array = fetch_options_from_reference_lists(component, submission)
@@ -118,15 +126,20 @@ def add_options_to_config(
             items_array = get_options_from_variable(component, data, submission)
             if items_array is None:
                 return
-        case _:
+        case DataSrcOptions.manual:
             return
+        case _:  # pragma: no cover
+            assert_never(data_src)
 
-    assign(
-        component,
-        options_path,
-        [
-            {"label": escaped_label, "value": escaped_key}
-            for escaped_key, escaped_label in items_array
-        ],
-        missing=dict,
-    )
+    options = [
+        Option(value=escaped_key, label=escaped_label)
+        for escaped_key, escaped_label in items_array
+    ]
+    # assing to the right property
+    match component:
+        case Radio() | Selectboxes():
+            component.values = options
+        case Select():
+            component.data.values = options
+        case _:  # pragma: no cover
+            assert_never(component)

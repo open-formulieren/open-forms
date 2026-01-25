@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
-from typing import Any, Literal, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, NotRequired, TypedDict
 
 from django.conf import settings
 from django.urls import reverse
@@ -12,27 +12,51 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from furl import furl
 
+from formio_types import (
+    TYPE_TO_TAG,
+    AnyComponent,
+    Children,
+    Columns,
+    Content,
+    EditGrid,
+    Fieldset,
+    File,
+    Partners,
+    Radio,
+    Select,
+    Selectboxes,
+    SoftRequiredErrors,
+)
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.formio.typing import Component
+from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.submissions.rendering.renderer import Renderer
+from openforms.typing import StrOrPromise
 from openforms.utils.urls import build_absolute_uri
 
 from ..datastructures import FormioData
-from ..utils import iter_components
 from ..visibility import is_hidden
 from .conf import RENDER_CONFIGURATION
 from .nodes import ComponentNode
 from .registry import register
 
+if TYPE_CHECKING:
+    ContainerBase = Node
+else:
+    ContainerBase = type("ContainerBase", (), {})
 
-class ContainerMixin:
+
+class ContainerMixin[ComponentT: Fieldset | Columns | EditGrid](ContainerBase):
     is_layout = True
 
     renderer: Renderer
     step_data: FormioData
-    component: Component
-    mode: RenderModes
+    component: ComponentT
+
+    if TYPE_CHECKING:
+
+        def get_children(self) -> Iterator[ComponentNode[AnyComponent]]: ...
 
     @property
     def is_visible(self) -> bool:
@@ -50,14 +74,15 @@ class ContainerMixin:
         if is_hidden(
             self.component,
             self.step_data,
-            configuration=self.renderer.submission.total_configuration_wrapper,
+            configuration=self.renderer.submission.formio_config,
         ):
             return False
 
         render_configuration = RENDER_CONFIGURATION[self.mode]
         if render_configuration.key is not None:
-            _type = self.component.get("type", "unknown")
-            assert render_configuration.key not in self.component, (
+            _type = TYPE_TO_TAG[type(self.component)]
+            attr = render_configuration.key.value
+            assert not hasattr(self.component, attr), (
                 f"Component type {_type} unexpectedly seems to support "
                 f"the {render_configuration.key} property!"
             )
@@ -68,33 +93,35 @@ class ContainerMixin:
 
         return True
 
+    @property
+    def display_value(self) -> str:
+        return ""
+
 
 @register("selectboxes")
 @register("radio")
-class ChoicesNode(ComponentNode):
+class ChoicesNode(ComponentNode[Selectboxes | Radio]):
     def apply_to_labels(self, f: Callable[[str], str]) -> None:
         super().apply_to_labels(f)
-        for choice in self.component["values"]:
-            choice["label"] = f(choice["label"])
+        for choice in self.component.values:
+            choice.label = f(choice.label)
 
 
 @register("select")
-class SelectNode(ComponentNode):
+class SelectNode(ComponentNode[Select]):
     def apply_to_labels(self, f: Callable[[str], str]) -> None:
         super().apply_to_labels(f)
-        for choice in self.component["data"]["values"]:
-            choice["label"] = f(choice["label"])
+        for choice in self.component.data.values:
+            choice.label = f(choice.label)
 
 
 @register("fieldset")
-class FieldSetNode(ContainerMixin, ComponentNode):
-    layout_modifier: str = "fieldset"
-    display_value: str = ""
+class FieldSetNode(ContainerMixin[Fieldset], ComponentNode[Fieldset]):
+    layout_modifier: ClassVar[str] = "fieldset"
 
     @property
     def label(self) -> str:
-        header_hidden = self.component.get("hideHeader", False)
-        if header_hidden:
+        if self.component.hide_header:
             return ""
         return super().label
 
@@ -103,11 +130,18 @@ class FieldSetNode(ContainerMixin, ComponentNode):
 
 
 @register("columns")
-class ColumnsNode(ContainerMixin, ComponentNode):
-    layout_modifier: str = "columns"
-    label: str = ""  # 1451 -> never output a label
-    value: None = None  # columns never have a value
-    display_value: str = ""
+class ColumnsNode(ContainerMixin[Columns], ComponentNode[Columns]):
+    layout_modifier: ClassVar[str] = "columns"
+
+    @property
+    def label(self) -> str:
+        # 1451 -> never output a label
+        return ""
+
+    @property
+    def value(self) -> None:
+        # columns never have a value
+        return None
 
     def get_children(self) -> Iterator[ComponentNode]:
         """
@@ -130,8 +164,8 @@ class ColumnsNode(ContainerMixin, ComponentNode):
                 ],
             }
         """
-        for index, column in enumerate(self.component["columns"]):
-            for component in iter_components(configuration=column, recursive=False):
+        for index, column in enumerate(self.component.columns):
+            for component in column.components:
                 yield ComponentNode.build_node(
                     step_data=self.step_data,
                     component=component,
@@ -147,8 +181,8 @@ class ColumnsNode(ContainerMixin, ComponentNode):
 
 
 @register("content")
-class WYSIWYGNode(ComponentNode):
-    layout_modifier: str = "full-width"
+class WYSIWYGNode(ComponentNode[Content]):
+    layout_modifier: ClassVar[str] = "full-width"
 
     @property
     def spans_full_width(self) -> bool:
@@ -169,7 +203,7 @@ class WYSIWYGNode(ComponentNode):
 
     @property
     def value(self) -> str | SafeString:
-        content = self.component["html"]
+        content = self.component.html
         if self.as_html:
             return mark_safe(content)
 
@@ -178,7 +212,7 @@ class WYSIWYGNode(ComponentNode):
 
 
 @register("file")
-class FileNode(ComponentNode):
+class FileNode(ComponentNode[File]):
     @property
     def display_value(self) -> str:
         if self.mode != RenderModes.registration:
@@ -219,9 +253,8 @@ class FileNode(ComponentNode):
 
 
 @register("editgrid")
-class EditGridNode(ContainerMixin, ComponentNode):
-    layout_modifier: str = "editgrid"
-    display_value: str = ""
+class EditGridNode(ContainerMixin[EditGrid], ComponentNode[EditGrid]):
+    layout_modifier: ClassVar[str] = "editgrid"
 
     @property
     def is_layout(self) -> bool:
@@ -297,14 +330,13 @@ class EditGridNode(ContainerMixin, ComponentNode):
 
 
 @dataclass
-class EditGridGroupNode(ContainerMixin, ComponentNode):
+class EditGridGroupNode(ContainerMixin[EditGrid], ComponentNode[EditGrid]):
     group_index: int = 0
-    layout_modifier: str = "editgrid-group"
-    display_value: str = ""
-    default_label: str = _("Item")
+    layout_modifier: ClassVar[str] = "editgrid-group"
+    default_label: StrOrPromise = _("Item")
 
     def get_children(self) -> Iterator[ComponentNode]:
-        for component in iter_components(configuration=self.component, recursive=False):
+        for component in self.component.components:
             yield ComponentNode.build_node(
                 step_data=self.step_data,
                 component=component,
@@ -316,11 +348,11 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
             )
 
     def __post_init__(self):
-        self._base_label = self.component.get("groupLabel", self.default_label)
+        self._base_label = self.component.group_label or self.default_label
 
     def apply_to_labels(self, f: Callable[[str], str]) -> None:
         super().apply_to_labels(f)
-        self._base_label = f(self._base_label)
+        self._base_label = f(str(self._base_label))
 
     @property
     def label(self) -> str:
@@ -341,7 +373,7 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
 
 
 @register("softRequiredErrors")
-class SoftRequiredErrors(ComponentNode):
+class SoftRequiredErrorsNode(ComponentNode[SoftRequiredErrors]):
     @property
     def is_visible(self) -> bool:
         """
@@ -364,8 +396,8 @@ class PartnerValue(TypedDict):
 
 
 @register("partners")
-class PartnersNode(ComponentNode):
-    layout_modifier: str = "editgrid"  # apply similar styling to edit grid
+class PartnersNode(ComponentNode[Partners]):
+    layout_modifier: ClassVar[str] = "editgrid"  # apply similar styling to edit grid
 
     @property
     def display_value(self) -> str | list[PartnerValue]:
@@ -399,9 +431,11 @@ class PartnersNode(ComponentNode):
 
 
 @dataclass
-class PartnersGroupNode(ComponentNode):
+class PartnersGroupNode(ComponentNode[Partners]):
     group_index: int = 0
-    layout_modifier: str = "editgrid-group"  # apply similar styling to edit grid
+    layout_modifier: ClassVar[str] = (
+        "editgrid-group"  # apply similar styling to edit grid
+    )
 
     @property
     def value(self) -> Any:
@@ -411,12 +445,7 @@ class PartnersGroupNode(ComponentNode):
 
     def __post_init__(self):
         # XXX: groupLabel is currently not (yet) an option in the formio-builder/types.
-        # This mimicks the interface of edit grid.
-        self._base_label = self.component.get("groupLabel") or _("Partner")
-
-    def apply_to_labels(self, f: Callable[[str], str]) -> None:
-        super().apply_to_labels(f)
-        self._base_label = f(self._base_label)
+        self._base_label = _("Partner")
 
     @property
     def label(self) -> str:
@@ -474,8 +503,8 @@ class ChildValue(TypedDict):
 
 
 @register("children")
-class ChildrenNode(ComponentNode):
-    layout_modifier: str = "editgrid"  # apply similar styling to edit grid
+class ChildrenNode(ComponentNode[Children]):
+    layout_modifier: ClassVar[str] = "editgrid"  # apply similar styling to edit grid
 
     @property
     def value(self) -> Any:
@@ -483,7 +512,7 @@ class ChildrenNode(ComponentNode):
         if value is None:
             return None
         assert isinstance(value, list)
-        selection_enabled = bool(self.component.get("enableSelection"))
+        selection_enabled = self.component.enable_selection
         selected_children = (
             child for child in value if (not selection_enabled or child.get("selected"))
         )
@@ -529,10 +558,12 @@ class ChildrenNode(ComponentNode):
 
 
 @dataclass
-class ChildrenGroupNode(ComponentNode):
+class ChildrenGroupNode(ComponentNode[Children]):
     group_index: int = 0
     label_index: int = 0
-    layout_modifier: str = "editgrid-group"  # apply similar styling to edit grid
+    layout_modifier: ClassVar[str] = (
+        "editgrid-group"  # apply similar styling to edit grid
+    )
 
     @property
     def value(self) -> Any:
@@ -542,12 +573,7 @@ class ChildrenGroupNode(ComponentNode):
 
     def __post_init__(self):
         # XXX: groupLabel is currently not (yet) an option in the formio-builder/types.
-        # This mimicks the interface of edit grid.
-        self._base_label = self.component.get("groupLabel") or _("Child")
-
-    def apply_to_labels(self, f: Callable[[str], str]) -> None:
-        super().apply_to_labels(f)
-        self._base_label = f(self._base_label)
+        self._base_label = _("Child")
 
     @property
     def label(self) -> str:

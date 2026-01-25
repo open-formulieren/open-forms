@@ -4,6 +4,7 @@ from django.test import SimpleTestCase, tag
 
 from rest_framework import serializers
 
+from formio_types import TextField
 from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject, JSONValue
@@ -546,9 +547,7 @@ class EditGridFieldTests(SimpleTestCase):
         self.assertEqual(error.code, "empty")
 
     def test_min_length(self):
-        editgrid_components = [
-            {"type": "textfield", "key": "textfield", "label": "Text field"}
-        ]
+        editgrid_components = [TextField(key="textfield", label="Text field")]
 
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
@@ -582,9 +581,7 @@ class EditGridFieldTests(SimpleTestCase):
         self.assertEqual(error.code, "min_length")
 
     def test_max_length(self):
-        editgrid_components = [
-            {"type": "textfield", "key": "textfield", "label": "Text field"}
-        ]
+        editgrid_components = [TextField(key="textfield", label="Text field")]
 
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
@@ -618,7 +615,7 @@ class EditGridFieldTests(SimpleTestCase):
         self.assertEqual(error.code, "max_length")
 
     def test_to_representation(self):
-        editgrid_components = [{"type": "textfield", "key": "bar", "label": "Bar"}]
+        editgrid_components = [TextField(key="bar", label="Bar")]
 
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(

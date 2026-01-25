@@ -9,6 +9,7 @@ from freezegun import freeze_time
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.formio.tests.assertions import FormioMixin
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.utils.date import TIMEZONE_AMS, get_today
 from openforms.utils.tests.cache import clear_caches
@@ -32,7 +33,7 @@ def _scrub_access_token(response):
 
 
 @override_settings(LANGUAGE_CODE="en")
-class PluginTests(OFVCRMixin, TestCase):
+class PluginTests(FormioMixin, OFVCRMixin, TestCase):
     """
     Test the JCC Rest API appointments plugin
 
@@ -64,6 +65,8 @@ class PluginTests(OFVCRMixin, TestCase):
        will be in the future, so changes to the tests might be needed.
     """
 
+    maxDiff = None
+
     RECORDING_DATETIME: str = "2026-03-26T09:34:56+02:00"
 
     def setUp(self):
@@ -75,6 +78,8 @@ class PluginTests(OFVCRMixin, TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        JccRestConfig.clear_cache()
+
         super().setUpTestData()
 
         cls.plugin = JccRestPlugin("jcc")
@@ -328,70 +333,111 @@ class PluginTests(OFVCRMixin, TestCase):
             name="Geboorteaangifte",
         )
 
-        required_fields = self.plugin.get_required_customer_fields([product1, product2])
+        components, groups = self.plugin.get_required_customer_fields(
+            [product1, product2]
+        )
 
-        self.assertEqual(
-            required_fields,
-            (
-                [
+        self.assertIsNone(groups)
+
+        expected = [
+            {
+                "type": "textfield",
+                "key": "lastName",
+                "label": "Last name",
+                "autocomplete": "family-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "radio",
+                "key": "gender",
+                "label": "Gender",
+                "validate": {"required": False},
+                "values": [
                     {
-                        "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"maxLength": 128, "required": True},
+                        "value": "1",
+                        "label": "Male",
+                        "openForms": None,
+                        "description": "",
                     },
                     {
-                        "type": "radio",
-                        "key": "gender",
-                        "label": "Gender",
-                        "validate": {"required": False},
-                        "values": [
-                            {"value": 1, "label": "Male"},
-                            {"value": 2, "label": "Female"},
-                            {"value": 0, "label": "Other"},
-                        ],
+                        "value": "2",
+                        "label": "Female",
+                        "openForms": None,
+                        "description": "",
                     },
                     {
-                        "type": "textfield",
-                        "key": "firstName",
-                        "label": "First name",
-                        "autocomplete": "first-name",
-                        "validate": {"maxLength": 128, "required": False},
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "lastNamePrefix",
-                        "label": "Last name prefix",
-                        "autocomplete": "family-name-prefix",
-                        "validate": {"maxLength": 128, "required": False},
-                    },
-                    {
-                        "type": "date",
-                        "key": "birthDate",
-                        "label": "Date of birth",
-                        "autocomplete": "date-of-birth",
-                        "validate": {"required": False},
-                        "openForms": {"widget": "inputGroup"},
-                    },
-                    {
-                        "type": "email",
-                        "key": "emailAddress",
-                        "label": "Email address",
-                        "autocomplete": "email-address",
-                        "validate": {"maxLength": 254, "required": False},
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "socialSecurityNumber",
-                        "label": "Social security number",
-                        "autocomplete": "social-security-number",
-                        "validate": {"maxLength": 16, "required": True},
+                        "value": "0",
+                        "label": "Other",
+                        "openForms": None,
+                        "description": "",
                     },
                 ],
-                None,
-            ),
-        )
+            },
+            {
+                "type": "textfield",
+                "key": "firstName",
+                "label": "First name",
+                "autocomplete": "first-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": False,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "textfield",
+                "key": "lastNamePrefix",
+                "label": "Last name prefix",
+                "autocomplete": "family-name-prefix",
+                "validate": {
+                    "maxLength": 128,
+                    "required": False,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "date",
+                "key": "birthDate",
+                "label": "Date of birth",
+                "autocomplete": "date-of-birth",
+                "validate": {"required": False, "maxDate": None, "minDate": None},
+                "openForms": {
+                    "widget": "inputGroup",
+                    "maxDate": None,
+                    "minDate": None,
+                    "translations": None,
+                },
+            },
+            {
+                "type": "email",
+                "key": "emailAddress",
+                "label": "Email address",
+                "autocomplete": "email-address",
+                "validate": {"maxLength": 254, "required": False, "plugins": []},
+            },
+            {
+                "type": "textfield",
+                "key": "socialSecurityNumber",
+                "label": "Social security number",
+                "autocomplete": "social-security-number",
+                "validate": {
+                    "maxLength": 16,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+        ]
+        for index, expected_component in enumerate(expected):
+            with self.subTest(index=index, field=expected_component["key"]):
+                self.assertComponentProperties(components[index], expected_component)
 
     @patch(
         "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
@@ -428,36 +474,11 @@ class PluginTests(OFVCRMixin, TestCase):
             name="Bouwvergunning aanvraag",
         )
 
-        required_fields = self.plugin.get_required_customer_fields([product1])
+        components, groups = self.plugin.get_required_customer_fields([product1])
 
-        self.assertEqual(
-            required_fields,
-            (
-                [
-                    {
-                        "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "firstName",
-                        "label": "First name",
-                        "autocomplete": "first-name",
-                        "validate": {"maxLength": 128, "required": False},
-                        "description": "At least one of the following fields must be filled in: First name, Initials",
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "initials",
-                        "label": "Initials",
-                        "autocomplete": "initials",
-                        "validate": {"maxLength": 128, "required": False},
-                        "description": "At least one of the following fields must be filled in: First name, Initials",
-                    },
-                ],
+        with self.subTest("groups"):
+            self.assertEqual(
+                groups,
                 [
                     {
                         "type": "require_one_of",
@@ -465,8 +486,51 @@ class PluginTests(OFVCRMixin, TestCase):
                         "error_message": "At least one of the following fields is required: First name, Initials.",
                     }
                 ],
-            ),
-        )
+            )
+
+        expected = [
+            {
+                "type": "textfield",
+                "key": "lastName",
+                "label": "Last name",
+                "autocomplete": "family-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "textfield",
+                "key": "firstName",
+                "label": "First name",
+                "autocomplete": "first-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": False,
+                    "pattern": "",
+                    "plugins": [],
+                },
+                "description": "At least one of the following fields must be filled in: First name, Initials",
+            },
+            {
+                "type": "textfield",
+                "key": "initials",
+                "label": "Initials",
+                "autocomplete": "initials",
+                "validate": {
+                    "maxLength": 128,
+                    "required": False,
+                    "pattern": "",
+                    "plugins": [],
+                },
+                "description": "At least one of the following fields must be filled in: First name, Initials",
+            },
+        ]
+        for index, expected_component in enumerate(expected):
+            with self.subTest(index=index, field=expected_component["key"]):
+                self.assertComponentProperties(components[index], expected_component)
 
     @patch(
         "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
@@ -505,30 +569,39 @@ class PluginTests(OFVCRMixin, TestCase):
             name="Bouwvergunning aanvraag",
         )
 
-        required_fields = self.plugin.get_required_customer_fields([product1])
+        components, groups = self.plugin.get_required_customer_fields([product1])
 
-        self.assertEqual(
-            required_fields,
-            (
-                [
-                    {
-                        "type": "textfield",
-                        "key": "firstName",
-                        "label": "First name",
-                        "autocomplete": "first-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                ],
-                None,
-            ),
-        )
+        self.assertIsNone(groups)
+
+        expected = [
+            {
+                "type": "textfield",
+                "key": "firstName",
+                "label": "First name",
+                "autocomplete": "first-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "textfield",
+                "key": "lastName",
+                "label": "Last name",
+                "autocomplete": "family-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+        ]
+        for index, expected_component in enumerate(expected):
+            with self.subTest(index=index, field=expected_component["key"]):
+                self.assertComponentProperties(components[index], expected_component)
 
     @patch(
         "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
@@ -567,37 +640,51 @@ class PluginTests(OFVCRMixin, TestCase):
             name="Bouwvergunning aanvraag",
         )
 
-        required_fields = self.plugin.get_required_customer_fields([product1])
+        components, groups = self.plugin.get_required_customer_fields([product1])
 
-        self.assertEqual(
-            required_fields,
-            (
-                [
-                    {
-                        "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "firstName",
-                        "label": "First name",
-                        "autocomplete": "first-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "initials",
-                        "label": "Initials",
-                        "autocomplete": "initials",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                ],
-                None,
-            ),
-        )
+        self.assertIsNone(groups)
+
+        expected = [
+            {
+                "type": "textfield",
+                "key": "lastName",
+                "label": "Last name",
+                "autocomplete": "family-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "textfield",
+                "key": "firstName",
+                "label": "First name",
+                "autocomplete": "first-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "textfield",
+                "key": "initials",
+                "label": "Initials",
+                "autocomplete": "initials",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+        ]
+        for index, expected_component in enumerate(expected):
+            with self.subTest(index=index, field=expected_component["key"]):
+                self.assertComponentProperties(components[index], expected_component)
 
     @patch(
         "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
@@ -635,30 +722,39 @@ class PluginTests(OFVCRMixin, TestCase):
             name="Bouwvergunning aanvraag",
         )
 
-        required_fields = self.plugin.get_required_customer_fields([product1])
+        components, groups = self.plugin.get_required_customer_fields([product1])
 
-        self.assertEqual(
-            required_fields,
-            (
-                [
-                    {
-                        "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "initials",
-                        "label": "Initials",
-                        "autocomplete": "initials",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                ],
-                None,
-            ),
-        )
+        self.assertIsNone(groups)
+
+        expected = [
+            {
+                "type": "textfield",
+                "key": "lastName",
+                "label": "Last name",
+                "autocomplete": "family-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "textfield",
+                "key": "initials",
+                "label": "Initials",
+                "autocomplete": "initials",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+        ]
+        for index, expected_component in enumerate(expected):
+            with self.subTest(index=index, field=expected_component["key"]):
+                self.assertComponentProperties(components[index], expected_component)
 
     @patch(
         "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
@@ -694,36 +790,11 @@ class PluginTests(OFVCRMixin, TestCase):
             name="Bouwvergunning aanvraag",
         )
 
-        required_fields = self.plugin.get_required_customer_fields([product1])
+        components, groups = self.plugin.get_required_customer_fields([product1])
 
-        self.assertEqual(
-            required_fields,
-            (
-                [
-                    {
-                        "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                    {
-                        "type": "phoneNumber",
-                        "key": "mobilePhoneNumber",
-                        "label": "Mobile phone number",
-                        "autocomplete": "mobile-phone-number",
-                        "validate": {"maxLength": 16, "required": False},
-                        "description": "At least one of the following fields must be filled in: Phone number, Mobile phone number",
-                    },
-                    {
-                        "type": "phoneNumber",
-                        "key": "phoneNumber",
-                        "label": "Phone number",
-                        "autocomplete": "phone-number",
-                        "validate": {"required": False},
-                        "description": "At least one of the following fields must be filled in: Phone number, Mobile phone number",
-                    },
-                ],
+        with self.subTest("groups"):
+            self.assertEqual(
+                groups,
                 [
                     {
                         "type": "require_one_of",
@@ -731,8 +802,51 @@ class PluginTests(OFVCRMixin, TestCase):
                         "error_message": "At least one of the following fields is required: Phone number, Mobile phone number.",
                     }
                 ],
-            ),
-        )
+            )
+
+        expected = [
+            {
+                "type": "textfield",
+                "key": "lastName",
+                "label": "Last name",
+                "autocomplete": "family-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "phoneNumber",
+                "key": "mobilePhoneNumber",
+                "label": "Mobile phone number",
+                "autocomplete": "mobile-phone-number",
+                "validate": {
+                    "maxLength": 16,
+                    "required": False,
+                    "pattern": "",
+                    "plugins": [],
+                },
+                "description": "At least one of the following fields must be filled in: Phone number, Mobile phone number",
+            },
+            {
+                "type": "phoneNumber",
+                "key": "phoneNumber",
+                "label": "Phone number",
+                "autocomplete": "phone-number",
+                "validate": {
+                    "maxLength": None,
+                    "required": False,
+                    "pattern": "",
+                    "plugins": [],
+                },
+                "description": "At least one of the following fields must be filled in: Phone number, Mobile phone number",
+            },
+        ]
+        for index, expected_component in enumerate(expected):
+            with self.subTest(index=index, field=expected_component["key"]):
+                self.assertComponentProperties(components[index], expected_component)
 
     @patch(
         "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
@@ -771,37 +885,51 @@ class PluginTests(OFVCRMixin, TestCase):
             name="Bouwvergunning aanvraag",
         )
 
-        required_fields = self.plugin.get_required_customer_fields([product1])
+        components, groups = self.plugin.get_required_customer_fields([product1])
 
-        self.assertEqual(
-            required_fields,
-            (
-                [
-                    {
-                        "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                    {
-                        "type": "phoneNumber",
-                        "key": "mobilePhoneNumber",
-                        "label": "Mobile phone number",
-                        "autocomplete": "mobile-phone-number",
-                        "validate": {"maxLength": 16, "required": True},
-                    },
-                    {
-                        "type": "phoneNumber",
-                        "key": "phoneNumber",
-                        "label": "Phone number",
-                        "autocomplete": "phone-number",
-                        "validate": {"required": True},
-                    },
-                ],
-                None,
-            ),
-        )
+        self.assertIsNone(groups)
+
+        expected = [
+            {
+                "type": "textfield",
+                "key": "lastName",
+                "label": "Last name",
+                "autocomplete": "family-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "phoneNumber",
+                "key": "mobilePhoneNumber",
+                "label": "Mobile phone number",
+                "autocomplete": "mobile-phone-number",
+                "validate": {
+                    "maxLength": 16,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "phoneNumber",
+                "key": "phoneNumber",
+                "label": "Phone number",
+                "autocomplete": "phone-number",
+                "validate": {
+                    "maxLength": None,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+        ]
+        for index, expected_component in enumerate(expected):
+            with self.subTest(index=index, field=expected_component["key"]):
+                self.assertComponentProperties(components[index], expected_component)
 
     @patch(
         "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
@@ -840,30 +968,39 @@ class PluginTests(OFVCRMixin, TestCase):
             name="Bouwvergunning aanvraag",
         )
 
-        required_fields = self.plugin.get_required_customer_fields([product1])
+        components, groups = self.plugin.get_required_customer_fields([product1])
 
-        self.assertEqual(
-            required_fields,
-            (
-                [
-                    {
-                        "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                    {
-                        "type": "phoneNumber",
-                        "key": "phoneNumber",
-                        "label": "Phone number",
-                        "autocomplete": "phone-number",
-                        "validate": {"required": True},
-                    },
-                ],
-                None,
-            ),
-        )
+        self.assertIsNone(groups)
+
+        expected = [
+            {
+                "type": "textfield",
+                "key": "lastName",
+                "label": "Last name",
+                "autocomplete": "family-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "phoneNumber",
+                "key": "phoneNumber",
+                "label": "Phone number",
+                "autocomplete": "phone-number",
+                "validate": {
+                    "maxLength": None,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+        ]
+        for index, expected_component in enumerate(expected):
+            with self.subTest(index=index, field=expected_component["key"]):
+                self.assertComponentProperties(components[index], expected_component)
 
     @patch(
         "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
@@ -901,30 +1038,39 @@ class PluginTests(OFVCRMixin, TestCase):
             name="Bouwvergunning aanvraag",
         )
 
-        required_fields = self.plugin.get_required_customer_fields([product1])
+        components, groups = self.plugin.get_required_customer_fields([product1])
 
-        self.assertEqual(
-            required_fields,
-            (
-                [
-                    {
-                        "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
-                    {
-                        "type": "phoneNumber",
-                        "key": "mobilePhoneNumber",
-                        "label": "Mobile phone number",
-                        "autocomplete": "mobile-phone-number",
-                        "validate": {"maxLength": 16, "required": True},
-                    },
-                ],
-                None,
-            ),
-        )
+        self.assertIsNone(groups)
+
+        expected = [
+            {
+                "type": "textfield",
+                "key": "lastName",
+                "label": "Last name",
+                "autocomplete": "family-name",
+                "validate": {
+                    "maxLength": 128,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+            {
+                "type": "phoneNumber",
+                "key": "mobilePhoneNumber",
+                "label": "Mobile phone number",
+                "autocomplete": "mobile-phone-number",
+                "validate": {
+                    "maxLength": 16,
+                    "required": True,
+                    "pattern": "",
+                    "plugins": [],
+                },
+            },
+        ]
+        for index, expected_component in enumerate(expected):
+            with self.subTest(index=index, field=expected_component["key"]):
+                self.assertComponentProperties(components[index], expected_component)
 
     @freeze_time(RECORDING_DATETIME)
     def test_create_retrieve_and_cancel_appointment_flow(self):
@@ -1153,6 +1299,12 @@ class PluginTests(OFVCRMixin, TestCase):
 
 
 class FailedConfigCheckTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.addClassCleanup(JccRestConfig.clear_cache)
+
     def test_check_config_no_service_configured(self):
         plugin = JccRestPlugin("jcc")
 

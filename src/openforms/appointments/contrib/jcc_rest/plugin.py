@@ -406,7 +406,7 @@ class JccRestPlugin(BasePlugin):
         current_language = get_language()
         config_wrapper = FormioConfigurationWrapper({"components": components})
         get_translated_custom_error_messages(config_wrapper, current_language)
-        localize_components(config_wrapper, current_language)
+        localize_components(config_wrapper, current_language)  # pyright: ignore[reportArgumentType]
 
         return components, required_group_fields or None
 
@@ -427,6 +427,10 @@ class JccRestPlugin(BasePlugin):
                 start_at.date(), activities
             )
 
+            client_details = client.details
+            if (gender_value := client_details.get(CustomerFields.gender)) is not None:
+                client_details[CustomerFields.gender] = int(gender_value)
+
             appointment_data: AppointmentData = {
                 "id": None,  # id (as null) is required by JCC even for a new appointment
                 "activityList": [
@@ -436,8 +440,8 @@ class JccRestPlugin(BasePlugin):
                     # We send a default to 0 (other) gender because it's a required field in JCC
                     # (0=other, 1=male, 2=female)
                     {
-                        "gender": GenderType.other.value,
-                        **client.details,
+                        "gender": int(GenderType.other.value),
+                        **client_details,
                         "id": None,
                         "isMainCustomer": True,
                     },

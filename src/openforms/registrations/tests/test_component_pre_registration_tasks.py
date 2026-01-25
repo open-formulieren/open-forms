@@ -2,6 +2,9 @@ from unittest.mock import patch
 
 from django.test import TestCase, override_settings
 
+import msgspec
+
+from formio_types import Email, Number, TextField
 from openforms.formio.registry import (
     BasePlugin,
     ComponentPreRegistrationResult,
@@ -19,47 +22,39 @@ from ..tasks import (
     process_component_pre_registration,
 )
 
+# Wire up a different registry with the real formio types.
 
-class NoHookComponent(Component): ...
-
-
-class HookComponent(Component): ...
+register = ComponentRegistry()
 
 
-class FailHookComponent(Component): ...
-
-
-class NoHook(BasePlugin[NoHookComponent]):
+@register("textfield")
+class NoHook(BasePlugin[TextField]):
     def build_serializer_field(self, component):
         raise NotImplementedError()
 
 
-class Hook(BasePlugin[HookComponent]):
+@register("email")
+class Hook(BasePlugin[Email]):
     def build_serializer_field(self, component):
         raise NotImplementedError()
 
     @staticmethod
     def pre_registration_hook(
-        component: HookComponent, submission: Submission
+        component: Email, submission: Submission
     ) -> ComponentPreRegistrationResult:
         return {"data": "something"}
 
 
-class FailHook(BasePlugin[FailHookComponent]):
+@register("number")
+class FailHook(BasePlugin[Number]):
     def build_serializer_field(self, component):
         raise NotImplementedError()
 
     @staticmethod
     def pre_registration_hook(
-        component: HookComponent, submission: Submission
+        component: Number, submission: Submission
     ) -> ComponentPreRegistrationResult:
         raise ValueError("Something went wrong")
-
-
-register = ComponentRegistry()
-register("noHook")(NoHook)
-register("hook")(Hook)
-register("failHook")(FailHook)
 
 
 class PreRegistrationTaskTests(TestCase):
@@ -71,12 +66,9 @@ class PreRegistrationTaskTests(TestCase):
         self.addCleanup(patcher.stop)
 
     def test_pre_registration_task(self):
-        hook_component: Component = {
-            "key": "withHook",
-            "type": "hook",
-            "label": "With Hook",
-            "validate": {"required": False},
-        }
+        hook_component: Component = msgspec.to_builtins(
+            Email(key="withHook", label="With Hook")
+        )
         submission = SubmissionFactory.from_components(
             [hook_component],
             {"withHook": "foo"},
@@ -96,15 +88,12 @@ class PreRegistrationTaskTests(TestCase):
         self.assertEqual(component_var.pre_registration_result, {"data": "something"})
 
     def test_pre_registration_task_fail(self):
-        failed_hook_component: Component = {
-            "key": "failedHook",
-            "type": "failHook",
-            "label": "Failed Hook",
-            "validate": {"required": False},
-        }
+        failed_hook_component: Component = msgspec.to_builtins(
+            Number(key="failedHook", label="Failed Hook")
+        )
         submission = SubmissionFactory.from_components(
             [failed_hook_component],
-            {"failedHook": "foo"},
+            {"failedHook": 67},
         )
 
         execute_component_pre_registration(
@@ -121,12 +110,9 @@ class PreRegistrationTaskTests(TestCase):
         self.assertIn("traceback", component_var.pre_registration_result)
 
     def test_preregistration_task_skipped(self):
-        hook_component: Component = {
-            "key": "withHook",
-            "type": "hook",
-            "label": "With Hook",
-            "validate": {"required": False},
-        }
+        hook_component: Component = msgspec.to_builtins(
+            Email(key="withHook", label="With Hook")
+        )
         submission = SubmissionFactory.from_components(
             [hook_component],
             {"withHook": "foo"},
@@ -151,24 +137,16 @@ class PreRegistrationTaskTests(TestCase):
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_pre_registration_group(self):
-        no_hook_component: Component = {
-            "key": "withoutHook",
-            "type": "nohook",
-            "label": "Without Hook",
-            "validate": {"required": False},
-        }
-        hook_component: Component = {
-            "key": "withHook",
-            "type": "hook",
-            "label": "With Hook",
-            "validate": {"required": False},
-        }
+        no_hook_component = TextField(key="withoutHook", label="Without Hook")
+        hook_component = Email(key="withHook", label="With Hook")
+        components = msgspec.to_builtins([no_hook_component, hook_component])
+
         submission = SubmissionFactory.from_components(
-            [no_hook_component, hook_component],
+            components,
             {"withoutHook": "foo", "withHook": "bar"},
         )
 
-        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)
 
         state = submission.variables_state
         no_hook_var = state.variables["withoutHook"]
@@ -187,24 +165,16 @@ class PreRegistrationTaskTests(TestCase):
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_pre_registration_group_failed(self):
-        no_hook_component: Component = {
-            "key": "withoutHook",
-            "type": "nohook",
-            "label": "Without Hook",
-            "validate": {"required": False},
-        }
-        failed_hook_component: Component = {
-            "key": "failedHook",
-            "type": "failHook",
-            "label": "Failed Hook",
-            "validate": {"required": False},
-        }
+        no_hook_component = TextField(key="withoutHook", label="Without Hook")
+        failed_hook_component = Number(key="failedHook", label="Failed Hook")
+        components = msgspec.to_builtins([no_hook_component, failed_hook_component])
+
         submission = SubmissionFactory.from_components(
-            [no_hook_component, failed_hook_component],
+            components,
             {"withoutHook": "foo", "failedHook": "bar"},
         )
 
-        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)
 
         state = submission.variables_state
         no_hook_var = state.variables["withoutHook"]
@@ -224,24 +194,16 @@ class PreRegistrationTaskTests(TestCase):
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_pre_registration_group_one_component_succeed_and_another_failed(self):
-        hook_component: Component = {
-            "key": "withHook",
-            "type": "hook",
-            "label": "With Hook",
-            "validate": {"required": False},
-        }
-        failed_hook_component: Component = {
-            "key": "failedHook",
-            "type": "failHook",
-            "label": "Failed Hook",
-            "validate": {"required": False},
-        }
+        hook_component = Email(key="withHook", label="With Hook")
+        failed_hook_component = Number(key="failedHook", label="Failed Hook")
+        components = msgspec.to_builtins([hook_component, failed_hook_component])
+
         submission = SubmissionFactory.from_components(
-            [hook_component, failed_hook_component],
+            components,
             {"withHook": "foo", "failedHook": "bar"},
         )
 
-        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)
 
         state = submission.variables_state
         hook_var = state.variables["withHook"]
@@ -261,14 +223,9 @@ class PreRegistrationTaskTests(TestCase):
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_pre_registration_group_component_failed_retried_and_succeed(self):
-        hook_component: Component = {
-            "key": "withHook",
-            "type": "hook",
-            "label": "With Hook",
-            "validate": {"required": False},
-        }
+        hook_component = Email(key="withHook", label="With Hook")
         submission = SubmissionFactory.from_components(
-            [hook_component],
+            [msgspec.to_builtins(hook_component)],
             {"withHook": "foo"},
         )
 
@@ -277,7 +234,7 @@ class PreRegistrationTaskTests(TestCase):
             "openforms.registrations.tests.test_component_pre_registration_tasks.Hook.pre_registration_hook"
         ) as mock_hook:
             mock_hook.side_effect = ValueError("something went wrong")
-            execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
+            execute_component_pre_registration_group.delay(submission_id=submission.pk)
 
         state = submission.variables_state
         hook_var = state.variables["withHook"]
@@ -289,7 +246,7 @@ class PreRegistrationTaskTests(TestCase):
         self.assertIn("traceback", hook_var.pre_registration_result)
 
         # 2nd run - success
-        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)
 
         hook_var.refresh_from_db()
         self.assertEqual(
@@ -299,14 +256,9 @@ class PreRegistrationTaskTests(TestCase):
         self.assertEqual(hook_var.pre_registration_result, {"data": "something"})
 
     def test_process_pre_registration_task_succeed(self):
-        hook_component: Component = {
-            "key": "withHook",
-            "type": "hook",
-            "label": "With Hook",
-            "validate": {"required": False},
-        }
+        hook_component = Email(key="withHook", label="With hook")
         submission = SubmissionFactory.from_components(
-            [hook_component],
+            [msgspec.to_builtins(hook_component)],
             {"withHook": "foo"},
         )
         assert submission.needs_on_completion_retry is False
@@ -322,15 +274,9 @@ class PreRegistrationTaskTests(TestCase):
         self.assertFalse(submission.needs_on_completion_retry)
 
     def test_process_pre_registration_task_failed(self):
-        failed_hook_component: Component = {
-            "key": "failedHook",
-            "type": "failHook",
-            "label": "Failed Hook",
-            "validate": {"required": False},
-        }
-
+        failed_hook_component = Number(key="failedHook", label="Failed Hook")
         submission = SubmissionFactory.from_components(
-            [failed_hook_component],
+            [msgspec.to_builtins(failed_hook_component)],
             {"failedHook": "bar"},
         )
 
@@ -347,20 +293,12 @@ class PreRegistrationTaskTests(TestCase):
         self.assertTrue(submission.needs_on_completion_retry)
 
     def test_process_pre_registration_task_one_component_succeeded_another_failed(self):
-        hook_component: Component = {
-            "key": "withHook",
-            "type": "hook",
-            "label": "With Hook",
-            "validate": {"required": False},
-        }
-        failed_hook_component: Component = {
-            "key": "failedHook",
-            "type": "failHook",
-            "label": "Failed Hook",
-            "validate": {"required": False},
-        }
+        hook_component = Email(key="withHook", label="With Hook")
+        failed_hook_component = Number(key="failedHook", label="Failed Hook")
+        components = msgspec.to_builtins([hook_component, failed_hook_component])
+
         submission = SubmissionFactory.from_components(
-            [hook_component, failed_hook_component],
+            components,
             {"withHook": "foo", "failedHook": "bar"},
         )
 

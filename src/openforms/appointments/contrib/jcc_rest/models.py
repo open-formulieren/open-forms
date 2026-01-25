@@ -1,5 +1,8 @@
+from copy import deepcopy
+
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
@@ -9,7 +12,18 @@ from .constants import FIELD_TO_FORMIO_COMPONENT
 
 
 def get_default_components():
-    return {"components": list(FIELD_TO_FORMIO_COMPONENT.values())}
+    components = []
+    for component in deepcopy(FIELD_TO_FORMIO_COMPONENT).values():
+        # msgspec can't handle lazy translatable strings
+        component["label"] = force_str(component["label"])
+        if component["type"] == "radio":
+            component["values"] = [  # pyright: ignore
+                {**option, "label": force_str(option["label"])}
+                for option in component["values"]  # pyright: ignore
+            ]
+        components.append(component)
+
+    return {"components": components}
 
 
 class JccRestConfigManager(models.Manager):

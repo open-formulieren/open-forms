@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import itertools
+import typing
 from collections.abc import Iterator, MutableMapping, Sequence
 from typing import Any
 
@@ -8,6 +9,13 @@ import structlog
 from opentelemetry import trace
 from typing_extensions import TypeIs
 
+from formio_types import (
+    AnyComponent,
+    Columns,
+    EditGrid,
+    Fieldset,
+    FormioConfiguration as FormioConfigurationStruct,
+)
 from openforms.typing import JSONObject
 
 from .typing import Column, ColumnsComponent, Component, FormioConfiguration
@@ -26,6 +34,28 @@ def _is_column_component(component: ComponentLike) -> TypeIs[ColumnsComponent]:
     return component.get("type") == "columns"
 
 
+@typing.overload
+def iter_components(
+    configuration: ComponentLike,
+    *,
+    recursive=True,
+    recurse_into_editgrid: bool = True,
+    parent_map: MutableMapping[str, str] | None = None,  # mapping from child to parent
+    parent_key: str = "",
+) -> Iterator[Component]: ...
+
+
+@typing.overload
+def iter_components(
+    configuration: FormioConfigurationStruct | AnyComponent,
+    *,
+    recursive=True,
+    recurse_into_editgrid: bool = True,
+    parent_map: MutableMapping[str, str] | None = None,  # mapping from child to parent
+    parent_key: str = "",
+) -> Iterator[AnyComponent]: ...
+
+
 @tracer.start_as_current_span(
     name="iter-components",
     attributes={
@@ -35,52 +65,100 @@ def _is_column_component(component: ComponentLike) -> TypeIs[ColumnsComponent]:
     },
 )
 def iter_components(
-    configuration: ComponentLike,
+    configuration: ComponentLike | FormioConfigurationStruct | AnyComponent,
     *,
     recursive=True,
-    _mark_root=False,
     recurse_into_editgrid: bool = True,
     parent_map: MutableMapping[str, str] | None = None,  # mapping from child to parent
     parent_key: str = "",
-) -> Iterator[Component]:
+) -> Iterator[Component] | Iterator[AnyComponent]:
     _is_root = parent_key == ""
-    components = configuration.get("components", [])
-    assert isinstance(components, Sequence)
-    if _is_column_component(configuration) and recursive:
-        assert not components, "Both nested components and columns found"
-        assert isinstance(configuration, dict)
-        for column in configuration["columns"]:
-            yield from iter_components(
-                configuration=column,
-                recursive=recursive,
-                recurse_into_editgrid=recurse_into_editgrid,
-                parent_map=parent_map,
-                parent_key=configuration["key"],
-            )
+    if not isinstance(configuration, dict):
+        match configuration:
+            case FormioConfigurationStruct() | Fieldset():
+                for component in configuration.components:
+                    yield component
+                    if parent_key and parent_map is not None:
+                        parent_map[component.key] = parent_key
+                    if not recursive:
+                        continue
+                    if isinstance(component, EditGrid) and not recurse_into_editgrid:
+                        continue
+                    yield from iter_components(
+                        component,
+                        recursive=recursive,
+                        recurse_into_editgrid=recurse_into_editgrid,
+                        parent_map=parent_map,
+                        parent_key=getattr(configuration, "key", ""),
+                    )
+            case Columns(columns=columns):
+                for column in columns:
+                    for component in column.components:
+                        yield component
+                        if parent_key and parent_map is not None:
+                            parent_map[component.key] = parent_key
+                        if not recursive:
+                            continue
+                        if (
+                            isinstance(component, EditGrid)
+                            and not recurse_into_editgrid
+                        ):
+                            continue
+                        yield from iter_components(
+                            component,
+                            recursive=recursive,
+                            recurse_into_editgrid=recurse_into_editgrid,
+                            parent_map=parent_map,
+                            parent_key=configuration.key,
+                        )
+            case EditGrid(components=editgrid_components):
+                for component in editgrid_components:
+                    yield component
+                    if parent_key and parent_map is not None:
+                        parent_map[component.key] = parent_key
+                    if recursive:
+                        yield from iter_components(
+                            component,
+                            recursive=recursive,
+                            recurse_into_editgrid=recurse_into_editgrid,
+                            parent_map=parent_map,
+                            parent_key=configuration.key,
+                        )
+            case _:
+                pass
+    else:
+        components = configuration.get("components", [])
+        assert isinstance(components, list)
+        if _is_column_component(configuration) and recursive:
+            assert not components, "Both nested components and columns found"
+            for column in configuration["columns"]:
+                yield from iter_components(
+                    configuration=column,
+                    recursive=recursive,
+                    recurse_into_editgrid=recurse_into_editgrid,
+                    parent_map=parent_map,
+                    parent_key=configuration["key"],
+                )
 
-    for component in components:
-        assert isinstance(component, dict)
-        if _mark_root:
-            component["_is_root"] = _is_root
-        yield component
-        if parent_key and parent_map is not None:
-            parent_map[component["key"]] = parent_key
-
-        if recursive:
-            # TODO: find a cleaner solution - currently just not yielding these is not
-            # an option because we have some special treatment for editgrid data which
-            # 'copies' the nested components for further processing.
-            # Ideally, with should be able to delegate this behaviour to the registered
-            # component classes, but that's a refactor too big for the current task(s).
-            if component.get("type") == "editgrid" and not recurse_into_editgrid:
-                continue
-            yield from iter_components(
-                configuration=component,
-                recursive=recursive,
-                recurse_into_editgrid=recurse_into_editgrid,
-                parent_map=parent_map,
-                parent_key=component["key"],
-            )
+        for component in components:
+            yield component
+            if parent_key and parent_map is not None:
+                parent_map[component["key"]] = parent_key
+            if recursive:
+                # TODO: find a cleaner solution - currently just not yielding these is not
+                # an option because we have some special treatment for editgrid data which
+                # 'copies' the nested components for further processing.
+                # Ideally, with should be able to delegate this behaviour to the registered
+                # component classes, but that's a refactor too big for the current task(s).
+                if component.get("type") == "editgrid" and not recurse_into_editgrid:
+                    continue
+                yield from iter_components(
+                    configuration=component,
+                    recursive=recursive,
+                    recurse_into_editgrid=recurse_into_editgrid,
+                    parent_map=parent_map,
+                    parent_key=component["key"],
+                )
 
 
 def get_branch_representation(branch: Sequence[Component], *, prefix: str = "") -> str:
@@ -107,104 +185,3 @@ def get_component_default_value(component: Component) -> Any | None:
     if component.get("multiple") and default_value is None:
         return []
     return default_value
-
-
-# See https://help.form.io/userguide/forms/form-components#input-mask for the
-# semantics, and FormioUtils.getInputMask for the implementation.
-def conform_to_mask(value: str, mask: str) -> str:
-    """
-    Given an input and a Formio mask, try to conform the value to the mask.
-
-    If the value is not compatible with the mask, a ``ValueError`` is raised.
-    """
-    # loop through all the characters of the value and test them against the mask. Note
-    # that the value and mask may have different lengths due to non-input characters
-    # such as spaces/dashes... Formio only recognizes alphanumeric inputs as variable
-    # user input, the rest is part of the mask.
-    # NOTE: we don't check for numeric masks or not, let that be handled by Formio itself
-
-    # the final result characters, build from the value and mask
-    result: list[str] = []
-    char_index, mask_index = 0, 0
-    LOOP_GUARD, iterations = 1000, 0
-
-    # maps the formio mask characters to rules to test for alphanumeric chars etc.
-    TEST_RULES = {
-        "9": lambda c: c.isnumeric(),
-        "A": lambda c: c.isalpha(),
-        "a": lambda c: c.isalpha(),
-        "*": lambda c: c.isalnum(),
-    }
-
-    # the loop indices are reset within an iteration, but in the end either a ValueError
-    # is raised because of mismatch with the mask, or the value has been re-formatted
-    # conforming to the mask and thus has the same length.
-    while len(result) != len(mask):
-        if iterations > LOOP_GUARD:  # pragma: nocover
-            raise RuntimeError("Infinite while-loop detected!")
-        iterations += 1
-
-        try:
-            char, mask_char = value[char_index], mask[mask_index]
-        except IndexError as exc:
-            raise ValueError("Ran out of mask or value characters to process") from exc
-
-        test = TEST_RULES.get(mask_char)
-
-        # check if the character matches the mask - if it does, post-process and put
-        # it in the result list
-        if test and test(char) is True:
-            # check if we need to allow uppercase
-            if mask_char.islower() and char.isupper():
-                char = char.lower()
-            result.append(char)
-            # at the end of processing a character, advance the indices for the next
-            # character
-            char_index += 1
-            mask_index += 1
-            continue
-        elif char == mask_char:  # literal match -> good to go
-            result.append(char)
-            # at the end of processing a character, advance the indices for the next
-            # character
-            char_index += 1
-            mask_index += 1
-            continue
-        elif test is not None:  # there is a test, but it didn't pass
-            # there was a test, meaning this is an alphanumeric mask of some form. We
-            # may potentially skip some separator/formatting chars but ONLY if the
-            # current char is not alphanumeric at all. If it is, it doesn't match
-            # the expected pattern and we raise a ValueError.
-            if char.isalnum():
-                raise ValueError(
-                    f"Character {char} did not match expected pattern {mask_char}"
-                )
-            elif mask_char == "*":
-                raise ValueError(f"Character {char} was expected to be alphanumeric")
-            # at the end of processing a character, advance the indices for the next
-            # character
-            char_index += 1
-            continue
-        elif test is None:  # no test -> it's a formatting character
-            # if we encounter a formatting character that isn't the current input character,
-            # check if the current character is possibly an input (by checking if it's
-            # alphanumeric). If it's not, then we have a mismatch, otherwise we insert
-            # the formatting character in the result list and process the char again
-            # against the next mask char.
-            if not char.isalnum():
-                raise ValueError(
-                    f"Character {char} did not match expected formatting character {mask_char}"
-                )
-
-            # the character is probably input, so add the formatter to the result list and
-            # keep the current char_index so that we process it again
-            result.append(mask_char)
-            mask_index += 1
-            continue
-
-        else:  # pragma: nocover
-            raise RuntimeError(
-                f"Unexpected situation! Mask: {mask}, input value: {value}"
-            )
-
-    return "".join(result)

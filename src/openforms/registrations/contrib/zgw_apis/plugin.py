@@ -14,6 +14,7 @@ import structlog
 from furl import furl
 from glom import assign
 
+from formio_types import AnyComponent, File
 from openforms.authentication.service import get_branch_number
 from openforms.config.data import Action
 from openforms.contrib.objects_api.clients import get_objects_client
@@ -1087,22 +1088,22 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
 
 def process_component(
-    component: Component,
+    component: AnyComponent,
     value: VariableValue,
     schema: NestedDict,
     attachments: Mapping[str, Sequence[str]],
     current_data_path: str = "",
 ) -> VariableValue:
-    key = component["key"]
+    key = component.key
     attachments_key = key if not current_data_path else f"{current_data_path}.{key}"
 
     match component:
-        case {"type": "file", "multiple": True}:
+        case File(multiple=True):
             # for multiple, always emit a squence of URLs (possibly empty)
             urls: Sequence[str] = attachments.get(attachments_key, [])
             return urls
 
-        case {"type": "file"}:  # multiple is False or missing
+        case File():  # multiple is False or missing
             # normalize to a single URL or empty string
             urls: Sequence[str] = attachments.get(attachments_key, [])
             assert len(urls) <= 1  # sanity check

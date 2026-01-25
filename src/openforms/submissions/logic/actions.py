@@ -14,6 +14,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from glom import assign
 from json_logic import UNDEFINED_VALUE, jsonLogic
 
+from formio_types import AnyComponent, Children
 from openforms.dmn.service import evaluate_dmn
 from openforms.formio.service import (
     FormioConfigurationWrapper,
@@ -231,7 +232,7 @@ class PropertyAction(ActionOperation):
         # itself, not try to iterate over its children, so we create a 'fake'
         # configuration. Mutations are performed on the context directly.
         process_visibility(
-            {"components": [component]},
+            [component],
             context,
             configuration,
             parent_hidden=configuration.is_hidden(component["key"], context),
@@ -541,11 +542,11 @@ class SynchronizeVariablesAction(ActionOperation):
 
         return result
 
-    def _process_for_component_type(
-        self, context: FormioData, component_type: str
+    def _process_for_component(
+        self, context: FormioData, component: AnyComponent
     ) -> DataMapping | None:
-        match component_type:
-            case "children":
+        match component:
+            case Children():
                 source_data = context.get(self.source_variable, [])
                 destination_data = context.get(self.destination_variable) or []
                 if not (source_data or destination_data):
@@ -580,12 +581,12 @@ class SynchronizeVariablesAction(ActionOperation):
         *,
         data_for_visible_state: FormioData,
     ) -> DataMapping | None:
-        configuration = submission.total_configuration_wrapper
-        if self.source_variable not in configuration:
+        formio_config = submission.formio_config
+        if self.source_variable not in formio_config:
             return None
 
-        component_type = configuration[self.source_variable]["type"]
-        return self._process_for_component_type(context, component_type)
+        component = formio_config[self.source_variable]
+        return self._process_for_component(context, component)
 
 
 @dataclass

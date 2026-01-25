@@ -15,10 +15,10 @@ import structlog
 from glom import assign, glom
 from rest_framework import serializers
 
+from formio_types import AnyComponent, FormioConfiguration as FormioConfigurationStruct
 from openforms.formio.typing.base import FormioConfiguration
 
-from .datastructures import FormioConfigurationWrapper, FormioData
-from .typing import Component
+from .datastructures import FormioConfig, FormioData
 from .utils import iter_components
 
 if TYPE_CHECKING:
@@ -52,20 +52,19 @@ class StepDataSerializer(serializers.Serializer):
 
         assert self.context
         assert "configuration_wrapper" in self.context
-        config_wrapper: FormioConfigurationWrapper = self.context[
-            "configuration_wrapper"
-        ]
+        config_wrapper = self.context["configuration_wrapper"]
+        assert isinstance(config_wrapper, FormioConfig)
 
         values = FormioData(self.initial_data)
 
         # loop over all components and delegate application to the registry
-        for component in iter_components(configuration, recurse_into_editgrid=False):
+        for component in config_wrapper:
             # Components without submission data do not have serializer fields
             # associated with them.
             if not register.holds_submission_data(component):
                 continue
 
-            is_hidden = config_wrapper.is_hidden(component["key"], values)
+            is_hidden = config_wrapper.is_hidden(component.key, values)
 
             # we don't have to do anything when the component is visible, regular
             # validation rules apply
@@ -74,7 +73,7 @@ class StepDataSerializer(serializers.Serializer):
 
             # when it's not visible, grab the field from the serializer and remove all
             # the validators to match Formio's behaviour.
-            serializer_field = glom(fields, component["key"])
+            serializer_field = glom(fields, component.key)
             self._remove_validations_from_field(serializer_field)
 
     def _remove_validations_from_field(self, field: serializers.Field) -> None:
@@ -144,7 +143,7 @@ def dict_to_serializer(
 
 
 def build_serializer(
-    components: Sequence[Component], register: ComponentRegistry, **kwargs
+    components: Sequence[AnyComponent], register: ComponentRegistry, **kwargs
 ) -> StepDataSerializer:
     """
     Translate a sequence of Formio.js component definitions into a serializer.
@@ -156,11 +155,15 @@ def build_serializer(
         assert isinstance(context, dict) and "configuration" in context
         context.setdefault(
             "configuration_wrapper",
-            FormioConfigurationWrapper(context["configuration"]),
+            FormioConfig(
+                name="<serializer config>", components=context["configuration"]
+            ),
         )
+    from openforms.formio.service import dump_to_legacy
+
     fields: dict[str, FieldOrNestedFields] = {}
 
-    config: FormioConfiguration = {"components": components}
+    config = FormioConfigurationStruct(components=components)
     for component in iter_components(config, recurse_into_editgrid=False):
         # Components without submission data do not have serializer fields
         # associated with them.
@@ -168,8 +171,10 @@ def build_serializer(
             continue
 
         field = register.build_serializer_field(component)
-        assign(obj=fields, path=component["key"], val=field, missing=dict)
+        assign(obj=fields, path=component.key, val=field, missing=dict)
 
     serializer = dict_to_serializer(fields, **kwargs)
-    serializer.apply_hidden_state(config, fields, register)
+    # TODO: make all this work with structs too :)))
+    legacy_config: FormioConfiguration = dump_to_legacy(config)
+    serializer.apply_hidden_state(legacy_config, fields, register)
     return serializer

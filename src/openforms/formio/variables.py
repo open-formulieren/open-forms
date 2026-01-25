@@ -1,4 +1,4 @@
-from collections.abc import Collection, Iterator
+from collections.abc import Collection, Iterator, Mapping
 from dataclasses import dataclass
 
 from django.template import TemplateSyntaxError
@@ -29,8 +29,16 @@ SUPPORTED_TEMPLATE_PROPERTIES = (
 )
 
 
+def _render_and_force_str(source: str, context: Mapping[str, object]) -> str:
+    result = render_from_string(source, context)
+    # Slice the SafeString to force it into a normal string.
+    return result[:]
+
+
 def render(formio_bit: JSONValue, context: dict) -> JSONValue:
-    return recursively_apply_function(formio_bit, render_from_string, context=context)
+    return recursively_apply_function(
+        formio_bit, _render_and_force_str, context=context
+    )
 
 
 def iter_template_properties(component: Component) -> Iterator[tuple[str, JSONValue]]:

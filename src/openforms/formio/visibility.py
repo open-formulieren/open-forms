@@ -1,50 +1,59 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Protocol
 
-from openforms.typing import JSONObject
+from formio_types import (
+    AnyComponent,
+    Columns,
+    CosignV1,
+    SoftRequiredErrors,
+)
+from formio_types._base import Conditional
+from openforms.typing import VariableValue
 
 from .registry import register
-from .typing import Column, Component, ConditionalCompareValue
+from .typing import Component
 
 if TYPE_CHECKING:
-    from .datastructures import (
-        FormioConfiguration,
-        FormioConfigurationWrapper,
-        FormioData,
-    )
+    from .datastructures import FormioConfig, FormioConfigurationWrapper, FormioData
 
 
 class GetEvaluationData(Protocol):
     def __call__(self, data: FormioData) -> FormioData:
         """Get evaluation data context."""
+        ...
 
 
-def get_conditional(
-    component: Component,
-) -> tuple[bool, str, ConditionalCompareValue] | None:
+def get_conditional(component: AnyComponent) -> Conditional | None:
     """
     Get the conditional logic for this component. Will return ``None`` if the
     conditional is not configured or complete.
     """
-    conditional = component.get("conditional")
-    if not conditional:
+    match component:
+        # these don't support conditionals at all
+        case Columns() | SoftRequiredErrors() | CosignV1():
+            return None
+        case _:
+            conditional: Conditional | None = component.conditional
+
+    if conditional is None:
         return None
 
-    show = conditional.get("show")
-    when = conditional.get("when")
-    eq = conditional.get("eq")
-
+    # test that the conditional is properly configured
+    show = conditional.show
+    when = conditional.when
+    eq = conditional.eq
     if any([show in ["", None], when in ["", None], eq is None]):
         return None
 
-    return show, when, eq
+    return conditional
 
 
 def is_hidden(
-    component: Component,
+    component: AnyComponent,
     data: FormioData,
-    configuration: FormioConfigurationWrapper,
+    configuration: FormioConfig,
 ) -> bool:
     """
     Determine whether the component is hidden by checking the conditional and "hidden"
@@ -59,29 +68,43 @@ def is_hidden(
     conditional = get_conditional(component)
 
     if conditional is None:
-        return component.get("hidden", False)
+        match component:
+            case SoftRequiredErrors():
+                return False
+            case _:
+                return component.hidden
 
-    show, trigger_component_key, compare_value = conditional
+    # the assertion cases must be filtered out by ``get_conditional`` and result in
+    # "there is no conditional specified"
+    assert conditional.when is not None
+    assert isinstance(conditional.show, bool)
+
+    show = conditional.show
+    trigger_component_key = conditional.when
+    compare_value = conditional.eq
 
     # Be resilient on the component key lookup
+    # XXX: configuration validation must enforce that triggers point to valid
+    # components
     if trigger_component_key in configuration:
         trigger_component = configuration[trigger_component_key]
-    else:
-        trigger_component: Component = {
-            "type": "unknown",
-            "key": trigger_component_key,
-            "label": "unknown",
-        }
-    # Defaulting to an empty string when the value is nullish is what our renderer does,
-    # with a note that it may need some revision later because it's a left-over formio
-    # relic.
-    trigger_component_value = (
-        v if (v := data.get(trigger_component_key, None)) is not None else ""
-    )
 
-    triggered = register.test_conditional(
-        trigger_component, trigger_component_value, compare_value
-    )
+        # Defaulting to an empty string when the value is nullish is what our renderer
+        # does, with a note that it may need some revision later because it's a
+        # left-over formio relic.
+        trigger_component_value: VariableValue = (
+            v if (v := data.get(trigger_component_key, None)) is not None else ""
+        )
+        triggered = register.test_conditional(
+            trigger_component,
+            trigger_component_value,
+            compare_value,
+        )
+    else:
+        # when the 'when' reference is broken, we don't have a component to interpret
+        # the compare value. In that case, default to the empty string, which is what
+        # formio does when it has no value for a component.
+        triggered = compare_value == ""
 
     # Note that we return whether the component is hidden, not shown, so we invert the
     # return value
@@ -89,7 +112,7 @@ def is_hidden(
 
 
 def process_visibility(
-    configuration: FormioConfiguration | Component | Column | JSONObject,
+    components: Sequence[AnyComponent] | Sequence[Component],
     data: FormioData,
     wrapper: FormioConfigurationWrapper,
     *,
@@ -115,14 +138,32 @@ def process_visibility(
     :param data_for_visible_state: The data used to restore values when flipping
       visibility states.
     """
-    for component in configuration.get("components", []):
-        key = component["key"]
-        clear_on_hide = component.get("clearOnHide", True)
+    from .datastructures import FormioConfig
+    from .service import _convert_legacy_component
+
+    # process legacy structures into their msgspec equivalents, as this is the top-level
+    # entry point for a number of call sites working with legacy typed dicts
+    # TODO: update call sites to convert to msgspec earlier, which requires cleaning up
+    # the whole submissions logic evalution :)))
+    components = [
+        _convert_legacy_component(comp) if isinstance(comp, dict) else comp
+        for comp in components
+    ]
+
+    for component in components:
+        key = component.key
+        # FIXME: only consider components that define clear_on_hide (e.g. exclude content)
+        clear_on_hide = getattr(component, "clear_on_hide", True)
 
         hidden = parent_hidden or is_hidden(
             component,
             get_evaluation_data(data) if get_evaluation_data else data,
-            wrapper,
+            # XXX convert FormioConfigurationWrapper to FormioConfig, but be careful that
+            # downstream call mutations will not be reflected upstream!
+            FormioConfig(
+                name="<converted from FormioConfigurationWrapper>",
+                components=wrapper.configuration["components"],
+            ),
         )
 
         # Need to check whether the component holds submission data, as we do not have
