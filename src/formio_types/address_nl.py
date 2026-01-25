@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Literal
 
 from ._base import (
@@ -48,6 +49,7 @@ class AddressNLExtensions(
 
 class AddressNLValidate(FormioStruct):
     required: bool = False
+    plugins: Sequence[str] = []
 
 
 class AddressData(FormioStruct):

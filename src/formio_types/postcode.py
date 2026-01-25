@@ -3,8 +3,6 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Literal
 
-from typing_extensions import deprecated
-
 from ._base import (
     BaseOpenFormsExtensions,
     Component,
@@ -27,9 +25,9 @@ class PostcodeValidate(FormioStruct):
     pattern: Literal[r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"] = (
         r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"
     )
+    plugins: Sequence[str] = []
 
 
-@deprecated("postcode is deprecated in the frontend")
 class Postcode(Component, tag="postcode"):
     autocomplete: str = ""
     clear_on_hide: bool = True

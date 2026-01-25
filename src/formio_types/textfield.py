@@ -24,6 +24,7 @@ class TextfieldValidate(FormioStruct):
     required: bool = False
     max_length: int | None = None
     pattern: str = ""
+    plugins: Sequence[str] = []
 
 
 class TextField(Component, tag="textfield"):

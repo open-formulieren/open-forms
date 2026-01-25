@@ -127,7 +127,7 @@ class DatePlugin(BasePlugin[DateComponent, Date]):
         component["placeholder"] = _("dd-mm-yyyy")
 
     def build_serializer_field(
-        self, component: DateComponent
+        self, component: Date
     ) -> FormioDateField | serializers.ListField:
         """
         Accept date values.
@@ -136,26 +136,28 @@ class DatePlugin(BasePlugin[DateComponent, Date]):
         set dynamically through our own backend (see :meth:`mutate_config_dynamically`).
         """
         # relevant validators: required, datePicker.minDate and datePicker.maxDate
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
-        date_picker = component.get("datePicker") or {}
+        validate = component.validate
+        required = validate and validate.required
         validators = []
+        if date_picker := component.date_picker:
+            if min_date := date_picker.min_date:
+                min_value = datetime_in_amsterdam(
+                    datetime.fromisoformat(min_date)
+                ).date()
+                validators.append(MinValueValidator(min_value))
 
-        if min_date := date_picker.get("minDate"):
-            min_value = datetime_in_amsterdam(datetime.fromisoformat(min_date)).date()
-            validators.append(MinValueValidator(min_value))
-
-        if max_date := date_picker.get("maxDate"):
-            max_value = datetime_in_amsterdam(datetime.fromisoformat(max_date)).date()
-            validators.append(MaxValueValidator(max_value))
+            if max_date := date_picker.max_date:
+                max_value = datetime_in_amsterdam(
+                    datetime.fromisoformat(max_date)
+                ).date()
+                validators.append(MaxValueValidator(max_value))
 
         base = FormioDateField(
             required=required,
             allow_null=not required,
             validators=validators,
         )
-        return serializers.ListField(child=base) if multiple else base
+        return serializers.ListField(child=base) if component.multiple else base
 
     @staticmethod
     def as_json_schema(component: Date) -> JSONObject:
@@ -219,7 +221,7 @@ class DatetimePlugin(BasePlugin[DatetimeComponent, DateTime]):
         component["placeholder"] = _("dd-mm-yyyy HH:mm")
 
     def build_serializer_field(
-        self, component: DatetimeComponent
+        self, component: DateTime
     ) -> FormioDateTimeField | serializers.ListField:
         """
         Accept datetime values.
@@ -228,19 +230,18 @@ class DatetimePlugin(BasePlugin[DatetimeComponent, DateTime]):
         set dynamically through our own backend (see :meth:`mutate_config_dynamically`).
         """
         # relevant validators: required, datePicker.minDate and datePicker.maxDate
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
-        date_picker = component.get("datePicker") or {}
+        validate = component.validate
+        required = validate and validate.required
         validators = []
 
-        if min_date := date_picker.get("minDate"):
-            min_value = _normalize_validation_datetime(min_date)
-            validators.append(MinValueValidator(min_value))
+        if date_picker := component.date_picker:
+            if min_date := date_picker.min_date:
+                min_value = _normalize_validation_datetime(min_date)
+                validators.append(MinValueValidator(min_value))
 
-        if max_date := date_picker.get("maxDate"):
-            max_value = _normalize_validation_datetime(max_date)
-            validators.append(MaxValueValidator(max_value))
+            if max_date := date_picker.max_date:
+                max_value = _normalize_validation_datetime(max_date)
+                validators.append(MaxValueValidator(max_value))
 
         base = FormioDateTimeField(
             input_formats=[ISO_8601],
@@ -248,7 +249,7 @@ class DatetimePlugin(BasePlugin[DatetimeComponent, DateTime]):
             allow_null=not required,
             validators=validators,
         )
-        return serializers.ListField(child=base) if multiple else base
+        return serializers.ListField(child=base) if component.multiple else base
 
     @staticmethod
     def as_json_schema(component: DateTime) -> JSONObject:
@@ -304,11 +305,10 @@ class MapPlugin(BasePlugin[MapComponent, Map]):
             component["initialCenter"]["lng"] = config.form_map_default_longitude
 
     def build_serializer_field(
-        self, component: MapComponent
+        self, component: Map
     ) -> GeoJsonGeometryPolymorphicSerializer:
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
-
+        validate = component.validate
+        required = validate and validate.required
         return GeoJsonGeometryPolymorphicSerializer(
             required=required, allow_null=not required
         )
@@ -364,26 +364,26 @@ class PostcodePlugin(BasePlugin[Component, Postcode]):
         return value
 
     def build_serializer_field(
-        self, component: Component
+        self, component: Postcode
     ) -> serializers.CharField | serializers.ListField:
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+        validate = component.validate
+        required = validate and validate.required
         # dynamically add in more kwargs based on the component configuration
         extra = {}
         validators = []
-        # adding in the validator is more explicit than changing to
-        # serializers.RegexField, which essentially does the same.
-        if pattern := validate.get("pattern"):
-            validators.append(
-                RegexValidator(
-                    _normalize_pattern(pattern),
-                    message=_("This value does not match the required pattern."),
+        if validate:
+            # adding in the validator is more explicit than changing to
+            # serializers.RegexField, which essentially does the same.
+            if pattern := validate.pattern:
+                validators.append(
+                    RegexValidator(
+                        _normalize_pattern(pattern),
+                        message=_("This value does not match the required pattern."),
+                    )
                 )
-            )
 
-        if plugin_ids := validate.get("plugins", []):
-            validators.append(PluginValidator(plugin_ids))
+            if plugin_ids := validate.plugins:
+                validators.append(PluginValidator(plugin_ids))
 
         if validators:
             extra["validators"] = validators
@@ -391,7 +391,7 @@ class PostcodePlugin(BasePlugin[Component, Postcode]):
         base = serializers.CharField(
             required=required, allow_blank=not required, **extra
         )
-        return serializers.ListField(child=base) if multiple else base
+        return serializers.ListField(child=base) if component.multiple else base
 
     @staticmethod
     def as_json_schema(component: Postcode) -> JSONObject:
@@ -507,17 +507,15 @@ class BSNPlugin(BasePlugin[Component, BSN]):
     formatter = BSNFormatter
 
     def build_serializer_field(
-        self, component: Component
+        self, component: BSN
     ) -> serializers.CharField | serializers.ListField:
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+        validate = component.validate
+        required = validate and validate.required
 
         # dynamically add in more kwargs based on the component configuration
         extra = {}
-
         validators = [BSNValidator()]
-        if plugin_ids := validate.get("plugins", []):
+        if validate and (plugin_ids := validate.plugins):
             validators.append(PluginValidator(plugin_ids))
 
         extra["validators"] = validators
@@ -527,10 +525,10 @@ class BSNPlugin(BasePlugin[Component, BSN]):
             allow_blank=not required,
             # FIXME: should always be False, but formio client sends `null` for
             # untouched fields :( See #4068
-            allow_null=multiple,
+            allow_null=component.multiple,
             **extra,
         )
-        return serializers.ListField(child=base) if multiple else base
+        return serializers.ListField(child=base) if component.multiple else base
 
     @staticmethod
     def as_json_schema(component: BSN) -> JSONObject:
@@ -634,21 +632,19 @@ class AddressValueSerializer(serializers.Serializer):
 class AddressNLPlugin(BasePlugin[AddressNLComponent, AddressNL]):
     formatter = AddressNLFormatter
 
-    def build_serializer_field(
-        self, component: AddressNLComponent
-    ) -> AddressValueSerializer:
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+    def build_serializer_field(self, component: AddressNL) -> AddressValueSerializer:
+        validate = component.validate
+        required = validate and validate.required
 
         extra = {}
         validators = []
-        if plugin_ids := validate.get("plugins", []):
+        if validate and (plugin_ids := validate.plugins):
             validators.append(PluginValidator(plugin_ids))
 
         extra["validators"] = validators
 
         return AddressValueSerializer(
-            derive_address=component["deriveAddress"],
+            derive_address=component.derive_address,
             required=required,
             allow_null=not required,
             component=component,
@@ -723,12 +719,12 @@ class PartnerSerializer(serializers.Serializer):
     )
 
     def __init__(self, **kwargs):
-        self.component = kwargs.pop("component", None)
+        self.component: Partners | None = kwargs.pop("component", None)
         super().__init__(**kwargs)
 
 
 class PartnerListField(serializers.Field):
-    def __init__(self, component, **kwargs):
+    def __init__(self, component: Partners, **kwargs):
         self.component = component
         super().__init__(**kwargs)
 
@@ -751,7 +747,7 @@ class PartnerListField(serializers.Field):
         return PartnerSerializer(value, many=True, component=self.component).data
 
     def validate_list(self, partners):
-        component_key = self.component["key"]
+        component_key = self.component.key
         submission = self.context["submission"]
         state = submission.load_submission_value_variables_state()
         prefill_data = state.get_prefilled_data()
@@ -790,7 +786,7 @@ class PartnerListField(serializers.Field):
 class PartnersPlugin(BasePlugin[Component, Partners]):
     formatter = DefaultFormatter
 
-    def build_serializer_field(self, component: Component) -> PartnerListField:
+    def build_serializer_field(self, component: Partners) -> PartnerListField:
         return PartnerListField(component=component)
 
     @staticmethod
@@ -843,12 +839,12 @@ class ChildSerializer(serializers.Serializer):
     )
 
     def __init__(self, **kwargs):
-        self.component = kwargs.pop("component", None)
+        self.component: Children | None = kwargs.pop("component", None)
         super().__init__(**kwargs)
 
 
 class ChildListField(serializers.Field):
-    def __init__(self, component, **kwargs):
+    def __init__(self, component: Children, **kwargs):
         self.component = component
         super().__init__(**kwargs)
 
@@ -873,7 +869,7 @@ class ChildListField(serializers.Field):
     # TODO
     # Add proper type hints when #2324 is completed (sync the frontend with the backend)
     def validate_list(self, children):
-        component_key = self.component["key"]
+        component_key = self.component.key
         submission = self.context["submission"]
         state = submission.load_submission_value_variables_state()
         prefill_data = state.get_prefilled_data()
@@ -934,7 +930,7 @@ class ChildListField(serializers.Field):
         When the component allows selecting children, the value of the `selected` key
         should be of type boolean, otherwise it should be None.
         """
-        selection_allowed = self.component["enableSelection"]
+        selection_allowed = self.component.enable_selection
         if selection_allowed:
             return all(isinstance(child["selected"], bool) for child in children)
         else:
@@ -945,7 +941,7 @@ class ChildListField(serializers.Field):
 class ChildrenPlugin(BasePlugin[ChildrenComponent, Children]):
     formatter = DefaultFormatter
 
-    def build_serializer_field(self, component: ChildrenComponent) -> ChildListField:
+    def build_serializer_field(self, component: Children) -> ChildListField:
         return ChildListField(component=component)
 
     @staticmethod
@@ -975,9 +971,9 @@ class ChildrenPlugin(BasePlugin[ChildrenComponent, Children]):
 class CosignV2Plugin(BasePlugin[Component, CosignV2]):
     formatter = CosignFormatter
 
-    def build_serializer_field(self, component: Component) -> serializers.EmailField:
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+    def build_serializer_field(self, component: CosignV2) -> serializers.EmailField:
+        validate = component.validate
+        required = validate and validate.required
         return serializers.EmailField(required=required, allow_blank=not required)
 
     @staticmethod
@@ -995,21 +991,20 @@ class IbanPlugin(BasePlugin[Component, Iban]):
     formatter = DefaultFormatter
 
     def build_serializer_field(
-        self, component: Component
+        self, component: Iban
     ) -> serializers.CharField | serializers.ListField:
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+        validate = component.validate
+        required = validate and validate.required
 
         base = serializers.CharField(
             required=required,
             allow_blank=not required,
             # FIXME: should always be False, but formio client sends `null` for
             # untouched fields :( See #4068
-            allow_null=multiple,
+            allow_null=component.multiple,
             validators=[IBANValidator()],
         )
-        return serializers.ListField(child=base) if multiple else base
+        return serializers.ListField(child=base) if component.multiple else base
 
     @staticmethod
     def as_json_schema(component: Iban) -> JSONObject:
@@ -1027,17 +1022,16 @@ class LicensePlatePlugin(BasePlugin[Component, LicensePlate]):
     formatter = DefaultFormatter
 
     def build_serializer_field(
-        self, component: Component
+        self, component: LicensePlate
     ) -> serializers.CharField | serializers.ListField:
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+        validate = component.validate
+        required = validate and validate.required
 
         extra = {}
         validators = []
         # adding in the validator is more explicit than changing to
         # serializers.RegexField, which essentially does the same.
-        if pattern := validate.get("pattern"):
+        if validate and (pattern := validate.pattern):
             validators.append(
                 RegexValidator(
                     _normalize_pattern(pattern),
@@ -1053,11 +1047,11 @@ class LicensePlatePlugin(BasePlugin[Component, LicensePlate]):
             allow_blank=not required,
             # FIXME: should always be False, but formio client sends `null` for
             # untouched fields :( See #4068
-            allow_null=multiple,
+            allow_null=component.multiple,
             **extra,
         )
 
-        return serializers.ListField(child=base) if multiple else base
+        return serializers.ListField(child=base) if component.multiple else base
 
     @staticmethod
     def as_json_schema(component: LicensePlate) -> JSONObject:
