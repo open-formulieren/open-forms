@@ -90,7 +90,8 @@ class ImportExportTests(TempdirMixin, TestCase):
                 {
                     "component": "test_component",
                     "action": {
-                        "type": "disable-next",
+                        "type": "set-registration-backend",
+                        "value": "foo",
                     },
                 }
             ],
@@ -155,7 +156,8 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(1, len(form_logic))
             self.assertEqual("test_component", form_logic[0]["actions"][0]["component"])
             self.assertEqual(
-                {"type": "disable-next"}, form_logic[0]["actions"][0]["action"]
+                {"type": "set-registration-backend", "value": "foo"},
+                form_logic[0]["actions"][0]["action"],
             )
             self.assertIn(str(form.uuid), form_logic[0]["form"])
 

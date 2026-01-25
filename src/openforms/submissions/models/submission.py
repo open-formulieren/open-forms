@@ -634,7 +634,7 @@ class Submission(models.Model):
             return
 
         for submission_step in self._execution_state.submission_steps:
-            submission_step._can_submit = True
+            submission_step.can_submit = True
 
         del self._execution_state
 

@@ -267,7 +267,14 @@ class FormLogicFactory(factory.django.DjangoModelFactory):
                     },
                 }
             ]
-        return [{"action": {"type": LogicActionTypes.disable_next}}]
+        return [
+            {
+                "action": {
+                    "type": LogicActionTypes.set_registration_backend,
+                    "value": "foo",
+                },
+            }
+        ]
 
 
 class FormVariableFactory(factory.django.DjangoModelFactory):

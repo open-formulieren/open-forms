@@ -99,6 +99,7 @@ COPY \
     ./bin/check_celery_worker_liveness.py \
     ./bin/report_component_problems.py \
     ./bin/fix_submission_value_variable_missing_fields.py \
+    ./bin/check_disable_next_logic_action.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.

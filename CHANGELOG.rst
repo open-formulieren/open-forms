@@ -6,6 +6,28 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+
+3.5.0 (???)
+===================
+
+Upgrade procedure
+-----------------
+.. warning::
+
+    As a preparation for upcoming logic performance improvements, we changed the "disable next" logic
+    action. The form designers now have to specify on which step they want to execute this action.
+    We included a migration to automatically populate this field for all existing actions. Unfortunately,
+    in some cases we cannot guarantee that the assigned step is correct, i.e. no change in behaviour
+    is observed when filling out a form. Therefore, form designers/maintainers are asked to check these
+    cases manually. The script below outputs a list of logic rules (with their corresponding form) that
+    need manual attention. Use the flag ``--show-all`` to output a complete list of all affected rules.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/check_disable_next_logic_action.py
+
+
 3.3.10 (2026-01-05)
 ===================
 

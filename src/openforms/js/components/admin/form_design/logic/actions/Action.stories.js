@@ -375,3 +375,37 @@ export const SynchronizeVariables = {
   },
   decorators: [FormDecorator],
 };
+
+export const DisableNext = {
+  render,
+  name: 'Disable continuing to next step',
+
+  args: {
+    prefixText: 'Action',
+
+    action: {
+      component: '',
+      variable: '',
+      formStepUuid: '8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+      action: {type: 'disable-next'},
+    },
+
+    errors: {},
+
+    availableFormSteps: [
+      {
+        formDefinition:
+          'http://localhost:8000/api/v2/form-definitions/b4de3050-3d55-4d7e-bdec-c4ec2ff330f8',
+
+        configuration: {display: 'form'},
+        slug: 'step-1',
+        name: 'Step 1',
+        url: 'http://localhost:8000/api/v2/forms/42bda734-de31-4f0a-87c9-bf36085ffc75/steps/8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+        uuid: '8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+        _generatedId: '',
+        isNew: false,
+        validationErrors: [],
+      },
+    ],
+  },
+};
