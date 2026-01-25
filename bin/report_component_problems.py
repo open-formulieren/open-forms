@@ -20,7 +20,7 @@ SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
 
 
-def check_component(component) -> Iterator[str]:
+def check_component(component: Component) -> Iterator[str]:
     from rest_framework.exceptions import ValidationError
 
     from openforms.api.geojson import GeoJsonGeometryPolymorphicSerializer
@@ -119,12 +119,6 @@ def check_component(component) -> Iterator[str]:
 
             # Any other value is automatically invalid
             yield f"Default value '{default_value}' is not valid."
-
-        case {"type": "time", "validate": dict() as validate}:
-            if validate.get("minTime") == "":
-                yield "validate.minTime is empty string instead of null."
-            if validate.get("maxTime") == "":
-                yield "validate.maxTime is empty string instead of null."
 
         case {"type": "date"}:
             validate = component.get("validate", {})
