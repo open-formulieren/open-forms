@@ -306,7 +306,7 @@ class RadioTests(SimpleTestCase):
         component: RadioComponent = {
             "label": "Radio label",
             "key": "radio",
-            "values": [{"value": "", "label": ""}],
+            "values": [],
             "openForms": {
                 "dataSrc": DataSrcOptions.variable,
                 "itemsExpression": {"var": "foo"},

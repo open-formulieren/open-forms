@@ -114,7 +114,8 @@ class FormioConfigurationWrapper:
         it may be present multiple times in the internal datastructures.
         """
         seen = set()
-        for component in self.component_map.values():
+        # reverse to go from leaf nodes up to root nodes
+        for component in reversed(self.component_map.values()):
             # dicts are not hashable, the memory address is a stable reference
             component_id = id(component)
             if component_id in seen:

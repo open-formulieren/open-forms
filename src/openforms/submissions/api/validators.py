@@ -43,12 +43,18 @@ class ValidatePrefillData:
         prefilled_data = state.get_prefilled_data()
 
         errors = {}
+        assert instance.form_step is not None
         for component in instance.form_step.iter_components():
-            if "prefill" not in component or component["prefill"]["plugin"] == "":
-                continue
-
-            if not component["disabled"]:
-                continue
+            # only process components that have prefill configured *and* are not
+            # editable (disabled/read-only set to True)
+            match component:
+                case {
+                    "prefill": {"plugin": str(plugin)},
+                    "disabled": True,
+                } if plugin:
+                    pass
+                case _:
+                    continue
 
             # match on key
             if not (component_key := component.get("key")):

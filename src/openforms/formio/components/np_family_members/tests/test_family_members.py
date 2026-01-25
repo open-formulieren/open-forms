@@ -79,21 +79,36 @@ class FamilyMembersCustomFieldTypeTest(OFVCRMixin, TestCase):
 
         rewritten_component = updated_config_wrapper["npFamilyMembers"]
         self.assertEqual("selectboxes", rewritten_component["type"])
-        self.assertFalse(rewritten_component["fieldSet"])
-        self.assertFalse(rewritten_component["inline"])
-        self.assertEqual("checkbox", rewritten_component["inputType"])
+        self.assertNotIn("fieldSet", rewritten_component)
+        self.assertNotIn("inline", rewritten_component)
+        self.assertNotIn("inputType", rewritten_component)
         self.assertEqual(3, len(rewritten_component["values"]))
         self.assertEqual(
             rewritten_component["values"][0],
-            {"label": "Angélie Francisca Holthuizen", "value": "999991760"},
+            {
+                "label": "Angélie Francisca Holthuizen",
+                "value": "999991760",
+                "description": "",
+                "openForms": None,
+            },
         )
         self.assertEqual(
             rewritten_component["values"][1],
-            {"label": "Margaretha Holthuizen", "value": "999993392"},
+            {
+                "label": "Margaretha Holthuizen",
+                "value": "999993392",
+                "description": "",
+                "openForms": None,
+            },
         )
         self.assertEqual(
             rewritten_component["values"][2],
-            {"label": "Adrianus Holthuizen", "value": "999991978"},
+            {
+                "label": "Adrianus Holthuizen",
+                "value": "999991978",
+                "description": "",
+                "openForms": None,
+            },
         )
 
     def test_get_children_haal_centraal(self):

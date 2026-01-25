@@ -12,18 +12,18 @@ smeared out across the codebase in similar but different implementations, while 
 the public API better defined and smaller.
 """
 
+from __future__ import annotations
+
 import abc
 from collections.abc import Callable
 from typing import (
     TYPE_CHECKING,
     Any,
     ClassVar,
-    Generic,
     Literal,
     NotRequired,
     Protocol,
     TypedDict,
-    TypeVar,
 )
 
 from django.utils.translation import gettext as _
@@ -31,45 +31,47 @@ from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.request import Request
 
+from formio_types import TYPE_TO_TAG, AnyComponent, supports_multiple
+from formio_types._base import BaseOpenFormsExtensions, SupportedLanguage
+from openforms.formio.formatters.formio import DefaultFormatter
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
 from openforms.typing import JSONObject, JSONValue, VariableValue
 from openforms.variables.constants import FormVariableDataTypes
 
 from .datastructures import FormioConfigurationWrapper, FormioData
-from .typing import Component
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
-ComponentT = TypeVar("ComponentT", bound=Component, contravariant=True)
+    from .visibility import GetEvaluationData
 
 
 class ComponentPreRegistrationResult(TypedDict):
     data: NotRequired[JSONValue]
 
 
-class FormatterProtocol(Protocol[ComponentT]):
+class FormatterProtocol[ComponentT: AnyComponent](Protocol):
     def __init__(self, as_html: bool): ...
 
     def __call__(self, component: ComponentT, value: Any) -> str: ...
 
 
-class NormalizerProtocol(Protocol[ComponentT]):
+class NormalizerProtocol[ComponentT: AnyComponent](Protocol):
     def __call__(self, component: ComponentT, value: Any) -> Any: ...
 
 
-class RewriterForRequestProtocol(Protocol[ComponentT]):
+class RewriterForRequestProtocol[ComponentT: AnyComponent](Protocol):
     def __call__(self, component: ComponentT, request: Request) -> None: ...
 
 
-class PreRegistrationHookProtocol(Protocol[ComponentT]):
+class PreRegistrationHookProtocol[ComponentT: AnyComponent](Protocol):
     def __call__(
-        self, component: ComponentT, submission: "Submission"
+        self, component: ComponentT, submission: Submission
     ) -> ComponentPreRegistrationResult: ...
 
 
-class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP046
+class BasePlugin[ComponentT: AnyComponent](AbstractBasePlugin, abc.ABC):
     """
     Base class for Formio component plugins.
     """
@@ -130,10 +132,12 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
         return _("{type} component").format(type=self.identifier.capitalize())
 
     def mutate_config_dynamically(
-        self, component: ComponentT, submission: "Submission", data: FormioData
-    ) -> None: ...
+        self, component: ComponentT, submission: Submission, data: FormioData
+    ) -> AnyComponent | None: ...
 
-    def localize(self, component: ComponentT, language_code: str, enabled: bool):
+    def localize(
+        self, component: ComponentT, language_code: SupportedLanguage, enabled: bool
+    ):
         pass  # noop by default, specific component types can extend the base behaviour
 
     @abc.abstractmethod
@@ -159,10 +163,13 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
         return value
 
     @staticmethod
-    def as_json_schema(component: ComponentT) -> JSONObject | list[JSONObject] | None:
+    def as_json_schema(
+        component: ComponentT,
+    ) -> JSONObject | list[JSONObject] | None:
         """
-        Return JSON schema for this formio component plugin. This routine should be
-        implemented in the child class
+        Return JSON schema for this formio component plugin.
+
+        This routine should be implemented in subclasses.
         """
         raise NotImplementedError()
 
@@ -175,7 +182,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
         components_to_ignore_hidden: set[str],
-        get_evaluation_data: Callable | None = None,
+        get_evaluation_data: GetEvaluationData | None = None,
         data_for_visible_state: FormioData | None = None,
     ) -> None:
         """
@@ -194,6 +201,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
         :param data_for_visible_state: The data used to restore values when flipping
           visibility states.
         """
+        pass
 
     @staticmethod
     def test_conditional(
@@ -215,7 +223,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
         return self.data_type
 
     def get_empty_value(self, component: ComponentT) -> JSONValue:
-        if component.get("multiple", False):
+        if getattr(component, "multiple", False):
             return []
         return self.empty_value
 
@@ -223,18 +231,19 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
 class ComponentRegistry(BaseRegistry[BasePlugin]):
     module = "formio_components"
 
-    def normalize(self, component: Component, value: Any) -> Any:
+    def normalize(self, component: AnyComponent, value: Any) -> Any:
         """
         Given a value from any source, normalize it according to the component rules.
         """
-        if (component_type := component["type"]) not in self:
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
             return value
         normalizer = self[component_type].normalizer
         if normalizer is None:
             return value
         return normalizer(component, value)
 
-    def format(self, component: Component, value: Any, as_html=False) -> str:
+    def format(self, component: AnyComponent, value: Any, as_html=False) -> str:
         """
         Format a given value in the appropriate way for the specified component.
 
@@ -242,15 +251,19 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         for the given component type, as it makes the best sense for that component
         type.
         """
-        if (component_type := component["type"]) not in self:
-            component_type = "default"
-
-        component_plugin = self[component_type]
-        formatter = component_plugin.formatter(as_html=as_html)
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
+            formatter = DefaultFormatter(as_html=as_html)
+        else:
+            component_plugin: BasePlugin[AnyComponent] = self[component_type]
+            formatter = component_plugin.formatter(as_html=as_html)
         return formatter(component, value)
 
     def test_conditional(
-        self, component: Component, value: VariableValue, compare_value: VariableValue
+        self,
+        component: AnyComponent,
+        value: VariableValue,
+        compare_value: VariableValue,
     ) -> bool:
         """
         Perform a component-specific comparison whether a conditional is triggered.
@@ -261,10 +274,11 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
           in the component configuration.
         :return: Whether the conditional was triggered.
         """
-        if (component_type := component["type"]) not in self:
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
             component_type = "default"
 
-        plugin = self[component_type]
+        plugin: BasePlugin[AnyComponent] = self[component_type]
 
         # First, see if the component has a custom test conditional
         if (
@@ -274,7 +288,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
         # If it does not have one, default to a membership test if the component is
         # configured as multiple, or a direct comparison otherwise
-        if component.get("multiple", False):
+        if getattr(component, "multiple", False):
             assert isinstance(value, list)
             return compare_value in value
         else:
@@ -282,7 +296,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
     def apply_visibility(
         self,
-        component: Component,
+        component: AnyComponent,
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
         *,
@@ -308,10 +322,8 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         :param data_for_visible_state: The data used to restore values when flipping
           visibility states.
         """
-        if (component_type := component["type"]) not in self:
-            return
-
-        plugin = self[component_type]
+        component_type = TYPE_TO_TAG[type(component)]
+        plugin: BasePlugin[AnyComponent] = self[component_type]
         plugin.apply_visibility(
             component,
             data,
@@ -324,28 +336,32 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         )
 
     def update_config(
-        self, component: Component, submission: "Submission", data: FormioData
-    ) -> None:
+        self, component: AnyComponent, submission: Submission, data: FormioData
+    ) -> AnyComponent | None:
         """
-        Mutate the component configuration in place.
+        Mutate the component configuration in place or return a replacement.
 
         Mutating the config in place allows dynamic configurations (because of logic,
         for example) to work.
         """
         # if there is no plugin registered for the component, return the input
-        if (component_type := component["type"]) not in self:
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
             return
 
         # invoke plugin if exists
-        plugin = self[component_type]
-        plugin.mutate_config_dynamically(component, submission, data)
+        plugin: BasePlugin[AnyComponent] = self[component_type]
+        return plugin.mutate_config_dynamically(component, submission, data)
 
-    def update_config_for_request(self, component: Component, request: Request) -> None:
+    def update_config_for_request(
+        self, component: AnyComponent, request: Request
+    ) -> None:
         """
         Mutate the component in place for the given request context.
         """
         # if there is no plugin registered for the component, return the input
-        if (component_type := component["type"]) not in self:
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
             return
 
         # invoke plugin if exists
@@ -356,7 +372,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         rewriter(component, request)
 
     def localize_component(
-        self, component: Component, language_code: str, enabled: bool
+        self, component: AnyComponent, language_code: SupportedLanguage, enabled: bool
     ) -> None:
         """
         Apply component translations for the provided language code.
@@ -367,23 +383,31 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
           enabled, the translation information should still be stripped from the
           component definition(s).
         """
-        generic_translations = component.get("openForms", {}).get("translations", {})
-        # apply the generic translation behaviour even for unregistered components
-        if enabled and (translations := generic_translations.get(language_code, {})):
-            for prop, translation in translations.items():
-                if not translation:
-                    continue
-                component[prop] = translation
+        of_extensions = getattr(component, "open_forms", None)
+        if isinstance(of_extensions, BaseOpenFormsExtensions):
+            # apply the generic translation behaviour even for unregistered components
+            if (
+                enabled
+                and (generic_translations := of_extensions.translations) is not None
+                and (translations := generic_translations.get(language_code))
+                is not None
+            ):
+                for prop, translation in translations.items():
+                    if not translation:
+                        continue
+                    setattr(component, prop, translation)
 
-        if (component_type := component["type"]) in self:
-            component_plugin = self[component_type]
+            # always drop translation meta information
+            if of_extensions.translations:
+                of_extensions.translations = None
+
+        # check for component-specific localization hook
+        component_type = TYPE_TO_TAG[type(component)]
+        if (component_type) in self:
+            component_plugin: BasePlugin[AnyComponent] = self[component_type]
             component_plugin.localize(component, language_code, enabled=enabled)
 
-        # always drop translation meta information
-        if generic_translations:
-            del component["openForms"]["translations"]  # type: ignore
-
-    def build_serializer_field(self, component: Component) -> serializers.Field:
+    def build_serializer_field(self, component: AnyComponent) -> serializers.Field:
         """
         Translate a given component into a single serializer field, suitable for
         input validation.
@@ -391,13 +415,13 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         # if the component known in registry -> use the component plugin, otherwise
         # fall back to the special 'default' plugin which implements the current
         # behaviour of accepting any JSON value.
-        if (component_type := component["type"]) not in self:
-            component_type = "default"
-
-        component_plugin = self[component_type]
+        component_type = TYPE_TO_TAG[type(component)]
+        component_plugin: BasePlugin[AnyComponent] = self[component_type]
         return component_plugin.build_serializer_field(component)
 
-    def as_json_data(self, component: Component, value: VariableValue) -> VariableValue:
+    def as_json_data(
+        self, component: AnyComponent, value: VariableValue
+    ) -> VariableValue:
         """
         Process the input value for json data output.
 
@@ -413,11 +437,12 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         .. todo:: A generic type at the plugin level to bind the expected value type
            so that ``VariableValue`` is narrowed.
         """
-        plugin = self[component["type"]]
+        component_type = TYPE_TO_TAG[type(component)]
+        plugin: BasePlugin[AnyComponent] = self[component_type]
         return plugin.as_json_data(component, value)
 
     def as_json_schema(
-        self, component: Component
+        self, component: AnyComponent
     ) -> JSONObject | list[JSONObject] | None:
         """
         Return a JSON schema of a component.
@@ -433,35 +458,43 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
           JSON objects intermediate layout components with child nodes or a single
           JSON object otherwise.
         """
-        plugin = self[component["type"]]
+        component_type = TYPE_TO_TAG[type(component)]
+
+        plugin: BasePlugin[AnyComponent] = self[component_type]
         schema = plugin.as_json_schema(component)
-        if isinstance(schema, dict) and (description := component.get("description")):
+        if isinstance(schema, dict) and (
+            description := getattr(component, "description", "")
+        ):
             schema["description"] = description
         return schema
 
-    def has_pre_registration_hook(self, component: Component) -> bool:
+    def has_pre_registration_hook(self, component_type: str) -> bool:
         """
         Determine if a given component has a pre-registration hook.
         """
-        if (component_type := component["type"]) not in self:
+        if component_type not in self:
             return False
-
         return self[component_type].pre_registration_hook is not None
 
     def apply_pre_registration_hook(
-        self, component: Component, submission: "Submission"
+        self, component: AnyComponent, submission: Submission
     ) -> ComponentPreRegistrationResult:
         """
         Apply component pre registration hook.
         """
-        assert self.has_pre_registration_hook(component)
-        hook = self[component["type"]].pre_registration_hook
+        component_type = TYPE_TO_TAG[type(component)]
+        assert self.has_pre_registration_hook(component_type)
+        hook = self[component_type].pre_registration_hook
 
         assert hook is not None
 
         return hook(component, submission)
 
-    def get_component_data_type(self, component: Component) -> FormVariableDataTypes:
+    def get_component_data_type(
+        self,
+        component: AnyComponent,
+        ignore_multiple: bool = False,
+    ) -> FormVariableDataTypes:
         """
         Determine the data type for the component instance.
 
@@ -469,14 +502,14 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         collection of values. The data type is looked up from the component plugin
         registry or defaults to the string type.
         """
-        if component.get("multiple"):
+        component_type = TYPE_TO_TAG[type(component)]
+        plugin: BasePlugin[AnyComponent] = self[component_type]
+        if not ignore_multiple and getattr(component, "multiple", False):
             return FormVariableDataTypes.array
-        if (component_type := component["type"]) not in self:
-            return FormVariableDataTypes.string
-        return self[component_type].get_data_type(component)
+        return plugin.get_data_type(component)
 
     def get_component_data_subtype(
-        self, component: Component
+        self, component: AnyComponent
     ) -> Literal[""] | FormVariableDataTypes:
         """
         Get the data subtype of a component.
@@ -486,29 +519,28 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
           array (editgrid, files, partners, children and profile) are a special case,
           as ``multiple`` is not relevant for these.
         """
-        if (component_type := component["type"]) not in self:
-            component_type = "default"
-
-        if (subtype := self[component_type].data_subtype) is not None:
+        component_type = TYPE_TO_TAG[type(component)]
+        plugin: BasePlugin[AnyComponent] = self[component_type]
+        if (subtype := plugin.data_subtype) is not None:
             return subtype
 
-        if not component.get("multiple"):
+        multiple: bool = component.multiple if supports_multiple(component) else False
+        if not multiple:
             return ""
 
         # get the intrinsic data type
-        _component: Component = {**component, "multiple": False}
-        return self.get_component_data_type(_component)
+        return self.get_component_data_type(component, ignore_multiple=True)
 
-    def get_empty_value(self, component: Component) -> JSONValue:
-        if (component_type := component["type"]) not in self:
-            return ""
-        return self[component_type].get_empty_value(component)
+    def get_empty_value(self, component: AnyComponent) -> JSONValue:
+        component_type = TYPE_TO_TAG[type(component)]
+        plugin: BasePlugin[AnyComponent] = self[component_type]
+        return plugin.get_empty_value(component)
 
-    def holds_submission_data(self, component: Component) -> bool:
+    def holds_submission_data(self, component: AnyComponent) -> bool:
         """Return whether data can be submitted for a particular component."""
-        if (component_type := component["type"]) not in self:
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
             return True
-
         return self[component_type].holds_submission_data
 
 

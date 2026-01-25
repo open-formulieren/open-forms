@@ -28,7 +28,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 11 Jun 2026 09:36:44 GMT
+      - Sat, 20 Jun 2026 15:52:57 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -45,7 +45,7 @@ interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"stepwithnulls": {"radio": "2", "tekstveld":
-      "", "bedrag": null}}, "startAt": "2026-06-11"}}'
+      "", "bedrag": null}}, "startAt": "2026-06-20"}}'
     headers:
       Accept:
       - '*/*'
@@ -65,7 +65,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/fe8fb487-6a04-4304-a552-a366de18010a","uuid":"fe8fb487-6a04-4304-a552-a366de18010a","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"stepwithnulls":{"radio":"2","tekstveld":"","bedrag":null}},"geometry":null,"startAt":"2026-06-11","endAt":null,"registrationAt":"2026-06-11","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/6f5a80df-f53b-40b5-bdac-5a9cfe5b5897","uuid":"6f5a80df-f53b-40b5-bdac-5a9cfe5b5897","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"stepwithnulls":{"radio":"2","tekstveld":"","bedrag":null}},"geometry":null,"startAt":"2026-06-20","endAt":null,"registrationAt":"2026-06-20","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -80,9 +80,9 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 11 Jun 2026 09:36:44 GMT
+      - Sat, 20 Jun 2026 15:52:58 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/fe8fb487-6a04-4304-a552-a366de18010a
+      - http://localhost:8002/api/v2/objects/6f5a80df-f53b-40b5-bdac-5a9cfe5b5897
       Referrer-Policy:
       - same-origin
       Server:

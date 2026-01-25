@@ -10,6 +10,7 @@ from pathlib import Path
 import django
 
 import click
+import msgspec
 from json_logic.meta import JSONLogicExpression
 from json_logic.meta.expressions import destructure
 from json_logic.typing import JSON
@@ -83,11 +84,12 @@ def iter_variables_with_compare_value(expression: JSON):
 
 
 def report_rules() -> bool:
+    from formio_types import AnyComponent, EditGrid, FormioConfiguration, Selectboxes
+    from openforms.formio.registry import register
     from openforms.formio.service import (
-        get_component_empty_value,
+        _fixup_component_properties,
         iter_components,
     )
-    from openforms.formio.typing import Component
     from openforms.formio.visibility import get_conditional
     from openforms.forms.models import Form, FormLogic
     from openforms.variables.service import resolve_key
@@ -103,18 +105,23 @@ def report_rules() -> bool:
 
         # Mapping from component to step for quick access
         form_steps = form.formstep_set.select_related("form_definition")
-        component_map: dict[str, Component] = {}
+        component_map: dict[str, AnyComponent] = {}
         for form_step in form_steps:
-            for component in iter_components(
+            formio_configuration = msgspec.convert(
                 form_step.form_definition.configuration,
+                type=FormioConfiguration,
+                dec_hook=_fixup_component_properties,
+            )
+            for component in iter_components(
+                formio_configuration,
                 recursive=True,
                 recurse_into_editgrid=False,
             ):
-                component_map[component["key"]] = component
+                component_map[component.key] = component
 
                 # Component with visibility affected by a conditional
                 if get_conditional(component) is not None:
-                    components_with_affected_visibility.add(component["key"])
+                    components_with_affected_visibility.add(component.key)
 
         # Components with visibility affected by logic rules
         for rule in form.formlogic_set.iterator():
@@ -129,7 +136,7 @@ def report_rules() -> bool:
 
             component = component_map[key]
             children = {
-                child["key"]
+                child.key
                 for child in iter_components(
                     component, recursive=True, recurse_into_editgrid=False
                 )
@@ -145,7 +152,7 @@ def report_rules() -> bool:
                     continue
 
                 component = component_map[resolved_key]
-                if component["type"] == "editgrid" and var_name != resolved_key:
+                if isinstance(component, EditGrid) and var_name != resolved_key:
                     # We expect data access "editgrid.x.child_key" here, so discard the
                     # parent key and index. Assuming there are no nested editgrids here
                     # :see_no_evil:
@@ -153,8 +160,8 @@ def report_rules() -> bool:
                         ".", 1
                     )
 
-                    children_map: dict[str, Component] = {
-                        child["key"]: child
+                    children_map: dict[str, AnyComponent] = {
+                        child.key: child
                         for child in iter_components(
                             component, recursive=True, recurse_into_editgrid=False
                         )
@@ -167,12 +174,12 @@ def report_rules() -> bool:
                 # clearOnHide enabled, so it's not relevant
                 if (
                     resolved_key not in components_with_affected_visibility
-                    or not component.get("clearOnHide", True)
+                    or not getattr(component, "clear_on_hide", True)
                 ):
                     continue
 
-                empty_value = get_component_empty_value(component)
-                if component["type"] == "selectboxes":
+                empty_value = register.get_empty_value(component)
+                if isinstance(component, Selectboxes):
                     # `get_component_empty_value` returns {"option_a": False, "option_b": False, etc...}
                     # for a selectboxes component, which is not a useful in this
                     # context. It is not possible to use a dictionary as a comparison
@@ -186,7 +193,7 @@ def report_rules() -> bool:
                 # current default that is set when a variable is missing from the
                 # context. Note that all form variables should be present in the context
                 # at the moment, but there is no such guarantee for nested data.
-                if comp_value in [empty_value, None, component.get("defaultValue")]:
+                if comp_value in [empty_value, None, component.default_value]:
                     form_with_logic_with_risk[form, rule].add(var_name)
 
     data = [

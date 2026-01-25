@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.formio.tests.assertions import FormioMixin
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -19,11 +20,14 @@ from openforms.typing import JSONValue
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.constants import FormVariableDataTypes
 
+from ..constants import TEXT_FIELD_DEFAULTS
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 
 
-class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
+class CheckLogicSubmissionTest(SubmissionsMixin, FormioMixin, APITestCase):
+    maxDiff = None
+
     def test_check_logic_on_whole_submission(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -613,7 +617,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             configuration = response.json()["configuration"]
-            self.assertEqual(
+            self.assertComponentProperties(
                 configuration["components"][1],
                 {
                     "key": "when-unchecked",
@@ -622,7 +626,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     "hidden": True,
                 },
             )
-            self.assertEqual(
+            self.assertComponentProperties(
                 configuration["components"][2],
                 {
                     "key": "when-checked",
@@ -637,7 +641,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             configuration = response.json()["step"]["configuration"]
-            self.assertEqual(
+            self.assertComponentProperties(
                 configuration["components"][1],
                 {
                     "key": "when-unchecked",
@@ -646,7 +650,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     "hidden": False,
                 },
             )
-            self.assertEqual(
+            self.assertComponentProperties(
                 configuration["components"][2],
                 {
                     "key": "when-checked",
@@ -661,7 +665,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             configuration = response.json()["step"]["configuration"]
-            self.assertEqual(
+            self.assertComponentProperties(
                 configuration["components"][1],
                 {
                     "key": "when-unchecked",
@@ -670,7 +674,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     "hidden": True,
                 },
             )
-            self.assertEqual(
+            self.assertComponentProperties(
                 configuration["components"][2],
                 {
                     "key": "when-checked",
@@ -2037,6 +2041,8 @@ def is_jsonb_invariant(value: JSONValue) -> bool:
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
+    maxDiff = None
+
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -2091,6 +2097,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertEqual(
             configuration["components"][1],
             {
+                **TEXT_FIELD_DEFAULTS,
                 "key": "optional",
                 "label": "optional",
                 "type": "textfield",

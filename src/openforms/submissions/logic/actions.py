@@ -234,7 +234,7 @@ class PropertyAction(ActionOperation):
         # itself, not try to iterate over its children, so we create a 'fake'
         # configuration. Mutations are performed on the context directly.
         process_visibility(
-            {"components": [component]},
+            [component],
             context,
             configuration,
             data_for_hidden_state=data_for_hidden_state,

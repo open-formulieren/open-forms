@@ -1620,6 +1620,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "type": "file",
                     "key": "file",
                     "label": "File",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "registration": {
                         "informatieobjecttype": "https://example.com/ignore-me",
                     },

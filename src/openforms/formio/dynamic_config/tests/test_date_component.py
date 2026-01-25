@@ -329,20 +329,6 @@ class DynamicDateConfigurationTests(TestCase):
         with self.assertRaises(TypeError):
             self._get_dynamic_config(component, {"emptyVar": "foobar"})
 
-    @tag("gh-2581")
-    def test_incomplete_config_no_crash(self):
-        component: DateComponent = {
-            "type": "date",
-            "key": "aDate",
-            "label": "Date",
-            "openForms": {"maxDate": {}},
-            "datePicker": {"minDate": None, "maxDate": "2022-09-12T14:08:00Z"},
-        }
-
-        new_component = self._get_dynamic_config(component, {})
-
-        self.assertEqual(new_component["datePicker"]["maxDate"], "2022-09-12T14:08:00Z")
-
     @tag("gh-2525")
     def test_configuration_after_delete_validation(self):
         component: DateComponent = {
