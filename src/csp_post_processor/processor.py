@@ -286,7 +286,7 @@ def _add_wysiwyg_style_attributes_and_tags():
     # util to limit amount of manual edited data in the allowed_attribute_map
     for tag in _TAGS_WITH_STYLE:
         # check if we forgot to add it to allowed tags
-        if tag not in WYSIWYG_ALLOWED_TAGS:
+        if tag not in WYSIWYG_ALLOWED_TAGS:  # pragma: no cover
             raise ValueError(
                 f"adding tag '{tag}' to tag_attr_map but missing from 'allowed_tags'"
             )
@@ -301,7 +301,7 @@ def _add_wysiwyg_style_attributes_and_tags():
 
     # check if tags in attr map exist in allowed tags
     for tag in WYSIWYG_TAG_ALLOWED_ATTRIBUTE_MAP.keys():
-        if tag not in WYSIWYG_ALLOWED_TAGS:
+        if tag not in WYSIWYG_ALLOWED_TAGS:  # pragma: no cover
             raise ValueError(
                 f"adding tag '{tag}' to tag_attr_map but missing from 'allowed_tags'"
             )
