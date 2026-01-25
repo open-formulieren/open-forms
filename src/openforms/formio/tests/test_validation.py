@@ -55,6 +55,7 @@ class GenericValidationTests(SimpleTestCase):
                 "required": True,
                 "maxLength": 3,
             },
+            "defaultValue": [],
         }
         data: JSONObject = {
             "textMultiple": [

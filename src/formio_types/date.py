@@ -81,21 +81,21 @@ class PickerCustomOptions(FormioStruct, frozen=True):
 
 
 class DatePickerConfig(FormioStruct):
-    # See https://github.com/open-formulieren/types/blob/44291a9388174ef2525817b46db8e16ed1e0d8aa/src/formio/dates.ts#L75
-    show_weeks: bool
-    starting_day: Literal[0, 1, 2, 3, 4, 5, 6]
-    # TODO should be date, but those unions are not supported, however - we probably don't
-    # even support this anyway
-    init_date: Literal[""]
-    min_mode: Literal["day", "month", "year"]
-    max_mode: Literal["day", "month", "year"]
-    year_rows: int
-    year_columns: int
+    # # See https://github.com/open-formulieren/types/blob/44291a9388174ef2525817b46db8e16ed1e0d8aa/src/formio/dates.ts#L75
+    # show_weeks: bool
+    # starting_day: Literal[0, 1, 2, 3, 4, 5, 6]
+    # # TODO should be date, but those unions are not supported, however - we probably don't
+    # # even support this anyway
+    # init_date: Literal[""]
+    # min_mode: Literal["day", "month", "year"]
+    # max_mode: Literal["day", "month", "year"]
+    # year_rows: int
+    # year_columns: int
     # FIXME: should be date instances, but we have a mix of date, datetimes and empty
     # strings which msgspec can't handle properly yet. we need to fix the source
     # configuration
-    min_date: str | None
-    max_date: str | None
+    min_date: str | None = None
+    max_date: str | None = None
 
 
 # FIXME: should convert str -> date, but can't do `date | Literal[""] | None` in msgspec

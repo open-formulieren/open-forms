@@ -27,7 +27,7 @@ class SelectboxesExtensions(
 ):
     data_src: Literal["manual", "variable", "referenceLists"] = "manual"
     # for variable
-    items_expression: str | Mapping[str, object] = ""
+    items_expression: str | Mapping[str, object] | Sequence[Sequence[str]] = ""
     # for reference lists
     service: str = ""
     code: str = ""

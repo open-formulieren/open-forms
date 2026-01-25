@@ -14,7 +14,7 @@ from ._base import (
     TranslatedErrors,
 )
 
-type MimeType = Annotated[str, Meta(pattern=r"\w+/[\w.*\-_]+")]
+type MimeType = Annotated[str, Meta(pattern=r"(\w+/[\w.*\-_]+)|(\*)")]
 
 type FileValidatorKeys = Literal["required"]
 

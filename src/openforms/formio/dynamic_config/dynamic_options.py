@@ -31,7 +31,8 @@ def is_or_contains_none(option: JSONValue) -> bool:
 
 
 def escape_option(option: tuple[JSONValue, JSONValue]) -> tuple[str, str]:
-    return (escape(str(option[0])), escape(str(option[1])))
+    # convert to regular string instead of SafeString
+    return (escape(str(option[0]))[:], escape(str(option[1]))[:])
 
 
 def deduplicate_options(
