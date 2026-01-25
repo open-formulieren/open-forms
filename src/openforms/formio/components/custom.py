@@ -11,7 +11,6 @@ from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 import structlog
-from glom import glom
 from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
 
@@ -137,7 +136,7 @@ class DatePlugin(BasePlugin[DateComponent, Date]):
         """
         # relevant validators: required, datePicker.minDate and datePicker.maxDate
         validate = component.validate
-        required = validate and validate.required
+        required = validate is not None and validate.required
         validators = []
         if date_picker := component.date_picker:
             if min_date := date_picker.min_date:
@@ -231,7 +230,7 @@ class DatetimePlugin(BasePlugin[DatetimeComponent, DateTime]):
         """
         # relevant validators: required, datePicker.minDate and datePicker.maxDate
         validate = component.validate
-        required = validate and validate.required
+        required = validate is not None and validate.required
         validators = []
 
         if date_picker := component.date_picker:
@@ -308,7 +307,7 @@ class MapPlugin(BasePlugin[MapComponent, Map]):
         self, component: Map
     ) -> GeoJsonGeometryPolymorphicSerializer:
         validate = component.validate
-        required = validate and validate.required
+        required = validate is not None and validate.required
         return GeoJsonGeometryPolymorphicSerializer(
             required=required, allow_null=not required
         )
@@ -367,7 +366,7 @@ class PostcodePlugin(BasePlugin[Component, Postcode]):
         self, component: Postcode
     ) -> serializers.CharField | serializers.ListField:
         validate = component.validate
-        required = validate and validate.required
+        required = validate is not None and validate.required
         # dynamically add in more kwargs based on the component configuration
         extra = {}
         validators = []
@@ -510,7 +509,7 @@ class BSNPlugin(BasePlugin[Component, BSN]):
         self, component: BSN
     ) -> serializers.CharField | serializers.ListField:
         validate = component.validate
-        required = validate and validate.required
+        required = validate is not None and validate.required
 
         # dynamically add in more kwargs based on the component configuration
         extra = {}
@@ -573,12 +572,17 @@ class AddressValueSerializer(serializers.Serializer):
 
     def __init__(self, **kwargs):
         self.derive_address = kwargs.pop("derive_address", None)
-        self.component = kwargs.pop("component", None)
+        self.component: AddressNL | None = kwargs.pop("component", None)
         super().__init__(**kwargs)
 
     def validate_city(self, value: str) -> str:
-        if city_regex := glom(
-            self.component, "openForms.components.city.validate.pattern", default=""
+        if (
+            self.component
+            and (open_forms := self.component.open_forms)
+            and (components := open_forms.components)
+            and (city := components.city)
+            and (validate := city.validate)
+            and (city_regex := validate.pattern)
         ):
             if not re.fullmatch(city_regex, value):
                 raise serializers.ValidationError(
@@ -588,9 +592,13 @@ class AddressValueSerializer(serializers.Serializer):
         return value
 
     def validate_postcode(self, value: str) -> str:
-        """Normalize the postcode so that it matches the regex from the BRK API."""
-        if postcode_regex := glom(
-            self.component, "openForms.components.postcode.validate.pattern", default=""
+        if (
+            self.component
+            and (open_forms := self.component.open_forms)
+            and (components := open_forms.components)
+            and (postcode := components.postcode)
+            and (validate := postcode.validate)
+            and (postcode_regex := validate.pattern)
         ):
             if not re.fullmatch(postcode_regex, value):
                 raise serializers.ValidationError(
@@ -634,7 +642,7 @@ class AddressNLPlugin(BasePlugin[AddressNLComponent, AddressNL]):
 
     def build_serializer_field(self, component: AddressNL) -> AddressValueSerializer:
         validate = component.validate
-        required = validate and validate.required
+        required = validate is not None and validate.required
 
         extra = {}
         validators = []
@@ -973,7 +981,7 @@ class CosignV2Plugin(BasePlugin[Component, CosignV2]):
 
     def build_serializer_field(self, component: CosignV2) -> serializers.EmailField:
         validate = component.validate
-        required = validate and validate.required
+        required = validate is not None and validate.required
         return serializers.EmailField(required=required, allow_blank=not required)
 
     @staticmethod
@@ -994,7 +1002,7 @@ class IbanPlugin(BasePlugin[Component, Iban]):
         self, component: Iban
     ) -> serializers.CharField | serializers.ListField:
         validate = component.validate
-        required = validate and validate.required
+        required = validate is not None and validate.required
 
         base = serializers.CharField(
             required=required,
@@ -1025,7 +1033,7 @@ class LicensePlatePlugin(BasePlugin[Component, LicensePlate]):
         self, component: LicensePlate
     ) -> serializers.CharField | serializers.ListField:
         validate = component.validate
-        required = validate and validate.required
+        required = validate is not None and validate.required
 
         extra = {}
         validators = []

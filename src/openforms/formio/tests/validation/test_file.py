@@ -29,7 +29,7 @@ DEFAULT_FILE_COMPONENT: FileComponent = {
     "url": "",
     "useConfigFiletypes": False,
     "filePattern": "",
-    "file": {"allowedTypesLabels": []},
+    "file": {"type": [], "allowedTypesLabels": []},
 }
 
 
@@ -45,7 +45,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "url": "",
             "useConfigFiletypes": False,
             "filePattern": "",
-            "file": {"allowedTypesLabels": []},
+            "file": {"type": [], "allowedTypesLabels": []},
         }
 
         with self.subTest("without any provided value"):
@@ -67,7 +67,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "url": "",
             "useConfigFiletypes": False,
             "filePattern": "",
-            "file": {"allowedTypesLabels": []},
+            "file": {"type": [], "allowedTypesLabels": []},
             "validate": {"required": True},
         }
 
@@ -96,7 +96,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "url": "",
             "useConfigFiletypes": False,
             "filePattern": "",
-            "file": {"allowedTypesLabels": []},
+            "file": {"type": [], "allowedTypesLabels": []},
             "multiple": True,
             "maxNumberOfFiles": 2,
         }
@@ -128,7 +128,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "url": "",
             "useConfigFiletypes": False,
             "filePattern": "",
-            "file": {"allowedTypesLabels": []},
+            "file": {"type": [], "allowedTypesLabels": []},
             "multiple": False,
         }
 
@@ -162,7 +162,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "url": "",
             "useConfigFiletypes": False,
             "filePattern": "",
-            "file": {"allowedTypesLabels": []},
+            "file": {"type": [], "allowedTypesLabels": []},
             "maxNumberOfFiles": 1,
         }
 
@@ -197,6 +197,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "type": "editgrid",
             "key": "parent",
             "label": "Repeating group",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "file",
@@ -206,7 +207,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
                     "url": "",
                     "useConfigFiletypes": False,
                     "filePattern": "",
-                    "file": {"allowedTypesLabels": []},
+                    "file": {"type": [], "allowedTypesLabels": []},
                     "multiple": True,
                     "maxNumberOfFiles": 2,
                 }
@@ -489,7 +490,7 @@ class FileValidationMimeTypeTests(TestCase):
             "url": "",
             "useConfigFiletypes": False,
             "filePattern": "",
-            "file": {"allowedTypesLabels": []},
+            "file": {"type": [], "allowedTypesLabels": []},
         }
 
         is_valid, _ = validate_formio_data(component, data, submission=submission)

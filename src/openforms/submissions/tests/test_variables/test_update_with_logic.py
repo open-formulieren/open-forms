@@ -410,10 +410,12 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "nGreenApples",
+                        "label": "nGreenApples",
                     },
                     {
                         "type": "number",
                         "key": "nRedApples",
+                        "label": "nRedApples",
                     },
                 ]
             },

@@ -239,6 +239,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     }
                 ]
             },
@@ -250,6 +251,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "text2",
+                        "label": "text2",
                     }
                 ]
             },

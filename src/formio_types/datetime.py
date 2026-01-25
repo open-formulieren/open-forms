@@ -84,20 +84,20 @@ class PickerCustomOptions(FormioStruct, frozen=True):
 
 
 class DateTimePickerConfig(FormioStruct):
-    # See https://github.com/open-formulieren/types/blob/44291a9388174ef2525817b46db8e16ed1e0d8aa/src/formio/dates.ts#L75
-    show_weeks: bool
-    starting_day: Literal[0, 1, 2, 3, 4, 5, 6]
-    # TODO should be date, but those unions are not supported, however - we probably don't
-    # even support this anyway
-    init_date: Literal[""]
-    min_mode: Literal["day", "month", "year"]
-    max_mode: Literal["day", "month", "year"]
-    year_rows: int
-    year_columns: int
+    # # See https://github.com/open-formulieren/types/blob/44291a9388174ef2525817b46db8e16ed1e0d8aa/src/formio/dates.ts#L75
+    # show_weeks: bool
+    # starting_day: Literal[0, 1, 2, 3, 4, 5, 6]
+    # # TODO should be date, but those unions are not supported, however - we probably don't
+    # # even support this anyway
+    # init_date: Literal[""]
+    # min_mode: Literal["day", "month", "year"]
+    # max_mode: Literal["day", "month", "year"]
+    # year_rows: int
+    # year_columns: int
     # TODO: should be datetime instead of str, but they're not all valid RFC3339 encoded.
-    min_date: str | None
+    min_date: str | None = None
     # TODO: should be datetime instead of str, but they're not all valid RFC3339 encoded.
-    max_date: str | None
+    max_date: str | None = None
 
 
 class FormioDateTime:

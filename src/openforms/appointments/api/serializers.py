@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.utils.encoding import force_str
 from django.utils.functional import cached_property
 from django.utils.timezone import localdate
 from django.utils.translation import gettext_lazy as _
@@ -314,6 +315,19 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
 
                     component.setdefault("validate", {})["required"] = True
                     specific_errors[key] = group["error_message"]
+
+        for component in contact_details_meta:
+            component["label"] = force_str(component["label"])
+
+            match component:
+                case {"values": list() as values}:
+                    component["values"] = [
+                        {**opt, "label": force_str(opt["label"])} for opt in values
+                    ]
+                case {"data": {"values": list() as values}}:
+                    component["data"]["values"] = [
+                        {**opt, "label": force_str(opt["label"])} for opt in values
+                    ]
 
         contact_details_serializer = build_serializer(
             contact_details_meta,

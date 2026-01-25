@@ -63,6 +63,7 @@ class IbanFieldValidationTests(SimpleTestCase):
             "key": "foo",
             "label": "Test",
             "multiple": True,
+            "defaultValue": [],
         }
 
         data: JSONValue = {"foo": ["NL02ABNA0123456789", "NL14 ABNA 1238 8878 00"]}
