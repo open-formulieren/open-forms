@@ -9,6 +9,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
             "validate": {"required": True},
         }
 
@@ -35,6 +38,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         invalid_value = {
@@ -55,6 +61,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         invalid_value = {
@@ -75,6 +84,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         with self.subTest(case="Using non-array values for coordinates"):
@@ -135,6 +147,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         with self.subTest(case="Less than 2 values in coordinates"):
@@ -178,6 +193,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         valid_value = {
@@ -192,6 +210,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         invalid_value = {
@@ -212,6 +233,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         with self.subTest(case="Using non-array values for coordinates"):
@@ -290,6 +314,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         with self.subTest(case="Less than 2 values in coordinates"):
@@ -337,6 +364,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         valid_value = {
@@ -351,6 +381,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         invalid_value = {
@@ -371,6 +404,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         with self.subTest(case="Using non-array values for coordinates"):
@@ -470,6 +506,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         with self.subTest(case="Using less than 2 values for coordinates"):
@@ -518,6 +557,9 @@ class MapValidationTests(SimpleTestCase):
         component: MapComponent = {
             "type": "map",
             "key": "foo",
+            "label": "foo",
+            "interactions": {"marker": True, "polyline": False, "polygon": False},
+            "useConfigDefaultMapSettings": False,
         }
 
         data = {

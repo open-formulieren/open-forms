@@ -86,6 +86,7 @@ class StaticVariablesTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                     },
                 ]
             },
@@ -137,6 +138,7 @@ class StaticVariablesTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                     },
                 ]
             },

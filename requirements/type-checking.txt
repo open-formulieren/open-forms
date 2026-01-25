@@ -703,6 +703,10 @@ mozilla-django-oidc-db==1.1.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+msgspec==0.20.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 multidict==6.6.3
     # via
     #   -c requirements/ci.txt

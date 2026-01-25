@@ -195,6 +195,57 @@ def check_component(component: Component) -> Iterator[str]:
                             f"{language_code}."
                         )
 
+        case {"type": "editgrid"}:
+            if "groupLabel" not in component:
+                yield "Missing 'groupLabel' property."
+
+    # detect inconsistent default values
+    match component:
+        case {
+            "type": "textfield"
+            | "email"
+            | "phoneNumber"
+            | "postcode"
+            | "textarea"
+            | "select"
+            | "date"
+            | "datetime"
+            | "time",
+            "multiple": True,
+            "defaultValue": str(),
+        }:
+            yield "non-array defaultValue for 'multiple: true'"
+
+        case {
+            "type": "textfield"
+            | "email"
+            | "phoneNumber"
+            | "postcode"
+            | "textarea"
+            | "select"
+            | "date"
+            | "datetime"
+            | "time",
+            "multiple": True,
+            "defaultValue": list() as dv,
+        }:
+            if None in dv:
+                yield "None found in defaultValue for text-based component"
+
+        case {
+            "type": "textfield"
+            | "email"
+            | "phoneNumber"
+            | "postcode"
+            | "textarea"
+            | "select"
+            | "date"
+            | "datetime"
+            | "time",
+            "defaultValue": list(),
+        } if not (multiple := component.get("multiple")):
+            yield f"array defaultValue for 'multiple: {multiple}'"
+
 
 def check_component_html_usage(component: Component) -> list[str]:
     messages = []

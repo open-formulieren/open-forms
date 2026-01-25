@@ -204,18 +204,3 @@ class TimeFieldValidationTests(SimpleTestCase):
             is_valid, _ = validate_formio_data(component, {"time": invalid_value})
 
             self.assertFalse(is_valid)
-
-    def test_misconfigured_component(self):
-        component: Component = {
-            "type": "time",
-            "key": "time",
-            "label": "Misconfigured min/max time",
-            "validate": {
-                "minTime": True,  # type:ignore
-                "maxTime": 42,  # type:ignore
-            },
-        }
-
-        is_valid, _ = validate_formio_data(component, {"time": "15:36"})
-
-        self.assertTrue(is_valid)

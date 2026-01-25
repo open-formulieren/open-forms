@@ -19,7 +19,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
-from openforms.formio.components.vanilla import SelectBoxes, TextField
+from openforms.formio.components.vanilla import SelectBoxesPlugin, TextFieldPlugin
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.formatters.formio import TextFieldFormatter
 from openforms.formio.registry import BasePlugin, ComponentRegistry
@@ -118,14 +118,13 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
 
     def test_dynamic_form_definition(self):
         register = ComponentRegistry()
-        register("selectboxes")(SelectBoxes)
+        register("selectboxes")(SelectBoxesPlugin)
 
         @register("textfield")
         class TextField(BasePlugin):
             formatter = TextFieldFormatter
 
-            @staticmethod
-            def mutate_config_dynamically(component, submission, data):
+            def mutate_config_dynamically(self, component, submission, data):
                 component["label"] = "Rewritten label"
 
         self._add_submission_to_session(self.submission)
@@ -661,14 +660,13 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
     def test_custom_components_and_form_logic(self):
         # set up custom field type for test only
         register = ComponentRegistry()
-        register("textfield")(TextField)
+        register("textfield")(TextFieldPlugin)
 
         @register("testCustomType")
         class CustomType(BasePlugin):
             formatter = TextFieldFormatter
 
-            @staticmethod
-            def mutate_config_dynamically(component, submission, data):
+            def mutate_config_dynamically(self, component, submission, data):
                 key = component["key"]
                 component.clear()
                 component.update(

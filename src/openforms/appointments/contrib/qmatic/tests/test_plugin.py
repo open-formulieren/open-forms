@@ -2,6 +2,7 @@ from datetime import date, datetime
 
 from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
+from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
 
 import requests_mock
@@ -670,7 +671,8 @@ class ConfigurationTests(SimpleTestCase):
 
     def test_can_create_serializer_for_formio_fields(self):
         for component in FIELD_TO_FORMIO_COMPONENT.values():
-            assert "key" in component
+            component["label"] = force_str(component["label"])
+
             with self.subTest(component=component["key"]):
                 try:
                     serializer = build_serializer([component])

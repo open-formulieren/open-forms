@@ -9,16 +9,18 @@ https://github.com/formio/formio.js/blob/4.13.x/src/validator/Validator.js.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+import msgspec
 import structlog
 from glom import assign, glom
 from rest_framework import serializers
 
+from formio_types import AnyComponent, FormioConfiguration as FormioConfigurationStruct
+from formio_types.datetime import FormioDateTime
 from openforms.formio.typing.base import FormioConfiguration
 
 from .datastructures import FormioConfigurationWrapper, FormioData
-from .typing import Component
 from .utils import is_layout_component, iter_components
 
 if TYPE_CHECKING:
@@ -138,7 +140,7 @@ def dict_to_serializer(
 
 
 def build_serializer(
-    components: Sequence[Component], register: ComponentRegistry, **kwargs
+    components: Sequence[AnyComponent], register: ComponentRegistry, **kwargs
 ) -> StepDataSerializer:
     """
     Translate a sequence of Formio.js component definitions into a serializer.
@@ -148,14 +150,24 @@ def build_serializer(
     """
     fields: dict[str, FieldOrNestedFields] = {}
 
-    config: FormioConfiguration = {"components": components}
+    config = FormioConfigurationStruct(components=components)
     for component in iter_components(config, recurse_into_editgrid=False):
         if is_layout_component(component):
             continue
 
         field = register.build_serializer_field(component)
-        assign(obj=fields, path=component["key"], val=field, missing=dict)
+        assign(obj=fields, path=component.key, val=field, missing=dict)
 
     serializer = dict_to_serializer(fields, **kwargs)
-    serializer.apply_hidden_state(config, fields)
+    # TODO: make all this work with structs too :)))
+    legacy_config: FormioConfiguration = msgspec.to_builtins(config, enc_hook=_enc_hook)
+    serializer.apply_hidden_state(legacy_config, fields)
     return serializer
+
+
+def _enc_hook(obj: Any) -> Any:
+    match obj:
+        case FormioDateTime():
+            return obj.actual_value
+        case _:
+            raise NotImplementedError

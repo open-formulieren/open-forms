@@ -3,6 +3,7 @@ from datetime import date, datetime
 
 from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
+from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
 import requests_mock
@@ -10,6 +11,7 @@ from requests.exceptions import RequestException
 from zeep.exceptions import Error as ZeepError
 
 from openforms.formio.service import build_serializer
+from openforms.formio.typing import Component
 from openforms.utils.tests.http import fuzzy_server_error_status_code
 from openforms.utils.tests.logging import disable_logging
 from openforms.utils.xml import fromstring
@@ -762,7 +764,15 @@ class ConfigurationTests(SimpleTestCase):
 
     def test_can_create_serializer_for_formio_fields(self):
         for component in FIELD_TO_FORMIO_COMPONENT.values():
-            assert "key" in component
+            component: Component = {**component, "label": force_str(component["label"])}
+
+            match component:
+                case {"type": "radio"}:
+                    component["values"] = [
+                        {**opt, "label": force_str(opt["label"])}
+                        for opt in component["values"]
+                    ]
+
             with self.subTest(component=component["key"]):
                 try:
                     serializer = build_serializer([component])
