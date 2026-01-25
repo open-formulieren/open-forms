@@ -166,7 +166,12 @@ def build_serializer(
     This recursively builds up the serializer fields for each (nested) component and
     puts them into a serializer instance ready for validation.
     """
-    return _build_serializer(components, register=_register or register, **kwargs)
+    _components: Sequence[AnyComponent] = msgspec.convert(
+        components,
+        type=Sequence[AnyComponent],
+        dec_hook=_fixup_component_properties,
+    )
+    return _build_serializer(_components, register=_register or register, **kwargs)
 
 
 def as_json_schema(

@@ -111,27 +111,27 @@ class BasePlugin(Generic[ComponentT, NewComponentT], AbstractBasePlugin):
     def localize(self, component: ComponentT, language_code: str, enabled: bool):
         pass  # noop by default, specific component types can extend the base behaviour
 
-    def build_serializer_field(self, component: ComponentT) -> serializers.Field:
+    def build_serializer_field(self, component: NewComponentT) -> serializers.Field:
         # the default implementation is a compatibility shim while we transition to
         # the new backend validation mechanism.
+        component_type = TYPE_TO_TAG[type(component)]
         warnings.warn(
             "Relying on the default/implicit JSONField for component type "
-            f"{component['type']} is deprecated. Instead, define the "
+            f"{component_type} is deprecated. Instead, define the "
             "'build_serializer_field' method on the specific component plugin.",
             DeprecationWarning,
             stacklevel=2,
         )
 
         # not considered a layout component (because it doesn't have children)
-        if component["type"] == "content":
+        if component_type == "content":
             required = False
         elif is_layout_component(component):
             required = False  # they do not hold data, they can never be required
         else:
+            validate = getattr(component, "validate", None)
             required = (
-                validate.get("required", False)
-                if (validate := component.get("validate"))
-                else False
+                getattr(validate, "required", False) if validate is not None else False
             )
 
         # Allow anything that is valid JSON, taking into account the 'required'
@@ -344,7 +344,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         if generic_translations:
             del component["openForms"]["translations"]  # type: ignore
 
-    def build_serializer_field(self, component: Component) -> serializers.Field:
+    def build_serializer_field(self, component: AnyComponent) -> serializers.Field:
         """
         Translate a given component into a single serializer field, suitable for
         input validation.
@@ -352,9 +352,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         # if the component known in registry -> use the component plugin, otherwise
         # fall back to the special 'default' plugin which implements the current
         # behaviour of accepting any JSON value.
-        if (component_type := component["type"]) not in self:
-            component_type = "default"
-
+        component_type = TYPE_TO_TAG[type(component)]
         component_plugin = self[component_type]
         return component_plugin.build_serializer_field(component)
 

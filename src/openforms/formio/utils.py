@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import typing
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
@@ -9,6 +10,15 @@ import structlog
 from glom import Coalesce, Path, glom
 from typing_extensions import TypeIs
 
+from formio_types import (
+    AnyComponent,
+    Columns,
+    Content,
+    EditGrid,
+    Fieldset,
+    FormioConfiguration as FormioConfigurationStruct,
+    SoftRequiredErrors,
+)
 from openforms.typing import JSONObject, JSONValue
 from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
@@ -31,7 +41,7 @@ def _is_column_component(component: ComponentLike) -> TypeIs[ColumnsComponent]:
     return component.get("type") == "columns"
 
 
-@elasticapm.capture_span(span_type="app.formio.configuration")
+@typing.overload
 def iter_components(
     configuration: ComponentLike,
     *,
@@ -39,36 +49,88 @@ def iter_components(
     _is_root=True,
     _mark_root=False,
     recurse_into_editgrid: bool = True,
-) -> Iterator[Component]:
-    components = configuration.get("components", [])
-    if _is_column_component(configuration) and recursive:
-        assert not components, "Both nested components and columns found"
-        for column in configuration["columns"]:
-            yield from iter_components(
-                configuration=column,
-                recursive=recursive,
-                _is_root=False,
-                recurse_into_editgrid=recurse_into_editgrid,
-            )
+) -> Iterator[Component]: ...
 
-    for component in components:
-        if _mark_root:
-            component["_is_root"] = _is_root
-        yield component
-        if recursive:
-            # TODO: find a cleaner solution - currently just not yielding these is not
-            # an option because we have some special treatment for editgrid data which
-            # 'copies' the nested components for further processing.
-            # Ideally, with should be able to delegate this behaviour to the registered
-            # component classes, but that's a refactor too big for the current task(s).
-            if component.get("type") == "editgrid" and not recurse_into_editgrid:
-                continue
-            yield from iter_components(
-                configuration=component,
-                recursive=recursive,
-                _is_root=False,
-                recurse_into_editgrid=recurse_into_editgrid,
-            )
+
+@typing.overload
+def iter_components(
+    configuration: FormioConfigurationStruct | AnyComponent,
+    *,
+    recursive=True,
+    recurse_into_editgrid: bool = True,
+) -> Iterator[AnyComponent]: ...
+
+
+@elasticapm.capture_span(span_type="app.formio.configuration")
+def iter_components(
+    configuration: ComponentLike | FormioConfigurationStruct | AnyComponent,
+    *,
+    recursive=True,
+    _is_root=True,
+    _mark_root=False,
+    recurse_into_editgrid: bool = True,
+) -> Iterator[Component] | Iterator[AnyComponent]:
+    if not isinstance(configuration, dict):
+        match configuration:
+            case FormioConfigurationStruct() | Fieldset():
+                for component in configuration.components:
+                    yield component
+                    if recursive:
+                        yield from iter_components(
+                            component,
+                            recursive=recursive,
+                            recurse_into_editgrid=recurse_into_editgrid,
+                        )
+            case Columns(columns=columns) if recursive:
+                for column in columns:
+                    for component in column.components:
+                        yield from iter_components(
+                            component,
+                            recursive=recursive,
+                            recurse_into_editgrid=recurse_into_editgrid,
+                        )
+            case EditGrid(components=editgrid_components) if (
+                recursive and recurse_into_editgrid
+            ):
+                for component in editgrid_components:
+                    yield from iter_components(
+                        component,
+                        recursive=recursive,
+                        recurse_into_editgrid=recurse_into_editgrid,
+                    )
+            case _:
+                pass
+    else:
+        components = configuration.get("components", [])
+        assert isinstance(components, list)
+        if _is_column_component(configuration) and recursive:
+            assert not components, "Both nested components and columns found"
+            for column in configuration["columns"]:
+                yield from iter_components(
+                    configuration=column,
+                    recursive=recursive,
+                    _is_root=False,
+                    recurse_into_editgrid=recurse_into_editgrid,
+                )
+
+        for component in components:
+            if _mark_root:
+                component["_is_root"] = _is_root
+            yield component
+            if recursive:
+                # TODO: find a cleaner solution - currently just not yielding these is not
+                # an option because we have some special treatment for editgrid data which
+                # 'copies' the nested components for further processing.
+                # Ideally, with should be able to delegate this behaviour to the registered
+                # component classes, but that's a refactor too big for the current task(s).
+                if component.get("type") == "editgrid" and not recurse_into_editgrid:
+                    continue
+                yield from iter_components(
+                    configuration=component,
+                    recursive=recursive,
+                    _is_root=False,
+                    recurse_into_editgrid=recurse_into_editgrid,
+                )
 
 
 def iterate_components_with_configuration_path(
@@ -161,7 +223,16 @@ def get_readable_path_from_configuration_path(
     return " > ".join(keys_path)
 
 
-def is_layout_component(component: Component) -> bool:
+def is_layout_component(component: Component | AnyComponent) -> bool:
+    # msgspec struct
+    if not isinstance(component, dict):
+        # TODO: define classvar property on component class itself?
+        match component:
+            case Content() | Columns() | Fieldset() | SoftRequiredErrors():
+                return True
+            case _:
+                return False
+
     # Adapted from isLayoutComponent util function in Formio
     # https://github.com/formio/formio.js/blob/4.13.x/src/utils/formUtils.js#L25
     # FIXME ideally there would be a cleaner fix for this
