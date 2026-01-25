@@ -15,10 +15,10 @@ import structlog
 from glom import assign, glom
 from rest_framework import serializers
 
+from formio_types import AnyComponent, FormioConfiguration as FormioConfigurationStruct
 from openforms.formio.typing.base import FormioConfiguration
 
 from .datastructures import FormioConfigurationWrapper, FormioData
-from .typing import Component
 from .utils import is_layout_component, iter_components
 
 if TYPE_CHECKING:
@@ -138,7 +138,7 @@ def dict_to_serializer(
 
 
 def build_serializer(
-    components: Sequence[Component], register: ComponentRegistry, **kwargs
+    components: Sequence[AnyComponent], register: ComponentRegistry, **kwargs
 ) -> StepDataSerializer:
     """
     Translate a sequence of Formio.js component definitions into a serializer.
@@ -148,7 +148,7 @@ def build_serializer(
     """
     fields: dict[str, FieldOrNestedFields] = {}
 
-    config: FormioConfiguration = {"components": components}
+    config = FormioConfigurationStruct(components=components)
     for component in iter_components(config, recurse_into_editgrid=False):
         if is_layout_component(component):
             continue
