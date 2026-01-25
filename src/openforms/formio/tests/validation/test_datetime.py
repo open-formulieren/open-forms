@@ -136,6 +136,7 @@ class DatetimeFieldValidationTests(SimpleTestCase):
             "key": "datetimes",
             "label": "Multiple datetimes",
             "multiple": True,
+            "defaultValue": [],
         }
         data: JSONValue = {"datetimes": ["2024-01-01T00:00:00+00:00", "notdatetime"]}
 

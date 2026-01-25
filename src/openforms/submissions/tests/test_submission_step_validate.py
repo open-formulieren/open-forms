@@ -49,6 +49,9 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                     {
                         "key": "my_file",
                         "type": "file",
+                        "filePattern": "",
+                        "file": {"type": []},
+                        "url": "",
                     },
                 ]
             },
@@ -310,6 +313,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                     {
                         "key": "fieldset",
                         "type": "fieldset",
+                        "label": "fieldset",
                         "hidden": True,
                         "components": [
                             {
@@ -541,6 +545,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                         "type": "editgrid",
                         "key": "repeatingGroup",
                         "label": "Repeating group",
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "type": "number",
@@ -704,6 +709,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                                         },
                                         "type": "file",
                                         "label": "File Upload 1",
+                                        "filePattern": "",
                                     },
                                 ],
                             },
@@ -719,6 +725,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                                         },
                                         "type": "file",
                                         "label": "File Upload 2",
+                                        "filePattern": "",
                                     },
                                 ],
                             },
@@ -751,18 +758,21 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             form_definition__configuration={
                 "components": [
                     {
-                        "key": "fieldset",
                         "type": "fieldset",
+                        "key": "fieldset",
+                        "label": "fieldset",
+                        "hideHeader": False,
                         "components": [
                             {
+                                "type": "file",
                                 "key": "fileUpload1",
+                                "label": "File Upload 1",
                                 "file": {
                                     "name": "",
                                     "type": [],
                                     "allowedTypesLabels": [],
                                 },
-                                "type": "file",
-                                "label": "File Upload 1",
+                                "filePattern": "",
                             },
                         ],
                     },
@@ -1435,6 +1445,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                         "key": "textfield",
                         "label": "Textfield",
                         "multiple": True,
+                        "defaultValue": [],
                     },
                     {
                         "type": "radio",

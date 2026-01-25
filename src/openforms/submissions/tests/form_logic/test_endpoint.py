@@ -685,6 +685,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "textfieldStep1",
+                        "label": "Text field step 1",
                         "hidden": True,
                         "clearOnHide": True,
                     },
@@ -698,6 +699,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "textfieldStep2",
+                        "label": "Text field step 2",
                         "hidden": True,
                         "clearOnHide": True,
                     }

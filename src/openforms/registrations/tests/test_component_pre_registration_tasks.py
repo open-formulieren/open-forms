@@ -1,3 +1,4 @@
+from typing import Any
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings
@@ -29,12 +30,12 @@ class HookComponent(Component): ...
 class FailHookComponent(Component): ...
 
 
-class NoHook(BasePlugin[NoHookComponent]):
+class NoHook(BasePlugin[NoHookComponent, Any]):
     def build_serializer_field(self, component):
         raise NotImplementedError()
 
 
-class Hook(BasePlugin[HookComponent]):
+class Hook(BasePlugin[HookComponent, Any]):
     def build_serializer_field(self, component):
         raise NotImplementedError()
 
@@ -45,7 +46,7 @@ class Hook(BasePlugin[HookComponent]):
         return {"data": "something"}
 
 
-class FailHook(BasePlugin[FailHookComponent]):
+class FailHook(BasePlugin[FailHookComponent, Any]):
     def build_serializer_field(self, component):
         raise NotImplementedError()
 
@@ -168,7 +169,7 @@ class PreRegistrationTaskTests(TestCase):
             {"withoutHook": "foo", "withHook": "bar"},
         )
 
-        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)
 
         state = submission.variables_state
         no_hook_var = state.variables["withoutHook"]
@@ -204,7 +205,7 @@ class PreRegistrationTaskTests(TestCase):
             {"withoutHook": "foo", "failedHook": "bar"},
         )
 
-        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)
 
         state = submission.variables_state
         no_hook_var = state.variables["withoutHook"]
@@ -241,7 +242,7 @@ class PreRegistrationTaskTests(TestCase):
             {"withHook": "foo", "failedHook": "bar"},
         )
 
-        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)
 
         state = submission.variables_state
         hook_var = state.variables["withHook"]
@@ -277,7 +278,7 @@ class PreRegistrationTaskTests(TestCase):
             "openforms.registrations.tests.test_component_pre_registration_tasks.Hook.pre_registration_hook"
         ) as mock_hook:
             mock_hook.side_effect = ValueError("something went wrong")
-            execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
+            execute_component_pre_registration_group.delay(submission_id=submission.pk)
 
         state = submission.variables_state
         hook_var = state.variables["withHook"]
@@ -289,7 +290,7 @@ class PreRegistrationTaskTests(TestCase):
         self.assertIn("traceback", hook_var.pre_registration_result)
 
         # 2nd run - success
-        execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
+        execute_component_pre_registration_group.delay(submission_id=submission.pk)
 
         hook_var.refresh_from_db()
         self.assertEqual(
