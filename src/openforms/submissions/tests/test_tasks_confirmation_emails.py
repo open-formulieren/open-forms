@@ -738,9 +738,10 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
 
 class RaceConditionTests(TransactionTestCase):
+    @patch("openforms.submissions.tasks.emails.on_confirmation_email_sent")
     @patch("openforms.submissions.tasks.emails._send_confirmation_email")
     def test_concurrent_send_confirmation_email_calls(
-        self, mock_send_confirmation_email
+        self, mock_send_confirmation_email, mock_on_confirmation_email_sent
     ):
         """
         Assert that simultaneously scheduled send_email tasks do not run twice.
