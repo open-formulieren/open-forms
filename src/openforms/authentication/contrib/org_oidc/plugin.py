@@ -105,6 +105,7 @@ class OIDCAuthentication(BasePlugin[OIDCOptions]):
         assert form is not None
 
         authentication_backend = form.auth_backends.get(backend=PLUGIN_IDENTIFIER)
+        assert self.configuration_options is not None
         serializer = self.configuration_options(data=authentication_backend.options)
         serializer.is_valid(raise_exception=True)
         return serializer.data["visible"]
