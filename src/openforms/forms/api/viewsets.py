@@ -237,7 +237,17 @@ _FORM_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(FormSerializer)
     ),
     retrieve=extend_schema(
         summary=_("Retrieve form details"),
-        parameters=[UUID_OR_SLUG_PARAMETER],
+        parameters=[
+            UUID_OR_SLUG_PARAMETER,
+            OpenApiParameter(
+                name="authVisible",
+                location=OpenApiParameter.QUERY,
+                type=bool,
+                description=_(
+                    "If enabled, then all authorization methods are visible when the form starts"
+                ),
+            ),
+        ],
         description=_(
             "Retrieve the details/configuration of a particular form. \n\n"
             "A form is a collection of form steps, where each form step points to a "
