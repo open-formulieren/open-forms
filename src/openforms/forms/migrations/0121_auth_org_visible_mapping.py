@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
     dependencies = [
         (
             "forms",
-            "0118_alter_form_new_renderer_enabled",
+            "0120_change_disable_next_logic_action",
         ),
     ]
 
