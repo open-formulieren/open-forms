@@ -1,13 +1,17 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from openforms.forms.models import FormVariable
 from openforms.plugins.plugin import AbstractBasePlugin
-from openforms.submissions.models import Submission
 from openforms.typing import JSONObject, StrOrPromise
 
 from .constants import DATA_TYPE_TO_JSON_SCHEMA, FormVariableDataTypes
+
+if TYPE_CHECKING:
+    from openforms.submissions.models import Submission
 
 
 class BaseStaticVariable(ABC, AbstractBasePlugin):
