@@ -73,7 +73,46 @@ traffic. Three endpoints are exposed for health checks.
 Celery workers
 --------------
 
-.. todo:: TODO
+The Celery Worker service is responsible for picking up and executing background tasks
+scheduled by the web service or Celery beat.
+
+The worker creates and updates an event loop liveness file at
+``/app/tmp/celery_worker_event_loop.live``, which is touched every minute. Additionally,
+when the worker is ready to accept tasks, it creates the
+``/app/tmp/celery_worker.ready`` file and removes it when the worker shuts down.
+
+The worker liveness can be checked with the ``maykin-common`` CLI:
+
+.. code-block:: bash
+
+    maykin-common worker-health-check \
+        --broker redis://redis:6379/0 \
+        --liveness-file /app/tmp/celery_worker_event_loop.live \
+        --worker-name celery@docker
+
+.. caution:: Adapt the ``--broker`` and ``--worker-name`` options to your environment.
+
+    * ``--broker`` must match the value of the ``CELERY_BROKER``
+      :ref:`setting <installation_environment_config>`.
+    * ``--worker-name`` should not be necessary as it is taken from the
+      ``CELERY_WORKER_NAME`` envvar if set, and otherwise falls back to
+      ``celery@<hostname>``, where the hostname of the container is used.
+
+      If pings are failing, you may need to provide the worker name(s) explicitly.
+
+.. tip:: You can also use the health checks for readiness in rolling deployments on
+   Kubernetes, so that old pods are only stopped when the new versions are confirmed to
+   be ready.
+
+   .. code-block:: bash
+
+       maykin-common worker-health-check \
+        --skip-ping \
+        --skip-event-loop-liveness \
+        --no-skip-readiness \
+        --readiness-file /app/tmp/celery_worker.ready
+
+.. versionadded:: 3.5.0
 
 Celery beat
 -----------
