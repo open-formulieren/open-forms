@@ -16,7 +16,15 @@ from ...validators import (
 from .action_serializers import LogicComponentActionSerializer
 
 
-class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
+class FormLogicListSerializer(ListWithChildSerializer):
+    child_serializer_class = (
+        "openforms.forms.api.serializers.logic.form_logic.FormLogicSerializer"
+    )
+
+
+class FormLogicSerializer(
+    serializers.HyperlinkedModelSerializer, OrderedModelSerializer
+):
     form = RelatedFieldFromContext(
         queryset=Form.objects.all(),
         view_name="api:form-detail",
@@ -25,46 +33,6 @@ class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
         required=True,
         context_name="forms",
     )
-
-    class Meta:
-        fields = (
-            "uuid",
-            "url",
-            "form",
-            "json_logic_trigger",
-        )
-        extra_kwargs = {
-            "uuid": {
-                "read_only": True,
-            },
-            "json_logic_trigger": {
-                "help_text": _(
-                    "The trigger expression to determine if the actions should execute "
-                    "or not. Note that this must be a valid JsonLogic expression, and "
-                    "the first operand must be a reference to a variable in the form."
-                ),
-                "validators": [JsonLogicValidator()],
-            },
-        }
-        validators = [
-            JsonLogicTriggerValidator("json_logic_trigger"),
-        ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        related_field = self.Meta.model._meta.get_field("form")
-        self.fields["form"].help_text = related_field.help_text
-        self.fields["form"].label = related_field.verbose_name
-
-
-class FormLogicListSerializer(ListWithChildSerializer):
-    child_serializer_class = (
-        "openforms.forms.api.serializers.logic.form_logic.FormLogicSerializer"
-    )
-
-
-class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
     trigger_from_step = NestedHyperlinkedRelatedField(
         required=False,
         allow_null=True,
@@ -87,10 +55,14 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
         ),
     )
 
-    class Meta(FormLogicBaseSerializer.Meta):
+    class Meta:
         model = FormLogic
         list_serializer_class = FormLogicListSerializer
-        fields = FormLogicBaseSerializer.Meta.fields + (
+        fields = (
+            "uuid",
+            "url",
+            "form",
+            "json_logic_trigger",
             "description",
             "order",
             "trigger_from_step",
@@ -98,7 +70,15 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
             "is_advanced",
         )
         extra_kwargs = {
-            **FormLogicBaseSerializer.Meta.extra_kwargs,
+            "uuid": {"read_only": True},
+            "json_logic_trigger": {
+                "help_text": _(
+                    "The trigger expression to determine if the actions should execute "
+                    "or not. Note that this must be a valid JsonLogic expression, and "
+                    "the first operand must be a reference to a variable in the form."
+                ),
+                "validators": [JsonLogicValidator()],
+            },
             "url": {
                 "view_name": "api:form-logic-rules",
                 "lookup_field": "uuid",
@@ -114,6 +94,14 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
                 ),
             },
         }
-        validators = FormLogicBaseSerializer.Meta.validators + [
-            FormLogicTriggerFromStepFormValidator()
+        validators = [
+            JsonLogicTriggerValidator("json_logic_trigger"),
+            FormLogicTriggerFromStepFormValidator(),
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        related_field = self.Meta.model._meta.get_field("form")
+        self.fields["form"].help_text = related_field.help_text
+        self.fields["form"].label = related_field.verbose_name
