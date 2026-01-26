@@ -7,6 +7,7 @@ frozendict
 furl
 glom
 maykin-json-logic-py
+networkx # graphs for logic analysis
 jsonschema
 jsonschema_specifications
 jq

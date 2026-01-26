@@ -651,6 +651,10 @@ mozilla-django-oidc-db==1.1.1
     #   -r requirements/base.txt
 multidict==6.6.3
     # via yarl
+networkx==3.6
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 nh3==0.3.2
     # via
     #   -c requirements/base.txt
