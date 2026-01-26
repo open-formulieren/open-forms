@@ -1,6 +1,5 @@
 # Core python libraries
 ape-pie
-bleach[css] >= 5
 celery ~= 5.0
 celery-once
 defusedxml
@@ -11,9 +10,9 @@ maykin-json-logic-py
 jsonschema
 jsonschema_specifications
 jq
-html5lib
 lxml
 lxml-html-clean
+nh3
 onlinepayments-sdk-python3 # Worldline SDK
 O365  # microsoft graph
 phonenumberslite

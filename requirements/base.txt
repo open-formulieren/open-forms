@@ -25,8 +25,6 @@ beautifulsoup4==4.10.0
     # via o365
 billiard==4.2.1
     # via celery
-bleach==5.0.1
-    # via -r requirements/base.in
 boltons==21.0.0
     # via
     #   face
@@ -296,9 +294,7 @@ googleapis-common-protos==1.70.0
 grpcio==1.74.0
     # via opentelemetry-exporter-otlp-proto-grpc
 html5lib==1.1
-    # via
-    #   -r requirements/base.in
-    #   weasyprint
+    # via weasyprint
 humanize==3.14.0
     # via flower
 idna==3.7
@@ -374,6 +370,8 @@ mozilla-django-oidc-db==1.1.1
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning
+nh3==0.3.2
+    # via -r requirements/base.in
 numpy==2.3.3
     # via shapely
 o365==2.0.31
@@ -610,7 +608,6 @@ simplejson==3.19.3
     # via mail-parser
 six==1.16.0
     # via
-    #   bleach
     #   click-repl
     #   furl
     #   html5lib
@@ -638,7 +635,6 @@ tabulate==0.8.9
 tinycss2==1.1.0
     # via
     #   -r requirements/base.in
-    #   bleach
     #   cssselect2
     #   weasyprint
 tornado==6.5
@@ -692,7 +688,6 @@ webauthn==2.0.0
     # via django-two-factor-auth
 webencodings==0.5.1
     # via
-    #   bleach
     #   cssselect2
     #   html5lib
     #   tinycss2

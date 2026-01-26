@@ -3,12 +3,10 @@ import hashlib
 from django.http import HttpRequest
 from django.utils.safestring import SafeString, mark_safe
 
-import bleach
-import html5lib
 import lxml.html
+import nh3
 import structlog
 import tinycss2
-from bleach import css_sanitizer
 from lxml import etree
 from rest_framework.request import Request
 
@@ -16,9 +14,9 @@ from .constants import NONCE_HTTP_HEADER
 
 logger = structlog.stdlib.get_logger(__name__)
 
-wysiwyg_allowed_protocols = ["http", "https", "mailto", "data"]
+WYSIWYG_ALLOWED_PROTOCOLS: set[str] = {"http", "https", "mailto", "data"}
 
-wysiwyg_allowed_tags = [
+WYSIWYG_ALLOWED_TAGS: set[str] = {
     "a",
     "abbr",
     "acronym",
@@ -54,10 +52,10 @@ wysiwyg_allowed_tags = [
     "hr",
     "button",
     # NOTE we don't add "style" here
-]
+}
 
-_tags_with_style = [
-    # these will have _style_attrs added to the allowed tag/attr map below
+_TAGS_WITH_STYLE = [
+    # these will have _STYLE_ATTRS added to the allowed tag/attr map below
     "a",
     "p",
     "figure",
@@ -71,33 +69,89 @@ _tags_with_style = [
     "h5",
     "h6",
 ]
-_style_attrs = [
+_STYLE_ATTRS: set[str] = {
     "id",
     "class",
     "style",
-]
-
-wysiwyg_tag_allowed_attribute_map = {
-    "a": ["href", "title", "rel", "target"],
-    "abbr": ["title"],
-    "acronym": ["title"],
-    "img": ["width", "height", "alt", "src"],
-    "figure": ["title", "src"],
-    # CKEditor has a table designer with spans
-    "td": ["colspan", "rowspan"],
-    # Button class for NL DS styling + type
-    "button": ["class", "type"],
 }
 
-wysiwyg_css_properties = list(css_sanitizer.ALLOWED_CSS_PROPERTIES)
-wysiwyg_css_properties += [
-    # TinyMCE uses padding-left for indent
-    "padding-left",
+WYSIWYG_TAG_ALLOWED_ATTRIBUTE_MAP: dict[str, set[str]] = {
+    "a": {"href", "title", "rel", "target"},
+    "abbr": {"title"},
+    "acronym": {"title"},
+    "img": {"width", "height", "alt", "src"},
+    "figure": {"title", "src"},
+    # CKEditor has a table designer with spans
+    "td": {"colspan", "rowspan"},
+    # Button class for NL DS styling + type
+    "button": {"class", "type"},
+}
+
+# set taken from bleach
+WYSIWYG_CSS_PROPERTIES: set[str] = {
+    "azimuth",
+    "background-color",
+    "border-bottom-color",
+    "border-collapse",
+    "border-color",
+    "border-left-color",
+    "border-right-color",
+    "border-top-color",
+    "clear",
+    "color",
+    "cursor",
+    "direction",
+    "display",
+    "elevation",
+    "float",
+    "font",
+    "font-family",
+    "font-size",
+    "font-style",
+    "font-variant",
+    "font-weight",
+    "height",
+    "letter-spacing",
+    "line-height",
+    "overflow",
+    "pause",
+    "pause-after",
+    "pause-before",
+    "pitch",
+    "pitch-range",
+    "richness",
+    "speak",
+    "speak-header",
+    "speak-numeral",
+    "speak-punctuation",
+    "speech-rate",
+    "stress",
+    "text-align",
+    "text-decoration",
+    "text-indent",
+    "unicode-bidi",
+    "vertical-align",
+    "voice-family",
+    "volume",
+    "white-space",
+    "width",
+    # extended with our own needs
+} | {
     # TinyMCE uses list-style-type for list styling
     "list-style-type",
-]
-
-wysiwyg_svg_properties = list(css_sanitizer.ALLOWED_SVG_PROPERTIES)
+    # TinyMCE uses padding-left for indent
+    "padding-left",
+}
+WYSIWYG_SVG_PROPERTIES: set[str] = {
+    "fill",
+    "fill-opacity",
+    "fill-rule",
+    "stroke",
+    "stroke-linecap",
+    "stroke-linejoin",
+    "stroke-opacity",
+    "stroke-width",
+}
 
 
 class SafeStringWrapper(SafeString):
@@ -132,12 +186,9 @@ def post_process_html(
         logger.info("skip_processing", reason="nonce_not_found")
         return html
 
-    lxml_etree_document = html5lib.parse(
-        html,
-        treebuilder="lxml",
-        namespaceHTMLElements=False,
-    )
-    inline_styles = dict()
+    # mimick html5lib wrapping content in <html><body>...</body></html>
+    lxml_etree_document = lxml.html.fromstring(f"<html><body>{html}</body></html>")
+    inline_styles: dict[str, str] = {}
 
     for node in lxml_etree_document.iter():
         # scan for inline styles
@@ -149,11 +200,12 @@ def post_process_html(
 
         parsed_styles = tinycss2.parse_declaration_list(style)
 
-        # apply CSS whitelist here because the bleach step won't see these styles after we extracted them
+        # apply CSS allowlist here because the cleaning step won't see these styles after
+        # we extracted them
         parsed_styles = [
             s
             for s in parsed_styles
-            if getattr(s, "lower_name", None) in wysiwyg_css_properties
+            if getattr(s, "lower_name", None) in WYSIWYG_CSS_PROPERTIES
         ]
         if not parsed_styles:
             continue
@@ -171,30 +223,11 @@ def post_process_html(
         # keep the ID and CSS
         inline_styles[html_id] = tinycss2.serialize(parsed_styles)
 
-    # did we extract style we want to keep?
-    if inline_styles:
-        style_element = etree.Element("style")
-        style_element.attrib["nonce"] = csp_nonce
-
-        # build the CSS from the inline styles
-        all_styles = ""
-        for unique_id, style in inline_styles.items():
-            all_styles += f"#{unique_id} {{\n    {style}\n}} \n"
-
-        style_element.text = f"\n{all_styles}\n"
-
-        # convert styles to html string
-        style_markup = lxml.html.tostring(
-            style_element, encoding="unicode", pretty_print=True
-        )
-        style_markup = f"{style_markup}\n"
-    else:
-        style_markup = ""
-
     # convert back to a string
-    root = lxml_etree_document.getroot()
-    body = root.find("body")  # parsers wrap snippet in <html><body>...</body></html>
-    parts = body.getchildren()
+    root = lxml_etree_document
+    body = root.find("body")
+    assert body is not None
+    parts = list(body)
     if not parts:  # no nested HTML/elements
         return body.text or ""
 
@@ -204,8 +237,29 @@ def post_process_html(
             for part in parts
         ]
     )
-    # run bleach on non-style part
-    modified_html = bleach_wysiwyg_content(modified_html)
+    # sanitize the non-style part
+    modified_html = sanitize_wysiwyg_content(modified_html)
+
+    # did we extract style we want to keep?
+    style_markup: str = ""
+    if inline_styles:
+        style_element = etree.Element("style")
+        style_element.attrib["nonce"] = csp_nonce
+
+        # build the CSS from the inline styles
+        all_styles = ""
+        for unique_id, style in inline_styles.items():
+            if f'id="{unique_id}"' not in modified_html:
+                continue
+            all_styles += f"#{unique_id} {{\n    {style}\n}} \n"
+
+        if all_styles:
+            style_element.text = f"\n{all_styles}\n"
+            # convert styles to html string
+            style_markup = lxml.html.tostring(
+                style_element, encoding="unicode", pretty_print=True
+            )
+            style_markup = f"{style_markup}\n"
 
     result = SafeStringWrapper(mark_safe(f"{style_markup}{modified_html}"))
 
@@ -215,43 +269,39 @@ def post_process_html(
     return result
 
 
-def bleach_wysiwyg_content(html):
-    bleached = bleach.clean(
+def sanitize_wysiwyg_content(html):
+    cleaned = nh3.clean(
         html,
-        tags=wysiwyg_allowed_tags,
-        attributes=wysiwyg_tag_allowed_attribute_map,
-        protocols=wysiwyg_allowed_protocols,
-        # let's not strip tags to keep problems visible
-        strip=False,
+        tags=WYSIWYG_ALLOWED_TAGS,
+        attributes=WYSIWYG_TAG_ALLOWED_ATTRIBUTE_MAP,
+        url_schemes=WYSIWYG_ALLOWED_PROTOCOLS,
+        link_rel=None,
         strip_comments=True,
-        css_sanitizer=css_sanitizer.CSSSanitizer(
-            allowed_css_properties=wysiwyg_css_properties,
-            allowed_svg_properties=wysiwyg_svg_properties,
-        ),
+        filter_style_properties=WYSIWYG_CSS_PROPERTIES | WYSIWYG_SVG_PROPERTIES,
     )
-    return mark_safe(bleached)
+    return mark_safe(cleaned)
 
 
 def _add_wysiwyg_style_attributes_and_tags():
     # util to limit amount of manual edited data in the allowed_attribute_map
-    for tag in _tags_with_style:
+    for tag in _TAGS_WITH_STYLE:
         # check if we forgot to add it to allowed tags
-        if tag not in wysiwyg_allowed_tags:
+        if tag not in WYSIWYG_ALLOWED_TAGS:  # pragma: no cover
             raise ValueError(
                 f"adding tag '{tag}' to tag_attr_map but missing from 'allowed_tags'"
             )
 
         # add style attrs to tag/attr map
-        if tag in wysiwyg_tag_allowed_attribute_map:
-            for attr in _style_attrs:
-                if attr not in wysiwyg_tag_allowed_attribute_map[tag]:
-                    wysiwyg_tag_allowed_attribute_map[tag].append(attr)
+        if tag in WYSIWYG_TAG_ALLOWED_ATTRIBUTE_MAP:
+            for attr in _STYLE_ATTRS:
+                if attr not in WYSIWYG_TAG_ALLOWED_ATTRIBUTE_MAP[tag]:
+                    WYSIWYG_TAG_ALLOWED_ATTRIBUTE_MAP[tag].add(attr)
         else:
-            wysiwyg_tag_allowed_attribute_map[tag] = _style_attrs.copy()
+            WYSIWYG_TAG_ALLOWED_ATTRIBUTE_MAP[tag] = _STYLE_ATTRS.copy()
 
     # check if tags in attr map exist in allowed tags
-    for tag in wysiwyg_tag_allowed_attribute_map.keys():
-        if tag not in wysiwyg_allowed_tags:
+    for tag in WYSIWYG_TAG_ALLOWED_ATTRIBUTE_MAP.keys():
+        if tag not in WYSIWYG_ALLOWED_TAGS:  # pragma: no cover
             raise ValueError(
                 f"adding tag '{tag}' to tag_attr_map but missing from 'allowed_tags'"
             )

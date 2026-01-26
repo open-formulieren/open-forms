@@ -88,12 +88,9 @@ class AdminTests(WebTest):
             </g>
         </svg>
         """
-        sanitized_svg_content = b"""
+        sanitized_svg_content = """
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
             <circle cx="25" cy="25" r="25" fill="green"></circle>
-            //
-                alert("I am malicious &gt;:)")
-            //
             <g>
                 <rect x="0" y="0" width="10" height="10" fill="red"></rect>
             </g>
@@ -121,8 +118,8 @@ class AdminTests(WebTest):
         with self.subTest(part="assert logo sanitized"):
             with theme.logo.file.open("r") as logo_file:
                 # Assert that the logo is completely sanitized
-                decoded_logo = logo_file.read()
-                self.assertEqual(decoded_logo, sanitized_svg_content)
+                decoded_logo = logo_file.read().decode("utf-8")
+                self.assertHTMLEqual(decoded_logo, sanitized_svg_content)
 
     def test_upload_png(self):
         logo = Path(settings.DJANGO_PROJECT_DIR) / "static" / "img" / "digid.png"

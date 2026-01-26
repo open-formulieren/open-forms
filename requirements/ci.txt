@@ -51,10 +51,6 @@ billiard==4.2.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-bleach==5.0.1
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
 boltons==21.0.0
     # via
     #   -c requirements/base.txt
@@ -660,6 +656,10 @@ mozilla-django-oidc-db==1.1.1
     #   -r requirements/base.txt
 multidict==6.6.3
     # via yarl
+nh3==0.3.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 numpy==2.3.3
     # via
     #   -c requirements/base.txt
@@ -1093,7 +1093,6 @@ six==1.16.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   bleach
     #   click-repl
     #   furl
     #   html5lib
@@ -1267,7 +1266,6 @@ webencodings==0.5.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   bleach
     #   cssselect2
     #   html5lib
     #   tinycss2

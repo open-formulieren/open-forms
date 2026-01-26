@@ -964,9 +964,9 @@ class Content(BasePlugin):
         """
         Ensure that the inline styles are made compatible with Content-Security-Policy.
 
-        .. note:: we apply Bleach and a CSS declaration allowlist as part of the
-           post-processor because content components are not purely "trusted" content
-           from form-designers, but can contain malicious user input if the form
+        .. note:: we apply HTML sanitation and a CSS declaration allowlist as part of
+           the post-processor because content components are not purely "trusted"
+           content from form-designers, but can contain malicious user input if the form
            designer uses variables inside the HTML. The form submission data is passed
            as template context to these HTML blobs, posing a potential injection
            security risk.

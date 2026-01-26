@@ -1,8 +1,8 @@
 from django.core.files import File
 
-import bleach
+import nh3
 
-ALLOWED_SVG_TAGS = (
+ALLOWED_SVG_TAGS: set[str] = {
     "circle",
     "clipPath",
     "defs",
@@ -61,10 +61,10 @@ ALLOWED_SVG_TAGS = (
     "use",
     "view",
     # --- Not allowing 'a', 'animate*' and 'script' tags
-)
+}
 
-ALLOWED_SVG_ATTRIBUTES = {
-    "*": [
+ALLOWED_SVG_ATTRIBUTES: dict[str, set[str]] = {
+    "*": {
         # --- Basic presentation attributes
         "alignment-baseline",
         "baseline-shift",
@@ -146,11 +146,11 @@ ALLOWED_SVG_ATTRIBUTES = {
         "tableValues",
         "type",
         # --- Not allowing 'href', 'data-*', Animation and some other attributes
-    ],
-    "svg": ["xmlns", "viewBox"],
+    },
+    "svg": {"xmlns", "viewBox"},
 }
 
-ALLOWED_HTML_TAGS = (
+ALLOWED_HTML_TAGS: set[str] = {
     # Basic text tags
     "a",
     "b",
@@ -172,9 +172,13 @@ ALLOWED_HTML_TAGS = (
     "li",
     "ol",
     "ul",
-)
+}
 
-ALLOWED_HTML_ATTRIBUTES = {"a": ("href", "target", "rel", "data-fr-linked")}
+ALLOWED_HTML_ATTRIBUTES: dict[str, set[str]] = {
+    "a": {"href", "target", "rel", "data-fr-linked"},
+}
+
+ALLOWED_URL_SCHEMES: set[str] = {"http", "https", "mailto"}
 
 
 def sanitize_svg_file(data: File) -> File:
@@ -192,7 +196,7 @@ def sanitize_svg_file(data: File) -> File:
     file_content = data.read().decode("utf-8")
     sanitized_content = sanitize_svg_content(file_content)
 
-    # Replace svg file content with the bleached variant.
+    # Replace svg file content with the cleaned variant.
     # `truncate(0)` doesn't reset the point, so start with a seek(0) to make sure the
     # content is as expected.
     data.seek(0)
@@ -212,13 +216,21 @@ def sanitize_svg_content(svg_content: str) -> str:
     content.
 
     :arg svg_content: decoded SVG content.
+
+    .. warning:: Do not use in security-critical contexts - using nh3 or bleach for
+       SVG content sanitizing is best-effort and not what it's made for.
+
+    .. danger:: Do not inline the result of this function in HTML!
     """
 
-    return bleach.clean(
+    return nh3.clean(
         svg_content,
         tags=ALLOWED_SVG_TAGS,
+        # default: https://github.com/rust-ammonia/ammonia/blob/a0ebe263665931a16ff42c48b446465c52e8a78c/src/lib.rs#L389
+        clean_content_tags={"script"},
         attributes=ALLOWED_SVG_ATTRIBUTES,
-        strip=True,
+        strip_comments=True,
+        url_schemes=ALLOWED_URL_SCHEMES,
     )
 
 
@@ -231,9 +243,11 @@ def sanitize_html_content(html_content: str) -> str:
 
     :arg html_content: the html string to sanitize.
     """
-    return bleach.clean(
+    return nh3.clean(
         html_content,
         tags=ALLOWED_HTML_TAGS,
         attributes=ALLOWED_HTML_ATTRIBUTES,
-        strip=True,
+        strip_comments=True,
+        link_rel=None,
+        url_schemes=ALLOWED_URL_SCHEMES,
     )
