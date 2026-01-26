@@ -32,3 +32,39 @@ class ExtractVariablesTests(SimpleTestCase):
         variable_names = set(extract_variables_used(source))
 
         self.assertEqual(variable_names, {"someVar"})
+
+    def test_var_in_for_loop(self):
+        source = """
+        {% for attachment in attachments %}
+            It is {{ attachment }}
+        {% endfor %}
+        """
+
+        variable_names = set(extract_variables_used(source))
+
+        self.assertEqual(variable_names, {"attachment", "attachments"})
+
+    def test_var_in_if_statement(self):
+        source = """
+        {% if someVarInIf %}
+            {{otherVar}}
+        {% elif otherVarInIf == 'asdf' %}
+            {{yetAnotherVar}}
+        {% elif 'foo' == finalVarInIf %}
+            {{reallyLastVarIPromise}}
+        {% endif %}
+        """
+
+        variable_names = set(extract_variables_used(source))
+
+        self.assertEqual(
+            variable_names,
+            {
+                "otherVar",
+                "otherVarInIf",
+                "someVarInIf",
+                "yetAnotherVar",
+                "finalVarInIf",
+                "reallyLastVarIPromise",
+            },
+        )
