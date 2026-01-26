@@ -11,9 +11,11 @@ from typing import Any, override
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from glom import Assign, glom
 import structlog
 from json_logic.typing import Primitive
 
+from openforms.authentication.service import get_branch_number
 from openforms.emails.service import get_last_confirmation_email
 from openforms.forms.models import FormVariable
 from openforms.plugins.exceptions import InvalidPluginConfiguration
@@ -411,6 +413,30 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 extra_data[to_key] = value
                 extra_data.pop(from_key, None)
 
+    def process_vestiging(
+        self, submission: Submission, zaak_data: MutableMapping[str, Any]
+    ) -> None:
+        vestigings_nummer_key = next(
+            (
+                key
+                for key, value in self.zaak_mapping.items()
+                if value == RegistrationAttribute.initiator_vestigingsnummer
+            ),
+            None,
+        )
+
+        # prioritize the zaak_mapping as currently is
+        if not vestigings_nummer_key or (
+            zaak_data.get(vestigings_nummer_key) or not submission.is_authenticated
+        ):
+            return
+
+        auth_context = submission.auth_info.to_auth_context_data()
+        branch_number = get_branch_number(auth_context)
+
+        if branch_number:
+            glom(zaak_data, Assign(vestigings_nummer_key, branch_number))
+
     def register_submission(
         self, submission: Submission, options: RegistrationOptions
     ) -> dict | None:
@@ -449,6 +475,8 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 )
                 assert component is not None
                 zaak_data["locatie"]["key"] = component["key"]
+
+            self.process_vestiging(submission, zaak_data)
 
             extra_data = self.get_extra_data(submission, options)
 
