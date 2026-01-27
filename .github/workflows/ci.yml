@@ -98,13 +98,13 @@ jobs:
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
           coverage run \
-          --concurrency=multiprocessing \
-          --parallel-mode \
-          src/manage.py test src \
-            --force-color \
-            --parallel 4 \
-            --exclude-tag=e2e \
-            --verbosity 2
+            --concurrency=multiprocessing \
+            --parallel-mode \
+            src/manage.py test src \
+              --force-color \
+              --parallel 4 \
+              --exclude-tag=e2e \
+              --verbosity 2
           coverage combine
 
         env:

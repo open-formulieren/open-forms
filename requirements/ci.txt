@@ -626,7 +626,7 @@ maykin-2fa==2.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   maykin-common
-maykin-common==0.14.0
+maykin-common==0.16.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -713,7 +713,12 @@ opentelemetry-api==1.36.0
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-celery
+    #   opentelemetry-instrumentation-dbapi
     #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-psycopg
+    #   opentelemetry-instrumentation-redis
+    #   opentelemetry-instrumentation-requests
     #   opentelemetry-instrumentation-wsgi
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
@@ -741,9 +746,35 @@ opentelemetry-instrumentation==0.57b0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   opentelemetry-instrumentation-celery
+    #   opentelemetry-instrumentation-dbapi
     #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-psycopg
+    #   opentelemetry-instrumentation-redis
+    #   opentelemetry-instrumentation-requests
     #   opentelemetry-instrumentation-wsgi
+opentelemetry-instrumentation-celery==0.57b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+opentelemetry-instrumentation-dbapi==0.57b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-instrumentation-psycopg
 opentelemetry-instrumentation-django==0.57b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+opentelemetry-instrumentation-psycopg==0.57b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+opentelemetry-instrumentation-redis==0.57b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+opentelemetry-instrumentation-requests==0.57b0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -775,7 +806,11 @@ opentelemetry-semantic-conventions==0.57b0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-celery
+    #   opentelemetry-instrumentation-dbapi
     #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-redis
+    #   opentelemetry-instrumentation-requests
     #   opentelemetry-instrumentation-wsgi
     #   opentelemetry-sdk
 opentelemetry-util-http==0.57b0
@@ -783,6 +818,7 @@ opentelemetry-util-http==0.57b0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-requests
     #   opentelemetry-instrumentation-wsgi
 orderedmultidict==1.0.1
     # via
@@ -1281,6 +1317,8 @@ wrapt==1.15.0
     #   -r requirements/base.txt
     #   elastic-apm
     #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-dbapi
+    #   opentelemetry-instrumentation-redis
     #   vcrpy
 xlrd==2.0.1
     # via

@@ -11,16 +11,10 @@ WORKER_NAME=${CELERY_WORKER_NAME:="${QUEUE}"@%n}
 # Set defaults for OTEL
 export OTEL_SERVICE_NAME="${OTEL_SERVICE_NAME:-openforms-worker-"${QUEUE}"}"
 
-_binary=$(which celery)
-
-if [[ "$ENABLE_COVERAGE" ]]; then
-    _binary="coverage run $_binary"
-fi
-
 echo "Starting celery worker $WORKER_NAME with queue $QUEUE"
 # unset this if NOT using a process pool
 export _OTEL_DEFER_SETUP="true"
-exec $_binary --workdir src --app openforms.celery worker \
+exec celery --workdir src --app openforms.celery worker \
     -Q $QUEUE \
     -n $WORKER_NAME \
     -l $LOGLEVEL \

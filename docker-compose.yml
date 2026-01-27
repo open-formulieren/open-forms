@@ -32,6 +32,7 @@ x-app-env: &x-app-env
   - CELERY_BROKER_URL=redis://redis:6379/0
   - CELERY_RESULT_BACKEND=redis://redis:6379/0
   - CELERY_LOGLEVEL=DEBUG
+  - CELERY_WORKER_NAME=celery@docker
   - OPENFORMS_LOCATION_CLIENT=${OPENFORMS_LOCATION_CLIENT:-openforms.contrib.bag.client.BAGClient}
   - CORS_ALLOW_ALL_ORIGINS=${CORS_ALLOW_ALL_ORIGINS:-true}
   - EMAIL_HOST=smtp
@@ -195,8 +196,16 @@ services:
     environment: *x-app-env
     command: /celery_worker.sh
     healthcheck:
-      test: ["CMD", "python", "/app/bin/check_celery_worker_liveness.py"]
-      interval: 30s
+      test: [
+        "CMD",
+        "maykin-common",
+        "worker-health-check",
+        "--liveness-file=/app/tmp/celery_worker_event_loop.live",
+        "--max-age=70",
+        "--broker=redis://redis:6379/0",
+        "--worker-name=celery@docker",
+      ]
+      interval: 60s
       timeout: 5s
       retries: 3
       start_period: 10s
