@@ -1519,3 +1519,234 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(data["invalidParams"][6]["code"], "required")
         self.assertEqual(data["invalidParams"][6]["name"], "0.actions.2.action.config")
+
+
+class FormLogicAPIGraphValidationTests(APITestCase):
+    def setUp(self):
+        super().setUp()
+        user = SuperUserFactory.create(username="test", password="test")
+        self.client.force_authenticate(user=user)
+
+    def test_create(self):
+        form = FormFactory.create()
+        step_1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    },
+                    {
+                        "type": "content",
+                        "key": "content",
+                        "openForms": {
+                            "translations": {"nl": {"html": "<p>Dit is content!</p>"}}
+                        },
+                    },
+                ]
+            },
+        )
+        step_2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date",
+                        "label": "Date",
+                    },
+                ]
+            },
+        )
+
+        form_detail_url = f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}"
+        form_logic_data = [
+            {
+                "form": form_detail_url,
+                "jsonLogicTrigger": {"==": [{"var": "textfield"}, "datum"]},
+                "description": "First rule",
+                "order": 0,
+                "actions": [
+                    {
+                        "variable": "date",
+                        "action": {"type": "variable", "value": "2025-10-26"},
+                    }
+                ],
+            },
+            {
+                "form": form_detail_url,
+                "jsonLogicTrigger": {"==": [{"var": "checkbox"}, True]},
+                "description": "Second rule",
+                "order": 1,
+                "actions": [
+                    {
+                        "component": "textfield",
+                        "action": {
+                            "type": "property",
+                            "property": {"value": "disabled", "type": "bool"},
+                            "state": False,
+                        },
+                    }
+                ],
+            },
+            {
+                "form": form_detail_url,
+                "jsonLogicTrigger": {"==": [{"var": "checkbox"}, True]},
+                "description": "Third rule",
+                "order": 2,
+                "actions": [
+                    {
+                        "component": "content",
+                        "action": {
+                            "type": "property",
+                            "property": {"value": "hidden", "type": "bool"},
+                            "state": True,
+                        },
+                    }
+                ],
+            },
+        ]
+
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.put(url, data=form_logic_data)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        form_logic_qs = FormLogic.objects.all()
+        self.assertEqual(3, form_logic_qs.count())
+
+        with self.subTest("Rule order"):
+            expected_order = ["Second rule", "Third rule", "First rule"]
+            self.assertQuerySetEqual(
+                form_logic_qs,
+                expected_order,
+                ordered=True,
+                transform=lambda rule: rule.description,
+            )
+
+        with self.subTest("Rules of step 1"):
+            self.assertQuerySetEqual(
+                step_1.logic_rules.all(),
+                [form_logic_qs[0], form_logic_qs[1]],
+                ordered=True,
+            )
+
+        with self.subTest("Rules of step 2"):
+            self.assertQuerySetEqual(
+                step_2.logic_rules.all(), [form_logic_qs[2]], ordered=True
+            )
+
+    def test_with_cycles(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "foo",
+                        "type": "textfield",
+                        "label": "Foo",
+                    },
+                    {
+                        "key": "bar",
+                        "type": "textfield",
+                        "label": "Bar",
+                    },
+                    {
+                        "key": "baz",
+                        "type": "textfield",
+                        "label": "Baz",
+                    },
+                    {
+                        "key": "self",
+                        "type": "textfield",
+                        "label": "Self",
+                    },
+                ],
+            },
+        )
+
+        form_detail_url = f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}"
+        form_logic_data = [
+            {
+                "form": form_detail_url,
+                "jsonLogicTrigger": {"==": [{"var": "self"}, ""]},
+                "description": "Set self",
+                "order": 0,
+                "actions": [
+                    {
+                        "variable": "self",
+                        "action": {"type": "variable", "value": "self"},
+                    }
+                ],
+            },
+            {
+                "form": form_detail_url,
+                "jsonLogicTrigger": {"==": [{"var": "foo"}, ""]},
+                "description": "Set bar",
+                "order": 1,
+                "actions": [
+                    {
+                        "variable": "bar",
+                        "action": {"type": "variable", "value": "bar"},
+                    }
+                ],
+            },
+            {
+                "form": form_detail_url,
+                "jsonLogicTrigger": {"==": [{"var": "bar"}, ""]},
+                "description": "Set baz",
+                "order": 2,
+                "actions": [
+                    {
+                        "variable": "baz",
+                        "action": {"type": "variable", "value": "baz"},
+                    }
+                ],
+            },
+            {
+                "form": form_detail_url,
+                "jsonLogicTrigger": {"==": [{"var": "baz"}, ""]},
+                "description": "Set foo",
+                "order": 3,
+                "actions": [
+                    {
+                        "variable": "foo",
+                        "action": {"type": "variable", "value": "foo"},
+                    }
+                ],
+            },
+        ]
+
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.put(url, data=form_logic_data)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        expected_error = [
+            {
+                "name": "0.jsonLogicTrigger",
+                "code": "cycles-detected",
+                "reason": "Rule contains cycles through variable(s): self.",
+            },
+            {
+                "name": "1.jsonLogicTrigger",
+                "code": "cycles-detected",
+                "reason": "Rule contains cycles through variable(s): bar, baz, foo.",
+            },
+            {
+                "name": "2.jsonLogicTrigger",
+                "code": "cycles-detected",
+                "reason": "Rule contains cycles through variable(s): bar, baz, foo.",
+            },
+            {
+                "name": "3.jsonLogicTrigger",
+                "code": "cycles-detected",
+                "reason": "Rule contains cycles through variable(s): bar, baz, foo.",
+            },
+        ]
+        self.assertEqual(response.json()["invalidParams"], expected_error)
