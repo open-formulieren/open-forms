@@ -26,6 +26,13 @@ class FormLogic(OrderedModel):
         on_delete=models.CASCADE,
         help_text=_("Form to which the JSON logic applies."),
     )
+    form_steps = models.ManyToManyField(
+        FormStep,
+        verbose_name=_("form steps"),
+        help_text=_("List of form steps on which this logic rule should be executed."),
+        blank=True,
+        related_name="logic_rules",
+    )
     trigger_from_step = models.ForeignKey(
         "FormStep",
         on_delete=models.SET_NULL,
