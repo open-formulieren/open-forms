@@ -74,8 +74,8 @@ def pspid_matcher(request_one: Request, request_two: Request) -> bool:
 class WorldlinePluginTests(OFVCRMixin, WebTest):
     def _get_vcr_kwargs(self, **kwargs) -> dict:
         kwargs = super()._get_vcr_kwargs(**kwargs)
-        kwargs.setdefault("filter_headers", [])
-        kwargs["filter_headers"].append("Authorization")
+        assert "filter_headers" in kwargs
+        assert "Authorization" in kwargs["filter_headers"]
         kwargs["before_record_request"] = _scrub_pspid
         return kwargs
 

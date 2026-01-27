@@ -92,8 +92,8 @@ class PluginTests(OFVCRMixin, TestCase):
 
     def _get_vcr_kwargs(self, **kwargs) -> dict:
         kwargs = super()._get_vcr_kwargs(**kwargs)
-        kwargs.setdefault("filter_headers", [])
-        kwargs["filter_headers"].append("Authorization")
+        assert "filter_headers" in kwargs
+        assert "Authorization" in kwargs["filter_headers"]
         kwargs["before_record_response"] = _scrub_access_token
         return kwargs
 
