@@ -15,7 +15,10 @@ from openforms.formio.service import (
 from openforms.formio.typing import FormioConfiguration
 
 from .logic.actions import ActionOperation
-from .logic.rules import get_rules_to_evaluate, iter_evaluate_rules
+from .logic.rules import (
+    get_rules_to_evaluate_v2,
+    iter_evaluate_rules,
+)
 from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:
@@ -98,7 +101,7 @@ def evaluate_form_logic(
     # to make sure we are not processing with outdated data. The frontend will not send
     # data for fields that were (conditionally) hidden, so simply applying the unsaved
     # data to the state will not remove existing values of those fields.
-    rules = get_rules_to_evaluate(submission, step)
+    rules = get_rules_to_evaluate_v2(submission, step)
     # These components are affected by a hidden property action, which means we cannot
     # check the "hidden" property of the component during conditional logic evaluation
     components_with_hidden_action = set()
@@ -222,7 +225,7 @@ def check_submission_logic(
     if not submission_state.form_steps:
         return
 
-    rules = get_rules_to_evaluate(submission, current_step)
+    rules = get_rules_to_evaluate_v2(submission, current_step)
 
     # load the data state and all variables
     submission_variables_state = submission.load_submission_value_variables_state()
