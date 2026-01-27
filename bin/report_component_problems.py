@@ -26,6 +26,10 @@ def check_component(component: Component) -> Iterator[str]:
     from openforms.api.geojson import GeoJsonGeometryPolymorphicSerializer
 
     match component:
+        case {"openForms": None}:
+            yield "'None' openForms extensions."
+
+    match component:
         case {"conditional": {"show": ""} | {"when": ""}}:
             yield "Unexpected empty strings in conditional."
 
