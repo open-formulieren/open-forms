@@ -123,6 +123,13 @@ class FormLogic(OrderedModel):
 
         return self._steps
 
+    @steps.setter
+    def steps(self, v: set[FormStep]):
+        # We cannot determine a step if both the input and output variables are
+        # user-defined. In this case, we need to manually check the predecessors of this
+        # logic rule in the graph, determine a step from them, and set it to the rule.
+        self._steps = v
+
     @property
     def input_variable_keys(self) -> Collection[str]:
         """
