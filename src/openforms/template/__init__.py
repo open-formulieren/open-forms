@@ -22,7 +22,13 @@ from django.utils.safestring import SafeString
 
 from .backends.sandboxed_django import backend as sandbox_backend, openforms_backend
 
-__all__ = ["render_from_string", "parse", "sandbox_backend", "openforms_backend"]
+__all__ = [
+    "render_from_string",
+    "parse",
+    "sandbox_backend",
+    "openforms_backend",
+    "extract_variables_used",
+]
 
 
 def parse(source: str, backend=sandbox_backend) -> DjangoTemplate:
