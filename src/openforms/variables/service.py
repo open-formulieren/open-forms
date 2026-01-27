@@ -2,15 +2,20 @@
 Public Python API to access (static) form variables.
 """
 
-from collections.abc import Collection
+from __future__ import annotations
 
-from openforms.forms.models import FormVariable
+from collections.abc import Collection
+from typing import TYPE_CHECKING
+
 from openforms.plugins.registry import BaseRegistry
-from openforms.submissions.models import Submission
 
 from .base import BaseStaticVariable
 from .registry import register_static_variable as static_variables_registry
 from .utils import get_variables_for_context
+
+if TYPE_CHECKING:
+    from openforms.forms.models import FormVariable
+    from openforms.submissions.models import Submission
 
 __all__ = ["get_static_variables", "get_variables_for_context", "resolve_key"]
 

@@ -76,6 +76,38 @@ def get_rules_to_evaluate(
     ]
 
 
+def get_rules_to_evaluate_v2(
+    submission: Submission, current_step: SubmissionStep | None = None
+) -> Iterable[FormLogic]:
+    """
+    Given a submission, return the logic rules ready for evaluation.
+
+    :arg submission: A submission instance to retrieve the rules for
+    :arg current_step: The (optional) step at which the rules need to be evaluated. If
+      not provided, the step following the last completed step is used, or the first
+      step in the form if there are no completed steps.
+    :returns: An iterable of :class`openforms.forms.models.FormLogic` instances. This
+      may be a queryset, but could also be a list.
+    """
+    submission_state = submission.load_execution_state()
+    # if there are no form steps, there is no usable form -> there are no logic rules
+    # to evaluate
+    if not submission_state.form_steps:
+        return []
+
+    # filter down the rules that are only applicable in the current step context
+    current_step = current_step or get_current_step(submission)
+    assert current_step is not None  # we already exit early if there are no form steps
+    form_step = current_step.form_step
+
+    if form_step.logic_rules.count() == 0:
+        return get_rules_to_evaluate(submission, current_step)
+
+    # Note that this an OrderedModelQuerySet, so the logic order is already resolved
+    # here
+    return form_step.logic_rules.iterator()
+
+
 def get_current_step(submission: Submission) -> SubmissionStep | None:
     """
     Obtain what the 'current step' of a submission is.
@@ -92,7 +124,7 @@ def get_current_step(submission: Submission) -> SubmissionStep | None:
     """
     submission_state = submission.load_execution_state()
     if not submission_state.form_steps:
-        return
+        return None
 
     last_completed_step = submission_state.get_last_completed_step()
     # no steps completed -> current index is first step: 0
