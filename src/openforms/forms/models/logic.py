@@ -69,9 +69,6 @@ class FormLogic(OrderedModel):
         verbose_name = _("form logic")
         verbose_name_plural = _("form logic rules")
 
-    def __hash__(self):
-        return hash(self.uuid)
-
     def clean(self):
         super().clean()
 

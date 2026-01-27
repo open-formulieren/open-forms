@@ -74,7 +74,7 @@ class FormLogicListSerializer(ListWithChildSerializer):
         data_new: list[dict[str, object]] = []
         steps: list[list[FormStep]] = []
         for rule in new_rule_order:
-            # We can get the original rule data by using the (manually set) order as an
+            # We can get the original rule data by using the (manually set) pk as an
             # index.
             rule_data = attrs[rule.pk]
             steps.append(list(rule.steps))
