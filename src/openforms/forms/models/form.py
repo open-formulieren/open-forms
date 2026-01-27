@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from contextlib import suppress
 from copy import deepcopy
 from functools import cached_property
+from itertools import chain
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 from django.conf import settings
@@ -45,7 +46,7 @@ User = get_user_model()
 logger = structlog.stdlib.get_logger(__name__)
 
 if TYPE_CHECKING:
-    from . import FormAuthenticationBackend
+    from . import FormAuthenticationBackend, FormStep
 
 
 class FormQuerySet(models.QuerySet["Form"]):
@@ -406,6 +407,9 @@ class Form(models.Model):
     get_change_text = literal_getter("change_text", "form_change_text")
     get_confirm_text = literal_getter("confirm_text", "form_confirm_text")
 
+    _component_to_step: dict[str, FormStep] | None = None
+    _all_form_variable_keys: set[str] | None = None
+
     class Meta:
         verbose_name = _("form")
         verbose_name_plural = _("forms")
@@ -443,6 +447,20 @@ class Form(models.Model):
         if (limit := self.submission_limit) and limit <= self.submission_counter:
             return True
         return False
+
+    @property
+    def all_form_variable_keys(self) -> set[str]:
+        """Set of all available form variable keys (includes static variables)."""
+        if self._all_form_variable_keys is not None:
+            return self._all_form_variable_keys
+
+        from openforms.variables.service import get_static_variables
+
+        self._all_form_variable_keys = {
+            var.key
+            for var in chain(get_static_variables(), self.formvariable_set.all())
+        }
+        return self._all_form_variable_keys
 
     def get_registration_backend_display(self) -> str:
         return (
@@ -697,6 +715,49 @@ class Form(models.Model):
         self.deactivate_on = None
         self.save(update_fields=["active", "deactivate_on"])
         logger.debug("forms.form_deactivated", id=self.pk, name=self.admin_name)
+
+    def get_child_component_keys(self, component_key: str) -> set[str]:
+        """
+        Get all child component keys for an arbitrary component key.
+
+        :param component_key: The component key.
+        :returns: A set of children component keys. Will be an empty set if there is no
+          corresponding component configuration for the ``component_key``, or if the
+          component does not contain any children.
+        """
+        step = self.get_form_step(component_key)
+        if step is None:
+            return set()
+
+        return step.form_definition.configuration_wrapper.get_child_component_keys(
+            component_key
+        )
+
+    def get_form_step(self, key: str) -> FormStep | None:
+        """
+        Get the corresponding form step for a variable or component key.
+
+        Caches a mapping from component key to form step.
+
+        :param key: The component key.
+        :returns: The corresponding ``FormStep``, or ``None`` if no step could be found.
+        """
+        if self._component_to_step is not None:
+            return self._component_to_step.get(key, None)
+
+        self._component_to_step = {}
+        for form_step in self.formstep_set.select_related("form_definition"):
+            component_list = [
+                component["key"]
+                for component in form_step.form_definition.iter_components(
+                    recursive=True, recurse_into_editgrid=False
+                )
+            ]
+            self._component_to_step.update(
+                zip(component_list, [form_step] * len(component_list), strict=True)
+            )
+
+        return self._component_to_step.get(key, None)
 
 
 class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
