@@ -127,7 +127,9 @@ FormLogic.propTypes = {
 };
 
 const FormLogicRules = ({rules, onAdd, onChange, onDelete}) => {
+  // TODO-2409: parseValidationErrors doesn't seem to be compatible with multiple errors per field
   const validationErrors = parseValidationErrors(useContext(ValidationErrorContext), 'logicRules');
+  console.log(validationErrors);
   // FIXME - getting the validation errors by index breaks if you then delete rules/reorder
   // rules -> they're displayed for the wrong rule. When deleting/reordering rules, the
   // validation errors state needs to be re-ordered the same way.
