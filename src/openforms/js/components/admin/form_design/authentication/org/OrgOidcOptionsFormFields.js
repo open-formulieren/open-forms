@@ -16,7 +16,6 @@ const OrgOidcOptionsFormFields = ({name}) => {
 
   // set defaults
   const {values, setValues} = useFormikContext();
-  console.log('values=', values);
   const defaults = {
     visible: true,
   };
