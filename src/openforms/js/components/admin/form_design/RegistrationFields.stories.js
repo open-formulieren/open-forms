@@ -1,4 +1,4 @@
-import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
+import {expect, fn, screen, userEvent, waitFor, within} from 'storybook/test';
 
 import {mockProcessDefinitionsGet} from 'components/admin/form_design/registrations/camunda/mocks';
 import {

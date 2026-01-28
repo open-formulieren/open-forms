@@ -1,5 +1,5 @@
-import {expect, fn, userEvent, within} from '@storybook/test';
 import selectEvent from 'react-select-event';
+import {expect, fn, userEvent, within} from 'storybook/test';
 
 import {
   FormDecorator,
