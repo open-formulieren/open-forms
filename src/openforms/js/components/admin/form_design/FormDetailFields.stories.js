@@ -1,4 +1,4 @@
-import {fn} from '@storybook/test';
+import {fn} from 'storybook/test';
 
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 

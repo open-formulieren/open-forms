@@ -24,10 +24,9 @@ const config = {
 
   addons: [
     '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
     'storybook-react-intl',
     '@storybook/addon-webpack5-compiler-babel',
+    '@storybook/addon-docs',
   ],
 
   features: {

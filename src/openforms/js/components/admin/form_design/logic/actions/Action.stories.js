@@ -1,7 +1,7 @@
-import {useArgs} from '@storybook/preview-api';
-import {expect, userEvent, waitFor, within} from '@storybook/test';
 import {produce} from 'immer';
 import set from 'lodash/set';
+import {useArgs} from 'storybook/preview-api';
+import {expect, userEvent, waitFor, within} from 'storybook/test';
 
 import {
   mockDMNDecisionDefinitionVersionsGet,

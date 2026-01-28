@@ -1,5 +1,5 @@
-import {fn, userEvent, within} from '@storybook/test';
 import {Form, Formik} from 'formik';
+import {fn, userEvent, within} from 'storybook/test';
 
 import {
   FeatureFlagsDecorator,

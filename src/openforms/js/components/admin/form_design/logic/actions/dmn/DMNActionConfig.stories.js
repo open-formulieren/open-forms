@@ -1,4 +1,4 @@
-import {expect, fireEvent, fn, userEvent, waitFor, within} from '@storybook/test';
+import {expect, fireEvent, fn, userEvent, waitFor, within} from 'storybook/test';
 
 import {
   mockDMNDecisionDefinitionVersionsGet,

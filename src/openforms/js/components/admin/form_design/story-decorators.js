@@ -1,6 +1,6 @@
-import {fn} from '@storybook/test';
 import {Form, Formik} from 'formik';
 import {Fragment, useEffect} from 'react';
+import {fn} from 'storybook/test';
 
 import {
   FeatureFlagsContext,
