@@ -355,6 +355,35 @@ class FormSerializerTest(TestCase):
 
             self.assertTrue(data["submission_limit_reached"])
 
+    def test_form_login_options_visible_with_org_oidc(self):
+        form = FormFactory.create(
+            authentication_backend="org-oidc",
+            authentication_backend_options={"visible": False},
+        )
+        factory = RequestFactory()
+        request = factory.get("/foo")
+        request.user = UserFactory.create()
+
+        serializer = FormSerializer(instance=form, context={"request": request})
+        login_options = serializer.data["login_options"]
+
+        self.assertEqual(len(login_options), 1)
+        self.assertFalse(login_options[0]["visible"])
+
+    def test_form_login_options_visible_with_other_auth(self):
+        form = FormFactory.create(
+            authentication_backend="digid",
+        )
+        factory = RequestFactory()
+        request = factory.get("/foo")
+        request.user = UserFactory.create()
+
+        serializer = FormSerializer(instance=form, context={"request": request})
+        login_options = serializer.data["login_options"]
+
+        self.assertEqual(len(login_options), 1)
+        self.assertTrue(login_options[0]["visible"])
+
 
 class SynchronizeVariablesActionConfigSerializerTest(TestCase):
     def test_valid_mappings(self):

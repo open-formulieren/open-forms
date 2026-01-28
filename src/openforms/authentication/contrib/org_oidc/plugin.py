@@ -12,6 +12,7 @@ from openforms.utils.urls import reverse_plus
 from ...base import BasePlugin, LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...registry import register
+from .config import OIDCOptions, OIDCOptionsSerializer
 from .oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 
 PLUGIN_IDENTIFIER = "org-oidc"
@@ -23,7 +24,7 @@ org_oidc_init = OIDCAuthenticationRequestInitView.as_view(
 
 
 @register(PLUGIN_IDENTIFIER)
-class OIDCAuthentication(BasePlugin):
+class OIDCAuthentication(BasePlugin[OIDCOptions]):
     """
     Authentication plugin using the global mozilla-django-oidc-db (as used for the admin)
     """
@@ -32,6 +33,7 @@ class OIDCAuthentication(BasePlugin):
     provides_auth = (AuthAttribute.employee_id,)
     oidc_plugin_identifier = OIDC_ORG_IDENTIFIER
     init_view = staticmethod(org_oidc_init)
+    configuration_options = OIDCOptionsSerializer
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str, options):
         return_url = reverse_plus(
@@ -98,6 +100,15 @@ class OIDCAuthentication(BasePlugin):
             href="https://openid.net/",
             appearance=LogoAppearance.light,
         )
+
+    def get_visible(self, form: Form | None) -> bool:
+        assert form is not None
+
+        authentication_backend = form.auth_backends.get(backend=PLUGIN_IDENTIFIER)
+        assert self.configuration_options is not None
+        serializer = self.configuration_options(data=authentication_backend.options)
+        serializer.is_valid(raise_exception=True)
+        return serializer.data["visible"]
 
 
 assert len(OIDCAuthentication.provides_auth) == 1

@@ -1959,6 +1959,14 @@ paths:
           embedding page emits a `style-src` policy containing `unsafe-inline`, then
           you can omit this header without losing functionality. We recommend favouring
           the nonce mechanism though.
+      - in: query
+        name: auth_visible
+        schema:
+          type: string
+          enum:
+          - all
+        description: If used, then all authorization methods are visible when the
+          form starts
       - in: path
         name: uuid_or_slug
         schema:
@@ -9249,12 +9257,17 @@ components:
           readOnly: true
           description: This authorization method can be used to log in on behalf of
             another person or company
+        visible:
+          type: boolean
+          readOnly: true
+          description: This authorization method is always shown when the form starts
       required:
       - identifier
       - isForGemachtigde
       - label
       - logo
       - url
+      - visible
     MethodEnum:
       enum:
       - GET

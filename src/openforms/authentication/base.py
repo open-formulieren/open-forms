@@ -36,6 +36,7 @@ class LoginInfo:
     logo: LoginLogo | None = None
     url: str | None = None
     is_for_gemachtigde: bool = False
+    visible: bool = True
 
 
 class Choice(TypedDict):
@@ -156,6 +157,7 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
             url=login_url,
             logo=self.get_logo(request),
             is_for_gemachtigde=self.is_for_gemachtigde,
+            visible=self.get_visible(form),
         )
         return info
 
@@ -170,3 +172,6 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
 
     def get_logo(self, request: HttpRequest) -> LoginLogo | None:
         return None
+
+    def get_visible(self, form: Form | None) -> bool:
+        return True
