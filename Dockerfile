@@ -56,6 +56,10 @@ COPY ./*.json ./*.js /app/
 # install WITH dev tooling
 RUN npm ci --legacy-peer-deps
 
+# install necessary global dependencies (for example subprocess.run(["formatjs", ...]) 
+# looks for a global CLI on PATH)
+RUN npm install -g @formatjs/cli@6.6.1
+
 # copy source code
 COPY ./src /app/src
 
