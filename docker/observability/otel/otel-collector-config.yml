@@ -89,7 +89,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [debug, otlp/tempo]
+      exporters: [otlp/tempo]
     metrics:
       receivers: [otlp, postgresql, redis, nginx, prometheus]
       processors: [memory_limiter, transform, batch]
