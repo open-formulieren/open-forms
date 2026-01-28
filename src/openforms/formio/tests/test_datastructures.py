@@ -176,6 +176,75 @@ class FormioDataTests(TestCase):
                 },
             )
 
+    def test_pop_items(self):
+        data = FormioData(
+            {
+                "foo": {"bar": "baz"},
+                "key": "value",
+                "list": ["a", {"foo": {"bar": "baz"}}],
+            },
+        )
+
+        with self.subTest("pop normal"):
+            value = data.pop("key")
+            self.assertEqual(value, "value")
+            self.assertRaises(KeyError, lambda: data["key"])
+
+        with self.subTest("pop nested"):
+            value = data.pop("foo.bar")
+            self.assertEqual(value, "baz")
+            self.assertEqual(data["foo"], {})
+
+        with self.subTest("pop list out of range"):
+            value = data.pop("list.5", "default")
+            self.assertEqual(value, "default")
+            self.assertEqual(data["list"], ["a", {"foo": {"bar": "baz"}}])
+
+        with self.subTest("pop list"):
+            value = data.pop("list.1")
+            self.assertEqual(value, {"foo": {"bar": "baz"}})
+            self.assertEqual(data["list"], ["a"])
+
+        with self.subTest("pop missing"):
+            value = data.pop("non.existing", None)
+            self.assertIsNone(value)
+
+    def test_del_items(self):
+        data = FormioData(
+            {
+                "foo": {"bar": "baz"},
+                "key": "value",
+                "list": ["a", {"foo": {"bar": "baz"}}],
+                "simply": "lovely",
+            },
+        )
+
+        with self.subTest("del normal"):
+            del data["key"]
+            self.assertRaises(KeyError, lambda: data["key"])
+
+        with self.subTest("del nested"):
+            del data["foo.bar"]
+            self.assertEqual(data["foo"], {})
+
+        with self.subTest("del list"):
+            del data["list.1"]
+            self.assertEqual(data["list"], ["a"])
+
+        with self.subTest("del list out of range"), self.assertRaises(KeyError):
+            del data["list.5"]
+
+        with self.subTest("del missing"), self.assertRaises(KeyError):
+            del data["non.existing"]
+
+        with self.subTest("del partially missing"), self.assertRaises(KeyError):
+            del data["foo.non_existing"]
+
+        with self.subTest("del on string"):
+            with self.assertRaises(KeyError):
+                del data["simply.3"]
+            self.assertEqual(data["simply"], "lovely")
+
 
 class FormioConfigurationWrapperTests(TestCase):
     def test_editgrid_lookups_by_key(self):

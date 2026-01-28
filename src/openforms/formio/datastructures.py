@@ -271,3 +271,36 @@ class FormioData(UserDict):
                 return False
 
         return True
+
+    def __delitem__(self, key: str) -> None:
+        """
+        Delete an item from the internal data dict.
+
+        Keys are expected to be strings and can indicate nested data, e.g.
+        ``variable.key``.
+        """
+        assert isinstance(key, str)
+
+        if "." not in key:
+            del self.data[key]
+            return
+
+        path, last = key.rsplit(".", 1)
+        error = KeyError(f"Key '{key}' is not present in the data")
+        try:
+            container = self[path]
+        except KeyError:
+            raise error
+
+        if isinstance(container, dict):
+            try:
+                del container[last]
+            except KeyError:
+                raise error
+        elif isinstance(container, list):
+            try:
+                container.pop(int(last))
+            except (ValueError, IndexError):
+                raise error
+        else:
+            raise error
