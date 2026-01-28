@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied
 
 import elasticapm
 import structlog
+from opentelemetry import trace
 from rest_framework.exceptions import ValidationError
 from zgw_consumers.concurrent import parallel
 
@@ -20,6 +21,7 @@ from .exceptions import PrefillSkipped
 from .registry import Registry
 
 logger = structlog.stdlib.get_logger(__name__)
+tracer = trace.get_tracer("openforms.prefill.sources")
 
 
 def fetch_prefill_values_from_attribute(
@@ -52,6 +54,9 @@ def fetch_prefill_values_from_attribute(
 
     mappings: dict[str, JSONEncodable] = {}
 
+    @tracer.start_as_current_span(
+        name="invoke-plugin", attributes={"span.type": "app", "span.subtype": "prefill"}
+    )
     @elasticapm.capture_span(span_type="app.prefill")
     def invoke_plugin(
         item: tuple[BasePlugin, IdentifierRoles, list[dict[str, str]]],

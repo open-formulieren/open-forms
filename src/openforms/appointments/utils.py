@@ -5,6 +5,7 @@ import re
 import elasticapm
 import qrcode
 import structlog
+from opentelemetry import trace
 
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
@@ -15,6 +16,7 @@ from .models import Appointment, AppointmentInfo, AppointmentsConfig
 from .registry import register
 
 logger = structlog.stdlib.get_logger(__name__)
+tracer = trace.get_tracer("openforms.appointments.utils")
 
 
 def get_plugin(plugin: str = "") -> BasePlugin:
@@ -39,6 +41,14 @@ def get_formatted_phone_number(phone_number: str | None) -> str | None:
     return phone_number[:16]
 
 
+@tracer.start_as_current_span(
+    name="delete-appointment-for-submission",
+    attributes={
+        "span.type": "app",
+        "span.subtype": "appointments",
+        "span.action": "delete",
+    },
+)
 @elasticapm.capture_span(span_type="app.appointments.delete")
 def delete_appointment_for_submission(submission: Submission, plugin=None) -> None:
     """

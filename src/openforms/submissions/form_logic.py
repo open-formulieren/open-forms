@@ -4,6 +4,7 @@ from copy import deepcopy
 from typing import TYPE_CHECKING
 
 import elasticapm
+from opentelemetry import trace
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
@@ -21,7 +22,17 @@ from .models.submission_step import DirtyData
 if TYPE_CHECKING:
     from .models import Submission, SubmissionStep
 
+tracer = trace.get_tracer("openforms.submissions.form_logic")
 
+
+@tracer.start_as_current_span(
+    name="evaluate-form-logic",
+    attributes={
+        "span.type": "app",
+        "span.subtype": "submissions",
+        "span.action": "logic",
+    },
+)
 @elasticapm.capture_span(span_type="app.submissions.logic")
 def evaluate_form_logic(
     submission: Submission,
@@ -121,8 +132,18 @@ def evaluate_form_logic(
 
     # 6.1 If the action type is to set a variable, update the data. This happens inside
     # of iter_evaluate_rules.
-    with elasticapm.capture_span(
-        name="collect_logic_operations", span_type="app.submissions.logic"
+    with (
+        tracer.start_as_current_span(
+            name="collect-logic-operations",
+            attributes={
+                "span.type": "app",
+                "span.subtype": "submissions",
+                "span.action": "logic",
+            },
+        ),
+        elasticapm.capture_span(
+            name="collect_logic_operations", span_type="app.submissions.logic"
+        ),
     ):
         for operation in iter_evaluate_rules(
             rules,

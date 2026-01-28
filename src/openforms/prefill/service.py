@@ -36,6 +36,7 @@ So, to recap:
 
 import elasticapm
 import structlog
+from opentelemetry import trace
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
@@ -55,6 +56,7 @@ from .sources import (
 )
 
 logger = structlog.stdlib.get_logger(__name__)
+tracer = trace.get_tracer("openforms.prefill.service")
 
 
 def inject_prefill(
@@ -107,6 +109,9 @@ def inject_prefill(
         component["defaultValue"] = variable.to_json(prefill_value)
 
 
+@tracer.start_as_current_span(
+    name="prefill-variables", attributes={"span.type": "app", "span.subtype": "prefill"}
+)
 @elasticapm.capture_span(span_type="app.prefill")
 def prefill_variables(submission: Submission, register: Registry | None = None) -> None:
     """

@@ -12,6 +12,7 @@ import elasticapm
 import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
+from opentelemetry import trace
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
@@ -46,6 +47,7 @@ from .validators import (
 )
 
 logger = structlog.stdlib.get_logger(__name__)
+tracer = trace.get_tracer("openforms.submissions.api.serializers")
 
 
 class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
@@ -219,6 +221,14 @@ class ContextAwareFormStepSerializer(serializers.ModelSerializer):
             "index": {"source": "order"},
         }
 
+    @tracer.start_as_current_span(
+        name="get-configuration",
+        attributes={
+            "span.type": "app",
+            "span.subtype": "api",
+            "span.action": "serialization",
+        },
+    )
     @elasticapm.capture_span(span_type="app.api.serialization")
     def get_configuration(self, instance) -> dict:
         submission = self.root.instance.submission
@@ -279,6 +289,14 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
 
         return super().to_internal_value(data)
 
+    @tracer.start_as_current_span(
+        name="to-representation",
+        attributes={
+            "span.type": "app",
+            "span.subtype": "api",
+            "span.action": "serialization",
+        },
+    )
     @elasticapm.capture_span(span_type="app.api.serialization")
     def to_representation(self, instance):
         # invoke the configured form logic to dynamically update the Formio.js configuration

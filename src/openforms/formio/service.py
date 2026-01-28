@@ -15,6 +15,7 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 import elasticapm
+from opentelemetry import trace
 
 from openforms.typing import JSONObject
 
@@ -63,6 +64,8 @@ __all__ = [
     "get_component_empty_value",
 ]
 
+tracer = trace.get_tracer("openforms.formio.service")
+
 
 def format_value(component: Component, value: Any, *, as_html: bool = False):
     """
@@ -79,6 +82,10 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
     return register.normalize(component, value)
 
 
+@tracer.start_as_current_span(
+    name="get-dynamic-configuration",
+    attributes={"span.type": "app", "span.subtype": "formio"},
+)
 @elasticapm.capture_span(span_type="app.formio")
 def get_dynamic_configuration(
     config_wrapper: FormioConfigurationWrapper,

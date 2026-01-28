@@ -2,6 +2,7 @@ from collections.abc import Iterable, Iterator
 
 import elasticapm
 from json_logic import jsonLogic
+from opentelemetry import trace
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
@@ -13,6 +14,8 @@ from openforms.forms.models import FormLogic, FormStep
 from ..models import Submission, SubmissionStep
 from .actions import ActionOperation
 from .log_utils import log_errors
+
+tracer = trace.get_tracer("openforms.submissions.logic.rules")
 
 
 def _include_rule(form_steps: list[FormStep], rule: FormLogic, step_index: int) -> bool:
@@ -134,10 +137,21 @@ def iter_evaluate_rules(
     """
     state = submission.load_submission_value_variables_state()
     for rule in rules:
-        with elasticapm.capture_span(
-            "evaluate_rule",
-            span_type="app.submissions.logic",
-            labels={"ruleId": rule.pk},
+        with (
+            tracer.start_as_current_span(
+                name="evaluate-rule",
+                attributes={
+                    "span.type": "app",
+                    "span.subtype": "submissions",
+                    "span.action": "logic",
+                    "ruleId": rule.pk,
+                },
+            ),
+            elasticapm.capture_span(
+                "evaluate_rule",
+                span_type="app.submissions.logic",
+                labels={"ruleId": rule.pk},
+            ),
         ):
             triggered = False
             with log_errors(rule.json_logic_trigger, rule):
