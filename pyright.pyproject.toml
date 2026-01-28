@@ -72,7 +72,11 @@ include = [
     "src/openforms/translations/admin.py",
     "src/openforms/translations/constants.py",
     "src/openforms/translations/models.py",
+    "src/openforms/translations/subprocesses.py",
+    "src/openforms/translations/tasks.py",
     "src/openforms/translations/tests/test_admin.py",
+    "src/openforms/translations/tests/test_subprocesses.py",
+    "src/openforms/translations/tests/test_tasks.py",
     # core submissions app
     "src/openforms/submissions/api/validation.py",
     "src/openforms/submissions/cosigning.py",
