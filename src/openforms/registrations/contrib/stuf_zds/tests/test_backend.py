@@ -3354,6 +3354,62 @@ class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
             },
         )
 
+    @tag("gh-5892")
+    def test_key_with_period_used_as_registration_attribute(self):
+        """
+        Ensure that registration does not crash when keys of registration attributes
+        contain a period.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voor.naam",
+                    "label": "Voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "label": "Achternaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {"key": "extra", "type": "textfield", "label": "Extra"},
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={
+                "voor": {"naam": "Hans"},
+                "achternaam": "Worst",
+                "extra": "Extra tekst",
+            },
+            language_code="en",
+        )
+
+        plugin = StufZDSRegistration("stuf")
+        try:
+            plugin.register_submission(submission, self.options)
+        except KeyError as exc:
+            raise self.fail("Registration failed unexpectedly") from exc
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Hans",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Worst",
+                "//stuf:extraElementen/stuf:extraElement[@naam='extra']": "Extra tekst",
+            },
+        )
+
 
 @freeze_time("2020-12-22")
 @temp_private_root()
