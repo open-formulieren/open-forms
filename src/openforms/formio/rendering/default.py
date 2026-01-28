@@ -370,7 +370,7 @@ class PartnersNode(ComponentNode):
             return self.value
 
         # this does not show the object (list of objects/partners) in the (pdf) summary
-        assert isinstance(self.value, list)
+        assert isinstance(self.value, list | None)
         return ""
 
     def get_children(self) -> Iterator[ComponentNode]:
@@ -492,7 +492,7 @@ class ChildrenNode(ComponentNode):
             return self.value
 
         # this does not show the object (list of objects/children) in the (pdf) summary
-        assert isinstance(self.value, list)
+        assert isinstance(self.value, list | None)
         return ""
 
     def get_children(self) -> Iterator[ComponentNode]:

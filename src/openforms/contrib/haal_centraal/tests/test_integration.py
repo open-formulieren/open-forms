@@ -82,7 +82,8 @@ class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
 
     def _get_vcr_kwargs(self, **kwargs):
         kwargs = super()._get_vcr_kwargs(**kwargs)
-        kwargs["filter_headers"] = ["x-api-key"]
+        assert "filter_headers" in kwargs
+        assert "x-api-key" in kwargs["filter_headers"]
         return kwargs
 
     def assertPrefillVariableValues(self, value: JSONValue) -> None:

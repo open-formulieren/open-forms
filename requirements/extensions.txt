@@ -136,7 +136,7 @@ cryptography==44.0.1
     #   mozilla-django-oidc
     #   pyopenssl
     #   webauthn
-cssselect2==0.7.0
+cssselect2==0.8.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -474,11 +474,6 @@ grpcio==1.74.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   opentelemetry-exporter-otlp-proto-grpc
-html5lib==1.1
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   weasyprint
 humanize==3.14.0
     # via
     #   -c requirements/base.txt
@@ -583,7 +578,7 @@ maykin-2fa==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-maykin-common==0.16.0
+maykin-common==0.17.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -864,7 +859,7 @@ pydantic-settings==2.6.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-setup-configuration
-pydyf==0.8.0
+pydyf==0.12.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1063,7 +1058,6 @@ six==1.16.0
     #   -r requirements/base.txt
     #   click-repl
     #   furl
-    #   html5lib
     #   isodate
     #   mail-parser
     #   orderedmultidict
@@ -1100,11 +1094,16 @@ tabulate==0.8.9
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-tinycss2==1.1.0
+tinycss2==1.5.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   cssselect2
+    #   weasyprint
+tinyhtml5==2.0.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
     #   weasyprint
 tornado==6.5
     # via
@@ -1174,7 +1173,7 @@ wcwidth==0.2.5
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   prompt-toolkit
-weasyprint==60.1
+weasyprint==68.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1188,8 +1187,8 @@ webencodings==0.5.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   cssselect2
-    #   html5lib
     #   tinycss2
+    #   tinyhtml5
 wrapt==1.15.0
     # via
     #   -c requirements/base.txt

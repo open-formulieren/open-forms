@@ -169,7 +169,7 @@ cssselect==1.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   pyquery
-cssselect2==0.7.0
+cssselect2==0.8.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -555,11 +555,6 @@ grpcio==1.74.0
     #   opentelemetry-exporter-otlp-proto-grpc
 h11==0.16.0
     # via httpcore
-html5lib==1.1
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   weasyprint
 httpcore==1.0.9
     # via httpx
 httpx==0.28.1
@@ -691,7 +686,7 @@ maykin-2fa==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-common==0.16.0
+maykin-common==0.17.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -990,7 +985,7 @@ pydantic-settings==2.6.1
     #   -r requirements/ci.txt
     #   bump-my-version
     #   django-setup-configuration
-pydyf==0.8.0
+pydyf==0.12.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1222,7 +1217,6 @@ six==1.16.0
     #   -r requirements/ci.txt
     #   click-repl
     #   furl
-    #   html5lib
     #   isodate
     #   mail-parser
     #   orderedmultidict
@@ -1338,11 +1332,16 @@ tenacity==8.2.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-tinycss2==1.1.0
+tinycss2==1.5.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   cssselect2
+    #   weasyprint
+tinyhtml5==2.0.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
     #   weasyprint
 toml==0.10.2
     # via autopep8
@@ -1438,7 +1437,7 @@ wcwidth==0.2.5
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   prompt-toolkit
-weasyprint==60.1
+weasyprint==68.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1452,8 +1451,8 @@ webencodings==0.5.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   cssselect2
-    #   html5lib
     #   tinycss2
+    #   tinyhtml5
 webob==1.8.8
     # via
     #   -c requirements/ci.txt

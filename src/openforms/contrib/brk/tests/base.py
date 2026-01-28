@@ -41,5 +41,6 @@ class BRKTestMixin:
 
     def _get_vcr_kwargs(self: _VCRTestCase, **kwargs):
         kwargs = super()._get_vcr_kwargs(**kwargs)
-        kwargs["filter_headers"] = ["X-Api-Key"]
+        assert "filter_headers" in kwargs
+        assert "x-api-key" in kwargs["filter_headers"]
         return kwargs
