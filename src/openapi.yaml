@@ -1960,10 +1960,12 @@ paths:
           you can omit this header without losing functionality. We recommend favouring
           the nonce mechanism though.
       - in: query
-        name: authVisible
+        name: auth_visible
         schema:
-          type: boolean
-        description: If enabled, then all authorization methods are visible when the
+          type: string
+          enum:
+          - all
+        description: If used, then all authorization methods are visible when the
           form starts
       - in: path
         name: uuid_or_slug

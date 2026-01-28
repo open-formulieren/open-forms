@@ -240,12 +240,13 @@ _FORM_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(FormSerializer)
         parameters=[
             UUID_OR_SLUG_PARAMETER,
             OpenApiParameter(
-                name="authVisible",
+                name="auth_visible",
                 location=OpenApiParameter.QUERY,
-                type=bool,
+                type=str,
                 description=_(
-                    "If enabled, then all authorization methods are visible when the form starts"
+                    "If used, then all authorization methods are visible when the form starts"
                 ),
+                enum=["all"],
             ),
         ],
         description=_(
