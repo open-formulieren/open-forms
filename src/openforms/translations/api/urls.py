@@ -1,6 +1,11 @@
 from django.urls import path
 
-from .views import FormioTranslationsView, LanguageInfoView, SetLanguageView
+from .views import (
+    CustomizedCompiledTranslations,
+    FormioTranslationsView,
+    LanguageInfoView,
+    SetLanguageView,
+)
 
 app_name = "i18n"
 
@@ -11,5 +16,10 @@ urlpatterns = [
         "formio/<str:language>",
         FormioTranslationsView.as_view(),
         name="formio-translations",
+    ),
+    path(
+        "compiled-messages/<str:language_code>.json",
+        CustomizedCompiledTranslations.as_view(),
+        name="customized-translations",
     ),
 ]
