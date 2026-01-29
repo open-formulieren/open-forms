@@ -35,7 +35,10 @@ include = [
     "src/openforms/formio/dynamic_config/reference_lists.py",
     # Core forms app
     "src/openforms/forms/api/serializers/logic/action_serializers.py",
+    "src/openforms/forms/json_schema.py",
+    "src/openforms/forms/logic_analysis.py",
     "src/openforms/forms/management/commands/set_forms_new_renderer_enabled.py",
+    "src/openforms/forms/tests/test_logic_analysis.py",
     # Payments
     "src/openforms/payments/",
     # Interaction with the outside world
@@ -83,11 +86,12 @@ include = [
     # core submissions app
     "src/openforms/submissions/api/validation.py",
     "src/openforms/submissions/cosigning.py",
+    "src/openforms/submissions/logic/actions.py",
     "src/openforms/submissions/metrics.py",
     "src/openforms/submissions/query.py",
     "src/openforms/submissions/report.py",
+    "src/openforms/submissions/tests/form_logic/test_get_rules_to_evaluate.py",
     "src/openforms/submissions/tests/form_logic/test_rule_analysis.py",
-    "src/openforms/submissions/logic/actions.py",
     # our own template app/package on top of Django
     "src/openforms/template",
     # generic typing helpers
@@ -95,8 +99,6 @@ include = [
     # Utils
     "src/openforms/utils/form_fields.py",
     "src/openforms/utils/pdf.py",
-    # JSON schema generation
-    "src/openforms/forms/json_schema.py",
     # Validations app
     "src/openforms/validations/api/serializers.py",
     "src/geo_visualization",
