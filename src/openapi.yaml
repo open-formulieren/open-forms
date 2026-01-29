@@ -3019,6 +3019,34 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/i18n/compiled-messages/{language_code}.json:
+    get:
+      operationId: i18n_compiled_messages_.json_retrieve
+      summary: Get customized (compiled) translations
+      parameters:
+      - in: path
+        name: language_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - translations
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/i18n/formio/{language}:
     get:
       operationId: i18n_formio_retrieve

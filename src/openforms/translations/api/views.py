@@ -1,10 +1,11 @@
 from pathlib import Path
 
 from django.conf import settings
-from django.http import FileResponse
+from django.http import FileResponse, JsonResponse
 from django.utils.translation import activate, get_language, gettext_lazy as _
 
-from drf_spectacular.plumbing import build_object_type
+from drf_spectacular.plumbing import build_basic_type, build_object_type
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schema
 from rest_framework import permissions, status
 from rest_framework.exceptions import NotFound
@@ -126,3 +127,15 @@ class FormioTranslationsView(APIView):
             / f"{language}.json"
         )
         return FileResponse(filepath.open("rb"))
+
+
+@extend_schema(
+    summary=_("Get customized (compiled) translations"),
+    tags=["translations"],
+    # FIXME: this doesn't document the `null` -> better to make the SDK deal with empty
+    # responses than use 'null'.
+    responses={"200": build_basic_type(OpenApiTypes.NONE)},
+)
+class CustomizedCompiledTranslations(APIView):
+    def get(self, request: Request, *args, **kwargs):
+        return JsonResponse(data=None, safe=False)

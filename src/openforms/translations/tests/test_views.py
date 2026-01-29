@@ -44,3 +44,15 @@ class FormioTranslationsEndpointTests(APITestCase):
                 response = self.client.get(endpoint)
 
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class CustomizedCompiledTranslationsTests(APITestCase):
+    def test_returns_null_response_body(self):
+        endpoint = reverse(
+            "api:i18n:customized-translations", kwargs={"language_code": "nl"}
+        )
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), None)
