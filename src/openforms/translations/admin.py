@@ -69,7 +69,7 @@ class TranslationsMetaDataAdmin(PrivateMediaMixin, admin.ModelAdmin):
         # default messages are already part of the static files
         url = static(f"sdk/i18n/messages/{obj.language_code}.json")
         return format_html(
-            '<a href="{}" target="_blank">{}</a>',
+            '<a href="{}" download>{}</a>',
             url,
             _("Download"),
         )
@@ -81,7 +81,11 @@ class TranslationsMetaDataAdmin(PrivateMediaMixin, admin.ModelAdmin):
         form: ModelForm,
         change: bool,
     ) -> None:
+        has_new_file = (
+            "messages_file" in form.changed_data and "messages_file" in request.FILES
+        )
+
         super().save_model(request, obj, form, change)
 
-        if "messages_file" in form.changed_data:
+        if has_new_file:
             transaction.on_commit(lambda: process_custom_translation_assets(obj.pk))
