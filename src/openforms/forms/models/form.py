@@ -397,6 +397,16 @@ class Form(models.Model):
         default=False,
         help_text=_("Enable the new renderer."),
     )
+    logic_rule_analysis_enabled = models.BooleanField(
+        _("enable logic rule analysis"),
+        default=False,
+        help_text=_(
+            "Enabling this will analyze logic rules and re-order them according to "
+            "their dependency on other logic rules (happens when the form is saved). "
+            "Each rule will be automatically assigned to one or more steps on which "
+            "it will be executed."
+        ),
+    )
 
     objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
         FormManager
