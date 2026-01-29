@@ -31,6 +31,9 @@ class FormLogicListSerializer(ListWithChildSerializer):
     )
 
     def validate(self, attrs):
+        if not self.context["form"].new_logic_evaluation_enabled:
+            return super().validate(attrs)
+
         # This will only run when the logic rules have passed individual serializer
         # validation, so we can initialize model instances here.
         # Note: model instances without a pk are not hashable, which is a requirement to
@@ -82,6 +85,8 @@ class FormLogicListSerializer(ListWithChildSerializer):
 
     def create(self, validated_data):
         rules = super().create(validated_data)
+        if not self.context["form"].new_logic_evaluation_enabled:
+            return rules
 
         # Set many-to-many relationship from logic rules to form steps
         for rule, step_list in zip(

@@ -3829,6 +3829,12 @@
       "value": "the path should not have a leading slash"
     }
   ],
+  "TPy506": [
+    {
+      "type": 0,
+      "value": "Enable new logic rule evaluation"
+    }
+  ],
   "TR5xSY": [
     {
       "type": 0,
@@ -6303,6 +6309,12 @@
     {
       "type": 0,
       "value": "Partner 1"
+    }
+  ],
+  "lyU7fP": [
+    {
+      "type": 0,
+      "value": "Enabling this will analyze logic rules and re-order them according to their dependency on other logic rules (happens when the form is saved). Each rule will be automatically assigned to one or more steps on which it will be executed."
     }
   ],
   "m/NVtu": [

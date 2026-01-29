@@ -554,6 +554,7 @@ const FormConfigurationFields = ({
     askStatementOfTruth,
     appointmentOptions,
     newRendererEnabled,
+    newLogicEvaluationEnabled,
   } = form;
 
   const onCheckboxChange = (event, currentValue) => {
@@ -761,6 +762,28 @@ const FormConfigurationFields = ({
             }
             checked={newRendererEnabled}
             onChange={event => onCheckboxChange(event, newRendererEnabled)}
+          />
+        </FormRow>
+        <FormRow>
+          <Checkbox
+            name="form.newLogicEvaluationEnabled"
+            label={
+              <FormattedMessage
+                description="New logic rule evaluation feature flag label"
+                defaultMessage="Enable new logic rule evaluation"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="New logic rule evaluation feature flag help text"
+                defaultMessage={`Enabling this will analyze logic rules and re-order them according
+                 to their dependency on other logic rules (happens when the form is saved). Each
+                 rule will be automatically assigned to one or more steps on which it will be
+                 executed.`}
+              />
+            }
+            checked={newLogicEvaluationEnabled}
+            onChange={event => onCheckboxChange(event, newLogicEvaluationEnabled)}
           />
         </FormRow>
       </Fieldset>

@@ -1849,6 +1849,11 @@
     "description": "Service fetch configuration modal form Path field help text",
     "originalDefault": "the path should not have a leading slash"
   },
+  "TPy506": {
+    "defaultMessage": "Enable new logic rule evaluation",
+    "description": "New logic rule evaluation feature flag label",
+    "originalDefault": "Enable new logic rule evaluation"
+  },
   "TR5xSY": {
     "defaultMessage": "Are you sure you want to delete this rule?",
     "description": "Logic rule deletion confirm message",
@@ -2923,6 +2928,11 @@
     "defaultMessage": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case.",
     "description": "ZGW APIs registration options 'objecttype' help text",
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
+  },
+  "lyU7fP": {
+    "defaultMessage": "Enabling this will analyze logic rules and re-order them according to their dependency on other logic rules (happens when the form is saved). Each rule will be automatically assigned to one or more steps on which it will be executed.",
+    "description": "New logic rule evaluation feature flag help text",
+    "originalDefault": "Enabling this will analyze logic rules and re-order them according to their dependency on other logic rules (happens when the form is saved). Each rule will be automatically assigned to one or more steps on which it will be executed."
   },
   "m/NVtu": {
     "defaultMessage": "Transform to list",
