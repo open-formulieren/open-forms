@@ -554,6 +554,7 @@ const FormConfigurationFields = ({
     askStatementOfTruth,
     appointmentOptions,
     newRendererEnabled,
+    logicRuleAnalysisEnabled,
   } = form;
 
   const onCheckboxChange = (event, currentValue) => {
@@ -761,6 +762,28 @@ const FormConfigurationFields = ({
             }
             checked={newRendererEnabled}
             onChange={event => onCheckboxChange(event, newRendererEnabled)}
+          />
+        </FormRow>
+        <FormRow>
+          <Checkbox
+            name="form.logicRuleAnalysisEnabled"
+            label={
+              <FormattedMessage
+                description="Logic rule analysis feature flag label"
+                defaultMessage="Enable logic rule analysis"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="Logic rule analysis feature flag help text"
+                defaultMessage={`Enabling this will analyze logic rules and re-order them according
+                 to their dependency on other logic rules (happens when the form is saved). Each
+                 rule will be automatically assigned to one or more steps on which it will be
+                 executed.`}
+              />
+            }
+            checked={logicRuleAnalysisEnabled}
+            onChange={event => onCheckboxChange(event, logicRuleAnalysisEnabled)}
           />
         </FormRow>
       </Fieldset>

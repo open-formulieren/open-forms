@@ -1907,6 +1907,12 @@
       "value": "The values that can be picked for this field. Values are the text that is submitted with the form data. Labels are the text next to radio buttons, checkboxes and options in dropdowns."
     }
   ],
+  "DL51fL": [
+    {
+      "type": 0,
+      "value": "Execute on step"
+    }
+  ],
   "DRG6XN": [
     {
       "type": 0,
@@ -2279,6 +2285,12 @@
     {
       "type": 0,
       "value": "Reset to default description"
+    }
+  ],
+  "G8OLZH": [
+    {
+      "type": 0,
+      "value": "Visible"
     }
   ],
   "GBsms3": [
@@ -2657,6 +2669,12 @@
       "value": "hidden"
     }
   ],
+  "JB9822": [
+    {
+      "type": 0,
+      "value": "Enabling this will analyze logic rules and re-order them according to their dependency on other logic rules (happens when the form is saved). Each rule will be automatically assigned to one or more steps on which it will be executed."
+    }
+  ],
   "JDD7PC": [
     {
       "type": 0,
@@ -2673,6 +2691,12 @@
     {
       "type": 0,
       "value": "Lastname"
+    }
+  ],
+  "JP/Fu8": [
+    {
+      "type": 0,
+      "value": "Whether to always show this plugin when the form starts."
     }
   ],
   "JRGs/Q": [
@@ -4763,6 +4787,12 @@
     {
       "type": 0,
       "value": "Array"
+    }
+  ],
+  "bJEZH0": [
+    {
+      "type": 0,
+      "value": "Enable logic rule analysis"
     }
   ],
   "bRe/yq": [
@@ -7183,6 +7213,12 @@
     {
       "type": 0,
       "value": "There are errors in the prefill configuration."
+    }
+  ],
+  "tLBlkD": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Organization via OpenID Connect"
     }
   ],
   "tLL2x4": [
