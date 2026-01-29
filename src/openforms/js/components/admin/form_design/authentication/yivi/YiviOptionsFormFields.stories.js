@@ -1,4 +1,4 @@
-import {expect, waitFor, within} from '@storybook/test';
+import {expect, waitFor, within} from 'storybook/test';
 
 import {
   FormModalContentDecorator,

@@ -1,4 +1,4 @@
-import {useArgs} from '@storybook/preview-api';
+import {useArgs} from 'storybook/preview-api';
 
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 
