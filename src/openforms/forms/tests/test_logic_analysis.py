@@ -599,7 +599,7 @@ class DependencyGraphTests(TestCase):
         )
 
         with self.subTest("Initial steps"):
-            self.assertEqual(rule_1.steps, {step_2})
+            self.assertEqual(rule_1.steps, {step_1, step_2})
             self.assertEqual(rule_2.steps, set())
             self.assertEqual(rule_3.steps, set())
 
@@ -616,10 +616,10 @@ class DependencyGraphTests(TestCase):
         add_missing_steps(graph, step_1)
         with self.subTest("Steps are added"):
             # The first three rules all depend (directly or indirectly) on fields "foo"
-            # and "bar", so step 2 is assigned to ensure we have all data available.
-            self.assertEqual(rule_1.steps, {step_2})
-            self.assertEqual(rule_2.steps, {step_2})
-            self.assertEqual(rule_3.steps, {step_2})
+            # and "bar", we assign both steps.
+            self.assertEqual(rule_1.steps, {step_1, step_2})
+            self.assertEqual(rule_2.steps, {step_1, step_2})
+            self.assertEqual(rule_3.steps, {step_1, step_2})
 
             # The last two rules are independent of component variables, so we assign
             # the first step.
