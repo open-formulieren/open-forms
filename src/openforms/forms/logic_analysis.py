@@ -135,5 +135,5 @@ def add_missing_steps(graph: DiGraph, first_step: FormStep) -> None:
         parent_steps = set()
         for parent in graph.predecessors(rule):
             parent_steps |= parent.steps
-        # Assign the last step to ensure we have all data available
-        rule.steps = {max(parent_steps, key=lambda step: step.order)}
+
+        rule.steps = parent_steps
