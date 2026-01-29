@@ -3,7 +3,7 @@ import tempfile
 from pathlib import Path
 
 
-def compile_messages_file(input_path: str) -> tuple[bool, str | None]:
+def compile_messages_file(input_path: str) -> tuple[bool, str]:
     """
     Compiles a messages JSON file using formatjs as a subprocess.
 
@@ -42,6 +42,5 @@ def compile_messages_file(input_path: str) -> tuple[bool, str | None]:
         return False, error_msg
 
     finally:
-        # Clean up the temporary file if it exists
-        if output_path and (temp_output_path := Path(output_path)).exists():
-            temp_output_path.unlink(missing_ok=True)
+        # Clean up the temporary file
+        Path(output_path).unlink(missing_ok=True)

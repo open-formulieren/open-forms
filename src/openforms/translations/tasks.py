@@ -55,7 +55,7 @@ def process_custom_translation_assets(translations_metadata_pk: str) -> None:
                 "debug_output",
             )
         )
-        log.error("custom_translations_processing_failed")
+        log.error("custom_translations_file_processing_failed")
         return
 
     # the file is a valid JSON file, begin the subprocess
@@ -78,7 +78,7 @@ def process_custom_translation_assets(translations_metadata_pk: str) -> None:
         compiled_data = json.loads(result)
         instance.messages_count = len(compiled_data)
     else:
-        log.error("custom_translations_processing_failed")
+        log.error("custom_translations_file_processing_failed")
 
         instance.processing_status = StatusChoices.failed
         instance.debug_output = result or ""

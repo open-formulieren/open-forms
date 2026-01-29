@@ -80,7 +80,6 @@ class CompileCustomTranslationFileTests(TestCase):
             )
 
             self.assertFalse(result)
-            self.assertIsNotNone(error_msg)
             self.assertIsInstance(error_msg, str)
 
     def test_temp_output_file_is_removed_after_subprocess_finished(self):

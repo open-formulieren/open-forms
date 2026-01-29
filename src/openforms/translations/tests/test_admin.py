@@ -1,7 +1,7 @@
 from django.templatetags.static import static
 from django.urls import reverse
 
-from django_webtest import WebTest
+from django_webtest import TransactionWebTest, WebTest
 from furl import furl
 from maykin_2fa.test import disable_admin_mfa
 
@@ -209,6 +209,9 @@ class AdminTranslationMetaDataTests(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(asset_url, response.text)
 
+
+@disable_admin_mfa()
+class AdminTranslationMetaDataTransactionTests(TransactionWebTest):
     def test_saving_model(self):
         super_user = SuperUserFactory.create()
 
@@ -220,12 +223,22 @@ class AdminTranslationMetaDataTests(WebTest):
         form["language_code"] = "nl"
         form["messages_file"] = (
             "test.json",
-            b'{"s":"test"}',
+            b"""{
+            "skjd8uh": {
+                "defaultMessage": "A modified translated text",
+                "description": "A description",
+                "originalDefault": "Completed"
+            }
+            }""",
             "application/json",
         )
         form.submit().follow()
 
+        expected_messages_file_data = b'{\n            "skjd8uh": {\n                "defaultMessage": "A modified translated text",\n                "description": "A description",\n                "originalDefault": "Completed"\n            }\n            }'
+        expected_compiled_asset_data = b'{\n  "skjd8uh": [\n    {\n      "type": 0,\n      "value": "A modified translated text"\n    }\n  ]\n}\n'
+
         obj = TranslationsMetaData.objects.get()
 
         self.assertEqual(obj.language_code, "nl")
-        self.assertEqual(obj.messages_file.file.read(), b'{"s":"test"}')
+        self.assertEqual(obj.messages_file.file.read(), expected_messages_file_data)
+        self.assertEqual(obj.compiled_asset.file.read(), expected_compiled_asset_data)
