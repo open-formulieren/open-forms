@@ -1528,7 +1528,7 @@ class FormLogicAPIGraphValidationTests(APITestCase):
         self.client.force_authenticate(user=user)
 
     def test_create(self):
-        form = FormFactory.create()
+        form = FormFactory.create(logic_rule_analysis_enabled=True)
         step_1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -1637,6 +1637,7 @@ class FormLogicAPIGraphValidationTests(APITestCase):
     def test_with_cycles(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
+            logic_rule_analysis_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
