@@ -129,6 +129,19 @@ class FormLogicSerializer(
             "Actions triggered when the trigger expression evaluates to 'truthy'."
         ),
     )
+    form_steps = NestedHyperlinkedRelatedField(
+        read_only=True,
+        many=True,
+        view_name="api:form-steps-detail",
+        lookup_field="uuid",
+        parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
+        label=_("form steps"),
+        help_text=_(
+            "Form steps on which the rule will be executed, determined by logic rule "
+            "analysis. Note that this is only relevant when the "
+            "'logic_rule_analysis_enabled' feature flag on the form is set to `True`."
+        ),
+    )
 
     class Meta:
         model = FormLogic
@@ -143,6 +156,7 @@ class FormLogicSerializer(
             "trigger_from_step",
             "actions",
             "is_advanced",
+            "form_steps",
         )
         extra_kwargs = {
             "uuid": {"read_only": True},
