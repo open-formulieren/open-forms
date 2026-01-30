@@ -3022,22 +3022,87 @@ paths:
   /api/v2/i18n/compiled-messages/{language_code}.json:
     get:
       operationId: i18n_compiled_messages_.json_retrieve
+      description: Retrieve the new customized (compiled) translations after changes
+        have been applied. This is done based on the language code in the path.
       summary: Get customized (compiled) translations
       parameters:
       - in: path
         name: language_code
         schema:
           type: string
+          enum:
+          - en
+          - nl
+        description: Language code to retrieve the messages for.
         required: true
       tags:
       - translations
       security:
-      - tokenAuth: []
-      - cookieAuth: []
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: object
+                  additionalProperties: false
+                - type: object
+                  additionalProperties:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+              examples:
+                EmptyObject:
+                  value: {}
+                  summary: Empty object
+                CompiledFormatJSExample:
+                  value:
+                    skjd8uh:
+                    - type: 0
+                      value: A translated text
+                    abc123:
+                    - type: 6
+                      options:
+                        one:
+                        - type: 0
+                          value: 1 item
+                        other:
+                        - type: 0
+                          value: '{count} items'
+                  summary: Compiled FormatJS example
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        5XX:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'

@@ -3,6 +3,7 @@ from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 
@@ -57,7 +58,7 @@ class I18NAPITests(APITestCase):
             url, data={"code": "en"}, HTTP_ACCEPT_LANGUAGE="nl-NL, nl;q=0.9, en;q=0.8"
         )
 
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(response.content, b"")
         # assert current has changed
         current = self.client.get(
@@ -72,7 +73,7 @@ class I18NAPITests(APITestCase):
         # ትግርኛ is not available
         response = self.client.put(url, data={"code": "ti"})
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         error = response.json()
         self.assertEqual(error["code"], "invalid")
         self.assertEqual(error["invalidParams"][0]["code"], "invalid_choice")
