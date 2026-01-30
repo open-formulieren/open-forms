@@ -42,7 +42,7 @@ def store_registrator_details(
     if attribute not in AuthAttribute.values:
         raise ValueError(f"Unexpected auth attribute {attribute} specified")
 
-    RegistratorInfo.objects.update_or_create(  # pyright: ignore[reportAttributeAccessIssue]
+    RegistratorInfo.objects.update_or_create(
         submission=submission, defaults={**registrator_auth}
     )
 

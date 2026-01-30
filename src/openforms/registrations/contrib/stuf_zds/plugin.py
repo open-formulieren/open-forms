@@ -11,8 +11,8 @@ from typing import Any, override
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from glom import Assign, glom
 import structlog
+from glom import Assign, glom
 from json_logic.typing import Primitive
 
 from openforms.authentication.service import get_branch_number
