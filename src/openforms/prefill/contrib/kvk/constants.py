@@ -255,6 +255,7 @@ class Attributes(models.TextChoices):
     # )
     indNonMailing = ("indNonMailing", _("indNonMailing"))
     kvkNummer = ("kvkNummer", _("kvkNummer"))
+    vestigingsnummer = ("vestigingsnummer", _("vestigingsnummer"))
     materieleRegistratie_datumAanvang = (
         "materieleRegistratie.datumAanvang",
         _("materieleRegistratie > datumAanvang"),

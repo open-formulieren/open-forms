@@ -77,14 +77,40 @@ class CustomerInteractionsClient(LoggingMixin, OpenKlantClient):
         response = self.digitaal_adres.list_iter(params=params)
         yield from response
 
+    def _get_digital_addresses_for_kvk_branch_number(
+        self, vestigingsnummer: str
+    ) -> Iterator[DigitaalAdres]:
+        """
+        Search digital addresses by branch number of the party.
+
+        The selection of query params and their values are based on the OAS for the
+        "partij identificator":
+        https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/maykinmedia/open-klant/master/src/openklant/components/klantinteracties/openapi.yaml#tag/partij-identificatoren
+        """
+        params: ListDigitaalAdresParams = {
+            "verstrektDoorPartij__partijIdentificator__codeSoortObjectId": "vestigingsnummer",
+            "verstrektDoorPartij__partijIdentificator__codeRegister": "hr",
+            "verstrektDoorPartij__partijIdentificator__codeObjecttype": "vestiging",
+            "verstrektDoorPartij__partijIdentificator__objectId": vestigingsnummer,
+        }
+        response = self.digitaal_adres.list_iter(params=params)
+        yield from response
+
     def get_digital_addresses(
-        self, auth_attribute: AuthAttribute, auth_value: str
+        self,
+        auth_attribute: AuthAttribute,
+        auth_value: str,
+        legal_subject_service_restriction: str = "",
     ) -> Iterator[DigitaalAdres]:
         match auth_attribute:
             case AuthAttribute.bsn:
                 return self._get_digital_addresses_for_bsn(bsn=auth_value)
 
             case AuthAttribute.kvk:
+                if legal_subject_service_restriction:
+                    return self._get_digital_addresses_for_kvk_branch_number(
+                        vestigingsnummer=legal_subject_service_restriction
+                    )
                 return self._get_digital_addresses_for_kvk(kvk=auth_value)
 
             case AuthAttribute.pseudo | AuthAttribute.employee_id:  # pragma: no cover
