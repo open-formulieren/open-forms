@@ -51,6 +51,18 @@ const AVAILABLE_FORM_STEPS = [
     isNew: false,
     validationErrors: [],
   },
+  {
+    formDefinition:
+      'http://localhost:8000/api/v2/form-definitions/dae960ca-b390-458a-bd62-746ffa0353f1',
+    configuration: {display: 'form'},
+    slug: 'step-2',
+    name: 'Step 2',
+    url: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5/steps/76e829b3-ee9a-4f51-893e-efc2d50e5a95',
+    uuid: '76e829b3-ee9a-4f51-893e-efc2d50e5a95',
+    _generatedId: '',
+    isNew: false,
+    validationErrors: [],
+  },
 ];
 
 export default {
@@ -211,6 +223,16 @@ export const FullFunctionality = {
 
     availableFormVariables: AVAILABLE_FORM_VARIABLES,
     availableFormSteps: AVAILABLE_FORM_STEPS,
+    newLogicEvaluationEnabled: false,
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const icons = await canvas.findAllByTitle('Geavanceerde opties');
+    expect(icons[0]).toBeVisible();
+    await userEvent.click(icons[0]);
+    expect(canvas.getByText('Inschakelen vanaf stap:')).toBeVisible();
   },
 };
 
@@ -293,5 +315,78 @@ export const DeletingOneOfMultipleActionsInSameTrigger = {
       },
       {timeout: 10 * 1000}
     );
+  },
+};
+
+export const WithLogicRuleAnalysis = {
+  name: 'With logic rule analysis',
+
+  args: {
+    logicRules: [
+      {
+        uuid: 'foo',
+        _generatedId: 'foo',
+        _logicType: 'simple',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        description: 'Sample rule',
+        _mayGenerateDescription: false,
+        order: 0,
+        jsonLogicTrigger: {'==': [{var: 'foo'}, 'bar']},
+        isAdvanced: false,
+        formSteps: [
+          'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5/steps/8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+        ],
+        actions: [
+          {
+            action: {type: 'variable', value: 'Cool text'},
+            uuid: '',
+            _generatedId: '1',
+            formStepUuid: null,
+            variable: 'bar',
+          },
+        ],
+      },
+      {
+        uuid: 'bar',
+        _generatedId: 'bar',
+        _logicType: 'advanced',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        description: 'I will always trigger',
+        _mayGenerateDescription: false,
+        order: 1,
+        jsonLogicTrigger: true,
+        isAdvanced: true,
+        formSteps: [
+          'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5/steps/8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+          'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5/steps/76e829b3-ee9a-4f51-893e-efc2d50e5a95',
+        ],
+        actions: [
+          {
+            action: {type: 'disable-next'},
+            uuid: '',
+            _generatedId: '0',
+            formStepUuid: '8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+          },
+          {
+            action: {type: 'disable-next'},
+            uuid: '',
+            _generatedId: '1',
+            formStepUuid: '76e829b3-ee9a-4f51-893e-efc2d50e5a95',
+          },
+        ],
+      },
+    ],
+
+    availableFormVariables: AVAILABLE_FORM_VARIABLES,
+    availableFormSteps: AVAILABLE_FORM_STEPS,
+    newLogicEvaluationEnabled: true,
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    expect(await canvas.findByText('This rule will be executed on step(s): Step 1')).toBeVisible();
+    expect(
+      await canvas.findByText('This rule will be executed on step(s): Step 1, Step 2')
+    ).toBeVisible();
   },
 };
