@@ -5,13 +5,10 @@ from pathlib import Path
 from django.core.files.base import ContentFile
 from django.test import TestCase, override_settings
 
-from privates.test import temp_private_root
-
 from ..subprocesses import compile_messages_file
 from .factories import TranslationsMetaDataFactory
 
 
-@temp_private_root()
 class CompileCustomTranslationFileTests(TestCase):
     def test_uploaded_messages_are_successfully_compiled(self):
         tmpdir = tempfile.mkdtemp()

@@ -1,5 +1,4 @@
 import json
-from zoneinfo import ZoneInfo
 
 from django.core.files.base import ContentFile
 from django.utils import timezone
@@ -32,7 +31,7 @@ def process_custom_translation_assets(translations_metadata_pk: str) -> None:
     log = logger.bind(
         action="translations.process_custom_translations_asset",
         translation_metadata_id=instance.pk,
-        input_file_name=instance.messages_file.file.name,
+        input_file_name=file.name,
     )
 
     instance.processing_status = StatusChoices.in_progress
@@ -67,9 +66,7 @@ def process_custom_translation_assets(translations_metadata_pk: str) -> None:
 
         instance.processing_status = StatusChoices.done
         instance.debug_output = ""
-        instance.last_updated = timezone.now().astimezone(ZoneInfo("Europe/Amsterdam"))
-
-        assert result is not None
+        instance.last_updated = timezone.now()
 
         instance.compiled_asset.save(
             "compiled_asset.json", ContentFile(result), save=False
