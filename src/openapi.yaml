@@ -8584,9 +8584,20 @@ components:
           type: boolean
           description: Is this an advanced rule (the admin user manually wrote the
             trigger as JSON)?
+        formSteps:
+          type: array
+          items:
+            type: string
+            format: uri
+            title: form steps
+          readOnly: true
+          description: Form steps on which the rule will be executed, determined by
+            logic rule analysis. Note that this is only relevant when the `new_logic_evaluation_enabled`
+            feature flag on the form is set to `True`.
       required:
       - actions
       - form
+      - formSteps
       - jsonLogicTrigger
       - order
       - url
