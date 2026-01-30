@@ -81,7 +81,9 @@ class CommunicationPreferences(BasePlugin[CommunicationPreferencesOptions]):
             options["customer_interactions_api_group"]
         ) as client:
             digital_addresses: Iterator[DigitaalAdres] = client.get_digital_addresses(
-                submission.auth_info.attribute, identifier_value
+                submission.auth_info.attribute,
+                identifier_value,
+                legal_subject_service_restriction=submission.auth_info.legal_subject_service_restriction,
             )
 
         result = transform_digital_addresses(digital_addresses, address_types)

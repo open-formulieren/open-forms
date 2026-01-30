@@ -8,8 +8,15 @@ from glom import GlomError, glom
 from requests import RequestException
 
 from openforms.authentication.service import AuthAttribute
-from openforms.contrib.kvk.api_models.basisprofiel import BasisProfiel
-from openforms.contrib.kvk.client import NoServiceConfigured, get_kvk_profile_client
+from openforms.contrib.kvk.api_models.basisprofiel import (
+    BasisProfiel,
+    VestigingsProfiel,
+)
+from openforms.contrib.kvk.client import (
+    NoServiceConfigured,
+    get_kvk_client,
+    get_kvk_profile_client,
+)
 from openforms.contrib.kvk.models import KVKConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
@@ -54,6 +61,8 @@ class KVK_KVKNumberPrefill(BasePlugin):
             and cls.requires_auth
             and submission.auth_info.attribute in cls.requires_auth
         ):
+            if branch_number := submission.auth_info.legal_subject_service_restriction:
+                return branch_number
             return submission.auth_info.value
 
     @classmethod
@@ -65,10 +74,10 @@ class KVK_KVKNumberPrefill(BasePlugin):
     ) -> dict[str, Any]:
         # check if submission was logged in with the identifier we're interested
         if not (kvk_value := cls.get_identifier_value(submission, identifier_role)):
-            raise PrefillSkipped("No CoC-number available.")
+            raise PrefillSkipped("No branch or CoC-number available.")
 
         try:
-            with get_kvk_profile_client() as client:
+            with get_kvk_client(submission) as client:
                 result = client.get_profile(kvk_value)
         except (RequestException, NoServiceConfigured):
             return {}
@@ -86,13 +95,16 @@ class KVK_KVKNumberPrefill(BasePlugin):
         return values
 
     @staticmethod
-    def modify_result(result: BasisProfiel):
-        # first try getting the addresses from the embedded 'hoofdvestiging'. Note that
-        # this may be absent or empty depending on the type of company (see #1299).
-        # If there are no addresses found, we try to get them from 'eigenaar' instead.
-        addresses = glom(result, "_embedded.hoofdvestiging.adressen", default=None)
-        if addresses is None:
-            addresses = glom(result, "_embedded.eigenaar.adressen", default=None)
+    def modify_result(result: BasisProfiel | VestigingsProfiel):
+        if "_embedded" in result:  # BasisProfiel
+            # first try getting the addresses from the embedded 'hoofdvestiging'. Note that
+            # this may be absent or empty depending on the type of company (see #1299).
+            # If there are no addresses found, we try to get them from 'eigenaar' instead.
+            addresses = glom(result, "_embedded.hoofdvestiging.adressen", default=None)
+            if addresses is None:
+                addresses = glom(result, "_embedded.eigenaar.adressen", default=None)
+        else:  # VestigingsProfiel
+            addresses = glom(result, "adressen", default=None)
 
         # not a required field, meaning the key may be absent. If that's the case,
         # do nothing (it's better than crashing!)
