@@ -193,7 +193,7 @@ class DetermineVariablesAndStepTests(TestCase):
 
     def test_step_applicable(self):
         form = FormFactory.create()
-        FormStepFactory.create(
+        step_1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -264,8 +264,8 @@ class DetermineVariablesAndStepTests(TestCase):
             ],
         )
 
-        with self.subTest("Last step of input variables is set"):
-            self.assertEqual(rule_1.steps, {step_2})
+        with self.subTest("All input variable steps are set"):
+            self.assertEqual(rule_1.steps, {step_1, step_2})
             self.assertEqual(rule_1.input_variable_keys, {"checkbox", "checkbox2"})
             self.assertEqual(rule_1.output_variable_keys, {"textfield"})
 
@@ -276,7 +276,7 @@ class DetermineVariablesAndStepTests(TestCase):
 
     def test_step_not_applicable(self):
         form = FormFactory.create()
-        FormStepFactory.create(
+        step_1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -347,8 +347,8 @@ class DetermineVariablesAndStepTests(TestCase):
             ],
         )
 
-        with self.subTest("Last step of input variables is set"):
-            self.assertEqual(rule_1.steps, {step_2})
+        with self.subTest("All input variable steps are set"):
+            self.assertEqual(rule_1.steps, {step_1, step_2})
             self.assertEqual(rule_1.input_variable_keys, {"checkbox", "checkbox2"})
             self.assertEqual(rule_1.output_variable_keys, {"textfield"})
 
@@ -433,7 +433,12 @@ class DetermineVariablesAndStepTests(TestCase):
         )
         rule_3 = FormLogicFactory.create(
             form=form,
-            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            json_logic_trigger={
+                "and": [
+                    {"==": [{"var": "checkbox"}, True]},
+                    {"==": [{"var": "textfield"}, "foo"]},
+                ]
+            },
             actions=[
                 {
                     "action": {
@@ -487,24 +492,22 @@ class DetermineVariablesAndStepTests(TestCase):
             self.assertEqual(rule_2.output_variable_keys, {"textfieldInFieldset"})
 
         with self.subTest(
-            "Ensure last step of input variables is set when output variable is "
-            "user-defined."
+            "Ensure all steps of input variables is set when output variable is "
+            "user defined."
         ):
-            self.assertEqual(rule_3.steps, {step_1})
-            self.assertEqual(rule_3.input_variable_keys, {"checkbox"})
+            self.assertEqual(rule_3.steps, {step_1, step_2})
+            self.assertEqual(rule_3.input_variable_keys, {"checkbox", "textfield"})
             self.assertEqual(rule_3.output_variable_keys, {"user_defined"})
 
         with self.subTest(
             "Ensure no step when we have no input variables, and output variable is "
-            "user-defined"
+            "user defined"
         ):
             self.assertEqual(rule_4.steps, set())
             self.assertEqual(rule_4.input_variable_keys, set())
             self.assertEqual(rule_4.output_variable_keys, {"user_defined"})
 
-        with self.subTest(
-            "Ensure last step of input variables from json logic value is set"
-        ):
+        with self.subTest("Ensure step of input variable from json logic value is set"):
             self.assertEqual(rule_5.steps, {step_2})
             self.assertEqual(rule_5.input_variable_keys, {"textfieldInFieldset"})
             self.assertEqual(rule_5.output_variable_keys, {"user_defined"})
@@ -605,11 +608,6 @@ class DetermineVariablesAndStepTests(TestCase):
                         "label": "Date",
                     },
                     {
-                        "type": "currency",
-                        "key": "currency",
-                        "label": "Currency",
-                    },
-                    {
                         "type": "number",
                         "key": "number",
                         "label": "Number",
@@ -656,7 +654,7 @@ class DetermineVariablesAndStepTests(TestCase):
                 path="https://example.com/something/{% if test_case %}{{number}}{% endif %}",
                 # The date field value is a date object, so it can be formatted
                 headers={"X-Header": "{{date|date:'Y-m-d'}}"},
-                query_params={"X-Param": "{{currency}}"},
+                query_params={"X-Param": "{{checkbox}}"},
             ),
         )
 
@@ -672,7 +670,12 @@ class DetermineVariablesAndStepTests(TestCase):
         )
         rule_2 = FormLogicFactory.create(
             form=form,
-            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            json_logic_trigger={
+                "and": [
+                    {"==": [{"var": "checkbox"}, True]},
+                    {"==": [{"var": "textfield"}, "foo"]},
+                ]
+            },
             actions=[
                 {
                     "action": {"type": LogicActionTypes.fetch_from_service},
@@ -708,28 +711,28 @@ class DetermineVariablesAndStepTests(TestCase):
             self.assertEqual(rule_1.output_variable_keys, {"textfield"})
 
         with self.subTest(
-            "Ensure last step of input variables is set when output variable is "
-            "user-defined."
+            "Ensure all steps of input variables are set when output variable is user "
+            "defined."
         ):
-            self.assertEqual(rule_2.steps, {step_1})
-            self.assertEqual(rule_2.input_variable_keys, {"checkbox"})
+            self.assertEqual(rule_2.steps, {step_1, step_2})
+            self.assertEqual(rule_2.input_variable_keys, {"checkbox", "textfield"})
             self.assertEqual(rule_2.output_variable_keys, {"user_defined"})
 
         with self.subTest(
             "Ensure no step when we have no input variables, and output variable is "
-            "user-defined"
+            "user defined"
         ):
             self.assertEqual(rule_3.steps, set())
             self.assertEqual(rule_3.input_variable_keys, set())
             self.assertEqual(rule_3.output_variable_keys, {"user_defined"})
 
         with self.subTest(
-            "Ensure last step of the input variables from template(s) in path, header, "
-            "and query parameters values is set"
+            "Ensure all steps of the input variables from template(s) in path, header, "
+            "and query parameters values are set"
         ):
-            self.assertEqual(rule_4.steps, {step_2})
+            self.assertEqual(rule_4.steps, {step_1, step_2})
             self.assertEqual(
-                rule_4.input_variable_keys, {"currency", "date", "number", "test_case"}
+                rule_4.input_variable_keys, {"checkbox", "date", "number", "test_case"}
             )
             self.assertEqual(
                 rule_4.output_variable_keys, {"user_defined_with_template"}
@@ -737,7 +740,7 @@ class DetermineVariablesAndStepTests(TestCase):
 
     def test_evaluate_dmn(self):
         form = FormFactory.create()
-        FormStepFactory.create(
+        step_1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -778,7 +781,15 @@ class DetermineVariablesAndStepTests(TestCase):
                 ]
             },
         )
-        rule = FormLogicFactory.create(
+        FormVariableFactory.create(
+            form=form,
+            name="user_defined",
+            key="user_defined",
+            data_type=FormVariableDataTypes.string,
+            user_defined=True,
+        )
+
+        rule_1 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "checkbox"}, True]},
             actions=[
@@ -807,15 +818,51 @@ class DetermineVariablesAndStepTests(TestCase):
                 }
             ],
         )
+        rule_2 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "action": {
+                        "type": LogicActionTypes.evaluate_dmn,
+                        "config": {
+                            "plugin_id": "camunda",
+                            "decision_definition_id": "some-id",
+                            "decision_definition_version": "1",
+                            "input_mapping": [
+                                {
+                                    "form_variable": "textfield",
+                                    "dmn_variable": "textfieldDMN",
+                                },
+                            ],
+                            "output_mapping": [
+                                {
+                                    "form_variable": "user_defined",
+                                    "dmn_variable": "userDefinedDMN",
+                                },
+                            ],
+                        },
+                    },
+                }
+            ],
+        )
 
         with self.subTest("Ensure steps of output variables are set"):
-            self.assertEqual(rule.steps, {step_2, step_3})
-            self.assertEqual(rule.input_variable_keys, {"checkbox", "date"})
-            self.assertEqual(rule.output_variable_keys, {"textfield", "email"})
+            self.assertEqual(rule_1.steps, {step_2, step_3})
+            self.assertEqual(rule_1.input_variable_keys, {"checkbox", "date"})
+            self.assertEqual(rule_1.output_variable_keys, {"textfield", "email"})
+
+        with self.subTest(
+            "Ensure all steps of input variables are set when output variable is user "
+            "defined."
+        ):
+            self.assertEqual(rule_2.steps, {step_1, step_2})
+            self.assertEqual(rule_2.input_variable_keys, {"checkbox", "textfield"})
+            self.assertEqual(rule_2.output_variable_keys, {"user_defined"})
 
     def test_set_registration_backend(self):
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        step_1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -827,9 +874,26 @@ class DetermineVariablesAndStepTests(TestCase):
                 ]
             },
         )
+        step_2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                    }
+                ]
+            },
+        )
         rule = FormLogicFactory.create(
             form=form,
-            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            json_logic_trigger={
+                "and": [
+                    {"==": [{"var": "checkbox"}, True]},
+                    {"==": [{"var": "textfield"}, "foo"]},
+                ]
+            },
             actions=[
                 {
                     "action": {
@@ -841,7 +905,7 @@ class DetermineVariablesAndStepTests(TestCase):
             ],
         )
 
-        with self.subTest("Ensure step of input variable is set"):
-            self.assertEqual(rule.steps, {step})
-            self.assertEqual(rule.input_variable_keys, {"checkbox"})
+        with self.subTest("Ensure steps of input variable is set"):
+            self.assertEqual(rule.steps, {step_1, step_2})
+            self.assertEqual(rule.input_variable_keys, {"checkbox", "textfield"})
             self.assertEqual(rule.output_variable_keys, set())

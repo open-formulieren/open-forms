@@ -254,16 +254,14 @@ class StepNotApplicableAction(ActionOperation):
         # anyway if it was marked at not applicable.
         # Together with detecting "self cycles" in the dependency graph, though, we can
         # detect if the rule uses a field from the current step as input, which would be
-        # weird to do.
+        # a weird thing to do.
         form_step = self.rule.form.formstep_set.get(uuid=self.form_step_identifier)
         configuration = form_step.form_definition.configuration_wrapper
         return set(configuration.component_map.keys())
 
     @property
     def steps(self) -> set[FormStep]:
-        steps = self._get_steps(self.rule.unresolved_input_variables_from_trigger)
-        # Return last step to make sure all data will be available.
-        return {max(steps, key=lambda step: step.order)} if steps else steps
+        return self._get_steps(self.rule.unresolved_input_variables_from_trigger)
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -303,16 +301,14 @@ class StepApplicableAction(ActionOperation):
         # submission data.
         # Together with detecting "self cycles" in the dependency graph, though, we can
         # detect if the rule uses a field from the current step as input, which would be
-        # weird to do.
+        # a weird thing to do.
         form_step = self.rule.form.formstep_set.get(uuid=self.form_step_identifier)
         configuration = form_step.form_definition.configuration_wrapper
         return set(configuration.component_map.keys())
 
     @property
     def steps(self) -> set[FormStep]:
-        steps = self._get_steps(self.rule.unresolved_input_variables_from_trigger)
-        # Return last step to make sure all data will be available.
-        return {max(steps, key=lambda step: step.order)} if steps else steps
+        return self._get_steps(self.rule.unresolved_input_variables_from_trigger)
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -356,12 +352,10 @@ class VariableAction(ActionOperation):
 
         # If we cannot resolve a step from the output variables (we are setting a value
         # on a user-defined variable), try to resolve it from the input variables.
-        # Select the last step to make sure we have all data.
-        steps = self._get_steps(
+        return self._get_steps(
             self.rule.unresolved_input_variables_from_trigger
             | self.unresolved_input_variables
         )
-        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -545,12 +539,10 @@ class ServiceFetchAction(ActionOperation):
 
         # If we cannot resolve a step from the output variables (we are setting a value
         # on a user-defined variable), try to resolve it from the input variables.
-        # Select the last step to make sure we have all data.
-        steps = self._get_steps(
+        return self._get_steps(
             self.rule.unresolved_input_variables_from_trigger
             | self.unresolved_input_variables
         )
-        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -608,12 +600,10 @@ class EvaluateDMNAction(ActionOperation):
 
         # If we cannot resolve a step from the output variables (we are setting a value
         # on a user-defined variable), try to resolve it from the input variables.
-        # Select the last step to make sure we have all data
-        steps = self._get_steps(
+        return self._get_steps(
             self.rule.unresolved_input_variables_from_trigger
             | self.unresolved_input_variables
         )
-        return {max(steps, key=lambda step: step.order)} if steps else steps
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
