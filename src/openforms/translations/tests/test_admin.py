@@ -1,3 +1,5 @@
+import json
+
 from django.templatetags.static import static
 from django.urls import reverse
 
@@ -234,11 +236,26 @@ class AdminTranslationMetaDataTransactionTests(TransactionWebTest):
         )
         form.submit().follow()
 
-        expected_messages_file_data = b'{\n            "skjd8uh": {\n                "defaultMessage": "A modified translated text",\n                "description": "A description",\n                "originalDefault": "Completed"\n            }\n            }'
-        expected_compiled_asset_data = b'{\n  "skjd8uh": [\n    {\n      "type": 0,\n      "value": "A modified translated text"\n    }\n  ]\n}\n'
+        expected_messages_file_data = {
+            "skjd8uh": {
+                "defaultMessage": "A modified translated text",
+                "description": "A description",
+                "originalDefault": "Completed",
+            }
+        }
+        expected_compiled_asset_data = {
+            "skjd8uh": [{"type": 0, "value": "A modified translated text"}]
+        }
 
         obj = TranslationsMetaData.objects.get()
 
+        with (
+            open(obj.messages_file.path) as messages_file_path,
+            open(obj.compiled_asset.path) as compiled_asset_path,
+        ):
+            messages_file_data = json.load(messages_file_path)
+            compiled_asset_data = json.load(compiled_asset_path)
+
+        self.assertEqual(messages_file_data, expected_messages_file_data)
+        self.assertEqual(compiled_asset_data, expected_compiled_asset_data)
         self.assertEqual(obj.language_code, "nl")
-        self.assertEqual(obj.messages_file.file.read(), expected_messages_file_data)
-        self.assertEqual(obj.compiled_asset.file.read(), expected_compiled_asset_data)
