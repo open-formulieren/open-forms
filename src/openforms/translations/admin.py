@@ -1,13 +1,19 @@
 from django.contrib import admin
+from django.db import transaction
+from django.forms import ModelForm
+from django.http import HttpRequest
 from django.templatetags.static import static
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from privates.admin import PrivateMediaMixin
+
 from .models import TranslationsMetaData
+from .tasks import process_custom_translation_assets
 
 
 @admin.register(TranslationsMetaData)
-class TranslationsMetaDataAdmin(admin.ModelAdmin):
+class TranslationsMetaDataAdmin(PrivateMediaMixin, admin.ModelAdmin):
     list_display = (
         "language_code",
         "processing_status",
@@ -52,6 +58,8 @@ class TranslationsMetaDataAdmin(admin.ModelAdmin):
         "messages_count",
         "app_release",
     )
+    private_media_fields = ("compiled_asset",)
+    private_media_view_options = {"attachment": True}
 
     @admin.display(description=_("Default messages"))
     def default_source_messages_link(self, obj: TranslationsMetaData) -> str:
@@ -61,7 +69,23 @@ class TranslationsMetaDataAdmin(admin.ModelAdmin):
         # default messages are already part of the static files
         url = static(f"sdk/i18n/messages/{obj.language_code}.json")
         return format_html(
-            '<a href="{}" target="_blank">{}</a>',
+            '<a href="{}" download>{}</a>',
             url,
             _("Download"),
         )
+
+    def save_model(
+        self,
+        request: HttpRequest,
+        obj: TranslationsMetaData,
+        form: ModelForm,
+        change: bool,
+    ) -> None:
+        has_new_file = (
+            "messages_file" in form.changed_data and "messages_file" in request.FILES
+        )
+
+        super().save_model(request, obj, form, change)
+
+        if has_new_file:
+            transaction.on_commit(lambda: process_custom_translation_assets(obj.pk))
