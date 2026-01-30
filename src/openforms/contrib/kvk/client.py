@@ -9,19 +9,36 @@ from opentelemetry import trace
 from zgw_consumers.client import build_client
 
 from openforms.contrib.hal_client import HALClient
+from openforms.submissions.models.submission import Submission
 
-from .api_models.basisprofiel import BasisProfiel
+from .api_models.basisprofiel import BasisProfiel, VestigingsProfiel
 from .models import KVKConfig
 
 logger = structlog.stdlib.get_logger(__name__)
 tracer = trace.get_tracer("openforms.contrib.kvk.client")
 
 
+def get_kvk_client(submission: Submission) -> KVKProfileClient | KVKBranchProfileClient:
+    assert submission.is_authenticated
+
+    if submission.auth_info.legal_subject_service_restriction:
+        return get_kvk_branch_profile_client()
+
+    return get_kvk_profile_client()
+
+
 def get_kvk_profile_client() -> KVKProfileClient:
     config = KVKConfig.get_solo()
     if not (service := config.profile_service):
         raise NoServiceConfigured("No KVK basisprofielen service configured!")
-    return build_client(service, client_factory=KVKProfileClient)
+    return build_client(service, client_factory=KVKProfileClient)  # pyright: ignore[reportArgumentType]
+
+
+def get_kvk_branch_profile_client() -> KVKBranchProfileClient:
+    config = KVKConfig.get_solo()
+    if not (service := config.profile_service):
+        raise NoServiceConfigured("No KVK vestigingsprofielen service configured!")
+    return build_client(service, client_factory=KVKBranchProfileClient)  # pyright: ignore[reportArgumentType]
 
 
 def get_kvk_search_client() -> KVKSearchClient:
@@ -68,6 +85,30 @@ class KVKProfileClient(HALClient):
         Swagger: https://developers.kvk.nl/documentation/testing/swagger-basisprofiel-api
         """
         path = f"v1/basisprofielen/{kvk_nummer}"
+        try:
+            response = self.get(path)
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            logger.exception("kvk_profile_request_failure", exc_info=exc)
+            raise exc
+
+        return response.json()
+
+
+class KVKBranchProfileClient(HALClient):
+    @tracer.start_as_current_span(
+        name="get-profile", attributes={"span.type": "app", "span.subtype": "kvk"}
+    )
+    @elasticapm.capture_span("app.kvk")
+    def get_profile(self, branch_number: str) -> VestigingsProfiel:
+        """
+        Retrieve the profile of a single entity by chamber of commerce number.
+
+        :arg branch_number: a brnach number consisting of 12 digits.
+
+        Swagger: https://developers.kvk.nl/documentation/testing/swagger-vestigingsprofiel-api
+        """
+        path = f"v1/vestigingsprofielen/{branch_number}"
         try:
             response = self.get(path)
             response.raise_for_status()

@@ -6,7 +6,11 @@ from privates.test import temp_private_root
 
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..client import get_kvk_profile_client, get_kvk_search_client
+from ..client import (
+    get_kvk_branch_profile_client,
+    get_kvk_profile_client,
+    get_kvk_search_client,
+)
 from .base import KVKTestMixin
 
 
@@ -71,5 +75,29 @@ class KVKProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
         m.get(requests_mock.ANY, status_code=500)
 
         with get_kvk_profile_client() as client:
+            with self.assertRaises(requests.RequestException):
+                client.get_profile("69599084")
+
+
+@temp_private_root()
+class KVKBranchProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
+    def test_client(self):
+        with get_kvk_branch_profile_client() as client:
+            res = client.get_profile("000038509504")
+
+        self.assertIsNotNone(res)
+        self.assertEqual(res["kvkNummer"], "69599084")
+        self.assertEqual(res["vestigingsnummer"], "000038509504")
+
+    def test_client_404(self):
+        with get_kvk_branch_profile_client() as client:
+            with self.assertRaises(requests.HTTPError):
+                client.get_profile("12345678")
+
+    @requests_mock.Mocker()
+    def test_client_500(self, m):
+        m.get(requests_mock.ANY, status_code=500)
+
+        with get_kvk_branch_profile_client() as client:
             with self.assertRaises(requests.RequestException):
                 client.get_profile("69599084")
