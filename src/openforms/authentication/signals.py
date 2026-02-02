@@ -8,6 +8,7 @@ import structlog
 from rest_framework.request import Request
 
 from openforms.accounts.models import User
+from openforms.logging import audit_logger
 from openforms.submissions.models import Submission
 from openforms.submissions.signals import (
     submission_complete,
@@ -97,7 +98,10 @@ def set_auth_attribute_on_session(
     )
     if is_authenticated_request(request):
         log = log.bind(username=request.user.username)
-    log.info("authentication.submission_auth", is_delegated=is_delegated, audit=True)
+
+    # copy context to audit log
+    audit_log = audit_logger.bind(**structlog.get_context(log))
+    audit_log.debug("authentication.submission_auth", is_delegated=is_delegated)
 
     if registrator_subject:
         # we got registrator_subject data so form_auth is an employee

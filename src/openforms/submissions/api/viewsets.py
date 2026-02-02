@@ -27,7 +27,7 @@ from openforms.authentication.service import (
 )
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import Form, FormStep
-from openforms.logging import logevent
+from openforms.logging import audit_logger, logevent
 from openforms.prefill.service import prefill_variables
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
@@ -160,7 +160,7 @@ class SubmissionViewSet(
         super().perform_create(serializer)
         submission = serializer.instance
         assert isinstance(submission, Submission)
-        log = logger.bind(submission_uuid=str(submission.uuid))
+        audit_log = audit_logger.bind(submission_uuid=str(submission.uuid))
 
         form: Form = serializer.validated_data["form"]
 
@@ -179,7 +179,7 @@ class SubmissionViewSet(
         # mutate/view the submission
         add_submmission_to_session(submission, self.request.session)
 
-        log.info("submission_start", audit=True)
+        audit_log.info("submission_start")
 
         prefill_variables(submission)
         initialise_user_defined_variables(submission)
@@ -604,7 +604,7 @@ class SubmissionStepViewSet(
             # serializer
             persist_user_defined_variables(submission)
 
-        logger.info("submission_step_fill", audit=True, step_id=instance.pk)
+        audit_logger.info("submission_step_fill", step_id=instance.pk)
         attach_uploads_to_submission_step(instance)
 
         # See #1480 - if there is navigation between steps and original form field values

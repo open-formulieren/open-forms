@@ -12,6 +12,8 @@ import structlog
 from axes.signals import user_locked_out
 from hijack.signals import hijack_ended, hijack_started
 
+from openforms.logging import audit_logger
+
 from .metrics import login_failures, logins, logouts, user_lockouts
 from .models import User
 
@@ -29,9 +31,8 @@ def handle_hijack_start(
     data causing only the hijacked user to show up in the audit log instead of the
     hijacker.
     """
-    logger.info(
+    audit_logger.info(
         "hijack_started",
-        audit=True,
         hijacker=hijacker.username,
         hijacked=hijacked.username,
     )
@@ -48,9 +49,8 @@ def handle_hijack_end(
     data causing only the hijacked user to show up in the audit log instead of the
     hijacker.
     """
-    logger.info(
+    audit_logger.info(
         "hijack_ended",
-        audit=True,
         hijacker=hijacker.username,
         hijacked=hijacked.username,
     )

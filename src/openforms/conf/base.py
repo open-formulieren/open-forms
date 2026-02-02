@@ -24,10 +24,7 @@ from upgrade_check.constraints import UpgradePaths
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
 from openforms.logging.adapter import from_structlog
-from openforms.logging.processors import (
-    drop_user_agent_in_dev,
-    filter_by_level_or_audit,
-)
+from openforms.logging.processors import drop_user_agent_in_dev
 
 from .utils import Filesize, get_sentry_integrations
 
@@ -443,11 +440,7 @@ LOGGING = {
         # legacy
         "outgoing_requests": {"()": HttpFormatter},
     },
-    "filters": {
-        "audit_only": {
-            "()": "openforms.logging.filters.AuditFilter",
-        },
-    },
+    "filters": {},
     "handlers": {
         "null": {  # used by the ``mute_logging`` util
             "level": "DEBUG",
@@ -469,9 +462,8 @@ LOGGING = {
             "backupCount": 10,
         },
         "timeline_logger": {
-            "level": "DEBUG",
+            "level": "DEBUG",  # DO NOT MODIFY or make configurable
             "class": "openforms.logging.handlers.TimelineLoggerHandler",
-            "filters": ["audit_only"],
             # extra kwargs for the handler
             "adapter": from_structlog,
         },
@@ -487,13 +479,21 @@ LOGGING = {
         },
     },
     "loggers": {
-        "openforms": {
+        # special logger for audit-events, emit to stdout as usual but also direct logs
+        # to the timeline_logger to persist them in the database for easy
+        # querying/display
+        "openforms_audit": {
             "handlers": [_default_handler, "timeline_logger"],
+            "level": "DEBUG",  # DO NOT MODIFY or make configurable
+            "propagate": False,
+        },
+        "openforms": {
+            "handlers": [_default_handler],
             "level": "INFO",
             "propagate": True,
         },
         "stuf": {
-            "handlers": [_default_handler, "timeline_logger"],
+            "handlers": [_default_handler],
             "level": "DEBUG",
             "propagate": True,
         },
@@ -538,7 +538,7 @@ LOGGING = {
 structlog.configure(
     processors=[
         structlog.contextvars.merge_contextvars,
-        filter_by_level_or_audit,
+        structlog.stdlib.filter_by_level,
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,

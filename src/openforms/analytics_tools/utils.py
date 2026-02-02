@@ -12,6 +12,7 @@ from cookie_consent.models import Cookie, CookieGroup
 
 from openforms.config.constants import CSPDirective
 from openforms.config.models import CSPSetting
+from openforms.logging import audit_logger
 
 from .constants import AnalyticsTools
 
@@ -78,9 +79,8 @@ def update_analytics_tool(
         cookie_consent_group_id=config.analytics_cookie_consent_group.id,
     )
 
-    logger.info(
+    audit_logger.info(
         "analytics_tool_enabled" if is_activated else "analytics_tool_disabled",
-        audit=True,
         analytics_tool=str(analytics_tool),
     )
 

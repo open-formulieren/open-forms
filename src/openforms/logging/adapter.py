@@ -8,7 +8,7 @@ from .constants import TimelineLogTags
 from .handlers import EventDetails
 
 
-def from_structlog(event_dict: EventDict) -> EventDetails | None:
+def from_structlog(event_dict: EventDict) -> EventDetails:
     """
     Transform structlog events into django-timeline-logger parameters.
     """
@@ -136,4 +136,5 @@ def from_structlog(event_dict: EventDict) -> EventDetails | None:
                 },
             )
 
-    return None
+        case _:  # pragma: no cover
+            raise AssertionError(f"Unhandled event '{event_dict['event']}'!")

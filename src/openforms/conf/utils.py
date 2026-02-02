@@ -113,8 +113,8 @@ def mute_logging(config: dict) -> None:  # pragma: no cover
     for name, logger in config["loggers"].items():
         logger["handlers"] = ["null"]
         # don't drop audit logs
-        if name == "openforms":
-            logger["handlers"].append("timeline_logger")
+        if name == "openforms_audit":
+            logger["handlers"] = ["timeline_logger"]
 
     # some tooling logs to a logger which isn't defined, and that ends up in the root
     # logger -> add one so that we can mute that output too.

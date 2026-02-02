@@ -17,6 +17,7 @@ from cspreports.models import CSPReport
 from log_outgoing_requests.admin import OutgoingRequestsLogAdmin
 from log_outgoing_requests.models import OutgoingRequestsLog
 
+from openforms.logging import audit_logger
 from openforms.typing import is_authenticated_request
 
 logger = structlog.stdlib.get_logger()
@@ -75,9 +76,8 @@ class OutgoingRequestsLogOverrideAdmin(OutgoingRequestsLogAdmin):
         outgoing_request_log = self.get_object(request, object_id)
         if outgoing_request_log is None:
             raise Http404(f"No {self.model._meta.object_name} matches the given query.")
-        logger.info(
+        audit_logger.info(
             "outgoing_request_log_details_view_admin",
-            audit=True,
             object_id=object_id,
             user=request.user.username,
         )
