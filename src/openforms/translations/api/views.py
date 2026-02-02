@@ -6,7 +6,6 @@ from django.utils.translation import activate, get_language, gettext_lazy as _
 
 from django_sendfile import sendfile
 from drf_spectacular.plumbing import (
-    build_array_type,
     build_object_type,
 )
 from drf_spectacular.utils import (
@@ -144,7 +143,8 @@ class FormioTranslationsView(APIView):
     summary=_("Get customized (compiled) translations"),
     description=_(
         "Retrieve the new customized (compiled) translations after changes have been "
-        "applied. This is done based on the language code in the path."
+        "applied. This is done based on the language code in the path. In case no custom "
+        "translations exist, an empty object `{}` is returned."
     ),
     tags=["translations"],
     parameters=[
@@ -157,16 +157,7 @@ class FormioTranslationsView(APIView):
         ),
     ],
     responses={
-        "200": {
-            "oneOf": [
-                build_object_type(additionalProperties=False),
-                build_object_type(
-                    additionalProperties=build_array_type(
-                        build_object_type(additionalProperties=True)
-                    )
-                ),
-            ],
-        },
+        "200": build_object_type(),
         "404": ExceptionSerializer,
         "5XX": ExceptionSerializer,
     },
@@ -194,16 +185,10 @@ class CustomizedCompiledTranslations(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def _get_custom_translations_file_path(self, language_code: str) -> str | None:
-        # filter the objects by the received language code and the most recent and
-        # successfully processed upload
-        translations_metadata = (
-            TranslationsMetaData.objects.filter(
-                language_code=language_code,
-                last_updated__isnull=False,
-            )
-            .order_by("-last_updated")
-            .first()
-        )
+        translations_metadata = TranslationsMetaData.objects.filter(
+            language_code=language_code,
+            last_updated__isnull=False,
+        ).first()
 
         # make sure an instance with a compiled asset attached to it exists
         if (
@@ -230,6 +215,4 @@ class CustomizedCompiledTranslations(APIView):
         if not compiled_asset_path:
             return JsonResponse(data={})
 
-        return sendfile(
-            request, compiled_asset_path, attachment=True, mimetype="application/json"
-        )
+        return sendfile(request, compiled_asset_path, mimetype="application/json")

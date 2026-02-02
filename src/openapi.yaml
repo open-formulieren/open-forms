@@ -3023,7 +3023,8 @@ paths:
     get:
       operationId: i18n_compiled_messages_.json_retrieve
       description: Retrieve the new customized (compiled) translations after changes
-        have been applied. This is done based on the language code in the path.
+        have been applied. This is done based on the language code in the path. In
+        case no custom translations exist, an empty object `{}` is returned.
       summary: Get customized (compiled) translations
       parameters:
       - in: path
@@ -3044,15 +3045,7 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                - type: object
-                  additionalProperties: false
-                - type: object
-                  additionalProperties:
-                    type: array
-                    items:
-                      type: object
-                      additionalProperties: true
+                type: object
               examples:
                 EmptyObject:
                   value: {}

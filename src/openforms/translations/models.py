@@ -22,6 +22,7 @@ class TranslationsMetaData(models.Model):
         _("language"),
         max_length=10,
         choices=get_language_choices(),
+        unique=True,
         help_text=_("Selected language."),
     )
     messages_file = PrivateMediaFileField(
