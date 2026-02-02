@@ -160,6 +160,7 @@ class SubmissionViewSet(
         super().perform_create(serializer)
         submission = serializer.instance
         assert isinstance(submission, Submission)
+        log = logger.bind(submission_uuid=str(submission.uuid))
 
         form: Form = serializer.validated_data["form"]
 
@@ -178,7 +179,7 @@ class SubmissionViewSet(
         # mutate/view the submission
         add_submmission_to_session(submission, self.request.session)
 
-        logevent.submission_start(submission)
+        log.info("submission_start", audit=True)
 
         prefill_variables(submission)
         initialise_user_defined_variables(submission)
@@ -603,7 +604,7 @@ class SubmissionStepViewSet(
             # serializer
             persist_user_defined_variables(submission)
 
-        logevent.submission_step_fill(instance)
+        logger.info("submission_step_fill", audit=True, step_id=instance.pk)
         attach_uploads_to_submission_step(instance)
 
         # See #1480 - if there is navigation between steps and original form field values

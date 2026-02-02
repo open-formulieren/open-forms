@@ -8,7 +8,6 @@ from django.conf import settings
 from django.db.models import Model
 
 from openforms.accounts.models import User
-from openforms.analytics_tools.models import AnalyticsToolsConfiguration
 from openforms.appointments.models import AppointmentInfo
 from openforms.forms.models import Form
 from openforms.logging.constants import TimelineLogTags
@@ -17,11 +16,9 @@ from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.typing import JSONObject, JSONValue
 
 if TYPE_CHECKING:
-    from log_outgoing_requests.models import OutgoingRequestsLog
-
     from openforms.payments.models import SubmissionPayment
     from openforms.prefill.base import BasePlugin as PrefillPlugin
-    from openforms.submissions.models import Submission, SubmissionStep
+    from openforms.submissions.models import Submission
     from stuf.models import StufService
 
     from .models import TimelineLogProxy
@@ -71,76 +68,7 @@ def _create_log(
     return log_entry
 
 
-def outgoing_request_log_details_view_admin(
-    outgoing_request_log: OutgoingRequestsLog, user: User
-) -> None:
-    _create_log(
-        outgoing_request_log,
-        "outgoing_request_log_details_view_admin",
-        tags=[TimelineLogTags.AVG],
-        user=user,
-    )
-
-
 # - - -
-
-
-def enabling_analytics_tool(
-    analytics_tools_configuration: AnalyticsToolsConfiguration, analytics_tool: str
-):
-    _create_log(
-        analytics_tools_configuration,
-        "analytics_tool_enabled",
-        extra_data={"analytics_tool": analytics_tool},
-    )
-
-
-def disabling_analytics_tool(
-    analytics_tools_configuration: AnalyticsToolsConfiguration, analytics_tool: str
-):
-    _create_log(
-        analytics_tools_configuration,
-        "analytics_tool_disabled",
-        extra_data={"analytics_tool": analytics_tool},
-    )
-
-
-# - - -
-
-
-def submission_start(submission: Submission):
-    _create_log(
-        submission,
-        "submission_start",
-        tags=[TimelineLogTags.submission_lifecycle],
-    )
-
-
-def submission_auth(
-    submission: Submission, delegated: bool = False, user: User | None = None
-):
-    _create_log(
-        submission,
-        "submission_auth",
-        user=user,
-        extra_data={"delegated": delegated},
-        tags=[TimelineLogTags.submission_lifecycle],
-    )
-
-
-def submission_step_fill(step: SubmissionStep):
-    from openforms.forms.models import FormStep
-
-    assert isinstance(step.form_step, FormStep)
-    _create_log(
-        step.submission,
-        "submission_step_fill",
-        extra_data={
-            "step": str(step.form_step.form_definition.name),
-            "step_id": step.pk,
-        },
-        tags=[TimelineLogTags.submission_lifecycle],
-    )
 
 
 def _snapshot_submission_statistics(submission: Submission):

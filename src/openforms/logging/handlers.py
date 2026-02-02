@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Protocol
 
+from django.conf import settings
 from django.db import models
 
 import structlog
@@ -124,6 +125,9 @@ class TimelineLoggerHandler(logging.Handler):
     @supress_errors()
     def emit(self, record: logging.LogRecord):
         from .models import TimelineLogProxy
+
+        if getattr(settings, "AUDITLOG_DISABLED", False):
+            return
 
         assert is_event_dict(record.msg), "Only structlog event dicts are expected"
         event_details = self.adapter(record.msg)

@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 
+import structlog
 from cookie_consent.models import Cookie, CookieGroup
 
 from openforms.config.constants import CSPDirective
@@ -16,6 +17,8 @@ from .constants import AnalyticsTools
 
 if TYPE_CHECKING:
     from .models import AnalyticsToolsConfiguration, ToolConfiguration
+
+logger = structlog.stdlib.get_logger()
 
 
 CONTRIB_DIR = (Path(__file__).parent / "contrib").resolve()
@@ -37,13 +40,6 @@ def update_analytics_tool(
     is_activated: bool,
     tool_config: "ToolConfiguration",
 ) -> None:
-    from openforms.logging import logevent
-
-    if is_activated:
-        logevent.enabling_analytics_tool(config, analytics_tool)
-    else:
-        logevent.disabling_analytics_tool(config, analytics_tool)
-
     # process the CSP headers
     csps: Sequence[CSPDict] = (
         [] if not is_activated else load_asset("csp_headers.json", analytics_tool)
@@ -80,6 +76,12 @@ def update_analytics_tool(
         cookies,
         create=is_activated,
         cookie_consent_group_id=config.analytics_cookie_consent_group.id,
+    )
+
+    logger.info(
+        "analytics_tool_enabled" if is_activated else "analytics_tool_disabled",
+        audit=True,
+        analytics_tool=str(analytics_tool),
     )
 
 
