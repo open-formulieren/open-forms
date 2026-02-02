@@ -176,10 +176,10 @@ class ZGWBackendTests(TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "handelsnaam",
+                    "key": "achternaam",
                     "type": "textfield",
                     "registration": {
-                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
                     },
                 },
                 {
@@ -198,14 +198,14 @@ class ZGWBackendTests(TestCase):
                 },
             ],
             submitted_data={
-                "handelsnaam": "ACME",
+                "achternaam": "Willemse",
                 "postcode": "1000 AA",
                 "coordinaat": {
                     "type": "Point",
                     "coordinates": [4.893164274470299, 52.36673378967122],
                 },
             },
-            kvk="12345678",
+            bsn="111222333",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
             registration_result={
