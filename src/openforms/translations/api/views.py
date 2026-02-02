@@ -4,9 +4,15 @@ from django.conf import settings
 from django.http import FileResponse, JsonResponse
 from django.utils.translation import activate, get_language, gettext_lazy as _
 
-from drf_spectacular.plumbing import build_basic_type, build_object_type
-from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schema
+from django_sendfile import sendfile
+from drf_spectacular.plumbing import (
+    build_object_type,
+)
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    extend_schema,
+)
 from rest_framework import permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
@@ -18,7 +24,11 @@ from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerial
 from openforms.api.views.mixins import SerializerContextMixin
 from openforms.translations.utils import set_language_cookie
 
-from ..utils import get_language_codes, get_supported_languages
+from ..models import TranslationsMetaData
+from ..utils import (
+    get_language_codes,
+    get_supported_languages,
+)
 from .serializers import LanguageCodeSerializer, LanguageInfoSerializer
 
 
@@ -96,7 +106,7 @@ class SetLanguageView(SerializerContextMixin, APIView):
             location=OpenApiParameter.PATH,
             description=_("Language code to retrieve the messages for."),
             type=str,
-            enum=lazy_enum(get_language_codes),
+            enum=lazy_enum(get_language_codes),  # pyright: ignore[reportArgumentType]
         ),
     ],
     responses={
@@ -131,11 +141,78 @@ class FormioTranslationsView(APIView):
 
 @extend_schema(
     summary=_("Get customized (compiled) translations"),
+    description=_(
+        "Retrieve the new customized (compiled) translations after changes have been "
+        "applied. This is done based on the language code in the path. In case no custom "
+        "translations exist, an empty object `{}` is returned."
+    ),
     tags=["translations"],
-    # FIXME: this doesn't document the `null` -> better to make the SDK deal with empty
-    # responses than use 'null'.
-    responses={"200": build_basic_type(OpenApiTypes.NONE)},
+    parameters=[
+        OpenApiParameter(
+            name="language_code",
+            location=OpenApiParameter.PATH,
+            description=_("Language code to retrieve the messages for."),
+            type=str,
+            enum=lazy_enum(get_language_codes),  # pyright: ignore[reportArgumentType]
+        ),
+    ],
+    responses={
+        "200": build_object_type(),
+        "404": ExceptionSerializer,
+        "5XX": ExceptionSerializer,
+    },
+    examples=[
+        OpenApiExample("Empty object", value={}),
+        OpenApiExample(
+            "Compiled FormatJS example",
+            value={
+                "skjd8uh": [{"type": 0, "value": "A translated text"}],
+                "abc123": [
+                    {
+                        "type": 6,
+                        "options": {
+                            "one": [{"type": 0, "value": "1 item"}],
+                            "other": [{"type": 0, "value": "{count} items"}],
+                        },
+                    }
+                ],
+            },
+        ),
+    ],
 )
 class CustomizedCompiledTranslations(APIView):
-    def get(self, request: Request, *args, **kwargs):
-        return JsonResponse(data=None, safe=False)
+    authentication_classes = ()
+    permission_classes = (permissions.AllowAny,)
+
+    def _get_custom_translations_file_path(self, language_code: str) -> str | None:
+        translations_metadata = TranslationsMetaData.objects.filter(
+            language_code=language_code,
+            last_updated__isnull=False,
+        ).first()
+
+        # make sure an instance with a compiled asset attached to it exists
+        if (
+            not translations_metadata
+            or not translations_metadata.compiled_asset.storage.exists(
+                translations_metadata.compiled_asset.name
+            )
+        ):
+            return None
+
+        return translations_metadata.compiled_asset.path
+
+    def get(self, request, language_code: str, *args, **kwargs):
+        _valid_codes = get_language_codes()
+        if language_code not in _valid_codes:
+            raise NotFound(
+                _("The language code {language} is not supported.").format(
+                    language=language_code
+                )
+            )
+
+        compiled_asset_path = self._get_custom_translations_file_path(language_code)
+
+        if not compiled_asset_path:
+            return JsonResponse(data={})
+
+        return sendfile(request, compiled_asset_path, mimetype="application/json")
