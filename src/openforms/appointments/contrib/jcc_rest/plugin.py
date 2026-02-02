@@ -194,7 +194,7 @@ class JccRestPlugin(BasePlugin):
         Returns a list with the default component when isAnyPhoneNumberRequired or
         areFirstNameOrInitialsRequired are set to True.
         """
-        if condition and all(v is None or v == FieldState.hidden for v in field_values):
+        if condition and all(v == FieldState.hidden for v in field_values):
             return [component_factory]
 
         return []
@@ -203,14 +203,65 @@ class JccRestPlugin(BasePlugin):
         self, required_fields: RawCustomerFields
     ) -> dict[str, bool]:
         """
-        Based on the retrieved fields returns a dict with the fields and that should be
-        rendered and whether they are required or not.
+        Based on the retrieved fields returns a dict with the field names and a boolean,
+        set according to whether they are required or not.
         """
-        return {
-            field: state == FieldState.required
-            for field, state in required_fields.items()
-            if state in (FieldState.visible, FieldState.required)
+        excluded_fields = {
+            CustomerFields.last_name,
+            CustomerFields.phone_number,
         }
+
+        # according to JCC, missing fields are considered to be visible, so we check which
+        # fields are missing from the response (except lastName and phone number which
+        # are treated a bit differently) and we add them as optional
+        fields: dict[str, bool] = {
+            possible_field: False
+            for possible_field in CustomerFields.values
+            if possible_field not in required_fields
+            and possible_field not in excluded_fields
+        }
+
+        # JCC has different names for the main phone number in the `customer/customerfields/required`
+        # and the POST `appointment` endpoints, so we use `mainPhoneNumber` to find
+        # it in the response of the required fields (in our constans file we have the name
+        # that the appointment create body needs)
+        if "mainPhoneNumber" not in required_fields:
+            fields.setdefault("mainPhoneNumber", False)
+
+        # update the fields with the required ones
+        # these fields are present in the response and they can only be hidden or required,
+        # so we keep only the required ones
+        fields.update(
+            **{
+                field: True
+                for field, state in required_fields.items()
+                if state == FieldState.required
+            }
+        )
+
+        # race condition in case we require a field but none of them is present
+        def ensure_one_is_present(flag: str, field_a: str, field_b: str) -> None:
+            if not required_fields.get(flag):
+                return
+
+            if field_a in fields and field_b not in fields:
+                fields[field_a] = True
+            elif field_b in fields and field_a not in fields:
+                fields[field_b] = True
+
+        ensure_one_is_present(
+            "areFirstNameOrInitialsRequired",
+            "firstName",
+            "initials",
+        )
+
+        ensure_one_is_present(
+            "isAnyPhoneNumberRequired",
+            "mainPhoneNumber",
+            "mobilePhoneNumber",
+        )
+
+        return fields
 
     @with_graceful_default(default=tuple([]))
     def get_required_customer_fields(
@@ -248,6 +299,7 @@ class JccRestPlugin(BasePlugin):
             ),
         ]
 
+        # optional (only visible) and required customer fields
         rendered_fields = self._extract_rendered_fields(required_fields)
 
         components = []
