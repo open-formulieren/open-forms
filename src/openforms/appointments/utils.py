@@ -7,7 +7,7 @@ import qrcode
 import structlog
 from opentelemetry import trace
 
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.submissions.models import Submission
 
 from .base import BasePlugin
@@ -59,6 +59,7 @@ def delete_appointment_for_submission(submission: Submission, plugin=None) -> No
     """
     plugin = plugin or get_plugin()
     log = logger.bind(submission_uuid=str(submission.uuid), plugin=plugin)
+    audit_log = audit_logger.bind(**structlog.get_context(log))
     log.info("delete_existing_appointment")
     try:
         appointment_info = submission.appointment_info
@@ -69,13 +70,11 @@ def delete_appointment_for_submission(submission: Submission, plugin=None) -> No
     try:
         plugin.delete_appointment(appointment_info.appointment_id)
         appointment_info.cancel()
-    except AppointmentDeleteFailed as e:
-        log.warning("appointment_cancel_failure")
-        logevent.appointment_cancel_failure(appointment_info, plugin, e)
+    except AppointmentDeleteFailed as exc:
+        audit_log.warning("appointment_cancel_failure", exc_info=exc)
         raise
 
-    log.info("appointment_cancel_success")
-    logevent.appointment_cancel_success(appointment_info, plugin)
+    audit_log.info("appointment_cancel_success")
 
 
 def create_base64_qrcode(text):

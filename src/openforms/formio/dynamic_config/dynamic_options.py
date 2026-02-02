@@ -8,7 +8,7 @@ from json_logic import jsonLogic
 
 from openforms.api.exceptions import ServiceUnavailable
 from openforms.formio.constants import DataSrcOptions
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.submissions.models import Submission
 from openforms.typing import JSONValue
 
@@ -52,14 +52,14 @@ def get_options_from_variable(
     if not items_array:
         return
 
+    audit_log = audit_logger.bind(form_id=submission.form.pk, component=component)
     if not isinstance(items_array, list):
-        logevent.form_configuration_error(
-            submission.form,
-            component,
-            _(
-                "Variable obtained with expression %(items_expression)s for dynamic options is not an array."
-            )
-            % {"items_expression": json.dumps(items_expression)},
+        audit_log.warning(
+            "form_configuration_error",
+            error_message=_(
+                "Variable obtained with expression {items_expression} for dynamic "
+                "options is not an array."
+            ).format(items_expression=json.dumps(items_expression)),
         )
         return
 
@@ -69,13 +69,12 @@ def get_options_from_variable(
             item for item in items_array if not is_or_contains_none(item)
         ]
     ) != len(items_array):
-        logevent.form_configuration_error(
-            submission.form,
-            component,
-            _(
-                "Expression %(items_expression)s did not return a valid option for each item."
-            )
-            % {"items_expression": json.dumps(items_expression)},
+        audit_log.warning(
+            "form_configuration_error",
+            error_message=_(
+                "Expression {items_expression} did not return a valid option for "
+                "each item."
+            ).format(items_expression=json.dumps(items_expression)),
         )
 
     normalised_options: list[tuple[JSONValue, JSONValue]] = [
@@ -86,13 +85,12 @@ def get_options_from_variable(
         isinstance(item_key, dict | list) or isinstance(item_label, dict | list)
         for item_key, item_label in normalised_options
     ):
-        logevent.form_configuration_error(
-            submission.form,
-            component,
-            _(
-                "The dynamic options obtained with expression %(items_expression)s contain non-primitive types."
-            )
-            % {"items_expression": json.dumps(items_expression)},
+        audit_log.warning(
+            "form_configuration_error",
+            error_message=_(
+                "The dynamic options obtained with expression {items_expression} "
+                "contain non-primitive types."
+            ).format(items_expression=json.dumps(items_expression)),
         )
         return
 

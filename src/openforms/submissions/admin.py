@@ -18,14 +18,12 @@ from privates.views import PrivateMediaView
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.authentication.admin import AuthInfoInline
+from openforms.forms.models import Form
+from openforms.logging import audit_logger
 from openforms.logging.constants import TimelineLogTags
-from openforms.logging.logevent import (
-    submission_details_view_admin,
-    submission_export_list as log_export_submissions,
-)
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.models import SubmissionPayment
-from openforms.typing import StrOrPromise
+from openforms.typing import StrOrPromise, is_authenticated_request
 
 from .constants import IMAGE_COMPONENTS, PostSubmissionEvents, RegistrationStatuses
 from .exports import ExportFileTypes, export_submissions
@@ -420,10 +418,15 @@ class SubmissionAdmin(admin.ModelAdmin):
         return format_html_join(" | ", '<a href="{}" target="_blank">{}</a>', links)
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
+        assert is_authenticated_request(request)
         submission = self.get_object(request, object_id)
         if submission is None:
             raise Http404(f"No {self.model._meta.object_name} matches the given query.")
-        submission_details_view_admin(submission, request.user)
+        audit_logger.info(
+            "submission_details_view_admin",
+            submission_uuid=str(submission.uuid),
+            user=request.user.username,
+        )
         extra_context = {
             "attachments": submission.get_merged_attachments(),
             "image_components": IMAGE_COMPONENTS,
@@ -443,7 +446,10 @@ class SubmissionAdmin(admin.ModelAdmin):
             )
             return
 
-        log_export_submissions(queryset.first().form, request.user)
+        form: Form = queryset[0].form
+        audit_logger.info(
+            "submission_export_list", form_id=form.pk, user=request.user.username
+        )
         return export_submissions(queryset, file_type)
 
     @admin.action(description=_("Export selected %(verbose_name_plural)s as CSV-file."))

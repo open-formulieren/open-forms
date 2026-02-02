@@ -17,7 +17,7 @@ from rest_framework.exceptions import ValidationError
 from openforms.accounts.models import User
 from openforms.celery import app
 from openforms.emails.utils import send_mail_html
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.utils.urls import build_absolute_uri
 
 from ..models import Form
@@ -76,8 +76,7 @@ def process_forms_export(forms_uuids: list, user_id: int) -> None:
 
 @app.task(ignore_result=True)
 def process_forms_import(import_file: str, user_id: int) -> None:
-    user = User.objects.get(id=user_id)
-    failed_files = []
+    failed_files: list[tuple[str, object]] = []
     # This deletes the temp dir once the context manager is exited
     with tempfile.TemporaryDirectory() as temp_dir:
         with zipfile.ZipFile(private_media_storage.open(import_file), "r") as zip_file:
@@ -95,5 +94,5 @@ def process_forms_import(import_file: str, user_id: int) -> None:
                     )
                     continue
 
-    logevent.bulk_forms_imported(user=user, failed_files=failed_files)
+    audit_logger.info("bulk_forms_imported", user_id=user_id, failed_files=failed_files)
     private_media_storage.delete(import_file)

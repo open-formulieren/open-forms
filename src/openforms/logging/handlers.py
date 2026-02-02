@@ -44,9 +44,11 @@ class EventDetails:
     """
     The relevant plugin used, if available.
     """
-    error: Exception | None = None
+    error: Exception | str = ""
     """
     Any relevant Python exception to include in the log record.
+
+    Note that the exception may already have been formatted to a string.
     """
     tags: Collection[TimelineLogTags] = frozenset()
     """
@@ -71,7 +73,7 @@ class EventDetails:
         return None
 
     def get_extra_data(self) -> Mapping[str, object]:
-        extra_data: dict[str, object] = {}
+        extra_data: dict[str, object] = {"log_event": self.event}
         if self.extra_data:
             extra_data |= self.extra_data
         if self.plugin:
