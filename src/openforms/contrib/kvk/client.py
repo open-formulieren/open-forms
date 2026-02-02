@@ -36,7 +36,7 @@ def get_kvk_profile_client() -> KVKProfileClient:
 
 def get_kvk_branch_profile_client() -> KVKBranchProfileClient:
     config = KVKConfig.get_solo()
-    if not (service := config.profile_service):
+    if not (service := config.branch_profile_service):
         raise NoServiceConfigured("No KVK vestigingsprofielen service configured!")
     return build_client(service, client_factory=KVKBranchProfileClient)  # pyright: ignore[reportArgumentType]
 

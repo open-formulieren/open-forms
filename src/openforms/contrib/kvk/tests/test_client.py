@@ -7,6 +7,7 @@ from privates.test import temp_private_root
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import (
+    NoServiceConfigured,
     get_kvk_branch_profile_client,
     get_kvk_profile_client,
     get_kvk_search_client,
@@ -101,3 +102,11 @@ class KVKBranchProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
         with get_kvk_branch_profile_client() as client:
             with self.assertRaises(requests.RequestException):
                 client.get_profile("69599084")
+
+    @requests_mock.Mocker()
+    def test_client_without_service_configured(self, m):
+        config = self.config_mock.return_value
+        config.branch_profile_service = None
+
+        with self.assertRaises(NoServiceConfigured):
+            get_kvk_branch_profile_client()
