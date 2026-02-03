@@ -64,7 +64,7 @@ class PluginTests(OFVCRMixin, TestCase):
        will be in the future, so changes to the tests might be needed.
     """
 
-    RECORDING_DATETIME: str = "2026-01-19T08:32:56+02:00"
+    RECORDING_DATETIME: str = "2026-02-02T12:32:56+02:00"
 
     def setUp(self):
         super().setUp()
@@ -315,6 +315,10 @@ class PluginTests(OFVCRMixin, TestCase):
             self.failureException("Config check should have passed.")
 
     def test_required_customer_fields_with_existing_products(self):
+        """
+        The specific activity is covering all the possible states of a field (visible,
+        hidden and required).
+        """
         product1 = Product(
             identifier="c956d136-57a0-4c53-9673-378f41044631",
             name="Schuldhulpverlening",
@@ -338,44 +342,29 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"maxLength": 128, "required": True},
                     },
                     {
-                        "type": "textfield",
-                        "key": "socialSecurityNumber",
-                        "label": "Social security number",
-                        "autocomplete": "social-security-number",
-                        "validate": {"maxLength": 16, "required": True},
+                        "type": "radio",
+                        "key": "gender",
+                        "label": "Gender",
+                        "validate": {"required": False},
+                        "values": [
+                            {"value": 1, "label": "Male"},
+                            {"value": 2, "label": "Female"},
+                            {"value": 0, "label": "Other"},
+                        ],
                     },
-                ],
-                None,
-            ),
-        )
-
-    @patch(
-        "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
-    )
-    def test_required_customer_fields_when_optional_fields_are_present(self, m):
-        # TODO
-        # Check if such an example has been added to the JCC test instance and replace
-        # the mocked response (we need at least one optional field)
-
-        m.return_value = {"birthDate": 0}
-
-        product1 = Product(
-            identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
-            name="Bouwvergunning aanvraag",
-        )
-
-        required_fields = self.plugin.get_required_customer_fields([product1])
-
-        self.assertEqual(
-            required_fields,
-            (
-                [
                     {
                         "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"required": True, "maxLength": 128},
+                        "key": "firstName",
+                        "label": "First name",
+                        "autocomplete": "first-name",
+                        "validate": {"maxLength": 128, "required": False},
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "lastNamePrefix",
+                        "label": "Last name prefix",
+                        "autocomplete": "family-name-prefix",
+                        "validate": {"maxLength": 128, "required": False},
                     },
                     {
                         "type": "date",
@@ -385,67 +374,19 @@ class PluginTests(OFVCRMixin, TestCase):
                         "validate": {"required": False},
                         "openForms": {"widget": "inputGroup"},
                     },
-                ],
-                None,
-            ),
-        )
-
-    def test_required_customer_fields_when_required_fields_are_present(self):
-        product1 = Product(
-            identifier="637474a7-ea52-43f8-9e8a-30f3e0c13cf4",
-            name="Partnerschap met toespraak - eigen BABS",
-        )
-
-        required_fields = self.plugin.get_required_customer_fields([product1])
-
-        self.assertEqual(
-            required_fields,
-            (
-                [
-                    {
-                        "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
                     {
                         "type": "email",
                         "key": "emailAddress",
                         "label": "Email address",
                         "autocomplete": "email-address",
-                        "validate": {"maxLength": 254, "required": True},
+                        "validate": {"maxLength": 254, "required": False},
                     },
-                    {
-                        "type": "phoneNumber",
-                        "key": "phoneNumber",
-                        "label": "Phone number",
-                        "autocomplete": "phone-number",
-                        "validate": {"required": True},
-                    },
-                ],
-                None,
-            ),
-        )
-
-    def test_required_customer_fields_when_all_fields_hidden(self):
-        product1 = Product(
-            identifier="53410a47-6ede-4225-81e0-4ebffaae0ef3",
-            name="Geboorteaangifte",
-        )
-
-        required_fields = self.plugin.get_required_customer_fields([product1])
-
-        self.assertEqual(
-            required_fields,
-            (
-                [
                     {
                         "type": "textfield",
-                        "key": "lastName",
-                        "label": "Last name",
-                        "autocomplete": "family-name",
-                        "validate": {"maxLength": 128, "required": True},
+                        "key": "socialSecurityNumber",
+                        "label": "Social security number",
+                        "autocomplete": "social-security-number",
+                        "validate": {"maxLength": 16, "required": True},
                     },
                 ],
                 None,
@@ -464,9 +405,22 @@ class PluginTests(OFVCRMixin, TestCase):
         # areFirstNameOrInitialsRequired to be True)
 
         m.return_value = {
-            "firstName": 0,
-            "initials": 0,
             "areFirstNameOrInitialsRequired": True,
+            "gender": 1,
+            "lastNamePrefix": 1,
+            "birthDate": 1,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "emailAddress": 1,
+            "mainPhoneNumber": 1,
+            "mobilePhoneNumber": 1,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
         }
 
         product1 = Product(
@@ -526,9 +480,24 @@ class PluginTests(OFVCRMixin, TestCase):
         # areFirstNameOrInitialsRequired to be True)
 
         m.return_value = {
+            "areFirstNameOrInitialsRequired": True,
             "firstName": 1,
             "initials": 1,
-            "areFirstNameOrInitialsRequired": True,
+            "gender": 1,
+            "lastNamePrefix": 1,
+            "birthDate": 1,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "emailAddress": 1,
+            "mainPhoneNumber": 1,
+            "mobilePhoneNumber": 1,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
         }
 
         product1 = Product(
@@ -573,9 +542,92 @@ class PluginTests(OFVCRMixin, TestCase):
         # areFirstNameOrInitialsRequired to be True)
 
         m.return_value = {
-            "initials": 2,
-            "firstName": 2,
             "areFirstNameOrInitialsRequired": True,
+            "firstName": 2,
+            "initials": 2,
+            "gender": 1,
+            "lastNamePrefix": 1,
+            "birthDate": 1,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "emailAddress": 1,
+            "mainPhoneNumber": 1,
+            "mobilePhoneNumber": 1,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
+        }
+
+        product1 = Product(
+            identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
+            name="Bouwvergunning aanvraag",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Last name",
+                        "autocomplete": "family-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "firstName",
+                        "label": "First name",
+                        "autocomplete": "first-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "initials",
+                        "label": "Initials",
+                        "autocomplete": "initials",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                ],
+                None,
+            ),
+        )
+
+    @patch(
+        "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
+    )
+    def test_required_customer_fields_with_areFirstNameOrInitialsRequired_and_one_field_missing(
+        self, m
+    ):
+        # TODO
+        # Check if such an example has been added to the JCC test instance and replace
+        # the mocked response (we need both firstName and initials to be required and
+        # areFirstNameOrInitialsRequired to be True)
+
+        m.return_value = {
+            "areFirstNameOrInitialsRequired": True,
+            "firstName": 1,
+            "gender": 1,
+            "lastNamePrefix": 1,
+            "birthDate": 1,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "emailAddress": 1,
+            "mainPhoneNumber": 1,
+            "mobilePhoneNumber": 1,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
         }
 
         product1 = Product(
@@ -603,13 +655,6 @@ class PluginTests(OFVCRMixin, TestCase):
                         "autocomplete": "initials",
                         "validate": {"maxLength": 128, "required": True},
                     },
-                    {
-                        "type": "textfield",
-                        "key": "firstName",
-                        "label": "First name",
-                        "autocomplete": "first-name",
-                        "validate": {"maxLength": 128, "required": True},
-                    },
                 ],
                 None,
             ),
@@ -627,9 +672,22 @@ class PluginTests(OFVCRMixin, TestCase):
         # visible and isAnyPhoneNumberRequired to be True)
 
         m.return_value = {
-            "mobilePhoneNumber": 0,
-            "mainPhoneNumber": 0,
             "isAnyPhoneNumberRequired": True,
+            "firstName": 1,
+            "initials": 1,
+            "gender": 1,
+            "lastNamePrefix": 1,
+            "birthDate": 1,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "emailAddress": 1,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
         }
         product1 = Product(
             identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
@@ -688,9 +746,24 @@ class PluginTests(OFVCRMixin, TestCase):
         # required and isAnyPhoneNumberRequired to be True)
 
         m.return_value = {
+            "isAnyPhoneNumberRequired": True,
             "mainPhoneNumber": 2,
             "mobilePhoneNumber": 2,
-            "isAnyPhoneNumberRequired": True,
+            "firstName": 1,
+            "initials": 1,
+            "gender": 1,
+            "lastNamePrefix": 1,
+            "birthDate": 1,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "emailAddress": 1,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
         }
 
         product1 = Product(
@@ -742,9 +815,24 @@ class PluginTests(OFVCRMixin, TestCase):
         # hidden and isAnyPhoneNumberRequired to be True)
 
         m.return_value = {
+            "isAnyPhoneNumberRequired": True,
             "mainPhoneNumber": 1,
             "mobilePhoneNumber": 1,
-            "isAnyPhoneNumberRequired": True,
+            "firstName": 1,
+            "initials": 1,
+            "gender": 1,
+            "lastNamePrefix": 1,
+            "birthDate": 1,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "emailAddress": 1,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
         }
 
         product1 = Product(
@@ -771,6 +859,67 @@ class PluginTests(OFVCRMixin, TestCase):
                         "label": "Phone number",
                         "autocomplete": "phone-number",
                         "validate": {"required": True},
+                    },
+                ],
+                None,
+            ),
+        )
+
+    @patch(
+        "openforms.appointments.contrib.jcc_rest.client.Client.get_required_customer_fields"
+    )
+    def test_required_customer_fields_with_isAnyPhoneNumberRequired_and_one_field_is_missing(
+        self, m
+    ):
+        # TODO
+        # Check if such an example has been added to the JCC test instance and replace
+        # the mocked response (we need both mobilePhoneNumber and mainPhoneNumber to be
+        # hidden and isAnyPhoneNumberRequired to be True)
+
+        m.return_value = {
+            "isAnyPhoneNumberRequired": True,
+            "mainPhoneNumber": 1,
+            "firstName": 1,
+            "initials": 1,
+            "gender": 1,
+            "lastNamePrefix": 1,
+            "birthDate": 1,
+            "socialSecurityNumber": 1,
+            "nationality": 1,
+            "language": 1,
+            "emailAddress": 1,
+            "streetName": 1,
+            "houseNumber": 1,
+            "houseNumberSuffix": 1,
+            "postalCode": 1,
+            "city": 1,
+            "country": 1,
+        }
+
+        product1 = Product(
+            identifier="2d03b4bf-c56f-41fd-bce2-621f174c8df2",
+            name="Bouwvergunning aanvraag",
+        )
+
+        required_fields = self.plugin.get_required_customer_fields([product1])
+
+        self.assertEqual(
+            required_fields,
+            (
+                [
+                    {
+                        "type": "textfield",
+                        "key": "lastName",
+                        "label": "Last name",
+                        "autocomplete": "family-name",
+                        "validate": {"maxLength": 128, "required": True},
+                    },
+                    {
+                        "type": "phoneNumber",
+                        "key": "mobilePhoneNumber",
+                        "label": "Mobile phone number",
+                        "autocomplete": "mobile-phone-number",
+                        "validate": {"maxLength": 16, "required": True},
                     },
                 ],
                 None,
