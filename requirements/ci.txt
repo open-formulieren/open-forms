@@ -65,7 +65,7 @@ brotli==1.1.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   fonttools
-cbor2==5.6.2
+cbor2==5.8.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -163,7 +163,7 @@ diff-match-patch==20230430
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-import-export
-django==4.2.26
+django==4.2.28
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -466,7 +466,7 @@ flower==2.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-fonttools==4.45.1
+fonttools==4.61.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -817,7 +817,7 @@ prompt-toolkit==3.0.27
     #   click-repl
 propcache==0.3.2
     # via yarl
-protobuf==6.31.1
+protobuf==6.33.5
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1188,7 +1188,7 @@ uritemplate==3.0.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   drf-spectacular
-urllib3==2.5.0
+urllib3==2.6.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
