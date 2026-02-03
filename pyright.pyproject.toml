@@ -1,6 +1,8 @@
 [tool.pyright]
 include = [
     "src/openforms/api/urls.py",
+    "src/openforms/api/v2_urls.py",
+    "src/openforms/api/v3_urls.py",
     "src/openforms/conf",
     # plugin/registry-related code (base classes etc.)
     "src/openforms/plugins",
@@ -35,6 +37,7 @@ include = [
     "src/openforms/formio/dynamic_config/reference_lists.py",
     # Core forms app
     "src/openforms/forms/api/serializers/logic/action_serializers.py",
+    "src/openforms/forms/api/v3/",
     "src/openforms/forms/json_schema.py",
     "src/openforms/forms/logic_analysis.py",
     "src/openforms/forms/management/commands/set_forms_new_renderer_enabled.py",
