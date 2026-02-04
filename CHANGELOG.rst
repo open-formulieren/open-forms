@@ -27,6 +27,35 @@ Upgrade procedure
         # in the container via ``docker exec`` or ``kubectl exec``:
         python /app/bin/check_disable_next_logic_action.py
 
+3.4.1 (2026-02-04)
+==================
+
+Bugfix release.
+
+* [:backend:`5888`] Fixed empty dates presenting as ``None`` in service fetch rather
+  than an empty string.
+* [:backend:`5885`] Fixed a crash in the date field value normalization when it has
+  prefill configuration, observed in the summary page.
+* [:backend:`5827`] Fixed a registration crash when a form contains children or partners
+  components that are hidden or part of a non-applicable step.
+* [:backend:`5892`] Fixed not being able to use a component key with a ``.`` in it as
+  StUF-ZDS initiator information.
+* Updated dependencies to their latest security releases, such as Django and urllib3.
+
+3.3.11 (2026-02-04)
+===================
+
+Bugfix release.
+
+* [:backend:`5888`] Fixed empty dates presenting as ``None`` in service fetch rather
+  than an empty string.
+* [:backend:`5885`] Fixed a crash in the date field value normalization when it has
+  prefill configuration, observed in the summary page.
+* [:backend:`5827`] Fixed a registration crash when a form contains children or partners
+  components that are hidden or part of a non-applicable step.
+* [:backend:`5892`] Fixed not being able to use a component key with a ``.`` in it as
+  StUF-ZDS initiator information.
+* Updated dependencies to their latest security releases, such as Django and urllib3.
 
 3.3.10 (2026-01-05)
 ===================
