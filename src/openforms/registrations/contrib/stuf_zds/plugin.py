@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import re
+import warnings
 from collections.abc import MutableMapping
 from dataclasses import dataclass
 from datetime import date, datetime
 from functools import partial
 from io import BytesIO
 from typing import Any, override
-import warnings
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _

@@ -1,4 +1,5 @@
-from typing import Any, Callable, assert_never
+from collections.abc import Callable
+from typing import Any, assert_never
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _

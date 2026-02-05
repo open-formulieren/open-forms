@@ -1,13 +1,5 @@
 from openforms.authentication.types import (
     AnyAuthContext,
-    DigiDContext,
-    DigiDMachtigenContext,
-    EHerkenningContext,
-    EHerkenningMachtigenContext,
-    EIDASCompanyContext,
-    EIDASContext,
-    EmployeeContext,
-    YiviContext,
 )
 
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
