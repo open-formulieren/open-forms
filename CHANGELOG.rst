@@ -7,25 +7,110 @@ Changelog
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
 
-3.5.0 (???)
-===================
+3.5.0-alpha.0 (2026-02-11)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
 
 Upgrade procedure
 -----------------
-.. warning::
 
-    As a preparation for upcoming logic performance improvements, we changed the "disable next" logic
-    action. The form designers now have to specify on which step they want to execute this action.
-    We included a migration to automatically populate this field for all existing actions. Unfortunately,
-    in some cases we cannot guarantee that the assigned step is correct, i.e. no change in behaviour
-    is observed when filling out a form. Therefore, form designers/maintainers are asked to check these
-    cases manually. The script below outputs a list of logic rules (with their corresponding form) that
-    need manual attention. Use the flag ``--show-all`` to output a complete list of all affected rules.
+To upgrade to 3.5, please:
 
-    .. code-block:: bash
+* ⚠️ Ensure that your Helm charts don't use the ``bin/check_celery_worker_liveness.py``
+  script, since it has been removed. You can read about the new health check mechanisms
+  here: :ref:`installation_health_checks`.
 
-        # in the container via ``docker exec`` or ``kubectl exec``:
-        python /app/bin/check_disable_next_logic_action.py
+* ⚠️ Logic rules using the "disable next" action may need extra attention.
+
+  .. warning::
+
+      In preparation for upcoming logic performance improvements, we changed the
+      "disable next" logic action. The form designers now have to specify on which step
+      they want to execute this action. We included a migration to automatically
+      populate this field for all existing actions. Unfortunately, in some cases we
+      cannot guarantee that the assigned step is correct, i.e. no change in behaviour
+      is observed when filling out a form. Therefore, form designers/maintainers are
+      asked to check these cases manually. The script below outputs a list of logic
+      rules (with their corresponding form) that need manual attention. Use the flag
+      ``--show-all`` to output a complete list of all affected rules.
+
+      .. code-block:: bash
+
+          # in the container via ``docker exec`` or ``kubectl exec``:
+          python /app/bin/check_disable_next_logic_action.py
+
+New features
+------------
+
+* JCC REST API integration:
+
+  - [:backend:`5690`] The additional product information (HTML) is now exposed to the SDK.
+  - [:backend:`5696`] Implemented the remaining API calls for the appointment flow.
+
+* Performance:
+
+  - [:backend:`5861`] Updated the "disable next" logic action - it now requires the step
+    to disable to be specified. The automatic migrations update can reliably determine
+    the step most of the time. For the forms to manually review, see the upgrade
+    procedure notes.
+  - [:backend:`2409`] Open Forms can now statically determine which input and output
+    variables are used in logic rules.
+
+* [:backend:`5287`] Low-level health check mechanisms are now exposed in all Open Forms
+  components.
+* [:backend:`5450`] Distributed tracing is now mostly stable. The following component
+  traces are now also available:
+
+  - Postgres queries
+  - Redis queries
+  - Celery tasks
+  - Outgoing requests to external services
+  - Application-specific traces
+
+* [:backend:`5319`] The "Organization login via OpenID Connect" can now be hidden by
+  default. Use the ``authVisible=all`` query parameter to make it visible in the SDK.
+* [:backend:`5820`] Added endpoint to retrieve the overridden frontend translations.
+* [:backend:`5553`]  When starting a form from organization login on behalf of a
+  company, you can now also provide the branch number.
+
+Bugfixes
+--------
+
+* [:backend:`5888`] Fixed empty dates presenting as ``None`` in service fetch rather
+  than an empty string.
+* [:backend:`5885`] Fixed a crash in the date field value normalization when it has
+  prefill configuration, observed in the summary page.
+* [:backend:`5827`] Fixed a registration crash when a form contains children or partners
+  components that are hidden or part of a non-applicable step.
+* [:backend:`5892`] Fixed not being able to use a component key with a ``.`` in it as
+  StUF-ZDS initiator information.
+* [:backend:`5902`] Cleaned up how we handle prefilled data.
+* [:backend:`5893`] Fixed ``amount`` attribute of appointment product not being set when
+  processing query parameters.
+
+Project maintenance
+-------------------
+
+* [:backend:`5879`] Extended the component problem detection and added automatic fixes
+  for the issues.
+* Cleaned up inconsistent test setups.
+* Updated ``pyright`` and improved type checking.
+* Replaced the unmaintained bleach with nh3 HTML-sanitizer library.
+* Updated dependencies to their latest security releases:
+
+  - protobuf
+  - weasyprint
+  - copy-webpack-plugin
+  - django
+  - urllib3
+  - cbor2
+  - lodash
+  - cryptography
+  - Pillow
+  - webpack
+
+* Upgraded to storybook 9.
 
 3.4.1 (2026-02-04)
 ==================
