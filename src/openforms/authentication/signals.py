@@ -19,7 +19,7 @@ from openforms.submissions.signals import (
 
 from .constants import FORM_AUTH_SESSION_KEY, REGISTRATOR_SUBJECT_SESSION_KEY
 from .registry import register
-from .typing import FormAuth
+from .typing import BaseAuth, FormAuth
 from .utils import (
     logout_submission,
     remove_auth_info_from_session,
@@ -121,7 +121,7 @@ def set_auth_attribute_on_session(
                     ]
                 )
 
-            registrator_save: FormAuth = {
+            registrator_save: BaseAuth = {
                 "value": form_auth["value"],
                 "attribute": form_auth["attribute"],
                 "plugin": form_auth["plugin"],
