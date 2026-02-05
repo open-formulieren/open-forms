@@ -147,21 +147,21 @@ class ActionOperation:
 @dataclass
 class PropertyAction(ActionOperation):
     component: str
-    property: str
+    property_name: str
     value: Any
 
-    @builtins.property
+    @property
     def unresolved_input_variables(self) -> set[str]:
         return set()
 
-    @builtins.property
+    @property
     def unresolved_output_variables(self) -> set[str]:
         # Also need to include children, as it might be a layout component.
         return {self.component} | self.rule.form.get_child_component_keys(
             self.component
         )
 
-    @builtins.property
+    @property
     def steps(self) -> set[FormStep]:
         return self._get_steps(self.unresolved_output_variables)
 
@@ -169,7 +169,7 @@ class PropertyAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> Self:
         return cls(
             component=action["component"],
-            property=action["action"]["property"]["value"],
+            property_name=action["action"]["property"]["value"],
             value=action["action"]["state"],
         )
 
@@ -179,7 +179,7 @@ class PropertyAction(ActionOperation):
         if self.component not in configuration:
             return None
         component = configuration[self.component]
-        assign(component, self.property, self.value, missing=dict)
+        assign(component, self.property_name, self.value, missing=dict)
 
     def eval(
         self,
@@ -189,7 +189,7 @@ class PropertyAction(ActionOperation):
     ) -> DataMapping | None:
         # To avoid doing unnecessary work, only apply clear-on-hide logic for components
         # for which their action sets the "hidden" property to True.
-        if not (self.property == "hidden" and self.value):
+        if not (self.property_name == "hidden" and self.value):
             return None
 
         # Note that this can happen when the action applies to a component of a

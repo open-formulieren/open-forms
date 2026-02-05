@@ -89,7 +89,10 @@ class FormLogic(OrderedModel):
         from openforms.submissions.logic.actions import PropertyAction
 
         for action in self.action_operations:
-            if not isinstance(action, PropertyAction) or action.property != "hidden":
+            if (
+                not isinstance(action, PropertyAction)
+                or action.property_name != "hidden"
+            ):
                 continue
             yield action
 
