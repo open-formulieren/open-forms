@@ -14,7 +14,6 @@ TEST_FILES = Path(__file__).parent.resolve() / "files"
 TestFileNames = Literal[
     "basisprofiel_response.json",
     "basisprofiel_response_vve.json",
-    "vestigingsprofiel_response.json",
     "zoeken_response.json",
 ]
 

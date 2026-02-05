@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 
 import requests
 import requests_mock
@@ -81,7 +81,7 @@ class KVKProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
 
 
 @temp_private_root()
-class KVKBranchProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
+class KVKBranchProfilesClientTests(OFVCRMixin, KVKTestMixin, TestCase):
     def test_client(self):
         with get_kvk_branch_profile_client() as client:
             res = client.get_profile("000038509504")
@@ -95,16 +95,13 @@ class KVKBranchProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
             with self.assertRaises(requests.HTTPError):
                 client.get_profile("12345678")
 
-    @requests_mock.Mocker()
-    def test_client_500(self, m):
-        m.get(requests_mock.ANY, status_code=500)
+    def test_client_500(self):
+        with self.vcr_raises(TimeoutError):
+            with get_kvk_branch_profile_client() as client:
+                with self.assertRaises(requests.RequestException):
+                    client.get_profile("69599084")
 
-        with get_kvk_branch_profile_client() as client:
-            with self.assertRaises(requests.RequestException):
-                client.get_profile("69599084")
-
-    @requests_mock.Mocker()
-    def test_client_without_service_configured(self, m):
+    def test_client_without_service_configured(self):
         config = self.config_mock.return_value
         config.branch_profile_service = None
 
