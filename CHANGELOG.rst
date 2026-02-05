@@ -7,8 +7,10 @@ Changelog
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
 
-3.5.0 (???)
-===================
+3.5.0-alpha.0 (2026-02-05)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
 
 Upgrade procedure
 -----------------
@@ -26,6 +28,59 @@ Upgrade procedure
 
         # in the container via ``docker exec`` or ``kubectl exec``:
         python /app/bin/check_disable_next_logic_action.py
+
+
+New features
+------------
+
+* JCC integration:
+
+  - [:backend:`5690`] Added the extra field description for a product in appointments.
+  - [:backend:`5696`] Implemented JCC API calls
+
+* Performance:
+
+  - [:backend:`5861`] Added step selection field to the "disable next" action, which indicates on which step
+    the corresponding rule should be executed.
+  - [:backend:`2409`] Added support for variable extraction from if statements and for loops
+    in Django templates and refactored form logic serializer.
+
+
+* [:backend:`5287`] The health check mechanisms are added for all containers:
+
+  - ``/_healthz/*`` endpoints are added for the django application
+  - liveness files for celery and celery beat
+
+* [:backend:`5450`] The support for Open telemetry tracing is extended. Now all redis and PostgreSQL queries,
+  celery tasks and external requests are auto instrumented, we also included custom traces for
+  interesting parts of Open Forms.
+* [:backend:`5319`] Login option for organizations with OpenID Connect can be now dinamically
+  displayed depending on the ``auth_visible`` query param.
+* [:backend:`5820`] We now support retrieving custom static translation assets from the backend.
+  The new enpoint is added to upload the custom translations.
+
+Bugfixes
+--------
+
+* [:backend:`5902`] Refactored hadling of prefill data and moved it from submission to state.
+* [:backend:`5893`] Fixed ``amount`` attribute of appointment Product not being set.
+
+
+Project maintenance
+-------------------
+
+* [:backend:`5879`] Fixed various incorrect configurations for component definitions.
+* Added a test for prefill validation of nested data to make sure that the data is properly validated.
+* Cleaned up inconsistent test setups.
+* Updated `pyright` and improved type checking.
+* Replaced bleach with nh3 sanitizer.
+* Updated dependencies to their latest security releases:
+
+  - protobuf
+  - weasyprint
+  - copy-webpack-plugin
+
+* Upgraded to storybook 9.1.17.
 
 3.4.1 (2026-02-04)
 ==================
