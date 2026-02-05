@@ -39,8 +39,8 @@ class RegistratorSubjectInfoForm(forms.Form):
         widget=OpenFormsTextInput(),
     )
     kvk_branch_number = forms.CharField(
-        label=_("KvK branche number of customer"),
-        help_text=_("Chamber of Commerce branche number of the customer"),
+        label=_("KvK branch number of customer"),
+        help_text=_("Chamber of Commerce branch number of the customer"),
         required=False,
         max_length=12,
         validators=[validate_branchNumber],

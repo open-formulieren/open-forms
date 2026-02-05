@@ -590,7 +590,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
             }
             self.assertContains(response, message, html=True)
 
-        with self.subTest("kvk branche number without kvk"):
+        with self.subTest("kvk branch number without kvk"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
             form["bsn"] = "115736499"
