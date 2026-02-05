@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Callable, assert_never
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -13,8 +13,11 @@ from openforms.contrib.kvk.api_models.basisprofiel import (
     VestigingsProfiel,
 )
 from openforms.contrib.kvk.client import (
+    KVKBranchProfileClient,
+    KVKProfileClient,
+    KVKProfileClientType,
     NoServiceConfigured,
-    get_kvk_client,
+    get_kvk_branch_profile_client,
     get_kvk_profile_client,
 )
 from openforms.contrib.kvk.models import KVKConfig
@@ -76,13 +79,17 @@ class KVK_KVKNumberPrefill(BasePlugin):
         if not (kvk_value := cls.get_identifier_value(submission, identifier_role)):
             raise PrefillSkipped("No branch or CoC-number available.")
 
+        client_function: Callable = get_kvk_profile_client
+
+        if submission.auth_info.legal_subject_service_restriction:
+            client_function = get_kvk_branch_profile_client
+
         try:
-            with get_kvk_client(submission) as client:
+            with client_function() as client:
                 result = client.get_profile(kvk_value)
+                cls.modify_result(result, client)
         except (RequestException, NoServiceConfigured):
             return {}
-
-        cls.modify_result(result)
 
         values = dict()
         for attr in attributes:
@@ -95,16 +102,23 @@ class KVK_KVKNumberPrefill(BasePlugin):
         return values
 
     @staticmethod
-    def modify_result(result: BasisProfiel | VestigingsProfiel):
-        if "_embedded" in result:  # BasisProfiel
-            # first try getting the addresses from the embedded 'hoofdvestiging'. Note that
-            # this may be absent or empty depending on the type of company (see #1299).
-            # If there are no addresses found, we try to get them from 'eigenaar' instead.
-            addresses = glom(result, "_embedded.hoofdvestiging.adressen", default=None)
-            if addresses is None:
-                addresses = glom(result, "_embedded.eigenaar.adressen", default=None)
-        else:  # VestigingsProfiel
-            addresses = glom(result, "adressen", default=None)
+    def modify_result(
+        result: BasisProfiel | VestigingsProfiel, client: KVKProfileClientType
+    ):
+        match client:
+            case KVKProfileClient():
+                addresses = glom(
+                    result, "_embedded.hoofdvestiging.adressen", default=None
+                )
+
+                if addresses is None:
+                    addresses = glom(
+                        result, "_embedded.eigenaar.adressen", default=None
+                    )
+            case KVKBranchProfileClient():
+                addresses = glom(result, "adressen", default=None)
+            case _:
+                assert_never(client)
 
         # not a required field, meaning the key may be absent. If that's the case,
         # do nothing (it's better than crashing!)

@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 import requests_mock
+from maykin_common.vcr import VCRMixin
 from privates.test import temp_private_root
 
 from openforms.authentication.service import AuthAttribute
@@ -14,7 +15,7 @@ from ..plugin import KVK_KVKNumberPrefill
 
 
 @temp_private_root()
-class KVKPrefillTests(KVKTestMixin, TestCase):
+class KVKPrefillTests(KVKTestMixin, VCRMixin, TestCase):
     @requests_mock.Mocker()
     def test_get_prefill_values(self, m):
         m.get(
@@ -44,14 +45,7 @@ class KVKPrefillTests(KVKTestMixin, TestCase):
         }
         self.assertEqual(values, expected)
 
-    @requests_mock.Mocker()
-    def test_get_prefill_values_branch_number(self, m):
-        m.get(
-            f"{self.api_root}v1/vestigingsprofielen/000037178598",
-            status_code=200,
-            json=load_json_mock("vestigingsprofiel_response.json"),
-        )
-
+    def test_get_prefill_values_branch_number(self):
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
 
         submission = SubmissionFactory.create(
