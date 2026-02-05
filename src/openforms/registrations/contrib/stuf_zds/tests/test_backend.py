@@ -1577,10 +1577,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-    @patch("celery.app.task.Task.request")
-    def test_plugin_vestiging_initiator_kvk_and_vestigingsnummer_through_auth(
-        self, m, mock_task
-    ):
+    def test_plugin_vestiging_initiator_kvk_and_vestigingsnummer_through_auth(self, m):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -1627,7 +1624,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content=load_mock("voegZaakdocumentToe.xml"),
             additional_matcher=match_text("edcLk01"),
         )
-        mock_task.id = 1
 
         form_options = {
             "zds_zaaktype_code": "zt-code",
