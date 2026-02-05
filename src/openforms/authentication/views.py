@@ -504,8 +504,12 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
                 self.request.session[REGISTRATOR_SUBJECT_SESSION_KEY] = {
                     "value": form.cleaned_data["kvk"],
                     "attribute": AuthAttribute.kvk,
-                    "branch_number": form.cleaned_data["kvk_branch_number"],
                 }
+
+                if branch_number := form.cleaned_data.get("kvk_branch_number"):
+                    self.request.session[REGISTRATOR_SUBJECT_SESSION_KEY].update(
+                        branch_number=branch_number
+                    )
             elif REGISTRATOR_SUBJECT_SESSION_KEY in self.request.session:
                 del self.request.session[REGISTRATOR_SUBJECT_SESSION_KEY]
 

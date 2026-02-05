@@ -665,7 +665,6 @@ class RegistratorSubjectInfoViewTests(WebTest):
                 {
                     "attribute": AuthAttribute.kvk,
                     "value": "12345678",
-                    "branch_number": "",
                 },
             )
 
