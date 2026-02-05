@@ -86,6 +86,8 @@ include = [
     "src/openforms/submissions/metrics.py",
     "src/openforms/submissions/query.py",
     "src/openforms/submissions/report.py",
+    "src/openforms/submissions/tests/form_logic/test_rule_analysis.py",
+    "src/openforms/submissions/logic/actions.py",
     # our own template app/package on top of Django
     "src/openforms/template",
     # generic typing helpers
