@@ -7,6 +7,7 @@ from datetime import date, datetime
 from functools import partial
 from io import BytesIO
 from typing import Any, override
+import warnings
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -483,6 +484,15 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 assert component is not None
                 zaak_data["locatie"]["key"] = component["key"]
 
+            warnings.warn(
+                (
+                    "The usage of the branch number retrieved from the form's submission"
+                    " will be replaced in Open Forms 4.0 by prioritizing the provided"
+                    " branch number after login"
+                ),
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
             self.process_vestiging(submission, zaak_data)
 
             extra_data = self.get_extra_data(submission, options)
