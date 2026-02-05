@@ -65,9 +65,8 @@ class RegistratorSubjectInfoForm(forms.Form):
         if bsn and kvk:
             self.add_error("bsn", msg)
             self.add_error("kvk", msg)
-        elif kvk_branch_number and bsn:
+        elif kvk_branch_number and not kvk:
             self.add_error("kvk_branch_number", branch_number_msg)
-            self.add_error("bsn", branch_number_msg)
         elif not bsn and not kvk and not skip_subject:
             self.add_error("bsn", msg)
             self.add_error("kvk", msg)
