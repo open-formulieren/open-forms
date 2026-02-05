@@ -609,6 +609,10 @@ nh3==0.3.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+networkx==3.6
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 numpy==2.3.3
     # via
     #   -c requirements/base.txt
