@@ -1,4 +1,5 @@
 from openforms.authentication.types import (
+    AnyAuthContext,
     DigiDContext,
     DigiDMachtigenContext,
     EHerkenningContext,
@@ -30,19 +31,8 @@ __all__ = [
     "remove_auth_info_from_session",
 ]
 
-type AuthContext = (
-    DigiDContext
-    | DigiDMachtigenContext
-    | EHerkenningContext
-    | EHerkenningMachtigenContext
-    | EIDASContext
-    | EIDASCompanyContext
-    | EmployeeContext
-    | YiviContext
-)
 
-
-def get_branch_number(auth_context: AuthContext) -> str:
+def get_branch_number(auth_context: AnyAuthContext) -> str:
     if auth_context["source"] != "eherkenning":
         return ""
     legal_subject = auth_context["authorizee"]["legalSubject"]
