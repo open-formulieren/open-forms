@@ -96,6 +96,7 @@ export const FormDecorator = (Story, {args}) => (
         },
       ],
       translationEnabled: false,
+      logicRuleAnalysisEnabled: args.logicRuleAnalysisEnabled || false,
     }}
   >
     <Story />
