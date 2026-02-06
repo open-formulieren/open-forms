@@ -1,17 +1,37 @@
 from django.core.exceptions import ValidationError
+from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext as _
 
 
-def validate_payment_order_id_template(value: str) -> None:
-    if "{uid}" not in value:
-        raise ValidationError(_("The template must include the {uid} placeholder."))
+@deconstructible
+class IdTemplateValidator:
+    def __init__(
+        self,
+        allowed_groups: tuple[str, ...] = (
+            "{year}",
+            "{public_reference}",
+            "{uid}",
+            "/",
+            ".",
+            "_",
+            "-",
+        ),
+    ):
+        self.allowed_groups = allowed_groups
 
-    for allowed in ["{year}", "{public_reference}", "{uid}", "/", ".", "_", "-"]:
-        value = value.replace(allowed, "")
+    def __call__(
+        self,
+        value: str,
+    ) -> None:
+        if "{uid}" not in value:
+            raise ValidationError(_("The template must include the {uid} placeholder."))
 
-    if value and not value.isalnum():
-        raise ValidationError(
-            _(
-                "The template may only consist of alphanumeric, /, ., _ and - characters."
+        for allowed in self.allowed_groups:
+            value = value.replace(allowed, "")
+
+        if value and not value.isalnum():
+            raise ValidationError(
+                _(
+                    "The template may only consist of alphanumeric, /, ., _ and - characters."
+                )
             )
-        )
