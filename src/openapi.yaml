@@ -9223,9 +9223,9 @@ components:
           format: uuid
           nullable: true
           title: form step
-          description: The UUID of the form step that will be affected by the action.
-            This field is required for action types `disable-next`, `step-applicable`,
-            `step-not-applicable` - otherwise it's optional.
+          description: De UUID van de formulierstap waarop de actie van invloed is.
+            Dit veld is verplicht voor actietypen `disable-next`, `step-applicable`,
+            `step-not-applicable` - anders is het optioneel.
         action:
           $ref: '#/components/schemas/LogicActionPolymorphic'
       required:
