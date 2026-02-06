@@ -7,7 +7,7 @@ Changelog
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
 
-3.5.0-alpha.0 (2026-02-05)
+3.5.0-alpha.0 (2026-02-06)
 ==========================
 
 This is an alpha release, meaning it is not finished yet or suitable for production use.
