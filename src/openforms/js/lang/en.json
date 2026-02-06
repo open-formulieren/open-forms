@@ -799,6 +799,11 @@
     "description": "Copy Objects API prefill configuration from registration backend help text",
     "originalDefault": "Select a registration backend and click the button to copy the configuration."
   },
+  "DL51fL": {
+    "defaultMessage": "Execute on step",
+    "description": "Disable next action execute on step message",
+    "originalDefault": "Execute on step"
+  },
   "DRG6XN": {
     "defaultMessage": "invalid input mapping(s)",
     "description": "Warning message: DMN input mapping problems detected",
@@ -993,6 +998,11 @@
     "defaultMessage": "Reset to default description",
     "description": "Reset logic expression icon title",
     "originalDefault": "Reset to default description"
+  },
+  "G8OLZH": {
+    "defaultMessage": "Visible",
+    "description": "Visible field label",
+    "originalDefault": "Visible"
   },
   "GBsms3": {
     "defaultMessage": "No form variable specified (anymore).",
@@ -1223,6 +1233,11 @@
     "defaultMessage": "Authentication failure",
     "description": "Modal title API call failed with HTTP 401",
     "originalDefault": "Authentication failure"
+  },
+  "JP/Fu8": {
+    "defaultMessage": "Whether to always show this plugin when the form starts.",
+    "description": "Visible field text",
+    "originalDefault": "Whether to always show this plugin when the form starts."
   },
   "JRGs/Q": {
     "defaultMessage": "Expand/collapse JsonLogic",
@@ -3343,6 +3358,11 @@
     "defaultMessage": "There are errors in the prefill configuration.",
     "description": "Prefill configuration errors icon text",
     "originalDefault": "There are errors in the prefill configuration."
+  },
+  "tLBlkD": {
+    "defaultMessage": "Plugin configuration: Organization via OpenID Connect",
+    "description": "OpenID Connect authentication options modal title",
+    "originalDefault": "Plugin configuration: Organization via OpenID Connect"
   },
   "tLL2x4": {
     "defaultMessage": "Change form",
