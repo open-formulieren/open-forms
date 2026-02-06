@@ -15,6 +15,7 @@ from openforms.contrib.reference_lists.api.views import (
     ReferenceListsTablesViewSet,
 )
 from openforms.forms.api.public_api.viewsets import CategoryViewSet
+from openforms.forms.api.v3.viewsets import FormViewSet as FormViewSetV3
 from openforms.forms.api.viewsets import (
     FormDefinitionViewSet,
     FormsImportAPIView,
@@ -45,6 +46,10 @@ router.register(r"forms", FormViewSet)
 forms_router = NestedSimpleRouter(router, r"forms", lookup="form")
 forms_router.register(r"steps", FormStepViewSet, basename="form-steps")
 forms_router.register(r"versions", FormVersionViewSet, basename="form-versions")
+
+# v3 router
+router_v3 = routers.DefaultRouter(trailing_slash=False)
+router_v3.register(r"forms", FormViewSetV3, basename="form-v3")
 
 # form decoration
 # Expose this endpoint on 2 different URLs
@@ -136,6 +141,15 @@ urlpatterns = [
                 path("", include(router.urls)),
                 path("", include(forms_router.urls)),
                 path("", include(submissions_router.urls)),
+            ],
+        ),
+    ),
+    path(
+        "v3/",
+        decorator_include(
+            never_cache,
+            [
+                path("", include(router_v3.urls)),
             ],
         ),
     ),
