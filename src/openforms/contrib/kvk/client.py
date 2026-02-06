@@ -10,11 +10,14 @@ from zgw_consumers.client import build_client
 
 from openforms.contrib.hal_client import HALClient
 
-from .api_models.basisprofiel import BasisProfiel
+from .api_models.basisprofiel import BasisProfiel, VestigingsProfiel
 from .models import KVKConfig
 
 logger = structlog.stdlib.get_logger(__name__)
 tracer = trace.get_tracer("openforms.contrib.kvk.client")
+
+
+type KVKProfileClientType = KVKProfileClient | KVKBranchProfileClient
 
 
 def get_kvk_profile_client() -> KVKProfileClient:
@@ -22,6 +25,13 @@ def get_kvk_profile_client() -> KVKProfileClient:
     if not (service := config.profile_service):
         raise NoServiceConfigured("No KVK basisprofielen service configured!")
     return build_client(service, client_factory=KVKProfileClient)
+
+
+def get_kvk_branch_profile_client() -> KVKBranchProfileClient:
+    config = KVKConfig.get_solo()
+    if not (service := config.branch_profile_service):
+        raise NoServiceConfigured("No KVK vestigingsprofielen service configured!")
+    return build_client(service, client_factory=KVKBranchProfileClient)
 
 
 def get_kvk_search_client() -> KVKSearchClient:
@@ -68,6 +78,29 @@ class KVKProfileClient(HALClient):
         Swagger: https://developers.kvk.nl/documentation/testing/swagger-basisprofiel-api
         """
         path = f"v1/basisprofielen/{kvk_nummer}"
+        try:
+            response = self.get(path)
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            logger.exception("kvk_profile_request_failure", exc_info=exc)
+            raise exc
+
+        return response.json()
+
+
+class KVKBranchProfileClient(HALClient):
+    @tracer.start_as_current_span(
+        name="get-profile", attributes={"span.type": "app", "span.subtype": "kvk"}
+    )
+    def get_profile(self, branch_number: str) -> VestigingsProfiel:
+        """
+        Retrieve the profile of a single entity by chamber of commerce number.
+
+        :arg branch_number: a brnach number consisting of 12 digits.
+
+        Swagger: https://developers.kvk.nl/documentation/testing/swagger-vestigingsprofiel-api
+        """
+        path = f"v1/vestigingsprofielen/{branch_number}"
         try:
             response = self.get(path)
             response.raise_for_status()

@@ -152,6 +152,66 @@ class CommunicationPreferencesAPITests(OFVCRMixin, SubmissionsMixin, APITestCase
             ],
         )
 
+    def test_api_endpoint_authenticated_with_vestigingsnummer_prefill_found(self):
+        profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "label": "Profile",
+                        "digitalAddressTypes": profile_channels,
+                        "shouldUpdateCustomerData": True,
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            key="communication-preferences",
+            form=form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "customer_interactions_api_group": self.customer_interactions_config.identifier,
+                "profile_form_variable": "profile",
+            },
+        )
+        submission = SubmissionFactory.create(
+            auth_info__value="12345678",
+            auth_info__attribute=AuthAttribute.kvk,
+            auth_info__legal_subject_service_restriction="123456791201",
+            form=form,
+        )
+        self._add_submission_to_session(submission)
+        prefill_variables(submission=submission)
+
+        url = reverse(
+            "api:prefill_customer_interactions:communication-preferences",
+            kwargs={"submission_uuid": submission.uuid, "profile_component": "profile"},
+        )
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    "type": "email",
+                    "options": ["maykinmailvestiging@test.com"],
+                    "preferred": "maykinmailvestiging@test.com",
+                },
+                {
+                    "type": "phoneNumber",
+                    "options": ["0612345679"],
+                    "preferred": "0612345679",
+                },
+            ],
+        )
+
     def test_api_endpoint_no_user_var(self):
         profile_channels: list[SupportedChannels] = ["email", "phoneNumber"]
         form = FormFactory.create(

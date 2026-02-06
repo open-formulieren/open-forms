@@ -42,7 +42,9 @@ class KVKTestMixin:
         patcher = patch(
             "openforms.contrib.kvk.client.KVKConfig.get_solo",
             return_value=KVKConfig(
-                search_service=KVK_SERVICE, profile_service=KVK_SERVICE
+                search_service=KVK_SERVICE,
+                profile_service=KVK_SERVICE,
+                branch_profile_service=KVK_SERVICE,
             ),
         )
         self.config_mock = patcher.start()

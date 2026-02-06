@@ -103,3 +103,29 @@ class BasisProfiel(TypedDict):
     sbiActiviteiten: list[SBIActiviteit]
     links: Links
     _embedded: BasisProfielEmbedded
+
+
+class VestigingsProfiel(TypedDict):
+    """
+    Definition created from Swagger UI, API version 1.5.
+
+    Docs: https://developers.kvk.nl/documentation/testing/swagger-vestigingsprofiel-api
+    """
+
+    vestigingsnummer: str
+    kvkNummer: str
+    rsin: str
+    indNonMailing: JaNee
+    formeleRegistratiedatum: str
+    materieleRegistratie: MaterieleRegistratie
+    eersteHandelsnaam: str
+    indHoofdvestiging: JaNee
+    indCommercieleVestiging: JaNee
+    voltijdWerkzamePersonen: int
+    totaalWerkzamePersonen: int
+    deeltijdWerkzamePersonen: int
+    statutaireNaam: str
+    handelsnamen: list[HandelsNaam]
+    adressen: list[Adres]
+    sbiActiviteiten: list[SBIActiviteit]
+    links: Links

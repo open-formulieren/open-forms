@@ -590,6 +590,17 @@ class RegistratorSubjectInfoViewTests(WebTest):
             }
             self.assertContains(response, message, html=True)
 
+        with self.subTest("kvk branch number without kvk"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            form["bsn"] = "115736499"
+            form["kvk_branch_number"] = "000038509490"
+            response = form.submit(status=200)
+            self.assertContains(
+                response,
+                _("Branch number is only applicable for KvK values"),
+                html=True,
+            )
         with self.subTest("invalid with both bsn and kvk"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
@@ -609,6 +620,14 @@ class RegistratorSubjectInfoViewTests(WebTest):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
             form["kvk"] = "12345678"
+            response = form.submit(status=302)
+            self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
+
+        with self.subTest("valid kvk with branch number"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            form["kvk"] = "12345678"
+            form["kvk_branch_number"] = "000038509490"
             response = form.submit(status=302)
             self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
 
@@ -642,7 +661,30 @@ class RegistratorSubjectInfoViewTests(WebTest):
             self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
             data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
             self.assertEqual(
-                data, {"attribute": AuthAttribute.kvk, "value": "12345678"}
+                data,
+                {
+                    "attribute": AuthAttribute.kvk,
+                    "value": "12345678",
+                },
+            )
+
+        with self.subTest("kvk with branch number"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            form["kvk"] = "12345678"
+            form["kvk_branch_number"] = "000038509490"
+            response = form.submit(status=302)
+            self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
+
+            self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
+            data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+            self.assertEqual(
+                data,
+                {
+                    "attribute": AuthAttribute.kvk,
+                    "value": "12345678",
+                    "branch_number": "000038509490",
+                },
             )
 
         with self.subTest("skip_subject"):

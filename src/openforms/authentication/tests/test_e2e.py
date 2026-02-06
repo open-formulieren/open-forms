@@ -52,7 +52,7 @@ class RegistratorSubjectInfoTests(E2ETestCase):
             await page.get_by_label("Company").click()
 
             bsn_input = page.get_by_role("textbox", name="bsn")
-            kvk_input = page.get_by_role("textbox", name="kvk")
+            kvk_input = page.get_by_label("KvK number of customer")
             employee_button = page.get_by_role(
                 "button", name="Continue without additional information"
             )
