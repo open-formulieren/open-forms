@@ -9,8 +9,6 @@ from openforms.accounts.models import User
 from openforms.plugins.plugin import AbstractBasePlugin
 
 if TYPE_CHECKING:
-    from stuf.models import StufService
-
     from .models import TimelineLogProxy
 
 
@@ -56,46 +54,3 @@ def _create_log(
         user=user,
     )
     return log_entry
-
-
-# - - -
-
-
-def stuf_zds_request(service: StufService, url):
-    _create_log(
-        service,
-        "stuf_zds_request",
-        extra_data={"url": url},
-    )
-
-
-def stuf_zds_success_response(service: StufService, url):
-    _create_log(
-        service,
-        "stuf_zds_success_response",
-        extra_data={"url": url},
-    )
-
-
-def stuf_zds_failure_response(service: StufService, url):
-    _create_log(
-        service,
-        "stuf_zds_failure_response",
-        extra_data={"url": url},
-    )
-
-
-def stuf_bg_request(service: StufService, url):
-    _create_log(
-        service,
-        "stuf_bg_request",
-        extra_data={"url": url},
-    )
-
-
-def stuf_bg_response(service: StufService, url):
-    _create_log(
-        service,
-        "stuf_bg_response",
-        extra_data={"url": url},
-    )

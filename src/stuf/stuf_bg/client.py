@@ -1,12 +1,9 @@
 from collections.abc import Mapping
-from functools import partial
 from typing import Literal
 
 import structlog
 import xmltodict
 from glom import glom
-
-from openforms.logging import logevent
 
 from ..client import BaseClient
 from ..constants import EndpointType
@@ -39,11 +36,7 @@ def StufBGClient(service: StufService) -> "Client":
     Client instance factory, given a service configured in the database.
     """
     factory = ServiceClientFactory(service)
-    init_kwargs = get_client_init_kwargs(
-        service,
-        request_log_hook=partial(logevent.stuf_bg_request, service),
-        response_log_hook=partial(logevent.stuf_bg_response, service),
-    )
+    init_kwargs = get_client_init_kwargs(service)
     return Client.configure_from(factory, **init_kwargs)
 
 
