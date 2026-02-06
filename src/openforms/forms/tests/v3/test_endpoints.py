@@ -442,6 +442,8 @@ class FormEndpointAccessTests(APITestCase):
         }
 
         response = self.client.put(url, data=data)
+        response_data = response.json()
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response_data["code"], "not_authenticated")
         self.assertEqual(Form.objects.count(), 0)

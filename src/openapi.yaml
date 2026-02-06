@@ -6183,6 +6183,11 @@ paths:
           type: string
           format: uuid
         required: true
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        required: true
       tags:
       - forms
       requestBody:
@@ -6192,7 +6197,6 @@ paths:
               $ref: '#/components/schemas/FormV3'
         required: true
       security:
-      - tokenAuth: []
       - cookieAuth: []
       responses:
         '200':
