@@ -38,7 +38,7 @@ from ..models import (
     SubmissionValueVariable,
     TemporaryFileUpload,
 )
-from ..public_references import get_random_reference
+from ..public_references import generate_unique_submission_reference
 
 
 def _calculate_price(
@@ -147,7 +147,9 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         )
         with_public_registration_reference = factory.Trait(
             completed=True,
-            public_registration_reference=factory.LazyFunction(get_random_reference),
+            public_registration_reference=factory.PostGeneration(
+                generate_unique_submission_reference
+            ),
         )
         cosigned = factory.Trait(
             completed=True,

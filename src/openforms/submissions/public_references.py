@@ -1,8 +1,9 @@
 from django.db import IntegrityError, transaction
-from django.utils.crypto import get_random_string
 
 import structlog
+from sqids import Sqids
 
+from ..config.models import GlobalConfiguration
 from .models import Submission
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -36,7 +37,7 @@ def set_submission_reference(submission: Submission) -> str | None:
     ) and save_attempts < MAX_NUM_ATTEMPTS:
         try:
             with transaction.atomic():
-                reference = generate_unique_submission_reference()
+                reference = generate_unique_submission_reference(submission)
                 submission.public_registration_reference = reference
                 submission.save(update_fields=["public_registration_reference"])
         except IntegrityError as error:
@@ -59,34 +60,24 @@ def set_submission_reference(submission: Submission) -> str | None:
     )
 
 
-def get_random_reference() -> str:
+def generate_unique_submission_reference(submission: Submission) -> str:
+    """
+    Generate unique reference based on the globally configured template.
+
+    The random string part is generated from the submission pk with
+    the alphabet which is uniquely shuffled for each OF instance.
+    """
+    config = GlobalConfiguration.get_solo()
+    template: str = config.public_reference_template
+    alphabet = config.public_reference_alphabet
+
     # 32 characters with length 6 -> 32^6 possible combinations.
     # that's roughly one billion combinations before we run out of options.
     # Also note that submissions are pruned after a (configurable) number of days, so
     # used references do become available again after that time.
-    # TODO: maybe include date param?
-    random_string = get_random_string(
-        length=6, allowed_chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+    sqids = Sqids(min_length=6, alphabet=alphabet)
+    uid = sqids.encode([submission.pk])
+
+    return template.replace("{year}", str(submission.created_on.year)).replace(
+        "{uid}", uid
     )
-    return f"OF-{random_string}"
-
-
-def generate_unique_submission_reference() -> str:
-    """
-    Generate a random but unique reference.
-    """
-    MAX_ATTEMPTS = 100  # ensure we have finite loops (while is evil)
-    iterations = 0
-
-    for _ in range(MAX_ATTEMPTS):
-        iterations += 1
-        reference = get_random_reference()
-        exists = Submission.objects.filter(
-            public_registration_reference=reference
-        ).exists()
-        if exists is False:
-            return reference
-
-    # loop ran all the way to the end without finding unused reference
-    # (otherwise it would have returned)
-    raise RuntimeError(f"Could not get a unused reference after {iterations} attempts!")
