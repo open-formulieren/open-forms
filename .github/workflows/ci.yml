@@ -490,7 +490,7 @@ jobs:
 
   oas:
     name: OAS
-    uses: maykinmedia/open-api-workflows/.github/workflows/oas.yml@v5
+    uses: maykinmedia/open-api-workflows/.github/workflows/oas.yml@v6
     with:
       python-version: '3.12'
       apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
