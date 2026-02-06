@@ -1,6 +1,7 @@
 from django.http import Http404
 
 from rest_framework import status, viewsets
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 
 from openforms.forms.api.parsers import FormCamelCaseJSONParser
@@ -19,6 +20,7 @@ class FormViewSet(viewsets.GenericViewSet):
     lookup_field = "uuid"
     lookup_url_kwarg = "uuid"
     serializer_class = FormSerializer
+    authentication_classes = (SessionAuthentication,)
     permission_classes = (FormAPIPermissions,)
 
     def update(self, request, *args, **kwargs):
