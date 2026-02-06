@@ -104,7 +104,7 @@ def get_dynamic_configuration(
     rewrite_formio_components(config_wrapper, submission=submission, data=data)
 
     # Add to each component the custom errors in the current locale
-    get_translated_custom_error_messages(config_wrapper, submission)
+    get_translated_custom_error_messages(config_wrapper, submission.language_code)
     localize_components(
         config_wrapper,
         submission.language_code,

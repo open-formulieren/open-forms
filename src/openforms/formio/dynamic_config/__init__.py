@@ -53,7 +53,7 @@ def rewrite_formio_components_for_request(
 
 
 def get_translated_custom_error_messages(
-    config_wrapper: FormioConfigurationWrapper, submission: Submission
+    config_wrapper: FormioConfigurationWrapper, language_code: str
 ) -> FormioConfigurationWrapper:
     for component in config_wrapper:
         if (
@@ -62,8 +62,7 @@ def get_translated_custom_error_messages(
         ):
             continue
 
-        language = submission.language_code
-        component["errors"] = custom_error_messages[language]
+        component["errors"] = custom_error_messages[language_code]
 
     return config_wrapper
 
