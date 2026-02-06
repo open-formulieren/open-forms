@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from django.db.models import IntegerChoices, TextChoices
 from django.utils.translation import gettext_lazy as _
 
@@ -155,6 +153,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "label": CustomerFields.last_name.label,
         "autocomplete": "family-name",
         "validate": {
+            "required": True,
             "maxLength": 128,
         },
     },
@@ -281,12 +280,6 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         },
     },
 }
-
-
-def get_component(component_type: CustomerFields, required: bool) -> Component:
-    component = deepcopy(FIELD_TO_FORMIO_COMPONENT[component_type])
-    component.setdefault("validate", {})["required"] = required
-    return component
 
 
 # Make sure we do not miss any field in the components definition
