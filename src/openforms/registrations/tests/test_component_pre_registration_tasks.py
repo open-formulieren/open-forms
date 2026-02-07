@@ -112,7 +112,7 @@ class PreRegistrationTaskTests(TestCase):
         )
         self.assertIn("traceback", component_var.pre_registration_result)
 
-    def test_reregistration_task_skipped(self):
+    def test_preregistration_task_skipped(self):
         hook_component: Component = {
             "key": "withHook",
             "type": "hook",

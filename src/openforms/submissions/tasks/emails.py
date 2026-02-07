@@ -18,7 +18,7 @@ from openforms.emails.constants import (
 )
 from openforms.emails.utils import send_mail_html
 from openforms.frontend import get_frontend_redirect_url
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.registrations.tasks import update_registration_with_confirmation_email
 from openforms.template import render_from_string
 
@@ -92,6 +92,7 @@ def send_confirmation_email(submission_id: int) -> None:
 @app.task(ignore_result=True)
 def send_email_cosigner(submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
+    audit_log = audit_logger.bind(submission_uuid=str(submission.uuid))
 
     with translation.override(submission.language_code):
         config = GlobalConfiguration.get_solo()
@@ -153,13 +154,12 @@ def send_email_cosigner(submission_id: int) -> None:
                 },
             )
         except Exception:
-            logevent.cosigner_email_queuing_failure(submission)
+            audit_log.warning("cosigner_email_queuing_failure")
             raise
 
         submission.cosign_request_email_sent = True
         submission.save(update_fields=("cosign_request_email_sent",))
-
-        logevent.cosigner_email_queuing_success(submission)
+        audit_log.info("cosigner_email_queuing_success")
 
 
 @app.task(
@@ -169,6 +169,10 @@ def send_email_cosigner(submission_id: int) -> None:
 )
 def schedule_emails(submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
+    audit_log = audit_logger.bind(
+        submission_uuid=str(submission.uuid),
+        form_uuid=str(submission.form.uuid),
+    )
 
     if (
         submission.confirmation_email_sent
@@ -186,13 +190,10 @@ def schedule_emails(submission_id: int) -> None:
         send_email_cosigner.delay(submission_id)
 
     if not submission.form.send_confirmation_email:
-        logger.debug(
+        audit_log.debug(
             "confirmation_email_skip",
-            submission_uuid=str(submission.uuid),
-            form_uuid=str(submission.form.uuid),
             reason="form_configured_no_confirmation_email",
         )
-        logevent.confirmation_email_skip(submission)
         return
 
     execution_options = {}
@@ -208,9 +209,7 @@ def schedule_emails(submission_id: int) -> None:
         args=(submission.pk,),
         **execution_options,
     )
-    logevent.confirmation_email_scheduled(
-        submission, scheduling_options=execution_options
-    )
+    audit_log.info("confirmation_email_scheduled", scheduling_options=execution_options)
 
 
 @app.task(

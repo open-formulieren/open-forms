@@ -2,7 +2,7 @@ from decimal import Decimal
 from unittest.mock import patch
 
 from django.contrib.admin import AdminSite
-from django.test import TestCase, tag
+from django.test import TestCase, override_settings, tag
 from django.urls import reverse
 from django.utils import timezone
 
@@ -10,6 +10,7 @@ from django_webtest import WebTest
 from freezegun import freeze_time
 from furl import furl
 from maykin_2fa.test import disable_admin_mfa
+from rest_framework.test import APIClient
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import (
@@ -19,7 +20,6 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.models.submission import Submission
 from openforms.variables.constants import FormVariableDataTypes
@@ -212,15 +212,26 @@ class TestSubmissionAdmin(WebTest):
         self.assertEqual(failed_below_limit.registration_attempts, 0)
 
     def test_change_view_displays_logs_if_submission_lifecycle(self):
-        # add regular submission log
-        submission_start(self.submission_1)
+        # start a submission to get a start log
+        with override_settings(ALLOWED_HOSTS=["*"], CORS_ALLOW_ALL_ORIGINS=True):
+            form = FormFactory.create(generate_minimal_setup=True)
+            api_client = APIClient()
+            form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+            _response = api_client.post(
+                reverse("api:submission-list"),
+                data={
+                    "form": f"http://testserver.com{form_url}",
+                    "formUrl": "http://testserver.com/my-form",
+                },
+                headers={"Host": "testserver.com"},
+            )
+            assert _response.status_code == 201
+            submission = form.submission_set.get()
 
         # viewing this generates an AVG log,
         # and a log for trying and failing to fetch a registration backend
         response = self.app.get(
-            reverse(
-                "admin:submissions_submission_change", args=(self.submission_1.pk,)
-            ),
+            reverse("admin:submissions_submission_change", args=(submission.pk,)),
             user=self.user,
         )
 

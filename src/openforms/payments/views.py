@@ -27,7 +27,7 @@ from rest_framework.views import APIView
 from openforms.api.parsers import PlainTextParser
 from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ERR_CONTENT_TYPE
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.models import Submission
 from openforms.submissions.tasks import on_post_submission_event
@@ -139,7 +139,12 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
         options = plugin.configuration_options(data=payment.plugin_options)
         options.is_valid(raise_exception=True)
         info = plugin.start_payment(request, payment, options.validated_data)
-        logevent.payment_flow_start(payment, plugin)
+        audit_logger.info(
+            "payment_flow_start",
+            submission_uuid=str(payment.submission.uuid),
+            plugin=plugin,
+            payment_uuid=str(payment.uuid),
+        )
         return Response(self.get_serializer(instance=info).data)
 
 
@@ -199,7 +204,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
 class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     lookup_field = "uuid"
     lookup_url_kwarg = "uuid"
-    queryset = SubmissionPayment.objects.all()
+    queryset = SubmissionPayment.objects.select_related("submission")
     parser_classes = (FormParser, MultiPartParser)
 
     def _handle_return(self, request, uuid: str):
@@ -216,13 +221,17 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         path if something goes wrong on our end.
         """
         payment = self.get_object()
-        log = logger.bind(submission_payment_uuid=str(payment.uuid))
+        log = logger.bind(
+            submission_uuid=str(payment.submission.uuid),
+            payment_uuid=str(payment.uuid),
+        )
         try:
             plugin = register[payment.plugin_id]
         except KeyError:
             raise NotFound(detail="unknown plugin")
         self._plugin = plugin
         log = log.bind(plugin=plugin)
+        audit_log = audit_logger.bind(**structlog.get_context(log))
 
         if not payment.submission.payment_required:
             raise ParseError(detail="payment not required")
@@ -238,12 +247,10 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
             options.is_valid(raise_exception=True)
             response = plugin.handle_return(request, payment, options.validated_data)
         except Exception as exc:
-            log.error("payment_flow_failure", exc_info=exc)
-            logevent.payment_flow_failure(payment, plugin, exc)
+            audit_log.error("payment_flow_failure", exc_info=exc)
             raise
         else:
-            log.info("payment_flow_return")
-            logevent.payment_flow_return(payment, plugin)
+            audit_log.info("payment_flow_return")
 
         if response.status_code in (301, 302):
             location = response.get("Location", "")
@@ -387,7 +394,12 @@ class PaymentWebhookView(PaymentFlowBaseView):
 
         payment = plugin.handle_webhook(request)
         if payment:
-            logevent.payment_flow_webhook(payment, plugin)
+            audit_logger.info(
+                "payment_flow_webhook",
+                submission_uuid=str(payment.submission.uuid),
+                plugin=plugin,
+                payment_uuid=str(payment.uuid),
+            )
             if payment.status == PaymentStatus.completed:
                 transaction.on_commit(
                     partial(
@@ -449,7 +461,13 @@ class PaymentLinkView(DetailView):
             options = plugin.configuration_options(data=payment.plugin_options)
             options.is_valid(raise_exception=True)
             info = plugin.start_payment(self.request, payment, options.validated_data)
-            logevent.payment_flow_start(payment, plugin, from_email=True)
+            audit_logger.info(
+                "payment_flow_start",
+                submission_uuid=str(payment.submission.uuid),
+                plugin=plugin,
+                payment_uuid=str(payment.uuid),
+                from_email=True,
+            )
 
             context["url"] = info.url
             context["method"] = info.type.upper()

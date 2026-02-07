@@ -16,6 +16,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from openforms.accounts.models import User
 from openforms.api import pagination
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.filters import PermissionFilterMixin
@@ -27,8 +28,9 @@ from openforms.authentication.service import (
 )
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import Form, FormStep
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.prefill.service import prefill_variables
+from openforms.typing import is_authenticated_request
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step
@@ -160,6 +162,7 @@ class SubmissionViewSet(
         super().perform_create(serializer)
         submission = serializer.instance
         assert isinstance(submission, Submission)
+        audit_log = audit_logger.bind(submission_uuid=str(submission.uuid))
 
         form: Form = serializer.validated_data["form"]
 
@@ -178,7 +181,7 @@ class SubmissionViewSet(
         # mutate/view the submission
         add_submmission_to_session(submission, self.request.session)
 
-        logevent.submission_start(submission)
+        audit_log.info("submission_start")
 
         prefill_variables(submission)
         initialise_user_defined_variables(submission)
@@ -461,7 +464,12 @@ class SubmissionViewSet(
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, *args, **kwargs):
-        logevent.submission_details_view_api(self.get_object(), request.user)
+        submission = self.get_object()
+        audit_log = audit_logger.bind(submission_uuid=str(submission.uuid))
+        if is_authenticated_request(request):
+            assert isinstance(request.user, User)
+            audit_log = audit_log.bind(user=request.user.username)
+        audit_log.info("submission_details_view_api")
         return super().retrieve(request, *args, **kwargs)
 
     @extend_schema(
@@ -603,7 +611,7 @@ class SubmissionStepViewSet(
             # serializer
             persist_user_defined_variables(submission)
 
-        logevent.submission_step_fill(instance)
+        audit_logger.info("submission_step_fill", step_id=instance.pk)
         attach_uploads_to_submission_step(instance)
 
         # See #1480 - if there is navigation between steps and original form field values

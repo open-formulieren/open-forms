@@ -8,7 +8,7 @@ import structlog
 from rest_framework.request import Request
 
 from openforms.accounts.models import User
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.submissions.models import Submission
 from openforms.submissions.signals import (
     submission_complete,
@@ -16,6 +16,7 @@ from openforms.submissions.signals import (
     submission_resumed,
     submission_start,
 )
+from openforms.typing import is_authenticated_request
 
 from .constants import FORM_AUTH_SESSION_KEY, REGISTRATOR_SUBJECT_SESSION_KEY
 from .registry import register
@@ -92,13 +93,15 @@ def set_auth_attribute_on_session(
         )
         raise PermissionDenied(_("Demo plugins require an active admin session."))
 
-    user = request.user if request.user.is_authenticated else None
-    assert isinstance(user, User | None)
     is_delegated = bool(
         registrator_subject and registrator_subject.get("skipped_subject_info") is None
     )
-    log.debug("authentication.submission_auth", is_delegated=is_delegated)
-    logevent.submission_auth(instance, delegated=is_delegated, user=user)
+    if is_authenticated_request(request):
+        log = log.bind(username=request.user.username)
+
+    # copy context to audit log
+    audit_log = audit_logger.bind(**structlog.get_context(log))
+    audit_log.debug("authentication.submission_auth", is_delegated=is_delegated)
 
     if registrator_subject:
         # we got registrator_subject data so form_auth is an employee

@@ -23,6 +23,7 @@ from upgrade_check import UpgradeCheck, VersionRange
 from upgrade_check.constraints import UpgradePaths
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
+from openforms.logging.adapter import from_structlog
 from openforms.logging.processors import drop_user_agent_in_dev
 
 from .utils import Filesize, get_sentry_integrations
@@ -403,6 +404,8 @@ LOG_OUTGOING_REQUESTS = config("LOG_OUTGOING_REQUESTS", default=True)
 
 LOGGING_DIR = BASE_DIR / "log"
 
+_default_handler = "json_file" if not LOG_STDOUT else "console"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -458,6 +461,12 @@ LOGGING = {
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             "backupCount": 10,
         },
+        "timeline_logger": {
+            "level": "DEBUG",  # DO NOT MODIFY or make configurable
+            "class": "openforms.logging.handlers.TimelineLoggerHandler",
+            # extra kwargs for the handler
+            "adapter": from_structlog,
+        },
         "log_outgoing_requests": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
@@ -470,18 +479,26 @@ LOGGING = {
         },
     },
     "loggers": {
+        # special logger for audit-events, emit to stdout as usual but also direct logs
+        # to the timeline_logger to persist them in the database for easy
+        # querying/display
+        "openforms_audit": {
+            "handlers": [_default_handler, "timeline_logger"],
+            "level": "DEBUG",  # DO NOT MODIFY or make configurable
+            "propagate": False,
+        },
         "openforms": {
-            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
+            "handlers": [_default_handler],
             "level": "INFO",
             "propagate": True,
         },
         "stuf": {
-            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
+            "handlers": [_default_handler],
             "level": "DEBUG",
             "propagate": True,
         },
         "django.request": {
-            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
+            "handlers": [_default_handler],
             "level": "ERROR",
             "propagate": False,
         },
@@ -498,7 +515,7 @@ LOGGING = {
             "propagate": True,
         },
         "mozilla_django_oidc": {
-            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
+            "handlers": [_default_handler],
             "level": "INFO",
         },
         "log_outgoing_requests": {
@@ -511,7 +528,7 @@ LOGGING = {
             "propagate": True,
         },
         "django_structlog": {
-            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
+            "handlers": [_default_handler],
             "level": "INFO",
             "propagate": False,
         },

@@ -11,7 +11,10 @@ from django.utils.translation import gettext_lazy as _
 from dateutil.relativedelta import relativedelta
 from tablib import Dataset
 
-from openforms.logging import logevent
+from openforms.logging.constants import (
+    FORM_SUBMIT_SUCCESS_EVENT,
+    REGISTRATION_SUCCESS_EVENT,
+)
 
 from ..models import Form
 from ..statistics import export_registration_statistics
@@ -32,11 +35,8 @@ def get_last_of_previous_month() -> date:
 
 
 class EventChoices(TextChoices):
-    registration_success = (
-        logevent.REGISTRATION_SUCCESS_EVENT,
-        _("Successfully registered"),
-    )
-    submission_success = logevent.FORM_SUBMIT_SUCCESS_EVENT, _("Completed")
+    registration_success = (REGISTRATION_SUCCESS_EVENT, _("Successfully registered"))
+    submission_success = FORM_SUBMIT_SUCCESS_EVENT, _("Completed")
 
 
 class ExportStatisticsForm(forms.Form):

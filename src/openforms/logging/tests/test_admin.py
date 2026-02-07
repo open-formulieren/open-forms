@@ -9,7 +9,7 @@ from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.logging.models import TimelineLogProxy
 from openforms.logging.tests.factories import TimelineLogProxyFactory
 from openforms.prefill.registry import register
@@ -32,7 +32,11 @@ class AVGAuditLogListViewTests(WebTest):
 
         submission = SubmissionFactory.create()
         # create AVG log
-        logevent.submission_details_view_admin(submission, user)
+        audit_logger.info(
+            "submission_details_view_admin",
+            submission_uuid=str(submission.uuid),
+            user=user.username,
+        )
 
         # create generic log
         TimelineLogProxyFactory.create(content_object=submission, user=user)
@@ -46,7 +50,11 @@ class AVGAuditLogListViewTests(WebTest):
         submission = SubmissionFactory.create(completed_on=timezone.now())
         user = SuperUserFactory.create()
 
-        logevent.submission_details_view_admin(submission, user)
+        audit_logger.info(
+            "submission_details_view_admin",
+            submission_uuid=str(submission.uuid),
+            user=user.username,
+        )
 
         url = reverse("admin:logging_timelinelogproxy_changelist")
         changelist = self.app.get(url, user=user)
@@ -63,7 +71,11 @@ class AVGAuditLogListViewTests(WebTest):
         submission = SubmissionFactory.create(completed_on=timezone.now())
         user = SuperUserFactory.create()
 
-        logevent.submission_details_view_admin(submission, user)
+        audit_logger.info(
+            "submission_details_view_admin",
+            submission_uuid=str(submission.uuid),
+            user=user.username,
+        )
         log = TimelineLogProxy.objects.get(object_id=submission.id)
 
         url = reverse(
@@ -75,18 +87,17 @@ class AVGAuditLogListViewTests(WebTest):
     @tag("gh-2850")
     def test_deleted_submission_doesnt_crash_logs(self):
         url = reverse("admin:logging_avgtimelinelogproxy_changelist")
-
         user = StaffUserFactory.create(
             user_permissions=["logging.view_avgtimelinelogproxy"]
         )
         self.client.force_login(user)
-
         submission = SubmissionFactory.create()
-
-        logevent.prefill_retrieve_success(
-            submission, register["haalcentraal"], ["name"]
+        audit_logger.info(
+            "prefill_retrieve_success",
+            submission_uuid=str(submission.uuid),
+            plugin=register["haalcentraal"],
+            attributes=["name"],
         )
-
         submission.delete()
 
         response = self.app.get(url, user=user)

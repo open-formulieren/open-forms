@@ -9,6 +9,7 @@ from django.http.response import HttpResponse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from cookie_consent.admin import LogItemAdmin as CookieLogAdmin
 from cookie_consent.models import LogItem as CookieLog
 from cspreports.admin import CSPReportAdmin
@@ -16,7 +17,10 @@ from cspreports.models import CSPReport
 from log_outgoing_requests.admin import OutgoingRequestsLogAdmin
 from log_outgoing_requests.models import OutgoingRequestsLog
 
-from openforms.logging.logevent import outgoing_request_log_details_view_admin
+from openforms.logging import audit_logger
+from openforms.typing import is_authenticated_request
+
+logger = structlog.stdlib.get_logger()
 
 
 class SubmitActions(models.TextChoices):
@@ -68,10 +72,15 @@ class OutgoingRequestsLogOverrideAdmin(OutgoingRequestsLogAdmin):
         form_url: str = "",
         extra_context: dict[str, Any] | None = None,
     ) -> HttpResponse:
+        assert is_authenticated_request(request)
         outgoing_request_log = self.get_object(request, object_id)
         if outgoing_request_log is None:
             raise Http404(f"No {self.model._meta.object_name} matches the given query.")
-        outgoing_request_log_details_view_admin(outgoing_request_log, request.user)
+        audit_logger.info(
+            "outgoing_request_log_details_view_admin",
+            object_id=object_id,
+            user=request.user.username,
+        )
         return super().change_view(request, object_id, form_url, extra_context)
 
 

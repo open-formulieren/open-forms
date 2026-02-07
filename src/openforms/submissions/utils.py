@@ -33,7 +33,7 @@ from openforms.emails.utils import (
 )
 from openforms.formio.service import FormioData
 from openforms.forms.models import Form
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.utils.urls import build_absolute_uri
 
 from .constants import SUBMISSIONS_SESSION_KEY
@@ -161,19 +161,17 @@ def remove_submission_from_session(
 
 
 def send_confirmation_email(submission: Submission) -> None:
-    logevent.confirmation_email_start(submission)
+    audit_log = audit_logger.bind(submission_uuid=str(submission.uuid))
+    audit_log.info("confirmation_email_start")
 
     subject_template, content_template = get_confirmation_email_templates(submission)
 
     to_emails = submission.get_email_confirmation_recipients(submission.data)
     if not to_emails:
-        logger.warning(
-            "skip_confirmation_email",
+        audit_log.warning(
+            "confirmation_email_skip",
             reason="could_not_determine_recipient_email_address",
-            submission_uuid=str(submission.uuid),
         )
-        logevent.confirmation_email_skip(submission)
-
         submission.confirmation_email_sent = False
         submission.save(update_fields=["confirmation_email_sent"])
         return
@@ -216,8 +214,8 @@ def send_confirmation_email(submission: Submission) -> None:
                 X_OF_EVENT_HEADER: EmailEventChoices.confirmation,
             },
         )
-    except Exception as e:
-        logevent.confirmation_email_failure(submission, e)
+    except Exception as exc:
+        audit_log.exception("confirmation_email_failure", exc_info=exc)
         raise
 
     submission.confirmation_email_sent = True
@@ -233,8 +231,7 @@ def send_confirmation_email(submission: Submission) -> None:
             "payment_complete_confirmation_email_sent",
         )
     )
-
-    logevent.confirmation_email_success(submission)
+    audit_log.info("confirmation_email_success")
 
 
 def initialise_user_defined_variables(submission: Submission):

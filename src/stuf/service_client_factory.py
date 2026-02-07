@@ -3,7 +3,6 @@ from typing import Any
 
 from soap.constants import EndpointSecurity
 
-from .client import LoggingHook, noop_log
 from .constants import EndpointType
 from .models import StufService
 from .stuf import InvolvedParty, StuurGegevens, WSSecurity
@@ -28,11 +27,7 @@ class ServiceClientFactory:
         return kwargs
 
 
-def get_client_init_kwargs(
-    service: StufService,
-    request_log_hook: LoggingHook = noop_log,
-    response_log_hook: LoggingHook = noop_log,
-):
+def get_client_init_kwargs(service: StufService):
     # pass the endpoint types map
     endpoints = {
         endpoint_type: service.get_endpoint(endpoint_type)
@@ -51,8 +46,6 @@ def get_client_init_kwargs(
     return {
         "soap_version": service.soap_service.soap_version,
         "endpoints": endpoints,
-        "request_log_hook": request_log_hook,
-        "response_log_hook": response_log_hook,
         "wss_security": wss_security,
         "stuurgegevens": stuurgegevens,
     }

@@ -51,6 +51,9 @@ include = [
     # Emails
     "src/openforms/emails/",
     # Logging
+    "src/openforms/logging/adapter.py",
+    "src/openforms/logging/handlers.py",
+    "src/openforms/logging/processors.py",
     "src/openforms/logging/logevent.py",
     "src/openforms/logging/models.py",
     # Authentication
@@ -86,6 +89,7 @@ include = [
     "src/openforms/submissions/metrics.py",
     "src/openforms/submissions/query.py",
     "src/openforms/submissions/report.py",
+    "src/openforms/submissions/tests/test_log_events.py",
     # our own template app/package on top of Django
     "src/openforms/template",
     # generic typing helpers
