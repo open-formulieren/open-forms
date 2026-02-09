@@ -1,10 +1,15 @@
 import uuid as _uuid
+from collections.abc import Collection
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from ordered_model.models import OrderedModel
+
+from openforms.forms.models import FormStep
+from openforms.utils.json_logic import introspect_json_logic
+from openforms.variables.service import resolve_key
 
 
 class FormLogic(OrderedModel):
@@ -49,6 +54,7 @@ class FormLogic(OrderedModel):
     )
 
     order_with_respect_to = "form"
+    _steps: set[FormStep] | None = None
 
     class Meta(OrderedModel.Meta):
         verbose_name = _("form logic")
@@ -83,7 +89,10 @@ class FormLogic(OrderedModel):
         from openforms.submissions.logic.actions import PropertyAction
 
         for action in self.action_operations:
-            if not isinstance(action, PropertyAction) or action.property != "hidden":
+            if (
+                not isinstance(action, PropertyAction)
+                or action.property_name != "hidden"
+            ):
                 continue
             yield action
 
@@ -91,3 +100,58 @@ class FormLogic(OrderedModel):
     def components_in_hidden_actions(self) -> set[str]:
         """Set of components for which an action changes the "hidden" property."""
         return {action.component for action in self.hidden_actions}
+
+    @property
+    def unresolved_input_variables_from_trigger(self) -> set[str]:
+        """Set of unresolved input variables from the JSON logic trigger."""
+        return {
+            var.key
+            for var in introspect_json_logic(self.json_logic_trigger).get_input_keys()
+        }
+
+    @property
+    def steps(self) -> set[FormStep]:
+        """
+        Set of steps (determined by the actions) on which this rule should be executed.
+        """
+        if self._steps is not None:
+            return self._steps
+
+        self._steps = set()
+        for action in self.action_operations:
+            self._steps |= action.steps
+
+        return self._steps
+
+    @property
+    def input_variable_keys(self) -> Collection[str]:
+        """
+        Set of input form variable keys, determined from the JSON logic trigger and all
+        actions.
+        """
+        raw_input_keys = self.unresolved_input_variables_from_trigger
+        for action in self.action_operations:
+            raw_input_keys |= action.unresolved_input_variables
+
+        return {
+            resolved_key
+            for key in raw_input_keys
+            if (resolved_key := resolve_key(key, self.form.all_form_variable_keys))
+            is not None
+        }
+
+    @property
+    def output_variable_keys(self) -> Collection[str]:
+        """Set of output form variable keys, determined from all actions."""
+        raw_output_keys = set()
+        for action in self.action_operations:
+            raw_output_keys |= action.unresolved_output_variables
+
+        # Resolving the key here should not be necessary, as we do not support changing
+        # values inside editgrid items (and also selectboxes, partners, children), so
+        # it should already be the top-level key. We do need to do the check on all
+        # form variables, as they might still include components for which we don't have
+        # a variable (e.g. layout components).
+        return {
+            key for key in raw_output_keys if key in self.form.all_form_variable_keys
+        }

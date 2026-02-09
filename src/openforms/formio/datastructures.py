@@ -142,6 +142,21 @@ class FormioConfigurationWrapper:
             nodes.append(component)
         return all(is_visible_in_frontend(node, values) for node in nodes)
 
+    def get_child_component_keys(self, key: str) -> set[str]:
+        """
+        Get all child component keys for an arbitrary component key.
+
+        :param key: The component key.
+        :returns: A set of children component keys. Will be an empty set if the
+          component does not contain any children.
+        """
+        return {
+            child["key"]
+            for child in iter_components(
+                self.component_map[key], recursive=True, recurse_into_editgrid=False
+            )
+        }
+
 
 class FormioData(UserDict):
     """
