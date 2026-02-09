@@ -229,6 +229,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         """
         Create a Zaak, so that we can have a registration ID.
 
+        At this step we always create a zaak, but we can use other method to generate the registration ID.
         Note: The Rol, Status, the documents for the files uploaded by the user in the form (attachments) and the
         confirmation report PDF will be added in the registration task (after the report has been generated).
         """
@@ -282,9 +283,10 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 "intermediate.zaak",
             )
 
-        return PreRegistrationResult(
-            reference=zaak["identificatie"], data={"zaak": zaak}
-        )
+        # emp[ty reference will trigger 'set_submission_reference' function in the 'pre_registration' task
+        public_reference = zaak["identificatie"] if zgw.use_generated_zaaknummer else ""
+
+        return PreRegistrationResult(reference=public_reference, data={"zaak": zaak})
 
     @wrap_api_errors
     def register_submission(

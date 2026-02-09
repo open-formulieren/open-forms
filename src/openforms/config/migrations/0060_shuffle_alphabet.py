@@ -9,7 +9,7 @@ def shuffle_alphabet(apps: StateApps, _):
     Shuffle public_reference_alphabet to make generated ids unique across different instances.
     """
     GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
-    config = GlobalConfiguration.objects.get()
+    config, _ = GlobalConfiguration.objects.get_or_create()
     shuffled_alphabet = "".join(
         sample(config.public_reference_alphabet, len(config.public_reference_alphabet))
     )
