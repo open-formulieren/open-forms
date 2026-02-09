@@ -1,4 +1,4 @@
-from django.db import IntegrityError, transaction
+from django.db import transaction
 
 import structlog
 from sqids import Sqids
@@ -27,37 +27,12 @@ def set_submission_reference(submission: Submission) -> str | None:
         log.info("skip_set_public_reference", reason="reference_already_set")
         return
 
-    # race-condition detection. There's no reason/logic after the number 5 other than
-    # gut feeling.
-    MAX_NUM_ATTEMPTS = 5
-    race_condition_suspected, save_attempts = False, 0
+    with transaction.atomic():
+        reference = generate_unique_submission_reference(submission)
+        submission.public_registration_reference = reference
+        submission.save(update_fields=["public_registration_reference"])
 
-    while (
-        race_condition_suspected or save_attempts == 0
-    ) and save_attempts < MAX_NUM_ATTEMPTS:
-        try:
-            with transaction.atomic():
-                reference = generate_unique_submission_reference(submission)
-                submission.public_registration_reference = reference
-                submission.save(update_fields=["public_registration_reference"])
-        except IntegrityError as error:
-            race_condition_suspected = True
-            save_attempts += 1
-            log.warning(
-                "likely_race_condition_detected",
-                num_attempts_done=save_attempts,
-                exc_info=error,
-            )
-            # if we're about to leave the loop, re-raise the original exception
-            if save_attempts >= MAX_NUM_ATTEMPTS:
-                raise
-        else:
-            return reference
-    # should never reach this
-    raise RuntimeError(  # noqa
-        "Unexpected code-path! Either the reference should have been saved successfully, "
-        "or the error should have been re-raised."
-    )
+    return reference
 
 
 def generate_unique_submission_reference(submission: Submission) -> str:
