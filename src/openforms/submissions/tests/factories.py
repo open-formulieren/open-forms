@@ -11,6 +11,7 @@ from django.utils.translation import get_language
 import factory
 import faker
 import magic
+from sqids import Sqids
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.formio.service import FormioData
@@ -38,7 +39,6 @@ from ..models import (
     SubmissionValueVariable,
     TemporaryFileUpload,
 )
-from ..public_references import generate_unique_submission_reference
 
 
 def _calculate_price(
@@ -49,6 +49,26 @@ def _calculate_price(
         return
 
     submission.calculate_price(save=create)
+
+
+def _generate_unique_submission_reference(n: int):
+    """
+    generate public reference for tests based on int parameter.
+
+    Quick helper function which doesn't access GlobalConfig modal and can't be
+    used to test submission.public_registration_reference
+    """
+    template = "OF-{uid}"
+    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+
+    # 32 characters with length 6 -> 32^6 possible combinations.
+    # that's roughly one billion combinations before we run out of options.
+    # Also note that submissions are pruned after a (configurable) number of days, so
+    # used references do become available again after that time.
+    sqids = Sqids(min_length=6, alphabet=alphabet)
+    uid = sqids.encode([n])
+
+    return template.format(uid=uid)
 
 
 class SubmissionFactory(factory.django.DjangoModelFactory):
@@ -147,8 +167,8 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         )
         with_public_registration_reference = factory.Trait(
             completed=True,
-            public_registration_reference=factory.PostGeneration(
-                generate_unique_submission_reference
+            public_registration_reference=factory.Sequence(
+                lambda n: _generate_unique_submission_reference(n)
             ),
         )
         cosigned = factory.Trait(

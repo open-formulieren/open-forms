@@ -3528,6 +3528,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         self.addCleanup(client.close)
 
         pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert pre_registration_result.data is not None
 
         self.assertEqual(
             pre_registration_result.reference,
