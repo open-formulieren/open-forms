@@ -176,10 +176,10 @@ class ZGWBackendTests(TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "handelsnaam",
+                    "key": "achternaam",
                     "type": "textfield",
                     "registration": {
-                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
                     },
                 },
                 {
@@ -198,14 +198,14 @@ class ZGWBackendTests(TestCase):
                 },
             ],
             submitted_data={
-                "handelsnaam": "ACME",
+                "achternaam": "Willemse",
                 "postcode": "1000 AA",
                 "coordinaat": {
                     "type": "Point",
                     "coordinates": [4.893164274470299, 52.36673378967122],
                 },
             },
-            kvk="12345678",
+            bsn="111222333",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
             registration_result={
@@ -1776,6 +1776,80 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                     "inpLocatiebeschrijving": "",
                     "wplWoonplaatsNaam": "Ketnet",
                 },
+                "subVerblijfBuitenland": None,
+            }
+            self.assertEqual(
+                rol_data["betrokkeneIdentificatie"], expected_identificatie
+            )
+
+    def test_create_zaak_with_vestiging_and_kvk_initiator_and_legacy_config_through_auth(
+        self,
+    ):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+            ],
+            submitted_data={
+                "handelsnaam": "ACME",
+            },
+            kvk="12345678",
+            branch_number="000038509490",
+            completed=True,
+        )
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "document_type_description": "",
+            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_description": "",
+            "partners_roltype": "",
+            "children_roltype": "",
+            "children_description": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        assert isinstance(pre_registration_result.data, dict)
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+
+        result = plugin.register_submission(submission, options)
+        assert result
+
+        with self.subTest("check recorded result"):
+            zaken_root = self.zgw_group.zrc_service.api_root
+            self.assertTrue(
+                result["initiator_rol"]["url"].startswith(f"{zaken_root}rollen/")
+            )
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+
+        with self.subTest("verify initiator"):
+            rol_data = client.get(result["initiator_rol"]["url"]).json()
+
+            self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
+            self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
+            self.assertEqual(rol_data["betrokkene"], "")
+            self.assertEqual(rol_data["betrokkeneType"], "vestiging")
+            expected_identificatie = {
+                "handelsnaam": ["ACME"],
+                "kvkNummer": "12345678",
+                "vestigingsNummer": "000038509490",
+                "verblijfsadres": None,
                 "subVerblijfBuitenland": None,
             }
             self.assertEqual(

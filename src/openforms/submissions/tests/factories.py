@@ -206,6 +206,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
         bsn = kwargs.pop("bsn", None)
         kvk = kwargs.pop("kvk", None)
+        branch_number = kwargs.pop("branch_number", None)
         pseudo = kwargs.pop("pseudo", None)
         auth_plugin = kwargs.pop("auth_plugin", None)
 
@@ -227,6 +228,8 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             }
             if auth_plugin:
                 attrs["plugin"] = auth_plugin
+            if branch_number:
+                attrs["legal_subject_service_restriction"] = branch_number
             AuthInfoFactory.create(**attrs)
 
         form = submission.form
