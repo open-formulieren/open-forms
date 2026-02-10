@@ -113,6 +113,14 @@ def set_auth_attribute_on_session(
                 # TODO we don't have a plugin to define here? things break if this doesn't exist (like the logout view)
                 "plugin": registrator_subject.get("plugin", "registrator"),
             }
+
+            if "branch_number" in registrator_subject:
+                auth_save.update(
+                    legal_subject_service_restriction=registrator_subject[
+                        "branch_number"
+                    ]
+                )
+
             registrator_save: BaseAuth = {
                 "value": form_auth["value"],
                 "attribute": form_auth["attribute"],
