@@ -1577,6 +1577,85 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
+    def test_plugin_vestiging_initiator_kvk_and_vestigingsnummer_through_auth(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+            ],
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={"handelsnaam": "ACME"},
+            kvk="12345678",
+            branch_number="000038509490",
+            form__name="my-form",
+            form__product__price=Decimal("0"),
+            form__payment_backend="demo",
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="my-attachment.doc",
+            content_type="application/msword",
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "123",
+            "zds_zaaktype_status_omschrijving": "aaabbc",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+        }
+
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        self.assertTrue(serializer.is_valid())
+
+        result = plugin.register_submission(submission, serializer.validated_data)
+        self.assertEqual(
+            result,
+            {
+                "zaak": "foo-zaak",
+                "document": "bar-document",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:vestigingsNummer": "000038509490",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:handelsnaam": "ACME",
+            },
+        )
+
     @patch("celery.app.task.Task.request")
     def test_plugin_medewerker(self, m, mock_task):
         submission = SubmissionFactory.from_components(

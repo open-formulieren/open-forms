@@ -1,0 +1,63 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/hal+json
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/hal+json
+      User-Agent:
+      - python-requests/2.32.4
+      apikey:
+      - l7xx1f2691f2520d487b902f4e0b57a0b197
+    method: GET
+    uri: https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504
+  response:
+    body:
+      string: '{"vestigingsnummer":"000038509504","kvkNummer":"69599084","indNonMailing":"Ja","formeleRegistratiedatum":"20200828","materieleRegistratie":{"datumAanvang":"20150828"},"eersteHandelsnaam":"Test
+        EMZ Dagobert","indHoofdvestiging":"Ja","indCommercieleVestiging":"Ja","voltijdWerkzamePersonen":1,"totaalWerkzamePersonen":1,"deeltijdWerkzamePersonen":0,"handelsnamen":[{"naam":"Test
+        EMZ Dagobert","volgorde":0},{"naam":"Tweede handelsnaam 1MZ","volgorde":1},{"naam":"Derde
+        handelsnaam 1MZ","volgorde":2},{"naam":"Vierde handelsnaam 1MZ","volgorde":3}],"adressen":[{"type":"bezoekadres","indAfgeschermd":"Nee","volledigAdres":"Abebe
+        Bikilalaan 17 M                         1034WL Amsterdam","straatnaam":"Abebe
+        Bikilalaan","huisnummer":17,"huisletter":"M","postcode":"1034WL","plaats":"Amsterdam","land":"Nederland"}],"sbiActiviteiten":[{"sbiCode":"10110","sbiOmschrijving":"Verwerking
+        en conservering van vlees, met uitzondering van vlees van gevogelte","indHoofdactiviteit":"Ja"},{"sbiCode":"10120","sbiOmschrijving":"Verwerking
+        en conservering van vlees van gevogelte","indHoofdactiviteit":"Nee"},{"sbiCode":"10130","sbiOmschrijving":"Vervaardiging
+        van vleesproducten","indHoofdactiviteit":"Nee"}],"links":[{"rel":"self","href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"},{"rel":"basisprofiel","href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"}]}'
+    headers:
+      API-Version:
+      - 1.5.0
+      Cache-Control:
+      - no-store
+      Connection:
+      - keep-alive
+      Content-Security-Policy:
+      - frame-ancestors 'none', default-src 'none'
+      Content-Type:
+      - application/hal+json
+      Date:
+      - Thu, 05 Feb 2026 11:27:26 GMT
+      Feature-Policy:
+      - '''none'''
+      Keep-Alive:
+      - timeout=60
+      Referrer-Policy:
+      - no-referrer
+      Server:
+      - unknown
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      content-length:
+      - '1379'
+      strict-transport-security:
+      - max-age=157680000 ; includeSubDomains
+      - max-age=0; includeSubDomains
+    status:
+      code: 200
+      message: ''
+version: 1

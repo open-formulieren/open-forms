@@ -143,6 +143,62 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
                 f"{log_entry.fmt_form} on behalf of the customer",
             )
 
+    def test_attributes_set_with_registrator_subject_info_branch_number(self):
+        register = Registry()
+        register("organization_plugin")(ProvidesEmployeePlugin)
+        instance = SubmissionFactory.create()
+        request = factory.get("/foo")
+        request.user = StaffUserFactory.create(username="Joe")
+        request.session = SessionBase()
+        request.session.update(
+            {
+                FORM_AUTH_SESSION_KEY: {
+                    "plugin": "organization_plugin",
+                    "attribute": AuthAttribute.employee_id,
+                    "value": "my-employee-id",
+                },
+                REGISTRATOR_SUBJECT_SESSION_KEY: {
+                    "attribute": AuthAttribute.kvk,
+                    "value": "12345678",
+                    "branch_number": "000038509490",
+                },
+            }
+        )
+
+        with mock_register(register):
+            set_auth_attribute_on_session(
+                sender=None, instance=instance, request=request
+            )
+
+        instance.refresh_from_db()
+
+        # check the property doesn't alias both
+        self.assertNotEqual(instance.auth_info, instance.registrator)
+
+        # check the clients info is stored as .auth_info
+        self.assertEqual(instance.auth_info.attribute, AuthAttribute.kvk)
+        self.assertEqual(instance.auth_info.value, "12345678")
+        self.assertEqual(instance.auth_info.plugin, "registrator")
+        self.assertEqual(
+            instance.auth_info.legal_subject_service_restriction, "000038509490"
+        )
+
+        # check the employee's info is stored as .registrator
+        self.assertEqual(instance.registrator.plugin, "organization_plugin")
+        self.assertEqual(instance.registrator.attribute, AuthAttribute.employee_id)
+        self.assertEqual(instance.registrator.value, "my-employee-id")
+
+        with override_settings(LANGUAGE_CODE="en"), self.subTest("audit trail"):
+            log_entry = TimelineLogProxy.objects.last()
+            assert log_entry is not None
+            message = log_entry.get_message()
+
+            self.assertEqual(
+                message.strip().replace("&quot;", '"'),
+                f"{log_entry.fmt_lead}: Staff user Joe authenticated for form "
+                f"{log_entry.fmt_form} on behalf of the customer",
+            )
+
     def test_attributes_set_with_registrator_when_skipped(self):
         register = Registry()
         register("organization_plugin")(ProvidesEmployeePlugin)

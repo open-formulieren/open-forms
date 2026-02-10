@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
+from openforms.authentication.service import get_branch_number
 from openforms.typing import JSONObject
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes
@@ -356,10 +357,7 @@ class AuthContextBranchNumber(BaseStaticVariable):
         if submission is None or not submission.is_authenticated:
             return ""
         auth_context = submission.auth_info.to_auth_context_data()
-        if auth_context["source"] != "eherkenning":
-            return ""
-        legal_subject = auth_context["authorizee"]["legalSubject"]
-        return legal_subject.get("branchNumber", "")
+        return get_branch_number(auth_context)
 
     def as_json_schema(self) -> JSONObject:
         return {

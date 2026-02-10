@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 import requests_mock
+from maykin_common.vcr import VCRMixin
 from privates.test import temp_private_root
 
 from openforms.authentication.service import AuthAttribute
@@ -14,7 +15,7 @@ from ..plugin import KVK_KVKNumberPrefill
 
 
 @temp_private_root()
-class KVKPrefillTests(KVKTestMixin, TestCase):
+class KVKPrefillTests(KVKTestMixin, VCRMixin, TestCase):
     @requests_mock.Mocker()
     def test_get_prefill_values(self, m):
         m.get(
@@ -41,6 +42,31 @@ class KVKPrefillTests(KVKTestMixin, TestCase):
         expected = {
             "bezoekadres.straatnaam": "Abebe Bikilalaan",
             "kvkNummer": "69599084",
+        }
+        self.assertEqual(values, expected)
+
+    def test_get_prefill_values_branch_number(self):
+        plugin = KVK_KVKNumberPrefill(identifier="kvk")
+
+        submission = SubmissionFactory.create(
+            auth_info__value="68750110",
+            auth_info__plugin="kvk",
+            auth_info__attribute=AuthAttribute.kvk,
+            auth_info__legal_subject_service_restriction="000037178598",
+        )
+        values = plugin.get_prefill_values(
+            submission,
+            [
+                Attributes.bezoekadres_straatnaam,
+                Attributes.kvkNummer,
+                Attributes.vestigingsnummer,
+                "invalidAttribute",
+            ],
+        )
+        expected = {
+            "bezoekadres.straatnaam": "Hizzaarderlaan",
+            "kvkNummer": "68750110",
+            "vestigingsnummer": "000037178598",
         }
         self.assertEqual(values, expected)
 
