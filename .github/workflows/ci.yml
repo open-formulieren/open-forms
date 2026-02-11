@@ -195,7 +195,7 @@ jobs:
       - uses: open-formulieren/actions/check-message-extraction@v1
         with:
           paths: src/openforms/js/{compiled-lang,lang}
-          extraction-command: ./bin/compilemessages_js.sh
+          extraction-command: ./bin/makemessages_js.sh
           compilation-command: ./bin/compilemessages_js.sh
 
       # Only actually does anything in release/* branches or for pushed tags
