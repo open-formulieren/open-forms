@@ -97,7 +97,7 @@ services:
       - open-forms-dev
 
   clamav:
-    image: clamav/clamav:1.0.0
+    image: clamav/clamav:1.5
     networks:
       - open-forms-dev
 
