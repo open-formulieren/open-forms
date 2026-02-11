@@ -39,19 +39,21 @@ class FormLogicListSerializer(ListWithChildSerializer):
         # Note: model instances without a pk are not hashable, which is a requirement to
         # use them in the graph, so we assign it manually. These rules will just live in
         # memory, so it will not result in conflicts with existing rules.
-        rules = [FormLogic(**rule_data, pk=i) for i, rule_data in enumerate(data)]
+        _temporary_rules: list[FormLogic] = [
+            FormLogic(**rule_data, pk=i) for i, rule_data in enumerate(attrs)
+        ]
 
-        graph = create_graph(rules)
+        graph = create_graph(_temporary_rules)
         cycles = detect_cycles(graph)
         if cycles:
             msg = _("Rule contains cycles through variable(s): {variables}.")
-            errors = defaultdict(list)
+            errors: defaultdict[str, list[ErrorDetail]] = defaultdict(list)
             for cycle in cycles:
                 # Sort to get consistent order in the error message (rules of a cycle do
                 # not have a start or end, so the order in which they are processed is
                 # not always consistent).
                 var_keys = ", ".join(sorted(cycle.variables))
-                for rule in sorted(cycle["rules"], key=lambda r: r.order):
+                for rule in sorted(cycle.rules, key=lambda r: r.order):
                     errors[f"{rule.order}.json_logic_trigger"].append(
                         ErrorDetail(
                             msg.format(variables=var_keys), code="cycles-detected"
@@ -59,19 +61,22 @@ class FormLogicListSerializer(ListWithChildSerializer):
                     )
             raise serializers.ValidationError(errors)
 
-        # Form steps are added to the context dictionary from the form-step set, which
-        # is an ordered model queryset, so we can just select the first value.
-        first_step = next(iter(self.context["form_steps"].values()))
+        # Form steps are added to the context dictionary in
+        # `FormViewSet.logic_rules_bulk_update`. It is a mapping from form step UUID to
+        # form step. We rely on it being ordered.
+        first_step: FormStep = next(iter(self.context["form_steps"].values()))
+        # Note that the order will remain 0, even if a form step was deleted.
         assert first_step.order == 0
         add_missing_steps(graph, first_step)
         new_rule_order = resolve_order(graph)
 
         # Reorder the incoming data according to the determined order.
-        data_new, steps = [], []
+        data_new: list[dict[str, object]] = []
+        steps: list[list[FormStep]] = []
         for rule in new_rule_order:
-            # We can get the original rule data by using the (manually set) pk as an
+            # We can get the original rule data by using the (manually set) order as an
             # index.
-            rule_data = data[rule.pk]
+            rule_data = attrs[rule.pk]
             steps.append(list(rule.steps))
             data_new.append(rule_data)
 
