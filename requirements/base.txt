@@ -49,7 +49,7 @@ certifi==2024.7.4
     #   requests
     #   self-certifi
     #   sentry-sdk
-cffi==1.16.0
+cffi==2.0.0
     # via
     #   cryptography
     #   weasyprint
@@ -72,7 +72,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
-cryptography==44.0.1
+cryptography==46.0.5
     # via
     #   django-digid-eherkenning
     #   django-simple-certmanager
@@ -476,7 +476,7 @@ pathable==0.4.3
     # via jsonschema-spec
 phonenumberslite==8.13.29
     # via -r requirements/base.in
-pillow==10.3.0
+pillow==12.1.1
     # via
     #   -r requirements/base.in
     #   django-colorfield
@@ -515,7 +515,7 @@ pygments==2.19.2
     # via rich
 pyjwt==2.6.0
     # via zgw-consumers
-pyopenssl==25.0.0
+pyopenssl==25.3.0
     # via
     #   josepy
     #   webauthn
