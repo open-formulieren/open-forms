@@ -809,7 +809,7 @@
     "originalDefault": "Select a registration backend and click the button to copy the configuration."
   },
   "DL51fL": {
-    "defaultMessage": "Execute on step",
+    "defaultMessage": "Uitvoeren bij stap",
     "description": "Disable next action execute on step message",
     "originalDefault": "Execute on step"
   },
@@ -1013,7 +1013,7 @@
     "originalDefault": "Reset to default description"
   },
   "G8OLZH": {
-    "defaultMessage": "Visible",
+    "defaultMessage": "Zichtbaar",
     "description": "Visible field label",
     "originalDefault": "Visible"
   },
@@ -1248,7 +1248,7 @@
     "originalDefault": "Authentication failure"
   },
   "JP/Fu8": {
-    "defaultMessage": "Whether to always show this plugin when the form starts.",
+    "defaultMessage": "Geeft aan of deze optie altijd moet worden weergegeven wanneer het formulier wordt gestart.",
     "description": "Visible field text",
     "originalDefault": "Whether to always show this plugin when the form starts."
   },
@@ -3387,7 +3387,7 @@
     "originalDefault": "There are errors in the prefill configuration."
   },
   "tLBlkD": {
-    "defaultMessage": "Plugin configuration: Organization via OpenID Connect",
+    "defaultMessage": "Pluginconfiguratie: Organisatie via OIDC",
     "description": "OpenID Connect authentication options modal title",
     "originalDefault": "Plugin configuration: Organization via OpenID Connect"
   },

@@ -1897,7 +1897,7 @@
   "DL51fL": [
     {
       "type": 0,
-      "value": "Execute on step"
+      "value": "Uitvoeren bij stap"
     }
   ],
   "DRG6XN": [
@@ -2277,7 +2277,7 @@
   "G8OLZH": [
     {
       "type": 0,
-      "value": "Visible"
+      "value": "Zichtbaar"
     }
   ],
   "GBsms3": [
@@ -2677,7 +2677,7 @@
   "JP/Fu8": [
     {
       "type": 0,
-      "value": "Whether to always show this plugin when the form starts."
+      "value": "Geeft aan of deze optie altijd moet worden weergegeven wanneer het formulier wordt gestart."
     }
   ],
   "JRGs/Q": [
@@ -7190,7 +7190,7 @@
   "tLBlkD": [
     {
       "type": 0,
-      "value": "Plugin configuration: Organization via OpenID Connect"
+      "value": "Pluginconfiguratie: Organisatie via OIDC"
     }
   ],
   "tLL2x4": [
