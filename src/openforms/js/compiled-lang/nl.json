@@ -801,6 +801,12 @@
       "value": "Naam van de formulierdefinitie die in deze stap gebruikt wordt."
     }
   ],
+  "68Aey7": [
+    {
+      "type": 0,
+      "value": "Wanneer dit is ingeschakeld, wordt het klantprofiel automatisch bijgewerkt door Open Formulieren zodra een digitaal adres wordt toegevoegd."
+    }
+  ],
   "6F2H6H": [
     {
       "type": 0,
@@ -895,6 +901,12 @@
     {
       "type": 0,
       "value": "Voeg nog een laag toe"
+    }
+  ],
+  "78ckd0": [
+    {
+      "type": 0,
+      "value": "E-mailadres"
     }
   ],
   "7AQfXl": [
@@ -1239,6 +1251,12 @@
     {
       "type": 0,
       "value": "Let op! Als je een ander objecttype selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?"
+    }
+  ],
+  "9XqFGF": [
+    {
+      "type": 0,
+      "value": "Gebruikercommunicatiemethodes bijwerken"
     }
   ],
   "9akVrT": [
@@ -1910,6 +1928,12 @@
     {
       "type": 0,
       "value": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Als je hier een waarde selecteert, dan overschrijft die de vertrouwelijkheidaanduiding van het geselecteerde zaaktype."
+    }
+  ],
+  "DbpUVv": [
+    {
+      "type": 0,
+      "value": "Waarde in decimale graden, tussen 50.5 en 54."
     }
   ],
   "DcI1VF": [
@@ -3786,6 +3810,12 @@
       "value": "Niet uitvragen"
     }
   ],
+  "Tpg442": [
+    {
+      "type": 0,
+      "value": "Waarde in decimale graden, tussen 3 en 7.5."
+    }
+  ],
   "TtqZa0": [
     {
       "type": 0,
@@ -4148,6 +4178,12 @@
       "value": "Authenticatie automatische login"
     }
   ],
+  "XKpEHP": [
+    {
+      "type": 0,
+      "value": "Selecteer ten minste één digitaal adrestype."
+    }
+  ],
   "XMV3t2": [
     {
       "type": 0,
@@ -4236,6 +4272,12 @@
     {
       "type": 0,
       "value": "Variabelen"
+    }
+  ],
+  "Y1qhnH": [
+    {
+      "type": 0,
+      "value": "Digitale adrestypen waarop een gebruiker te bereiken is."
     }
   ],
   "Y4oNhH": [
@@ -5871,12 +5913,6 @@
       "value": "Nee"
     }
   ],
-  "jiDz2v": [
-    {
-      "type": 0,
-      "value": "Waarde in decimale graden, tussen -90 en +90."
-    }
-  ],
   "jitewC": [
     {
       "type": 0,
@@ -6735,6 +6771,12 @@
       "value": "Bevestigen"
     }
   ],
+  "q+qVVR": [
+    {
+      "type": 0,
+      "value": "Telefoonnummer"
+    }
+  ],
   "q3kxsb": [
     {
       "type": 0,
@@ -7147,6 +7189,12 @@
       "value": "De minimale tijd die gekozen kan worden."
     }
   ],
+  "tZwyML": [
+    {
+      "type": 0,
+      "value": "Telefoonnummer"
+    }
+  ],
   "tg+6bo": [
     {
       "type": 0,
@@ -7291,6 +7339,12 @@
     {
       "type": 0,
       "value": "Bronpad"
+    }
+  ],
+  "vN6yXh": [
+    {
+      "type": 0,
+      "value": "Beschikbare digitale adrestypen"
     }
   ],
   "vNRiMn": [
@@ -7497,6 +7551,12 @@
       "value": "Sjabloon bevestigingspagina"
     }
   ],
+  "xPFvic": [
+    {
+      "type": 0,
+      "value": "E-mailadres"
+    }
+  ],
   "xTcRPO": [
     {
       "type": 0,
@@ -7683,12 +7743,6 @@
     {
       "type": 0,
       "value": "Actie"
-    }
-  ],
-  "z45pcO": [
-    {
-      "type": 0,
-      "value": "Waarde in decimale graden, tussen -180 en +180."
     }
   ],
   "z4zEf7": [
