@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.template import loader
-from django.test import SimpleTestCase, TestCase, tag
+from django.test import SimpleTestCase, tag
 from django.utils import timezone
 
 import requests_mock
@@ -13,7 +13,6 @@ import xmltodict
 from glom import T as GlomTarget, glom
 from lxml import etree
 
-from openforms.logging.models import TimelineLogProxy
 from openforms.logging.tests.utils import disable_timelinelog
 from openforms.prefill.contrib.stufbg.plugin import ATTRIBUTES_TO_STUF_BG_MAPPING
 from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
@@ -301,22 +300,6 @@ class StufBGClientTests(SimpleTestCase):
         for key, value in expected.items():
             with self.subTest(key=key, value=value):
                 self.assertEqual(response_data.get(key), value)
-
-
-# not SimpleTestCase because of openforms.logging.logevent usage
-class StufBGClientLoggingTests(TestCase):
-    def test_soap_request_gets_logged(self):
-        stuf_service = StufServiceFactory.create(soap_service__soap_version="1.1")
-        stufbg_client = StufBGClient(service=stuf_service)
-        test_bsn = "999992314"
-
-        with requests_mock.Mocker() as m:
-            m.post(stuf_service.soap_service.url)
-            # perform request
-            stufbg_client.get_values_for_attributes(test_bsn, FieldChoices.values)
-
-        logged_events = TimelineLogProxy.objects.filter_event("stuf_bg_request")
-        self.assertTrue(logged_events.exists(), "StUF-BG request wasn't logged.")
 
 
 def _contains_nils(d: dict):

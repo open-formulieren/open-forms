@@ -20,7 +20,7 @@ from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.views import ListMixin
 from openforms.formio.api.schema import FORMIO_COMPONENT_SCHEMA
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.submissions.api.mixins import SubmissionCompletionMixin
 from openforms.submissions.api.permissions import (
     ActiveSubmissionPermission,
@@ -376,27 +376,22 @@ class CancelAppointmentView(GenericAPIView):
             plugin=plugin,
             submission_uuid=str(submission.uuid),
         ):
-            logevent.appointment_cancel_start(submission.appointment_info, plugin)
-
+            audit_logger.info("appointment_cancel_start")
             serializer = CancelAppointmentInputSerializer(data=request.data)
             try:
                 serializer.is_valid(raise_exception=True)
-            except ValidationError as e:
-                logevent.appointment_cancel_failure(
-                    submission.appointment_info, plugin, e
-                )
-                raise e
+            except ValidationError as exc:
+                audit_logger.warning("appointment_cancel_failure", exc_info=exc)
+                raise
 
             emails = submission.get_email_confirmation_recipients(submission.data)
 
             # The user must enter the email address they used when creating
             # the appointment which we validate here
             if serializer.validated_data["email"] not in emails:
-                e = PermissionDenied
-                logevent.appointment_cancel_failure(
-                    submission.appointment_info, plugin, e
-                )
-                raise e
+                exc = PermissionDenied
+                audit_logger.warning("appointment_cancel_failure", exc_info=exc)
+                raise exc
 
             try:
                 delete_appointment_for_submission(submission, plugin)

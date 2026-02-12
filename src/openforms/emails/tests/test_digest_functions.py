@@ -32,7 +32,7 @@ from openforms.forms.tests.factories import (
     FormRegistrationBackendFactory,
     FormVariableFactory,
 )
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.prefill.registry import register as prefill_register
@@ -122,23 +122,23 @@ class ErrorFormConfiguration(BasePlugin):
 class FailedEmailsTests(TestCase):
     def test_failed_emails_are_collected(self):
         submission = SubmissionFactory.create()
+        audit_log = audit_logger.bind(
+            submission_uuid=str(submission.uuid),
+            email_event="registration",
+        )
 
         # Log email failed within last day
-        logevent.email_status_change(
-            submission,
-            event="registration",
-            status=Message.STATUS_FAILED,
+        audit_log.info(
+            "email_status_change",
+            new_status=Message.STATUS_FAILED,
             status_label="Failed",
-            include_in_daily_digest=True,
         )
 
         # Successfully sent email
-        logevent.email_status_change(
-            submission,
-            event="registration",
-            status=Message.STATUS_SENT,
+        audit_log.info(
+            "email_status_change",
+            new_status=Message.STATUS_SENT,
             status_label="Sent",
-            include_in_daily_digest=True,
         )
 
         failed_emails = collect_failed_emails(
@@ -150,14 +150,16 @@ class FailedEmailsTests(TestCase):
 
     def test_sent_emails_are_not_collected(self):
         submission = SubmissionFactory.create()
+        audit_log = audit_logger.bind(
+            submission_uuid=str(submission.uuid),
+            email_event="registration",
+        )
 
         # Log email failed more than 24h ago
-        logevent.email_status_change(
-            submission,
-            event="registration",
-            status=Message.STATUS_FAILED,
+        audit_log.info(
+            "email_status_change",
+            new_status=Message.STATUS_FAILED,
             status_label="Failed",
-            include_in_daily_digest=True,
         )
 
         failed_emails = collect_failed_emails(
@@ -178,17 +180,21 @@ class FailedRegistrationsTests(TestCase):
         failed_submission_2 = SubmissionFactory.create(
             form=form_1, registration_status=RegistrationStatuses.failed
         )
+        audit_log = audit_logger.bind(
+            exc_info=RegistrationFailed("Registration plugin is not enabled"),
+            plugin=register_register["test-invalid-backend"],
+        )
 
         # 1st failure
-        logevent.registration_failure(
-            failed_submission_1,
-            RegistrationFailed("Registration plugin is not enabled"),
+        audit_log.warning(
+            "registration_failure",
+            submission_uuid=str(failed_submission_1.uuid),
         )
 
         # 2nd failure
-        logevent.registration_failure(
-            failed_submission_2,
-            RegistrationFailed("Registration plugin is not enabled"),
+        audit_log.warning(
+            "registration_failure",
+            submission_uuid=str(failed_submission_2.uuid),
         )
 
         # 2nd form with 1 failure in the past 24 hours
@@ -198,9 +204,9 @@ class FailedRegistrationsTests(TestCase):
         )
 
         # failure
-        logevent.registration_failure(
-            failed_submission,
-            RegistrationFailed("Registration plugin is not enabled"),
+        audit_log.warning(
+            "registration_failure",
+            submission_uuid=str(failed_submission.uuid),
         )
 
         failed_registrations = collect_failed_registrations(
@@ -214,10 +220,11 @@ class FailedRegistrationsTests(TestCase):
     def test_timestamp_constraint_returns_no_results(self):
         form = FormFactory.create()
         submission = SubmissionFactory.create(form=form, registration_failed=True)
-
-        logevent.registration_failure(
-            submission,
-            RegistrationFailed("Registration plugin is not enabled"),
+        audit_logger.warning(
+            "registration_failure",
+            plugin=register_register["test-invalid-backend"],
+            submission_uuid=str(submission.uuid),
+            exc_info=RegistrationFailed("Registration plugin is not enabled"),
         )
 
         digest = Digest(since=datetime(2023, 1, 4, 1, 0, 0).replace(tzinfo=utc))
@@ -236,24 +243,26 @@ class FailedPrefillTests(TestCase):
         form_1 = FormFactory.create()
         submission_1 = SubmissionFactory.create(form=form_1)
         submission_2 = SubmissionFactory.create(form=form_1)
+        audit_log = audit_logger.bind(
+            plugin=hc_plugin, attributes=["burgerservicenummer"]
+        )
 
         # 1st failure(no values)
-        logevent.prefill_retrieve_empty(
-            submission_1, hc_plugin, ["burgerservicenummer"]
-        )
+        audit_log.info("prefill_retrieve_empty", submission_uuid=str(submission_1.uuid))
 
         # 2nd failure(no values)
-        logevent.prefill_retrieve_empty(
-            submission_2, hc_plugin, ["burgerservicenummer"]
-        )
+        audit_log.info("prefill_retrieve_empty", submission_uuid=str(submission_2.uuid))
 
         # 2nd form with 1 failure in the past 24 hours
         form_2 = FormFactory.create()
         submission = SubmissionFactory.create(form=form_2)
 
         # failure(service not configured)
-        logevent.prefill_retrieve_failure(
-            submission, stufbg_plugin, NoServiceConfigured()
+        audit_logger.exception(
+            "prefill.plugin.retrieve_failure",
+            submission_uuid=str(submission.uuid),
+            plugin=stufbg_plugin,
+            exc_info=NoServiceConfigured(),
         )
 
         failed_plugins = collect_failed_prefill_plugins(
@@ -269,8 +278,12 @@ class FailedPrefillTests(TestCase):
 
         form = FormFactory.create()
         submission = SubmissionFactory.create(form=form)
-
-        logevent.prefill_retrieve_empty(submission, hc_plugin, ["burgerservicenummer"])
+        audit_logger.info(
+            "prefill_retrieve_empty",
+            submission_uuid=str(submission.uuid),
+            plugin=hc_plugin,
+            attributes=["burgerservicenummer"],
+        )
 
         digest = Digest(since=datetime(2023, 1, 4, 1, 0, 0).replace(tzinfo=utc))
         context = digest.get_context_data()

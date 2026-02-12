@@ -14,8 +14,6 @@ Functional requirements are:
 See ``test_disabled_forms.py`` for more extensive tests around maintenance mode.
 """
 
-from unittest.mock import patch
-
 from django.test import override_settings, tag
 
 from rest_framework import status
@@ -37,6 +35,7 @@ from ..models import Submission, SubmissionValueVariable
     CORS_ALLOW_ALL_ORIGINS=False,
     ALLOWED_HOSTS=["*"],
     CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+    TIMELINE_HANDLER_DISABLED=True,
 )
 class SubmissionStartTests(APITestCase):
     endpoint = reverse_lazy("api:submission-list")
@@ -201,8 +200,7 @@ class SubmissionStartTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @patch("openforms.logging.logevent._create_log")
-    def test_start_submission_with_prefill(self, mock_logevent):
+    def test_start_submission_with_prefill(self):
         FormVariableFactory.create(
             form=self.form,
             form_definition=self.step.form_definition,

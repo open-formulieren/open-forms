@@ -3,9 +3,8 @@ from __future__ import annotations
 import base64
 import uuid
 from collections import OrderedDict
-from collections.abc import Callable, Iterator, MutableMapping
+from collections.abc import Iterator, MutableMapping
 from datetime import datetime
-from functools import partial
 from typing import (
     Any,
     BinaryIO,
@@ -26,7 +25,6 @@ from lxml.etree import _Element
 from requests import RequestException
 
 from openforms.config.models import GlobalConfiguration
-from openforms.logging import logevent
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
@@ -123,16 +121,11 @@ def StufZDSClient(
     service: StufService, options: ZaakOptions, config: StufZDSConfig
 ) -> Client:
     factory = ServiceClientFactory(service)
-    init_kwargs = get_client_init_kwargs(
-        service,
-        request_log_hook=partial(logevent.stuf_zds_request, service),
-    )
+    init_kwargs = get_client_init_kwargs(service)
     return Client.configure_from(
         factory,
         config=config,
         options=options,
-        failure_log_callback=partial(logevent.stuf_zds_failure_response, service),
-        success_log_callback=partial(logevent.stuf_zds_success_response, service),
         **init_kwargs,
     )
 
@@ -150,16 +143,11 @@ class Client(BaseClient):
         *args,
         config: StufZDSConfig,
         options: ZaakOptions,
-        failure_log_callback: Callable[[str], None],
-        success_log_callback: Callable[[str], None],
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.config = config
         self.zds_options = options
-        # TODO: do we still need this? This can be a processor?
-        self.log_stuf_zds_failure = failure_log_callback
-        self.log_stuf_zds_success = success_log_callback
 
     def execute_call(self, *args, **kwargs) -> _Element:
         """
@@ -191,13 +179,11 @@ class Client(BaseClient):
             response = self.templated_request(*args, **kwargs)
         except RequestException as exc:
             logger.error("request_failure", exc_info=exc)
-            self.log_stuf_zds_failure(_url)
             raise RegistrationFailed("error while making backend request") from exc
 
         if (status_code := response.status_code) < 200 or status_code >= 400:
             error_text = parse_soap_error_text(response)
             logger.error("bad_response", status_code=status_code, error_text=error_text)
-            self.log_stuf_zds_failure(_url)
             raise RegistrationFailed(
                 f"error while making backend request: HTTP {status_code}: {error_text}",
                 response=response,
@@ -206,12 +192,12 @@ class Client(BaseClient):
         try:
             xml = fromstring(response.content)
         except etree.XMLSyntaxError as e:
-            self.log_stuf_zds_failure(_url)
+            logger.warning("bad_response", error_text="could not parse XML")
             raise RegistrationFailed(
                 "error while parsing incoming backend response XML"
             ) from e
 
-        self.log_stuf_zds_success(_url)
+        logger.info("request_success")
         return xml
 
     def create_zaak_identificatie(self) -> str:

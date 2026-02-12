@@ -6,7 +6,8 @@ from flags.state import flag_disabled
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
-from openforms.logging import logevent
+from openforms.logging import audit_logger
+from openforms.logging.constants import FORM_SUBMIT_SUCCESS_EVENT
 
 from ..constants import PostSubmissionEvents
 from ..metrics import attachments_per_submission, completion_counter
@@ -52,7 +53,10 @@ class SubmissionCompletionMixin:
         # all logic has run; we can fix backend
         submission.save()
 
-        logevent.form_submit_success(submission)
+        audit_logger.info(
+            FORM_SUBMIT_SUCCESS_EVENT,
+            submission_uuid=str(submission.uuid),
+        )
 
         remove_submission_from_session(submission, self.request.session)
 

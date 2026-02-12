@@ -85,6 +85,8 @@ celery-once==3.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+celery-types==0.23.0
+    # via -r requirements/type-checking.in
 certifi==2024.7.4
     # via
     #   -c requirements/ci.txt
@@ -1352,6 +1354,7 @@ typing-extensions==4.12.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   celery-types
     #   django-stubs
     #   django-stubs-ext
     #   django-test-migrations

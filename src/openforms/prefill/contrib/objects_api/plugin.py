@@ -48,8 +48,11 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
         auth_attribute_path = prefill_options["auth_attribute_path"]
         assert auth_attribute_path, "Auth attribute path may not be empty"
 
-        with get_objects_client(api_group) as client:
-            validate_object_ownership(submission, client, auth_attribute_path, self)
+        with (
+            get_objects_client(api_group) as client,
+            structlog.contextvars.bound_contextvars(plugin=self),
+        ):
+            validate_object_ownership(submission, client, auth_attribute_path)
 
     @classmethod
     def get_prefill_values_from_options(

@@ -6,12 +6,26 @@ from freezegun import freeze_time
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
-from openforms.logging import logevent
+from openforms.logging import audit_logger
+from openforms.logging.constants import (
+    FORM_SUBMIT_SUCCESS_EVENT,
+    REGISTRATION_SUCCESS_EVENT,
+)
 from openforms.registrations.contrib.demo.plugin import DemoRegistration
+from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ...forms import ExportStatisticsForm
 from ..factories import FormFactory
+
+
+def _log_form_submit_success(submission: Submission) -> None:
+    """
+    Lightweight helper to log the form submit event.
+
+    Keep in sync with :meth:`openforms.submissions.api.mixins.SubmissionCompletionMixin._complete_submission`.
+    """
+    audit_logger.info(FORM_SUBMIT_SUCCESS_EVENT, submission_uuid=str(submission.uuid))
 
 
 @disable_admin_mfa()
@@ -59,11 +73,11 @@ class SubmissionStatisticsAdminTests(WebTest):
         form_1 = FormFactory.create(name="Order coffee")
         form_2 = FormFactory.create(name="Request bathroom break")
         submission1 = SubmissionFactory.create(completed=True, form=form_1)
-        logevent.form_submit_success(submission1)
+        _log_form_submit_success(submission1)
         submission2 = SubmissionFactory.create(completed=True, form=form_1)
-        logevent.form_submit_success(submission2)
+        _log_form_submit_success(submission2)
         submission3 = SubmissionFactory.create(completed=True, form=form_2)
-        logevent.form_submit_success(submission3)
+        _log_form_submit_success(submission3)
 
         changelist_page = self.app.get(self.admin_url, user=superuser)
 
@@ -83,11 +97,11 @@ class SubmissionStatisticsAdminTests(WebTest):
         form_1 = FormFactory.create(name="Order coffee")
         form_2 = FormFactory.create(name="Request bathroom break")
         submission1 = SubmissionFactory.create(completed=True, form=form_1)
-        logevent.form_submit_success(submission1)
+        _log_form_submit_success(submission1)
         submission2 = SubmissionFactory.create(completed=True, form=form_1)
-        logevent.form_submit_success(submission2)
+        _log_form_submit_success(submission2)
         submission3 = SubmissionFactory.create(completed=True, form=form_2)
-        logevent.form_submit_success(submission3)
+        _log_form_submit_success(submission3)
 
         _changelist_page = self.app.get(self.admin_url, user=superuser)
         search_form = _changelist_page.forms["changelist-search"]
@@ -108,13 +122,13 @@ class SubmissionStatisticsAdminTests(WebTest):
         # create submissions at different points in time
         with freeze_time("2024-10-07T12:00:00Z"):
             submission1 = SubmissionFactory.create(completed=True, form=form)
-            logevent.form_submit_success(submission1)
+            _log_form_submit_success(submission1)
         with freeze_time("2025-01-03T10:00:00Z"):
             submission1 = SubmissionFactory.create(completed=True, form=form)
-            logevent.form_submit_success(submission1)
+            _log_form_submit_success(submission1)
         with freeze_time("2025-01-04T23:59:59+01:00"):
             submission1 = SubmissionFactory.create(completed=True, form=form)
-            logevent.form_submit_success(submission1)
+            _log_form_submit_success(submission1)
 
         _changelist_page = self.app.get(self.admin_url, user=superuser)
         # this library translates the form ID from the label, wtf
@@ -200,15 +214,16 @@ class FormStatisticsExportAdminTests(WebTest):
             is_staff=True,
             user_permissions=["forms.view_formsubmissionstatistics"],
         )
+        plugin = DemoRegistration("demo")
+        audit_log = audit_logger.bind(plugin=plugin)
         # create some log records for submissions
         with freeze_time("2024-12-20T16:44:00+01:00"):
             sub1, sub2, sub3 = SubmissionFactory.create_batch(
                 3, registration_success=True
             )
-            plugin = DemoRegistration("demo")
-            logevent.registration_success(sub1, plugin=plugin)
-            logevent.registration_success(sub2, plugin=plugin)
-            logevent.registration_success(sub3, plugin=plugin)
+            audit_log.info("registration_success", submission_uuid=str(sub1.uuid))
+            audit_log.info("registration_success", submission_uuid=str(sub2.uuid))
+            audit_log.info("registration_success", submission_uuid=str(sub3.uuid))
 
         export_page = self.app.get(self.admin_url, user=user)
         form = export_page.forms["export-statistics"]
@@ -234,6 +249,7 @@ class FormStatisticsExportAdminTests(WebTest):
         Test that the form filters correctly filter down the matching log records.
         """
         plugin = DemoRegistration("demo")
+        audit_log = audit_logger.bind(plugin=plugin)
         form1, form2, form3 = FormFactory.create_batch(3)
         with freeze_time("2024-12-20T16:44:00+01:00"):
             registered_submission_1 = SubmissionFactory.create(
@@ -241,21 +257,31 @@ class FormStatisticsExportAdminTests(WebTest):
                 registration_success=True,
                 public_registration_reference="SUB-01",
             )
-            logevent.registration_success(registered_submission_1, plugin=plugin)
+            audit_log.info(
+                "registration_success",
+                submission_uuid=str(registered_submission_1.uuid),
+            )
 
             failed_submission = SubmissionFactory.create(
                 form=form1,
                 registration_failed=True,
                 public_registration_reference="FAIL-01",
             )
-            logevent.registration_failure(failed_submission, error=Exception("nope"))
+            audit_log.warning(
+                "registration_failure",
+                submission_uuid=str(failed_submission.uuid),
+                exc_info=Exception("nope"),
+            )
         with freeze_time("2024-11-20T12:00:00+01:00"):
             registered_submission_2 = SubmissionFactory.create(
                 form=form2,
                 registration_success=True,
                 public_registration_reference="SUB-02",
             )
-            logevent.registration_success(registered_submission_2, plugin=plugin)
+            audit_log.info(
+                "registration_success",
+                submission_uuid=str(registered_submission_2.uuid),
+            )
 
         with freeze_time("2024-12-05T12:00:00+01:00"):
             registered_submission_3 = SubmissionFactory.create(
@@ -263,7 +289,10 @@ class FormStatisticsExportAdminTests(WebTest):
                 registration_success=True,
                 public_registration_reference="SUB-03",
             )
-            logevent.registration_success(registered_submission_3, plugin=plugin)
+            audit_log.info(
+                "registration_success",
+                submission_uuid=str(registered_submission_3.uuid),
+            )
 
         with freeze_time("2024-12-06T10:00:00+01:00"):
             registered_submission_4 = SubmissionFactory.create(
@@ -271,12 +300,15 @@ class FormStatisticsExportAdminTests(WebTest):
                 registration_success=True,
                 public_registration_reference="SUB-04",
             )
-            logevent.registration_success(registered_submission_4, plugin=plugin)
+            audit_log.info(
+                "registration_success",
+                submission_uuid=str(registered_submission_4.uuid),
+            )
 
         with self.subTest("filter on start date"):
             export_form1 = ExportStatisticsForm(
                 data={
-                    "kind": logevent.REGISTRATION_SUCCESS_EVENT,
+                    "kind": REGISTRATION_SUCCESS_EVENT,
                     "start_date": "2024-12-14",
                     "end_date": "2024-12-31",
                 }
@@ -292,7 +324,7 @@ class FormStatisticsExportAdminTests(WebTest):
         with self.subTest("filter on end date"):
             export_form2 = ExportStatisticsForm(
                 data={
-                    "kind": logevent.REGISTRATION_SUCCESS_EVENT,
+                    "kind": REGISTRATION_SUCCESS_EVENT,
                     "start_date": "2024-01-01",
                     "end_date": "2024-12-05",
                 }
@@ -309,7 +341,7 @@ class FormStatisticsExportAdminTests(WebTest):
         with self.subTest("filter on subset of forms"):
             export_form3 = ExportStatisticsForm(
                 data={
-                    "kind": logevent.REGISTRATION_SUCCESS_EVENT,
+                    "kind": REGISTRATION_SUCCESS_EVENT,
                     "start_date": "2024-01-01",
                     "end_date": "2024-12-31",
                     "limit_to_forms": [form2.pk, form3.pk],

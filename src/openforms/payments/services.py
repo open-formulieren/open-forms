@@ -1,6 +1,6 @@
 from django.db import transaction
 
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.registrations.registry import register
 from openforms.submissions.models import Submission
 
@@ -10,16 +10,21 @@ __all__ = ["update_submission_payment_registration"]
 
 
 def update_submission_payment_registration(submission: Submission):
+    audit_log = audit_logger.bind(submission_uuid=str(submission.uuid))
+
     if (registration_backend := submission.registration_backend) is None:
-        error = AttributeError("Submission has no registration backend")
-        logevent.registration_payment_update_failure(submission, error=error)
+        audit_log.info(
+            "registration_payment_update_failure", reason="no_registration_backend"
+        )
         return
 
     try:
         plugin = register[registration_backend.backend]
-    except KeyError as e:
-        logevent.registration_payment_update_failure(submission, error=e)
+    except KeyError as exc:
+        audit_log.warning("registration_payment_update_failure", exc_info=exc)
         return
+
+    audit_log = audit_log.bind(plugin=plugin)
 
     # TODO support partial payments
     with transaction.atomic():
@@ -27,15 +32,12 @@ def update_submission_payment_registration(submission: Submission):
             status=PaymentStatus.completed
         ).select_for_update()
         if not payments:
-            logevent.registration_payment_update_skip(submission)
+            audit_log.info("registration_payment_update_skip")
             return
 
-        logevent.registration_payment_update_start(submission, plugin=plugin)
+        audit_log.info("registration_payment_update_start")
         options_serializer = plugin.configuration_options(
-            data=(
-                submission.registration_backend
-                and submission.registration_backend.options
-            ),
+            data=registration_backend and registration_backend.options,
             context={"validate_business_logic": False},
         )
         options_serializer.is_valid(raise_exception=True)
@@ -44,14 +46,13 @@ def update_submission_payment_registration(submission: Submission):
             plugin.update_payment_status(submission, options_serializer.validated_data)
             # FIXME: pyright + custom querysets...
             payments.mark_registered()  # pyright: ignore[reportAttributeAccessIssue]
-        except Exception as e:
-            logevent.registration_payment_update_failure(
-                submission, error=e, plugin=plugin
-            )
+        except Exception as exc:
+            audit_log = audit_log.bind(exc_info=exc)
+            audit_log.warning("registration_payment_update_failure")
             for p in payments:
-                logevent.payment_register_failure(p, plugin, e)
+                audit_log.warning("payment_register_failure", payment_uuid=str(p.uuid))
             raise
         else:
-            logevent.registration_payment_update_success(submission, plugin=plugin)
+            audit_log.info("registration_payment_update_success")
             for p in payments:
-                logevent.payment_register_success(p, plugin)
+                audit_log.info("payment_register_success", payment_uuid=str(p.uuid))

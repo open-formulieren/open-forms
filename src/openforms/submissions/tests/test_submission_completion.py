@@ -915,7 +915,7 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         with self.monkeypatch:
-            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+            on_post_submission_event(submission.pk, PostSubmissionEvents.on_completion)
 
         self.assertEqual(len(self.mock_calls), 1)
         submission_in_args = self.mock_calls[0][0][0]
@@ -955,7 +955,7 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         with self.monkeypatch:
-            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+            on_post_submission_event(submission.pk, PostSubmissionEvents.on_completion)
 
         # Still tries to use default
         self.assertEqual(len(self.mock_calls), 1)
@@ -968,8 +968,8 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
                 (
                     log
                     for log in logged_events
-                    if log.extra_data.get("error", "")
-                    == "FormRegistrationBackend matching query does not exist."
+                    if "FormRegistrationBackend matching query does not exist."
+                    in log.extra_data.get("error", "")
                     and log.extra_data["backend"]["key"] == "not M"
                 ),
                 False,

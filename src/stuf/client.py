@@ -13,7 +13,7 @@ subclass the base class and implement your domain specific logic in your own cla
 """
 
 import uuid
-from typing import Any, Literal, Protocol
+from typing import Any
 
 from django.template import loader
 
@@ -28,14 +28,6 @@ from .constants import EndpointType
 from .stuf import StuurGegevens, WSSecurity
 
 logger = structlog.stdlib.get_logger(__name__)
-
-
-class LoggingHook(Protocol):
-    def __call__(self, url: str) -> None: ...
-
-
-def noop_log(*args, **kwargs) -> None:
-    pass
 
 
 class BaseClient(APIClient):
@@ -94,9 +86,6 @@ class BaseClient(APIClient):
         endpoints: dict[EndpointType | str, str],
         wss_security: WSSecurity,
         stuurgegevens: StuurGegevens,
-        # additional functionality - can probably be replaced with self.hooks at some point
-        request_log_hook: LoggingHook = noop_log,
-        response_log_hook: LoggingHook = noop_log,
     ):
         super().__init__(base_url, request_kwargs)
 
@@ -104,9 +93,6 @@ class BaseClient(APIClient):
         self._endpoints = endpoints
         self.wss_security = wss_security
         self.stuurgegevens = stuurgegevens
-
-        self.request_log_hook = request_log_hook
-        self.response_log_hook = response_log_hook
 
         # set the correct Content-Type header for the specified soap version
         self.headers["Content-Type"] = SOAP_VERSION_CONTENT_TYPES[self.soap_version]
@@ -142,16 +128,6 @@ class BaseClient(APIClient):
     # HTTP interaction
     #
 
-    def _log(self, url: str, *, direction: Literal["request", "response"]) -> None:
-        match direction:
-            case "request":
-                hook = self.request_log_hook
-            case "response":
-                hook = self.response_log_hook
-            case _:  # pragma: no cover
-                raise ValueError("Unexpected direction received")
-        hook(url)
-
     def soap_request(
         self,
         soap_action: str,
@@ -159,8 +135,13 @@ class BaseClient(APIClient):
         endpoint_type: EndpointType = EndpointType.vrije_berichten,
     ) -> Response:
         normalized_url = self.to_absolute_url(endpoint_type)
-        self._log(normalized_url, direction="request")
+        log = logger.bind(
+            client=type(self).__name__,
+            url=normalized_url,
+            soap_action=soap_action,
+        )
 
+        log.debug("stuf_request_started")
         response = self.post(
             normalized_url,
             data=body.encode("utf-8"),
@@ -173,8 +154,7 @@ class BaseClient(APIClient):
                 ),
             },
         )
-
-        self._log(normalized_url, direction="response")
+        log.debug("stuf_response_received", status_code=response.status_code)
         # TODO should this do response.raise_for_error() ?
         return response
 
@@ -215,6 +195,7 @@ class BaseClient(APIClient):
         structlog.contextvars.bind_contextvars(
             standard="StUF",
             sector_alias=self.sector_alias.upper(),
+            soap_action=soap_action,
             referentienummer=full_context["referentienummer"],
         )
         logger.debug("prepare_and_make_request")

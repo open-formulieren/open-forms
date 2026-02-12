@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.http import HttpRequest
 
 from import_export import resources
 from import_export.admin import ExportActionModelAdmin
@@ -59,13 +60,17 @@ class TimelineLogProxyAdmin(ExportActionModelAdmin):
     # Export options:
     resource_classes = [TimelineLogProxyResource]
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request: HttpRequest):
         return False
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(
+        self, request: HttpRequest, obj: TimelineLogProxy | None = None
+    ):
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(
+        self, request: HttpRequest, obj: TimelineLogProxy | None = None
+    ):
         return False
 
 

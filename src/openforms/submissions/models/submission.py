@@ -14,7 +14,7 @@ from django.utils.formats import localize
 from django.utils.functional import cached_property
 from django.utils.safestring import SafeString
 from django.utils.timezone import localtime
-from django.utils.translation import get_language, gettext_lazy as _
+from django.utils.translation import get_language, gettext, gettext_lazy as _
 
 import elasticapm
 import structlog
@@ -26,7 +26,7 @@ from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.service import FormioConfigurationWrapper, FormioData
 from openforms.forms.models import FormRegistrationBackend, FormStep
-from openforms.logging.logevent import registration_debug
+from openforms.logging import audit_logger
 from openforms.payments.constants import PaymentStatus
 from openforms.template import openforms_backend, render_from_string
 from openforms.typing import JSONObject, RegistrationBackendKey
@@ -870,48 +870,45 @@ class Submission(models.Model):
         self, enable_log: bool = False
     ) -> RegistrationBackendKey | None:
         backends = list(self.form.registration_backends.order_by("id"))
+        audit_log = audit_logger.bind(submission_uuid=str(self.uuid))
         match len(backends):  # sanity check
             case 1:
                 return backends[0].key
             case 0:
                 if enable_log:
-                    registration_debug(
-                        self,
-                        extra_data={
-                            "message": _("No registration backends defined on form.")
-                        },
+                    audit_log.debug(
+                        "registration_debug",
+                        message=gettext("No registration backends defined on form."),
                     )
                 return None
             case _:
                 default = backends[0]
                 if enable_log:
-                    registration_debug(
-                        self,
-                        extra_data={
-                            "message": _("Multiple backends defined on form."),
-                            "backend": {"key": default.key, "name": default.name},
-                        },
+                    audit_log.debug(
+                        "registration_debug",
+                        message=gettext("Multiple backends defined on form."),
+                        backend={"key": default.key, "name": default.name},
                     )
                 return default.key
 
     def resolve_registration_backend(
         self, enable_log: bool = False
     ) -> FormRegistrationBackend | None:
+        audit_log = audit_logger.bind(submission_uuid=str(self.uuid))
         if self.finalised_registration_backend_key:
             try:
                 return self.form.registration_backends.get(
                     key=self.finalised_registration_backend_key
                 )
-            except FormRegistrationBackend.DoesNotExist as e:
-                registration_debug(
-                    self,
-                    error=e,
-                    extra_data={
-                        "message": _(
-                            "Unknown registration backend set by form logic. Trying default..."
-                        ),
-                        "backend": {"key": self.finalised_registration_backend_key},
-                    },
+            except FormRegistrationBackend.DoesNotExist as exc:
+                audit_log.debug(
+                    "registration_debug",
+                    message=gettext(
+                        "Unknown registration backend set by form logic. Trying "
+                        "default..."
+                    ),
+                    backend={"key": self.finalised_registration_backend_key},
+                    exc_info=exc,
                 )
 
         # not/faulty set by logic; fallback to default

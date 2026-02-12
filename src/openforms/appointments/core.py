@@ -11,7 +11,7 @@ import elasticapm
 import structlog
 from opentelemetry import trace
 
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.submissions.models import Submission
 
 from .base import BasePlugin, CustomerDetails, Location, Product
@@ -41,6 +41,10 @@ def book(appointment: Appointment, remarks: str = "") -> str:
     Book the appointment from the data in the model instance.
     """
     plugin = _get_plugin(appointment)
+    audit_log = audit_logger.bind(
+        submission_uuid=str(appointment.submission.uuid),
+        plugin=plugin,
+    )
 
     # convert DB data into domain objects
     products = [
@@ -51,7 +55,7 @@ def book(appointment: Appointment, remarks: str = "") -> str:
     normalized_data = plugin.normalize_contact_details(appointment.contact_details)
     customer = CustomerDetails(details=normalized_data)
 
-    logevent.appointment_register_start(appointment.submission, plugin)
+    audit_log.info("appointment_register_start")
     appointment_id = plugin.create_appointment(
         products,
         location,
@@ -59,13 +63,13 @@ def book(appointment: Appointment, remarks: str = "") -> str:
         customer,
         remarks=remarks,
     )
-    appointment_info = AppointmentInfo.objects.create(
+    AppointmentInfo.objects.create(
         status=AppointmentDetailsStatus.success,
         appointment_id=appointment_id,
         submission=appointment.submission,
         start_time=appointment.datetime,
     )
-    logevent.appointment_register_success(appointment_info, plugin)
+    audit_log.info("appointment_register_success")
     return appointment_id
 
 
@@ -93,10 +97,12 @@ def book_for_submission(submission: Submission) -> str:
     if not submission.form.is_appointment:
         raise NoAppointmentForm("Not an appointment form")
 
+    audit_log = audit_logger.bind(submission_uuid=str(submission.uuid))
+
     try:
         appointment = submission.appointment
     except Appointment.DoesNotExist:
-        logevent.appointment_register_skip(submission)
+        audit_log.info("appointment_register_skip")
         raise AppointmentRegistrationFailed(
             "No registration attempted - there is no appointment data available."
         )
@@ -110,6 +116,8 @@ def book_for_submission(submission: Submission) -> str:
         appointment_id = book(appointment)
     except AppointmentCreateFailed as exc:
         plugin = _get_plugin(appointment)
+        audit_log = audit_log.bind(plugin=plugin)
+
         logger.error(
             "appointment_register_failure",
             plugin=plugin,
@@ -121,12 +129,12 @@ def book_for_submission(submission: Submission) -> str:
             "A technical error occurred while we tried to book your appointment. "
             "Please verify if all the data is correct or try again later."
         )
-        appointment_info = AppointmentInfo.objects.create(
+        AppointmentInfo.objects.create(
             status=AppointmentDetailsStatus.failed,
             error_information=error_information,
             submission=submission,
         )
-        logevent.appointment_register_failure(appointment_info, plugin, exc)
+        audit_log.warning("appointment_register_failure")
         raise AppointmentRegistrationFailed("Unable to create appointment") from exc
 
     return appointment_id

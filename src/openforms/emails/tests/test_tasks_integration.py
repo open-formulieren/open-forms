@@ -24,7 +24,7 @@ from openforms.forms.tests.factories import (
     FormLogicFactory,
     FormRegistrationBackendFactory,
 )
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.prefill.registry import register as prefill_register
 from openforms.registrations.base import BasePlugin
@@ -68,22 +68,22 @@ class EmailDigestTaskIntegrationTests(TestCase):
 
     def test_that_repeated_failures_are_not_mentioned_multiple_times(self):
         submission = SubmissionFactory.create()
+        audit_log = audit_logger.bind(
+            submission_uuid=str(submission.uuid),
+            email_event="registration",
+        )
 
         with freeze_time("2023-01-02T12:30:00+01:00"):
-            logevent.email_status_change(
-                submission,
-                event="registration",
-                status=Message.STATUS_FAILED,
+            audit_log.info(
+                "email_status_change",
+                new_status=Message.STATUS_FAILED,
                 status_label="Failed",
-                include_in_daily_digest=True,
             )
         with freeze_time("2023-01-02T13:30:00+01:00"):
-            logevent.email_status_change(
-                submission,
-                event="registration",
-                status=Message.STATUS_FAILED,
+            audit_log.info(
+                "email_status_change",
+                new_status=Message.STATUS_FAILED,
                 status_label="Failed",
-                include_in_daily_digest=True,
             )
 
         with freeze_time("2023-01-03T01:00:00+01:00"):
@@ -112,12 +112,12 @@ class EmailDigestTaskIntegrationTests(TestCase):
         submission = SubmissionFactory.create()
 
         with freeze_time("2023-01-02T12:30:00+01:00"):
-            logevent.email_status_change(
-                submission,
-                event="registration",
-                status=Message.STATUS_FAILED,
+            audit_logger.info(
+                "email_status_change",
+                submission_uuid=str(submission.uuid),
+                email_event="registration",
+                new_status=Message.STATUS_FAILED,
                 status_label="Failed",
-                include_in_daily_digest=True,
             )
 
         with freeze_time("2023-01-03T01:00:00+01:00"):
@@ -168,32 +168,36 @@ class EmailDigestTaskIntegrationTests(TestCase):
         )
         hc_plugin = prefill_register["haalcentraal"]
 
+        audit_log = audit_logger.bind(submission_uuid=str(submission.uuid))
+
         # trigger failures
         with freeze_time("2023-01-02T12:30:00+01:00"):
-            logevent.email_status_change(
-                submission,
-                event="registration",
-                status=Message.STATUS_FAILED,
+            audit_log.info(
+                "email_status_change",
+                email_event="registration",
+                new_status=Message.STATUS_FAILED,
                 status_label="Failed",
-                include_in_daily_digest=True,
             )
-            logevent.registration_failure(
-                submission,
-                RegistrationFailed("Registration plugin is not enabled"),
+            audit_log.warning(
+                "registration_failure",
+                plugin=register_register["integration-test-invalid-backend"],
+                exc_info=RegistrationFailed("Registration plugin is not enabled"),
             )
-            logevent.prefill_retrieve_empty(
-                submission, hc_plugin, ["burgerservicenummer"]
+            audit_log.info(
+                "prefill_retrieve_empty",
+                plugin=hc_plugin,
+                attributes=["burgerservicenummer"],
             )
             FormRegistrationBackendFactory.create(
                 form=form,
                 key="plugin1",
                 backend="integration-test-invalid-backend",
             )
-            FormLogicFactory(
+            FormLogicFactory.create(
                 form=form,
                 json_logic_trigger={"==": [{"var": "foo"}, "apple"]},
             )
-            FormLogicFactory(
+            FormLogicFactory.create(
                 form=form,
                 json_logic_trigger={"custom_operator": [5, 3]},
             )

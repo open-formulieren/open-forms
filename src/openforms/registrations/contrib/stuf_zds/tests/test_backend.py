@@ -26,7 +26,6 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.logging.models import TimelineLogProxy
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.prefill.service import prefill_variables
@@ -395,19 +394,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_request.txt"
-            ).count(),
-            5,
-        )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_success_response.txt"
-            ).count(),
-            5,
-        )
-
         # even on success, the intermediate results must be recorded:
         submission.refresh_from_db()
         self.assertEqual(
@@ -669,19 +655,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
                 "//zkn:object/zkn:formaat": "application/msword",
             },
-        )
-
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_request.txt"
-            ).count(),
-            5,
-        )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_success_response.txt"
-            ).count(),
-            5,
         )
 
         # even on success, the intermediate results must be recorded:
@@ -1148,19 +1121,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_request.txt"
-            ).count(),
-            5,
-        )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_success_response.txt"
-            ).count(),
-            5,
-        )
-
         # even on success, the intermediate results must be recorded:
         submission.refresh_from_db()
         self.assertEqual(
@@ -1341,19 +1301,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
                 "//zkn:object/zkn:formaat": "application/msword",
             },
-        )
-
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_request.txt"
-            ).count(),
-            5,
-        )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_success_response.txt"
-            ).count(),
-            5,
         )
 
         # even on success, the intermediate results must be recorded:
@@ -1544,19 +1491,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
                 "//zkn:object/zkn:formaat": "application/msword",
             },
-        )
-
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_request.txt"
-            ).count(),
-            5,
-        )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_success_response.txt"
-            ).count(),
-            5,
         )
 
         # even on success, the intermediate results must be recorded:
@@ -2059,18 +1993,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:laatsteBetaaldatum": "20201222",
             },
         )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_request.txt"
-            ).count(),
-            4,
-        )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_success_response.txt"
-            ).count(),
-            4,
-        )
 
     @patch("celery.app.task.Task.request")
     def test_retried_registration_with_internal_reference(self, m, mock_task):
@@ -2320,19 +2242,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
                 "//zkn:object/zkn:formaat": "application/msword",
             },
-        )
-
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_request.txt"
-            ).count(),
-            5,
-        )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_success_response.txt"
-            ).count(),
-            5,
         )
 
     @patch("celery.app.task.Task.request")
@@ -2764,19 +2673,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_request.txt"
-            ).count(),
-            5,
-        )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_success_response.txt"
-            ).count(),
-            5,
-        )
-
     @patch("celery.app.task.Task.request")
     def test_plugin_optional_fields_missing_status_code(self, m, mock_task):
         submission = SubmissionFactory.from_components(
@@ -2958,19 +2854,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
                 "//zkn:object/zkn:formaat": "application/msword",
             },
-        )
-
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_request.txt"
-            ).count(),
-            5,
-        )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_zds_success_response.txt"
-            ).count(),
-            5,
         )
 
     def test_pre_registration_goes_wrong_sets_internal_reference(self, m):

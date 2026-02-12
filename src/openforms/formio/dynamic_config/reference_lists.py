@@ -6,7 +6,7 @@ from zgw_consumers.client import build_client
 from zgw_consumers.models import Service
 
 from openforms.contrib.reference_lists.client import ReferenceListsClient
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.submissions.models import Submission
 
 from ..typing import Component
@@ -19,32 +19,34 @@ def fetch_options_from_reference_lists(
     # We need to clean up the comoponent type and remove the ignore
     service_slug = glom(component, "openForms.service", default=None)
     code = glom(component, "openForms.code", default=None)
+    audit_log = audit_logger.bind(form_id=submission.form.pk, component=component)
     if not service_slug:
-        logevent.form_configuration_error(
-            submission.form,
-            component,  # pyright: ignore[reportArgumentType]
-            _(
-                "Cannot fetch from ReferenceLists API, because no `service` is configured."
+        audit_log.warning(
+            "form_configuration_error",
+            error_message=_(
+                "Cannot fetch from ReferenceLists API, because no `service` "
+                "is configured."
             ),
         )
         return
 
     if not code:
-        logevent.form_configuration_error(
-            submission.form,
-            component,  # pyright: ignore[reportArgumentType]
-            _("Cannot fetch from ReferenceLists API, because no `code` is configured."),
+        audit_log.warning(
+            "form_configuration_error",
+            error_message=_(
+                "Cannot fetch from ReferenceLists API, because no `code` is configured."
+            ),
         )
         return
 
     try:
         service = Service.objects.get(slug=service_slug)
     except Service.DoesNotExist:
-        logevent.form_configuration_error(
-            submission.form,
-            component,  # pyright: ignore[reportArgumentType]
-            _(
-                "Cannot fetch from ReferenceLists API, service with {service_slug} does not exist."
+        audit_log.warning(
+            "form_configuration_error",
+            error_message=_(
+                "Cannot fetch from ReferenceLists API, service with {service_slug} "
+                "does not exist."
             ).format(service_slug=service_slug),
         )
         return
@@ -59,21 +61,20 @@ def fetch_options_from_reference_lists(
                     return []
 
             items = client.get_items_for_table_cached(code)
-    except RequestException as e:
-        logevent.reference_lists_failure_response(
-            submission.form,
-            component,  # pyright: ignore[reportArgumentType]
-            _(
+    except RequestException as exc:
+        audit_log.warning(
+            "reference_lists_failure_response",
+            error_message=_(
                 "Exception occurred while fetching from ReferenceLists API: {exception}."
-            ).format(exception=e),
+            ).format(exception=exc),
+            exc_info=exc,
         )
         return
     else:
         if not items:
-            logevent.reference_lists_failure_response(
-                submission.form,
-                component,  # pyright: ignore[reportArgumentType]
-                _("No results found from ReferenceLists API."),
+            audit_log.warning(
+                "reference_lists_failure_response",
+                error_message=_("No results found from ReferenceLists API."),
             )
             return
 

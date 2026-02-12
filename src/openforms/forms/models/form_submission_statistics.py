@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from openforms.logging import logevent
+from openforms.logging.constants import FORM_SUBMIT_SUCCESS_EVENT
 from openforms.logging.models import TimelineLogProxy
 
 
@@ -20,7 +20,7 @@ class FormStatisticsV2Manager(models.Manager["FormSubmissionStatistics"]):
         # openforms.submissions.api.mixins.SubmissionCompletionMixin._complete_submission
         return qs.filter(
             content_type=submission_content_type,
-            extra_data__log_event=logevent.FORM_SUBMIT_SUCCESS_EVENT,
+            extra_data__log_event=FORM_SUBMIT_SUCCESS_EVENT,
         )
 
 

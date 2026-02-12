@@ -23,7 +23,7 @@ from import_export.formats.base_formats import XLSX
 from privates.storages import private_media_storage
 from rest_framework.exceptions import ValidationError
 
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.payments.contrib.ogone.models import OgoneMerchant
 
 from ..forms import ExportStatisticsForm
@@ -68,9 +68,11 @@ class DownloadExportedFormsView(ExportImportPermissionMixin, View):
         forms_export = get_object_or_404(
             FormsExport, uuid=kwargs["uuid"], user=request.user
         )
-
-        logevent.forms_bulk_export_downloaded(forms_export, request.user)
-
+        audit_logger.info(
+            "downloaded_bulk_export",
+            user=request.user.username,
+            export_id=forms_export.pk,
+        )
         return FileResponse(open(forms_export.export_content.path, "rb"))
 
 

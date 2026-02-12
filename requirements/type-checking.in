@@ -1,6 +1,7 @@
 -c ci.txt
 -r ci.txt
 
+celery-types
 decouple-types
 django-stubs
 django-stubs-ext
