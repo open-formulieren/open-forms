@@ -2,6 +2,7 @@ import unittest
 
 from django.test import TestCase, tag
 
+from openforms.formio.service import FormioData
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -135,15 +136,19 @@ class ComponentModificationTests(TestCase):
         )
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
-            submission=submission,
-            form_step=form_step,
-            data={
-                "component1": "trigger value",
-                "component2": "Some data to be deleted",
-            },
+            submission=submission, form_step=form_step
         )
 
-        configuration = evaluate_form_logic(submission, submission_step)
+        configuration = evaluate_form_logic(
+            submission,
+            submission_step,
+            FormioData(
+                {
+                    "component1": "trigger value",
+                    "component2": "Some data to be deleted",
+                }
+            ),
+        )
 
         expected = {
             "components": [
@@ -875,7 +880,6 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "textField",
-                        "hidden": True,
                         "conditional": {
                             "eq": "2025-01-01",
                             "show": True,
@@ -889,19 +893,24 @@ class ComponentModificationTests(TestCase):
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
-            submission=submission,
-            form_step=form_step,
-            data={
-                "date": "2025-01-01",
-                "textField": "Some data that must not be cleared!",
-            },
+            submission=submission, form_step=form_step
         )
 
-        evaluate_form_logic(submission, submission_step)
-
-        self.assertEqual(
-            "Some data that must not be cleared!", submission_step.data["textField"]
+        evaluate_form_logic(
+            submission,
+            submission_step,
+            FormioData(
+                {
+                    "date": "2025-01-01",
+                    "textField": "Some data that must not be cleared!",
+                }
+            ),
         )
+
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_unsaved=True)
+
+        self.assertEqual(data["textField"], "Some data that must not be cleared!")
 
     @tag("gh-1183")
     def test_component_incomplete_frontend_logic(self):
@@ -994,14 +1003,16 @@ class ComponentModificationTests(TestCase):
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
-            submission=submission,
-            form_step=step,
-            data={"radio": "a", "nested": {"component": "test"}},
+            submission=submission, form_step=step
         )
 
         self.assertTrue(submission_step.can_submit)
 
-        evaluate_form_logic(submission, submission_step)
+        evaluate_form_logic(
+            submission,
+            submission_step,
+            FormioData({"radio": "a", "nested": {"component": "test"}}),
+        )
 
         self.assertEqual(submission_step.data["nested"]["component"], "")
 

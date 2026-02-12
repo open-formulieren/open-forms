@@ -7,8 +7,10 @@ from ...form_logic import evaluate_form_logic
 
 
 class ConditionalLogicTests(TestCase):
-    def test_clear_existing(self):
-        """Ensure that a hidden component with existing submission data is cleared."""
+    def test_existing_data_is_not_cleared(self):
+        """
+        Ensure that a hidden component with existing submission data is not cleared.
+        """
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -28,16 +30,35 @@ class ConditionalLogicTests(TestCase):
             ],
             submitted_data={
                 "textfieldVisible": "keep me",
-                "textfieldHidden": "clear me",
+                "textfieldHidden": "I am submitted data",
             },
+            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step)
+        # Note that this unsaved data is technically not possible, because the frontend
+        # will not send hidden fields to the backend, but it does prove that the backend
+        # code follows the behaviour of the frontend.
+        evaluate_form_logic(
+            submission,
+            step,
+            FormioData(
+                {
+                    "textfieldVisible": "changed data",
+                    "textfieldHidden": "more changed data",
+                }
+            ),
+        )
 
         state = submission.load_submission_value_variables_state()
-        data = state.get_data(include_static_variables=False)
-        self.assertEqual(data, {"textfieldVisible": "keep me", "textfieldHidden": ""})
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
+        self.assertEqual(
+            data,
+            {
+                "textfieldVisible": "changed data",
+                "textfieldHidden": "I am submitted data",
+            },
+        )
         self.assertEqual(step.unsaved_data, {})
 
     def test_clear_initially_visible(self):
@@ -89,19 +110,28 @@ class ConditionalLogicTests(TestCase):
                     },
                 },
             ],
-            submitted_data={
-                "textfieldVisible": "hide",
-                "textfieldConditionallyHidden": "clear me",
-                "textfieldConditionallyHidden2": "clear me",
-                "file": [{"clear": "me"}],
-            },
+            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step)
+        # Note that this unsaved data is technically not possible, because the frontend
+        # will not send hidden fields to the backend, but it does prove that the backend
+        # code follows the behaviour of the frontend.
+        evaluate_form_logic(
+            submission,
+            step,
+            FormioData(
+                {
+                    "textfieldVisible": "hide",
+                    "textfieldConditionallyHidden": "clear me",
+                    "textfieldConditionallyHidden2": "clear me",
+                    "file": [{"clear": "me"}],
+                }
+            ),
+        )
 
         state = submission.load_submission_value_variables_state()
-        data = state.get_data(include_static_variables=False)
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
             {
@@ -152,18 +182,27 @@ class ConditionalLogicTests(TestCase):
                     },
                 },
             ],
-            submitted_data={
-                "textfieldVisible": "hide fieldset",
-                "nestedTextfield": "clear me",
-                "nestedTextfield2": "keep me",
-            },
+            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step)
+        # Note that this unsaved data is technically not possible, because the frontend
+        # will not send hidden fields to the backend, but it does prove that the backend
+        # code follows the behaviour of the frontend.
+        evaluate_form_logic(
+            submission,
+            step,
+            FormioData(
+                {
+                    "textfieldVisible": "hide fieldset",
+                    "nestedTextfield": "clear me",
+                    "nestedTextfield2": "keep me",
+                }
+            ),
+        )
 
         state = submission.load_submission_value_variables_state()
-        data = state.get_data(include_static_variables=False)
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
             {
@@ -225,18 +264,27 @@ class ConditionalLogicTests(TestCase):
                     ],
                 },
             ],
-            submitted_data={
-                "textfieldVisible": "hide nested",
-                "nestedTextfieldConditionallyHidden": "clear me",
-                "nestedTextfield": "keep me",
-            },
+            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step)
+        # Note that this unsaved data is technically not possible, because the frontend
+        # will not send hidden fields to the backend, but it does prove that the backend
+        # code follows the behaviour of the frontend.
+        evaluate_form_logic(
+            submission,
+            step,
+            FormioData(
+                {
+                    "textfieldVisible": "hide nested",
+                    "nestedTextfieldConditionallyHidden": "clear me",
+                    "nestedTextfield": "keep me",
+                }
+            ),
+        )
 
         state = submission.load_submission_value_variables_state()
-        data = state.get_data(include_static_variables=False)
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
             {
@@ -285,19 +333,28 @@ class ConditionalLogicTests(TestCase):
                     ],
                 }
             ],
-            submitted_data={
-                "editgrid": [
-                    {"trigger": "show", "follower": "keep me"},
-                    {"trigger": "hide", "follower": "clear me"},
-                ]
-            },
+            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step)
+        # Note that this unsaved data is technically not possible, because the frontend
+        # will not send hidden fields to the backend, but it does prove that the backend
+        # code follows the behaviour of the frontend.
+        evaluate_form_logic(
+            submission,
+            step,
+            FormioData(
+                {
+                    "editgrid": [
+                        {"trigger": "show", "follower": "keep me"},
+                        {"trigger": "hide", "follower": "clear me"},
+                    ]
+                }
+            ),
+        )
 
         state = submission.load_submission_value_variables_state()
-        data = state.get_data(include_static_variables=False)
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
             {
@@ -343,31 +400,40 @@ class ConditionalLogicTests(TestCase):
                     ],
                 }
             ],
-            submitted_data={
-                "editgrid": [
-                    {
-                        "trigger": "show",
-                        "editgrid2": [
-                            {"follower": "keep me"},
-                            {"follower": "keep me as well"},
-                        ],
-                    },
-                    {
-                        "trigger": "hide",
-                        "editgrid2": [
-                            {"follower": "clear me"},
-                            {"follower": "you better clear me too"},
-                        ],
-                    },
-                ]
-            },
+            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step)
+        # Note that this unsaved data is technically not possible, because the frontend
+        # will not send hidden fields to the backend, but it does prove that the backend
+        # code follows the behaviour of the frontend.
+        evaluate_form_logic(
+            submission,
+            step,
+            FormioData(
+                {
+                    "editgrid": [
+                        {
+                            "trigger": "show",
+                            "editgrid2": [
+                                {"follower": "keep me"},
+                                {"follower": "keep me as well"},
+                            ],
+                        },
+                        {
+                            "trigger": "hide",
+                            "editgrid2": [
+                                {"follower": "clear me"},
+                                {"follower": "you better clear me too"},
+                            ],
+                        },
+                    ]
+                }
+            ),
+        )
 
         state = submission.load_submission_value_variables_state()
-        data = state.get_data(include_static_variables=False)
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
             {
@@ -428,6 +494,7 @@ class ConditionalLogicTests(TestCase):
                     "key": "textfield4",
                     "label": "Textfield 4",
                     "clearOnHide": True,
+                    "defaultValue": "default",
                     "conditional": {
                         "show": True,
                         "when": "textfield3",
@@ -438,7 +505,6 @@ class ConditionalLogicTests(TestCase):
                     "type": "textfield",
                     "key": "textfield5",
                     "label": "Textfield 5",
-                    "defaultValue": "default",
                     "conditional": {
                         "show": True,
                         "when": "textfield2",
@@ -446,27 +512,36 @@ class ConditionalLogicTests(TestCase):
                     },
                 },
             ],
-            submitted_data={
-                "textfield1": "",
-                "textfield2": "visible",
-                "textfield3": "visible",
-                "textfield4": "visible",
-                "textfield5": "",
-            },
+            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step, FormioData({"textfield1": "hidden"}))
+        # Note that this unsaved data is technically not possible, because the frontend
+        # will not send hidden fields to the backend, but it does prove that the backend
+        # code follows the behaviour of the frontend.
+        evaluate_form_logic(
+            submission,
+            step,
+            FormioData(
+                {
+                    "textfield1": "hidden",
+                    "textfield2": "visible",
+                    "textfield3": "visible",
+                    "textfield4": "visible",
+                    "textfield5": "",
+                }
+            ),
+        )
 
         state = submission.load_submission_value_variables_state()
-        data = state.get_data(include_static_variables=False)
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
             {
                 "textfield1": "hidden",
                 "textfield2": "",
                 "textfield3": "",
-                "textfield4": "",
+                "textfield4": "default",
                 "textfield5": "",
             },
         )
@@ -499,17 +574,26 @@ class ConditionalLogicTests(TestCase):
                     "clearOnHide": True,
                 },
             ],
-            submitted_data={
-                "textfieldVisible": ["a", "b", "c"],
-                "textfieldConditionallyHidden": "clear me",
-            },
+            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step)
+        # Note that this unsaved data is technically not possible, because the frontend
+        # will not send hidden fields to the backend, but it does prove that the backend
+        # code follows the behaviour of the frontend.
+        evaluate_form_logic(
+            submission,
+            step,
+            FormioData(
+                {
+                    "textfieldVisible": ["a", "b", "c"],
+                    "textfieldConditionallyHidden": "clear me",
+                }
+            ),
+        )
 
         state = submission.load_submission_value_variables_state()
-        data = state.get_data(include_static_variables=False)
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
             {
@@ -561,18 +645,24 @@ class ConditionalLogicTests(TestCase):
                     "clearOnHide": True,
                 },
             ],
-            submitted_data={
-                "selectboxes": {"a": False, "b": True, "c": False},
-                "textfield1": "keep me",
-                "textfield2": "clear me",
-            },
+            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step)
+        evaluate_form_logic(
+            submission,
+            step,
+            FormioData(
+                {
+                    "selectboxes": {"a": False, "b": True, "c": False},
+                    "textfield1": "keep me",
+                    "textfield2": "clear me",
+                }
+            ),
+        )
 
         state = submission.load_submission_value_variables_state()
-        data = state.get_data(include_static_variables=False)
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
             {
@@ -602,7 +692,8 @@ class ConditionalLogicTests(TestCase):
                     "conditional": {"eq": "yes", "show": True, "when": "radio"},
                     "clearOnHide": True,
                 },
-            ]
+            ],
+            form__new_renderer_enabled=True,
         )
 
         step = submission.submissionstep_set.first()
@@ -638,14 +729,23 @@ class ConditionalLogicTests(TestCase):
                     "clearOnHide": True,
                 },
             ],
-            submitted_data={
-                "nonRegisteredComponentTrigger": "hide",
-                "nonRegisteredComponentFollower": "clear me",
-            },
+            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
-        evaluate_form_logic(submission, step)
+        # Note that this unsaved data is technically not possible, because the frontend
+        # will not send hidden fields to the backend, but it does prove that the backend
+        # code follows the behaviour of the frontend.
+        evaluate_form_logic(
+            submission,
+            step,
+            FormioData(
+                {
+                    "nonRegisteredComponentTrigger": "hide",
+                    "nonRegisteredComponentFollower": "clear me",
+                }
+            ),
+        )
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_static_variables=False, include_unsaved=True)
