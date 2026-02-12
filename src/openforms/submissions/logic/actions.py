@@ -75,6 +75,7 @@ class ActionOperation:
         context: FormioData,
         configuration: FormioConfigurationWrapper,
         submission: Submission,
+        initial_data: FormioData,
     ) -> DataMapping | None:
         """
         Return a mapping [name/path -> new_value] with changes that are to be
@@ -110,6 +111,7 @@ class PropertyAction(ActionOperation):
         context: FormioData,
         configuration: FormioConfigurationWrapper,
         submission: Submission,
+        initial_data: FormioData,
     ) -> DataMapping | None:
         # To avoid doing unnecessary work, only apply clear-on-hide logic for components
         # for which their action sets the "hidden" property to True.
@@ -129,7 +131,11 @@ class PropertyAction(ActionOperation):
         # itself, not try to iterate over its children, so we create a 'fake'
         # configuration. Mutations are performed on the context directly.
         process_visibility(
-            {"components": [component]}, context, configuration, parent_hidden=True
+            {"components": [component]},
+            context,
+            configuration,
+            initial_data=initial_data,
+            parent_hidden=True,
         )
         return None
 
@@ -210,6 +216,7 @@ class VariableAction(ActionOperation):
         context: FormioData,
         configuration: FormioConfigurationWrapper,
         submission: Submission,
+        initial_data: FormioData,
     ) -> DataMapping:
         with log_errors(self.value, self.rule):
             return {self.variable: jsonLogic(self.value, context.data)}
@@ -318,6 +325,7 @@ class SynchronizeVariablesAction(ActionOperation):
         context: FormioData,
         configuration: FormioConfigurationWrapper,
         submission: Submission,
+        initial_data: FormioData,
     ) -> DataMapping | None:
         configuration = submission.total_configuration_wrapper
         if self.source_variable not in configuration:
@@ -340,6 +348,7 @@ class ServiceFetchAction(ActionOperation):
         context: FormioData,
         configuration: FormioConfigurationWrapper,
         submission: Submission,
+        initial_data: FormioData,
     ) -> DataMapping:
         var = self.rule.form.formvariable_set.get(key=self.variable)
         with log_errors({}, self.rule):  # TODO proper error handling
@@ -382,6 +391,7 @@ class EvaluateDMNAction(ActionOperation):
         context: FormioData,
         configuration: FormioConfigurationWrapper,
         submission: Submission,
+        initial_data: FormioData,
     ) -> DataMapping | None:
         # Mapping from form variables to DMN inputs
         dmn_inputs = {

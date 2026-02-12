@@ -403,9 +403,21 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         self.assertFalse(data["steps"][1]["isApplicable"])
 
-    @tag("gh-1755")
+    @tag("gh-1755", "gh-5685")
     def test_check_logic_hide_with_default_value(self):
-        form = FormFactory.create()
+        """
+        Ensure that a field with clearOnHide enabled and a default value, will get the
+        empty value when it becomes hidden.
+
+        Note that this is the behaviour of the old renderer, which is why this test only
+        passes with ``new_renderer_enabled=False``. This test can be removed completely
+        once we remove the feature flag, as replacing tests have been added to
+        test_endpoint.py (see tag 'gh-5685').
+
+        Interestingly, the new behaviour where we assign the default value instead, also
+        seemed to be the what happened before the fix for #1755.
+        """
+        form = FormFactory.create(new_renderer_enabled=False)
         form_step = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -452,13 +464,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
 
-        submission_detail_endpoint = reverse(
-            "api:submission-detail",
-            kwargs={"uuid": submission.uuid},
-        )
-        response = self.client.get(submission_detail_endpoint)
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-
         logic_check_endpoint = reverse(
             "api:submission-steps-logic-check",
             kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
@@ -475,7 +480,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         response = self.client.post(
             logic_check_endpoint,
-            data={"data": {"checkbox": False, "textfield": "Test data"}},
+            data={"data": {"checkbox": False, "textfield": "Modified test data"}},
         )
         data = response.json()
         self.assertEqual(status.HTTP_200_OK, response.status_code)

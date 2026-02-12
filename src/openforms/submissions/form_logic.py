@@ -88,6 +88,13 @@ def evaluate_form_logic(
     submission_variables_state = submission.load_submission_value_variables_state()
 
     # 4. Apply the (dirty) data to the variable state.
+    # We need to get the initial data for clear on hide first, as we don't want it to
+    # include the unsaved data.
+    initial_data_for_clear_on_hide = (
+        _get_initial_data_for_clear_on_hide(step)
+        if submission.form.new_renderer_enabled
+        else FormioData()
+    )
     if unsaved_data is not None:
         submission_variables_state.set_values(unsaved_data)
     data_for_evaluation = submission_variables_state.get_data(
@@ -110,6 +117,7 @@ def evaluate_form_logic(
         data_for_evaluation,
         config_wrapper,
         components_with_hidden_action,
+        initial_data_for_clear_on_hide,
     )
 
     # 6. Evaluate the logic rules in order
@@ -129,6 +137,7 @@ def evaluate_form_logic(
             data_for_evaluation,
             config_wrapper,
             submission=submission,
+            initial_data=initial_data_for_clear_on_hide,
         ):
             mutation_operations.append(operation)
 
@@ -176,11 +185,53 @@ def evaluate_form_logic(
     return config_wrapper.configuration
 
 
+def _get_initial_data_for_clear_on_hide(step: SubmissionStep) -> FormioData:
+    """
+    Get initial data which will be used when clear on hide is activated.
+
+    The new renderer does not only assign the empty value when a component with
+    clearOnHide enabled goes from hidden -> visible. The following value will be
+    assigned, in order of precedence:
+      1. Already submitted value
+      2. Default value
+      3. Empty value
+    We need to do the same in the backend, to ensure no infinite loops will occur, where
+    the backend sends a value to the frontend (new renderer only) that doesn't match
+    with what the frontend expects.
+
+    :param step: Submission step.
+    :returns: Initial data in a ``FormioData`` instance.
+    """
+    state = step.submission.load_submission_value_variables_state()
+    saved_data = state.get_data(submission_step=step, include_unsaved=False)
+
+    initial_data = FormioData()
+    config_wrapper = step.form_step.form_definition.configuration_wrapper
+    # Iterating over variables here ensures we don't have to deal with (children of)
+    # layout components, as all the fields that hold data will have a variable.
+    for key, variable in state.get_variables_in_submission_step(step).items():
+        component = config_wrapper[key]
+
+        # If we have an already saved value, use that, otherwise use the default value
+        # (which should be the empty value if it isn't a custom one). Note that the
+        # default value could be a template expression, which is not evaluated until
+        # step 7.2 of evaluating logic. Deliberately leaving this "broken" for now (see
+        # commit message).
+        initial_data[key] = (
+            saved_data[key]
+            if key in saved_data
+            else variable.to_python(component.get("defaultValue"))
+        )
+
+    return initial_data
+
+
 def evaluate_conditional_logic(
     configuration: FormioConfiguration,
     data: FormioData,
     wrapper: FormioConfigurationWrapper,
     components_to_ignore_hidden: set[str],
+    initial_data: FormioData,
 ):
     """
     Evaluate conditional logic through iteration.
@@ -194,18 +245,20 @@ def evaluate_conditional_logic(
     :param wrapper: Formio configuration wrapper. Required for component lookup.
     :param components_to_ignore_hidden: Set of components for which the "hidden"
       property is ignored in determining whether the component is hidden.
+    :param initial_data: Initial data for clear-on-hide behavior.
     """
-    initial_data = None
+    processed_data = None
     _loop_count = 0
-    while initial_data != data:
+    while processed_data != data:
         if _loop_count >= 50:  # pragma: nocover
             raise RuntimeError("Potential infinite loop stopped!")
         _loop_count += 1
-        initial_data = deepcopy(data)
+        processed_data = deepcopy(data)
         process_visibility(
             configuration,
             data,
             wrapper,
+            initial_data=initial_data,
             components_to_ignore_hidden=components_to_ignore_hidden,
         )
 
@@ -231,8 +284,14 @@ def check_submission_logic(
     )
 
     mutation_operations: list[ActionOperation] = []
+    # Note: values should have already been resolved at this point, so we just pass
+    # `data_for_evaluation` as initial data.
     for operation in iter_evaluate_rules(
-        rules, data_for_evaluation, submission.total_configuration_wrapper, submission
+        rules,
+        data_for_evaluation,
+        submission.total_configuration_wrapper,
+        submission,
+        data_for_evaluation,
     ):
         mutation_operations.append(operation)
 
