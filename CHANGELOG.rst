@@ -6,6 +6,43 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.5.0-alpha.1 (2026-02-12)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Upgrade procedure
+-----------------
+
+To upgrade to 3.5, please:
+
+* ⚠️ Ensure that your Helm charts don't use the ``bin/check_celery_worker_liveness.py``
+  script, since it has been removed. You can read about the new health check mechanisms
+  here: :ref:`installation_health_checks`.
+
+* ⚠️ Logic rules using the "disable next" action may need extra attention.
+
+  .. warning::
+
+      In preparation for upcoming logic performance improvements, we changed the
+      "disable next" logic action. The form designers now have to specify on which step
+      they want to execute this action. We included a migration to automatically
+      populate this field for all existing actions. Unfortunately, in some cases we
+      cannot guarantee that the assigned step is correct, i.e. no change in behaviour
+      is observed when filling out a form. Therefore, form designers/maintainers are
+      asked to check these cases manually. The script below outputs a list of logic
+      rules (with their corresponding form) that need manual attention. Use the flag
+      ``--show-all`` to output a complete list of all affected rules.
+
+      .. code-block:: bash
+
+          # in the container via ``docker exec`` or ``kubectl exec``:
+          python /app/bin/check_disable_next_logic_action.py
+
+Bugfixes
+--------
+
+* Fixed missing translations in the AddressNL component with update of the SDK version.
 
 3.5.0-alpha.0 (2026-02-11)
 ==========================

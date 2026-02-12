@@ -7,7 +7,7 @@ publiccodeYmlVersion: '0.2'
 name: Open Forms Builder and API
 url: 'http://github.com/open-formulieren/open-forms.git'
 softwareType: standalone/backend
-softwareVersion: 3.5.0-alpha.0
+softwareVersion: 3.5.0-alpha.1
 releaseDate: '2022-03-10'
 logo: 'https://github.com/open-formulieren/open-forms/blob/main/docs/logo.svg'
 platforms:
