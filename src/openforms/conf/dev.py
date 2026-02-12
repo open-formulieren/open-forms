@@ -1,5 +1,6 @@
 # ruff: noqa: F405
 import os
+import sys
 import warnings
 
 from maykin_common.config import config
@@ -118,6 +119,14 @@ if config("PROFILE", default=False):
     MIDDLEWARE = ["silk.middleware.SilkyMiddleware"] + MIDDLEWARE
     security_index = MIDDLEWARE.index("django.middleware.security.SecurityMiddleware")
     MIDDLEWARE.insert(security_index + 1, "whitenoise.middleware.WhiteNoiseMiddleware")
+
+#
+# Timeline-logger
+#
+
+# ensure we insert audit logs in the main thread & DB transaction in tests
+if "test" in sys.argv:
+    TIMELINE_HANDLER_USE_QUEUE = False
 
 #
 # Disable CSP rate limit
