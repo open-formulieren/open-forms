@@ -14,6 +14,7 @@ import magic
 from sqids import Sqids
 
 from openforms.authentication.constants import AuthAttribute
+from openforms.config.constants import DEFAULT_ALPHABET
 from openforms.formio.service import FormioData
 from openforms.formio.typing import Component
 from openforms.forms.tests.factories import (
@@ -51,7 +52,7 @@ def _calculate_price(
     submission.calculate_price(save=create)
 
 
-def _generate_unique_submission_reference(n: int):
+def _generate_unique_submission_reference(n: int) -> str:
     """
     generate public reference for tests based on int parameter.
 
@@ -59,13 +60,12 @@ def _generate_unique_submission_reference(n: int):
     used to test submission.public_registration_reference
     """
     template = "OF-{uid}"
-    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
     # 32 characters with length 6 -> 32^6 possible combinations.
     # that's roughly one billion combinations before we run out of options.
     # Also note that submissions are pruned after a (configurable) number of days, so
     # used references do become available again after that time.
-    sqids = Sqids(min_length=6, alphabet=alphabet)
+    sqids = Sqids(min_length=6, alphabet=DEFAULT_ALPHABET)
     uid = sqids.encode([n])
 
     return template.format(uid=uid)

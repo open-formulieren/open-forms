@@ -283,7 +283,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 "intermediate.zaak",
             )
 
-        # emp[ty reference will trigger 'set_submission_reference' function in the 'pre_registration' task
+        # empty reference will trigger 'set_submission_reference' function in the 'pre_registration' task
         public_reference = zaak["identificatie"] if zgw.use_generated_zaaknummer else ""
 
         return PreRegistrationResult(reference=public_reference, data={"zaak": zaak})

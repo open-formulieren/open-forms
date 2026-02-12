@@ -27,7 +27,7 @@ from openforms.translations.utils import ensure_default_language
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
 
-from ..constants import FamilyMembersDataAPIChoices, UploadFileType
+from ..constants import DEFAULT_ALPHABET, FamilyMembersDataAPIChoices, UploadFileType
 from ..utils import verify_clamav_connection
 from .theme import Theme
 
@@ -669,7 +669,7 @@ class GlobalConfiguration(SingletonModel):
     public_reference_alphabet = models.CharField(
         _("Public reference alphabet"),
         max_length=32,
-        default="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",
+        default=DEFAULT_ALPHABET,
         help_text=_(
             "Alphabet used to generate the {uid} part of the public reference of the submission. "
             "The sequence is shuffled in the unique way for each instance of Open Forms "

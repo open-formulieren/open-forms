@@ -53,6 +53,4 @@ def generate_unique_submission_reference(submission: Submission) -> str:
     sqids = Sqids(min_length=6, alphabet=alphabet)
     uid = sqids.encode([submission.pk])
 
-    return template.replace("{year}", str(submission.created_on.year)).replace(
-        "{uid}", uid
-    )
+    return template.format(year=submission.created_on.year, uid=uid)
