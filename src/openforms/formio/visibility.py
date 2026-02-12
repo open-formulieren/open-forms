@@ -87,6 +87,7 @@ def process_visibility(
     data: FormioData,
     wrapper: FormioConfigurationWrapper,
     *,
+    initial_data: FormioData,
     parent_hidden: bool = False,
     get_evaluation_data: GetEvaluationData | None = None,
     components_to_ignore_hidden: set[str] | None = None,
@@ -103,6 +104,7 @@ def process_visibility(
       or column.
     :param data: Data used for processing.
     :param wrapper: Formio configuration wrapper. Required for component lookup.
+    :param initial_data: Initial data for clear-on-hide behavior.
     :param parent_hidden: Indicates whether the parent component was hidden. Note that
       the conditional will not be evaluated at all when this is set to ``True``.
     :param get_evaluation_data: Function used to get the evaluation data used during
@@ -130,13 +132,15 @@ def process_visibility(
             # NOTE - formio.js (and our own renderer) *delete* the key entirely from the
             # data instead, while we assign the empty value to ensure every variable is
             # always present in the submission data
-            data[key] = get_component_empty_value(component)
+            # If we don't have an initial value available, just use the empty value.
+            data[key] = initial_data.get(key) or get_component_empty_value(component)
 
         # Apply the visibility to children components, if applicable
         register.apply_visibility(
             component,
             data,
             wrapper,
+            initial_data=initial_data,
             parent_hidden=hidden,
             ignore_hidden_property=ignore_hidden_property,
             get_evaluation_data=get_evaluation_data,
