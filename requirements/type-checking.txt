@@ -398,7 +398,7 @@ django-test-migrations==1.5.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-timeline-logger==5.0.0
+django-timeline-logger==6.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1355,6 +1355,7 @@ typing-extensions==4.12.2
     #   django-stubs
     #   django-stubs-ext
     #   django-test-migrations
+    #   django-timeline-logger
     #   djangorestframework-stubs
     #   mozilla-django-oidc-db
     #   opentelemetry-api
