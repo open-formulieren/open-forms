@@ -626,7 +626,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         Ensure that logic check only returns cleared values relevant for the current
         step.
         """
-        form = FormFactory.create()
+        form = FormFactory.create(new_renderer_enabled=True)
         step_1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -698,7 +698,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
             ],
         )
 
-        with self.subTest("logic in step 2"):
+        with self.subTest("logic in step 1"):
             endpoint = reverse(
                 "api:submission-steps-logic-check",
                 kwargs={
@@ -712,16 +712,16 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 data={
                     "data": {
                         "checkbox": False,
-                        "textfieldStep1": "some data",
+                        "textfieldStep1": "some changed data",
                     },
                 },
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-            # Ensure that we only receive cleared data for the first step
+            # Because the step was already submitted before, we fall back to that value
+            # instead of the empty value.
             self.assertEqual(
-                response.json()["step"]["data"],
-                {"textfieldStep1": ""},
+                response.json()["step"]["data"], {"textfieldStep1": "some data"}
             )
 
         # Simulate navigating to the next step
@@ -739,15 +739,15 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
             response = self.client.post(
                 endpoint,
                 data={
-                    "data": {"textfieldStep2": "some data"},
+                    "data": {"textfieldStep2": "some more changed data"},
                 },
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-            # Ensure that we only receive cleared data for the second step
+            # Because the step was already submitted before, we fall back to that value
+            # instead of the empty value.
             self.assertEqual(
-                response.json()["step"]["data"],
-                {"textfieldStep2": ""},
+                response.json()["step"]["data"], {"textfieldStep2": "some data"}
             )
 
     def test_clear_on_hide_behaviour_with_conditional_and_logic_rule(self):
