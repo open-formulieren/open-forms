@@ -310,7 +310,7 @@ django-formtools==2.5.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-two-factor-auth
-django-health-check==3.20.8
+django-health-check==3.24.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -686,7 +686,7 @@ maykin-2fa==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-common==0.17.0
+maykin-common==0.18.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -951,6 +951,11 @@ protobuf==6.33.5
     #   -r requirements/ci.txt
     #   googleapis-common-protos
     #   opentelemetry-proto
+psutil==7.2.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   django-health-check
 psycopg==3.2.1
     # via
     #   -c requirements/ci.txt
