@@ -165,6 +165,7 @@ def iter_evaluate_rules(
     data: FormioData,
     configuration: FormioConfigurationWrapper,
     submission: Submission,
+    initial_data: FormioData,
 ) -> Iterator[ActionOperation]:
     """
     Iterate over the rules and evaluate the trigger, yielding action operations and
@@ -179,7 +180,9 @@ def iter_evaluate_rules(
     :arg data: Mapping from variable key to variable value (native Python types), for
       all variables present in the :class:`SubmissionValueVariableState`. This data
       structure is updated after every mutation.
+    :arg configuration: Formio configuration wrapper of a step.
     :arg submission: Submission instance.
+    :arg initial_data: Initial data for clear-on-hide behavior.
     :returns: An iterator yielding :class:`ActionOperation` instances.
     """
     state = submission.load_submission_value_variables_state()
@@ -208,11 +211,13 @@ def iter_evaluate_rules(
             # as components can be hidden by default and shown when a logic rule is
             # triggered
             if not triggered:
-                _handle_clear_on_hide(rule, data, configuration)
+                _handle_clear_on_hide(rule, data, configuration, initial_data)
                 continue
 
             for operation in rule.action_operations:
-                if mutations := operation.eval(data, configuration, submission):
+                if mutations := operation.eval(
+                    data, configuration, submission, initial_data
+                ):
                     mutations_python = {
                         key: state.variables[key].to_python(value)
                         for key, value in mutations.items()
@@ -223,7 +228,10 @@ def iter_evaluate_rules(
 
 
 def _handle_clear_on_hide(
-    rule: FormLogic, data: FormioData, configuration: FormioConfigurationWrapper
+    rule: FormLogic,
+    data: FormioData,
+    configuration: FormioConfigurationWrapper,
+    initial_data: FormioData,
 ):
     """
     Handle clear-on-hide behaviour for components of which the "hidden" property
@@ -252,4 +260,6 @@ def _handle_clear_on_hide(
         # Note that we cannot pass ``parent_hidden=True`` here, and skip conditional
         # evaluation (like in ``PropertyAction.eval``), because a component can be
         # affected by a simple conditional which makes it visible.
-        process_visibility({"components": [component]}, data, configuration)
+        process_visibility(
+            {"components": [component]}, data, configuration, initial_data=initial_data
+        )
