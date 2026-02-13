@@ -12,8 +12,8 @@
 # https://open-forms.readthedocs.io/en/latest/installation/config.html
 #
 x-labels: &x-labels
-  client: dev
-  target: test
+  client: of
+  target: docker-compose
   app: openforms
 
 x-app-env: &x-app-env

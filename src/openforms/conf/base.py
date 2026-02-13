@@ -21,7 +21,10 @@ from upgrade_check.constraints import UpgradePaths
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
 from openforms.logging.adapter import from_structlog
-from openforms.logging.processors import drop_user_agent_in_dev
+from openforms.logging.processors import (
+    add_open_telemetry_spans,
+    drop_user_agent_in_dev,
+)
 
 from .utils import Filesize, get_sentry_integrations
 
@@ -419,6 +422,7 @@ LOGGING = {
                 structlog.stdlib.add_logger_name,
                 structlog.stdlib.add_log_level,
                 drop_user_agent_in_dev,
+                add_open_telemetry_spans,
                 structlog.stdlib.PositionalArgumentsFormatter(),
             ],
         },
@@ -431,6 +435,7 @@ LOGGING = {
                 structlog.stdlib.add_logger_name,
                 structlog.stdlib.add_log_level,
                 drop_user_agent_in_dev,
+                add_open_telemetry_spans,
                 structlog.stdlib.PositionalArgumentsFormatter(),
             ],
         },
@@ -540,6 +545,7 @@ structlog.configure(
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
         drop_user_agent_in_dev,
+        add_open_telemetry_spans,
         structlog.stdlib.PositionalArgumentsFormatter(),
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
