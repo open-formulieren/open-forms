@@ -6,6 +6,8 @@ from django.utils import timezone
 
 import structlog
 
+from openforms.logging import audit_logger
+
 from ..celery import app
 from .models import Form
 
@@ -15,8 +17,6 @@ logger = structlog.stdlib.get_logger(__name__)
 @app.task(ignore_result=True)
 def activate_forms():
     """Activate all the forms that should be activated by the specific date and time."""
-    from openforms.logging import logevent
-
     now = timezone.now()
     forms = Form.objects.filter(
         active=False,
@@ -27,6 +27,7 @@ def activate_forms():
 
     for form in forms:
         log = logger.bind(form_id=form.pk, name=form.admin_name)
+        audit_log = audit_logger.bind(**structlog.get_context(log))
         with transaction.atomic():
             log.info("form_activation")
             try:
@@ -34,15 +35,12 @@ def activate_forms():
             except DatabaseError as exc:
                 log.error("form_activation_failure", exc_info=exc)
             else:
-                log.info("form_activated")
-                transaction.on_commit(partial(logevent.form_activated, form))
+                transaction.on_commit(partial(audit_log.info, "form_activated"))
 
 
 @app.task(ignore_result=True)
 def deactivate_forms():
     """Deactivate all the forms that should be deactivated by the specific date and time."""
-    from openforms.logging import logevent
-
     now = timezone.now()
     forms = Form.objects.live().filter(
         deactivate_on__lte=now, deactivate_on__gt=now - timedelta(minutes=5)
@@ -50,6 +48,7 @@ def deactivate_forms():
 
     for form in forms:
         log = logger.bind(form_id=form.pk, name=form.admin_name)
+        audit_log = audit_logger.bind(**structlog.get_context(log))
         with transaction.atomic():
             log.info("form_deactivation")
             try:
@@ -57,5 +56,4 @@ def deactivate_forms():
             except DatabaseError as exc:
                 log.error("form_deactivation_failure", exc_info=exc)
             else:
-                log.info("form_deactivated")
-                transaction.on_commit(partial(logevent.form_deactivated, form))
+                transaction.on_commit(partial(audit_log.info, "form_deactivated"))

@@ -409,7 +409,7 @@ django-test-migrations==1.5.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-timeline-logger==5.0.0
+django-timeline-logger==6.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1379,6 +1379,7 @@ typing-extensions==4.12.2
     #   -r requirements/ci.txt
     #   anyio
     #   django-test-migrations
+    #   django-timeline-logger
     #   mozilla-django-oidc-db
     #   opentelemetry-api
     #   opentelemetry-exporter-otlp-proto-grpc

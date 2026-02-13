@@ -12,7 +12,7 @@ from rest_framework.request import Request
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.config.data import Entry
 from openforms.frontend import get_frontend_redirect_url
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.submissions.tokens import submission_status_token_generator
 from openforms.template import render_from_string, sandbox_backend
 from openforms.template.validators import DjangoTemplateValidator
@@ -134,6 +134,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin[PaymentOptions]):
             action = request.query_params.get(RETURN_ACTION_PARAM)
             payment_id = request.query_params[PAYMENT_ID_PARAM]
             log = logger.bind(payment_id=payment_id)
+            audit_log = audit_logger.bind(**structlog.get_context(log))
 
             log.info("process_payment_status")
             client = OgoneClient(options["merchant_id"])
@@ -141,12 +142,11 @@ class OgoneLegacyPaymentPlugin(BasePlugin[PaymentOptions]):
             try:
                 params = client.get_validated_params(request.query_params)
             except InvalidSignature as exc:
-                log.warning(
+                audit_log.warning(
                     "payment_flow_failure",
                     reason="invalid_shasign_signature",
                     exc_info=exc,
                 )
-                logevent.payment_flow_failure(payment, self, exc)
                 return HttpResponseBadRequest("bad shasign")
 
             self.apply_status(payment, params.STATUS, payment_id)
@@ -191,6 +191,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin[PaymentOptions]):
             entrypoint="webhook",
         ):
             log = logger.bind(payment_id=payment_id)
+            audit_log = audit_logger.bind(**structlog.get_context(log))
             log.info("process_payment_status")
 
             options_serializer = self.configuration_options(data=payment.plugin_options)
@@ -201,12 +202,11 @@ class OgoneLegacyPaymentPlugin(BasePlugin[PaymentOptions]):
             try:
                 params = client.get_validated_params(request.data)
             except InvalidSignature as exc:
-                log.warning(
+                audit_log.warning(
                     "payment_flow_failure",
                     reason="invalid_shasign_signature",
                     exc_info=exc,
                 )
-                logevent.payment_flow_failure(payment, self, exc)
                 # see note about ParseError above
                 raise ParseError("bad shasign")
 

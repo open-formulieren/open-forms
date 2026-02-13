@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import structlog
 
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.typing import JSONValue
 
 if TYPE_CHECKING:
@@ -60,17 +60,12 @@ def get_submission_price(submission: Submission) -> Decimal:
             if getattr(submission, "_in_admin_display", False):  # pragma: no cover
                 raise
 
-            logger.warning(
+            audit_logger.warning(
                 "price_calculation_variable_error",
+                submission_uuid=str(submission.uuid),
                 variable=exc.variable,
                 value=exc.value,
                 exc_info=exc,
-            )
-            logevent.price_calculation_variable_error(
-                submission=submission,
-                variable=exc.variable,
-                error=exc,
-                value=exc.value,
             )
             raise
         else:

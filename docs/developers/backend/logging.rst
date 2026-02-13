@@ -6,7 +6,8 @@ Logging
 
 Logging is the practice of adding strategic log statements in the code to inform of
 particular events taking place. It's generally a good practice to make debugging
-certain data-flows easier and can provide insight in what the system is doing.
+certain data-flows easier and can provide insight in what the system is doing. Logs can
+also be critical audit-information, see :ref:`developers_backend_core_audit_logging`.
 
 Logs are typically emitted during development (with ``runserver``) but also in
 production (containers). In the latter situation, logs are usually scraped and aggregated

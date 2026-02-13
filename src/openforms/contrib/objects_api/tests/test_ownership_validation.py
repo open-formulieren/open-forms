@@ -7,7 +7,6 @@ from requests.exceptions import HTTPError, RequestException
 
 from openforms.authentication.service import AuthAttribute
 from openforms.logging.models import TimelineLogProxy
-from openforms.registrations.contrib.objects_api.plugin import ObjectsAPIRegistration
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin, with_setup_test_data_vcr
 
@@ -15,8 +14,6 @@ from ..clients import get_objects_client
 from ..helpers import prepare_data_for_registration
 from ..ownership_validation import validate_object_ownership
 from .factories import ObjectsAPIGroupConfigFactory
-
-PLUGIN = ObjectsAPIRegistration("test")
 
 
 @override_settings(
@@ -56,7 +53,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
 
         with get_objects_client(self.objects_api_group_used) as client:
             try:
-                validate_object_ownership(submission, client, ["bsn"], PLUGIN)
+                validate_object_ownership(submission, client, ["bsn"])
             except PermissionDenied as exc:
                 raise self.failureException(
                     "BSN in submission is owner of data"
@@ -73,7 +70,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
                 PermissionDenied, "Cannot pass data reference as anonymous user"
             ),
         ):
-            validate_object_ownership(submission, client, ["bsn"], PLUGIN)
+            validate_object_ownership(submission, client, ["bsn"])
 
         logs = TimelineLogProxy.objects.for_object(submission)
         self.assertEqual(
@@ -94,7 +91,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
                 PermissionDenied, "User is not the owner of the referenced object"
             ),
         ):
-            validate_object_ownership(submission, client, ["bsn"], PLUGIN)
+            validate_object_ownership(submission, client, ["bsn"])
 
         logs = TimelineLogProxy.objects.for_object(submission)
         self.assertEqual(logs.filter_event("object_ownership_check_failure").count(), 1)
@@ -123,7 +120,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
                 PermissionDenied, "User is not the owner of the referenced object"
             ),
         ):
-            validate_object_ownership(submission, client, ["nested", "bsn"], PLUGIN)
+            validate_object_ownership(submission, client, ["nested", "bsn"])
 
     @tag("gh-4398")
     def test_ownership_check_fails_if_auth_attribute_path_is_badly_configured(self):
@@ -151,7 +148,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
                     "Could not verify if user is owner of the referenced object",
                 ),
             ):
-                validate_object_ownership(submission, client, [], PLUGIN)
+                validate_object_ownership(submission, client, [])
 
             with (
                 self.subTest("non existent path"),
@@ -161,7 +158,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
                 ),
             ):
                 validate_object_ownership(
-                    submission, client, ["this", "does", "not", "exist"], PLUGIN
+                    submission, client, ["this", "does", "not", "exist"]
                 )
 
     @tag("gh-4398")
@@ -181,7 +178,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
         )
         with get_objects_client(self.objects_api_group_used) as client:
             with self.assertRaises(PermissionDenied):
-                validate_object_ownership(submission, client, ["bsn"], PLUGIN)
+                validate_object_ownership(submission, client, ["bsn"])
 
     @tag("gh-4398")
     @patch(
@@ -201,4 +198,4 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
 
         with get_objects_client(self.objects_api_group_used) as client:
             with self.assertRaises(PermissionDenied):
-                validate_object_ownership(submission, client, ["bsn"], PLUGIN)
+                validate_object_ownership(submission, client, ["bsn"])

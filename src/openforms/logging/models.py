@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator, Sequence
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Literal, Self
 
 from django.contrib import admin
 from django.db import models
@@ -21,32 +21,32 @@ from .constants import TimelineLogTags
 
 
 class TimelineLogProxyQueryset(models.QuerySet["TimelineLogProxy"]):
-    def filter_event(self, event: str):
+    def filter_event(self, event: str) -> Self:
         return self.filter(extra_data__log_event=event)
 
-    def has_tag(self, tag: str):
+    def has_tag(self, tag: str) -> Self:
         return self.filter(extra_data__contains={tag: True})
 
-    def exclude_tag(self, tag: str):
+    def exclude_tag(self, tag: str) -> Self:
         return self.exclude(extra_data__contains={tag: True})
 
 
-class TimelineLogProxyManager(
-    TimelineLogManager.from_queryset(TimelineLogProxyQueryset)
-):
-    if TYPE_CHECKING:
+if TYPE_CHECKING:
 
+    class TimelineLogProxyManager(TimelineLogManager):
         def for_object(self, obj: models.Model) -> TimelineLogProxyQueryset: ...
         def filter_event(self, event: str) -> TimelineLogProxyQueryset: ...
-        def has_tag(self, tag: str) -> TimelineLogProxyQueryset: ...
+        def has_tag(self, tag: TimelineLogTags | str) -> TimelineLogProxyQueryset: ...
         def exclude_tag(self, tag: str) -> TimelineLogProxyQueryset: ...
+else:
+    TimelineLogProxyManager = TimelineLogManager.from_queryset(TimelineLogProxyQueryset)
 
 
 class TimelineLogProxy(TimelineLog):
     content_type_id: int
     user_id: int | None
 
-    objects: ClassVar[TimelineLogProxyManager] = TimelineLogProxyManager()
+    objects: ClassVar[TimelineLogProxyManager] = TimelineLogProxyManager()  # pyright: ignore[reportIncompatibleVariableOverride]
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         proxy = True
@@ -172,7 +172,7 @@ class TimelineLogProxy(TimelineLog):
         )
 
     @property
-    def fmt_submission_registration_attempts(self):
+    def fmt_submission_registration_attempts(self) -> int | Literal[""]:
         if self.is_submission:
             assert self.content_object is not None
             return self.content_object.registration_attempts
@@ -191,7 +191,7 @@ class TimelineLogProxy(TimelineLog):
         return self.get_message()
 
     @property
-    def event(self):
+    def event(self) -> str | None:
         if not self.extra_data:
             return None
         else:
@@ -199,7 +199,7 @@ class TimelineLogProxy(TimelineLog):
 
 
 class AVGTimelineLogProxyManager(models.Manager):
-    def get_queryset(self):
+    def get_queryset(self) -> TimelineLogProxyQueryset:
         return TimelineLogProxyQueryset(self.model, using=self._db).has_tag(
             TimelineLogTags.AVG
         )

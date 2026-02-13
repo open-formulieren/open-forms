@@ -12,9 +12,12 @@ from django.utils.functional import Promise
 
 from dateutil.relativedelta import relativedelta
 from rest_framework.request import Request
+from typing_extensions import TypeIs
 
 if TYPE_CHECKING:
     from django.utils.functional import _StrOrPromise
+
+    from openforms.accounts.models import User
 else:
     _StrOrPromise = str
 
@@ -66,3 +69,11 @@ type VariableValue = (
     | list[VariableValue]  # for components configured as multiple
     | dict[str, VariableValue]
 )
+
+
+class AuthenticatedHttpRequest(HttpRequest):
+    user: User  # pyright: ignore[reportIncompatibleVariableOverride]
+
+
+def is_authenticated_request(request: HttpRequest) -> TypeIs[AuthenticatedHttpRequest]:
+    return request.user.is_authenticated

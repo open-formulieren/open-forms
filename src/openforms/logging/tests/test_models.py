@@ -8,7 +8,7 @@ from freezegun import freeze_time
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.forms.models import Form
 from openforms.forms.tests.factories import FormFactory
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.logging.models import AVGTimelineLogProxy
 from openforms.logging.tests.base import LoggingTestMixin
 from openforms.logging.tests.factories import TimelineLogProxyFactory
@@ -239,7 +239,11 @@ class AVGProxyModelTest(LoggingTestMixin, TestCase):
         user = StaffUserFactory.create()
         submission = SubmissionFactory.create()
         # create AVG log
-        logevent.submission_details_view_admin(submission, user)
+        audit_logger.info(
+            "submission_details_view_admin",
+            submission_uuid=str(submission.uuid),
+            user=user.username,
+        )
 
         # create generic log
         TimelineLogProxyFactory.create(content_object=submission, user=user)

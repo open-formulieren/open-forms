@@ -4,6 +4,8 @@ import logging.config  # noqa: TID251 - correct use to replace stdlib logging
 import structlog
 from maykin_common.config import config
 
+from openforms.logging.adapter import from_structlog
+
 
 def receiver_setup_logging(
     loglevel, logfile, format, colorize, **kwargs
@@ -42,8 +44,22 @@ def receiver_setup_logging(
                     "class": "logging.StreamHandler",
                     "formatter": formatter,
                 },
+                "timeline_logger": {
+                    "()": "openforms.logging.factories.audit_handler_factory",
+                    "adapter": from_structlog,
+                    "buffer_size": 5,
+                    "flush_interval": 15.0,
+                },
             },
             "loggers": {
+                # special logger for audit-events, emit to stdout as usual but also direct logs
+                # to the timeline_logger to persist them in the database for easy
+                # querying/display
+                "openforms_audit": {
+                    "handlers": ["console", "timeline_logger"],
+                    "level": "DEBUG",  # DO NOT MODIFY or make configurable
+                    "propagate": False,
+                },
                 "openforms": {
                     "handlers": ["console"],
                     "level": "INFO",

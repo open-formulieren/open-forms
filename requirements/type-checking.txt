@@ -85,6 +85,8 @@ celery-once==3.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+celery-types==0.23.0
+    # via -r requirements/type-checking.in
 certifi==2024.7.4
     # via
     #   -c requirements/ci.txt
@@ -398,7 +400,7 @@ django-test-migrations==1.5.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-timeline-logger==5.0.0
+django-timeline-logger==6.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1352,9 +1354,11 @@ typing-extensions==4.12.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   celery-types
     #   django-stubs
     #   django-stubs-ext
     #   django-test-migrations
+    #   django-timeline-logger
     #   djangorestframework-stubs
     #   mozilla-django-oidc-db
     #   opentelemetry-api

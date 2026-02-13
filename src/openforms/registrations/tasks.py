@@ -14,7 +14,7 @@ from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.registry import register as formio_registry
 from openforms.formio.typing.base import Component
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.submissions.constants import (
     ComponentPreRegistrationStatuses,
     PostSubmissionEvents,
@@ -24,6 +24,7 @@ from openforms.submissions.models import Submission
 from openforms.submissions.public_references import set_submission_reference
 
 from .exceptions import RegistrationFailed
+from .registry import Registry
 from .service import get_registration_plugin
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -216,7 +217,9 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
     log = logger.bind(
         action="registrations.main_registration",
         trigger=event,
+        submission_uuid=str(submission.uuid),
     )
+    audit_log = audit_logger.bind(**structlog.get_context(log))
 
     if submission.registration_status == RegistrationStatuses.success:
         # if it's already successfully registered, do not overwrite that.
@@ -232,8 +235,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         return
 
     if submission.cosign_state.is_waiting:
-        log.info("skipped_registration", reason="cosign_required", outcome="skip")
-        logevent.skipped_registration_cosign_required(submission)
+        audit_log.info("skipped_registration", reason="cosign_required", outcome="skip")
         return
 
     config = GlobalConfiguration.get_solo()
@@ -242,25 +244,24 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         and submission.payment_required
         and not submission.payment_user_has_paid
     ):
-        log.info("skipped_registration", reason="payment_not_received", outcome="skip")
-        logevent.registration_skipped_not_yet_paid(submission)
+        audit_log.info(
+            "skipped_registration", reason="payment_not_received", outcome="skip"
+        )
         return
+
+    audit_log.info("registration_start")
 
     if (num_attempts := submission.registration_attempts) >= (
         max_num := config.registration_attempt_limit
     ):
         # if it fails after this many attempts we give up
-        log.debug(
+        audit_log.debug(
             "max_registration_attempts_exceeded",
             num_attempts=num_attempts,
             max_num=max_num,
             outcome="skip",
         )
-        logevent.registration_attempts_limited(submission)
         return
-
-    log.info("registration_start")
-    logevent.registration_start(submission)
 
     submission.last_register_date = timezone.now()
     submission.registration_status = RegistrationStatuses.in_progress
@@ -277,26 +278,28 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
     backend_config = submission.registration_backend
 
     if not backend_config or not backend_config.backend:
-        log.info("registration_completed", reason="no_registration_plugin_configured")
+        audit_log.info(
+            "registration_completed", reason="no_registration_plugin_configured"
+        )
         submission.save_registration_status(RegistrationStatuses.success, None)
-        logevent.registration_skip(submission)
         return
 
     registry = backend_config._meta.get_field("backend").registry  # pyright: ignore[reportAttributeAccessIssue]
+    assert isinstance(registry, Registry)
     backend = backend_config.backend
 
     log.debug("resolve_plugin", plugin_id=backend)
     plugin = registry[backend]
     log = log.bind(plugin=plugin.identifier)
+    audit_log = audit_log.bind(plugin=plugin)
 
     if not plugin.is_enabled:
-        log.info("registration_failure", reason="plugin_disabled")
         exc = RegistrationFailed("Registration plugin is not enabled")
+        audit_log.info("registration_failure", reason="plugin_disabled", exc_info=exc)
         submission.save_registration_status(
             RegistrationStatuses.failed,
             {"traceback": "".join(traceback.format_exception(exc))},
         )
-        logevent.registration_failure(submission, exc)
         if event == PostSubmissionEvents.on_retry:
             raise exc
         return
@@ -310,8 +313,9 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
     try:
         options_serializer.is_valid(raise_exception=True)
     except ValidationError as exc:
-        logevent.registration_failure(submission, exc, plugin)
-        log.warning("registration_failure", reason="invalid_options", exc_info=exc)
+        audit_log.warning(
+            "registration_failure", reason="invalid_options", exc_info=exc
+        )
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
@@ -325,25 +329,23 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
             submission, options_serializer.validated_data
         )
     except RegistrationFailed as exc:
-        log.warning("registration_failure", exc_info=exc)
+        audit_log.warning("registration_failure", exc_info=exc)
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
-        logevent.registration_failure(submission, exc, plugin)
         if event == PostSubmissionEvents.on_retry:
             raise exc
         return
     except Exception as exc:
-        log.exception("registration_failure", exc_info=exc)
+        audit_log.exception("registration_failure", exc_info=exc)
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
-        logevent.registration_failure(submission, exc, plugin)
         if event == PostSubmissionEvents.on_retry:
             raise exc
         return
 
-    log.info("registration_success")
+    audit_log.info("registration_success")
     if (
         config.wait_for_payment_to_register
         and event == PostSubmissionEvents.on_payment_complete
@@ -352,7 +354,6 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         log.info("marked_payments_registered")
 
     submission.save_registration_status(RegistrationStatuses.success, result or {})
-    logevent.registration_success(submission, plugin)
     log.info("done")
 
 
@@ -362,6 +363,8 @@ def update_registration_with_confirmation_email(submission_id: int) -> None:
     )
 
     submission = Submission.objects.get(id=submission_id)
+    log = log.bind(submission_uuid=str(submission.uuid))
+    audit_log = audit_logger.bind(**structlog.get_context(log))
 
     if submission.registration_status != RegistrationStatuses.success:
         log.info(
@@ -372,21 +375,17 @@ def update_registration_with_confirmation_email(submission_id: int) -> None:
 
     plugin = get_registration_plugin(submission)
     if plugin is None:
-        log.info(
+        audit_log.info(
             "update_registration_with_confirmation_email_completed",
             reason="no_plugin_is_configured",
         )
-        logevent.registration_update_with_confirmation_email_skip(submission)
         return
+    audit_log = audit_log.bind(plugin=plugin)
 
     if not plugin.is_enabled:
-        log.info(
+        audit_log.info(
             "update_registration_with_confirmation_email_failed",
             reason="plugin_is_disabled",
-        )
-        exc = RegistrationFailed("Registration plugin is not enabled")
-        logevent.registration_update_with_confirmation_email_failure(
-            submission, exc, plugin
         )
         return
 
@@ -399,13 +398,10 @@ def update_registration_with_confirmation_email(submission_id: int) -> None:
     try:
         options_serializer.is_valid(raise_exception=True)
     except ValidationError as exc:
-        log.warning(
+        audit_log.warning(
             "update_registration_with_confirmation_email_failed",
             reason="invalid_options",
             exc_info=exc,
-        )
-        logevent.registration_update_with_confirmation_email_failure(
-            submission, exc, plugin
         )
         return
 
@@ -415,21 +411,19 @@ def update_registration_with_confirmation_email(submission_id: int) -> None:
             submission, options_serializer.validated_data
         )
     except (RegistrationFailed, Exception) as exc:
-        log.warning("update_registration_with_confirmation_email_failed", exc_info=exc)
+        audit_log.warning(
+            "update_registration_with_confirmation_email_failed", exc_info=exc
+        )
         submission.registration_result["update_with_confirmation_emails_traceback"] = (
             traceback.format_exc()
         )
         submission.save(update_fields=["registration_result"])
-        logevent.registration_update_with_confirmation_email_failure(
-            submission, exc, plugin
-        )
         return
 
     if result:
         submission.registration_result.update(result)
     submission.save(update_fields=["registration_result"])
-    logevent.registration_update_with_confirmation_email_success(submission, plugin)
-    log.info("done")
+    audit_log.info("update_registration_with_confirmation_email_done")
 
 
 @app.task(ignore_result=True)
@@ -438,14 +432,13 @@ def execute_component_pre_registration(
 ) -> None:
     component_key = component["key"]
     submission = Submission.objects.get(id=submission_id)
-    log = logger.bind(
+    audit_log = audit_logger.bind(
         action="formio.component_pre_registration",
         submission_uuid=str(submission.uuid),
         component_key=component_key,
         component_type=component["type"],
     )
-    log.info("component_pre_registration_task_received")
-    logevent.component_pre_registration_start(submission, component_key)
+    audit_log.info("component_pre_registration_start")
 
     state = submission.load_submission_value_variables_state()
     component_var = state.get_variable(component_key)
@@ -454,13 +447,12 @@ def execute_component_pre_registration(
     config = GlobalConfiguration.get_solo()
 
     if not component_var.is_registration_attempt_allowed:
-        log.info(
+        audit_log.info(
             "component_pre_registration_skip",
             pre_registration_status=component_var.pre_registration_status,
             registration_attempts=submission.registration_attempts,
             max_number_of_attempts=config.registration_attempt_limit,
         )
-        logevent.component_pre_registration_skip(submission, component_key)
         return
 
     component_var.pre_registration_status = ComponentPreRegistrationStatuses.in_progress
@@ -469,17 +461,11 @@ def execute_component_pre_registration(
     try:
         result = formio_registry.apply_pre_registration_hook(component, submission)
     except Exception as exc:
-        log.info("component_pre_registration_failure", exc_info=exc)
-        logevent.component_pre_registration_failure(
-            submission, error=exc, component_key=component_key
-        )
+        audit_log.warning("component_pre_registration_failure", exc_info=exc)
         component_var.pre_registration_status = ComponentPreRegistrationStatuses.failed
         component_var.pre_registration_result = {"traceback": traceback.format_exc()}
-
     else:
-        logevent.component_pre_registration_success(
-            submission, component_key=component_key
-        )
+        audit_log.info("component_pre_registration_success")
         component_var.pre_registration_status = ComponentPreRegistrationStatuses.success
         component_var.pre_registration_result = result
 
@@ -493,7 +479,7 @@ def execute_component_pre_registration_group(task, submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
 
     task_group = group(
-        execute_component_pre_registration.si(  # pyright: ignore[reportFunctionMemberAccess]
+        execute_component_pre_registration.si(
             submission_id=submission_id, component=component
         )
         for component in submission.total_configuration_wrapper

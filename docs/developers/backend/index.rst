@@ -49,6 +49,7 @@ Core
     core/submissions
     core/submission-renderer
     core/variables
+    core/audit-logging
     file-uploads
     service-fetch
 

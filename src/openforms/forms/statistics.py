@@ -7,7 +7,10 @@ from django.utils.translation import gettext_lazy as _
 
 from tablib import Dataset
 
-from openforms.logging import logevent
+from openforms.logging.constants import (
+    FORM_SUBMIT_SUCCESS_EVENT,
+    REGISTRATION_SUCCESS_EVENT,
+)
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.models import Submission
 
@@ -18,7 +21,7 @@ def export_registration_statistics(
     start_date: date,
     end_date: date,
     limit_to_forms: models.QuerySet[Form] | None = None,
-    event: str = logevent.REGISTRATION_SUCCESS_EVENT,
+    event: str = REGISTRATION_SUCCESS_EVENT,
 ) -> Dataset:
     """
     Export the form registration statistics to a tablib Dataset.
@@ -36,10 +39,10 @@ def export_registration_statistics(
       ``None`` is given, all forms are included.
     """
     title_mappings = {
-        logevent.REGISTRATION_SUCCESS_EVENT: _(
+        REGISTRATION_SUCCESS_EVENT: _(
             "Successfully registered submissions between {start} and {end}"
         ),
-        logevent.FORM_SUBMIT_SUCCESS_EVENT: _(
+        FORM_SUBMIT_SUCCESS_EVENT: _(
             "Successfully completed submissions between {start} and {end}"
         ),
     }
@@ -65,7 +68,7 @@ def export_registration_statistics(
         content_type=ContentType.objects.get_for_model(Submission),
         timestamp__gte=_start_date,
         timestamp__lte=_end_date,
-        # see openforms.logging.logevent for the data structure of the extra_data
+        # see openforms.logging.adapter for the data structure of the extra_data
         # JSONField
         extra_data__log_event=event,
     ).order_by("timestamp")

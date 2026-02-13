@@ -361,7 +361,7 @@ django-structlog==9.1.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-timeline-logger==5.0.0
+django-timeline-logger==6.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1131,6 +1131,7 @@ typing-extensions==4.12.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   django-timeline-logger
     #   mozilla-django-oidc-db
     #   opentelemetry-api
     #   opentelemetry-exporter-otlp-proto-grpc

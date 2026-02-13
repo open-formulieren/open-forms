@@ -5,7 +5,7 @@ from celery_once import QueueOnce
 
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
-from openforms.logging import logevent
+from openforms.logging import audit_logger
 from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.models import Submission
 
@@ -35,6 +35,7 @@ def update_submission_payment_status(
         submission_uuid=str(submission.uuid),
         payment_required=submission.payment_required,
     )
+    audit_log = audit_logger.bind(**structlog.get_context(log))
     config = GlobalConfiguration.get_solo()
 
     should_skip = config.wait_for_payment_to_register or any(
@@ -46,8 +47,7 @@ def update_submission_payment_status(
         )
     )
     if should_skip:
-        logevent.registration_payment_update_skip(submission)
-        log.info(
+        audit_log.info(
             "registration_payment_update_skip",
             wait_for_payment_to_register=config.wait_for_payment_to_register,
             registration_status=submission.registration_status,
