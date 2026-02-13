@@ -6,7 +6,14 @@ from .models import ZGWApiGroupConfig
 
 @admin.register(ZGWApiGroupConfig)
 class ZGWApiGroupConfigAdmin(admin.ModelAdmin):
-    list_display = ("name", "identifier", "zrc_service", "drc_service", "ztc_service")
+    list_display = (
+        "name",
+        "identifier",
+        "zrc_service",
+        "drc_service",
+        "ztc_service",
+        "use_generated_zaaknummer",
+    )
     list_select_related = ("zrc_service", "drc_service", "ztc_service")
     search_fields = (
         "name",
@@ -23,6 +30,7 @@ class ZGWApiGroupConfigAdmin(admin.ModelAdmin):
                 "fields": (
                     "name",
                     "identifier",
+                    "use_generated_zaaknummer",
                 )
             },
         ),

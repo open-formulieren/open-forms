@@ -31,9 +31,7 @@ class Migration(migrations.Migration):
                 default="{year}/{public_reference}/{uid}",
                 help_text="Template to use when generating payment order IDs. It should be alpha-numerical and can contain the '/._-' characters. You can use the placeholder tokens: {year}, {public_reference}, {uid}.",
                 max_length=48,
-                validators=[
-                    openforms.payments.validators.validate_payment_order_id_template
-                ],
+                validators=[openforms.payments.validators.IdTemplateValidator()],
                 verbose_name="Payment Order ID template",
             ),
         ),

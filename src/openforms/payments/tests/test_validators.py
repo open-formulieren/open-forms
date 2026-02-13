@@ -1,19 +1,19 @@
 from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase
 
-from openforms.payments.validators import validate_payment_order_id_template
+from openforms.payments.validators import IdTemplateValidator
 
 
 class PaymentOrderIDValidatorTests(SimpleTestCase):
     def test_uid_present(self):
         valid = "{uid}"
         with self.subTest(value=valid):
-            validate_payment_order_id_template(valid)
+            IdTemplateValidator()(valid)
 
         invalid = "other_things"
         with self.subTest(value=invalid):
             with self.assertRaises(ValidationError):
-                validate_payment_order_id_template(invalid)
+                IdTemplateValidator()(invalid)
 
     def test_valid_templates(self):
         valid = [
@@ -29,7 +29,7 @@ class PaymentOrderIDValidatorTests(SimpleTestCase):
 
         for value in valid:
             with self.subTest(value=value):
-                validate_payment_order_id_template(value)
+                IdTemplateValidator()(value)
 
     def test_raises_for_invalid_prefixes(self):
         invalid = [
@@ -43,4 +43,4 @@ class PaymentOrderIDValidatorTests(SimpleTestCase):
         for value in invalid:
             with self.subTest(value=value):
                 with self.assertRaises(ValidationError):
-                    validate_payment_order_id_template(value)
+                    IdTemplateValidator()(value)
