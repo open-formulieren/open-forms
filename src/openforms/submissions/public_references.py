@@ -46,10 +46,6 @@ def generate_unique_submission_reference(submission: Submission) -> str:
     template: str = config.public_reference_template
     alphabet = config.public_reference_alphabet
 
-    # 32 characters with length 6 -> 32^6 possible combinations.
-    # that's roughly one billion combinations before we run out of options.
-    # Also note that submissions are pruned after a (configurable) number of days, so
-    # used references do become available again after that time.
     sqids = Sqids(min_length=6, alphabet=alphabet)
     uid = sqids.encode([submission.pk])
 
