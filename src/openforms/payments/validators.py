@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext as _
@@ -7,7 +9,7 @@ from django.utils.translation import gettext as _
 class IdTemplateValidator:
     def __init__(
         self,
-        allowed_groups: tuple[str, ...] = (
+        allowed_groups: Sequence[str] = (
             "{year}",
             "{public_reference}",
             "{uid}",
@@ -32,6 +34,8 @@ class IdTemplateValidator:
         if value and not value.isalnum():
             raise ValidationError(
                 _(
-                    "The template may only consist of alphanumeric, /, ., _ and - characters."
+                    "The template may only consist of alphanumeric and allowed groups "
+                    "of characters: %(groups)s"
                 )
+                % {"groups": ", ".join(self.allowed_groups)}
             )

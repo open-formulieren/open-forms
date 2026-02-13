@@ -31,6 +31,7 @@ from openforms.contrib.zgw.service import (
 from openforms.emails.service import get_last_confirmation_email
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.submissions.public_references import generate_unique_submission_reference
 from openforms.typing import VariableValue
 from openforms.utils.date import datetime_in_amsterdam
 from openforms.utils.pdf import convert_html_to_pdf
@@ -242,6 +243,10 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         zaak_data = apply_data_mapping(
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
         )
+        # if we generate the reference in OF and use it as a Zaak identifier
+        if not zgw.use_generated_zaaknummer:
+            public_reference = generate_unique_submission_reference(submission)
+            zaak_data["identificatie"] = public_reference
 
         # resolve zaaktype to use
         if case_type_identification := options["case_type_identification"]:
@@ -283,10 +288,9 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 "intermediate.zaak",
             )
 
-        # empty reference will trigger 'set_submission_reference' function in the 'pre_registration' task
-        public_reference = zaak["identificatie"] if zgw.use_generated_zaaknummer else ""
-
-        return PreRegistrationResult(reference=public_reference, data={"zaak": zaak})
+        return PreRegistrationResult(
+            reference=zaak["identificatie"], data={"zaak": zaak}
+        )
 
     @wrap_api_errors
     def register_submission(

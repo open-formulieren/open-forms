@@ -3534,8 +3534,13 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             pre_registration_result.reference,
             pre_registration_result.data["zaak"]["identificatie"],
         )
+        self.assertTrue(pre_registration_result.reference.startswith("ZAAK-"))
 
-    def test_pre_registration_not_use_zaaknummer_as_reference(self):
+    @patch(
+        "openforms.registrations.contrib.zgw_apis.plugin.generate_unique_submission_reference",
+        return_value="OF-JCRWBX",
+    )
+    def test_pre_registration_not_use_zaaknummer_as_reference(self, mock):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -3580,5 +3585,9 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         self.addCleanup(client.close)
 
         pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert pre_registration_result.data is not None
 
-        self.assertEqual(pre_registration_result.reference, "")
+        self.assertEqual(pre_registration_result.reference, "OF-JCRWBX")
+        self.assertEqual(
+            pre_registration_result.data["zaak"]["identificatie"], "OF-JCRWBX"
+        )
