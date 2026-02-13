@@ -1,7 +1,8 @@
 from django import forms
 
+from openforms.formio.validators import validate_formio_js_schema
+
 from ..models import FormDefinition
-from ..validators import validate_formio_js_schema
 from ..widgets import FormBuilderWidget
 
 

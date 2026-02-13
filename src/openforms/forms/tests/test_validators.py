@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase
 
-from ..validators import validate_formio_js_schema
+from openforms.formio.validators import validate_formio_js_schema
 
 
 class FormioJSSchemaValidatorTests(SimpleTestCase):
