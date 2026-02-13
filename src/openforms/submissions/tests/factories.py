@@ -56,7 +56,7 @@ def _generate_unique_submission_reference(n: int) -> str:
     """
     generate public reference for tests based on int parameter.
 
-    Quick helper function which doesn't access GlobalConfig modal and can't be
+    Deterministic helper function which doesn't use the GlobalConfiguration model and can't be
     used to test submission.public_registration_reference
     """
     template = "OF-{uid}"
