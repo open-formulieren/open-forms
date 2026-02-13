@@ -392,6 +392,26 @@ EMAIL_TIMEOUT = config("EMAIL_TIMEOUT", default=10)
 
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="openforms@example.com")
 
+MAILER_USE_BACKEND = config(
+    "MAILER_USE_BACKEND",
+    default="django.core.mail.backends.smtp.EmailBackend",  # or django_o365mail.EmailBackend for sending via the Office365 Graph API
+)
+
+#
+# Django O365 e-mail for sending mail via the Office365 Graph API
+#
+O365_MAIL_CLIENT_ID = config("O365_MAIL_CLIENT_ID", default="")
+O365_MAIL_CLIENT_SECRET = config("O365_MAIL_CLIENT_SECRET", default="")
+O365_MAIL_TENANT_ID = config("O365_MAIL_TENANT_ID", default="")
+O365_MAIL_SAVE_TO_SENT = config("O365_MAIL_SAVE_TO_SENT", default=False)
+O365_ACTUALLY_SEND_IN_DEBUG = config("O365_ACTUALLY_SEND_IN_DEBUG", default=False)
+O365_MAIL_ACCOUNT_KWARGS: dict[str, str] = {
+    "token_backend": "O365.utils.token.EnvTokenBackend"
+}
+O365_MAIL_RESOURCE: str | None = os.getenv("O365_MAIL_RESOURCE")
+if O365_MAIL_RESOURCE is not None:
+    O365_MAIL_MAILBOX_KWARGS: dict[str, str] = {"resource": O365_MAIL_RESOURCE}
+
 #
 # LOGGING
 #
