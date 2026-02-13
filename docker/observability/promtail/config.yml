@@ -49,7 +49,18 @@ scrape_configs:
         action: drop
         regex: promtail
     pipeline_stages:
-    - docker: {}
-    - static_labels:
-        job: docker
-        instance: docker.host.internal
+      - docker: {}
+      - static_labels:
+          job: docker
+          instance: docker.host.internal
+      - json:
+          drop_malformed: false
+          expressions:
+            event: event
+            level: level
+            trace_id: trace_id
+            span_id: span_id
+      - labels:
+          event:
+          level:
+
