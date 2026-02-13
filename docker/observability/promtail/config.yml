@@ -60,7 +60,16 @@ scrape_configs:
             level: level
             trace_id: trace_id
             span_id: span_id
+            logger: logger
+            request: request
+            request_id: request_id
       - labels:
           event:
           level:
-
+      # requires config changes in loki to actually accept this!
+      - structured_metadata:
+          trace_id:
+          span_id:
+          logger:
+          request:
+          request_id:
