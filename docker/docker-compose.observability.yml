@@ -51,12 +51,11 @@ services:
       - open-forms-dev
 
   # traces backend
-  # used this example - https://github.com/grafana/tempo/blob/main/example/docker-compose/otel-collector/docker-compose.yaml
   tempo:
-    image: grafana/tempo:latest
-    command: --config.file=/etc/tempo.yaml
+    image: grafana/tempo:2.10.0
+    command: --config.file=/etc/tempo.yml
     volumes:
-      - ./observability/tempo/tempo.yaml:/etc/tempo.yaml
+      - ./observability/tempo/tempo.yml:/etc/tempo.yml
       - ./tempo-data:/var/tempo
     ports:
       - "3200:3200"  # tempo
@@ -70,9 +69,9 @@ services:
   # open telemetry collector, receives metrics from the application instance(s)
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.131.0
-    command: --config=/etc/otel-collector-config.yaml
+    command: --config=/etc/otel-collector-config.yml
     volumes:
-      - ./observability/otel/otel-collector-config.yml:/etc/otel-collector-config.yaml
+      - ./observability/otel/otel-collector-config.yml:/etc/otel-collector-config.yml
     ports:
       - 4317:4317
       - 4318:4318
