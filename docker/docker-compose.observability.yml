@@ -8,7 +8,9 @@ services:
     image: grafana/loki:latest
     ports:
       - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yml
+    volumes:
+      - ./observability/loki/local-config.yml:/etc/loki/local-config.yml
     networks:
       - open-forms-dev
 
