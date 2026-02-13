@@ -6,6 +6,14 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.5.0 (2026-??-??)
+==================
+
+This is a reminder to add a note to the perfomance improvements summary about modifying individual logic
+rules and/or form definitions when the feature flag for new logic rule analysis is enabled:
+The validation and reordering of logic rules happens on form save, so modiying indiviual logic rules might
+result in out-of-sync analysis.
+
 3.5.0-alpha.1 (2026-02-12)
 ==========================
 

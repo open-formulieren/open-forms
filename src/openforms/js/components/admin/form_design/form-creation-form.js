@@ -122,6 +122,7 @@ const initialFormState = {
     },
     authBackends: [],
     newRendererEnabled: false,
+    newLogicEvaluationEnabled: false,
   },
   newForm: true,
   formSteps: [],
@@ -185,6 +186,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   appointmentOptions: 'form',
   brpPersonenRequestOptions: 'advanced-configuration',
   newRendererEnabled: 'form',
+  newLogicEvaluationEnabled: 'form',
 };
 
 const TRANSLATION_FIELD_TO_TAB_NAMES = {

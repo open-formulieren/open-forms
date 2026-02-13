@@ -8180,6 +8180,13 @@ components:
           type: boolean
           title: Enable new renderer
           description: Enable the new renderer.
+        newLogicEvaluationEnabled:
+          type: boolean
+          title: Enable new logic rule evaluation
+          description: Enabling this will analyze logic rules and re-order them according
+            to their dependency on other logic rules (happens when the form is saved).
+            Each rule will be automatically assigned to one or more steps on which
+            it will be executed.
       required:
       - communicationPreferencesPortalUrl
       - cosignHasLinkInEmail
@@ -9851,6 +9858,13 @@ components:
           type: boolean
           title: Enable new renderer
           description: Enable the new renderer.
+        newLogicEvaluationEnabled:
+          type: boolean
+          title: Enable new logic rule evaluation
+          description: Enabling this will analyze logic rules and re-order them according
+            to their dependency on other logic rules (happens when the form is saved).
+            Each rule will be automatically assigned to one or more steps on which
+            it will be executed.
     PatchedFormDefinition:
       type: object
       properties:

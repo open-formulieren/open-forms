@@ -24,6 +24,8 @@ class FormLogicAdmin(OrderedModelAdmin):
     search_fields = ("uuid", "description", "json_logic_trigger")
     raw_id_fields = ("form", "trigger_from_step")
 
+    readonly_fields = ("form_steps",)
+
     @admin.display(description=_("form"))
     def form_admin_name(self, obj):
         return obj.form.admin_name
