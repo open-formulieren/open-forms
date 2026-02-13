@@ -64,7 +64,7 @@ class PluginTests(OFVCRMixin, TestCase):
        will be in the future, so changes to the tests might be needed.
     """
 
-    RECORDING_DATETIME: str = "2026-02-02T12:32:56+02:00"
+    RECORDING_DATETIME: str = "2026-02-13T08:32:56+02:00"
 
     def setUp(self):
         super().setUp()
