@@ -234,6 +234,7 @@ def _get_initial_data_for_clear_on_hide(step: SubmissionStep) -> FormioData:
 
         # If we have an already saved value, use that, otherwise use the default value
         # (which should be the empty value if it is a custom one).
+        # TODO-5685: get rid of template expressions here somehow?
         initial_data[key] = (
             saved_data[key]
             if key in saved_data
