@@ -272,7 +272,7 @@ class FormAdmin(
 
     @admin.display(description=_("Live"), boolean=True)
     def is_live(self, obj: Form) -> bool:
-        return obj.active and not obj._is_deleted
+        return obj.active and not obj._is_deleted and not obj.maintenance_mode
 
     def get_form(self, request, *args, **kwargs):
         # no actual changes to the fields are triggered, we're only ending up here
