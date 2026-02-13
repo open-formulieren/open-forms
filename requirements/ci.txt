@@ -311,6 +311,10 @@ django-modeltranslation==0.19.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+django-o365mail==1.1.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-ordered-model==3.6
     # via
     #   -c requirements/base.txt
@@ -668,6 +672,7 @@ o365==2.0.31
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   django-o365mail
 oauthlib==3.2.2
     # via
     #   -c requirements/base.txt

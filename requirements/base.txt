@@ -195,6 +195,8 @@ django-log-outgoing-requests==0.7.1
     # via -r requirements/base.in
 django-modeltranslation==0.19.4
     # via -r requirements/base.in
+django-o365mail==1.1.0
+    # via -r requirements/base.in
 django-ordered-model==3.6
     # via
     #   -r requirements/base.in
@@ -375,7 +377,9 @@ nh3==0.3.2
 numpy==2.3.3
     # via shapely
 o365==2.0.31
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   django-o365mail
 oauthlib==3.2.2
     # via requests-oauthlib
 odfpy==1.4.1

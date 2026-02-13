@@ -72,6 +72,13 @@ Common settings
 Email settings
 --------------
 
+* ``MAILER_USE_BACKEND``: Configure the e-mail backend. Defaults to ``django.core.mail.backends.smtp.EmailBackend``. Set to ``django_o365mail.EmailBackend`` for sending via the Office365 Graph API.
+
+* ``DEFAULT_FROM_EMAIL``: The email address to use a default sender. Defaults
+  to ``openforms@example.com``.
+
+**SMTP**
+
 * ``EMAIL_HOST``: Email server host. Defaults to ``localhost``.
 
 * ``EMAIL_PORT``: Email server port. Defaults to ``25``.
@@ -83,10 +90,21 @@ Email settings
 * ``EMAIL_USE_TLS``: Indicates whether the email server uses TLS. Defaults to
   ``False``.
 
-* ``DEFAULT_FROM_EMAIL``: The email address to use a default sender. Defaults
-  to ``openforms@example.com``.
-
 * ``EMAIL_TIMEOUT``: How long to wait for blocking operations like the connection attempt, in seconds. Defaults to ``10``.
+
+**Office365 Graph API**
+
+* ``O365_MAIL_CLIENT_ID``: Application client ID for Office365 Graph API authentication. Defaults to ``""``.
+
+* ``O365_MAIL_CLIENT_SECRET``: Application client secret for Office365 Graph API authentication. Defaults to ``""``.
+
+* ``O365_MAIL_TENANT_ID``: Tenant ID where the application is registered. Defaults to ``""``.
+
+* ``O365_MAIL_RESOURCE``: The email address/mailbox resource to use for sending emails. Optional - if not specified, the default mailbox for the authenticated user will be used. Defaults to ``""``.
+
+* ``O365_MAIL_SAVE_TO_SENT``: Whether to save sent emails. Defaults to ``False``.
+
+* ``O365_ACTUALLY_SEND_IN_DEBUG``: Whether to actually send emails when ``DEBUG`` is enabled. Defaults to ``False``.
 
 .. _installation_config_cors:
 
