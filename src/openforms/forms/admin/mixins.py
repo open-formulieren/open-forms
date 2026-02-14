@@ -54,6 +54,7 @@ class FormioConfigMixin:
                     {"label": label, "value": value}
                     for value, label in VertrouwelijkheidsAanduidingen.choices
                 ],
+                "form_mode": "default",
             }
         )
 

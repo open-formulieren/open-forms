@@ -17,7 +17,7 @@ class ComponentWithCustomErrorsTests(TestCase):
         submission = SubmissionFactory.create(language_code="en")
 
         get_translated_custom_error_messages(
-            FormioConfigurationWrapper(config), submission
+            FormioConfigurationWrapper(config), submission.language_code
         )
 
         self.assertNotIn("errors", config["components"][0])
@@ -48,7 +48,7 @@ class ComponentWithCustomErrorsTests(TestCase):
         submission = SubmissionFactory.create(language_code="en")
 
         get_translated_custom_error_messages(
-            FormioConfigurationWrapper(config), submission
+            FormioConfigurationWrapper(config), submission.language_code
         )
 
         self.assertEqual(
@@ -87,7 +87,7 @@ class ComponentWithCustomErrorsTests(TestCase):
         submission = SubmissionFactory.create(language_code="en")
 
         get_translated_custom_error_messages(
-            FormioConfigurationWrapper(config), submission
+            FormioConfigurationWrapper(config), submission.language_code
         )
 
         self.assertEqual(

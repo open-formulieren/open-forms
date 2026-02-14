@@ -27,7 +27,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 02 Feb 2026 14:10:45 GMT
+      - Fri, 13 Feb 2026 11:08:13 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()
@@ -60,26 +60,36 @@ interactions:
       language:
       - en
     method: GET
-    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/availabletimelist?locationId=f3b8864b-2e08-4d01-99db-e36f49f3e19c&fromDate=2026-02-02&toDate=2026-02-03&activityId=6063baab-b077-4eaf-8671-98394793724c&amount=1
+    uri: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/appointment/availabletimelist?locationId=f3b8864b-2e08-4d01-99db-e36f49f3e19c&fromDate=2026-02-13&toDate=2026-02-14&activityId=6063baab-b077-4eaf-8671-98394793724c&amount=1
   response:
     body:
-      string: "{\r\n  \"availableTimesList\": [\r\n    \"2026-02-02T15:15:00\",\r\n
-        \   \"2026-02-02T15:20:00\",\r\n    \"2026-02-02T15:25:00\",\r\n    \"2026-02-02T15:30:00\",\r\n
-        \   \"2026-02-02T15:35:00\",\r\n    \"2026-02-02T15:40:00\",\r\n    \"2026-02-02T15:45:00\",\r\n
-        \   \"2026-02-02T15:50:00\",\r\n    \"2026-02-02T15:55:00\",\r\n    \"2026-02-02T16:00:00\",\r\n
-        \   \"2026-02-02T16:05:00\",\r\n    \"2026-02-02T16:10:00\",\r\n    \"2026-02-02T16:15:00\",\r\n
-        \   \"2026-02-02T16:20:00\",\r\n    \"2026-02-02T16:25:00\",\r\n    \"2026-02-02T16:30:00\",\r\n
-        \   \"2026-02-02T16:35:00\",\r\n    \"2026-02-02T16:40:00\",\r\n    \"2026-02-02T16:45:00\",\r\n
-        \   \"2026-02-02T16:50:00\"\r\n  ],\r\n  \"appointmentDuration\": 600\r\n}"
+      string: "{\r\n  \"availableTimesList\": [\r\n    \"2026-02-13T12:10:00\",\r\n
+        \   \"2026-02-13T12:15:00\",\r\n    \"2026-02-13T12:20:00\",\r\n    \"2026-02-13T13:00:00\",\r\n
+        \   \"2026-02-13T13:05:00\",\r\n    \"2026-02-13T13:10:00\",\r\n    \"2026-02-13T13:15:00\",\r\n
+        \   \"2026-02-13T13:20:00\",\r\n    \"2026-02-13T13:25:00\",\r\n    \"2026-02-13T13:30:00\",\r\n
+        \   \"2026-02-13T13:35:00\",\r\n    \"2026-02-13T13:40:00\",\r\n    \"2026-02-13T13:45:00\",\r\n
+        \   \"2026-02-13T13:50:00\",\r\n    \"2026-02-13T13:55:00\",\r\n    \"2026-02-13T14:00:00\",\r\n
+        \   \"2026-02-13T14:05:00\",\r\n    \"2026-02-13T14:10:00\",\r\n    \"2026-02-13T14:15:00\",\r\n
+        \   \"2026-02-13T14:20:00\",\r\n    \"2026-02-13T14:25:00\",\r\n    \"2026-02-13T14:30:00\",\r\n
+        \   \"2026-02-13T14:35:00\",\r\n    \"2026-02-13T14:40:00\",\r\n    \"2026-02-13T14:45:00\",\r\n
+        \   \"2026-02-13T14:50:00\",\r\n    \"2026-02-13T14:55:00\",\r\n    \"2026-02-13T15:00:00\",\r\n
+        \   \"2026-02-13T15:05:00\",\r\n    \"2026-02-13T15:10:00\",\r\n    \"2026-02-13T15:15:00\",\r\n
+        \   \"2026-02-13T15:20:00\",\r\n    \"2026-02-13T15:25:00\",\r\n    \"2026-02-13T15:30:00\",\r\n
+        \   \"2026-02-13T15:35:00\",\r\n    \"2026-02-13T15:40:00\",\r\n    \"2026-02-13T15:45:00\",\r\n
+        \   \"2026-02-13T15:50:00\",\r\n    \"2026-02-13T15:55:00\",\r\n    \"2026-02-13T16:00:00\",\r\n
+        \   \"2026-02-13T16:05:00\",\r\n    \"2026-02-13T16:10:00\",\r\n    \"2026-02-13T16:15:00\",\r\n
+        \   \"2026-02-13T16:20:00\",\r\n    \"2026-02-13T16:25:00\",\r\n    \"2026-02-13T16:30:00\",\r\n
+        \   \"2026-02-13T16:35:00\",\r\n    \"2026-02-13T16:40:00\",\r\n    \"2026-02-13T16:45:00\",\r\n
+        \   \"2026-02-13T16:50:00\"\r\n  ],\r\n  \"appointmentDuration\": 600\r\n}"
     headers:
       content-length:
-      - '626'
+      - '1466'
       content-security-policy:
       - frame-ancestors 'self'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 02 Feb 2026 14:10:46 GMT
+      - Fri, 13 Feb 2026 11:08:13 GMT
       permissions-policy:
       - accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(),
         microphone=(), payment=(), usb=()

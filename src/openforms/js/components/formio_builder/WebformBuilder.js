@@ -40,6 +40,7 @@ const FILE_TYPES = jsonScriptToVar('config-UPLOAD_FILETYPES', {default: []});
 const MAX_FILE_UPLOAD_SIZE = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE', {default: 'unknown'});
 const RICH_TEXT_COLORS = jsonScriptToVar('config-RICH_TEXT_COLORS', {default: []});
 const MAP_TILE_LAYERS = jsonScriptToVar('config-MAP_TILE_LAYERS', {default: []});
+const FORM_MODE = jsonScriptToVar('FORM_MODE', {default: 'default'});
 
 const WebformBuilderFormio = Formio.Builders.builders.webform;
 
@@ -164,6 +165,7 @@ class WebformBuilder extends WebformBuilderFormio {
         <IntlProvider {...intlProviderProps}>
           <ComponentConfiguration
             // Context binding
+            formMode={FORM_MODE ? FORM_MODE : 'default'}
             uniquifyKey={uniquifyKey}
             supportedLanguageCodes={LANGUAGES}
             theme={currentTheme.getValue()}
