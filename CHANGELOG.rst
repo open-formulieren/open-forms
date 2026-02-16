@@ -14,6 +14,30 @@ rules and/or form definitions when the feature flag for new logic rule analysis 
 The validation and reordering of logic rules happens on form save, so modiying indiviual logic rules might
 result in out-of-sync analysis.
 
+Upgrade procedure
+-----------------
+
+To upgrade to 3.5, please:
+
+* ⚠️ An script was created to address possible inaccurate payment statusses for
+  failed payments for the Worldline payment provider.
+
+  .. warning::
+
+      Previously it was assumed that failed payments could not have their
+      statusses changed through the webhooks mechanism. This was incorrect as this
+      is possible with the Worldline payment provider. Changes were introduced for
+      new payments but existing payments were not affected by these. The script
+      below processes all failed payments that might have a different status in the
+      Worldline API that were ignored previously. Whenever the Worldline API has a
+      different status, the current status from the Worldline API will be applied
+      to these payments.
+
+      .. code-block:: bash
+
+          # in the container via ``docker exec`` or ``kubectl exec``:
+          python /app/bin/fix_payment_status.py
+
 3.5.0-alpha.1 (2026-02-12)
 ==========================
 

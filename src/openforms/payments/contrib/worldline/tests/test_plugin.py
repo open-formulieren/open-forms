@@ -592,6 +592,109 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         self.assertEqual(payment.public_order_id, "2025/OF-KUTK8B/5")
         self.assertEqual(payment.provider_payment_id, "12345")
 
+    def test_webhook_event_retry(self):
+        # create a dummy configuration entry to verify that the runtime code selects the
+        # correct one
+        WorldlineWebhookConfigurationFactory.create()
+        webhook_configuration = WorldlineWebhookConfigurationFactory.create()
+        merchant = WorldlineMerchantFactory.create(pspid="psp123")
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__slug="myform",
+            form__payment_backend="worldline",
+            form__payment_backend_options={"merchant": merchant.id},
+            form__product__price=Decimal("11.35"),
+        )
+        payment = SubmissionPaymentFactory.for_submission(
+            submission, public_order_id="2025/OF-KUTK8B/5", provider_payment_id="12345"
+        )
+
+        assert payment.status == PaymentStatus.started
+
+        plugin = register["worldline"]
+        webhook_url = plugin.get_webhook_url(factory.get("/foo"))
+
+        # Pending webhook event
+        data = WebhookEventRequestFactory.build(
+            payment__status=_WorldlinePaymentStatus.pending_approval,
+            payment__id="000000850010000188130000200001",  # should be ignored in this scenario
+            payment__paymentOutput__references=ReferencesFactory(
+                merchantReference="2025/OF-KUTK8B/5",
+            ),
+            type="payment.pending_approval",
+        )
+
+        response = self.client.post(
+            webhook_url,
+            data=data,
+            content_type="application/json",
+            headers={
+                "X-GCS-KeyId": webhook_configuration.webhook_key_id,
+                "X-GCS-Signature": generate_webhook_signature(
+                    webhook_configuration.webhook_key_secret, data
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.processing)
+
+        # Failed payment webhook event
+        data = WebhookEventRequestFactory.build(
+            payment__status=_WorldlinePaymentStatus.rejected,
+            payment__id="000000850010000188130000200001",  # should be ignored in this scenario
+            payment__paymentOutput__references=ReferencesFactory(
+                merchantReference="2025/OF-KUTK8B/5",
+            ),
+            type="payment.rejected",
+        )
+
+        response = self.client.post(
+            webhook_url,
+            data=data,
+            content_type="application/json",
+            headers={
+                "X-GCS-KeyId": webhook_configuration.webhook_key_id,
+                "X-GCS-Signature": generate_webhook_signature(
+                    webhook_configuration.webhook_key_secret, data
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.failed)
+
+        # Succesful retry payment webhook event
+        data = WebhookEventRequestFactory.build(
+            payment__status=_WorldlinePaymentStatus.captured,
+            payment__id="000000850010000188130000200001",  # should be ignored in this scenario
+            payment__paymentOutput__references=ReferencesFactory(
+                merchantReference="2025/OF-KUTK8B/5",
+            ),
+            type="payment.captured",
+        )
+
+        response = self.client.post(
+            webhook_url,
+            data=data,
+            content_type="application/json",
+            headers={
+                "X-GCS-KeyId": webhook_configuration.webhook_key_id,
+                "X-GCS-Signature": generate_webhook_signature(
+                    webhook_configuration.webhook_key_secret, data
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.completed)
+
     def test_webhook_no_payment_id(self):
         webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")

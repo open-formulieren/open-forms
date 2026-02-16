@@ -26,9 +26,9 @@ class PaymentStatus(models.TextChoices):
     # in-progress
     started = "started", _("Started by user")
     processing = "processing", _("Backend is processing")
+    failed = "failed", _("Cancelled or failed")
 
     # payment finished
-    failed = "failed", _("Cancelled or failed")
     completed = "completed", _("Completed by user")
 
     # flow done
@@ -40,7 +40,6 @@ class PaymentStatus(models.TextChoices):
 
 
 PAYMENT_STATUS_FINAL: Set[str] = {
-    PaymentStatus.failed.value,
     PaymentStatus.completed.value,
     PaymentStatus.registered.value,
 }

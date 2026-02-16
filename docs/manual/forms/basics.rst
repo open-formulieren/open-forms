@@ -241,6 +241,12 @@ Er zijn twee mogelijke flows om inzendingen te registreren voor formulieren waar
    wordt aangepast.
 2. De inzending wordt naar de registratiebackend gestuurd pas ná dat de betaling voltooid is.
 
+.. warning:: Afhankelijk van de betalingsprovider, kan het zijn dat de status van de betaling
+    op een later moment aangepast kan worden vanuit de betalingsprovider. Dit kan bijvoorbeeld
+    voorkomen wanneer een betaling mislukt, maar bij een volgende poging wel slaagt. De
+    status van de betaling kan in deze situatie in eerste instantie op "Geannuleerd of mislukt" staan
+    maar na een succesvolle poging op "Voltooid door gebruiker".
+
 De flow kan ingesteld worden in de **Algemene Configuratie**.
 
 Zie ook: :ref:`configuration_general_payment_flow`
