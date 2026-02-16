@@ -78,7 +78,7 @@ class CheckboxChoicesArrayField(MultipleChoiceField):
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("choices", self.get_field_choices)
-        for kwarg in ("base_field", "max_length", "nested"):
+        for kwarg in ("base_field", "max_length", "nested", "schema"):
             if kwarg in kwargs:  # pragma: no cover
                 kwargs.pop(kwarg)
         super().__init__(*args, **kwargs)
