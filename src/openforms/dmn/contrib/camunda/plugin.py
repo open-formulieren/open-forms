@@ -4,7 +4,6 @@ from typing import Any
 from django.utils.translation import gettext_lazy as _
 
 import requests
-import simplejson  # dependency pulled in via mail-parser...
 import structlog
 from django_camunda.client import Camunda, get_client
 from django_camunda.dmn import evaluate_dmn, get_dmn_parser
@@ -48,7 +47,7 @@ def handle_camunda_error(error: requests.HTTPError):
 
     try:
         response_body = error.response.json()
-    except (json.JSONDecodeError, simplejson.JSONDecodeError) as exc:
+    except json.JSONDecodeError as exc:
         log.exception("json_body_decode_failure", exc_info=exc)
     else:
         log.error("camunda_request_failure", body=response_body)
