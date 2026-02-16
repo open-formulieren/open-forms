@@ -18,7 +18,6 @@ import tinymce.models
 
 import openforms.config.models.config
 import openforms.emails.validators
-import openforms.payments.validators
 import openforms.template.validators
 import openforms.utils.fields
 import openforms.utils.translations

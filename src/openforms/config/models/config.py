@@ -16,7 +16,6 @@ from zgw_consumers.models import Service
 
 from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.validators import URLSanitationValidator
-from openforms.payments.validators import validate_payment_order_id_template
 from openforms.template import (
     extract_variables_used,
     openforms_backend,
@@ -26,8 +25,9 @@ from openforms.template.validators import DjangoTemplateValidator
 from openforms.translations.utils import ensure_default_language
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
+from openforms.utils.validators import IdTemplateValidator
 
-from ..constants import FamilyMembersDataAPIChoices, UploadFileType
+from ..constants import DEFAULT_ALPHABET, FamilyMembersDataAPIChoices, UploadFileType
 from ..utils import verify_clamav_connection
 from .theme import Theme
 
@@ -426,7 +426,7 @@ class GlobalConfiguration(SingletonModel):
             "Template to use when generating payment order IDs. It should be alpha-numerical and can contain the '/._-' characters. "
             "You can use the placeholder tokens: {year}, {public_reference}, {uid}.",
         ),
-        validators=[validate_payment_order_id_template],
+        validators=[IdTemplateValidator()],
     )
 
     # Privacy policy related fields
@@ -642,6 +642,29 @@ class GlobalConfiguration(SingletonModel):
             "Should a submission be processed (sent to the registration backend) only after payment has been received?"
         ),
         default=False,
+    )
+
+    public_reference_template = models.CharField(
+        _("Public reference template"),
+        max_length=20,
+        default="OF-{uid}",
+        help_text=_(
+            "Template to use when generating public reference of the submission. It should be alpha-numerical "
+            "and can contain the '/._-' characters. You can use the placeholder tokens: "
+            "{year}, {uid}.",
+        ),
+        validators=[
+            IdTemplateValidator(allowed_groups=("{year}", "{uid}", "/", ".", "_", "-"))
+        ],
+    )
+    public_reference_alphabet = models.CharField(
+        _("Public reference alphabet"),
+        max_length=32,
+        default=DEFAULT_ALPHABET,
+        help_text=_(
+            "Alphabet used to generate the {uid} part of the public reference of the submission. "
+            "The sequence is shuffled in the unique way for each instance of Open Forms "
+        ),
     )
 
     objects = GlobalConfigurationManager()

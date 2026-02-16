@@ -1,3 +1,5 @@
+.. _manual_submissions:
+
 ===========
 Inzendingen
 ===========
@@ -43,12 +45,16 @@ beschikbaar tot het moment van schoning.
 **Handleidingen per plugin**
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
 
    registration/objects-api
+   registration/zgw-apis
+
+Instellingen
+============
 
 Opschonen
-=========
+---------
 
 Inzendingen worden regelmatig geschoond. Er is een aantal instellingen die
 de manier en periode van opschoning beïnvloeden. Zo kunnen inzendingen na
@@ -61,3 +67,27 @@ een inzending verwijderd worden.
 
     Verwijderde inzendingen zijn ook echt verwijderd. Deze kunnen niet worden
     teruggehaald omwille van privacy en archiveringswetgeving.
+
+.. _manual_submissions_public_reference:
+
+Referentienummers
+-----------------
+
+Elke inzending krijgt een referentienummer. De klant die het formulier instuurt kan met
+deze referentie contact opnemen met de organisatie om informatie op te vragen of
+problemen te melden.
+
+Afhankelijk van de (formulier)instellingen wordt dit nummer door Open Formulieren of
+door een externe registratieplugin gegenereerd. Als de generatie van de externe plugin
+faalt, dan genereert Open Formulieren zelf een referentie zodat de klant altijd iets van
+houvast heeft.
+
+In de **Admin** > **Configuratie** > **Algemene configuratie** kan de beheerder onder
+"Inzendingen" het sjabloon voor de referentienummers instellen. Het standaardsjabloon
+is ``OF-{uid}``.
+
+In dit sjabloon kan je alle alfanumerieke karakters gebruiken, de karakters ``-``, ``_``,
+``/``, ``.`` en de speciale instructies:
+
+* ``{uid}`` (verplicht) - het unieke nummer, bestaande uit hoofdletters en cijfers
+* ``{year}`` - huidige jaar, in het formaat ``JJJJ``, bijvoorbeeld 2026

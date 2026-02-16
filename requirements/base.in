@@ -33,6 +33,7 @@ self-certifi
 semantic-version
 schwifty
 shapely  # map geometry shapes
+sqids
 tabulate
 tqdm
 typing-extensions

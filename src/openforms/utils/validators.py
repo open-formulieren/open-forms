@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils.deconstruct import deconstructible
@@ -144,3 +146,46 @@ class IBANValidator:
 
 
 validate_iban = IBANValidator()
+
+
+@deconstructible
+class IdTemplateValidator:
+    def __init__(
+        self,
+        allowed_groups: Sequence[str] = (
+            "{year}",
+            "{public_reference}",
+            "{uid}",
+            "/",
+            ".",
+            "_",
+            "-",
+        ),
+    ):
+        self.allowed_groups = allowed_groups
+
+    def __call__(self, value: str) -> None:
+        if "{uid}" not in value:
+            raise ValidationError(_("The template must include the {uid} placeholder."))
+
+        for allowed in self.allowed_groups:
+            value = value.replace(allowed, "")
+
+        if value and not value.isalnum():
+            # build human readable error message
+            special_chars = [char for char in self.allowed_groups if len(char) == 1]
+            if not special_chars:
+                csv_chars = last_char = ""
+                msg = _("The template may only consist of alphanumeric characters.")
+            else:
+                msg = _(
+                    "The template may only consist of alphanumeric{csv_chars} and "
+                    "{last_char} characters."
+                )
+                csv_chars = (
+                    f", {', '.join(special_chars[:-1])}"
+                    if len(special_chars) > 1
+                    else ""
+                )
+                last_char = special_chars[-1]
+            raise ValidationError(msg.format(csv_chars=csv_chars, last_char=last_char))

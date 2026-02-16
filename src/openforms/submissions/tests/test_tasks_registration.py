@@ -1,91 +1,82 @@
-import threading
-import time
 from unittest.mock import patch
 
-from django.db import close_old_connections
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 
-from ..public_references import set_submission_reference
+from freezegun import freeze_time
+
+from ...config.models import GlobalConfiguration
+from ..public_references import generate_unique_submission_reference
 from .factories import SubmissionFactory
 
 
 class ObtainSubmissionReferenceTests(TestCase):
-    def test_reference_generator_checks_for_used_references(self):
-        RANDOM_STRINGS = ["UNIQUE", "OTHER"]
-        SubmissionFactory.create(
-            completed=True,
-            registration_success=True,
-            public_registration_reference=f"OF-{RANDOM_STRINGS[0]}",
-        )
-        submission = SubmissionFactory.create(
-            form__registration_backend="zgw-create-zaak",
-            completed=True,
-            registration_success=True,
-            registration_result={"bad": {"result": "shape"}},
-        )
+    def test_generate_public_reference_seeded_on_pk(self):
+        """
+        test that the generated reference is idempotent and with pk as a seed value
+        """
+        submission = SubmissionFactory.create()
+        reference = generate_unique_submission_reference(submission)
 
-        def get_random_string(*args, **kwargs):
-            return RANDOM_STRINGS.pop(0)
+        with self.subTest("check idempotency"):
+            for _ in range(5):  # just some number of repetitions
+                regenerated_reference = generate_unique_submission_reference(submission)
+
+                self.assertEqual(reference, regenerated_reference)
+
+        with self.subTest("check pk as seed value"):
+            another_submission = SubmissionFactory.create()
+            another_reference = generate_unique_submission_reference(another_submission)
+
+            self.assertNotEqual(reference, another_reference)
+
+    @freeze_time("2026-01-01")
+    def test_generate_public_reference_with_different_templates(self):
+        submission = SubmissionFactory.create()
+
+        # get random sequence first
+        with patch(
+            "openforms.submissions.public_references.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(public_reference_template="{uid}"),
+        ):
+            uid = generate_unique_submission_reference(submission)
+
+            self.assertEqual(len(uid), 6)
+
+        # assert public reference for different templates
+        template_reference_mapping = {
+            "OF-{uid}": f"OF-{uid}",
+            "NL-{year}-{uid}": f"NL-2026-{uid}",
+            "{uid}/xyz": f"{uid}/xyz",
+        }
+        for template, expected_reference in template_reference_mapping.items():
+            with self.subTest(template):
+                with patch(
+                    "openforms.submissions.public_references.GlobalConfiguration.get_solo",
+                    return_value=GlobalConfiguration(
+                        public_reference_template=template
+                    ),
+                ):
+                    reference = generate_unique_submission_reference(submission)
+
+                self.assertEqual(reference, expected_reference)
+
+    def test_generate_public_reference_with_different_alphabet(self):
+        submission = SubmissionFactory.create()
 
         with patch(
-            "openforms.submissions.public_references.get_random_string",
-            new=get_random_string,
+            "openforms.submissions.public_references.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                public_reference_alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+            ),
         ):
-            set_submission_reference(submission)
+            reference1 = generate_unique_submission_reference(submission)
 
-        submission.refresh_from_db()
-        self.assertEqual(submission.public_registration_reference, "OF-OTHER")
+        with patch(
+            "openforms.submissions.public_references.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                public_reference_alphabet="69SRQPAXEWMZB8LNY4GFU7THVDJ523KC"
+            ),
+        ):
+            reference2 = generate_unique_submission_reference(submission)
 
-
-class RaceConditionTests(TransactionTestCase):
-    def test_race_condition_generating_unique_reference(self):
-        """
-        Assert that race conditions don't cause crashes.
-
-        This test starts a separate thread simulating the coincidence that the same
-        reference is created while a reference is being generated, causing a unique
-        constraint violation. The reference generator should recover from this
-        automatically.
-        """
-        RANDOM_STRINGS = ["UNIQUE", "OTHER"]
-        submission1, submission2 = SubmissionFactory.create_batch(
-            2,
-            form__registration_backend="zgw-create-zaak",
-            completed=True,
-            registration_success=True,
-            registration_result={"bad": {"result": "shape"}},
-        )
-
-        def generate_unique_submission_reference(*args, **kwargs):
-            string = RANDOM_STRINGS.pop(0)
-            # introduce a delay so that the other thread can insert the same reference
-            time.sleep(0.5)
-            return f"OF-{string}"
-
-        def race_condition():
-            submission2.public_registration_reference = "OF-UNIQUE"
-            submission2.save(update_fields=["public_registration_reference"])
-            close_old_connections()
-
-        # code affected by race condition
-        def obtain_reference():
-            with patch(
-                "openforms.submissions.public_references.generate_unique_submission_reference",
-                new=generate_unique_submission_reference,
-            ):
-                set_submission_reference(submission1)
-                close_old_connections()
-
-        race_condition_thread = threading.Thread(target=race_condition)
-        obtain_reference_thread = threading.Thread(target=obtain_reference)
-
-        # start and wait for threads to finish
-        obtain_reference_thread.start()
-        race_condition_thread.start()
-        race_condition_thread.join()
-        obtain_reference_thread.join()
-
-        submission1.refresh_from_db()
-        submission2.refresh_from_db()
-        self.assertEqual(submission2.public_registration_reference, "OF-UNIQUE")
-        self.assertEqual(submission1.public_registration_reference, "OF-OTHER")
+        self.assertNotEqual(reference1, reference2)

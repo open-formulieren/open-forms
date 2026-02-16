@@ -31,6 +31,7 @@ from openforms.contrib.zgw.service import (
 from openforms.emails.service import get_last_confirmation_email
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.submissions.public_references import generate_unique_submission_reference
 from openforms.typing import VariableValue
 from openforms.utils.date import datetime_in_amsterdam
 from openforms.utils.pdf import convert_html_to_pdf
@@ -229,6 +230,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         """
         Create a Zaak, so that we can have a registration ID.
 
+        At this step we always create a zaak, but we can use other method to generate the registration ID.
         Note: The Rol, Status, the documents for the files uploaded by the user in the form (attachments) and the
         confirmation report PDF will be added in the registration task (after the report has been generated).
         """
@@ -241,6 +243,10 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         zaak_data = apply_data_mapping(
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
         )
+        # if we generate the reference in OF and use it as a Zaak identifier
+        if not zgw.use_generated_zaaknummer:
+            public_reference = generate_unique_submission_reference(submission)
+            zaak_data["identificatie"] = public_reference
 
         # resolve zaaktype to use
         if case_type_identification := options["case_type_identification"]:

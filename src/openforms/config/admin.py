@@ -35,6 +35,7 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
             _("Submissions"),
             {
                 "fields": (
+                    "public_reference_template",
                     "submission_confirmation_title",
                     "submission_confirmation_template",
                     "submission_report_download_link_title",

@@ -11,8 +11,10 @@ from django.utils.translation import get_language
 import factory
 import faker
 import magic
+from sqids import Sqids
 
 from openforms.authentication.constants import AuthAttribute
+from openforms.config.constants import DEFAULT_ALPHABET
 from openforms.formio.service import FormioData
 from openforms.formio.typing import Component
 from openforms.forms.tests.factories import (
@@ -38,7 +40,6 @@ from ..models import (
     SubmissionValueVariable,
     TemporaryFileUpload,
 )
-from ..public_references import get_random_reference
 
 
 def _calculate_price(
@@ -49,6 +50,21 @@ def _calculate_price(
         return
 
     submission.calculate_price(save=create)
+
+
+def _generate_unique_submission_reference(n: int) -> str:
+    """
+    generate public reference for tests based on int parameter.
+
+    Deterministic helper function which doesn't use the GlobalConfiguration model and can't be
+    used to test submission.public_registration_reference
+    """
+    template = "OF-{uid}"
+
+    sqids = Sqids(min_length=6, alphabet=DEFAULT_ALPHABET)
+    uid = sqids.encode([n])
+
+    return template.format(uid=uid)
 
 
 class SubmissionFactory(factory.django.DjangoModelFactory):
@@ -147,7 +163,9 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         )
         with_public_registration_reference = factory.Trait(
             completed=True,
-            public_registration_reference=factory.LazyFunction(get_random_reference),
+            public_registration_reference=factory.Sequence(
+                _generate_unique_submission_reference
+            ),
         )
         cosigned = factory.Trait(
             completed=True,
