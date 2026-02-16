@@ -41,6 +41,16 @@
       "value": "Remove"
     }
   ],
+  "+d6rRS": [
+    {
+      "type": 0,
+      "value": "This rule will be executed on step(s): "
+    },
+    {
+      "type": 1,
+      "value": "steps"
+    }
+  ],
   "+dcHiF": [
     {
       "type": 0,

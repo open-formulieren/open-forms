@@ -19,6 +19,11 @@
     "description": "ZGW APIs registration: default overrides fieldset title",
     "originalDefault": "Optional ZGW configuration"
   },
+  "+d6rRS": {
+    "defaultMessage": "This rule will be executed on step(s): {steps}",
+    "description": "Execute on step(s) label",
+    "originalDefault": "This rule will be executed on step(s): {steps}"
+  },
   "+dcHiF": {
     "defaultMessage": "Tijdens de registratie wordt een zaak van dit zaaktype aangemaakt.",
     "description": "ZGW APIs registration options 'case type' helpText",

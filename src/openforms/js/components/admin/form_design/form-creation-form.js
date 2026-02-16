@@ -1240,6 +1240,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           translationEnabled: state.form.translationEnabled,
           registrationBackends: state.form.registrationBackends,
           selectedAuthPlugins: state.selectedAuthPlugins,
+          newLogicEvaluationEnabled: state.form.newLogicEvaluationEnabled,
         }}
       >
         <FormWarnings form={state.form} />

@@ -1323,8 +1323,9 @@ class FormLogicAPITests(APITestCase):
         # 5. Look up all the form variables for the form (once)
         # 6. Get max order within form (from ordered_model.models.OrderedModelQuerySet.bulk_create)
         # 7. Bulk insert logic rules
-        # 8. transaction RELEASE SAVEPOINT
-        with self.assertNumQueries(8):
+        # 8. Prefetch form steps for all rules
+        # 9. transaction RELEASE SAVEPOINT
+        with self.assertNumQueries(9):
             response = self.client.put(url, data=form_logic_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
