@@ -1,0 +1,58 @@
+interactions:
+- request:
+    body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+      "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
+      "registratiedatum": "2026-02-13", "startdatum": "2026-02-13", "productenOfDiensten":
+      [], "omschrijving": "Form 000", "toelichting": "Aangemaakt door Open Formulieren",
+      "betalingsindicatie": "nvt", "identificatie": "OF-JCRWBX"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Crs:
+      - EPSG:4326
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Crs:
+      - EPSG:4326
+      Content-Length:
+      - '404'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: http://localhost:8003/zaken/api/v1/zaken
+  response:
+    body:
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/a26efe12-d552-462b-a075-048cd8330d66","uuid":"a26efe12-d552-462b-a075-048cd8330d66","identificatie":"OF-JCRWBX","bronorganisatie":"000000000","omschrijving":"Form
+        000","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-02-13","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-02-13","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+        is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
+    headers:
+      API-version:
+      - 1.5.1
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Content-Crs:
+      - EPSG:4326
+      Content-Length:
+      - '1378'
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Location:
+      - http://localhost:8003/zaken/api/v1/zaken/a26efe12-d552-462b-a075-048cd8330d66
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 201
+      message: Created
+version: 1

@@ -3487,3 +3487,107 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "subVerblijfBuitenland": None,
             },
         )
+
+    def test_pre_registration_use_zaaknummer_as_reference(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={
+                "someText": "Foo",
+            },
+            bsn="111222333",
+        )
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "document_type_description": "",
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+        }
+
+        plugin = ZGWRegistration("zgw")
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert pre_registration_result.data is not None
+
+        self.assertEqual(
+            pre_registration_result.reference,
+            pre_registration_result.data["zaak"]["identificatie"],
+        )
+        self.assertTrue(pre_registration_result.reference.startswith("ZAAK-"))
+
+    @patch(
+        "openforms.registrations.contrib.zgw_apis.plugin.generate_unique_submission_reference",
+        return_value="OF-JCRWBX",
+    )
+    def test_pre_registration_not_use_zaaknummer_as_reference(self, mock):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={
+                "someText": "Foo",
+            },
+            bsn="111222333",
+        )
+        zgw_group = ZGWApiGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            organisatie_rsin="000000000",
+            use_generated_zaaknummer=False,
+        )
+        catalogi_root = zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": zgw_group,
+            "case_type_identification": "",
+            "document_type_description": "",
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+        }
+
+        plugin = ZGWRegistration("zgw")
+
+        client = get_zaken_client(zgw_group)
+        self.addCleanup(client.close)
+
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert pre_registration_result.data is not None
+
+        self.assertEqual(pre_registration_result.reference, "OF-JCRWBX")
+        self.assertEqual(
+            pre_registration_result.data["zaak"]["identificatie"], "OF-JCRWBX"
+        )
