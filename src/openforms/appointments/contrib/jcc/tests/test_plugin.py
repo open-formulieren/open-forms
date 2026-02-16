@@ -103,8 +103,9 @@ class PluginTests(MockConfigMixin, TestCase):
         m.post(
             "http://example.com/soap11",
             text=location_details_callback,
-            additional_matcher=lambda request: "getGovLocationDetailsRequest"
-            in request.text,
+            additional_matcher=lambda request: (
+                "getGovLocationDetailsRequest" in request.text
+            ),
         )
 
         locations = self.plugin.get_locations()
@@ -403,8 +404,9 @@ class PluginTests(MockConfigMixin, TestCase):
         m.post(
             "http://example.com/soap11",
             text=mock_response("getGovAppointmentDetailsResponse.xml"),
-            additional_matcher=lambda req: "getGovAppointmentDetailsRequest"
-            in req.text,
+            additional_matcher=lambda req: (
+                "getGovAppointmentDetailsRequest" in req.text
+            ),
         )
         m.post(
             "http://example.com/soap11",
@@ -414,8 +416,9 @@ class PluginTests(MockConfigMixin, TestCase):
         m.post(
             "http://example.com/soap11",
             text=mock_response("GetAppointmentQRCodeTextResponse.xml"),
-            additional_matcher=lambda req: "GetAppointmentQRCodeTextRequest"
-            in req.text,
+            additional_matcher=lambda req: (
+                "GetAppointmentQRCodeTextRequest" in req.text
+            ),
         )
         m.post(
             "http://example.com/soap11",
@@ -459,8 +462,9 @@ class PluginTests(MockConfigMixin, TestCase):
         m.post(
             "http://example.com/soap11",
             text=mock_response("getGovAppointmentDetailsResponse.xml"),
-            additional_matcher=lambda req: "getGovAppointmentDetailsRequest"
-            in req.text,
+            additional_matcher=lambda req: (
+                "getGovAppointmentDetailsRequest" in req.text
+            ),
         )
         m.post(
             "http://example.com/soap11",
@@ -470,8 +474,9 @@ class PluginTests(MockConfigMixin, TestCase):
         m.post(
             "http://example.com/soap11",
             text=mock_response("GetAppointmentQRCodeTextResponse.xml"),
-            additional_matcher=lambda req: "GetAppointmentQRCodeTextRequest"
-            in req.text,
+            additional_matcher=lambda req: (
+                "GetAppointmentQRCodeTextRequest" in req.text
+            ),
         )
         m.post(
             "http://example.com/soap11",
@@ -493,8 +498,9 @@ class PluginTests(MockConfigMixin, TestCase):
         m.post(
             "http://example.com/soap11",
             text=mock_response("getGovAppointmentDetailsMultipleProductsResponse.xml"),
-            additional_matcher=lambda req: "getGovAppointmentDetailsRequest"
-            in req.text,
+            additional_matcher=lambda req: (
+                "getGovAppointmentDetailsRequest" in req.text
+            ),
         )
         m.post(
             "http://example.com/soap11",
@@ -504,8 +510,9 @@ class PluginTests(MockConfigMixin, TestCase):
         m.post(
             "http://example.com/soap11",
             text=mock_response("GetAppointmentQRCodeTextResponse.xml"),
-            additional_matcher=lambda req: "GetAppointmentQRCodeTextRequest"
-            in req.text,
+            additional_matcher=lambda req: (
+                "GetAppointmentQRCodeTextRequest" in req.text
+            ),
         )
         m.post(
             "http://example.com/soap11",
@@ -617,8 +624,9 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         m.post(
             "http://example.com/soap11",
             text=location_details_callback,
-            additional_matcher=lambda request: "getGovLocationDetailsRequest"
-            in request.text,
+            additional_matcher=lambda request: (
+                "getGovLocationDetailsRequest" in request.text
+            ),
         )
 
         locations = self.plugin.get_locations()
@@ -742,8 +750,9 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         m.post(
             "http://example.com/soap11",
             text=mock_response("getGovAppointmentDetailsEmptyResponse.xml"),
-            additional_matcher=lambda req: "getGovAppointmentDetailsRequest"
-            in req.text,
+            additional_matcher=lambda req: (
+                "getGovAppointmentDetailsRequest" in req.text
+            ),
         )
 
         with self.assertRaises(AppointmentException):

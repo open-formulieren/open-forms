@@ -1,5 +1,4 @@
 from collections.abc import Iterable
-from typing import Generic, TypeVar
 
 from rest_framework import serializers
 from rest_framework.request import Request
@@ -17,10 +16,7 @@ class SerializerContextMixin:
         return {"request": self.request, "format": self.format_kwarg, "view": self}
 
 
-T = TypeVar("T")
-
-
-class ListMixin(Generic[T], SerializerContextMixin):
+class ListMixin[T](SerializerContextMixin):
     """
     Fetch and serialize a list of objects.
 

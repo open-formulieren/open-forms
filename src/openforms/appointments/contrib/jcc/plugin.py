@@ -3,7 +3,7 @@ from collections.abc import Callable
 from contextlib import contextmanager
 from datetime import date, datetime
 from functools import wraps
-from typing import ParamSpec, TypeVar
+from typing import ParamSpec
 
 from django.urls import reverse
 from django.utils import timezone
@@ -55,12 +55,10 @@ def log_soap_errors(event: str):
 
 
 Param = ParamSpec("Param")
-T = TypeVar("T")
-FuncT = Callable[Param, T]
 
 
-def with_graceful_default(default: T):
-    def decorator(func: FuncT) -> FuncT:
+def with_graceful_default[T](default: T):  # pyright: ignore[reportInvalidTypeVarUse]
+    def decorator(func: Callable[Param, T]) -> Callable[Param, T]:
         @wraps(func)
         def wrapper(*args, **kwargs) -> T:
             try:

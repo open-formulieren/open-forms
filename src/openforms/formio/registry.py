@@ -68,7 +68,7 @@ class PreRegistrationHookProtocol(Protocol[ComponentT]):
     ) -> ComponentPreRegistrationResult: ...
 
 
-class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
+class BasePlugin(Generic[ComponentT], AbstractBasePlugin):  # noqa: UP046
     """
     Base class for Formio component plugins.
     """
