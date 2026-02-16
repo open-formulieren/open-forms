@@ -1390,6 +1390,10 @@ tzlocal==4.3.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   o365
+unittest-parametrize==1.8.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 uritemplate==3.0.1
     # via
     #   -c requirements/ci.txt

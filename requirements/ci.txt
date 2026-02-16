@@ -1267,6 +1267,8 @@ tzlocal==4.3.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   o365
+unittest-parametrize==1.8.0
+    # via -r requirements/test-tools.in
 uritemplate==3.0.1
     # via
     #   -c requirements/base.txt
