@@ -22,6 +22,16 @@ To upgrade to 3.5, please:
 * ⚠️ If you haven't done so yet, please review the manual intervention mentioned in the
   3.4.2 release notes.
 
+Deprecations
+------------
+
+**Content-Security-Policy configuration**
+
+The ``CSP_REPORT_ONLY`` environment variable is deprecated. The upstream library changed
+their settings mechanism and now allows for distinct enforced/report-only configurations.
+
+We'll work on bridging this gap, possibly through an upgrade to Django 6.0.
+
 3.4.2 (2026-02-20)
 ==================
 

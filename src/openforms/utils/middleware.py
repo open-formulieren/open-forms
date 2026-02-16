@@ -28,7 +28,6 @@ class UpdateCSPMiddleware:
             return response
 
         # we're basically copying/extending the @csp_update decorator
-        update = dict((k.lower().replace("_", "-"), v) for k, v in update.items())
 
         # cooperate with possible data from actual decorator
         have = getattr(response, "_csp_update", None)
@@ -51,8 +50,6 @@ def _merge_list_values(left, right) -> list[str]:
 
 def _append_dict_list_values(target, source):
     for k, v in source.items():
-        # normalise the directives
-        k = k.lower().replace("_", "-")
         if k in target:
             target[k] = _merge_list_values(target[k], v)
         else:

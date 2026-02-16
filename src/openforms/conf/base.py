@@ -8,6 +8,7 @@ from django.conf import global_settings as defaults
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
+import csp.constants
 import sentry_sdk
 import structlog
 from celery.schedules import crontab
@@ -1179,73 +1180,66 @@ PAYMENT_CONFIRMATION_EMAIL_TIMEOUT = 60 * 15
 #
 # NOTE: make sure values are a tuple or list, and to quote special values like 'self'
 
-# ideally we'd use BASE_URI but it'd have to be lazy or cause issues
-CSP_DEFAULT_SRC = [
-    "'self'",
-] + config("CSP_EXTRA_DEFAULT_SRC", default=[], split=True)
+_csp_default_src = [
+    csp.constants.SELF,
+    *config("CSP_EXTRA_DEFAULT_SRC", default=[], split=True),
+]
 
-# Allow any 'https:' host, as we don't know in advance which target is used by eHerkenning.
-# Behavior is also different between browsers regarding redirects, see:
-# https://stackoverflow.com/a/69439102 / https://github.com/w3c/webappsec-csp/issues/8
-CSP_FORM_ACTION = (
-    config(
-        "CSP_FORM_ACTION",
-        default=["\"'self'\"", "https:"]
-        + config("CSP_EXTRA_FORM_ACTION", default=[], split=True),
-        split=True,
-    )
-    + CORS_ALLOWED_ORIGINS
-)
+CONTENT_SECURITY_POLICY = {
+    "EXCLUDE_URL_PREFIXES": (
+        # ReDoc/Swagger pull in external sources, so don't enforce CSP on API endpoints/documentation.
+        "/api/",
+        # FIXME: Admin pulls in bootstrap from CDN & has inline styles/scripts probably
+        "/admin/",
+    ),
+    "DIRECTIVES": {
+        # base-uri does not fall back to default-src
+        "base-uri": [csp.constants.SELF],
+        "default-src": _csp_default_src,
+        "font-src": _csp_default_src,
+        # Allow any 'https:' host, as we don't know in advance which target is used by eHerkenning.
+        # Behavior is also different between browsers regarding redirects, see:
+        # https://stackoverflow.com/a/69439102 / https://github.com/w3c/webappsec-csp/issues/8
+        "form-action": config(
+            "CSP_FORM_ACTION",
+            default=[csp.constants.SELF, "https:"]
+            + config("CSP_EXTRA_FORM_ACTION", default=[], split=True),
+            split=True,
+        )
+        + CORS_ALLOWED_ORIGINS,
+        # Frame directives do not fall back to default-src
+        # equivalent to X-Frame-Options: deny
+        "frame-ancestors": [csp.constants.NONE],
+        "frame-src": [csp.constants.SELF],
+        # * service.pdok.nl serves the tiles for the Leaflet maps (PNGs) and must be whitelisted
+        # * the data: URIs are used by Leaflet (invisible pixel for memory management/image unloading)
+        #   and the signature component which saves the image drawn on the canvas as data: URI
+        "img-src": _csp_default_src
+        + ["data:", "https://service.pdok.nl/"]
+        + config("CSP_EXTRA_IMG_SRC", default=[], split=True),
+        # affects <object> and <embed> tags, block everything by default but allow deploy-time
+        # overrides.
+        "object-src": config("CSP_OBJECT_SRC", default=["\"'none'\""], split=True),
+        # report to our own django-csp-reports
+        "report-uri": reverse_lazy("report_csp"),
+        # firefox does not get the nonce from default-src, see
+        # https://stackoverflow.com/a/63376012
+        "script-src": [*_csp_default_src, csp.constants.NONCE],
+        "style-src": [*_csp_default_src, csp.constants.NONCE],
+        "upgrade-insecure-requests": False,  # TODO enable on production?
+    },
+    # envvar is float between 0 and 1, for backwards compatibility
+    "REPORT_PERCENTAGE": 100.0 * config("CSP_REPORT_PERCENTAGE", default=1.0),
+}
+CONTENT_SECURITY_POLICY_REPORT_ONLY = {}
 
-# * service.pdok.nl serves the tiles for the Leaflet maps (PNGs) and must be whitelisted
-# * the data: URIs are used by Leaflet (invisible pixel for memory management/image unloading)
-#   and the signature component which saves the image drawn on the canvas as data: URI
-CSP_IMG_SRC = (
-    CSP_DEFAULT_SRC
-    + ["data:", "https://service.pdok.nl/"]
-    + config("CSP_EXTRA_IMG_SRC", default=[], split=True)
-)
-
-# affects <object> and <embed> tags, block everything by default but allow deploy-time
-# overrides.
-CSP_OBJECT_SRC = config("CSP_OBJECT_SRC", default=["\"'none'\""], split=True)
-
-# we must include this explicitly, otherwise the style-src only includes the nonce because
-# of CSP_INCLUDE_NONCE_IN
-CSP_STYLE_SRC = CSP_DEFAULT_SRC
-CSP_SCRIPT_SRC = CSP_DEFAULT_SRC
-CSP_FONT_SRC = CSP_DEFAULT_SRC
-
-# firefox does not get the nonce from default-src, see
-# https://stackoverflow.com/a/63376012
-CSP_INCLUDE_NONCE_IN = ["style-src", "script-src"]
-
-# directives that don't fallback to default-src
-CSP_BASE_URI = ["'self'"]
-
-# Frame directives do not fall back to default-src
-CSP_FRAME_ANCESTORS = ["'none'"]  # equivalent to X-Frame-Options: deny
-CSP_FRAME_SRC = ["'self'"]
-# CSP_NAVIGATE_TO = ["'self'"]  # this will break all outgoing links etc  # too much & tricky, see note on MDN
-# CSP_SANDBOX # too much
-
-CSP_UPGRADE_INSECURE_REQUESTS = False  # TODO enable on production?
-
-CSP_EXCLUDE_URL_PREFIXES = (
-    # ReDoc/Swagger pull in external sources, so don't enforce CSP on API endpoints/documentation.
-    "/api/",
-    # FIXME: Admin pulls in bootstrap from CDN & has inline styles/scripts probably
-    "/admin/",
-)
-
-# note these are outdated/deprecated django-csp options
-# CSP_BLOCK_ALL_MIXED_CONTENT
-# CSP_PLUGIN_TYPES
-# CSP_CHILD_SRC
-
-# report to our own django-csp-reports
-CSP_REPORT_ONLY = config("CSP_REPORT_ONLY", default=False)  # enforce by default
-CSP_REPORT_URI = reverse_lazy("report_csp")
+# backwards compatible setup for upstream changes
+if config(
+    "CSP_REPORT_ONLY",
+    default=False,  # enforce by default
+):  # pragma: no cover
+    CONTENT_SECURITY_POLICY_REPORT_ONLY = CONTENT_SECURITY_POLICY.copy()
+    CONTENT_SECURITY_POLICY = {}
 
 #
 # Django CSP-report settings
@@ -1254,9 +1248,6 @@ CSP_REPORTS_SAVE = config("CSP_REPORTS_SAVE", default=False)  # save as model
 CSP_REPORTS_LOG = config("CSP_REPORTS_LOG", default=True)  # logging
 CSP_REPORTS_LOG_LEVEL = "warning"
 CSP_REPORTS_EMAIL_ADMINS = False
-CSP_REPORT_PERCENTAGE = config(
-    "CSP_REPORT_PERCENTAGE", default=1.0
-)  # float between 0 and 1
 CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
 
 #

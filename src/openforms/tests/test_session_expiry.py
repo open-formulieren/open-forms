@@ -16,6 +16,7 @@ from django.urls import path
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+import csp.constants
 from freezegun import freeze_time
 from maykin_2fa.test import disable_admin_mfa
 from rest_framework import permissions, status
@@ -177,7 +178,14 @@ class FormUserSessionExpiryTests(APITestCase):
                     },
                 )
 
-    @override_settings(ROOT_URLCONF=__name__, CSP_REPORT_URI="/foo")
+    @override_settings(
+        ROOT_URLCONF=__name__,
+        CONTENT_SECURITY_POLICY={
+            "DIRECTIVES": {"default-src": [csp.constants.SELF]},
+            "REPORT_URI": "/foo",
+        },
+        CONTENT_SECURITY_POLICY_REPORT_ONLY={},
+    )
     def test_session_expiry_header_included(self):
         """
         Assert that the response contains a header indicating when the session expires.
