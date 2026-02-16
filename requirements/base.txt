@@ -55,8 +55,6 @@ cffi==2.0.0
     # via
     #   cryptography
     #   weasyprint
-chardet==5.2.0
-    # via prance
 charset-normalizer==3.4.4
     # via requests
 clamd==1.0.2
@@ -325,19 +323,12 @@ jsonschema==4.26.0
     #   -r requirements/base.in
     #   drf-jsonschema-serializer
     #   drf-spectacular
-    #   jsonschema-spec
-    #   openapi-schema-validator
-    #   openapi-spec-validator
-jsonschema-spec==0.1.3
-    # via openapi-spec-validator
 jsonschema-specifications==2025.9.1
     # via
     #   -r requirements/base.in
     #   jsonschema
 kombu==5.6.2
     # via celery
-lazy-object-proxy==1.12.0
-    # via openapi-spec-validator
 lxml==6.0.2
     # via
     #   -r requirements/base.in
@@ -393,12 +384,6 @@ oauthlib==3.3.1
 onlinepayments-sdk-python3==7.0.0
     # via -r requirements/base.in
 open-klant-client==0.4.0
-    # via -r requirements/base.in
-openapi-schema-validator==0.4.3
-    # via openapi-spec-validator
-openapi-spec-validator==0.5.5
-    # via openapi3-parser
-openapi3-parser==1.1.13
     # via -r requirements/base.in
 openpyxl==3.1.5
     # via tablib
@@ -485,9 +470,6 @@ packaging==26.0
     #   django-csp
     #   kombu
     #   opentelemetry-instrumentation
-    #   prance
-pathable==0.4.4
-    # via jsonschema-spec
 phonenumberslite==9.0.24
     # via -r requirements/base.in
 pillow==12.1.1
@@ -499,8 +481,6 @@ platformdirs==4.9.2
     # via zeep
 portalocker==3.2.0
     # via -r requirements/base.in
-prance==25.4.8.0
-    # via openapi3-parser
 prometheus-client==0.24.1
     # via flower
 prompt-toolkit==3.0.52
@@ -565,7 +545,6 @@ pytz==2025.2
 pyyaml==6.0.3
     # via
     #   drf-spectacular
-    #   jsonschema-spec
     #   pydantic-settings
 qrcode==8.2
     # via
@@ -593,7 +572,6 @@ requests==2.32.5
     #   o365
     #   onlinepayments-sdk-python3
     #   opentelemetry-exporter-otlp-proto-http
-    #   prance
     #   requests-file
     #   requests-oauthlib
     #   requests-toolbelt
@@ -607,8 +585,6 @@ requests-toolbelt==1.0.0
     # via
     #   onlinepayments-sdk-python3
     #   zeep
-rfc3339-validator==0.1.4
-    # via openapi-schema-validator
 rich==14.3.2
     # via typer
 rpds-py==0.30.0
@@ -618,9 +594,7 @@ rpds-py==0.30.0
 rstr==3.2.2
     # via schwifty
 ruamel-yaml==0.19.1
-    # via
-    #   django-setup-configuration
-    #   prance
+    # via django-setup-configuration
 schwifty==2026.1.0
     # via -r requirements/base.in
 self-certifi==2.0.0
@@ -641,7 +615,6 @@ six==1.17.0
     #   mail-parser
     #   orderedmultidict
     #   python-dateutil
-    #   rfc3339-validator
 soupsieve==2.8.3
     # via beautifulsoup4
 sqids==0.5.2
@@ -676,7 +649,6 @@ typing-extensions==4.15.0
     #   django-modeltranslation
     #   django-timeline-logger
     #   grpcio
-    #   jsonschema-spec
     #   mozilla-django-oidc-db
     #   opentelemetry-api
     #   opentelemetry-exporter-otlp-proto-grpc

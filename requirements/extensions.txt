@@ -89,11 +89,6 @@ cffi==2.0.0
     #   -r requirements/base.txt
     #   cryptography
     #   weasyprint
-chardet==5.2.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   prance
 charset-normalizer==3.4.4
     # via
     #   -c requirements/base.txt
@@ -530,14 +525,6 @@ jsonschema==4.26.0
     #   -r requirements/base.txt
     #   drf-jsonschema-serializer
     #   drf-spectacular
-    #   jsonschema-spec
-    #   openapi-schema-validator
-    #   openapi-spec-validator
-jsonschema-spec==0.1.3
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   openapi-spec-validator
 jsonschema-specifications==2025.9.1
     # via
     #   -c requirements/base.txt
@@ -548,11 +535,6 @@ kombu==5.6.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-lazy-object-proxy==1.12.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   openapi-spec-validator
 lxml==6.0.2
     # via
     #   -c requirements/base.txt
@@ -650,20 +632,6 @@ open-forms-ext-haalcentraal-hr==0.3.1
 open-forms-ext-token-exchange==0.5.0
     # via -r requirements/extensions.in
 open-klant-client==0.4.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-openapi-schema-validator==0.4.3
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   openapi-spec-validator
-openapi-spec-validator==0.5.5
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   openapi3-parser
-openapi3-parser==1.1.13
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -797,12 +765,6 @@ packaging==26.0
     #   django-csp
     #   kombu
     #   opentelemetry-instrumentation
-    #   prance
-pathable==0.4.4
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   jsonschema-spec
 phonenumberslite==9.0.24
     # via
     #   -c requirements/base.txt
@@ -822,11 +784,6 @@ portalocker==3.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-prance==25.4.8.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   openapi3-parser
 prometheus-client==0.24.1
     # via
     #   -c requirements/base.txt
@@ -947,7 +904,6 @@ pyyaml==6.0.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   drf-spectacular
-    #   jsonschema-spec
     #   pydantic-settings
 qrcode==8.2
     # via
@@ -979,7 +935,6 @@ requests==2.32.5
     #   o365
     #   onlinepayments-sdk-python3
     #   opentelemetry-exporter-otlp-proto-http
-    #   prance
     #   requests-file
     #   requests-oauthlib
     #   requests-toolbelt
@@ -1000,11 +955,6 @@ requests-toolbelt==1.0.0
     #   -r requirements/base.txt
     #   onlinepayments-sdk-python3
     #   zeep
-rfc3339-validator==0.1.4
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   openapi-schema-validator
 rich==14.3.2
     # via
     #   -c requirements/base.txt
@@ -1026,7 +976,6 @@ ruamel-yaml==0.19.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-setup-configuration
-    #   prance
 schwifty==2026.1.0
     # via
     #   -c requirements/base.txt
@@ -1061,7 +1010,6 @@ six==1.17.0
     #   mail-parser
     #   orderedmultidict
     #   python-dateutil
-    #   rfc3339-validator
 soupsieve==2.8.3
     # via
     #   -c requirements/base.txt
@@ -1122,7 +1070,6 @@ typing-extensions==4.15.0
     #   django-modeltranslation
     #   django-timeline-logger
     #   grpcio
-    #   jsonschema-spec
     #   mozilla-django-oidc-db
     #   opentelemetry-api
     #   opentelemetry-exporter-otlp-proto-grpc

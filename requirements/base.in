@@ -85,7 +85,6 @@ djangorestframework-camel-case
 django-filter
 drf-jsonschema-serializer
 drf-polymorphic
-openapi3-parser
 
 # API schema generation (OpenAPI 3)
 drf-spectacular
