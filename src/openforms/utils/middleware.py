@@ -1,6 +1,10 @@
+from django.conf import settings
+
 from openforms.config.models import CSPSetting
 
 
+# TODO: this should probably be upgraded to a custom subclass:
+# https://django-csp.readthedocs.io/en/v4.0/migration-guide.html#migrating-custom-middleware
 class UpdateCSPMiddleware:
     """
     adds database driven CSP directives by simulating the django-csp '@csp_update' decorator
@@ -30,11 +34,14 @@ class UpdateCSPMiddleware:
         # we're basically copying/extending the @csp_update decorator
 
         # cooperate with possible data from actual decorator
-        have = getattr(response, "_csp_update", None)
+        _is_report_only = bool(settings.CONTENT_SECURITY_POLICY_REPORT_ONLY)
+        attrname = "_csp_update_ro" if _is_report_only else "_csp_update"
+
+        have = getattr(response, attrname, None)
         if have:
             _append_dict_list_values(have, update)
         else:
-            response._csp_update = update
+            setattr(response, attrname, update)
 
         return response
 
