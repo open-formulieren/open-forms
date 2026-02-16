@@ -58,6 +58,7 @@ django-import-export
 django-jsonform
 django-log-outgoing-requests
 django-modeltranslation
+django-o365mail
 django-ordered-model
 django-privates
 django-redis
