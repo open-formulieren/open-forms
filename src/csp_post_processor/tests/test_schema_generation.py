@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from django.contrib import admin
 from django.test import override_settings
-from django.urls import path
+from django.urls import include, path
 
 from drf_spectacular.views import SpectacularJSONAPIView
 from rest_framework import serializers, status
@@ -68,10 +68,11 @@ urlpatterns = [
     path("endpoint5", ListSerializerViewSet.as_view({"get": "list"})),
     # url resolver complains otherwise on other exceptions
     path("admin/", admin.site.urls),
+    path("csp/", include("cspreports.urls")),
 ]
 
 
-@override_settings(ROOT_URLCONF=__name__, CSP_REPORT_URI="/blah")
+@override_settings(ROOT_URLCONF=__name__)
 class SchemaGenerationExtensionTests(APITestCase):
     def test_expected_schema_generation(self):
         # can't use override_settings because drf-spectacular doesn't seem to

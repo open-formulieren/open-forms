@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+import csp.constants
 from cookie_consent.models import Cookie
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -44,12 +45,12 @@ class PiwikProTagManagerTests(AnalyticsMixin, TestCase):
                 except Cookie.DoesNotExist as e:
                     self.fail(f"Unexpected exception : {e}")
 
-        for csp in self.json_csp:
+        for directive in self.json_csp:
             with self.subTest("Test creation of CSP"):
                 try:
                     CSPSetting.objects.get(
-                        value=csp["value"],
-                        directive=csp["directive"],
+                        value=directive["value"],
+                        directive=directive["directive"],
                         identifier=AnalyticsTools.piwik_pro_tag_manager,
                     )
                 except CSPSetting.DoesNotExist as e:
@@ -73,12 +74,12 @@ class PiwikProTagManagerTests(AnalyticsMixin, TestCase):
             with self.subTest("Test deletion of cookies"):
                 self.assertFalse(Cookie.objects.filter(name=cookie["name"]).exists())
 
-        for csp in self.json_csp:
+        for directive in self.json_csp:
             with self.subTest("Test deletion of CSP"):
                 self.assertFalse(
                     CSPSetting.objects.filter(
-                        value=csp["value"],
-                        directive=csp["directive"],
+                        value=directive["value"],
+                        directive=directive["directive"],
                         identifier=AnalyticsTools.piwik_pro_tag_manager,
                     ).exists()
                 )
@@ -100,7 +101,10 @@ class PiwikProTagManagerTests(AnalyticsMixin, TestCase):
         self.assertEqual(cm.exception.code, "invalid_together")
 
 
-@override_settings(CSP_DEFAULT_SRC=["'self'"], CSP_REPORT_ONLY=False)
+@override_settings(
+    CONTENT_SECURITY_POLICY={"DIRECTIVES": {"default-src": [csp.constants.SELF]}},
+    CONTENT_SECURITY_POLICY_REPORT_ONLY={},
+)
 class CanLoadFormWithAnalyticsCSPTests(CSPMixin, APITestCase):
     def test_loading_form_still_has_self_in_default_src(self):
         csp_setting = CSPSetting(value="https://piwikpro.com", directive="default-src")

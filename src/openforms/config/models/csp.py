@@ -1,4 +1,6 @@
 from collections import defaultdict
+from collections.abc import Collection, Mapping
+from typing import TYPE_CHECKING, ClassVar
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -7,9 +9,11 @@ from django.utils.translation import gettext_lazy as _
 
 from ..constants import CSPDirective
 
+type AsDictResult = Mapping[str, Collection[str]]
+
 
 class CSPSettingQuerySet(models.QuerySet):
-    def as_dict(self):
+    def as_dict(self) -> AsDictResult:
         ret = defaultdict(set)
         for directive, value in self.values_list("directive", "value"):
             ret[directive].add(value)
@@ -44,11 +48,15 @@ class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
         content_type = ContentType.objects.get_for_model(obj, for_concrete_model=False)
         CSPSetting.objects.filter(
             content_type=content_type,
-            object_id=str(obj.id),
+            object_id=str(obj.pk),
             identifier=identifier,
         ).delete()
 
         self.bulk_create(instances)
+
+    if TYPE_CHECKING:
+
+        def as_dict(self) -> AsDictResult: ...
 
 
 class CSPSetting(models.Model):
@@ -86,7 +94,7 @@ class CSPSetting(models.Model):
     )
     content_object = GenericForeignKey("content_type", "object_id")
 
-    objects: CSPSettingManager = CSPSettingManager()
+    objects: ClassVar[CSPSettingManager] = CSPSettingManager()  # pyright: ignore[reportIncompatibleVariableOverride]
 
     class Meta:
         ordering = ("directive", "value")
