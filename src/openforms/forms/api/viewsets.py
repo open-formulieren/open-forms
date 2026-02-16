@@ -3,7 +3,7 @@ from uuid import UUID
 
 from django.conf import settings
 from django.db import transaction
-from django.db.models import Prefetch
+from django.db.models import Prefetch, prefetch_related_objects
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import translation
@@ -606,6 +606,8 @@ class FormViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
+        prefetch_related_objects(serializer.instance, "form_steps")
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
@@ -626,7 +628,7 @@ class FormViewSet(viewsets.ModelViewSet):
         form = self.get_object()
 
         logic_rules = form.formlogic_set.prefetch_related(
-            "form", "trigger_from_step__form"
+            "form", "trigger_from_step__form", "form_steps"
         )
 
         serializer = FormLogicSerializer(
