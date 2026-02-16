@@ -1,3 +1,5 @@
+.. _manual_submissions:
+
 ===========
 Inzendingen
 ===========
@@ -46,6 +48,7 @@ beschikbaar tot het moment van schoning.
    :maxdepth: 1
 
    registration/objects-api
+   registration/zgw-apis
 
 Instellingen
 ============
@@ -64,6 +67,8 @@ een inzending verwijderd worden.
 
     Verwijderde inzendingen zijn ook echt verwijderd. Deze kunnen niet worden
     teruggehaald omwille van privacy en archiveringswetgeving.
+
+.. _manual_submissions_public_reference:
 
 Referentienummers
 -----------------
