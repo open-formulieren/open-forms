@@ -102,3 +102,6 @@ class UploadFileType(models.TextChoices):
 class FamilyMembersDataAPIChoices(models.TextChoices):
     haal_centraal = "haal_centraal", _("Haal Centraal")
     stuf_bg = "stuf_bg", _("StufBg")
+
+
+DEFAULT_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"

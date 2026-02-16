@@ -1,7 +1,9 @@
-from django.db import IntegrityError, transaction
-from django.utils.crypto import get_random_string
+from django.db import transaction
 
 import structlog
+from sqids import Sqids
+
+from openforms.config.models import GlobalConfiguration
 
 from .models import Submission
 
@@ -26,67 +28,29 @@ def set_submission_reference(submission: Submission) -> str | None:
         log.info("skip_set_public_reference", reason="reference_already_set")
         return
 
-    # race-condition detection. There's no reason/logic after the number 5 other than
-    # gut feeling.
-    MAX_NUM_ATTEMPTS = 5
-    race_condition_suspected, save_attempts = False, 0
+    with transaction.atomic():
+        reference = generate_unique_submission_reference(submission)
+        submission.public_registration_reference = reference
+        submission.save(update_fields=["public_registration_reference"])
 
-    while (
-        race_condition_suspected or save_attempts == 0
-    ) and save_attempts < MAX_NUM_ATTEMPTS:
-        try:
-            with transaction.atomic():
-                reference = generate_unique_submission_reference()
-                submission.public_registration_reference = reference
-                submission.save(update_fields=["public_registration_reference"])
-        except IntegrityError as error:
-            race_condition_suspected = True
-            save_attempts += 1
-            log.warning(
-                "likely_race_condition_detected",
-                num_attempts_done=save_attempts,
-                exc_info=error,
-            )
-            # if we're about to leave the loop, re-raise the original exception
-            if save_attempts >= MAX_NUM_ATTEMPTS:
-                raise
-        else:
-            return reference
-    # should never reach this
-    raise RuntimeError(  # noqa
-        "Unexpected code-path! Either the reference should have been saved successfully, "
-        "or the error should have been re-raised."
-    )
+    return reference
 
 
-def get_random_reference() -> str:
-    # 32 characters with length 6 -> 32^6 possible combinations.
-    # that's roughly one billion combinations before we run out of options.
-    # Also note that submissions are pruned after a (configurable) number of days, so
-    # used references do become available again after that time.
-    # TODO: maybe include date param?
-    random_string = get_random_string(
-        length=6, allowed_chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-    )
-    return f"OF-{random_string}"
-
-
-def generate_unique_submission_reference() -> str:
+def generate_unique_submission_reference(submission: Submission) -> str:
     """
-    Generate a random but unique reference.
+    Generate unique reference based on the globally configured template.
+
+    The random string part is generated from the submission pk with
+    the alphabet which is uniquely shuffled for each OF instance.
     """
-    MAX_ATTEMPTS = 100  # ensure we have finite loops (while is evil)
-    iterations = 0
+    config = GlobalConfiguration.get_solo()
+    template: str = config.public_reference_template
+    alphabet = config.public_reference_alphabet
 
-    for _ in range(MAX_ATTEMPTS):
-        iterations += 1
-        reference = get_random_reference()
-        exists = Submission.objects.filter(
-            public_registration_reference=reference
-        ).exists()
-        if exists is False:
-            return reference
+    sqids = Sqids(min_length=6, alphabet=alphabet)
+    uid = sqids.encode([submission.pk])
 
-    # loop ran all the way to the end without finding unused reference
-    # (otherwise it would have returned)
-    raise RuntimeError(f"Could not get a unused reference after {iterations} attempts!")
+    return template.replace(
+        "{year}",
+        str(submission.created_on.year),
+    ).replace("{uid}", uid)
