@@ -6,6 +6,60 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.4.2 (2026-02-20)
+==================
+
+Hotfix release.
+
+.. warning:: Manual intervention required.
+
+    Open Forms treated "failed" payment statuses as final, as that was the case in Ogone.
+    However, Worldline can still send valid status updates to mark the payment as
+    completed, but this didn't correctly register in Open Forms. As a result,
+    submissions that were awaiting registration until payment was received were never
+    sent to the registration backend, despite being paid. Similarly, submissions that
+    were registered never received the update signal that the payment status was now
+    completed. Which behaviour applies depends on the selected mode in the global
+    configuration options.
+
+    We've included a script to automatically re-check the payment status of failed
+    payments, and trigger the registration (or registration update) behaviour if the
+    payment turns out to be completed/successful after all. You can run this through:
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/fix_payment_status.py [--dry-run]
+
+    The optional ``--dry-run`` flag will report which payments/submisions are affected
+    without making any changes.
+
+    **Note** Depending on your submission retention configuration, it is possible that
+    there are more submission payments affected by this that are no longer present in
+    the database, so unfortunately we cannot verify and correct those. If you still have
+    the container logs, you can search for the ``payment_status_final`` with log level
+    ``WARNING`` to find additional occurrences. The structured log data includes the
+    public order ID and wordline status that you can use to correlate payments in the
+    Worldline portal with your backoffice system. An example log line looks like:
+
+    .. code-block:: json
+
+      {
+        "payment": "<SubmissionPayment: #2026XXXX 'Voltooid en geregistreerd' YY.00>",
+        "worldline_status": "CAPTURED",
+        "public_order_id": "2026XXXX",
+        "event": "payment_status_final",
+        "request_id": "92b04554-5fd2-4f8e-81c0-cb35d27e15a7",
+        "plugin": "<openforms.payments.contrib.worldline.plugin.WorldlinePaymentPlugin object at 0x7f7fccae1f40>",
+        "submission_uuid": "b1648fe9-1805-4bfb-a57f-e9a8515d7a93",
+        "entrypoint": "browser",
+        "user_id": null,
+        "payment_uuid": "e4689825-ad05-469d-848d-abf91e5c05ff",
+        "timestamp": "2026-01-01T00:00:00Z",
+        "logger": "openforms.payments.contrib.worldline.plugin",
+        "level": "warning"
+      }
+
 3.4.1 (2026-02-04)
 ==================
 
