@@ -2408,11 +2408,6 @@
     "description": "Introduction page fieldset title",
     "originalDefault": "Introduction page"
   },
-  "dGBYF7": {
-    "defaultMessage": "{collapsed, select, true {(Tonen)} other {(Verbergen)}}",
-    "description": "Fieldset collapse link text",
-    "originalDefault": "{collapsed, select, true {(Show)} other {(Hide)}}"
-  },
   "dV8M5q": {
     "defaultMessage": "Een herkenbare naam voor deze plugin en configuratie.",
     "description": "Backend name help text",

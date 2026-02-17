@@ -886,9 +886,9 @@ export const ObjectsAPI = {
     });
 
     await step('Select a catalogue for document types', async () => {
-      const fieldsetTitle = modal.getByRole('heading', {name: 'Documenttypen (Tonen)'});
+      const fieldsetTitle = modal.getByRole('heading', {name: 'Documenttypen'});
       expect(fieldsetTitle).toBeVisible();
-      await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
+      await userEvent.click(fieldsetTitle);
 
       const catalogueSelect = modal.getByLabelText('Catalogus');
       await rsSelect(catalogueSelect, 'Catalogus 2');
@@ -898,16 +898,18 @@ export const ObjectsAPI = {
       'Path to auth attribute is required if updating existing objects is enabled',
       async () => {
         const otherSettingsTitle = modal.getByRole('heading', {
-          name: 'Bestaand object bijwerken (Tonen)',
+          name: 'Bestaand object bijwerken',
         });
         expect(otherSettingsTitle).toBeVisible();
-        await userEvent.click(within(otherSettingsTitle).getByRole('link', {name: '(Tonen)'}));
+        await userEvent.click(otherSettingsTitle);
 
         const authAttributePath = modal.getByText('Identificatie-attribuut');
 
         expect(authAttributePath.parentElement.parentElement).toHaveClass('field--disabled');
 
-        const updateExistingObject = modal.getByLabelText('Bestaand object bijwerken');
+        const updateExistingObject = modal.getByRole('checkbox', {
+          name: 'Bestaand object bijwerken',
+        });
         await userEvent.click(updateExistingObject);
 
         // Checking `updateExistingObject` should make `authAttributePath` no longer disabled

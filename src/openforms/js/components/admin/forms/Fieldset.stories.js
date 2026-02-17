@@ -5,8 +5,8 @@ import Fieldset from './Fieldset';
 import FormRow from './FormRow';
 import {TextInput} from './Inputs';
 
-const render = ({title, extraClassName = ''}) => (
-  <Fieldset title={title} extraClassName={extraClassName}>
+const render = ({title, extraClassName = '', ...args}) => (
+  <Fieldset title={title} extraClassName={extraClassName} {...args}>
     {/* typical example of nested content */}
     <FormRow>
       <Field name="Field" label="Input field" helpText="Lorem ipsum">
@@ -51,5 +51,21 @@ export const WithoutTitle = {
   args: {
     title: '',
     extraClassName: '',
+  },
+};
+
+export const Collapsed = {
+  args: {
+    title: 'Default collapsed',
+    collapsible: true,
+    initialCollapsed: true,
+  },
+};
+
+export const CollapsibleInitiallyOpen = {
+  args: {
+    title: 'Default collapsed',
+    collapsible: true,
+    initialCollapsed: false,
   },
 };
