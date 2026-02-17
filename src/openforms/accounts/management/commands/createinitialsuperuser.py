@@ -1,8 +1,9 @@
 # Taken from github.com/open-zaak/open-zaak project
 # Copyright (C) 2020 Dimpact
 import os
+import secrets
+import string
 
-import django
 from django.conf import settings
 from django.contrib.auth.management.commands.createsuperuser import (
     Command as BaseCommand,
@@ -12,13 +13,9 @@ from django.urls import reverse
 
 from ...models import User
 
-PASSWORD_FROM_ENV_SUPPORTED = django.VERSION[:2] > (2, 2)
-
 
 class Command(BaseCommand):
     help = "Set up an initial superuser account if it doesn't exist yet"
-
-    UserModel: type[User]
 
     def add_arguments(self, parser):
         super().add_arguments(parser)
@@ -46,6 +43,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, **options):
+        assert self.UserModel is User
         username = options[self.UserModel.USERNAME_FIELD]
         database = options["database"]
         qs = self.UserModel._default_manager.db_manager(database).filter(
@@ -71,9 +69,10 @@ class Command(BaseCommand):
         user = qs.get()
 
         if not password and options["generate_password"]:
-            options["password"] = self.UserModel.objects.make_random_password(length=20)
+            alphabet = string.ascii_letters + string.digits
+            options["password"] = "".join(secrets.choice(alphabet) for _ in range(20))
 
-        if options["password"] or not PASSWORD_FROM_ENV_SUPPORTED:
+        if options["password"]:
             self.stdout.write("Setting user password...")
             user.set_password(options["password"])
             user.save()
