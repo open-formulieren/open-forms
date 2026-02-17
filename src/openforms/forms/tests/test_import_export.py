@@ -309,7 +309,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             imported_form.registration_backends.count(),
             form.registration_backends.count(),
         )
-        self.assertQuerysetEqual(backend_registrations, imported_backend_registrations)
+        self.assertQuerySetEqual(backend_registrations, imported_backend_registrations)
         self.assertEqual(imported_form.name, form.name)
         self.assertIsNone(imported_form.product)
         self.assertEqual(imported_form.slug, old_form_slug)
@@ -456,7 +456,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             imported_form.registration_backends.count(),
             form.registration_backends.count(),
         )
-        self.assertQuerysetEqual(backend_registrations, imported_backend_registrations)
+        self.assertQuerySetEqual(backend_registrations, imported_backend_registrations)
         self.assertEqual(imported_form.name, form.name)
         self.assertEqual(imported_form.internal_name, form.internal_name)
         self.assertIsNone(imported_form.product)
