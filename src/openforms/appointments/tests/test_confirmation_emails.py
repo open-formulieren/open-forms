@@ -2,12 +2,11 @@
 Test the generic confirmation e-mail sending for appointment forms.
 """
 
-from datetime import date, datetime, time
+from datetime import UTC, date, datetime, time
 from unittest.mock import patch
 
 from django.core import mail
 from django.test import TestCase, override_settings
-from django.utils import timezone
 from django.utils.html import escape
 from django.utils.translation import gettext as _
 
@@ -59,8 +58,7 @@ class NoEmailPlugin(BasePlugin):
 
     def get_times(self, *args, **kwargs):
         return [
-            datetime.combine(day, time(12, 0), tzinfo=timezone.utc)
-            for day in self.get_dates()
+            datetime.combine(day, time(12, 0), tzinfo=UTC) for day in self.get_dates()
         ]
 
     def get_required_customer_fields(
@@ -84,8 +82,8 @@ class NoEmailPlugin(BasePlugin):
                 city="Teststad",
                 postalcode="1234AB",
             ),
-            start_at=datetime(2023, 8, 1, 12, 0).replace(tzinfo=timezone.utc),
-            end_at=datetime(2023, 8, 1, 12, 15).replace(tzinfo=timezone.utc),
+            start_at=datetime(2023, 8, 1, 12, 0).replace(tzinfo=UTC),
+            end_at=datetime(2023, 8, 1, 12, 15).replace(tzinfo=UTC),
             remarks="Remarks",
             other={"Some": "<h1>Data</h1>"},
         )
