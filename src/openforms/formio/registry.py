@@ -148,6 +148,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
         *,
+        initial_data: FormioData,
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
@@ -159,6 +160,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         :param component: Component configuration.
         :param data: Data used for processing.
         :param wrapper: Formio configuration wrapper. Required for component lookup.
+        :param initial_data: Initial data for clear-on-hide behavior.
         :param parent_hidden: Indicates whether the parent component was hidden.
         :param get_evaluation_data: Function used to get the evaluation data used during
           evaluation of the conditional.
@@ -249,6 +251,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
         *,
+        initial_data: FormioData,
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
@@ -260,6 +263,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         :param component: Component configuration.
         :param data: Data used for processing.
         :param wrapper: Formio configuration wrapper. Required for component lookup.
+        :param initial_data: Initial data for clear-on-hide behavior.
         :param parent_hidden: Indicates whether the parent component was hidden.
         :param get_evaluation_data: Function used to get the evaluation data used during
           evaluation of the conditional.
@@ -274,6 +278,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
             component,
             data,
             wrapper,
+            initial_data=initial_data,
             parent_hidden=parent_hidden,
             ignore_hidden_property=ignore_hidden_property,
             get_evaluation_data=get_evaluation_data,
