@@ -13,7 +13,7 @@ from .dev import LOGGING
 SILKY_PYTHON_PROFILER = True
 
 if "test" in sys.argv:
-    PASSWORD_HASHERS = ["django.contrib.auth.hashers.UnsaltedMD5PasswordHasher"]
+    PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
     # if you have a separate postgres cluster purely for testing, change the port number
     # and use the superuser
