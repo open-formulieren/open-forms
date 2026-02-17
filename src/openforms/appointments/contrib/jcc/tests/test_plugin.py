@@ -1,8 +1,7 @@
 import re
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 
 from django.test import SimpleTestCase, TestCase
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import requests_mock
@@ -186,7 +185,7 @@ class PluginTests(MockConfigMixin, TestCase):
 
         self.assertEqual(len(times), 106)
         # 8 AM in summer in AMS -> 6 AM in UTC
-        ams_expected_time = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        ams_expected_time = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=UTC)
         self.assertEqual(times[0], ams_expected_time)
 
     @requests_mock.Mocker()
@@ -266,7 +265,7 @@ class PluginTests(MockConfigMixin, TestCase):
             text=mock_response("bookGovAppointmentResponse.xml"),
         )
 
-        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=UTC)
         result = self.plugin.create_appointment([product], location, start_at, client)
 
         self.assertEqual(result, "1234567890")
@@ -686,7 +685,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
                 CustomerFields.birthday: "1980-01-01",
             }
         )
-        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=UTC)
         m.post(
             "http://example.com/soap11",
             text=mock_response("failedBookGovAppointmentResponse.xml"),
@@ -707,7 +706,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
                 CustomerFields.birthday: "1980-01-01",
             }
         )
-        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=UTC)
         m.post(requests_mock.ANY, exc=OSError("tubes are closed"))
 
         with self.assertRaisesMessage(

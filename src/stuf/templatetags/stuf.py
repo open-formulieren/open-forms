@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import UTC, timedelta
 from typing import Any
 
 from django.template import Library
@@ -31,7 +31,7 @@ def render_security(wss: WSSecurity, expiry_minutes: int) -> dict[str, Any]:
     regard.
     """
     # get 'now' in UTC
-    now = timezone.localtime(timezone.now(), timezone=timezone.utc)
+    now = timezone.localtime(timezone.now(), timezone=UTC)
     expires_at = now + timedelta(minutes=expiry_minutes)
     return {
         "use_wss": wss.use_wss,
