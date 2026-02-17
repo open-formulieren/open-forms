@@ -2,6 +2,11 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+# make sure the right path is used for the subporcess (different paths are used based on
+# the environment)
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+FORMATJS_BIN = PROJECT_ROOT / "node_modules/.bin/formatjs"
+
 
 def compile_messages_file(input_path: str) -> tuple[bool, str]:
     """
@@ -22,8 +27,7 @@ def compile_messages_file(input_path: str) -> tuple[bool, str]:
     try:
         subprocess.run(
             [
-                "npx",
-                "formatjs",
+                str(FORMATJS_BIN),
                 "compile",
                 input_path,
                 "--ast",
