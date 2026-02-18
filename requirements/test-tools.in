@@ -17,7 +17,6 @@ tblib
 hypothesis  # property-based testing
 unittest-parametrize
 zgw-consumers[testutils]
-zgw-consumers-oas
 
 # Code formatting
 ruff
