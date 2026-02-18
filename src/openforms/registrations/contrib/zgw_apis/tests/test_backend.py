@@ -1,6 +1,6 @@
 import json
 import textwrap
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time
 from decimal import Decimal
 from unittest import expectedFailure
 from unittest.mock import patch
@@ -8,12 +8,8 @@ from uuid import uuid4
 
 from django.test import TestCase, override_settings, tag
 
-import requests_mock
-from freezegun import freeze_time
-from furl import furl
 from privates.test import temp_private_root
 from zgw_consumers.test.factories import ServiceFactory
-from zgw_consumers_oas.component_generation import generate_oas_component
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.tests.factories import RegistratorInfoFactory
@@ -22,15 +18,14 @@ from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
-from openforms.contrib.zgw.clients.zaken import CRS_HEADERS
+from openforms.contrib.zgw.clients.zaken import CRS_HEADERS, ZakenClient
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.prefill.contrib.family_members.plugin import (
     PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
 )
 from openforms.prefill.service import prefill_variables
-from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.submissions.constants import PostSubmissionEvents
-from openforms.submissions.models import SubmissionStep
+from openforms.submissions.models import Submission, SubmissionStep
 from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -46,1369 +41,60 @@ from ..plugin import ZGWRegistration
 from ..typing import RegistrationOptions
 from .factories import ZGWApiGroupConfigFactory
 
-
-@temp_private_root()
-@requests_mock.Mocker(real_http=False)
-class ZGWBackendTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        cls.zgw_group = ZGWApiGroupConfigFactory.create(
-            zrc_service__api_root="https://zaken.nl/api/v1/",
-            drc_service__api_root="https://documenten.nl/api/v1/",
-            ztc_service__api_root="https://catalogus.nl/api/v1/",
-        )
-
-    def install_mocks(self, m):
-        m.post(
-            "https://zaken.nl/api/v1/zaken",
-            status_code=201,
-            json=generate_oas_component(
-                "zaken",
-                "schemas/Zaak",
-                url="https://zaken.nl/api/v1/zaken/1",
-                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            ),
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            [
-                # two calls on same URL: one PDF and one attachment
-                {
-                    "json": generate_oas_component(
-                        "documenten",
-                        "schemas/EnkelvoudigInformatieObject",
-                        url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-                    ),
-                    "status_code": 201,
-                },
-                {
-                    "json": generate_oas_component(
-                        "documenten",
-                        "schemas/EnkelvoudigInformatieObject",
-                        url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-                    ),
-                    "status_code": 201,
-                },
-            ],
-        )
-        m.post(
-            "https://zaken.nl/api/v1/zaakinformatieobjecten",
-            [
-                # two calls on same URL: one PDF and one attachment
-                {
-                    "json": generate_oas_component(
-                        "zaken",
-                        "schemas/ZaakInformatieObject",
-                        url="https://zaken.nl/api/v1/zaakinformatieobjecten/1",
-                    ),
-                    "status_code": 201,
-                },
-                {
-                    "json": generate_oas_component(
-                        "zaken",
-                        "schemas/ZaakInformatieObject",
-                        url="https://zaken.nl/api/v1/zaakinformatieobjecten/2",
-                    ),
-                    "status_code": 201,
-                },
-            ],
-        )
-
-        m.get(
-            "https://catalogus.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1&omschrijvingGeneriek=initiator",
-            status_code=200,
-            json={
-                "count": 1,
-                "next": None,
-                "previous": None,
-                "results": [
-                    generate_oas_component(
-                        "catalogi",
-                        "schemas/RolType",
-                        url="https://catalogus.nl/api/v1/roltypen/1",
-                    )
-                ],
-            },
-            headers={"API-version": "1.0.0"},
-        )
-        m.post(
-            "https://zaken.nl/api/v1/rollen",
-            status_code=201,
-            json=generate_oas_component(
-                "zaken", "schemas/Rol", url="https://zaken.nl/api/v1/rollen/1"
-            ),
-        )
-        m.get(
-            "https://catalogus.nl/api/v1/statustypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
-            status_code=200,
-            json={
-                "count": 2,
-                "next": None,
-                "previous": None,
-                "results": [
-                    generate_oas_component(
-                        "catalogi",
-                        "schemas/StatusType",
-                        url="https://catalogus.nl/api/v1/statustypen/2",
-                        volgnummer=2,
-                    ),
-                    generate_oas_component(
-                        "catalogi",
-                        "schemas/StatusType",
-                        url="https://catalogus.nl/api/v1/statustypen/1",
-                        volgnummer=1,
-                    ),
-                ],
-            },
-            headers={"API-version": "1.0.0"},
-        )
-        m.post(
-            "https://zaken.nl/api/v1/statussen",
-            status_code=201,
-            json=generate_oas_component(
-                "zaken", "schemas/Status", url="https://zaken.nl/api/v1/statussen/1"
-            ),
-        )
-
-    @override_settings(LANGUAGE_CODE="en")
-    def test_submission_with_registrator(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "achternaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
-                    },
-                },
-                {
-                    "key": "postcode",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_postcode,
-                    },
-                },
-                {
-                    "key": "coordinaat",
-                    "type": "map",
-                    "registration": {
-                        "attribute": RegistrationAttribute.locatie_coordinaat,
-                    },
-                },
-            ],
-            submitted_data={
-                "achternaam": "Willemse",
-                "postcode": "1000 AA",
-                "coordinaat": {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
-            },
-            bsn="111222333",
-            form__product__price=Decimal("0"),
-            form__payment_backend="demo",
-            registration_result={
-                "zaak": {
-                    "url": "https://zaken.nl/api/v1/zaken/1",
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                }
-            },
-        )
-        RegistratorInfoFactory.create(submission=submission, value="123456782")
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "medewerker_roltype": "Some description",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-        self.install_mocks(m)
-        m.get(
-            "https://catalogus.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
-            status_code=200,
-            json={
-                "count": 1,
-                "next": None,
-                "previous": None,
-                "results": [
-                    generate_oas_component(
-                        "catalogi",
-                        "schemas/RolType",
-                        url="https://catalogus.nl/api/v1/roltypen/111",
-                        omschrijving="Some description",
-                    )
-                ],
-            },
-            headers={"API-version": "1.0.0"},
-        )
-
-        plugin = ZGWRegistration("zgw")
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-
-        self.assertIn("medewerker_rol", result)
-
-        self.assertEqual(len(m.request_history), 8)
-        (
-            create_pdf_document,
-            relate_pdf_document,
-            get_roltypen,
-            create_rol,
-            get_roltypen2,
-            create_medewerker_rol,
-            get_statustypen,
-            create_status,
-        ) = m.request_history
-
-        post_data = create_medewerker_rol.json()
-        self.assertEqual(post_data["betrokkeneType"], "medewerker")
-        self.assertEqual(
-            post_data["roltoelichting"],
-            "Employee who registered the case on behalf of the customer.",
-        )
-        self.assertEqual(
-            post_data["roltype"],
-            "https://catalogus.nl/api/v1/roltypen/111",
-        )
-        self.assertEqual(
-            post_data["betrokkeneIdentificatie"]["identificatie"],
-            "123456782",
-        )
-
-    def test_submission_with_product(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "textfield",
-                    "type": "textfield",
-                },
-            ],
-            submitted_data={
-                "textfield": "Foo",
-            },
-            completed=True,
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "product_url": "https://example.com",
-            "objects_api_group": None,
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(
-            submission, zgw_form_options
-        )
-        assert submission.registration_result is not None
-        assert isinstance(pre_registration_result.data, dict)
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-
-        self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-        )
-
-        create_zaak = m.request_history[0]
-
-        with self.subTest("Create zaak call"):
-            create_zaak_body = create_zaak.json()
-
-            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
-            self.assertEqual(
-                create_zaak_body["productenOfDiensten"],
-                ["https://example.com"],
-            )
-            self.assertEqual(
-                create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-            )
-
-    def test_submission_roltype_initiator_not_found(self, m):
-        submission = SubmissionFactory.create(
-            completed=True,
-            with_report=True,
-            registration_result={
-                "zaak": {
-                    "url": "https://zaken.nl/api/v1/zaken/1",
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                }
-            },
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-        self.install_mocks(m)
-        roltypen_url = furl("https://catalogus.nl/api/v1/roltypen").set(
-            {
-                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                "omschrijvingGeneriek": "initiator",
-            }
-        )
-        m.get(
-            str(roltypen_url),
-            status_code=200,
-            json={"count": 0, "next": None, "previous": None, "results": []},
-            headers={"API-version": "1.0.0"},
-        )
-
-        plugin = ZGWRegistration("zgw")
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-        self.assertIsNone(result["initiator_rol"])
-
-    def test_retried_registration_with_internal_reference(self, m):
-        """
-        Assert that the internal reference is included in the "kenmerken".
-        """
-        submission = SubmissionFactory.from_components(
-            completed_not_preregistered=True,
-            needs_on_completion_retry=True,
-            public_registration_reference="OF-1234",
-            components_list=[{"key": "dummy"}],
-            form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={
-                "zgw_api_group": self.zgw_group.pk,
-                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-                "organisatie_rsin": "000000000",
-                "vertrouwelijkheidaanduiding": "openbaar",
-                "objects_api_group": None,
-            },
-        )
-        self.install_mocks(m)
-
-        pre_registration(submission.pk, PostSubmissionEvents.on_retry)
-
-        create_zaak = m.request_history[0]
-        create_zaak_body = create_zaak.json()
-        self.assertEqual(
-            create_zaak_body["kenmerken"],
-            [
-                {
-                    "kenmerk": "OF-1234",
-                    "bron": "Open Formulieren",
-                }
-            ],
-        )
-
-    @freeze_time("2021-01-01 10:00")
-    def test_register_and_update_paid_product(self, m):
-        submission = SubmissionFactory.from_data(
-            {"voornaam": "Foo"},
-            # setup payment although at this level of testing it is not needed
-            form__product__price=Decimal("11.35"),
-            form__payment_backend="demo",
-        )
-        self.assertTrue(submission.payment_required)
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-        self.install_mocks(m)
-        m.patch(
-            "https://zaken.nl/api/v1/zaken/1",
-            status_code=200,
-            json=generate_oas_component(
-                "zaken",
-                "schemas/Zaak",
-                url="https://zaken.nl/api/v1/zaken/1",
-                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            ),
-        )
-
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(
-            submission, zgw_form_options
-        )
-
-        submission.public_registration_reference = pre_registration_result.reference
-        assert submission.registration_result is not None
-        assert isinstance(pre_registration_result.data, dict)
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-
-        self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
-        submission.registration_result = result
-        submission.save()
-
-        # check initial payment status
-        create_zaak_body = m.request_history[0].json()
-        self.assertEqual(create_zaak_body["betalingsindicatie"], "nog_niet")
-        self.assertNotIn("laatsteBetaaldatum", create_zaak_body)
-
-        # run the actual update
-        plugin.update_payment_status(submission, {"zgw_api_group": self.zgw_group})
-
-        patch_zaak_body = m.last_request.json()
-        self.assertEqual(patch_zaak_body["betalingsindicatie"], "geheel")
-        self.assertEqual(
-            patch_zaak_body["laatsteBetaaldatum"], "2021-01-01T10:00:00+00:00"
-        )
-
-    @tag("sentry-334882")
-    def test_submission_with_zgw_backend_override_fields(self, m):
-        """Assert that override of default values for the ZGW backend works"""
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "field1",
-                    "type": "file",
-                    "registration": {
-                        "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/10",
-                        "bronorganisatie": "100000009",
-                        "docVertrouwelijkheidaanduiding": "zeer_geheim",
-                        "titel": "TITEL",
-                    },
-                },
-                {
-                    "key": "field2",
-                    "type": "file",
-                    "registration": {
-                        "informatieobjecttype": "",
-                        "bronorganisatie": "",
-                        "doc_vertrouwelijkheidaanduiding": "",
-                        "titel": "",
-                    },
-                },
-            ],
-            registration_result={
-                "zaak": {
-                    "url": "https://zaken.nl/api/v1/zaken/1",
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                }
-            },
-            completed=True,
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-        SubmissionFileAttachmentFactory.create(
-            submission_step=SubmissionStep.objects.first(),
-            file_name="attachment1.jpg",
-            form_key="field1",
-            _component_configuration_path="components.0",
-        )
-        SubmissionFileAttachmentFactory.create(
-            submission_step=SubmissionStep.objects.first(),
-            file_name="attachment2.jpg",
-            form_key="field2",
-            _component_configuration_path="components.1",
-        )
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        plugin.register_submission(submission, zgw_form_options)
-
-        self.assertEqual(len(m.request_history), 10)
-        (
-            create_pdf_document,
-            relate_pdf_document,
-            get_roltypen,
-            create_rol,
-            get_statustypen,
-            create_status,
-            create_attachment1_document,
-            relate_attachment1_document,
-            create_attachment2_document,
-            relate_attachment2_document,
-        ) = m.request_history
-
-        with self.subTest("Attachment 1: override fields"):
-            # Verify attachments
-            document_create_attachment1_body = create_attachment1_document.json()
-            self.assertEqual(create_attachment1_document.method, "POST")
-            self.assertEqual(
-                create_attachment1_document.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-
-            # Use override fields
-            self.assertEqual(
-                document_create_attachment1_body["bestandsnaam"], "attachment1.jpg"
-            )
-            self.assertEqual(
-                document_create_attachment1_body["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/10",
-            )
-            self.assertEqual(
-                document_create_attachment1_body["bronorganisatie"],
-                "100000009",
-            )
-            self.assertEqual(
-                document_create_attachment1_body["vertrouwelijkheidaanduiding"],
-                "zeer_geheim",
-            )
-            self.assertEqual(
-                document_create_attachment1_body["titel"],
-                "TITEL",
-            )
-
-        with self.subTest("Attachment 2: defaults values"):
-            # Verify attachments
-            document_create_attachment2_body = create_attachment2_document.json()
-            self.assertEqual(create_attachment2_document.method, "POST")
-            self.assertEqual(
-                create_attachment2_document.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            # Use default IOType
-            self.assertEqual(
-                document_create_attachment2_body["bestandsnaam"], "attachment2.jpg"
-            )
-            self.assertEqual(
-                document_create_attachment2_body["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            )
-            self.assertEqual(
-                document_create_attachment2_body["bronorganisatie"],
-                "000000000",
-            )
-            # Sentry 334882 - "" is not a valid choice, validation error from Documenten API.
-            # This is because you either need to *not* specify the key, or provide a valid value.
-            self.assertNotIn(
-                "vertrouwelijkheidaanduiding", document_create_attachment2_body
-            )
-            # if no title is explicitly provided, the file name should be inserted
-            self.assertEqual(
-                document_create_attachment2_body["titel"], "attachment2.jpg"
-            )
-
-    def test_zgw_backend_default_author(self, m):
-        """Assert that the default values for the ZGW API configuration are inserted
-
-        * default author: "Aanvrager"
-        """
-        attachment = SubmissionFileAttachmentFactory.create(
-            submission_step__submission__completed_not_preregistered=True,
-            submission_step__submission__with_report=True,
-        )
-        submission = attachment.submission_step.submission
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(
-            submission, zgw_form_options
-        )
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-        plugin.register_submission(submission, zgw_form_options)
-
-        self.assertEqual(len(m.request_history), 9)
-        (
-            create_zaak,
-            create_pdf_document,
-            relate_pdf_document,
-            get_roltypen,
-            create_rol,
-            get_statustypen,
-            create_status,
-            create_attachment_document,
-            relate_attachment_document,
-        ) = m.request_history
-
-        with self.subTest("Create zaak call"):
-            create_zaak_body = create_zaak.json()
-
-            # make sure we have the right request
-            self.assertEqual(create_zaak.method, "POST")
-            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
-
-            # check defaults
-            self.assertNotIn("vertrouwelijkheidaanduiding", create_zaak_body)
-
-        with self.subTest("Create summary PDF document"):
-            create_eio_body = create_pdf_document.json()
-
-            # make sure we have the right request
-            self.assertEqual(create_zaak.method, "POST")
-            self.assertEqual(
-                create_pdf_document.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-
-            # check defaults
-            self.assertNotIn("vertrouwelijkheidaanduiding", create_eio_body)
-            self.assertEqual(create_eio_body["auteur"], "Aanvrager")
-
-        with self.subTest("Create attachment document"):
-            create_attachment_body = create_attachment_document.json()
-
-            # make sure we have the right request
-            self.assertEqual(create_attachment_document.method, "POST")
-            self.assertEqual(
-                create_attachment_document.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            # check defaults
-            self.assertNotIn("vertrouwelijkheidaanduiding", create_eio_body)
-            self.assertEqual(create_attachment_body["auteur"], "Aanvrager")
-
-    def test_zgw_backend_document_ontvangstdatum(self, m):
-        attachment = SubmissionFileAttachmentFactory.create(
-            submission_step__submission__completed_not_preregistered=True,
-            submission_step__submission__with_report=True,
-        )
-        submission = attachment.submission_step.submission
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(
-            submission, zgw_form_options
-        )
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-        plugin.register_submission(submission, zgw_form_options)
-
-        self.assertEqual(len(m.request_history), 9)
-        (
-            create_zaak,
-            create_pdf_document,
-            relate_pdf_document,
-            get_roltypen,
-            create_rol,
-            get_statustypen,
-            create_status,
-            create_attachment_document,
-            relate_attachment_document,
-        ) = m.request_history
-
-        create_attachment_body = create_attachment_document.json()
-
-        self.assertIsNotNone(create_attachment_body["ontvangstdatum"])
-
-    def test_zgw_backend_defaults_empty_string(self, m):
-        """Assert that empty strings for new fields are overriden with defaults
-
-        This test ensures that old DB entries won't have an empty string as the value
-        of newly added fields like `auteur`.
-        """
-        attachment = SubmissionFileAttachmentFactory.create(
-            submission_step__submission__completed_not_preregistered=True,
-            submission_step__submission__with_report=True,
-            file_name="attachment1.jpg",
-            form_key="field1",
-            submission_step__submission__registration_result={
-                "zaak": {
-                    "url": "https://zaken.nl/api/v1/zaken/1",
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                }
-            },
-        )
-        submission = attachment.submission_step.submission
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "auteur": "",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        plugin.register_submission(submission, zgw_form_options)
-
-        self.assertEqual(len(m.request_history), 8)
-        (
-            create_pdf_document,
-            relate_pdf_document,
-            get_roltypen,
-            create_rol,
-            get_statustypen,
-            create_status,
-            create_attachment_document,
-            relate_attachment_document,
-        ) = m.request_history
-
-        document_create_attachment_body = create_attachment_document.json()
-        self.assertEqual(document_create_attachment_body["auteur"], "Aanvrager")
-
-    @tag("sentry-334882")
-    def test_zgw_backend_unspecified_zaakvertrouwelijkheidaanduiding(self, m):
-        submission = SubmissionFactory.create(
-            completed_not_preregistered=True,
-            with_report=True,
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "auteur": "",
-            "zaak_vertrouwelijkheidaanduiding": "",  # type: ignore
-            "objects_api_group": None,
-            "product_url": "",
-        }
-        self.install_mocks(m)
-        plugin = ZGWRegistration("zgw")
-
-        plugin.pre_register_submission(submission, zgw_form_options)
-
-        create_zaak = m.last_request
-        self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
-        self.assertEqual(create_zaak.method, "POST")
-        body = create_zaak.json()
-        self.assertNotIn("vertrouwelijkheidaanduiding", body)
-
-    def test_zgw_backend_has_reference_after_pre_submission(self, m):
-        m.post(
-            "https://zaken.nl/api/v1/zaken",
-            status_code=201,
-            json=generate_oas_component(
-                "zaken",
-                "schemas/Zaak",
-                url="https://zaken.nl/api/v1/zaken/1",
-                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-                identificatie="ZAAK-OF-TEST",
-            ),
-        )
-        submission = SubmissionFactory.create(
-            form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={
-                "zgw_api_group": self.zgw_group.pk,
-                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-                "objects_api_group": None,
-            },
-            completed_not_preregistered=True,
-        )
-        assert submission.public_registration_reference == ""
-
-        pre_registration(submission.id, PostSubmissionEvents.on_completion)
-
-        submission.refresh_from_db()
-        self.assertEqual(submission.public_registration_reference, "ZAAK-OF-TEST")
-
-    @tag("gh-3649")
-    def test_document_size_argument_present(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "field1",
-                    "type": "file",
-                },
-            ],
-            completed=True,
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-        SubmissionFileAttachmentFactory.create(
-            submission_step=SubmissionStep.objects.first(),
-            content__data=b"content",
-            file_name="attachment1.txt",
-            form_key="field1",
-            _component_configuration_path="components.0",
-        )
-
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(
-            submission, zgw_form_options
-        )
-
-        submission.public_registration_reference = pre_registration_result.reference
-        assert submission.registration_result is not None
-        assert isinstance(pre_registration_result.data, dict)
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-
-        plugin.register_submission(submission, zgw_form_options)
-
-        (
-            create_zaak,
-            create_pdf_document,
-            relate_pdf_document,
-            get_roltypen,
-            create_rol,
-            get_statustypen,
-            create_status,
-            create_attachment1_document,
-            relate_attachment1_document,
-        ) = m.request_history
-
-        self.assertIn("bestandsomvang", json.loads(create_pdf_document.body))
-
-        attachment_data = json.loads(create_attachment1_document.body)
-
-        self.assertIn("bestandsomvang", attachment_data)
-        self.assertEqual(attachment_data["bestandsomvang"], 7)
-
-    @patch(
-        "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo"
-    )
-    def test_submission_with_zgw_and_objects_api_backends(self, m, obj_api_config):
-        config = ObjectsAPIConfig(
-            content_json=textwrap.dedent(
-                """
-                {
-                    "bron": {
-                        "naam": "Open Formulieren",
-                        "kenmerk": "{{ submission.kenmerk }}"
-                    },
-                    "type": "{{ productaanvraag_type }}",
-                    "aanvraaggegevens": {% json_summary %},
-                    "taal": "{{ submission.language_code  }}",
-                    "betrokkenen": [
-                        {
-                            "inpBsn" : "{{ variables.auth_bsn }}",
-                            "rolOmschrijvingGeneriek" : "initiator"
-                        }
-                    ],
-                }"""
-            ),
-        )
-
-        # unused group
-        ObjectsAPIGroupConfigFactory.create(
-            objects_service__api_root="https://objecten2.nl/api/v1/",
-            organisatie_rsin="111222333",
-        )
-        objects_api_group = ObjectsAPIGroupConfigFactory.create(
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            organisatie_rsin="000000000",
-        )
-
-        def get_create_json_for_object(req, ctx):
-            request_body = req.json()
-            return {
-                "url": "https://objecten.nl/api/v1/objects/1",
-                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-                "type": request_body["type"],
-                "record": {
-                    "index": 0,
-                    **request_body["record"],
-                    "endAt": None,
-                    "registrationAt": date.today().isoformat(),
-                    "correctionFor": 0,
-                    "correctedBy": "",
-                },
-            }
-
-        def get_create_json_for_zaakobject(req, ctx):
-            request_body = req.json()
-            return {
-                "url": "https://zaken.nl/api/v1/zaakobjecten/2c556247-aaa2-48d5-a94c-0aa72c78323a",
-                "uuid": "2c556247-aaa2-48d5-a94c-0aa72c78323a",
-                "zaak": request_body["zaak"],
-                "object": request_body["object"],
-                "zaakobjecttype": None,
-                "objectType": "overige",
-                "objectTypeOverige": "",
-                "objectTypeOverigeDefinitie": {
-                    "url": request_body["objectTypeOverigeDefinitie"]["url"],
-                    "schema": ".jsonSchema",
-                    "objectData": ".record.data",
-                },
-                "relatieomschrijving": "",
-                "objectIdentificatie": None,
-            }
-
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json_for_object,
-        )
-        m.post(
-            "https://zaken.nl/api/v1/zaakobjecten",
-            status_code=201,
-            json=get_create_json_for_zaakobject,
-        )
-
-        obj_api_config.return_value = config
-
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "voorletters",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_voorletters,
-                    },
-                },
-                {
-                    "key": "voornaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_voornamen,
-                    },
-                },
-                {
-                    "key": "achternaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
-                    },
-                },
-                {
-                    "key": "tussenvoegsel",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
-                    },
-                },
-                {
-                    "key": "geboortedatum",
-                    "type": "date",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geboortedatum,
-                    },
-                },
-                {
-                    "key": "geslachtsaanduiding",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geslachtsaanduiding,
-                    },
-                },
-                {
-                    "key": "postcode",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_postcode,
-                    },
-                },
-                {
-                    "key": "coordinaat",
-                    "type": "map",
-                    "registration": {
-                        "attribute": RegistrationAttribute.locatie_coordinaat,
-                    },
-                },
-            ],
-            submitted_data={
-                "voornaam": "Foo",
-                "achternaam": "Bar",
-                "tussenvoegsel": "de",
-                "postcode": "1000 AA",
-                "geboortedatum": "2000-12-31",
-                "coordinaat": {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
-                "voorletters": "J.W.",
-                "geslachtsaanduiding": "mannelijk",
-            },
-            bsn="111222333",
-            language_code="en",
-            form_definition_kwargs={"slug": "test"},
-            registration_result={
-                "zaak": {
-                    "url": "https://zaken.nl/api/v1/zaken/1",
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                }
-            },
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": objects_api_group,
-            "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2",
-            "objecttype_version": 1,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-
-        self.assertEqual(
-            result["document"]["url"],
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-        self.assertEqual(
-            result["initiator_rol"]["url"], "https://zaken.nl/api/v1/rollen/1"
-        )
-        self.assertEqual(result["status"]["url"], "https://zaken.nl/api/v1/statussen/1")
-        self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-        )
-        self.assertEqual(
-            result["objects_api_object"],
-            {
-                "url": "https://objecten.nl/api/v1/objects/1",
-                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-                "type": "https://objecttypen.nl/api/v1/objecttypes/2",
-                "record": {
-                    "index": 0,
-                    "typeVersion": 1,
-                    "data": {
-                        "data": {
-                            "test": {
-                                "voorletters": "J.W.",
-                                "voornaam": "Foo",
-                                "achternaam": "Bar",
-                                "tussenvoegsel": "de",
-                                "geboortedatum": "2000-12-31",
-                                "geslachtsaanduiding": "mannelijk",
-                                "postcode": "1000 AA",
-                                "coordinaat": {
-                                    "type": "Point",
-                                    "coordinates": [
-                                        4.893164274470299,
-                                        52.36673378967122,
-                                    ],
-                                },
-                            }
-                        },
-                        "type": "ProductAanvraag",
-                        "bsn": "111222333",
-                        "submission_id": str(submission.uuid),
-                        "language_code": "en",
-                    },
-                    "startAt": date.today().isoformat(),
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [4.893164274470299, 52.36673378967122],
-                    },
-                    "endAt": None,
-                    "registrationAt": date.today().isoformat(),
-                    "correctionFor": 0,
-                    "correctedBy": "",
-                },
-            },
-        )
-        self.assertEqual(
-            result["zaakobject"],
-            {
-                "url": "https://zaken.nl/api/v1/zaakobjecten/2c556247-aaa2-48d5-a94c-0aa72c78323a",
-                "uuid": "2c556247-aaa2-48d5-a94c-0aa72c78323a",
-                "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "object": "https://objecten.nl/api/v1/objects/1",
-                "zaakobjecttype": None,
-                "objectType": "overige",
-                "objectTypeOverige": "",
-                "objectTypeOverigeDefinitie": {
-                    "url": "https://objecttypen.nl/api/v1/objecttypes/2/versions/1",
-                    "schema": ".jsonSchema",
-                    "objectData": ".record.data",
-                },
-                "relatieomschrijving": "",
-                "objectIdentificatie": None,
-            },
-        )
-
-    @tag("gh-5803")
-    def test_date_related_objects_as_separate_variables_in_objects_api_template(
-        self, m
-    ):
-        objects_api_group = ObjectsAPIGroupConfigFactory.create(
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            organisatie_rsin="000000000",
-        )
-
-        def get_create_json_for_object(req, ctx):
-            request_body = req.json()
-            return {
-                "url": "https://objecten.nl/api/v1/objects/1",
-                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-                "type": request_body["type"],
-                "record": {
-                    "index": 0,
-                    **request_body["record"],
-                    "endAt": None,
-                    "registrationAt": date.today().isoformat(),
-                    "correctionFor": 0,
-                    "correctedBy": "",
-                },
-            }
-
-        def get_create_json_for_zaakobject(req, ctx):
-            request_body = req.json()
-            return {
-                "url": "https://zaken.nl/api/v1/zaakobjecten/2c556247-aaa2-48d5-a94c-0aa72c78323a",
-                "uuid": "2c556247-aaa2-48d5-a94c-0aa72c78323a",
-                "zaak": request_body["zaak"],
-                "object": request_body["object"],
-                "zaakobjecttype": None,
-                "objectType": "overige",
-                "objectTypeOverige": "",
-                "objectTypeOverigeDefinitie": {
-                    "url": request_body["objectTypeOverigeDefinitie"]["url"],
-                    "schema": ".jsonSchema",
-                    "objectData": ".record.data",
-                },
-                "relatieomschrijving": "",
-                "objectIdentificatie": None,
-            }
-
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json_for_object,
-        )
-        m.post(
-            "https://zaken.nl/api/v1/zaakobjecten",
-            status_code=201,
-            json=get_create_json_for_zaakobject,
-        )
-
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "date",
-                    "type": "date",
-                    "label": "Date",
-                },
-                {
-                    "key": "datetime",
-                    "type": "datetime",
-                    "label": "datetime",
-                },
-                {
-                    "key": "editgrid",
-                    "type": "editgrid",
-                    "label": "Editgrid",
-                    "components": [
-                        {
-                            "type": "time",
-                            "key": "time",
-                            "label": "Time",
-                        }
-                    ],
-                },
-            ],
-            submitted_data={
-                "date": "2025-12-10",
-                "datetime": "2025-12-11T12:34:56+01:00",
-                "editgrid": [{"time": "12:34:56"}],
-            },
-            language_code="en",
-            bsn="111222333",
-            form_definition_kwargs={"slug": "test"},
-            registration_result={
-                "zaak": {
-                    "url": "https://zaken.nl/api/v1/zaken/1",
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                }
-            },
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": objects_api_group,
-            "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2",
-            "objecttype_version": 1,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-            "content_json": textwrap.dedent(
-                """
-                {
-                    "bron": {"naam": "Open Formulieren"},
-                    "aanvraaggegevens": {
-                        "datum": "{{ variables.date }}",
-                        "datumtijd": "{{ variables.datetime }}",
-                        "editgrid": "{{ variables.editgrid }}"
-                    }
-                }"""
-            ),
-        }
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-
-        self.assertEqual(
-            result["objects_api_object"]["record"]["data"],
-            {
-                "bron": {"naam": "Open Formulieren"},
-                "aanvraaggegevens": {
-                    "datum": "2025-12-10",
-                    "datumtijd": "2025-12-11T12:34:56+01:00",
-                    "editgrid": "[{'time': '12:34:56'}]",
-                },
-            },
-        )
-
-    @tag("gh-4337")
-    def test_zgw_backend_zaak_omschrijving(self, m):
-        with self.subTest("Short name that is not truncated"):
-            submission = SubmissionFactory.create(
-                completed_not_preregistered=True,
-                with_report=True,
-                form__name="Short name",
-            )
-            zgw_form_options: RegistrationOptions = {
-                "zgw_api_group": self.zgw_group,
-                "case_type_identification": "",
-                "document_type_description": "",
-                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-                "auteur": "",
-                "zaak_vertrouwelijkheidaanduiding": "",  # type: ignore
-                "objects_api_group": None,
-                "product_url": "",
-            }
-            self.install_mocks(m)
-            plugin = ZGWRegistration("zgw")
-
-            plugin.pre_register_submission(submission, zgw_form_options)
-
-            create_zaak = m.last_request
-            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
-            self.assertEqual(create_zaak.method, "POST")
-            body = create_zaak.json()
-            self.assertEqual(body["omschrijving"], "Short name")
-
-        with self.subTest("Long name that is truncated"):
-            submission = SubmissionFactory.create(
-                completed_not_preregistered=True,
-                with_report=True,
-                form__name="Long name that will most definitely be truncated to 80 characters right???????????",
-            )
-            zgw_form_options: RegistrationOptions = {
-                "zgw_api_group": self.zgw_group,
-                "case_type_identification": "",
-                "document_type_description": "",
-                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-                "auteur": "",
-                "zaak_vertrouwelijkheidaanduiding": "",  # type: ignore
-                "objects_api_group": None,
-                "product_url": "",
-            }
-            self.install_mocks(m)
-            plugin = ZGWRegistration("zgw")
-
-            plugin.pre_register_submission(submission, zgw_form_options)
-
-            create_zaak = m.last_request
-            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
-            self.assertEqual(create_zaak.method, "POST")
-            body = create_zaak.json()
-            self.assertEqual(
-                body["omschrijving"],
-                "Long name that will most definitely be truncated to 80 characters right????????\u2026",
-            )
+NP_INITIATOR_FIELDS = [
+    {
+        "key": "achternaam",
+        "type": "textfield",
+        "registration": {
+            "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+        },
+    },
+    {
+        "key": "postcode",
+        "type": "textfield",
+        "registration": {
+            "attribute": RegistrationAttribute.initiator_postcode,
+        },
+    },
+    {
+        "key": "woonplaats",
+        "type": "textfield",
+        "registration": {"attribute": RegistrationAttribute.initiator_woonplaats},
+    },
+    {
+        "key": "straat",
+        "type": "textfield",
+        "registration": {
+            "attribute": RegistrationAttribute.initiator_straat,
+        },
+    },
+    {
+        "key": "huisnummer",
+        "type": "number",
+        "registration": {
+            "attribute": RegistrationAttribute.initiator_huisnummer,
+        },
+    },
+]
+NP_INITIATOR_DATA = {
+    "achternaam": "Willemse",
+    "postcode": "1000 AA",
+    "woonplaats": "Ketnet",
+    "straat": "Samsonweg",
+    "huisnummer": 101,
+}
+
+
+def _run_preregistration(
+    submission: Submission,
+    plugin: ZGWRegistration,
+    options: RegistrationOptions,
+) -> None:
+    pre_registration_result = plugin.pre_register_submission(submission, options)
+    assert isinstance(submission.registration_result, dict)
+    assert isinstance(pre_registration_result.data, dict)
+    submission.registration_result.update(pre_registration_result.data)
+    submission.save()
 
 
 @temp_private_root()
@@ -1421,6 +107,182 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             for_test_docker_compose=True,
             organisatie_rsin="000000000",
         )
+
+    def test_submission_has_reference_after_pre_registration(self):
+        submission = SubmissionFactory.create(
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={
+                "zgw_api_group": self.zgw_group.pk,
+                "catalogue": {"domain": "TEST", "rsin": "000000000"},
+                "case_type_identification": "ZT-001",
+                "document_type_description": "Attachment Informatieobjecttype",
+                "objects_api_group": None,
+            },
+            completed_not_preregistered=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        assert submission.public_registration_reference == ""
+
+        pre_registration(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.public_registration_reference,
+            submission.registration_result["zaak"]["identificatie"],
+        )
+
+    @patch(
+        "openforms.registrations.contrib.zgw_apis.plugin.generate_unique_submission_reference",
+        return_value="OF-JCRWBX",
+    )
+    def test_submission_has_reference_after_pre_registration_use_of_generator(
+        self, mock
+    ):
+        zgw_group = ZGWApiGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            organisatie_rsin="000000000",
+            use_generated_zaaknummer=False,
+        )
+        submission = SubmissionFactory.create(
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "catalogue": {"domain": "TEST", "rsin": "000000000"},
+                "case_type_identification": "ZT-001",
+                "document_type_description": "Attachment Informatieobjecttype",
+                "objects_api_group": None,
+            },
+            completed_not_preregistered=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        assert submission.public_registration_reference == ""
+
+        pre_registration(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        self.assertEqual(submission.public_registration_reference, "OF-JCRWBX")
+        self.assertEqual(
+            submission.registration_result["zaak"]["identificatie"], "OF-JCRWBX"
+        )
+
+    @tag("gh-4337")
+    def test_zaakomschrijving_includes_form_name(self):
+        with self.subTest("Short name that is not truncated"):
+            submission1 = SubmissionFactory.create(
+                form__name="Short name",
+                form__registration_backend="zgw-create-zaak",
+                form__registration_backend_options={
+                    "zgw_api_group": self.zgw_group.pk,
+                    "catalogue": {"domain": "TEST", "rsin": "000000000"},
+                    "case_type_identification": "ZT-001",
+                    "document_type_description": "Attachment Informatieobjecttype",
+                    "objects_api_group": None,
+                },
+                completed_not_preregistered=True,
+                # Pin to a known case & document type version
+                completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            )
+            assert submission1.public_registration_reference == ""
+
+            pre_registration(submission1.id, PostSubmissionEvents.on_completion)
+
+            submission1.refresh_from_db()
+            zaak = submission1.registration_result["zaak"]
+            self.assertEqual(zaak["omschrijving"], "Short name")
+
+        with self.subTest("Long name that is truncated"):
+            submission2 = SubmissionFactory.create(
+                form__name=(
+                    "Long name that will most definitely be truncated to 80 characters "
+                    "right???????????"
+                ),
+                form__registration_backend="zgw-create-zaak",
+                form__registration_backend_options={
+                    "zgw_api_group": self.zgw_group.pk,
+                    "catalogue": {"domain": "TEST", "rsin": "000000000"},
+                    "case_type_identification": "ZT-001",
+                    "document_type_description": "Attachment Informatieobjecttype",
+                    "objects_api_group": None,
+                },
+                completed_not_preregistered=True,
+                # Pin to a known case & document type version
+                completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            )
+            assert submission2.public_registration_reference == ""
+
+            pre_registration(submission2.id, PostSubmissionEvents.on_completion)
+
+            submission2.refresh_from_db()
+            zaak = submission2.registration_result["zaak"]
+            self.assertEqual(
+                zaak["omschrijving"],
+                "Long name that will most definitely be truncated to 80 characters "
+                "right????????\u2026",
+            )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_submission_with_registrator(self):
+        submission = SubmissionFactory.from_components(
+            NP_INITIATOR_FIELDS,
+            submitted_data=NP_INITIATOR_DATA,
+            bsn="111222333",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        RegistratorInfoFactory.create(submission=submission, value="123456782")
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "medewerker_roltype": "Baliemedewerker",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        with self.subTest("full registration"):
+            result = plugin.register_submission(submission, options)
+            assert result
+            zaak_url = result["zaak"]["url"]
+
+        with (
+            self.subTest("verify created rol"),
+            get_zaken_client(self.zgw_group) as client,
+        ):
+            rollen = client.get("rollen", params={"zaak": zaak_url}).json()
+
+            self.assertEqual(rollen["count"], 2)  # inititiator, registrator
+            registrator_rol = next(
+                rol
+                for rol in rollen["results"]
+                if rol["omschrijving"] == "Baliemedewerker"
+            )
+            self.assertEqual(registrator_rol["betrokkeneType"], "medewerker")
+            self.assertEqual(
+                registrator_rol["roltoelichting"],
+                "Employee who registered the case on behalf of the customer.",
+            )
+            self.assertEqual(
+                registrator_rol["betrokkeneIdentificatie"]["identificatie"],
+                "123456782",
+            )
 
     def test_create_zaak_with_natuurlijk_persoon_initiator_and_legacy_config(self):
         submission = SubmissionFactory.from_components(
@@ -1440,13 +302,6 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                     },
                 },
                 {
-                    "key": "achternaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
-                    },
-                },
-                {
                     "key": "tussenvoegsel",
                     "type": "textfield",
                     "registration": {
@@ -1468,40 +323,13 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                     },
                 },
                 {
-                    "key": "postcode",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_postcode,
-                    },
-                },
-                {
-                    "key": "woonplaats",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_woonplaats
-                    },
-                },
-                {
-                    "key": "straat",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_straat,
-                    },
-                },
-                {
-                    "key": "huisnummer",
-                    "type": "number",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_huisnummer,
-                    },
-                },
-                {
                     "key": "coordinaat",
                     "type": "map",
                     "registration": {
                         "attribute": RegistrationAttribute.locatie_coordinaat,
                     },
                 },
+                *NP_INITIATOR_FIELDS,
             ],
             submitted_data={
                 "voornaam": "Foo",
@@ -1512,10 +340,6 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "straat": "Samsonweg",
                 "huisnummer": 101,
                 "geboortedatum": "2000-12-31",
-                "coordinaat": {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
             },
@@ -2060,6 +884,41 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "7f1887e8-bf22-47e7-ae52-ed6848d7e70e",
             )
 
+    def test_create_zaak_with_zaaktype_where_initiator_roltype_is_missing(self):
+        submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "dummy"}],
+            submitted_data={"dummy": "dummy"},
+            bsn="111222333",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2025, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "INCOMPLETE",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "organisatie_rsin": "000000000",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        result = plugin.register_submission(submission, options)
+
+        assert result is not None
+        self.assertIsNone(result["initiator_rol"])
+
     def test_create_zaak_with_case_identification_reference_and_product(self):
         submission = SubmissionFactory.from_components(
             [
@@ -2243,6 +1102,48 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                             "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
                         )
 
+    def test_retried_registration_with_internal_reference(self):
+        """
+        Assert that the internal reference is included in the "kenmerken".
+        """
+        submission = SubmissionFactory.from_components(
+            completed_not_preregistered=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            needs_on_completion_retry=True,
+            public_registration_reference="OF-1234",
+            components_list=[{"key": "dummy"}],
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={
+                "zgw_api_group": self.zgw_group.pk,
+                "catalogue": {"domain": "TEST", "rsin": "000000000"},
+                "case_type_identification": "ZT-001",
+                "document_type_description": "Attachment Informatieobjecttype",
+                "zaaktype": "",
+                "informatieobjecttype": "",
+                "organisatie_rsin": "000000000",
+                "vertrouwelijkheidaanduiding": "openbaar",
+                "objects_api_group": None,
+            },
+        )
+
+        pre_registration(submission.pk, PostSubmissionEvents.on_retry)
+
+        submission.refresh_from_db()
+        with get_zaken_client(self.zgw_group) as client:
+            assert submission.registration_result is not None
+            zaak_url = submission.registration_result["zaak"]["url"]
+            zaak_data = client.get(zaak_url, headers=CRS_HEADERS).json()
+            self.assertEqual(
+                zaak_data["kenmerken"],
+                [
+                    {
+                        "kenmerk": "OF-1234",
+                        "bron": "Open Formulieren",
+                    }
+                ],
+            )
+
     def test_submission_with_multiple_eigenschappen_creation(self):
         submission = SubmissionFactory.from_components(
             [
@@ -2401,6 +1302,444 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "second property": "a value",
             },
         )
+
+    def test_register_and_update_paid_product(self):
+        submission = SubmissionFactory.from_data(
+            {"voornaam": "Foo"},
+            bsn="111222333",
+            # setup payment although at this level of testing it is not needed
+            form__product__price=Decimal("11.35"),
+            form__payment_backend="demo",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        assert submission.payment_required
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        with self.subTest("full registration"):
+            result = plugin.register_submission(submission, options)
+            assert result
+            zaak_url = result["zaak"]["url"]
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+
+        with self.subTest("verify initial payment status"):
+            zaak_data = client.get(zaak_url, headers=CRS_HEADERS).json()
+            self.assertEqual(zaak_data["betalingsindicatie"], "nog_niet")
+            self.assertIsNone(zaak_data["laatsteBetaaldatum"])
+
+        before_update = datetime.combine(
+            date.fromisoformat(zaak_data["registratiedatum"]),
+            time(0, 0, 0, tzinfo=UTC),
+        )
+
+        with self.subTest("perform the payment status update"):
+            plugin.update_payment_status(submission, options)
+
+        with self.subTest("verify updated payment status"):
+            zaak_data = client.get(zaak_url, headers=CRS_HEADERS).json()
+            self.assertEqual(zaak_data["betalingsindicatie"], "geheel")
+            timestamp_str = zaak_data["laatsteBetaaldatum"]
+            self.assertIsNotNone(timestamp_str)
+            self.assertGreater(datetime.fromisoformat(timestamp_str), before_update)
+
+    @tag("sentry-334882", "gh-3649")
+    def test_file_attachments_respect_field_specific_overrides(self):
+        """
+        Assert that override of default values for the Documenten API works.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "field1",
+                    "type": "file",
+                    "registration": {
+                        # attachment informatieobjecttype in docker compose
+                        "informatieobjecttype": (
+                            "http://localhost:8003/catalogi/api/v1/"
+                            "informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e"
+                        ),
+                        "bronorganisatie": "100000009",
+                        "docVertrouwelijkheidaanduiding": "zeer_geheim",
+                        "titel": "TITEL",
+                    },
+                },
+                {
+                    "key": "field2",
+                    "type": "file",
+                    # options should be omitted in the actual call and the document type
+                    # defaults must be used
+                    "registration": {
+                        "informatieobjecttype": "",
+                        "bronorganisatie": "",
+                        "doc_vertrouwelijkheidaanduiding": "",
+                        "titel": "",
+                    },
+                },
+            ],
+            bsn="111222333",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        submission_step = SubmissionStep.objects.get()
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "PDF Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "organisatie_rsin": "000000000",
+            # empty value should be ignored, use the VA from the zaaktype
+            "zaak_vertrouwelijkheidaanduiding": "",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            # empty-ish value should fall back to default
+            "auteur": "",
+        }
+        attachment_1 = SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="attachment1.jpg",
+            form_key="field1",
+            _component_configuration_path="components.0",
+        )
+        attachment_2 = SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="attachment2.jpg",
+            form_key="field2",
+            _component_configuration_path="components.1",
+        )
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        plugin.register_submission(submission, options)
+
+        submission.refresh_from_db()
+        assert submission.registration_result
+
+        with self.subTest("zaak details"):
+            zaak_data = submission.registration_result["zaak"]
+            # http://localhost:8003/admin/catalogi/zaaktype/5/change/
+            self.assertEqual(zaak_data["vertrouwelijkheidaanduiding"], "intern")
+
+        document_results = submission.registration_result["intermediate"]["documents"]
+        with self.subTest("Attachment 1 with overridden fields"):
+            document_1_data = document_results[str(attachment_1.pk)]["document"]
+            self.assertEqual(document_1_data["bestandsnaam"], "attachment1.jpg")
+            self.assertEqual(
+                document_1_data["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e",
+            )
+            self.assertEqual(document_1_data["bronorganisatie"], "100000009")
+            self.assertEqual(
+                document_1_data["vertrouwelijkheidaanduiding"], "zeer_geheim"
+            )
+            self.assertEqual(document_1_data["titel"], "TITEL")
+            self.assertIsNotNone(document_1_data["ontvangstdatum"])
+
+        with self.subTest("Attachment 2 with defaults"):
+            document_2_data = document_results[str(attachment_2.pk)]["document"]
+            self.assertEqual(document_2_data["bestandsnaam"], "attachment2.jpg")
+            # PDF informatieobjecttype
+            # http://localhost:8003/admin/catalogi/informatieobjecttype/4/change/
+            self.assertEqual(
+                document_2_data["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/29b63e5c-3835-4f68-8fad-f2aea9ae6b71",
+            )
+            self.assertEqual(document_2_data["bronorganisatie"], "000000000")
+            # default from informatieobjecttype
+            self.assertEqual(document_2_data["vertrouwelijkheidaanduiding"], "openbaar")
+            self.assertEqual(document_2_data["titel"], "attachment2.jpg")
+            self.assertEqual(document_2_data["auteur"], "Aanvrager")
+            self.assertIsNotNone(document_2_data["ontvangstdatum"])
+
+        with self.subTest("PDF summary document defaults"):
+            pdf_report_data = document_results["report"]["document"]
+            # PDF informatieobjecttype
+            # http://localhost:8003/admin/catalogi/informatieobjecttype/4/change/
+            self.assertEqual(
+                pdf_report_data["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/29b63e5c-3835-4f68-8fad-f2aea9ae6b71",
+            )
+            self.assertEqual(pdf_report_data["auteur"], "Aanvrager")
+            self.assertIsNone(pdf_report_data["ontvangstdatum"])
+
+        # Issue #3649
+        with self.subTest("Ensure 'bestandsomvang' is set explicitly"):
+            document_requests = (
+                req
+                for req in self.cassette.requests
+                if req.url.startswith(
+                    "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten"
+                )
+                if req.method == "POST"
+            )
+            for req in document_requests:
+                req_data = json.loads(req.body)
+                with self.subTest(file=req_data["bestandsnaam"]):
+                    self.assertIn("bestandsomvang", req_data)
+                    self.assertIsInstance(req_data["bestandsomvang"], int)
+
+    @tag("gh-5803")
+    def test_submission_with_zgw_and_objects_api_backends(self):
+        self.maxDiff = None
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
+        )
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "achternaam",
+                    "type": "textfield",
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+                # ensure that date/datetime/time is properly serialized - see #5803
+                {
+                    "key": "date",
+                    "type": "date",
+                    "label": "Date",
+                },
+                {
+                    "key": "datetime",
+                    "type": "datetime",
+                    "label": "datetime",
+                },
+                {
+                    "key": "editgrid",
+                    "type": "editgrid",
+                    "label": "Editgrid",
+                    "components": [
+                        {
+                            "type": "time",
+                            "key": "time",
+                            "label": "Time",
+                        }
+                    ],
+                },
+            ],
+            submitted_data={
+                "achternaam": "Bar",
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
+                "date": "2025-12-10",
+                "datetime": "2025-12-11T12:34:56+01:00",
+                "editgrid": [{"time": "12:34:56"}],
+            },
+            bsn="111222333",
+            language_code="en",
+            form_definition_kwargs={"slug": "test"},
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "PDF Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "organisatie_rsin": "000000000",
+            "objects_api_group": objects_api_group,
+            "objecttype": (
+                "http://host.docker.internal:8001/api/v2/"
+                "objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e"
+            ),
+            "objecttype_version": 1,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "content_json": textwrap.dedent(
+                """
+                {
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": "{{ submission.kenmerk }}"
+                    },
+                    "type": "{{ productaanvraag_type }}",
+                    "aanvraaggegevens": {% json_summary %},
+                    "gh-5803": {
+                        "datum": "{{ variables.date }}",
+                        "datumtijd": "{{ variables.datetime }}",
+                        "editgrid": "{{ variables.editgrid }}"
+                    },
+                    "taal": "{{ submission.language_code  }}",
+                    "betrokkenen": [
+                        {
+                            "inpBsn" : "{{ variables.auth_bsn }}",
+                            "rolOmschrijvingGeneriek" : "initiator"
+                        }
+                    ]
+                }"""
+            ),
+        }
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+        # we need to patch the ZGW client `create_zaakobject` method so that we can
+        # fix up the object URL since Open Zaak validates the format and needs to resolve
+        # this inside the container network
+        original_create_zaakobject = ZakenClient.create_zaakobject
+
+        def wrapped_create_zaakobject(
+            self,
+            zaak,
+            object_url: str,
+            objecttype_version_url: str,
+        ):
+            object_url = object_url.replace(
+                "http://objects-web:8000",
+                "http://host.docker.internal:8002",
+                1,
+            )
+            return original_create_zaakobject(
+                self, zaak, object_url, objecttype_version_url
+            )
+
+        with patch.object(
+            ZakenClient,
+            "create_zaakobject",
+            side_effect=wrapped_create_zaakobject,
+            autospec=True,
+        ):
+            result = plugin.register_submission(submission, options)
+
+        # verify the created objects
+        assert result is not None
+        # grab "today's" date from the zaak registratiedatum
+        today = result["zaak"]["registratiedatum"]
+
+        created_object = result["objects_api_object"]
+        with self.subTest("objects API object"):
+            self.assertEqual(
+                created_object["type"],
+                (
+                    "http://host.docker.internal:8001/api/v2/"
+                    "objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e"
+                ),
+            )
+
+            self.assertIsInstance(
+                created_object["record"]["data"]["bron"]["kenmerk"], str
+            )
+            del created_object["record"]["data"]["bron"]["kenmerk"]
+            self.assertEqual(
+                created_object["record"],
+                {
+                    "index": 1,
+                    "typeVersion": 1,
+                    "data": {
+                        "bron": {"naam": "Open Formulieren"},
+                        "type": "ProductAanvraag",
+                        "aanvraaggegevens": {
+                            "test": {
+                                "achternaam": "Bar",
+                                "coordinaat": {
+                                    "type": "Point",
+                                    "coordinates": [
+                                        4.893164274470299,
+                                        52.36673378967122,
+                                    ],
+                                },
+                                "date": "2025-12-10",
+                                "datetime": "2025-12-11T12:34:56+01:00",
+                                "editgrid": [{"time": "12:34:56"}],
+                            }
+                        },
+                        "gh-5803": {
+                            "datum": "2025-12-10",
+                            "datumtijd": "2025-12-11T12:34:56+01:00",
+                            # note: string formatted list because of template!
+                            "editgrid": "[{'time': '12:34:56'}]",
+                        },
+                        "taal": "en",
+                        "betrokkenen": [
+                            {
+                                "inpBsn": "111222333",
+                                "rolOmschrijvingGeneriek": "initiator",
+                            }
+                        ],
+                    },
+                    "startAt": today,
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                    "endAt": None,
+                    "registrationAt": today,
+                    "correctionFor": None,
+                    "correctedBy": None,
+                },
+            )
+
+        with self.subTest("zaakobject relation"):
+            zaakobject = result["zaakobject"]
+            self.assertEqual(zaakobject["zaak"], result["zaak"]["url"])
+            self.assertIsNone(zaakobject["zaakobjecttype"])
+            self.assertEqual(
+                zaakobject["object"],
+                created_object["url"].replace(
+                    "objects-web:8000", "host.docker.internal:8002"
+                ),
+            )
+            self.assertEqual(zaakobject["objectType"], "overige")
+            self.assertEqual(zaakobject["objectTypeOverige"], "")
+            self.assertEqual(
+                zaakobject["objectTypeOverigeDefinitie"],
+                {
+                    "url": (
+                        "http://host.docker.internal:8001/api/v2/"
+                        "objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions/1"
+                    ),
+                    "schema": ".jsonSchema",
+                    "objectData": ".record.data",
+                },
+            )
+            self.assertEqual(zaakobject["relatieomschrijving"], "")
+            self.assertIsNone(zaakobject["objectIdentificatie"])
 
     @patch(
         "openforms.registrations.contrib.zgw_apis.plugin.get_last_confirmation_email",
@@ -3486,108 +2825,4 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "verblijfsadres": None,
                 "subVerblijfBuitenland": None,
             },
-        )
-
-    def test_pre_registration_use_zaaknummer_as_reference(self):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "type": "textfield",
-                    "key": "someText",
-                    "label": "Some text",
-                }
-            ],
-            submitted_data={
-                "someText": "Foo",
-            },
-            bsn="111222333",
-        )
-        catalogi_root = self.zgw_group.ztc_service.api_root
-        options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "catalogue": {
-                "domain": "TEST",
-                "rsin": "000000000",
-            },
-            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-            "organisatie_rsin": "000000000",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-
-        plugin = ZGWRegistration("zgw")
-
-        client = get_zaken_client(self.zgw_group)
-        self.addCleanup(client.close)
-
-        pre_registration_result = plugin.pre_register_submission(submission, options)
-        assert pre_registration_result.data is not None
-
-        self.assertEqual(
-            pre_registration_result.reference,
-            pre_registration_result.data["zaak"]["identificatie"],
-        )
-        self.assertTrue(pre_registration_result.reference.startswith("ZAAK-"))
-
-    @patch(
-        "openforms.registrations.contrib.zgw_apis.plugin.generate_unique_submission_reference",
-        return_value="OF-JCRWBX",
-    )
-    def test_pre_registration_not_use_zaaknummer_as_reference(self, mock):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "type": "textfield",
-                    "key": "someText",
-                    "label": "Some text",
-                }
-            ],
-            submitted_data={
-                "someText": "Foo",
-            },
-            bsn="111222333",
-        )
-        zgw_group = ZGWApiGroupConfigFactory.create(
-            for_test_docker_compose=True,
-            organisatie_rsin="000000000",
-            use_generated_zaaknummer=False,
-        )
-        catalogi_root = zgw_group.ztc_service.api_root
-        options: RegistrationOptions = {
-            "zgw_api_group": zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "catalogue": {
-                "domain": "TEST",
-                "rsin": "000000000",
-            },
-            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-            "organisatie_rsin": "000000000",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-        }
-
-        plugin = ZGWRegistration("zgw")
-
-        client = get_zaken_client(zgw_group)
-        self.addCleanup(client.close)
-
-        pre_registration_result = plugin.pre_register_submission(submission, options)
-        assert pre_registration_result.data is not None
-
-        self.assertEqual(pre_registration_result.reference, "OF-JCRWBX")
-        self.assertEqual(
-            pre_registration_result.data["zaak"]["identificatie"], "OF-JCRWBX"
         )

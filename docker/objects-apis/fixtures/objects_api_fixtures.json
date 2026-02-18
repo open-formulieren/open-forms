@@ -63,6 +63,15 @@
     }
 },
 {
+    "model": "core.objecttype",
+    "pk": 8,
+    "fields": {
+        "service": 2,
+        "uuid": "8faed0fa-7864-4409-aa6d-533a37616a9e",
+        "_name": "Accepts everything"
+    }
+},
+{
     "model": "token.tokenauth",
     "pk": 1,
     "fields": {
@@ -155,6 +164,17 @@
     }
 },
 {
+    "model": "token.permission",
+    "pk": 8,
+    "fields": {
+        "token_auth": 1,
+        "object_type": 8,
+        "mode": "read_and_write",
+        "use_fields": false,
+        "fields": null
+    }
+},
+{
     "model": "zgw_consumers.service",
     "pk": 1,
     "fields": {
@@ -174,6 +194,38 @@
         "user_representation": "",
         "client_certificate": null,
         "server_certificate": null
+    }
+},
+{
+    "model": "zgw_consumers.service",
+    "pk": 2,
+    "fields": {
+        "label": "Local objecttypes (internal docker host)",
+        "oas": "https://raw.githubusercontent.com/maykinmedia/objecttypes-api/master/src/objecttypes/api/v2/openapi.yaml",
+        "oas_file": "",
+        "uuid": "6e5febed-000a-497b-99b7-e79ff8293899",
+        "api_type": "orc",
+        "api_root": "http://host.docker.internal:8001/api/v2/",
+        "client_id": "",
+        "secret": "",
+        "auth_type": "api_key",
+        "header_key": "Authorization",
+        "header_value": "Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
+        "nlx": "",
+        "user_id": "",
+        "user_representation": "",
+        "client_certificate": null,
+        "server_certificate": null
+    }
+},
+{
+    "model": "zgw_consumers.nlxconfig",
+    "pk": 1,
+    "fields": {
+        "directory": "",
+        "outway": "",
+        "certificate": "",
+        "certificate_key": ""
     }
 }
 ]

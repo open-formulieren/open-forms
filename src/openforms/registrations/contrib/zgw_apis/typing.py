@@ -39,7 +39,9 @@ class RegistrationOptions(TypedDict):
     zaaktype: str  # DeprecationWarning
     informatieobjecttype: str  # DeprecationWarning
     organisatie_rsin: NotRequired[str]
-    zaak_vertrouwelijkheidaanduiding: NotRequired[VertrouwelijkheidAanduiding]
+    zaak_vertrouwelijkheidaanduiding: NotRequired[
+        VertrouwelijkheidAanduiding | Literal[""]
+    ]
     medewerker_roltype: NotRequired[str]
     partners_roltype: str
     partners_description: str

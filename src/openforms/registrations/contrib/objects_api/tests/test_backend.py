@@ -1,11 +1,15 @@
+from __future__ import annotations
+
+import json
+from collections.abc import Callable
 from datetime import UTC, datetime
 from unittest.mock import patch
 from uuid import UUID
 
 from django.test import TestCase
 
-import requests_mock
-from zgw_consumers_oas.component_generation import generate_oas_component
+from requests import RequestException
+from vcr.request import Request as VCRRequest
 
 from openforms.contrib.objects_api.clients import (
     get_documents_client,
@@ -33,14 +37,24 @@ from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..typing import RegistrationOptionsV2
 
 
-@requests_mock.Mocker()
-class ObjectsAPIBackendTests(TestCase):
-    """General tests for the Objects API registration backend.
+class BeforeRecordRequestWrapper:
+    hook: Callable[[VCRRequest], VCRRequest | None] | None = None
 
-    These tests don't depend on the options version (v1 or v2).
+    def __call__(self, request: VCRRequest) -> VCRRequest | None:
+        if hook := self.hook:
+            return hook(request)
+        return request
+
+
+class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
+    _vcr_before_record_request: BeforeRecordRequestWrapper = (
+        BeforeRecordRequestWrapper()
+    )
     """
+    Instance variable to intercept and modify requests to introduce error behaviour.
 
-    maxDiff = None
+    Set this in the test with a callback to introduce test-specific failure situations.
+    """
 
     def setUp(self):
         super().setUp()
@@ -52,18 +66,44 @@ class ObjectsAPIBackendTests(TestCase):
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
 
-        self.objects_api_group = ObjectsAPIGroupConfigFactory.create(
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            drc_service__api_root="https://documenten.nl/api/v1/",
-        )
+        def _reset_vcr_hook():
+            self._vcr_before_record_request.hook = None
 
-    def test_csv_creation_fails_pdf_still_saved(self, m: requests_mock.Mocker):
+        self.addCleanup(_reset_vcr_hook)
+
+    def _get_vcr_kwargs(self, **kwargs):
+        kwargs["before_record_request"] = self._vcr_before_record_request
+        return super()._get_vcr_kwargs(**kwargs)
+
+    def test_csv_creation_fails_pdf_still_saved(self):
         """Test the behavior when one of the API calls fails.
 
         The exception should be caught, the intermediate data saved, and a
         ``RegistrationFailed`` should be raised in the end.
         """
 
+        def fail_csv_request(request: VCRRequest):
+            if not request.url.startswith("http://localhost:8003/documenten/api/v1"):
+                return request
+            if request.method != "POST":
+                return request
+
+            assert isinstance(request.body, bytes)
+            request_body = json.loads(request.body)
+
+            if request_body["bestandsnaam"].endswith(".csv"):
+                raise RequestException("Broken CSV upload.")
+            else:
+                return request
+
+        self._vcr_before_record_request.hook = fail_csv_request
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="TEST",
+            catalogue_rsin="000000000",
+            organisatie_rsin="000000000",
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -72,39 +112,25 @@ class ObjectsAPIBackendTests(TestCase):
                 },
             ],
             submitted_data={"voornaam": "Foo"},
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
         )
-
-        pdf = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-
-        # OK on PDF request
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=pdf,
-            additional_matcher=lambda req: req.json()["bestandsnaam"].endswith(".pdf"),
-        )
-
-        # Failure on CSV request (which is dispatched after the PDF one)
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=500,
-            additional_matcher=lambda req: "csv" in req.json()["bestandsnaam"],
-        )
-
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         with self.assertRaises(RegistrationFailed):
             plugin.register_submission(
                 submission,
                 {
-                    "objects_api_group": self.objects_api_group,
+                    "version": 1,
+                    "objects_api_group": objects_api_group,
+                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+                    "objecttype_version": 3,
+                    "iot_submission_report": "PDF Informatieobjecttype",
+                    "iot_submission_csv": "CSV Informatieobjecttype",
+                    "iot_attachment": "",
                     "upload_submission_csv": True,
-                    "informatieobjecttype_submission_csv": "dummy",
-                    "informatieobjecttype_submission_report": "dummy",
+                    "update_existing_object": False,
+                    "auth_attribute_path": [],
                 },
             )
 
@@ -112,18 +138,42 @@ class ObjectsAPIBackendTests(TestCase):
             submission=submission
         )
 
-        self.assertEqual(registration_data.pdf_url, pdf["url"])
+        self.assertTrue(
+            registration_data.pdf_url.startswith(
+                "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten"
+            )
+        )
         self.assertEqual(registration_data.csv_url, "")
 
-    def test_attachment_fails_other_attachments_still_saved(
-        self, m: requests_mock.Mocker
-    ):
+    def test_attachment_fails_other_attachments_still_saved(self):
         """Test the behavior when one of the API calls to register an attachment fails.
 
         The exception should be caught, the first attachment saved, and a
         ``RegistrationFailed`` should be raised in the end.
         """
 
+        def fail_ping_request(request: VCRRequest):
+            if not request.url.startswith("http://localhost:8003/documenten/api/v1"):
+                return request
+            if request.method != "POST":
+                return request
+
+            assert isinstance(request.body, bytes)
+            request_body = json.loads(request.body)
+
+            if request_body["bestandsnaam"].endswith(".png"):
+                raise RequestException("Broken PNG upload.")
+            else:
+                return request
+
+        self._vcr_before_record_request.hook = fail_ping_request
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="TEST",
+            catalogue_rsin="000000000",
+            organisatie_rsin="000000000",
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -136,6 +186,8 @@ class ObjectsAPIBackendTests(TestCase):
                 },
             ],
             completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
         )
         submission_step = submission.steps[0]
         attachment_1 = SubmissionFileAttachmentFactory.create(
@@ -149,36 +201,18 @@ class ObjectsAPIBackendTests(TestCase):
             form_key="file_2",
         )
 
-        jpg_resp = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-
-        # OK on JPG attachment request
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=jpg_resp,
-            additional_matcher=lambda req: req.json()["bestandsnaam"].endswith(".jpg"),
-        )
-
-        # Failure on PNG attachment request (which is dispatched after the JPG one)
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=500,
-            additional_matcher=lambda req: req.json()["bestandsnaam"].endswith(".png"),
-        )
-
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
         with self.assertRaises(RegistrationFailed):
             plugin.register_submission(
                 submission,
                 {
-                    "objects_api_group": self.objects_api_group,
+                    "version": 1,
+                    "objects_api_group": objects_api_group,
+                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+                    "objecttype_version": 3,
+                    "iot_attachment": "Attachment Informatieobjecttype",
+                    "iot_submission_report": "",
+                    "iot_submission_csv": "",
                     "upload_submission_csv": False,
-                    "informatieobjecttype_attachment": "dummy",
                 },
             )
 
@@ -187,12 +221,35 @@ class ObjectsAPIBackendTests(TestCase):
         )
         self.assertTrue(attachment.exists())
 
-    def test_registration_works_after_failure(self, m: requests_mock.Mocker):
+    def test_registration_works_after_failure(self):
         """Test the registration behavior after a failure.
 
-        As a ``ObjectsAPIRegistrationData`` instance was already created, it shouldn't crash.
+        If an ``ObjectsAPIRegistrationData`` instance was already created, it shouldn't
+        cause crashes when retrying.
         """
 
+        def fail_csv_request(request: VCRRequest):
+            if not request.url.startswith("http://localhost:8003/documenten/api/v1"):
+                return request
+            if request.method != "POST":
+                return request
+
+            assert isinstance(request.body, bytes)
+            request_body = json.loads(request.body)
+
+            if request_body["bestandsnaam"].endswith(".csv"):
+                raise RequestException("Broken CSV upload.")
+            else:
+                return request
+
+        self._vcr_before_record_request.hook = fail_csv_request
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="TEST",
+            catalogue_rsin="000000000",
+            organisatie_rsin="000000000",
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -201,50 +258,38 @@ class ObjectsAPIBackendTests(TestCase):
                 },
             ],
             submitted_data={"voornaam": "Foo"},
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
         )
-
         # Instance created from a previous attempt
         registration_data = ObjectsAPIRegistrationData.objects.create(
-            submission=submission, pdf_url="https://example.com"
+            submission=submission,
+            pdf_url="https://example.com",
         )
-
-        # Failure on CSV request (no mocks for the PDF one, we assume it was already created)
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=500,
-            additional_matcher=lambda req: "csv" in req.json()["bestandsnaam"],
-        )
-
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         with self.assertRaises(RegistrationFailed):
             plugin.register_submission(
                 submission,
                 {
-                    "objects_api_group": self.objects_api_group,
+                    "version": 1,
+                    "objects_api_group": objects_api_group,
+                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+                    "objecttype_version": 3,
+                    "iot_submission_report": "",
+                    "iot_submission_csv": "CSV Informatieobjecttype",
+                    "iot_attachment": "",
                     "upload_submission_csv": True,
-                    "informatieobjecttype_submission_csv": "dummy",
+                    "update_existing_object": False,
+                    "auth_attribute_path": [],
                 },
             )
 
         registration_data = ObjectsAPIRegistrationData.objects.get(
             submission=submission
         )
-
         self.assertEqual(registration_data.pdf_url, "https://example.com")
         self.assertEqual(registration_data.csv_url, "")
-
-
-class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
-    def setUp(self):
-        super().setUp()
-
-        config_patcher = patch(
-            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-            return_value=ObjectsAPIConfig(),
-        )
-        self.mock_get_config = config_patcher.start()
-        self.addCleanup(config_patcher.stop)
 
     def test_submission_with_objects_api_backend_create_and_update_object(self):
         objects_api_group = ObjectsAPIGroupConfigFactory.create(
