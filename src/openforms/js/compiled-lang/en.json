@@ -801,12 +801,6 @@
       "value": "Name of the form definition used in this form step"
     }
   ],
-  "68Aey7": [
-    {
-      "type": 0,
-      "value": "When this is checked, Open Forms automatically updates the customer profile when a digital address is added."
-    }
-  ],
   "6F2H6H": [
     {
       "type": 0,
@@ -901,12 +895,6 @@
     {
       "type": 0,
       "value": "Add another overlay"
-    }
-  ],
-  "78ckd0": [
-    {
-      "type": 0,
-      "value": "Email"
     }
   ],
   "7AQfXl": [
@@ -1247,12 +1235,6 @@
     {
       "type": 0,
       "value": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
-    }
-  ],
-  "9XqFGF": [
-    {
-      "type": 0,
-      "value": "Open Forms should update customer data after submission"
     }
   ],
   "9akVrT": [
@@ -1941,12 +1923,6 @@
     {
       "type": 0,
       "value": "Indication of the level to which extent the case is meant to be public. The value selected here will override the default configured on the case type."
-    }
-  ],
-  "DbpUVv": [
-    {
-      "type": 0,
-      "value": "Value in decimal degrees, between 50.5 and 54."
     }
   ],
   "DcI1VF": [
@@ -3827,12 +3803,6 @@
       "value": "Do not ask"
     }
   ],
-  "Tpg442": [
-    {
-      "type": 0,
-      "value": "Value in decimal degrees, between 3 and 7.5."
-    }
-  ],
   "TtqZa0": [
     {
       "type": 0,
@@ -4195,12 +4165,6 @@
       "value": "Authentication automatic login"
     }
   ],
-  "XKpEHP": [
-    {
-      "type": 0,
-      "value": "At least one digital address type must be selected."
-    }
-  ],
   "XMV3t2": [
     {
       "type": 0,
@@ -4289,12 +4253,6 @@
     {
       "type": 0,
       "value": "Variables"
-    }
-  ],
-  "Y1qhnH": [
-    {
-      "type": 0,
-      "value": "Digital address types a user can be contacted on."
     }
   ],
   "Y4oNhH": [
@@ -5925,6 +5883,12 @@
       "value": "No"
     }
   ],
+  "jiDz2v": [
+    {
+      "type": 0,
+      "value": "Value in decimal degrees, between -90 and +90."
+    }
+  ],
   "jitewC": [
     {
       "type": 0,
@@ -6783,12 +6747,6 @@
       "value": "Confirm"
     }
   ],
-  "q+qVVR": [
-    {
-      "type": 0,
-      "value": "Phone number"
-    }
-  ],
   "q3kxsb": [
     {
       "type": 0,
@@ -7205,12 +7163,6 @@
       "value": "The earliest possible value that can be entered."
     }
   ],
-  "tZwyML": [
-    {
-      "type": 0,
-      "value": "Phone number"
-    }
-  ],
   "tg+6bo": [
     {
       "type": 0,
@@ -7355,12 +7307,6 @@
     {
       "type": 0,
       "value": "Source path"
-    }
-  ],
-  "vN6yXh": [
-    {
-      "type": 0,
-      "value": "Available digital address types"
     }
   ],
   "vNRiMn": [
@@ -7567,12 +7513,6 @@
       "value": "Submission confirmation template"
     }
   ],
-  "xPFvic": [
-    {
-      "type": 0,
-      "value": "Email"
-    }
-  ],
   "xTcRPO": [
     {
       "type": 0,
@@ -7759,6 +7699,12 @@
     {
       "type": 0,
       "value": "Action"
+    }
+  ],
+  "z45pcO": [
+    {
+      "type": 0,
+      "value": "Value in decimal degrees, between -180 and +180."
     }
   ],
   "z4zEf7": [
