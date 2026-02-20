@@ -56,6 +56,12 @@ COPY ./*.json ./*.js /app/
 # install WITH dev tooling
 RUN npm ci --legacy-peer-deps
 
+# extract only @formatjs/cli subtree from node_modules (needed for the final stage)
+RUN npm --prefix node_modules/@formatjs/cli ls --all --parseable \
+  | sed 's#^/app/##' \
+  | sort -u \
+  | tar -czf /tmp/formatjs-node_modules.tgz -C /app -T -
+
 # copy source code
 COPY ./src /app/src
 
@@ -82,6 +88,9 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         # weasyprint deps, see https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#debian-11
         libpango-1.0-0 \
         libpangoft2-1.0-0 \
+        # needed for node
+        curl \
+        xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -119,6 +128,35 @@ COPY --from=frontend-build /app/node_modules/@fortawesome/fontawesome-free/webfo
 # Include SDK files. Collectstatic produces both the versions with and without hash
 # in the STATICFILES_ROOT
 COPY --from=sdk-image /sdk /app/src/openforms/static/sdk
+
+# the following are needed to have access to module formatjs/cli during runtime (process
+# custom translations)
+COPY --from=frontend-build /app/build /app/build
+COPY --from=frontend-build /app/node_modules/.bin /app/node_modules/.bin
+# copy only @formatjs/cli + dependencies
+COPY --from=frontend-build /tmp/formatjs-node_modules.tgz /tmp/
+
+# extract minimal node_modules subtree
+RUN tar -xzf /tmp/formatjs-node_modules.tgz -C /app \
+    && rm /tmp/formatjs-node_modules.tgz
+
+# install Node runtime matching .nvmrc
+COPY .nvmrc /tmp/.nvmrc
+RUN set -eux; \
+    MAJOR_VERSION=$(tr -d '[:space:]' < /tmp/.nvmrc); \
+    echo "Major Node version: $MAJOR_VERSION"; \
+    # fetch Node index.json and extract versions for this major
+    FULL_VERSION=$(curl -fsSL https://nodejs.org/dist/index.json \
+        | grep '"version":' \
+        | sed -n 's/.*"version": *"\(v'"$MAJOR_VERSION"'\.[0-9]\+\.[0-9]\+\)".*/\1/p' \
+        | sort -V \
+        | tail -n1); \
+    echo "Latest patch version: $FULL_VERSION"; \
+    # download and extract Node
+    curl -fsSL "https://nodejs.org/dist/$FULL_VERSION/node-$FULL_VERSION-linux-x64.tar.xz" -o /tmp/node.tar.xz; \
+    tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1; \
+    rm /tmp/node.tar.xz /tmp/.nvmrc
+
 
 # copy source code
 COPY ./src /app/src
