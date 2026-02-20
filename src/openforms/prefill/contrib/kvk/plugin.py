@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import Any, assert_never
 
 from django.urls import reverse
@@ -24,6 +24,7 @@ from openforms.contrib.kvk.client import (
 from openforms.contrib.kvk.models import KVKConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
+from openforms.typing import StrOrPromise
 
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
@@ -50,7 +51,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
     requires_auth = (AuthAttribute.kvk,)
 
     @staticmethod
-    def get_available_attributes() -> list[tuple[str, str]]:
+    def get_available_attributes() -> Iterable[tuple[str, StrOrPromise]]:
         return Attributes.choices
 
     @classmethod
