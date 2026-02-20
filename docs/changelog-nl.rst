@@ -184,7 +184,7 @@ Gedetailleerde wijzigingen
   logica-actie synchroniseer variabele” in combinatie met veldengroep-componenten.
 * [:backend:`5735`] Crash verholpen bij het omzetten van ruwe JSON-gegevens naar
   Python-types wanneer variabelen in bepaalde situaties niet in de database aanwezig zijn.
-* [:cve:`CVE-2025-64515`] Ontbrekende logica-evaluatie vóór validatie van
+* [:cve:`2025-64515`] Ontbrekende logica-evaluatie vóór validatie van
   (stap)gebruikersinvoer opgelost. Zie :ghsa:`GHSA-cp63-63mq-5wvf` voor details.
 * Performanceproblemen van de e-mailverificatiepagina in de beheeromgeving zijn opgelost.
 * Enkele crashes verholpen die ontstonden door het inschakelen van bepaalde
