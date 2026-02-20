@@ -34,7 +34,7 @@ class AttributeGroupAdminTests(WebTest):
         # Go to export page and export to json
         export_page = self.app.get(self.admin_export_url, user=user)
         export_form = export_page.forms[1]
-        export_form["file_format"].select(text="json")
+        export_form["format"].select(text="json")
         export_response = export_form.submit()
 
         # Expect that the export was successful
@@ -83,7 +83,7 @@ class AttributeGroupAdminTests(WebTest):
         # Go to export page and export to json
         export_page = self.app.get(self.admin_export_url, user=user)
         export_form = export_page.forms[1]
-        export_form["file_format"].select(text="json")
+        export_form["format"].select(text="json")
         export_response = export_form.submit()
 
         # Expect that the export was successful
@@ -104,7 +104,7 @@ class AttributeGroupAdminTests(WebTest):
             export_response.body,
             "application/json",
         )
-        import_form["input_format"].select(text="json")
+        import_form["format"].select(text="json")
         import_response = import_form.submit()
 
         # Assert successful import
