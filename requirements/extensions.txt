@@ -268,7 +268,7 @@ django-formtools==2.5.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-two-factor-auth
-django-health-check==4.0.0
+django-health-check==4.0.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -372,7 +372,7 @@ django-tinymce==5.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-treebeard==5.0.2
+django-treebeard==5.0.5
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -406,7 +406,7 @@ dnspython==2.8.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-health-check
-docutils==0.22.4
+docutils==0.21.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -477,7 +477,7 @@ googleapis-common-protos==1.72.0
     #   -r requirements/base.txt
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-grpcio==1.78.0
+grpcio==1.78.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -564,7 +564,7 @@ markdown-it-py==4.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   rich
-maykin-2fa==2.0.1
+maykin-2fa==2.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -623,7 +623,7 @@ oauthlib==3.3.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   requests-oauthlib
-onlinepayments-sdk-python3==7.0.0
+onlinepayments-sdk-python3==7.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -800,7 +800,7 @@ protobuf==6.33.5
     #   -r requirements/base.txt
     #   googleapis-common-protos
     #   opentelemetry-proto
-psycopg==3.3.2
+psycopg==3.3.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -809,7 +809,7 @@ pyasn1==0.6.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   webauthn
-pycountry==24.6.1
+pycountry==26.2.16
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -830,7 +830,7 @@ pydantic-core==2.41.5
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   pydantic
-pydantic-settings==2.13.0
+pydantic-settings==2.13.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -910,7 +910,7 @@ qrcode==8.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-two-factor-auth
-redis==7.1.1
+redis==7.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -955,7 +955,7 @@ requests-toolbelt==1.0.0
     #   -r requirements/base.txt
     #   onlinepayments-sdk-python3
     #   zeep
-rich==14.3.2
+rich==14.3.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1058,7 +1058,7 @@ tqdm==4.67.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-typer==0.23.1
+typer==0.24.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
