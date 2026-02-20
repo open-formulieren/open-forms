@@ -96,7 +96,7 @@ class YiviPrefill(BasePlugin[YiviOptions]):
                 *(
                     {
                         "attribute": f"_internal.{auth_attr.value}",
-                        "label": auth_attr.label,
+                        "label": str(auth_attr.label),
                         "auth_attribute": auth_attr.value,
                     }
                     for auth_attr in cls.requires_auth

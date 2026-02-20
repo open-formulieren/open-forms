@@ -18,7 +18,6 @@ from collections.abc import Iterator, Mapping
 from django.template.backends.django import Template as DjangoTemplate
 from django.template.base import FilterExpression, Node, Variable, VariableNode
 from django.template.defaulttags import ForNode, IfNode, TemplateLiteral
-from django.utils.safestring import SafeString
 
 from .backends.sandboxed_django import backend as sandbox_backend, openforms_backend
 
@@ -49,7 +48,7 @@ def render_from_string(
     context: Mapping[str, object],
     backend=sandbox_backend,
     disable_autoescape: bool = False,
-) -> SafeString:
+) -> str:
     """
     Render a template source string using the provided context.
 
@@ -65,8 +64,7 @@ def render_from_string(
         source = f"{{% autoescape off %}}{source}{{% endautoescape %}}"
     template = parse(source, backend=backend)
     assert isinstance(context, dict)
-    res = template.render(context)
-    return res
+    return template.render(context)
 
 
 def _iter_nodes(nodelist: list[Node]) -> Iterator[Node]:

@@ -15,6 +15,7 @@ class SandboxedDjangoTemplates(DjangoTemplates):
     """
 
     def __init__(self, params):
+        assert isinstance(params, dict)
         params = params.copy()
         params.setdefault("NAME", "django_sandboxed")
         # no file system paths to look up files (also blocks {% include %} etc)

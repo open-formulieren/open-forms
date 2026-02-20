@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from functools import wraps
@@ -11,6 +11,7 @@ import structlog
 
 from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.typing import StrOrPromise
 
 from ...base import (
     AppointmentDetails,
@@ -39,12 +40,22 @@ from .types import (
 
 logger = structlog.stdlib.get_logger(__name__)
 
+# pair of key/identifier + human readable label
+type FieldLabelPair = tuple[str, StrOrPromise]
+
 
 @dataclass
 class RequireOneOfRule:
     enabled: bool
-    fields: tuple[str, ...]
-    labels: tuple[str, ...]
+    field_label_pairs: Sequence[FieldLabelPair]
+
+    @property
+    def fields(self) -> Sequence[str]:
+        return [field for field, _ in self.field_label_pairs]
+
+    @property
+    def labels(self) -> Sequence[StrOrPromise]:
+        return [label for _, label in self.field_label_pairs]
 
 
 def with_graceful_default[T, **P](
@@ -283,18 +294,16 @@ class JccRestPlugin(BasePlugin):
         GROUP_RULES = [
             RequireOneOfRule(
                 enabled=required_fields.get("isAnyPhoneNumberRequired"),
-                fields=("phoneNumber", "mobilePhoneNumber"),
-                labels=(
-                    CustomerFields.phone_number.label,
-                    CustomerFields.mobile_phone_number.label,
+                field_label_pairs=(
+                    ("phoneNumber", CustomerFields.phone_number.label),
+                    ("mobilePhoneNumber", CustomerFields.mobile_phone_number.label),
                 ),
             ),
             RequireOneOfRule(
                 enabled=required_fields.get("areFirstNameOrInitialsRequired"),
-                fields=("firstName", "initials"),
-                labels=(
-                    CustomerFields.first_name.label,
-                    CustomerFields.initials.label,
+                field_label_pairs=(
+                    ("firstName", CustomerFields.first_name.label),
+                    ("initials", CustomerFields.initials.label),
                 ),
             ),
         ]
@@ -354,7 +363,7 @@ class JccRestPlugin(BasePlugin):
 
             active_labels = [
                 str(label)
-                for field, label in zip(rule.fields, rule.labels, strict=True)
+                for field, label in rule.field_label_pairs
                 if field in rendered_keys
             ]
 
