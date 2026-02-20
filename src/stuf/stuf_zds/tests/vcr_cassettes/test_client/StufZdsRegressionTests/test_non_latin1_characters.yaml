@@ -1,0 +1,123 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope\n    xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"\n
+      \   xmlns:StUF=\"http://www.egem.nl/StUF/StUF0301\"\n    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n>\n
+      \   <soapenv:Header>\n        \n\n    </soapenv:Header>\n    <soapenv:Body>\n
+      \       \n\n<ZKN:zakLk01\n    xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\"\n
+      \   xmlns:BG=\"http://www.egem.nl/StUF/sector/bg/0310\"\n    xmlns:GML=\"http://www.opengis.net/gml\"\n>\n
+      \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Lk01</StUF:berichtcode>\n
+      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>123</StUF:referentienummer>\n<StUF:tijdstipBericht>20260220173420</StUF:tijdstipBericht>\n\n
+      \       <StUF:entiteittype>ZAK</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
+      \   <ZKN:parameters>\n        <StUF:mutatiesoort>T</StUF:mutatiesoort>\n        <StUF:indicatorOvername>V</StUF:indicatorOvername>\n
+      \   </ZKN:parameters>\n    <ZKN:object StUF:verwerkingssoort=\"T\" StUF:entiteittype=\"ZAK\">\n
+      \       <ZKN:identificatie></ZKN:identificatie>\n        \n        \n        \n
+      \       <ZKN:startdatum></ZKN:startdatum>\n        <ZKN:registratiedatum></ZKN:registratiedatum>\n
+      \       \n        \n\n        <ZKN:zaakniveau>1</ZKN:zaakniveau>\n        <ZKN:deelzakenIndicatie>N</ZKN:deelzakenIndicatie>\n
+      \       <StUF:tijdstipRegistratie></StUF:tijdstipRegistratie>\n        <StUF:extraElementen>\n\n<StUF:extraElement
+      naam=\"foo\">\u015E</StUF:extraElement>\n\n</StUF:extraElementen>\n\n\n        <ZKN:isVan
+      StUF:entiteittype=\"ZAKZKT\" StUF:verwerkingssoort=\"T\">\n            <ZKN:gerelateerde
+      StUF:verwerkingssoort=\"I\" StUF:entiteittype=\"ZKT\">\n                \n                <ZKN:code></ZKN:code>\n
+      \               <ZKN:ingangsdatumObject></ZKN:ingangsdatumObject>\n            </ZKN:gerelateerde>\n
+      \       </ZKN:isVan>\n        \n            <ZKN:heeftAlsInitiator StUF:verwerkingssoort=\"T\"
+      StUF:entiteittype=\"ZAKBTRINI\">\n                <ZKN:gerelateerde>\n                    <ZKN:natuurlijkPersoon
+      StUF:entiteittype=\"NPS\" StUF:verwerkingssoort=\"T\">\n                        <BG:inp.bsn>111222333</BG:inp.bsn>\n
+      \                       <BG:authentiek StUF:metagegeven=\"true\">N</BG:authentiek>\n
+      \                   </ZKN:natuurlijkPersoon>\n                </ZKN:gerelateerde>\n
+      \               <StUF:tijdstipRegistratie></StUF:tijdstipRegistratie>\n            </ZKN:heeftAlsInitiator>\n
+      \       \n        \n        \n        \n\n        \n\n        \n    </ZKN:object>\n</ZKN:zakLk01>\n
+      \   </soapenv:Body>\n</soapenv:Envelope>\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2988'
+      Content-Type:
+      - application/soap+xml
+      SOAPAction:
+      - http://www.egem.nl/StUF/sector/zkn/0310/irrelevant
+      User-Agent:
+      - python-requests/2.32.5
+    method: POST
+    uri: https://commonground.nl/
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta http-equiv=\"content-type\"
+        content=\"text/html; charset=utf-8\">\n  <meta name=\"robots\" content=\"NONE,NOARCHIVE\">\n
+        \ <title>403 Forbidden</title>\n  <style>\n    html * { padding:0; margin:0;
+        }\n    body * { padding:10px 20px; }\n    body * * { padding:0; }\n    body
+        { font-family: sans-serif; background:#eee; color:#000; }\n    body>div {
+        border-bottom:1px solid #ddd; }\n    h1 { font-weight:normal; margin-bottom:.4em;
+        }\n    h1 span { font-size:60%; color:#666; font-weight:normal; }\n    #info
+        { background:#f6f6f6; }\n    #info ul { margin: 0.5em 4em; }\n    #info p,
+        #summary p { padding-top:10px; }\n    #summary { background: #ffc; }\n    #explanation
+        { background:#eee; border-bottom: 0px none; }\n  </style>\n</head>\n<body>\n<div
+        id=\"summary\">\n  <h1>Verboden <span>(403)</span></h1>\n  <p>CSRF-verificatie
+        mislukt. Aanvraag afgebroken.</p>\n\n  <p>U ziet deze melding, omdat deze
+        HTTPS-website vereist dat uw webbrowser een \u2018Referer header\u2019 meestuurt,
+        maar deze ontbreekt. Deze header is om veiligheidsredenen vereist om er zeker
+        van te zijn dat uw browser niet door derden wordt gekaapt.</p>\n  <p>Als u
+        \u2018Referer\u2019-headers in uw browser hebt uitgeschakeld, schakel deze
+        dan weer in, op zijn minst voor deze website, of voor HTTPS-verbindingen,
+        of voor \u2018same-origin\u2019-aanvragen.</p>\n  <p>Als u de tag &lt;meta
+        name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt; gebruikt of
+        de header \u2018Referrer-Policy: no-referrer\u2019 opneemt, verwijder deze
+        dan. De CSRF-bescherming vereist de \u2018Referer\u2019-header voor strenge
+        referer-controle. Als u bezorgd bent om privacy, gebruik dan alternatieven
+        zoals &lt;a rel=&quot;noreferrer&quot; \u2026&gt; voor koppelingen naar websites
+        van derden.</p>\n\n\n</div>\n\n<div id=\"explanation\">\n  <p><small>Meer
+        informatie is beschikbaar met DEBUG=True.</small></p>\n</div>\n\n</body>\n</html>\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Language:
+      - nl
+      Content-Length:
+      - '1866'
+      Content-Security-Policy:
+      - 'style-src ''self'' ''unsafe-inline'' https://formulieren.pleio.nl https://embed.email-provider.eu
+        https://fonts.googleapis.com; form-action ''self'' https://embed.email-provider.eu;
+        frame-src ''self'' https://*.pleio.nl https://www.youtube-nocookie.com https://player.vimeo.com
+        https://api.eu.kaltura.com https://feed.mikle.com https://*.bbvms.com https://collabora.pleio.nl
+        https://embed.email-provider.eu https://commonground.email-provider.eu/ https://res.email-provider.eu/
+        https://fonts.googleapis.com https://fonts.gstatic.com; object-src ''none'';
+        upgrade-insecure-requests; script-src ''strict-dynamic'' https://embed.email-provider.eu;
+        img-src ''self'' data: https://*.pleio.nl https://statistiek.rijksoverheid.nl
+        https://i.ytimg.com https://i.vimeocdn.com https://*.bbvms.com https://account.pleio.nl
+        https://embed.email-provider.eu https://commonground.email-provider.eu/ https://res.email-provider.eu/
+        https://fonts.googleapis.com https://fonts.gstatic.com; connect-src ''self''
+        https://*.pleio.nl https://statistiek.rijksoverheid.nl https://vimeo.com https://*.sentry.io
+        https://collabora.pleio.nl https://embed.email-provider.eu; font-src ''self''
+        https://embed.email-provider.eu https://fonts.googleapis.com https://fonts.gstatic.com;
+        frame-ancestors ''self''; base-uri ''none''; default-src ''self'' https://embed.email-provider.eu'
+      Content-Type:
+      - text/html; charset=utf-8
+      Date:
+      - Fri, 20 Feb 2026 17:34:48 GMT
+      Referrer-Policy:
+      - same-origin
+      Set-Cookie:
+      - sessionid=rt4enpg5eifggivxddjjrrapj9omch7q; expires=Fri, 06 Mar 2026 17:34:48
+        GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax; Secure
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Vary:
+      - Accept-Language, Cookie
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-Pod:
+      - backend2-api-7975c749c4-8h66f
+      X-Request-Start:
+      - t=1771608888.347
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 403
+      message: Forbidden
+version: 1
