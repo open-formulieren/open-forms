@@ -37,10 +37,10 @@ Hotfix release.
     **Note** Depending on your submission retention configuration, it is possible that
     there are more submission payments affected by this that are no longer present in
     the database, so unfortunately we cannot verify and correct those. If you still have
-    the container logs, you can search for the ``payment_status_final`` with log level
-    ``WARNING`` to find additional occurrences. The structured log data includes the
-    public order ID and wordline status that you can use to correlate payments in the
-    Worldline portal with your backoffice system. An example log line looks like:
+    the container logs, you can search for the ``payment_status_final`` event with log
+    level ``WARNING`` to find additional occurrences. The structured log data includes
+    the public order ID and wordline status that you can use to correlate payments in
+    the Worldline portal with your backoffice system. An example log line looks like:
 
     .. code-block:: json
 
@@ -59,6 +59,13 @@ Hotfix release.
         "logger": "openforms.payments.contrib.worldline.plugin",
         "level": "warning"
       }
+
+* [:backend:`5942`] Fixed failed Worldline payments not being updatable to success state.
+* [:backend:`5685`] Fixed an infinite logic check loop when the new renderer is used
+  and components are hidden that have both ``clearOnHide`` enabled and a default value.
+* Fixed the CI workflow for i18n-message extraction.
+* Fixed the CI workflow for Open API specification checks.
+* Fixed the ClamAV image version used in docker-compose - the old version was removed.
 
 3.4.1 (2026-02-04)
 ==================
