@@ -99,6 +99,7 @@ include = [
     # Utils
     "src/openforms/utils/form_fields.py",
     "src/openforms/utils/pdf.py",
+    "src/openforms/utils/json_logic/partial_evaluation.py",
     # Validations app
     "src/openforms/validations/api/serializers.py",
     "src/geo_visualization",
