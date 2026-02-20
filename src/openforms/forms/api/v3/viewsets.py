@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -28,6 +29,7 @@ class FormViewSet(viewsets.GenericViewSet):
     lookup_field = "uuid"
     lookup_url_kwarg = "uuid"
     serializer_class = FormSerializer
+    authentication_classes = (SessionAuthentication,)
     permission_classes = (FormAPIPermissions,)
 
     def update(self, request: Request, **kwargs) -> Response:
