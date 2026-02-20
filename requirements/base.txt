@@ -177,7 +177,7 @@ django-flags==5.2.0
     # via -r requirements/base.in
 django-formtools==2.5.1
     # via django-two-factor-auth
-django-health-check==4.0.0
+django-health-check==4.0.4
     # via maykin-common
 django-hijack==3.7.6
     # via -r requirements/base.in
@@ -241,7 +241,7 @@ django-timeline-logger==6.0.0
     # via -r requirements/base.in
 django-tinymce==5.0.0
     # via -r requirements/base.in
-django-treebeard==5.0.2
+django-treebeard==5.0.5
     # via -r requirements/base.in
 django-two-factor-auth==1.18.1
     # via maykin-2fa
@@ -260,7 +260,7 @@ djangorestframework-camel-case==1.4.2
     # via -r requirements/base.in
 dnspython==2.8.0
     # via django-health-check
-docutils==0.22.4
+docutils==0.21.2
     # via django-setup-configuration
 drf-jsonschema-serializer==3.0.0
     # via -r requirements/base.in
@@ -297,7 +297,7 @@ googleapis-common-protos==1.72.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-grpcio==1.78.0
+grpcio==1.78.1
     # via opentelemetry-exporter-otlp-proto-grpc
 humanize==4.15.0
     # via flower
@@ -347,7 +347,7 @@ mail-parser==4.1.4
     # via django-yubin
 markdown-it-py==4.0.0
     # via rich
-maykin-2fa==2.0.1
+maykin-2fa==2.1.0
     # via
     #   -r requirements/base.in
     #   maykin-common
@@ -381,7 +381,7 @@ o365==2.1.9
     #   django-o365mail
 oauthlib==3.3.1
     # via requests-oauthlib
-onlinepayments-sdk-python3==7.0.0
+onlinepayments-sdk-python3==7.1.0
     # via -r requirements/base.in
 open-klant-client==0.4.0
     # via -r requirements/base.in
@@ -489,11 +489,11 @@ protobuf==6.33.5
     # via
     #   googleapis-common-protos
     #   opentelemetry-proto
-psycopg==3.3.2
+psycopg==3.3.3
     # via -r requirements/base.in
 pyasn1==0.6.2
     # via webauthn
-pycountry==24.6.1
+pycountry==26.2.16
     # via schwifty
 pycparser==3.0
     # via cffi
@@ -503,7 +503,7 @@ pydantic==2.12.5
     #   pydantic-settings
 pydantic-core==2.41.5
     # via pydantic
-pydantic-settings==2.13.0
+pydantic-settings==2.13.1
     # via django-setup-configuration
 pydyf==0.12.1
     # via weasyprint
@@ -550,7 +550,7 @@ qrcode==8.2
     # via
     #   -r requirements/base.in
     #   django-two-factor-auth
-redis==7.1.1
+redis==7.2.0
     # via
     #   celery-once
     #   django-redis
@@ -585,7 +585,7 @@ requests-toolbelt==1.0.0
     # via
     #   onlinepayments-sdk-python3
     #   zeep
-rich==14.3.2
+rich==14.3.3
     # via typer
 rpds-py==0.30.0
     # via
@@ -640,7 +640,7 @@ tornado==6.5.4
     # via flower
 tqdm==4.67.3
     # via -r requirements/base.in
-typer==0.23.1
+typer==0.24.0
     # via maykin-common
 typing-extensions==4.15.0
     # via
