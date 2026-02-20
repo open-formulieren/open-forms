@@ -45,8 +45,14 @@ class MSGraphClient:
             timeout=self.service.timeout,
         )
         if force_auth or not self.account.is_authenticated:
-            if not self.account.authenticate(scopes=self.scopes):
-                raise MSAuthenticationError("cannot authenticate: check credentials")
+            err = MSAuthenticationError("cannot authenticate: check credentials")
+            try:
+                success = self.account.authenticate(scopes=self.scopes)
+            except Exception as exc:
+                raise err from exc
+            else:
+                if not success:
+                    raise err
 
     @property
     def is_authenticated(self):

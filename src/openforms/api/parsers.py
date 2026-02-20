@@ -25,7 +25,7 @@ class MaxFilesizeMultiPartParser(parsers.MultiPartParser):
         # Content-Length should contain the length of the body we are about
         # to parse.
         try:
-            content_length = int(request.META.get("CONTENT_LENGTH", 0))
+            content_length = int(request.headers.get("content-length", 0))
         except (ValueError, TypeError):
             content_length = 0
 

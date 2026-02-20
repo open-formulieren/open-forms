@@ -51,7 +51,7 @@ class SubmissionTypeListFilter(admin.ListFilter):
 
         if self.parameter_name in params:
             value = params.pop(self.parameter_name)
-            self.used_parameters[self.parameter_name] = value
+            self.used_parameters[self.parameter_name] = value[-1]
 
     def show_all(self):
         return self.used_parameters.get(self.parameter_name) == "__all__"

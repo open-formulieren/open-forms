@@ -15,8 +15,8 @@ from openforms.forms.models import Category
 class CategoryAdmin(TreeAdmin):
     fields = [
         "name",
-        "_ref_node_id",
-        "_position",
+        "treebeard_position",
+        "treebeard_ref_node",
     ]
     form = movenodeform_factory(Category, fields=fields)
     list_display = [

@@ -58,10 +58,6 @@ class CSPDirective(models.TextChoices):
         "require-sri-for",
     )  # Valid values: script, style, or both. See: require-sri-for-known-tokens Note: This doesn’t use default-src as a fall-back.
 
-    # CSP_UPGRADE_INSECURE_REQUESTS  # Include upgrade-insecure-requests directive. A boolean. False See: upgrade-insecure-requests
-    # CSP_BLOCK_ALL_MIXED_CONTENT  # Include block-all-mixed-content directive. A boolean. False See: block-all-mixed-content
-    # CSP_INCLUDE_NONCE_IN  # Include dynamically generated nonce in all listed directives, e.g. CSP_INCLUDE_NONCE_IN=['script-src'] will add 'nonce-<b64-value>' to the script-src directive.
-
 
 class UploadFileType(models.TextChoices):
     all = "*", _("any filetype")

@@ -1,6 +1,6 @@
 # Core python libraries
 ape-pie
-celery ~= 5.0
+celery ~= 5.6
 celery-once
 defusedxml
 frozendict
@@ -41,7 +41,7 @@ weasyprint
 zeep
 
 # Framework libraries
-django ~= 4.2
+django ~= 5.2
 django-admin-index
 django-admin-rangefilter
 django-autoslug
@@ -69,6 +69,7 @@ django-tinymce
 django-treebeard
 django-upgrade-check
 django-yubin
+mozilla-django-oidc<5.0  # mozilla-django-oidc-db needs to be updated first
 mozilla-django-oidc-db[setup-configuration]
 maykin-common[axes,cli,health-checks,mfa,otel,pdf]
 maykin-2fa
@@ -84,7 +85,6 @@ djangorestframework-camel-case
 django-filter
 drf-jsonschema-serializer
 drf-polymorphic
-openapi3-parser
 
 # API schema generation (OpenAPI 3)
 drf-spectacular

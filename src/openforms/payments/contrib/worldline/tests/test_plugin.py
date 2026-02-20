@@ -133,6 +133,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             self.assertIsInstance(form, Tag)
 
             payment_url = form.attrs["action"]  # pyright: ignore[reportOptionalMemberAccess]
+            assert isinstance(payment_url, str)
             # trigger the payment
             response = requests.get(
                 payment_url,
@@ -236,6 +237,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             self.assertIsInstance(form, Tag)
 
             payment_url = form.attrs["action"]  # pyright: ignore[reportOptionalMemberAccess]
+            assert isinstance(payment_url, str)
             # trigger the payment
             requests.get(
                 payment_url,
@@ -321,6 +323,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             self.assertIsInstance(form, Tag)
 
             payment_url = form.attrs["action"]  # pyright: ignore[reportOptionalMemberAccess]
+            assert isinstance(payment_url, str)
             # trigger the payment
             requests.get(
                 payment_url,
@@ -1065,6 +1068,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             self.assertIsInstance(form, Tag)
 
             payment_url = form.attrs["action"]  # pyright: ignore[reportOptionalMemberAccess]
+            assert isinstance(payment_url, str)
             # trigger the payment
             response = requests.get(
                 payment_url,
@@ -1152,6 +1156,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             self.assertIsInstance(form, Tag)
 
             payment_url = form.attrs["action"]  # pyright: ignore[reportOptionalMemberAccess]
+            assert isinstance(payment_url, str)
             # trigger the payment
             requests.get(
                 payment_url,

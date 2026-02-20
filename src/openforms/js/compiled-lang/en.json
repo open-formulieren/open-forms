@@ -5079,30 +5079,6 @@
       "value": "Regular expression for postcode"
     }
   ],
-  "dGBYF7": [
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": "(Hide)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-            {
-              "type": 0,
-              "value": "(Show)"
-            }
-          ]
-        }
-      },
-      "type": 5,
-      "value": "collapsed"
-    }
-  ],
   "dJNdhr": [
     {
       "type": 0,

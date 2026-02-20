@@ -6,16 +6,16 @@ session expires if there's no activity within that timespan.
 """
 
 from copy import deepcopy
-from datetime import datetime
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib import admin
 from django.test import override_settings
 from django.urls import path
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
+import csp.constants
 from freezegun import freeze_time
 from maykin_2fa.test import disable_admin_mfa
 from rest_framework import permissions, status
@@ -97,9 +97,7 @@ class FormUserSessionExpiryTests(APITestCase):
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 session = response.wsgi_request.session
                 self.assertEqual(session.get_expiry_age(), 300)
-                expected_expiry = datetime(2021, 7, 29, 14, 5).replace(
-                    tzinfo=timezone.utc
-                )
+                expected_expiry = datetime(2021, 7, 29, 14, 5).replace(tzinfo=UTC)
                 self.assertEqual(session.get_expiry_date(), expected_expiry)
 
         # submit the first step, one minute later, simulating some time to fill out the step
@@ -111,9 +109,7 @@ class FormUserSessionExpiryTests(APITestCase):
 
                 self.assertEqual(step1_response.status_code, status.HTTP_201_CREATED)
                 session = step1_response.wsgi_request.session
-                expected_expiry = datetime(2021, 7, 29, 14, 6).replace(
-                    tzinfo=timezone.utc
-                )
+                expected_expiry = datetime(2021, 7, 29, 14, 6).replace(tzinfo=UTC)
                 self.assertEqual(session.get_expiry_date(), expected_expiry)
 
         # now, simulate the second step took 4 minutes and 30s to fill out. This puts us
@@ -127,9 +123,7 @@ class FormUserSessionExpiryTests(APITestCase):
 
                 self.assertEqual(step2_response.status_code, status.HTTP_201_CREATED)
                 session = step2_response.wsgi_request.session
-                expected_expiry = datetime(2021, 7, 29, 14, 10, 30).replace(
-                    tzinfo=timezone.utc
-                )
+                expected_expiry = datetime(2021, 7, 29, 14, 10, 30).replace(tzinfo=UTC)
                 self.assertEqual(session.get_expiry_date(), expected_expiry)
 
     @patch(
@@ -152,9 +146,7 @@ class FormUserSessionExpiryTests(APITestCase):
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 session = response.wsgi_request.session
                 self.assertEqual(session.get_expiry_age(), 300)
-                expected_expiry = datetime(2021, 7, 29, 14, 5).replace(
-                    tzinfo=timezone.utc
-                )
+                expected_expiry = datetime(2021, 7, 29, 14, 5).replace(tzinfo=UTC)
                 self.assertEqual(session.get_expiry_date(), expected_expiry)
 
         # submit the first step, 5 and a half minutes later, simulating the session has expired
@@ -177,7 +169,14 @@ class FormUserSessionExpiryTests(APITestCase):
                     },
                 )
 
-    @override_settings(ROOT_URLCONF=__name__, CSP_REPORT_URI="/foo")
+    @override_settings(
+        ROOT_URLCONF=__name__,
+        CONTENT_SECURITY_POLICY={
+            "DIRECTIVES": {"default-src": [csp.constants.SELF]},
+            "REPORT_URI": "/foo",
+        },
+        CONTENT_SECURITY_POLICY_REPORT_ONLY={},
+    )
     def test_session_expiry_header_included(self):
         """
         Assert that the response contains a header indicating when the session expires.
@@ -225,9 +224,7 @@ class AdminSessionExpiryTests(APITestCase):
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 session = response.wsgi_request.session
                 self.assertEqual(session.get_expiry_age(), 300)
-                expected_expiry = datetime(2021, 7, 29, 14, 5).replace(
-                    tzinfo=timezone.utc
-                )
+                expected_expiry = datetime(2021, 7, 29, 14, 5).replace(tzinfo=UTC)
                 self.assertEqual(session.get_expiry_date(), expected_expiry)
 
         # make another request to the admin to validate the session has not expired yet
@@ -238,9 +235,7 @@ class AdminSessionExpiryTests(APITestCase):
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 session = response.wsgi_request.session
                 self.assertEqual(session.get_expiry_age(), 300)
-                expected_expiry = datetime(2021, 7, 29, 14, 9).replace(
-                    tzinfo=timezone.utc
-                )
+                expected_expiry = datetime(2021, 7, 29, 14, 9).replace(tzinfo=UTC)
                 self.assertEqual(session.get_expiry_date(), expected_expiry)
 
         # make another request to the admin to validate the session has expired

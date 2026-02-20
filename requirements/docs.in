@@ -2,7 +2,7 @@
 -r base.txt
 
 # Documentation
-sphinx
+sphinx<9  # sphinx-tabs is not yet compatible
 sphinx-rtd-theme
 sphinx-tabs
 sphinxcontrib-mermaid

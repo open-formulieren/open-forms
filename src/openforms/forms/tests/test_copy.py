@@ -152,7 +152,7 @@ class CopyFormTests(TestCase):
         self.assertEqual(2, forms.count())
 
         self.assertEqual(form_copy.registration_backends.count(), 2)
-        self.assertQuerysetEqual(backend_registrations, copied_backend_registrations)
+        self.assertQuerySetEqual(backend_registrations, copied_backend_registrations)
 
     def test_copy_form_with_logic_rules_has_correct_formstep_uuid_in_actions(self):
         form = FormFactory.create()

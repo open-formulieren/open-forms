@@ -1,6 +1,6 @@
 import copy
 from collections.abc import Sequence
-from datetime import timedelta
+from datetime import UTC, timedelta
 from decimal import Decimal
 from typing import Any
 
@@ -84,7 +84,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
     class Params:
         completed = factory.Trait(
-            completed_on=factory.Faker("date_time_this_month", tzinfo=timezone.utc),
+            completed_on=factory.Faker("date_time_this_month", tzinfo=UTC),
             created_on=factory.LazyAttribute(
                 lambda s: s.completed_on - timedelta(hours=4)
             ),
@@ -98,14 +98,14 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             ),
         )
         completed_not_preregistered = factory.Trait(
-            completed_on=factory.Faker("date_time_this_month", tzinfo=timezone.utc),
+            completed_on=factory.Faker("date_time_this_month", tzinfo=UTC),
             created_on=factory.LazyAttribute(
                 lambda s: s.completed_on - timedelta(hours=4)
             ),
             price=factory.PostGeneration(_calculate_price),
         )
         suspended = factory.Trait(
-            suspended_on=factory.Faker("date_time_this_month", tzinfo=timezone.utc),
+            suspended_on=factory.Faker("date_time_this_month", tzinfo=UTC),
             completed_on=None,
             auth_info__with_hashed_identifying_attributes=True,
         )

@@ -2,7 +2,8 @@ from decimal import Decimal
 from unittest.mock import patch
 
 from django.contrib.admin import AdminSite
-from django.test import TestCase, override_settings, tag
+from django.db import models
+from django.test import RequestFactory, TestCase, override_settings, tag
 from django.urls import reverse
 from django.utils import timezone
 
@@ -398,6 +399,8 @@ class TestSubmissionAdmin(WebTest):
 
 class TestSubmissionTimeListFilterAdmin(TestCase):
     def test_time_filtering(self):
+        rf = RequestFactory()
+
         with freeze_time("2023-04-02T12:30:00+01:00"):
             # registered in the past 24 hours
             submission_1 = SubmissionFactory.create(
@@ -414,16 +417,21 @@ class TestSubmissionTimeListFilterAdmin(TestCase):
 
         with freeze_time("2023-04-02T18:30:00+01:00"):
             site = AdminSite()
+            request = rf.get("/irrelevant")
             model_admin = SubmissionAdmin(Submission, site)
             filter_instance = SubmissionTimeListFilter(
-                request=None,
-                params={"registration_time": "24hAgo"},
+                request=request,
+                params={
+                    # django-stubs annotations are wrong
+                    "registration_time": ["24hAgo"],  # pyright: ignore[reportArgumentType]
+                },
                 model=Submission,
                 model_admin=model_admin,
             )
 
             queryset = Submission.objects.all()
-            filtered_queryset = filter_instance.queryset(None, queryset)
+            filtered_queryset = filter_instance.queryset(request, queryset)
+            assert isinstance(filtered_queryset, models.QuerySet)
 
         self.assertQuerySetEqual(queryset, [submission_1, submission_2], ordered=False)
         self.assertQuerySetEqual(filtered_queryset, [submission_1], ordered=False)

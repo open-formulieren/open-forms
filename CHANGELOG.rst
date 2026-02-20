@@ -509,7 +509,7 @@ Detailed changes
   logic action is used and fieldset components are present.
 * [:backend:`5735`] Fixed a crash when converting raw JSON data to the Python types when
   variables don't exist in the database in certain circumstances.
-* [:cve:`CVE-2025-64515`] Fixed missing logic evaluation before validating (step data)
+* [:cve:`2025-64515`] Fixed missing logic evaluation before validating (step data)
   user input. See :ghsa:`GHSA-cp63-63mq-5wvf` for details.
 * Fixed the performance of the email verifications page in the admin.
 * Fixed some crashes due to enabling certain optimizations, notably when:
@@ -649,7 +649,7 @@ Bugfixes
   logic action is used and fieldset components are present.
 * [:backend:`5735`] Fixed a crash when converting raw JSON data to the Python types when
   variables don't exist in the database in certain circumstances.
-* [:cve:`CVE-2025-64515`] Fixed missing logic evaluation before validating (step data)
+* [:cve:`2025-64515`] Fixed missing logic evaluation before validating (step data)
   user input. See :ghsa:`GHSA-cp63-63mq-5wvf` for details.
 * Fixed the performance of the email verifications page in the admin.
 * Fixed some crashes due to enabling certain optimizations, notably when:
@@ -787,7 +787,7 @@ use logic to make it writable if no prefill data is available.
 
 **Bugfixes**
 
-* [:cve:`CVE-2025-64515`] Fixed missing logic evaluation before validating (step data)
+* [:cve:`2025-64515`] Fixed missing logic evaluation before validating (step data)
   user input. See :ghsa:`GHSA-cp63-63mq-5wvf` for details.
 * [:backend:`5735`] Fixed a crash when converting raw JSON data to the Python types when
   variables don't exist in the database in certain circumstances.
@@ -820,7 +820,7 @@ use logic to make it writable if no prefill data is available.
 
 **Bugfixes**
 
-* [:cve:`CVE-2025-64515`] Fixed missing logic evaluation before validating (step data)
+* [:cve:`2025-64515`] Fixed missing logic evaluation before validating (step data)
   user input. See :ghsa:`GHSA-cp63-63mq-5wvf` for details.
 * [:backend:`5735`] Fixed a crash when converting raw JSON data to the Python types when
   variables don't exist in the database in certain circumstances.

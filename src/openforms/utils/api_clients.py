@@ -1,19 +1,17 @@
 from collections.abc import Iterator
-from typing import Generic, TypedDict, TypeVar
+from typing import TypedDict
 
 from ape_pie import APIClient
 
-T = TypeVar("T")
 
-
-class PaginatedResponseData(TypedDict, Generic[T]):
+class PaginatedResponseData[T](TypedDict):
     count: int
     next: str
     previous: str
     results: list[T]
 
 
-def pagination_helper(
+def pagination_helper[T](
     client: APIClient, paginated_data: PaginatedResponseData[T]
 ) -> Iterator[T]:
     """A helper to iterate over the paginated data of an API response.

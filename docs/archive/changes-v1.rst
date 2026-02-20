@@ -102,7 +102,7 @@ Security fix release
 
 This release fixes a potential reflected file download vulnerability.
 
-* Bumped Django and django-sendfile2 versions with fixes for :cve:`CVE-2022-36359`.
+* Bumped Django and django-sendfile2 versions with fixes for :cve:`2022-36359`.
 * [:backend:`1833`] Fixed submission being blocked on empty prefill data
 
 1.1.4 (2022-07-25)
@@ -168,13 +168,13 @@ data. This involves a couple of steps with some pointers below.
 1.1.1 (2022-06-13)
 ==================
 
-Security release (:cve:`CVE-2022-31040`, :cve:`CVE-2022-31041`)
+Security release (:cve:`2022-31040`, :cve:`2022-31041`)
 
 This bugfix release fixes two security issues in Open Forms. We recommend upgrading
 as soon as possible.
 
-* [:cve:`CVE-2022-31040`] Fixed open redirect in cookie-consent 'close' button
-* [:cve:`CVE-2022-31041`] Perform upload content validation against allowed file types
+* [:cve:`2022-31040`] Fixed open redirect in cookie-consent 'close' button
+* [:cve:`2022-31041`] Perform upload content validation against allowed file types
 * [:backend:`1670`] Update error message for number validation
 
 1.1.0 (2022-05-24)
@@ -360,7 +360,7 @@ Security fix release
 
 This release fixes a potential reflected file download vulnerability.
 
-* Bumped Django and django-sendfile2 versions with fixes for :cve:`CVE-2022-36359`.
+* Bumped Django and django-sendfile2 versions with fixes for :cve:`2022-36359`.
 * Fixed the filename of submission attachment file downloads
 * [:backend:`1833`] Fixed submission being blocked on empty prefill data
 
@@ -405,13 +405,13 @@ Hotfix following 1.0.9 - this is the same patch as 1.1.2.
 1.0.9 (2022-06-13)
 ==================
 
-Security release (:cve:`CVE-2022-31040`, :cve:`CVE-2022-31041`)
+Security release (:cve:`2022-31040`, :cve:`2022-31041`)
 
 This bugfix release fixes two security issues in Open Forms. We recommend upgrading
 as soon as possible.
 
-* [:cve:`CVE-2022-31040`] Fixed open redirect in cookie-consent 'close' button
-* [:cve:`CVE-2022-31041`] Perform upload content validation against allowed file types
+* [:cve:`2022-31040`] Fixed open redirect in cookie-consent 'close' button
+* [:cve:`2022-31041`] Perform upload content validation against allowed file types
 * [:backend:`1670`] Update error message for number validation
 * [:backend:`1560`] Fix prefill not working inside of nested/layout components
 
@@ -483,7 +483,7 @@ Fixed some more bugs discovered during acceptance testing
 * [:backend:`1076`] Fixed missing regex pattern validation for postcode component
 * [:backend:`1433`] Fixed inclusion/exclusion of components in confirmation emails
 * [:backend:`1428`] Fixed edge case in data processing for email registration backend
-* Updated Pillow dependency with :cve:`CVE-2022-22817` fix
+* Updated Pillow dependency with :cve:`2022-22817` fix
 * Bump required SDK release to 1.0.1
 
 1.0.2 (2022-03-11)

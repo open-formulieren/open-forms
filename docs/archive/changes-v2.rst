@@ -1159,7 +1159,7 @@ Detailed changes
 * [:backend:`3774`] Fixed dark-mode support in new form builder.
 * [:backend:`3382`] Fixed translation warnings for date and datetime placeholders in the form
   builder.
-* [:cve:`CVE-2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
+* [:cve:`2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
 * [:backend:`3623`] Fixed some OpenID Connect compatibility issues with certain providers.
 * [:backend:`3863`] Fixed the generated XML for StUF-BG requests when retrieving partners/children.
 * [:backend:`3864`] Fixed handling of StUF-BG responses where one partner is returned.
@@ -1323,7 +1323,7 @@ Bugfix release
 This release addresses a security weakness. We believe there was no way to actually
 exploit it.
 
-* [:cve:`CVE-2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
+* [:cve:`2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
 * [:sdk:`642`] Fixed DigiD error message via SDK patch release.
 * [:backend:`3774`] Fixed dark-mode support in new form builder.
 * Upgraded dependencies to their latest available security releases.
@@ -1635,7 +1635,7 @@ Bugfix release
 This release addresses a security weakness. We believe there was no way to actually
 exploit it.
 
-* [:cve:`CVE-2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
+* [:cve:`2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
 * [:sdk:`642`] Fixed DigiD error message via SDK patch release.
 * Upgraded dependencies to their latest available security releases.
 
@@ -1915,7 +1915,7 @@ Bugfix release
 This release addresses a security weakness. We believe there was no way to actually
 exploit it.
 
-* [:cve:`CVE-2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
+* [:cve:`2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
 * [:sdk:`642`] Fixed DigiD error message via SDK patch release.
 * Upgraded dependencies to their latest available security releases.
 
@@ -2280,7 +2280,7 @@ Bugfix release
 This release addresses a security weakness. We believe there was no way to actually
 exploit it.
 
-* [:cve:`CVE-2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
+* [:cve:`2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
 * [:sdk:`642`] Fixed DigiD error message via SDK patch release.
 * Upgraded dependencies to their latest available security releases.
 
@@ -3737,8 +3737,8 @@ double check with the list of breaking changes in mind.
 
 * [:backend:`1657`] Fixed content component configuration options
 * Fixed support for non-white background colors in PDFs with organization logos
-* [:cve:`CVE-2022-31041`] Perform proper upload file type validation
-* [:cve:`CVE-2022-31040`] Fixed open redirect in cookie-consent 'close' button
+* [:cve:`2022-31041`] Perform proper upload file type validation
+* [:cve:`2022-31040`] Fixed open redirect in cookie-consent 'close' button
 * [:backend:`1670`] Update error message for number validation
 * [:backend:`1681`] Use a unique reference number every time for StUF-ZDS requests
 * [:backend:`1724`] Content fields must not automatically be marked as required
@@ -3751,7 +3751,7 @@ double check with the list of breaking changes in mind.
 * [:backend:`1617`] Fixed crash on StUF onvolledige datum
 * [:ghsa:`GHSA-g936-w68m-87j8`] Do additional permission checks for forms requiring login
 * [:backend:`1783`] Upgraded formiojs to fix searching in dropdowns
-* Bumped Django and django-sendfile2 versions with fixes for :cve:`CVE-2022-36359`
+* Bumped Django and django-sendfile2 versions with fixes for :cve:`2022-36359`
 * [:backend:`1839`] Fixed tooltip text not being displayed entirely
 * [:backend:`1880`] Fixed some validation errors not being displayed properly
 * [:backend:`1842`] Ensured prefill errors via StUF-BG are visible in logs

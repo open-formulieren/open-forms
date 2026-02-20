@@ -5067,30 +5067,6 @@
       "value": "Patroon of waarde voor de postcode"
     }
   ],
-  "dGBYF7": [
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": "(Verbergen)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-            {
-              "type": 0,
-              "value": "(Tonen)"
-            }
-          ]
-        }
-      },
-      "type": 5,
-      "value": "collapsed"
-    }
-  ],
   "dJNdhr": [
     {
       "type": 0,

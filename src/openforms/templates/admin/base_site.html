@@ -21,9 +21,9 @@
 {% endblock extrahead %}
 
 {% block branding %}
-    <h1 id="site-name">
+    <div id="site-name">
         <a href="{% url 'admin:index' %}">{{ settings.PROJECT_NAME }} {% trans "Administration" %}</a>
-    </h1>
+    </div>
     {% show_environment_info %}
     {% if user.is_anonymous %}
       {% include "admin/color_theme_toggle.html" %}

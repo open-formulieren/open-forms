@@ -13,12 +13,12 @@ from freezegun import freeze_time
 from furl import furl
 from privates.test import temp_private_root
 from simple_certmanager.test.factories import CertificateFactory
-from webtest.forms import Form as WTForm
 
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tokens import submission_resume_token_generator
 from openforms.utils.tests.cache import clear_caches
+from openforms.utils.tests.html_forms import parse_form
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....constants import FORM_AUTH_SESSION_KEY
@@ -398,10 +398,10 @@ def _do_signicat_login(
 
 
 def _parse_form(response: Response) -> tuple[Method, str, dict[str, str]]:
-    "Extract method, action URL and form values from html content"
-    form = WTForm(None, response.content)
-    url = form.action or response.url
-    assert url, f"No url found in {form}"
-    method = form.method
-    assert method in ("get", "post")
-    return method, url, dict(form.submit_fields())
+    """
+    Extract method, action URL and form values from html content.
+    """
+    method, action, submit_fields = parse_form(response.content)
+    url: str = action or response.url
+    assert url, "No url found"
+    return method, url, submit_fields

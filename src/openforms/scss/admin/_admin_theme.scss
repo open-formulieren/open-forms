@@ -368,7 +368,7 @@ body.popup {
 // just a massive PITA and we need these overrides because of the CSS reset that's
 // loaded.
 #branding {
-  h1 {
+  #site-name {
     // bootstrap mess
     line-height: normal;
     // admin override

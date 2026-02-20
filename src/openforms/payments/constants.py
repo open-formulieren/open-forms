@@ -3,6 +3,8 @@ from collections.abc import Set
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from openforms.typing import StrOrPromise
+
 
 class PaymentRequestType(models.TextChoices):
     get = "get"
@@ -35,7 +37,7 @@ class PaymentStatus(models.TextChoices):
     registered = "registered", _("Completed and registered")
 
     @classmethod
-    def get_label(cls, value: str) -> str:
+    def get_label(cls, value: str) -> StrOrPromise:
         return dict(cls.choices)[value]
 
 

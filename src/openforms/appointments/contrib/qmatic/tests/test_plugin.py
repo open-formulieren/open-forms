@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 
 from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
@@ -297,7 +297,7 @@ class PluginTests(MockConfigMixin, TestCase):
             plugin="qmatic",
             location="f364d92b7fa07a48c4ecc862de30c47",
             datetime=datetime(2023, 8, 21, 14, 15).replace(
-                tzinfo=timezone.utc
+                tzinfo=UTC
             ),  # 16:15 local time
             contact_details={
                 CustomerFields.last_name: "Doe",
@@ -383,12 +383,8 @@ class PluginTests(MockConfigMixin, TestCase):
         self.assertEqual(result.location.postalcode, "1111 AA")
         self.assertEqual(result.location.city, "City")
 
-        self.assertEqual(
-            result.start_at, datetime(2016, 11, 10, 12, 30, tzinfo=timezone.utc)
-        )
-        self.assertEqual(
-            result.end_at, datetime(2016, 11, 10, 12, 35, tzinfo=timezone.utc)
-        )
+        self.assertEqual(result.start_at, datetime(2016, 11, 10, 12, 30, tzinfo=UTC))
+        self.assertEqual(result.end_at, datetime(2016, 11, 10, 12, 35, tzinfo=UTC))
         self.assertEqual(result.remarks, "Geboekt via internet")
         self.assertDictEqual(result.other, {})
 
@@ -593,7 +589,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
                 CustomerFields.birthday: "1980-01-01",
             }
         )
-        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=UTC)
         m.get(
             f"{self.api_root}v1/branches/1",
             json={

@@ -1,4 +1,3 @@
-from unittest import skipIf
 from unittest.mock import patch
 
 from django.template.loader import render_to_string
@@ -10,7 +9,7 @@ from simple_certmanager.test.factories import CertificateFactory
 
 from openforms.logging.tests.utils import disable_timelinelog
 from openforms.registrations.exceptions import RegistrationFailed
-from openforms.tests.utils import can_connect
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ...constants import EndpointType
 from ...tests.factories import StufServiceFactory
@@ -130,9 +129,8 @@ class StufZdsClientTest(TestCase):
 
 
 @disable_timelinelog()
-class StufZdsRegressionTests(SimpleTestCase):
+class StufZdsRegressionTests(OFVCRMixin, SimpleTestCase):
     @tag("gh-1731")
-    @skipIf(not can_connect("example.com:443"), "Need real socket/connection for test")
     def test_non_latin1_characters(self):
         """
         Regression test for non-latin1 characters in the XML body.
@@ -148,7 +146,7 @@ class StufZdsRegressionTests(SimpleTestCase):
         )
 
         with patch.object(
-            client, "to_absolute_url", return_value="https://example.com"
+            client, "to_absolute_url", return_value="https://commonground.nl"
         ):
             context = {
                 **client.build_base_context(),

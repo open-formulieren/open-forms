@@ -87,7 +87,6 @@ Development and debug tooling
     logging
     dev-rendering
     profiling
-    file-uploads
     external-resources
 
 .. _Django: https://www.djangoproject.com/
