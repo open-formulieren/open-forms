@@ -98,6 +98,7 @@ RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle
 COPY \
     ./bin/report_component_problems.py \
     ./bin/fix_submission_value_variable_missing_fields.py \
+    ./bin/fix_payment_status.py \
     ./bin/check_disable_next_logic_action.py \
     ./bin/
 

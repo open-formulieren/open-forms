@@ -91,14 +91,17 @@ class SubmissionPaymentTests(TransactionTestCase):
         self.assertEqual(payment.public_order_id, "xyz2020/OF-123456/4")
 
     def test_status_is_final(self):
-        for s in [PaymentStatus.started, PaymentStatus.processing]:
+        for s in [
+            PaymentStatus.started,
+            PaymentStatus.processing,
+            PaymentStatus.failed,
+        ]:
             with self.subTest(s):
                 self.assertNotIn(s, PAYMENT_STATUS_FINAL)
 
         for s in [
             PaymentStatus.registered,
             PaymentStatus.completed,
-            PaymentStatus.failed,
         ]:
             with self.subTest(s):
                 self.assertIn(s, PAYMENT_STATUS_FINAL)
