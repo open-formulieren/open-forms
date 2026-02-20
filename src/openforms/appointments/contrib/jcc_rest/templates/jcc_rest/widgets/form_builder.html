@@ -1,0 +1,7 @@
+{% load i18n static %}
+<div class="form-builder">
+    <input class="form-builder__configuration-input" type="text" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %} hidden>
+    <div class="form-builder__container">
+        {% trans 'Loading form builder.' %}
+    </div>
+</div>

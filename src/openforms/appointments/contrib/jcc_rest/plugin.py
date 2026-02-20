@@ -5,10 +5,15 @@ from functools import wraps
 
 from django.urls import reverse
 from django.utils.html import format_html
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 
 import structlog
 
+from openforms.formio.dynamic_config import (
+    FormioConfigurationWrapper,
+    get_translated_custom_error_messages,
+    localize_components,
+)
 from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
@@ -28,7 +33,7 @@ from ...exceptions import (
 from ...registry import register
 from ...utils import create_base64_qrcode
 from .client import JccRestClient, NoServiceConfigured
-from .constants import CustomerFields, FieldState, GenderType, get_component
+from .constants import CustomerFields, FieldState, GenderType
 from .exceptions import GracefulJccRestException, JccRestException
 from .models import JccRestConfig
 from .types import (
@@ -195,28 +200,26 @@ class JccRestPlugin(BasePlugin):
         areFirstNameOrInitialsRequired are set to True.
         """
         if condition and all(v == FieldState.hidden for v in field_values):
+            component_factory.setdefault("validate", {})["required"] = True
             return [component_factory]
 
         return []
 
     def _extract_rendered_fields(
-        self, required_fields: RawCustomerFields
+        self, required_fields: RawCustomerFields, saved_components: dict[str, Component]
     ) -> dict[str, bool]:
         """
-        Based on the retrieved fields returns a dict with the field names and a boolean,
-        set according to whether they are required or not.
+        Based on the retrieved fields returns a dict with the field name and a boolean,
+        regarding whether it's required or not.
         """
-        excluded_fields = {
-            CustomerFields.last_name,
-            CustomerFields.phone_number,
-        }
+        excluded_fields = {"lastName", "phoneNumber"}
 
         # according to JCC, missing fields are considered to be visible, so we check which
         # fields are missing from the response (except lastName and phone number which
         # are treated a bit differently) and we add them as optional
         fields: dict[str, bool] = {
             possible_field: False
-            for possible_field in CustomerFields.values
+            for possible_field in saved_components
             if possible_field not in required_fields
             and possible_field not in excluded_fields
         }
@@ -299,8 +302,17 @@ class JccRestPlugin(BasePlugin):
             ),
         ]
 
+        # current components configuration
+        jcc_rest_config = JccRestConfig.get_solo()
+        saved_components = jcc_rest_config.configuration["components"]
+        saved_components_by_key: dict[str, Component] = {
+            component["key"]: component for component in saved_components
+        }
+
         # optional (only visible) and required customer fields
-        rendered_fields = self._extract_rendered_fields(required_fields)
+        rendered_fields = self._extract_rendered_fields(
+            required_fields, saved_components_by_key
+        )
 
         components = []
         # Name / initials defaults
@@ -309,12 +321,12 @@ class JccRestPlugin(BasePlugin):
                 required_fields.get("areFirstNameOrInitialsRequired"),
                 required_fields.get("initials"),
                 required_fields.get("firstName"),
-                component_factory=get_component(CustomerFields.first_name, True),
+                component_factory=saved_components_by_key["firstName"],
             )
         )
 
         # Last name is always required
-        components.append(get_component(CustomerFields.last_name, True))
+        components.append(saved_components_by_key["lastName"])
 
         # Phone defaults
         components.extend(
@@ -322,7 +334,7 @@ class JccRestPlugin(BasePlugin):
                 required_fields.get("isAnyPhoneNumberRequired"),
                 required_fields.get("mainPhoneNumber"),
                 required_fields.get("mobilePhoneNumber"),
-                component_factory=get_component(CustomerFields.phone_number, True),
+                component_factory=saved_components_by_key["phoneNumber"],
             )
         )
         # JCC has different names for the main phone number in the `customer/customerfields/required`
@@ -334,7 +346,10 @@ class JccRestPlugin(BasePlugin):
 
         # Explicitly declared visible fields
         for field, is_required in rendered_fields.items():
-            components.append(get_component(CustomerFields(field), is_required))
+            saved_components_by_key[field].setdefault("validate", {})["required"] = (
+                is_required
+            )
+            components.append(saved_components_by_key[field])
 
         rendered_keys = {component["key"] for component in components}
         required_group_fields = []
@@ -375,6 +390,12 @@ class JccRestPlugin(BasePlugin):
                     ).format(fields=", ".join(active_labels)),
                 }
             )
+
+        # Make sure the components are localized
+        current_language = get_language()
+        config_wrapper = FormioConfigurationWrapper({"components": components})
+        get_translated_custom_error_messages(config_wrapper, current_language)
+        localize_components(config_wrapper, current_language)
 
         return components, required_group_fields or None
 
