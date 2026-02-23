@@ -17,6 +17,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         python3-dev \
         libpq-dev \
         shared-mime-info \
+        curl \
         # required for (log) routing support in uwsgi
         libpcre3 \
         libpcre3-dev \
@@ -44,6 +45,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && /tmp/patches/apply.sh /usr/local/lib/python3.12/site-packages
 
+# Download and install nvm:
+COPY .nvmrc /tmp/.nvmrc
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash \
+    && \. "$HOME/.nvm/nvm.sh" \
+    && mv /tmp/.nvmrc . \
+    && nvm install \
+    && mv /bin/versions/node/*/ /tmp/node
+
 # Stage 2 - Install frontend deps and build assets
 FROM node:20-bookworm-slim AS frontend-build
 
@@ -55,6 +64,12 @@ COPY ./*.json ./*.js /app/
 
 # install WITH dev tooling
 RUN npm ci --legacy-peer-deps
+
+# extract only @formatjs/cli subtree from node_modules (needed for the final stage)
+RUN npm --prefix node_modules/@formatjs/cli ls --all --parseable \
+  | sed 's#^/app/##' \
+  | sort -u \
+  | tar -czf /tmp/formatjs-node_modules.tgz -C /app -T -
 
 # copy source code
 COPY ./src /app/src
@@ -119,6 +134,19 @@ COPY --from=frontend-build /app/node_modules/@fortawesome/fontawesome-free/webfo
 # Include SDK files. Collectstatic produces both the versions with and without hash
 # in the STATICFILES_ROOT
 COPY --from=sdk-image /sdk /app/src/openforms/static/sdk
+
+# the following are needed to have access to module formatjs/cli during runtime (process
+# custom translations)
+COPY --from=frontend-build /app/build /app/build
+COPY --from=frontend-build /app/node_modules/.bin /app/node_modules/.bin
+# copy only @formatjs/cli + dependencies
+COPY --from=frontend-build /tmp/formatjs-node_modules.tgz /tmp/
+
+# extract minimal node_modules subtree
+RUN tar -xzf /tmp/formatjs-node_modules.tgz -C /app \
+    && rm /tmp/formatjs-node_modules.tgz
+
+COPY --from=backend-build /tmp/node /usr/local/
 
 # copy source code
 COPY ./src /app/src
