@@ -9,7 +9,7 @@ from django.utils.translation import get_language, gettext_lazy as _
 
 import structlog
 
-from openforms.formio.dynamic_config import (
+from openforms.formio.service import (
     FormioConfigurationWrapper,
     get_translated_custom_error_messages,
     localize_components,

@@ -165,7 +165,7 @@ class WebformBuilder extends WebformBuilderFormio {
         <IntlProvider {...intlProviderProps}>
           <ComponentConfiguration
             // Context binding
-            formMode={FORM_MODE ? FORM_MODE : 'default'}
+            formMode={FORM_MODE}
             uniquifyKey={uniquifyKey}
             supportedLanguageCodes={LANGUAGES}
             theme={currentTheme.getValue()}

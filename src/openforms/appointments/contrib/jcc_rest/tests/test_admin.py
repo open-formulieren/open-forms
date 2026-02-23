@@ -26,7 +26,6 @@ class JccRestAdminTests(WebTest):
         context = response.context
 
         self.assertIn("form_mode", context)
-        self.assertIn("available_components", context)
 
     def test_form_has_configuration_components_populated(self):
         user = SuperUserFactory.create()
@@ -35,16 +34,16 @@ class JccRestAdminTests(WebTest):
         form = response.forms["jccrestconfig_form"]
         configuration_value = form.fields["configuration"][0].value
 
-        json_components_data = json.loads(configuration_value)
-
-        self.assertEqual(
-            json_components_data,
-            {"components": list(FIELD_TO_FORMIO_COMPONENT.values())},
+        actual_keys = set(
+            c["key"] for c in json.loads(configuration_value)["components"]
         )
+        expected_keys = set(FIELD_TO_FORMIO_COMPONENT.keys())
+
+        self.assertEqual(actual_keys, expected_keys)
 
     @patch("openforms.appointments.contrib.jcc_rest.forms.CustomerFields")
-    def test_form_validation(self, m):
-        m.values = ["initial"]
+    def test_form_validation_with_missing_keys(self, m):
+        m.values = ["initial", "another"]
 
         user = SuperUserFactory.create()
         endpoint = reverse("admin:jcc_rest_jccrestconfig_change")
@@ -52,7 +51,7 @@ class JccRestAdminTests(WebTest):
         form = response.forms["jccrestconfig_form"]
 
         form["configuration"].value = json.dumps(
-            {"components": [{"type": "textfield", "key": "changed"}]}
+            {"components": [{"type": "textfield", "key": "initial"}]}
         )
 
         response = form.submit()
@@ -61,10 +60,31 @@ class JccRestAdminTests(WebTest):
         error_texts = [li.text.strip() for li in error_items]
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(
-            any(
-                "Unknown component key for fields: changed. Adding a component or modifying a component's key is not allowed."
-                in error
-                for error in error_texts
-            )
+        self.assertEqual(
+            error_texts[1],
+            "Required keys are missing: another.",
+        )
+
+    @patch("openforms.appointments.contrib.jcc_rest.forms.CustomerFields")
+    def test_form_validation_with_modified_keys(self, m):
+        m.values = ["initial"]
+
+        user = SuperUserFactory.create()
+        endpoint = reverse("admin:jcc_rest_jccrestconfig_change")
+        response = self.app.get(endpoint, user=user)
+        form = response.forms["jccrestconfig_form"]
+
+        form["configuration"].value = json.dumps(
+            {"components": [{"type": "textfield", "key": "another"}]}
+        )
+
+        response = form.submit()
+
+        error_items = response.html.select("ul.errorlist li")
+        error_texts = [li.text.strip() for li in error_items]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            error_texts[1],
+            "Unknown component keys: another.\nRequired keys are missing: initial.",
         )

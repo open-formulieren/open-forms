@@ -42,17 +42,28 @@ class JccRestConfigForm(forms.ModelForm):
         components = self.cleaned_data["configuration"]["components"]
 
         initial_set = set(CustomerFields.values)
-        user_set = set([component["key"] for component in components])
-        modified = user_set - initial_set
+        user_set = {component["key"] for component in components}
 
-        if modified:
-            raise ValidationError(
-                {
-                    "configuration": _(
-                        "Unknown component key for fields: {keys}. "
-                        "Adding a component or modifying a component's key is not allowed."
-                    ).format(keys=",".join(modified))
-                }
+        unknown_keys = user_set - initial_set
+        missing_keys = initial_set - user_set
+
+        messages = []
+
+        if unknown_keys:
+            messages.append(
+                _("Unknown component keys: {keys}.").format(
+                    keys=", ".join(sorted(unknown_keys))
+                )
             )
+
+        if missing_keys:
+            messages.append(
+                _("Required keys are missing: {keys}.").format(
+                    keys=", ".join(sorted(missing_keys))
+                )
+            )
+
+        if messages:
+            raise ValidationError({"configuration": "\n".join(messages)})
 
         return self.cleaned_data

@@ -1,5 +1,8 @@
+from typing import Any
+
 from django.db import models
 from django.utils.encoding import force_str
+from django.utils.functional import Promise
 from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
@@ -9,23 +12,26 @@ from openforms.formio.typing import Component
 
 from .constants import FIELD_TO_FORMIO_COMPONENT
 
-type ComponentInputMap = dict[str, list[Component]]
-type ComponentOutputMap = dict[str, list[str]]
+
+def _resolve_lazy(obj: Any) -> Any:
+    """Recursive lazy resolver for JSON-like structures."""
+    if isinstance(obj, dict):
+        return {k: _resolve_lazy(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [_resolve_lazy(v) for v in obj]
+    elif isinstance(obj, Promise):
+        return force_str(obj)
+    else:
+        return obj
 
 
 def resolve_lazy(obj: dict[str, list[Component]]) -> dict[str, list[Component]]:
     """
-    Helper function for evaluating lazy objects (translatable fields).
+    Resolve lazy strings.
+
+    Keeps exact type: dict[str, list[Component]]
     """
-    match obj:
-        case dict():
-            return {k: resolve_lazy(v) for k, v in obj.items()}  # type: ignore [ReportReturnType]
-        case list():
-            return [resolve_lazy(v) for v in obj]
-        case int():
-            return obj
-        case _:
-            return force_str(obj)
+    return _resolve_lazy(obj)
 
 
 def get_default_components() -> dict[str, list[Component]]:
