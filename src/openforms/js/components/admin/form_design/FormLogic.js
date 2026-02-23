@@ -288,7 +288,7 @@ const RuleBody = ({
             <FormattedMessage
               description="Execute on step(s) label"
               defaultMessage="This rule will be executed on step(s): {steps}"
-              values={{steps: formSteps.map(step => step.stepName).join(', ')}}
+              values={{steps: formSteps?.map(step => step.stepName).join(', ')}}
             />
           </div>
         )}
