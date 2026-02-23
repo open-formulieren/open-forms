@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django_sendfile import sendfile
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework import serializers
 from rest_framework.generics import CreateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -55,6 +56,8 @@ class TemporaryFileView(DestroyAPIView):
     authentication_classes = (AnonCSRFSessionAuthentication,)
     permission_classes = [OwnsTemporaryUploadPermission]
     renderer_classes = [FileRenderer, CamelCaseJSONRenderer]
+    # defined to mute schema generation warnings
+    serializer_class = serializers.Serializer
 
     queryset = TemporaryFileUpload.objects.all()
     lookup_field = "uuid"

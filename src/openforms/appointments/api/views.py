@@ -364,6 +364,7 @@ class CancelAppointmentView(GenericAPIView):
     lookup_field = "uuid"
     lookup_url_kwarg = "submission_uuid"
     queryset = Submission.objects.all()
+    serializer_class = CancelAppointmentInputSerializer
     authentication_classes = (AnonCSRFSessionAuthentication,)
     permission_classes = [ActiveSubmissionPermission]
 
@@ -377,7 +378,7 @@ class CancelAppointmentView(GenericAPIView):
             submission_uuid=str(submission.uuid),
         ):
             audit_logger.info("appointment_cancel_start")
-            serializer = CancelAppointmentInputSerializer(data=request.data)
+            serializer = self.get_serializer(data=request.data)
             try:
                 serializer.is_valid(raise_exception=True)
             except ValidationError as exc:

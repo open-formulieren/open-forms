@@ -5,6 +5,9 @@ from drf_spectacular.openapi import AutoSchema
 
 class AnonCSRFSessionScheme(SessionScheme):
     target_class = "openforms.api.authentication.AnonCSRFSessionAuthentication"
+    # must be different name than the parent class, but it's effectively the same
+    # behaviour
+    name = "anonCSRFCookieAuth"
 
 
 class ModelTranslationsSerializerExtension(OpenApiSerializerExtension):

@@ -17,7 +17,7 @@ from drf_spectacular.utils import (
     OpenApiResponse,
     extend_schema,
 )
-from rest_framework import permissions, status
+from rest_framework import permissions, serializers, status
 from rest_framework.exceptions import MethodNotAllowed, NotFound, ParseError
 from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -206,6 +206,8 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     lookup_url_kwarg = "uuid"
     queryset = SubmissionPayment.objects.select_related("submission")
     parser_classes = (FormParser, MultiPartParser)
+    # defined to mute schema generation warnings
+    serializer_class = serializers.Serializer
 
     def _handle_return(self, request, uuid: str):
         """
