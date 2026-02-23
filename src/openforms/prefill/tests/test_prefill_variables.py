@@ -6,6 +6,7 @@ from django.test import TestCase, TransactionTestCase, tag
 
 import requests_mock
 from rest_framework import serializers
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
@@ -631,7 +632,9 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
     @requests_mock.Mocker()
     @patch("openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo")
     def test_no_success_message_on_failure(self, m, m_solo):
-        service = ServiceFactory.build(api_root="https://personen/api/")
+        service = ServiceFactory.build(
+            api_root="https://personen/api/", auth_type=AuthTypes.no_auth
+        )
         m.get(
             "https://personen/api/ingeschrevenpersonen/999990676",
             status_code=404,

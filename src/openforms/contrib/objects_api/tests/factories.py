@@ -9,16 +9,28 @@ class ObjectsAPIGroupConfigFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: f"Objects API group {n:03}")
     identifier = factory.Sequence(lambda n: f"objects-api-group-{n}")
     objects_service = factory.SubFactory(
-        "zgw_consumers.test.factories.ServiceFactory", api_type=APITypes.orc
+        "zgw_consumers.test.factories.ServiceFactory",
+        api_type=APITypes.orc,
+        auth_type=AuthTypes.no_auth,
     )
     objecttypes_service = factory.SubFactory(
-        "zgw_consumers.test.factories.ServiceFactory", api_type=APITypes.orc
+        "zgw_consumers.test.factories.ServiceFactory",
+        api_type=APITypes.orc,
+        auth_type=AuthTypes.no_auth,
     )
     drc_service = factory.SubFactory(
-        "zgw_consumers.test.factories.ServiceFactory", api_type=APITypes.drc
+        "zgw_consumers.test.factories.ServiceFactory",
+        api_type=APITypes.drc,
+        auth_type=AuthTypes.zgw,
+        client_id="dummy",
+        secret="1a7b0352-f51b-4657-a96f-6d1ace6edf9e",
     )
     catalogi_service = factory.SubFactory(
-        "zgw_consumers.test.factories.ServiceFactory", api_type=APITypes.ztc
+        "zgw_consumers.test.factories.ServiceFactory",
+        api_type=APITypes.ztc,
+        auth_type=AuthTypes.zgw,
+        client_id="dummy",
+        secret="0eb98b79-6d0d-47ae-860c-848985a672d5",
     )
 
     class Meta:
@@ -48,7 +60,7 @@ class ObjectsAPIGroupConfigFactory(factory.django.DjangoModelFactory):
                 api_root="http://localhost:8003/documenten/api/v1/",
                 api_type=APITypes.drc,
                 client_id="test_client_id",
-                secret="test_secret_key",
+                secret="c134912d-583a-447c-8c04-4e2597f26436",
                 auth_type=AuthTypes.zgw,
             ),
             catalogi_service=factory.SubFactory(
@@ -56,7 +68,7 @@ class ObjectsAPIGroupConfigFactory(factory.django.DjangoModelFactory):
                 api_root="http://localhost:8003/catalogi/api/v1/",
                 api_type=APITypes.ztc,
                 client_id="test_client_id",
-                secret="test_secret_key",
+                secret="c134912d-583a-447c-8c04-4e2597f26436",
                 auth_type=AuthTypes.zgw,
             ),
         )

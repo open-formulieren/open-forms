@@ -2921,7 +2921,9 @@ class GenericJSONRequestTests(TestCase):
         )
 
         options: GenericJSONOptions = {
-            "service": ServiceFactory.create(api_root="http://example.com/"),
+            "service": ServiceFactory.create(
+                api_root="http://example.com/", auth_type=AuthTypes.no_auth
+            ),
             "path": "",
             "variables": ["auth_bsn", "firstName"],
             "fixed_metadata_variables": [],

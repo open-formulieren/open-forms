@@ -3,6 +3,8 @@ import os
 import sys
 import warnings
 
+from bs4 import XMLParsedAsHTMLWarning
+from jwt import InsecureKeyLengthWarning
 from maykin_common.config import config
 
 os.environ.setdefault("DEBUG", "yes")
@@ -149,6 +151,16 @@ warnings.filterwarnings(
     r"DateTimeField .* received a naive datetime",
     RuntimeWarning,
     r"django\.db\.models\.fields",
+)
+
+warnings.filterwarnings(
+    "error",
+    category=InsecureKeyLengthWarning,
+)
+
+warnings.filterwarnings(
+    "error",
+    category=XMLParsedAsHTMLWarning,
 )
 
 # Override settings with local settings.

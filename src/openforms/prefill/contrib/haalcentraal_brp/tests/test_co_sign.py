@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.test import TestCase
 
 import requests_mock
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.contrib.haal_centraal.constants import BRPVersions
@@ -48,6 +49,7 @@ class CoSignPrefillTests:
         hc_config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=self.version,
         )

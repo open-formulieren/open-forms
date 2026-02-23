@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.test import SimpleTestCase
 
 import requests_mock
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
@@ -18,6 +19,7 @@ class ConfigCheckTests(SimpleTestCase):
         self.config = KadasterApiConfig(
             search_service=ServiceFactory.build(
                 api_root="https://kadaster/",
+                auth_type=AuthTypes.no_auth,
             )
         )
         config_patcher = patch(

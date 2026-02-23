@@ -4,6 +4,7 @@ from django.test import SimpleTestCase, TestCase
 
 import requests_mock
 from glom import glom
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.contrib.haal_centraal.constants import BRPVersions
@@ -42,7 +43,7 @@ class AttributeResolutionTests(SimpleTestCase):
                         glom(data, key)
 
     def test_get_available_attributes(self):
-        service = ServiceFactory.build()
+        service = ServiceFactory.build(auth_type=AuthTypes.no_auth)
         for version in BRPVersions:
             with self.subTest(version=version):
                 config = HaalCentraalConfig(
@@ -83,6 +84,7 @@ class HaalCentraalPluginTests:
         config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=self.version,
         )

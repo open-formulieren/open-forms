@@ -4,6 +4,7 @@ import requests_mock
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory, APITestCase
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import SuperUserFactory
@@ -927,7 +928,9 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         Ensure that date-related objects are properly formatted when they are used in
         templates in the service fetch configuration.
         """
-        service = ServiceFactory.create(api_root="https://example.com/")
+        service = ServiceFactory.create(
+            api_root="https://example.com/", auth_type=AuthTypes.no_auth
+        )
         m.get("https://example.com/test", json="foo")
 
         form = FormFactory.create()

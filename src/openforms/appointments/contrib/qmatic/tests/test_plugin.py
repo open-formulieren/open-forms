@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 
 import requests_mock
 from requests.exceptions import RequestException
+from zgw_consumers.constants import AuthTypes
 
 from openforms.formio.service import build_serializer
 from openforms.utils.date import TIMEZONE_AMS
@@ -396,7 +397,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     """
 
     def setUp(self):
-        self.service = ServiceFactory.build()
+        self.service = ServiceFactory.build(auth_type=AuthTypes.no_auth)
 
         super().setUp()
 

@@ -4,6 +4,7 @@ from django.test import SimpleTestCase
 
 import requests_mock
 from zgw_consumers.client import build_client
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.nlx import NLXClient
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -30,7 +31,9 @@ class PreRequestHooksTest(DisableNLXRewritingMixin, SimpleTestCase):
                 kwargs["headers"].update({"test": "test"})
 
         submission = SubmissionFactory.build()
-        service = ServiceFactory.build(api_root="https://personen/api/")
+        service = ServiceFactory.build(
+            api_root="https://personen/api/", auth_type=AuthTypes.no_auth
+        )
         client = build_client(
             service,
             client_factory=PreRequestsClient,

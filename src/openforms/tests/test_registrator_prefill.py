@@ -7,6 +7,7 @@ import requests_mock
 from django_webtest import WebTest
 from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 from rest_framework import status
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.models import User
@@ -62,7 +63,10 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(
     @patch(
         "openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo",
         return_value=HaalCentraalConfig(
-            brp_personen_service=ServiceFactory.build(api_root="https://personen/api/")
+            brp_personen_service=ServiceFactory.build(
+                api_root="https://personen/api/",
+                auth_type=AuthTypes.no_auth,
+            )
         ),
     )
     @mock_parallel_executor()

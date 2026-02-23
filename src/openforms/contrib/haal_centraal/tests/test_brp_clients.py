@@ -4,6 +4,7 @@ from django.test import SimpleTestCase, TestCase, tag
 
 import requests_mock
 from glom import glom
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
@@ -45,6 +46,7 @@ class HaalCentraalFindPersonTests:
         config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=self.version,
         )
@@ -602,6 +604,7 @@ class ClientFactoryInvalidVersionTests(SimpleTestCase):
         config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version="0.999",
         )
@@ -629,6 +632,7 @@ class HaalCentraalXHeadersTests(TestCase):
         config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=BRPVersions.v20,
             default_brp_personen_purpose_limitation_header_value="BRPACT-AanschrijvenZakelijkGerechtigde",
