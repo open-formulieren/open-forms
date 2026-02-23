@@ -42,6 +42,8 @@ services:
       - JWT_EXPIRY=99999999999  # Roughly 3170 years. This is required for tests with time frozen to work
       - JWT_LEEWAY=99999999999  # Clock drift can cause a JWT that’s valid on the client to be considered not valid (yet, or anymore) on the server, leading to unexpected HTTP 403 errors.
       - CELERY_WORKER_CONCURRENCY=${CELERY_WORKER_CONCURRENCY:-2}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - 8003:8000
     volumes: &openzaak_web_volumes

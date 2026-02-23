@@ -1126,20 +1126,6 @@ SPECTACULAR_SETTINGS = {
 }
 
 #
-# zgw-consumers-oas
-#
-ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
-    DJANGO_PROJECT_DIR / "registrations" / "contrib" / "zgw_apis" / "tests" / "files",
-    DJANGO_PROJECT_DIR
-    / "registrations"
-    / "contrib"
-    / "objects_api"
-    / "tests"
-    / "files",
-    DJANGO_PROJECT_DIR / "contrib" / "haal_centraal" / "tests" / "files",
-]
-
-#
 # Django Solo
 #
 SOLO_CACHE = "solo"
