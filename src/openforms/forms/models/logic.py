@@ -171,3 +171,10 @@ class FormLogic(OrderedModel):
         return {
             key for key in raw_output_keys if key in self.form.all_form_variable_keys
         }
+
+    def get_require_backend(self) -> bool:
+        for action in self.action_operations:
+            if action.get_require_backend():
+                return True
+
+        return False

@@ -69,6 +69,7 @@ from .serializers import (
     SubmissionSerializer,
     SubmissionStateLogic,
     SubmissionStateLogicSerializer,
+    # SubmissionStateLogicSerializerNew,
     SubmissionStepSerializer,
     SubmissionStepSummarySerializer,
     SubmissionSuspensionSerializer,
@@ -729,3 +730,45 @@ class SubmissionStepViewSet(
             },
         )
         return Response(submission_state_logic_serializer.data)
+
+    # @extend_schema(
+    #     summary=_("Apply/check form logic"),
+    #     description=_("Apply/check the logic rules specified on the form step."),
+    #     request=FormDataSerializer,
+    #     responses={
+    #         200: SubmissionStateLogicSerializer,
+    #         403: ExceptionSerializer,
+    #         FormDeactivated.status_code: ExceptionSerializer,
+    #         FormMaintenance.status_code: ExceptionSerializer,
+    #     },
+    # )
+    # @action(
+    #     detail=True,
+    #     methods=["post"],
+    #     url_path="_check-logic-new",
+    #     throttle_classes=[PollingRateThrottle],
+    # )
+    # def logic_check_new(self, request, *args, **kwargs):
+    #     submission_step = self.get_object()
+    #     submission = submission_step.submission
+    #
+    #     form_data_serializer = FormDataSerializer(data=request.data)
+    #     form_data_serializer.is_valid(raise_exception=True)
+    #
+    #     if data := form_data_serializer.validated_data["data"]:
+    #         new_configuration = evaluate_form_logic(submission, submission_step, data)
+    #         submission_step.form_step.form_definition.configuration = new_configuration
+    #
+    #         # TODO-5962: move into `evaluate_form_logic`?
+    #         new_rules = prepare_rules_for_frontend(submission_step)
+    #         submission_step.form_step.logic_rules = new_rules
+    #
+    #     submission_state_logic_serializer = SubmissionStateLogicSerializer(
+    #         instance=SubmissionStateLogic(submission=submission, step=submission_step),
+    #         context={
+    #             "request": request,
+    #             "current_step": submission_step,
+    #             "unsaved_data_only": True,
+    #         },
+    #     )
+    #     return Response(submission_state_logic_serializer.data)

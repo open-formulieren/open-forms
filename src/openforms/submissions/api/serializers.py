@@ -1,6 +1,7 @@
+from copy import deepcopy
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import TypedDict
+from typing import TypedDict, Iterable
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
@@ -25,11 +26,16 @@ from openforms.emails.utils import render_email_template, send_mail_html
 from openforms.formio.api.fields import FormioDataField
 from openforms.formio.service import FormioData, build_serializer
 from openforms.formio.utils import iter_components
-from openforms.forms.api.serializers import FormDefinitionSerializer
+from openforms.forms.api.serializers import (
+    FormDefinitionSerializer,
+    FormLogicSerializerFrontend,
+)
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
 from openforms.forms.validators import validate_not_deleted
 from openforms.utils.urls import build_absolute_uri
+from openforms.typing import VariableValue
+from openforms.utils.json_logic import partially_evaluate_json_logic
 
 from ..constants import SUBMISSIONS_SESSION_KEY, ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
@@ -213,10 +219,11 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer[Submission]):
 
 class ContextAwareFormStepSerializer(serializers.ModelSerializer):
     configuration = serializers.SerializerMethodField()
+    logic_rules = serializers.SerializerMethodField()
 
     class Meta:
         model = FormStep
-        fields = ("index", "configuration")
+        fields = ("uuid", "index", "configuration", "logic_rules")
         extra_kwargs = {
             "index": {"source": "order"},
         }
@@ -231,12 +238,38 @@ class ContextAwareFormStepSerializer(serializers.ModelSerializer):
     )
     @elasticapm.capture_span(span_type="app.api.serialization")
     def get_configuration(self, instance) -> dict:
+        # TODO-5962: this line seems to only work because in the check-logic call, the
+        #  root is `SubmissionStateLogic` which also has a submission property
         submission = self.root.instance.submission
         serializer = FormDefinitionSerializer(
             instance=instance.form_definition,
             context={**self.context, "submission": submission},
         )
         return serializer.data["configuration"]
+
+    def get_logic_rules(self, instance) -> list[dict[str, object]] | None:
+        if not instance.form.new_logic_evaluation_enabled:
+            return None
+
+        if isinstance(self.root.instance, SubmissionStateLogic):
+            step = self.root.instance.step
+        else:
+            step = self.root.instance
+
+        serializer = FormLogicSerializerFrontend(
+            many=True,
+            instance=instance.logic_rules,
+            context={"submission_step": step},
+        )
+        return serializer.data
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        if not instance.form.new_logic_evaluation_enabled:
+            representation["logic_rules"] = None
+
+        return representation
 
 
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
@@ -248,6 +281,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         allow_null=True,
         validators=[ValidatePrefillData()],
     )
+    default_configuration = serializers.JSONField(allow_null=True, read_only=True)
 
     parent_lookup_kwargs = {
         "submission_uuid": "submission__uuid",
@@ -265,6 +299,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "is_applicable",
             "completed",
             "can_submit",
+            "default_configuration",
         )
 
         extra_kwargs = {
@@ -300,10 +335,16 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     @elasticapm.capture_span(span_type="app.api.serialization")
     def to_representation(self, instance):
         # invoke the configured form logic to dynamically update the Formio.js configuration
+        default_configuration = deepcopy(
+            instance.form_step.form_definition.configuration
+        )
         new_configuration = evaluate_form_logic(instance.submission, instance)
+
+        # new_rules = prepare_rules_for_frontend(instance)
 
         # update the config for serialization
         instance.form_step.form_definition.configuration = new_configuration
+        # instance.form_step.logic_rules = new_rules
 
         representation = super().to_representation(instance)
 
@@ -323,6 +364,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             serialized_data[key] = variable.to_json(data[key])
 
         representation["data"] = serialized_data.data
+        representation["default_configuration"] = default_configuration
 
         return representation
 
@@ -445,6 +487,11 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
 class SubmissionStateLogicSerializer(serializers.Serializer):
     submission = SubmissionSerializer()
     step = SubmissionStepSerializer()
+
+
+# class SubmissionStateLogicSerializerNew(serializers.Serializer):
+#     submission = SubmissionSerializer()
+#     step = SubmissionStepSerializer()
 
 
 @dataclass

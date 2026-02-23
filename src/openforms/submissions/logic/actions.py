@@ -32,6 +32,7 @@ from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
 from .log_utils import log_errors
 from .service_fetching import perform_service_fetch
+from ...variables.constants import FormVariableSources
 
 
 class ActionDetails(TypedDict):
@@ -123,6 +124,14 @@ class ActionOperation:
         """
         raise NotImplementedError()
 
+    def get_require_backend(self) -> bool:
+        """
+        Get a flag that indicates whether this action requires the backend to be
+        evaluated.
+        :return: ``True`` if this action requires backend, ``False`` otherwise.
+        """
+        raise NotImplementedError()
+
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
@@ -175,6 +184,9 @@ class PropertyAction(ActionOperation):
             property_name=action["action"]["property"]["value"],
             value=action["action"]["state"],
         )
+
+    def get_require_backend(self) -> bool:
+        return False
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -255,6 +267,9 @@ class DisableNextAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> Self:
         return cls(form_step_identifier=action["form_step_uuid"])
 
+    def get_require_backend(self) -> bool:
+        return False
+
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
@@ -290,6 +305,13 @@ class StepNotApplicableAction(ActionOperation):
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(form_step_identifier=action.get("form_step_uuid", ""))
+
+    def get_require_backend(self) -> bool:
+        # TODO-5962: for now, could decide to split up the database action from marking
+        #  a step not applicable. We probably need to return "patch actions" to the
+        #  frontend for this to be feasible, because it now relies on
+        #  `check_submission_logic` to be run before serialization of the submission
+        return True
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -340,6 +362,10 @@ class StepApplicableAction(ActionOperation):
             form_step_identifier=action["form_step_uuid"],
         )
 
+    def get_require_backend(self) -> bool:
+        # TODO-5962: see note on step not applicable action
+        return True
+
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
@@ -384,6 +410,22 @@ class VariableAction(ActionOperation):
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(variable=action["variable"], value=action["action"]["value"])
+
+    def get_require_backend(self) -> bool:
+        # Note: unfortunately, we cannot temporarily set user-defined variables in the
+        # frontend, and only update the backend upon step submit. If there is another
+        # rule that uses this user-defined variable as an input, we will be working with
+        # outdated values. The backend will have already created a cached version of
+        # this rule, with the value that this user-defined variable has at the start of
+        # the submission step.
+        # TODO-5962: probably need to speed up data access here, as this is now called
+        #  dynamically. This analysis could be performed when saving the logic rules.
+        output_is_user_defined = self.rule.form.formvariable_set.filter(
+            source=FormVariableSources.user_defined,
+            key__in=self.unresolved_output_variables,
+        ).exists()
+        # If the output is a user-defined variable, we require the backend
+        return output_is_user_defined
 
     def eval(
         self,
@@ -444,6 +486,9 @@ class SynchronizeVariablesAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> Self:
         children_config: DataConfig = action["action"]["config"]  # pyright: ignore[reportAssignmentType]
         return cls(**children_config)
+
+    def get_require_backend(self) -> bool:
+        return True
 
     @staticmethod
     def _map_children_data(
@@ -578,6 +623,12 @@ class ServiceFetchAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> Self:
         return cls(variable=action["variable"])
 
+    def get_require_backend(self) -> bool:
+        # TODO-5692: could depend on the type of input variable. For example, if the
+        #  input is a static (authentication) variable, we only have to execute it in
+        #  the backend once, because the result won't change the second time.
+        return True
+
     def eval(
         self,
         context: FormioData,
@@ -643,6 +694,10 @@ class EvaluateDMNAction(ActionOperation):
         dmn_config: DMNConfig = action["action"]["config"]  # pyright: ignore[reportAssignmentType]
 
         return cls(**dmn_config)
+
+    def get_require_backend(self) -> bool:
+        # TODO-5962: see notes for service fetch action
+        return True
 
     def eval(
         self,
@@ -710,6 +765,12 @@ class SetRegistrationBackendAction(ActionOperation):
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(registration_backend_key=action["action"]["value"])
+
+    def get_require_backend(self) -> bool:
+        # TODO-5962: this cannot be executed in the frontend, but we could decide to
+        #  exclude it from the analysis, as this action can never influence other
+        #  rules/variables
+        return True
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
