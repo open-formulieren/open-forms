@@ -17,6 +17,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         python3-dev \
         libpq-dev \
         shared-mime-info \
+        curl \
         # required for (log) routing support in uwsgi
         libpcre3 \
         libpcre3-dev \
@@ -43,6 +44,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
     && rm -rf /var/lib/apt/lists/* \
     && /tmp/patches/apply.sh /usr/local/lib/python3.12/site-packages
+
+# Download and install nvm:
+COPY .nvmrc /tmp/.nvmrc
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash \
+    && \. "$HOME/.nvm/nvm.sh" \
+    && mv /tmp/.nvmrc . \
+    && nvm install \
+    && mv /bin/versions/node/*/ /tmp/node
 
 # Stage 2 - Install frontend deps and build assets
 FROM node:20-bookworm-slim AS frontend-build
@@ -88,9 +97,6 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         # weasyprint deps, see https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#debian-11
         libpango-1.0-0 \
         libpangoft2-1.0-0 \
-        # needed for node
-        curl \
-        xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -139,23 +145,7 @@ COPY --from=frontend-build /tmp/formatjs-node_modules.tgz /tmp/
 RUN tar -xzf /tmp/formatjs-node_modules.tgz -C /app \
     && rm /tmp/formatjs-node_modules.tgz
 
-# install Node runtime matching .nvmrc
-COPY .nvmrc /tmp/.nvmrc
-RUN set -eux; \
-    MAJOR_VERSION=$(tr -d '[:space:]' < /tmp/.nvmrc); \
-    echo "Major Node version: $MAJOR_VERSION"; \
-    # fetch Node index.json and extract versions for this major
-    FULL_VERSION=$(curl -fsSL https://nodejs.org/dist/index.json \
-        | grep '"version":' \
-        | sed -n 's/.*"version": *"\(v'"$MAJOR_VERSION"'\.[0-9]\+\.[0-9]\+\)".*/\1/p' \
-        | sort -V \
-        | tail -n1); \
-    echo "Latest patch version: $FULL_VERSION"; \
-    # download and extract Node
-    curl -fsSL "https://nodejs.org/dist/$FULL_VERSION/node-$FULL_VERSION-linux-x64.tar.xz" -o /tmp/node.tar.xz; \
-    tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1; \
-    rm /tmp/node.tar.xz /tmp/.nvmrc
-
+COPY --from=backend-build /tmp/node /usr/local/
 
 # copy source code
 COPY ./src /app/src
