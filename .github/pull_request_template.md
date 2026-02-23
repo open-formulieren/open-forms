@@ -13,6 +13,7 @@ Check off the items that are completed or not relevant.
   - [ ] Checked copying a form
   - [ ] Checked import/export of a form
   - [ ] Config checks in the configuration overview admin page
+  - [ ] Checked new model fields are usable in the admin
   - [ ] Problem detection in the admin email digest is handled
 
 - Dockerfile/scripts
@@ -23,3 +24,7 @@ Check off the items that are completed or not relevant.
 
   - [ ] Commit messages refer to the relevant Github issue
   - [ ] Commit messages explain the "why" of change, not the how
+
+- Documentation
+
+  - [ ] Added documentation which describes the changes
