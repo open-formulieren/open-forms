@@ -119,11 +119,9 @@ class SuwinetTestCase(OFVCRMixin, TestCase):
             assert r1.uri == r2.uri
             assert r1.method == r2.method
             # disregard signatures in the envelope header
-            b1 = BeautifulSoup(r1.body, features="lxml")
-            b2 = BeautifulSoup(r2.body, features="lxml")
-            assert list(b1.find("soap-env:body").children) == list(
-                b2.find("soap-env:body").children
-            )
+            b1 = BeautifulSoup(r1.body, features="lxml-xml")
+            b2 = BeautifulSoup(r2.body, features="lxml-xml")
+            assert list(b1.find("Body").children) == list(b2.find("Body").children)
 
         vcr.register_matcher("soap", soap_matcher)
 
