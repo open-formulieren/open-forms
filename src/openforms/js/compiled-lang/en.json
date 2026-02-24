@@ -3237,6 +3237,12 @@
       "value": ". Extend your session if you wish to continue."
     }
   ],
+  "OaeVI8": [
+    {
+      "type": 0,
+      "value": "Prefix"
+    }
+  ],
   "Od+jm6": [
     {
       "type": 0,
@@ -6045,12 +6051,6 @@
       "value": "isAvailable"
     }
   ],
-  "jtWzSW": [
-    {
-      "type": 0,
-      "value": "option 2: € 15,99"
-    }
-  ],
   "jy1jTd": [
     {
       "offset": 0,
@@ -7147,12 +7147,6 @@
     {
       "type": 0,
       "value": "Regular expression for city"
-    }
-  ],
-  "sxdJ/8": [
-    {
-      "type": 0,
-      "value": "option 1: € 10,99"
     }
   ],
   "sxfcjF": [

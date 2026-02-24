@@ -86,5 +86,9 @@ class JccRestAdminTests(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             error_texts[1],
-            "Unknown component keys: another.\nRequired keys are missing: initial.",
+            "Unknown component keys: another.",
+        )
+        self.assertEqual(
+            error_texts[2],
+            "Required keys are missing: initial.",
         )

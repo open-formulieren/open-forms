@@ -1,7 +1,6 @@
 from typing import Any
 
 from django import forms
-from django.core.exceptions import ValidationError
 from django.forms import Widget
 from django.utils.translation import gettext_lazy as _
 
@@ -47,23 +46,20 @@ class JccRestConfigForm(forms.ModelForm):
         unknown_keys = user_set - initial_set
         missing_keys = initial_set - user_set
 
-        messages = []
-
         if unknown_keys:
-            messages.append(
+            self.add_error(
+                "configuration",
                 _("Unknown component keys: {keys}.").format(
                     keys=", ".join(sorted(unknown_keys))
-                )
+                ),
             )
 
         if missing_keys:
-            messages.append(
+            self.add_error(
+                "configuration",
                 _("Required keys are missing: {keys}.").format(
                     keys=", ".join(sorted(missing_keys))
-                )
+                ),
             )
-
-        if messages:
-            raise ValidationError({"configuration": "\n".join(messages)})
 
         return self.cleaned_data
