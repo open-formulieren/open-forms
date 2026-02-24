@@ -45,13 +45,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && /tmp/patches/apply.sh /usr/local/lib/python3.12/site-packages
 
-# Download and install nvm:
+# Download and install nvm, but exclude npm as it's not needed in prod
 COPY .nvmrc /tmp/.nvmrc
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash \
     && \. "$HOME/.nvm/nvm.sh" \
     && mv /tmp/.nvmrc . \
     && nvm install \
-    && mv /bin/versions/node/*/ /tmp/node
+    && mv /bin/versions/node/*/ /tmp/node \
+    && rm -rf /tmp/node/bin/npm /tmp/node/lib/node_modules
 
 # Stage 2 - Install frontend deps and build assets
 FROM node:20-bookworm-slim AS frontend-build
