@@ -29,7 +29,9 @@ KEY = TEST_FILES / "our_key.pem"
 CERT = TEST_FILES / "our_certificate.pem"
 METADATA = TEST_FILES / "signicat_metadata.xml"
 
-SIGNICAT_BROKER_BASE = furl("https://maykin.pre.ie01.signicat.pro/broker")
+# SIGNICAT_BROKER_BASE = furl("https://maykin.pre.ie01.signicat.pro/broker")
+# https://maykinhubtest.sandbox.signicat.com/broker/authn/simulator/selection
+SIGNICAT_BROKER_BASE = furl("https://maykinhubtest.sandbox.signicat.com/auth/saml")
 
 
 @patch(
@@ -84,7 +86,9 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         # broker insists using https
         config.base_url = config.entity_id = "https://localhost:8000"
         # config.authn_requests_signed =  False
-        config.idp_service_entity_id = SIGNICAT_BROKER_BASE / "sp/saml"
+        config.idp_service_entity_id = (
+            "https://maykinhubtest.sandbox.signicat.com/auth/saml"
+        )
         config.artifact_resolve_content_type = XMLContentTypes.text_xml
         config.attribute_consuming_service_index = "1"
         config.service_name = "Test"

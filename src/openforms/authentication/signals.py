@@ -100,7 +100,12 @@ def set_auth_attribute_on_session(
         log = log.bind(username=request.user.username)
 
     # copy context to audit log
-    audit_log = audit_logger.bind(**structlog.get_context(log))
+    audit_log = audit_logger.bind(
+        **structlog.get_context(log),
+        # use PK as workaround, because the transaction is typically not committed yet
+        # at this point
+        submission_pk=instance.pk,
+    )
     audit_log.debug("authentication.submission_auth", is_delegated=is_delegated)
 
     if registrator_subject:
