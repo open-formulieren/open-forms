@@ -1,0 +1,13 @@
+{% extends 'admin/change_form.html' %}
+{% load i18n %}
+
+{% block extrahead %}
+{% include "admin/jcc_rest/includes/formio_config.html" %}
+{{ block.super }}
+{% endblock extrahead %}
+{% block extrastyle %}
+{{ block.super }}
+
+{% get_available_languages as languages %}
+{{ languages|json_script:'languages' }}  {# Used to determine languages for FormIO translations #}
+{% endblock %}

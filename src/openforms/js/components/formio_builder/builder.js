@@ -1,13 +1,14 @@
 import cloneDeep from 'lodash/cloneDeep';
 import set from 'lodash/set';
 import PropTypes from 'prop-types';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import {FormBuilder, Templates} from 'react-formio';
 
 import {FeatureFlagsContext, FormContext} from 'components/admin/form_design/Context';
 import useOnChanged from 'hooks/useOnChanged';
 import jsonScriptToVar from 'utils/json-script';
 
+import {APPOINTMENT_BUILDER_DATA, DEFAULT_BUILDER_DATA} from './builderData';
 import customTemplates from './customTemplates';
 
 Templates.current = customTemplates;
@@ -17,211 +18,10 @@ const nlStrings = require('lang/formio/nl.json');
 const getBuilderOptions = () => {
   const maxFileUploadSize = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE');
   const formFieldsRequiredDefault = jsonScriptToVar('config-REQUIRED_DEFAULT');
+  const formMode = jsonScriptToVar('FORM_MODE');
 
   return {
-    builder: {
-      basic: false,
-      advanced: false,
-      data: false,
-      layout: false,
-      premium: false,
-
-      custom: {
-        default: true,
-        title: 'Formuliervelden',
-        weight: 0,
-        components: {
-          textfield: true,
-          textarea: true,
-          checkbox: true,
-          selectboxes: true,
-          select: true,
-          radio: true,
-          number: true,
-          currency: true,
-          email: true,
-          date: true,
-          datetime: true,
-          time: true,
-          phoneNumber: true,
-          postcode: true,
-          file: true,
-        },
-      },
-      custom_special: {
-        title: 'Special fields',
-        weight: 5,
-        components: {
-          iban: true,
-          licenseplate: true,
-          bsn: true,
-          npFamilyMembers: true,
-          signature: true,
-          cosign: true,
-          map: true,
-          editgrid: true,
-          addressNL: true,
-          partners: true,
-          children: true,
-          customerProfile: true,
-        },
-      },
-      custom_layout: {
-        title: 'Opmaak',
-        weight: 5,
-        components: {
-          content: true,
-          fieldset: true,
-          columns: true,
-          softRequiredErrors: true,
-        },
-      },
-      custom_preset: {
-        title: 'Voorgedefinieerd',
-        weight: 10,
-        components: {
-          fullName: {
-            title: 'Volledige naam',
-            key: 'fullName',
-            icon: 'terminal',
-            schema: {
-              label: 'Volledige naam',
-              autocomplete: 'name',
-              type: 'textfield',
-              key: 'fullName',
-              input: true,
-            },
-          },
-          firstName: {
-            title: 'Voornaam',
-            key: 'firstName',
-            icon: 'terminal',
-            schema: {
-              label: 'Voornaam',
-              autocomplete: 'given-name',
-              type: 'textfield',
-              key: 'firstName',
-              input: true,
-            },
-          },
-          lastName: {
-            title: 'Achternaam',
-            key: 'lastName',
-            icon: 'terminal',
-            schema: {
-              label: 'Achternaam',
-              autocomplete: 'family-name',
-              type: 'textfield',
-              key: 'lastName',
-              input: true,
-            },
-          },
-          addressLine1: {
-            title: 'Adresregel 1',
-            key: 'addressLine1',
-            icon: 'home',
-            schema: {
-              label: 'Adresregel 1',
-              autocomplete: 'address-line1',
-              type: 'textfield',
-              key: 'addressLine1',
-              input: true,
-            },
-          },
-          addressLine2: {
-            title: 'Adresregel 2',
-            key: 'addressLine2',
-            icon: 'home',
-            schema: {
-              label: 'Adresregel 2',
-              autocomplete: 'address-line2',
-              type: 'textfield',
-              key: 'addressLine2',
-              input: true,
-            },
-          },
-          addressLine3: {
-            title: 'Adresregel 3',
-            key: 'addressLine3',
-            icon: 'home',
-            schema: {
-              label: 'Adresregel 3',
-              autocomplete: 'address-line3',
-              type: 'textfield',
-              key: 'addressLine3',
-              input: true,
-            },
-          },
-          postalcode: {
-            title: 'Postcode',
-            key: 'postalcode',
-            icon: 'home',
-            schema: {
-              label: 'Postcode',
-              autocomplete: 'postal-code',
-              type: 'textfield',
-              key: 'postalcode',
-              input: true,
-              inputMask: '9999 AA',
-              validateOn: 'blur',
-              validate: {
-                customMessage: 'Invalid Postcode',
-                // Dutch postcode has 4 numbers and 2 letters (case insensitive). Letter combinations SS, SD and SA
-                // are not used due to the Nazi-association.
-                // See https://stackoverflow.com/a/17898538/7146757 and https://nl.wikipedia.org/wiki/Postcodes_in_Nederland
-                pattern: '^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$',
-              },
-            },
-          },
-          email: {
-            title: 'E-mailadres',
-            key: 'email',
-            icon: 'at',
-            schema: {
-              label: 'E-mailadres',
-              autocomplete: 'email',
-              tableView: true,
-              key: 'email',
-              type: 'email',
-              input: true,
-            },
-          },
-          phoneNumber: {
-            title: 'Telefoonnummer',
-            key: 'phoneNumber',
-            icon: 'phone-square',
-            schema: {
-              label: 'Telefoonnummer',
-              autocomplete: 'tel',
-              tableView: true,
-              key: 'phoneNumber',
-              type: 'phoneNumber',
-              input: true,
-            },
-          },
-          url: {
-            title: 'Website',
-            key: 'url',
-            icon: 'link',
-            schema: {
-              label: 'Website',
-              autocomplete: 'url',
-              type: 'textfield',
-              key: 'url',
-              input: true,
-            },
-          },
-        },
-      },
-      custom_deprecated: {
-        title: 'Verouderd',
-        weight: 15,
-        components: {
-          postcode: true,
-          coSign: true,
-        },
-      },
-    },
+    builder: formMode === 'appointment' ? APPOINTMENT_BUILDER_DATA : DEFAULT_BUILDER_DATA,
     noDefaultSubmitButton: true,
     language: 'nl',
     i18n: {
