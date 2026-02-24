@@ -39,7 +39,7 @@
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.1",
     "design-token-editor": "^0.6.0",
-    "django-cookie-consent": "^0.6.0",
+    "django-cookie-consent": "^1.0.0",
     "dompurify": "^3.2.4",
     "feelin": "^3.1.0",
     "flatpickr": "^4.6.9",

@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import requests_mock
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.formio.components.utils import salt_location_message
@@ -169,6 +170,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         m_get_solo.return_value = KadasterApiConfig(
             bag_service=ServiceFactory.build(
                 api_root="https://bag/api/",
+                auth_type=AuthTypes.no_auth,
             )
         )
         endpoint = reverse("api:geo:address-autocomplete")

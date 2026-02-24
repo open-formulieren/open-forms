@@ -17,7 +17,7 @@ class TimelineLogProxyResource(resources.ModelResource):
 
     class Meta:
         model = TimelineLogProxy
-        fields = ("user", "related_object", "message", "timestamp")
+        fields = ("user", "related_object", "event", "message", "timestamp")
 
     def dehydrate_user(self, obj: TimelineLogProxy) -> str:
         return obj.fmt_user

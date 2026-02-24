@@ -1,4 +1,4 @@
-from collections.abc import Collection
+from collections.abc import Collection, Iterable
 from typing import Any
 
 from django.urls import reverse
@@ -9,6 +9,7 @@ from glom import T as Target, glom
 
 from openforms.authentication.service import AuthAttribute
 from openforms.submissions.models import Submission
+from openforms.typing import StrOrPromise
 from stuf.stuf_bg.checks import check_config as check_stuf_bg_config
 from stuf.stuf_bg.client import get_client
 from stuf.stuf_bg.constants import FieldChoices
@@ -97,7 +98,7 @@ class StufBgPrefill(BasePlugin):
     requires_auth = (AuthAttribute.bsn,)
 
     @staticmethod
-    def get_available_attributes() -> list[tuple[str, str]]:
+    def get_available_attributes() -> Iterable[tuple[str, StrOrPromise]]:
         return FieldChoices.choices
 
     @staticmethod

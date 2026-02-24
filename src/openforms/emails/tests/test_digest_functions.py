@@ -509,6 +509,7 @@ class BrokenConfigurationTests(TestCase):
             search_service=None,
             bag_service=ServiceFactory.build(
                 api_root="https://bag/api/",
+                auth_type=AuthTypes.no_auth,
             ),
         ),
     )

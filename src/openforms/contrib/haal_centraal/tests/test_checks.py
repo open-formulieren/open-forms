@@ -4,6 +4,7 @@ from django.test import SimpleTestCase
 from django.utils.translation import gettext as _
 
 import requests_mock
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.models import GlobalConfiguration
@@ -29,6 +30,7 @@ class ConfigCheckTests:
         self.config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=self.version,
         )

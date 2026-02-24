@@ -266,13 +266,13 @@ export const SelectDocumentType = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    const fieldsetTitle = canvas.getByRole('heading', {name: 'Documenttypen (Tonen)'});
+    const fieldsetTitle = canvas.getByRole('heading', {name: 'Documenttypen'});
     expect(fieldsetTitle).toBeVisible();
-    await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
+    await userEvent.click(fieldsetTitle);
 
     const catalogueSelect = canvas.getByLabelText('Catalogus');
     await rsSelect(catalogueSelect, 'Catalogus 1');
-    const pdfSelect = canvas.getByLabelText('Informatieobjecttype inzendings-PDF');
+    const pdfSelect = canvas.getAllByLabelText('Informatieobjecttype inzendings-PDF')[0];
     await rsSelect(pdfSelect, 'Test PDF');
 
     const testForm = await canvas.findByTestId('test-form');
@@ -311,9 +311,9 @@ export const DisplayPersistedConfiguration = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    const fieldsetTitle = canvas.getByRole('heading', {name: 'Documenttypen (Tonen)'});
+    const fieldsetTitle = canvas.getByRole('heading', {name: 'Documenttypen'});
     expect(fieldsetTitle).toBeVisible();
-    await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
+    await userEvent.click(fieldsetTitle);
 
     expect(await canvas.findByText('Catalogus 1')).toBeVisible();
     expect(await canvas.findByText('Test PDF')).toBeVisible();
@@ -342,8 +342,8 @@ export const DraftDocumentTypesFeatureFlagOn = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    const fieldsetTitle = canvas.getByRole('heading', {name: 'Documenttypen (Tonen)'});
+    const fieldsetTitle = canvas.getByRole('heading', {name: 'Documenttypen'});
     expect(fieldsetTitle).toBeVisible();
-    await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
+    await userEvent.click(fieldsetTitle);
   },
 };

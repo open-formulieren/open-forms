@@ -8,7 +8,7 @@ The backend collects information to send an e-mail to the user for resuming, for
 example.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from unittest.mock import patch
 from urllib.parse import urljoin
 
@@ -169,7 +169,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
 
         self.assertIn(expected_resume_url, email.body)
 
-        datetime_removed = datetime(2021, 11, 22, 12, 00, 00, tzinfo=timezone.utc)
+        datetime_removed = datetime(2021, 11, 22, 12, 00, 00, tzinfo=UTC)
 
         self.assertIn(defaulttags.date(datetime_removed), email.body)
 

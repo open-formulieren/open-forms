@@ -7,6 +7,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 import requests_mock
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
@@ -81,6 +82,7 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
         mock_brp_config_get_solo.return_value = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
                 api_root="https://personen/api/",
+                auth_type=AuthTypes.no_auth,
             )
         )
         with (TEST_FILES / "op_2_children.json").open("r") as infile:

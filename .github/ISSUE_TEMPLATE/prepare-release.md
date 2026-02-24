@@ -40,6 +40,7 @@ assignees: sergei-maertens
     - [ ] `openforms.contrib.kvk`
     - [ ] `openforms.contrib.objects_api`
     - [ ] `openforms.contrib.reference_lists`
+    - [ ] `stuf.stuf_zds.tests.test_client`
 
   - Email digest
 

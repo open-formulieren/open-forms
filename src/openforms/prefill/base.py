@@ -9,7 +9,7 @@ from openforms.submissions.models import Submission
 from openforms.submissions.models.submission_value_variable import (
     SubmissionValueVariable,
 )
-from openforms.typing import JSONEncodable, JSONObject
+from openforms.typing import JSONEncodable, JSONObject, StrOrPromise
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from .constants import IdentifierRoles
@@ -53,7 +53,7 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     options: SerializerCls = EmptyOptions
 
     @staticmethod
-    def get_available_attributes() -> Iterable[tuple[str, str]]:
+    def get_available_attributes() -> Iterable[tuple[str, StrOrPromise]]:
         """
         Return a choice list of available attributes this plugin offers.
         """

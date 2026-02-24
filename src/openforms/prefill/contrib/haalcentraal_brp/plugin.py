@@ -1,4 +1,4 @@
-from collections.abc import Collection, Mapping
+from collections.abc import Collection, Iterable, Mapping
 from typing import Any
 
 from django.urls import reverse
@@ -16,6 +16,7 @@ from openforms.contrib.haal_centraal.clients.brp import BRPClient
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.submissions.models import Submission
+from openforms.typing import StrOrPromise
 
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
@@ -55,7 +56,7 @@ class HaalCentraalPrefill(BasePlugin):
     requires_auth = (AuthAttribute.bsn,)
 
     @staticmethod
-    def get_available_attributes() -> list[tuple[str, str]]:
+    def get_available_attributes() -> Iterable[tuple[str, StrOrPromise]]:
         AttributesCls = get_attributes_cls()
         return AttributesCls.choices
 

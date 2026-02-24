@@ -1,10 +1,9 @@
 import os
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 from django.test import TestCase
-from django.utils import timezone
 
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -107,7 +106,7 @@ class BookAppointmentTests(TestCase):
 
     def test_plugin_invocation(self):
         submission = SubmissionFactory.create(form__is_appointment_form=True)
-        start = datetime(2023, 8, 1, 12, 0, 15).replace(tzinfo=timezone.utc)
+        start = datetime(2023, 8, 1, 12, 0, 15).replace(tzinfo=UTC)
         appointment = AppointmentFactory.create(
             submission=submission,
             plugin="demo",

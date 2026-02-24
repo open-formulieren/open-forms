@@ -124,9 +124,11 @@ class ConjointConstraint(models.CheckConstraint):
         self, *, fields: Collection[str], name: str, violation_error_message=None
     ):
         self.fields = fields
-        check = self._build_check(fields)
+        condition = self._build_check(fields)
         super().__init__(
-            name=name, check=check, violation_error_message=violation_error_message
+            name=name,
+            condition=condition,
+            violation_error_message=violation_error_message,
         )
 
     def _build_check(self, fields: Collection[str]):
@@ -137,7 +139,7 @@ class ConjointConstraint(models.CheckConstraint):
 
     def deconstruct(self):
         path, args, kwargs = super().deconstruct()
-        kwargs.pop("check")
+        kwargs.pop("condition")
         kwargs["fields"] = self.fields
         return path, args, kwargs
 

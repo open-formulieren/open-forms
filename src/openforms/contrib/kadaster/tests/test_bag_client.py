@@ -6,6 +6,7 @@ from django.test import SimpleTestCase
 
 import requests
 import requests_mock
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.formio.components.utils import salt_location_message
@@ -30,6 +31,7 @@ class BAGClientTests(SimpleTestCase):
             search_service=None,  # unused, but would otherwise execute queries
             bag_service=ServiceFactory.build(
                 api_root="https://bag/api/",
+                auth_type=AuthTypes.no_auth,
             ),
         )
         patcher = patch(

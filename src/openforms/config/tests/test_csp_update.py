@@ -1,5 +1,7 @@
 from django.test import TestCase, override_settings
 
+import csp.constants
+
 from ..models import CSPSetting
 
 
@@ -13,7 +15,13 @@ def parse_csp_policy(header_value):
     return csp_values
 
 
-@override_settings(CSP_REPORT_ONLY=False)
+@override_settings(
+    CONTENT_SECURITY_POLICY={
+        "DIRECTIVES": {"default-src": [csp.constants.SELF]},
+        "REPORT_URI": "/foo",
+    },
+    CONTENT_SECURITY_POLICY_REPORT_ONLY={},
+)
 class CSPUpdateTests(TestCase):
     def test_middleware_applies_cspsetting_models(self):
         CSPSetting.objects.create(directive="img-src", value="http://foo.bar")

@@ -9,6 +9,7 @@ from uuid import uuid4
 from django.test import TestCase, override_settings, tag
 
 from privates.test import temp_private_root
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.constants import AuthAttribute
@@ -1976,7 +1977,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
         return_value=HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
-                api_root="http://localhost:5010/haalcentraal/api/brp/"
+                api_root="http://localhost:5010/haalcentraal/api/brp/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=BRPVersions.v20,
         ),
@@ -2197,7 +2199,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
         return_value=HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
-                api_root="http://localhost:5010/haalcentraal/api/brp/"
+                api_root="http://localhost:5010/haalcentraal/api/brp/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=BRPVersions.v20,
         ),
@@ -2340,7 +2343,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
         return_value=HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
-                api_root="http://localhost:5010/haalcentraal/api/brp/"
+                api_root="http://localhost:5010/haalcentraal/api/brp/",
+                auth_type=AuthTypes.no_auth,
             ),
             brp_personen_version=BRPVersions.v20,
         ),

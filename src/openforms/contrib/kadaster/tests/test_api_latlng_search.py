@@ -7,6 +7,7 @@ import requests_mock
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from zgw_consumers.constants import AuthTypes
 
 from openforms.appointments.contrib.qmatic.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -24,6 +25,7 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
 
         cls.kadaster_service = ServiceFactory.build(
             api_root="https://kadaster/",
+            auth_type=AuthTypes.no_auth,
         )
 
     def setUp(self):

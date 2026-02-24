@@ -138,7 +138,6 @@ linkcheck_anchors_ignore_for_url = [
 extlinks = {
     "backend": ("https://github.com/open-formulieren/open-forms/issues/%s", "#%s"),
     "sdk": ("https://github.com/open-formulieren/open-forms-sdk/issues/%s", "#%s"),
-    "cve": ("https://cve.mitre.org/cgi-bin/cvename.cgi?name=%s", "%s"),
     "ghsa": (
         "https://github.com/open-formulieren/open-forms/security/advisories/%s",
         "%s",

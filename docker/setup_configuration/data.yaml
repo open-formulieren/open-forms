@@ -54,21 +54,21 @@ zgw_consumers:
     api_type: zrc
     auth_type: zgw
     client_id: test_client_id
-    secret: test_secret_key
+    secret: c134912d-583a-447c-8c04-4e2597f26436
   - identifier: documenten-test
     label: Documenten API test
     api_root: http://openzaak-web.local:8000/documenten/api/v1/
     api_type: drc
     auth_type: zgw
     client_id: test_client_id
-    secret: test_secret_key
+    secret: c134912d-583a-447c-8c04-4e2597f26436
   - identifier: catalogi-test
     label: Catalogi API test
     api_root: http://openzaak-web.local:8000/catalogi/api/v1/
     api_type: ztc
     auth_type: zgw
     client_id: test_client_id
-    secret: test_secret_key
+    secret: c134912d-583a-447c-8c04-4e2597f26436
 
 objects_api_config_enable: True
 objects_api:

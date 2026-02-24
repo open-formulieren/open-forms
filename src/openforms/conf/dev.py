@@ -3,6 +3,8 @@ import os
 import sys
 import warnings
 
+from bs4 import XMLParsedAsHTMLWarning
+from jwt import InsecureKeyLengthWarning
 from maykin_common.config import config
 
 os.environ.setdefault("DEBUG", "yes")
@@ -135,7 +137,9 @@ DISABLE_CSP_RATELIMITING = config("DISABLE_CSP_RATELIMITING", default=False)
 if DISABLE_CSP_RATELIMITING:
     MIDDLEWARE.remove("csp.contrib.rate_limiting.RateLimitedCSPMiddleware")
 
-CSP_EXCLUDE_URL_PREFIXES += ("/dev/", "/_healthz/")
+for _setting in (CONTENT_SECURITY_POLICY, CONTENT_SECURITY_POLICY_REPORT_ONLY):
+    if _setting and "EXCLUDE_URL_PREFIXES" in _setting:
+        _setting["EXCLUDE_URL_PREFIXES"] += ("/dev/", "/_healthz/")
 
 # None of the authentication backends require two-factor authentication.
 if config("DISABLE_2FA", default=True):  # pragma: no cover
@@ -147,6 +151,16 @@ warnings.filterwarnings(
     r"DateTimeField .* received a naive datetime",
     RuntimeWarning,
     r"django\.db\.models\.fields",
+)
+
+warnings.filterwarnings(
+    "error",
+    category=InsecureKeyLengthWarning,
+)
+
+warnings.filterwarnings(
+    "error",
+    category=XMLParsedAsHTMLWarning,
 )
 
 # Override settings with local settings.

@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import date, datetime, time, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from decimal import Decimal
 
 from django.test import SimpleTestCase
@@ -308,7 +308,7 @@ class TypeMappingTests(SimpleTestCase):
             "selectBoxes": ["option1", "option2"],
             "licenseplate": "1-AAA-BB",
             "select2": date(2021, 12, 29),
-            "select3": datetime(2021, 12, 29, 7, 15).replace(tzinfo=timezone.utc),
+            "select3": datetime(2021, 12, 29, 7, 15).replace(tzinfo=UTC),
         }
 
         for component in all_components:

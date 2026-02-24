@@ -6,7 +6,7 @@ coverage
 django-test-migrations
 django-simple-certmanager[testutils]
 django-webtest
-factory-boy
+factory-boy<3.3.3  # type-hints are messed up in 3.3.3
 freezegun
 maykin-common[axes,mfa,pdf,vcr]
 playwright

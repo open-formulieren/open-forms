@@ -55,7 +55,7 @@ class ObjectsAPIConfigurationStepTests(TestCase):
             api_type=APITypes.drc,
             auth_type=AuthTypes.zgw,
             client_id="test_client_id",
-            secret="test_secret_key",
+            secret="c134912d-583a-447c-8c04-4e2597f26436",
         )
         cls.catalogi_service = ServiceFactory.create(
             slug="catalogi-test",
@@ -64,7 +64,7 @@ class ObjectsAPIConfigurationStepTests(TestCase):
             api_type=APITypes.ztc,
             auth_type=AuthTypes.zgw,
             client_id="test_client_id",
-            secret="test_secret_key",
+            secret="c134912d-583a-447c-8c04-4e2597f26436",
         )
 
     def test_execute_success(self):

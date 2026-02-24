@@ -108,9 +108,9 @@ export const AuthenticationPluginWithOptionsModal = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    const authTitle = canvas.getByRole('heading', {name: 'Inloggen (Tonen)'});
+    const authTitle = canvas.getByRole('heading', {name: 'Inloggen'});
     expect(authTitle).toBeVisible();
-    await userEvent.click(within(authTitle).getByRole('link', {name: '(Tonen)'}));
+    await userEvent.click(authTitle);
 
     await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
 

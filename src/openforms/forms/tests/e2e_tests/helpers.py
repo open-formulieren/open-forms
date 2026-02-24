@@ -18,13 +18,11 @@ async def open_fieldset(page: Page, title: str) -> None:
     Toggle a fieldset from collapsed to open state.
 
     :arg page: The playwright page to find elements in.
-    :arg title: The heading/title of the fieldset displayed on the page, without the
-      'Show' string.
+    :arg title: The heading/title of the fieldset displayed on the page, inside the
+      summary element.
     """
-    toggle_link = page.get_by_role("heading", level=2, name=title).get_by_role(
-        "link", name="Show"
-    )
-    await toggle_link.click()
+    toggle_summary = page.get_by_role("heading", level=2, name=title)
+    await toggle_summary.click()
 
 
 async def open_component_options_modal(page: Page, label: str, exact: bool = False):

@@ -81,7 +81,7 @@ paths:
               $ref: '#/components/schemas/CancelAppointmentInput'
         required: true
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '204':
           description: No response body
@@ -137,7 +137,7 @@ paths:
               $ref: '#/components/schemas/Appointment'
         required: true
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '201':
           content:
@@ -495,7 +495,7 @@ paths:
       tags:
       - authentication
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '204':
           description: No response body
@@ -1281,7 +1281,7 @@ paths:
               $ref: '#/components/schemas/TemporaryFileUpload'
         required: true
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -3692,7 +3692,7 @@ paths:
       tags:
       - prefill
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -4598,7 +4598,7 @@ paths:
       tags:
       - submissions
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -4635,7 +4635,7 @@ paths:
               $ref: '#/components/schemas/Submission'
         required: true
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '201':
           content:
@@ -4741,7 +4741,7 @@ paths:
       tags:
       - submissions
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -4810,7 +4810,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SubmissionStep'
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -4933,7 +4933,7 @@ paths:
             schema:
               $ref: '#/components/schemas/FormData'
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -5030,7 +5030,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SubmissionStep'
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '204':
           description: No response body
@@ -5118,7 +5118,7 @@ paths:
       tags:
       - submissions
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -5160,7 +5160,7 @@ paths:
       tags:
       - submissions
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -5280,7 +5280,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SubmissionCompletion'
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -5393,7 +5393,7 @@ paths:
               $ref: '#/components/schemas/SubmissionSuspension'
         required: true
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '201':
           content:
@@ -5470,7 +5470,7 @@ paths:
       tags:
       - submissions
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       deprecated: true
       responses:
         '200':
@@ -5565,7 +5565,7 @@ paths:
               $ref: '#/components/schemas/Submission'
         required: true
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -5657,7 +5657,7 @@ paths:
       tags:
       - submissions
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -5699,7 +5699,7 @@ paths:
               $ref: '#/components/schemas/EmailVerification'
         required: true
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '201':
           content:
@@ -5744,7 +5744,7 @@ paths:
               $ref: '#/components/schemas/VerifyEmail'
         required: true
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -5794,7 +5794,7 @@ paths:
       tags:
       - submissions
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '200':
           content:
@@ -5814,10 +5814,10 @@ paths:
               $ref: '#/components/headers/Content-Language'
     delete:
       operationId: submissions_files_destroy
-      description: "Delete temporary file upload by the uploader. \n\nThis is called\
-        \ by the default Form.io file upload widget. \n\nAccess to this view requires\
-        \ an active form submission. Unclaimed temporary files automatically expire\
-        \ after {expire_days} day(s). "
+      description: "Delete temporary file upload by the uploader. \n\nThis is called
+        by the default Form.io file upload widget. \n\nAccess to this view requires
+        an active form submission. Unclaimed temporary files automatically expire
+        after {expire_days} day(s). "
       summary: Delete temporary file upload
       parameters:
       - in: query
@@ -5841,7 +5841,7 @@ paths:
       tags:
       - submissions
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       responses:
         '204':
           description: No response body
@@ -6059,7 +6059,7 @@ paths:
               $ref: '#/components/schemas/ValidationInput'
         required: true
       security:
-      - cookieAuth: []
+      - anonCSRFCookieAuth: []
       - {}
       responses:
         '200':
@@ -11105,6 +11105,10 @@ components:
       - amount
       - productId
   securitySchemes:
+    anonCSRFCookieAuth:
+      type: apiKey
+      in: cookie
+      name: openforms_sessionid
     cookieAuth:
       type: apiKey
       in: cookie

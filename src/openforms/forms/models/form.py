@@ -14,7 +14,7 @@ from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from django.db.models import F, Window
 from django.db.models.functions import RowNumber
-from django.db.models.manager import BaseManager
+from django.db.models.manager import Manager
 from django.utils.formats import localize
 from django.utils.timezone import localtime
 from django.utils.translation import gettext_lazy as _, override
@@ -125,7 +125,7 @@ class Form(models.Model):
     auto_login_authentication_backend = models.CharField(
         _("automatic login"), max_length=UNIQUE_ID_MAX_LENGTH, blank=True
     )
-    auth_backends: BaseManager[FormAuthenticationBackend]
+    auth_backends: Manager[FormAuthenticationBackend]
 
     # appointments
     is_appointment = models.BooleanField(

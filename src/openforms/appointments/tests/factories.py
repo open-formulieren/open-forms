@@ -1,4 +1,4 @@
-from django.utils import timezone
+from datetime import UTC
 
 import factory
 import factory.fuzzy
@@ -38,7 +38,7 @@ class AppointmentFactory(factory.django.DjangoModelFactory):
     plugin = "demo"
     submission = factory.SubFactory(SubmissionFactory, form__is_appointment_form=True)
     location = "some-location-id"
-    datetime = factory.Faker("future_datetime", tzinfo=timezone.utc)
+    datetime = factory.Faker("future_datetime", tzinfo=UTC)
 
     class Meta:
         model = "appointments.Appointment"

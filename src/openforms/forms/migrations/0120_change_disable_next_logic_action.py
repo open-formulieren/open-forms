@@ -35,7 +35,7 @@ def add_form_step_uuid_to_disable_next_actions(apps: StateApps, _):
         "formlogic_set", "formvariable_set", "formstep_set"
     )
     rules_to_update = set()
-    for form in forms.iterator():
+    for form in forms.iterator(chunk_size=10):
         # We don't care about deleted forms
         if form._is_deleted:
             continue
@@ -169,7 +169,7 @@ def remove_form_step_uuid_from_disable_next_actions(apps: StateApps, _):
 
     forms = Form.objects.prefetch_related("formlogic_set")
     rules_to_update = set()
-    for form in forms.iterator():
+    for form in forms.iterator(chunk_size=10):
         # We don't care about deleted forms
         if form._is_deleted:
             continue
