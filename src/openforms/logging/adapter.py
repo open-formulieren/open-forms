@@ -290,7 +290,9 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
             "submission_uuid": str(submission_uuid),
             "is_delegated": bool(is_delegated),
         }:
-            submission = Submission.objects.get(uuid=submission_uuid)
+            # submission is typically obtained via PK due to the transaction not yet
+            # being committed.
+            assert submission is not None
             user = (
                 User.objects.get(username=username)
                 if (username := event_dict.get("username"))
