@@ -1132,6 +1132,250 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertNotIn("date", data["step"]["data"])
 
 
+@tag("gh-6001", "gh-6005")
+class MultipleRulesTargettingSameComponentVisibilityTests(
+    SubmissionsMixin, APITestCase
+):
+    def test_first_rule_triggers_second_does_not_must_not_clear_value(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "values": [
+                            {"value": "a", "label": "A"},
+                            {"value": "b", "label": "B"},
+                        ],
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "show-when-a",
+                        "hidden": True,
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+        # just a single rule does not reproduce the issue (!).
+        # Rule 1: show the textfield when 'a' is selected in the radio
+        show_textfield_action = {
+            "formStep": None,
+            "component": "show-when-a",
+            "action": {
+                "type": "property",
+                "property": {"value": "hidden", "type": "bool"},
+                "value": {},
+                "state": False,
+            },
+        }
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "radio"}, "a"]},
+            actions=[show_textfield_action],
+        )
+        # Rule 2: show the textfield when a non-sense value is selected in the radio
+        # (never triggers!)
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "radio"}, "nonsense-value"]},
+            actions=[show_textfield_action],
+        )
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            logic_check_endpoint,
+            {"data": {"radio": "a", "show-when-a": "do-not-clear-me"}},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+
+        self.assertFalse(
+            data["step"]["formStep"]["configuration"]["components"][1]["hidden"]
+        )
+        self.assertEqual(data["step"]["data"], {})
+
+    def test_second_rule_triggers_first_does_not_must_not_clear_value(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "values": [
+                            {"value": "a", "label": "A"},
+                            {"value": "b", "label": "B"},
+                        ],
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "show-when-a",
+                        "hidden": True,
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+        # just a single rule does not reproduce the issue (!).
+        # Rule 1: show the textfield when a non-sense value is selected in the radio
+        # (never triggers!)
+        show_textfield_action = {
+            "formStep": None,
+            "component": "show-when-a",
+            "action": {
+                "type": "property",
+                "property": {"value": "hidden", "type": "bool"},
+                "value": {},
+                "state": False,
+            },
+        }
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "radio"}, "nonsense-value"]},
+            actions=[show_textfield_action],
+        )
+        # Rule 2: show the textfield when 'a' is selected in the radio
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "radio"}, "a"]},
+            actions=[show_textfield_action],
+        )
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            logic_check_endpoint,
+            {"data": {"radio": "a", "show-when-a": "do-not-clear-me"}},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+
+        self.assertFalse(
+            data["step"]["formStep"]["configuration"]["components"][1]["hidden"]
+        )
+        self.assertEqual(data["step"]["data"], {})
+
+    def test_rules_flip_from_hidden_to_visible_state_should_not_clear_value(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "values": [
+                            {"value": "a", "label": "A"},
+                            {"value": "b", "label": "B"},
+                        ],
+                    },
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "hide-when-a-but-show-when-checkbox-checked",
+                        "hidden": False,
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+
+        def _build_action(make_hidden: bool):
+            return {
+                "formStep": None,
+                "component": "hide-when-a-but-show-when-checkbox-checked",
+                "action": {
+                    "type": "property",
+                    "property": {"value": "hidden", "type": "bool"},
+                    "value": {},
+                    "state": make_hidden,
+                },
+            }
+
+        # Hide (and clear) the textfield when 'a' is selected in the radio
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "radio"}, "a"]},
+            actions=[_build_action(make_hidden=True)],
+        )
+        # Expected to trigger: the value of the textfield gets cleared because of the
+        # above rule.
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [{"var": "hide-when-a-but-show-when-checkbox-checked"}, ""]
+            },
+            actions=[
+                {
+                    "formStep": None,
+                    "component": "hide-when-a-but-show-when-checkbox-checked",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "validate.required", "type": "bool"},
+                        "value": {},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        # Show the textfield when the checkbox is checked
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"var": "checkbox"},
+            actions=[_build_action(make_hidden=False)],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            logic_check_endpoint,
+            {
+                "data": {
+                    "radio": "a",
+                    "checkbox": True,
+                    "hide-when-a-but-show-when-checkbox-checked": "do-not-clear-me",
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+
+        textfield_component = data["step"]["formStep"]["configuration"]["components"][2]
+        self.assertFalse(textfield_component["hidden"])
+        self.assertTrue(textfield_component["validate"]["required"])
+        self.assertEqual(data["step"]["data"], {})
+
+
 def is_valid_expression(expr: dict):
     try:
         JsonLogicValidator()(expr)
