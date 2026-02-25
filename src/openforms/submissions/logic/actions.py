@@ -177,6 +177,9 @@ class PropertyAction(ActionOperation):
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
+        # handled directly inside eval
+        if self.property_name == "hidden":
+            return None
         if self.component not in configuration:
             return None
         component = configuration[self.component]
@@ -191,17 +194,34 @@ class PropertyAction(ActionOperation):
     ) -> DataMapping | None:
         # To avoid doing unnecessary work, only apply clear-on-hide logic for components
         # for which their action sets the "hidden" property to True.
-        if not (self.property_name == "hidden" and self.value):
+        if self.property_name != "hidden":
             return None
 
-        # Note that this can happen when the action applies to a component of a
-        # different step than we are currently evaluating. We don't have to do
+        # we now know that we're making the component visible or hidden, but we're not
+        # guaranteed that we're actually changing the visibility state at all! For that
+        # we need to check at the current component configuration, and that requires
+        # first checking if the component is in the current step's configuration. The
+        # component *can* be absent if it refers to a component in another step than
+        # the one we are currently evaluating. We don't have to do
         # anything in this case, because the clear-on-hide behaviour of that
         # component will be handled once the user has reached that step.
         if self.component not in configuration:
             return None
 
         component = configuration[self.component]
+        was_hidden = component.get("hidden", False)
+        should_be_hidden = self.value is True
+
+        # apply the state mutation immediately, so that it's visible to follow up
+        # actions and rules operating on the same component. This obsoletes the
+        # apply method/side-effects.
+        component[self.property_name] = self.value
+
+        # is the visibility state going from visible to hidden? Only then the
+        # clear-on-hide should be triggered.
+        require_clear_on_hide_processing = not was_hidden and should_be_hidden
+        if not require_clear_on_hide_processing:
+            return None
 
         # Process the visibility of the component. We want to process the component
         # itself, not try to iterate over its children, so we create a 'fake'

@@ -211,7 +211,9 @@ def iter_evaluate_rules(
             # as components can be hidden by default and shown when a logic rule is
             # triggered
             if not triggered:
-                _handle_clear_on_hide(rule, data, configuration, initial_data)
+                _handle_clear_on_hide_for_untriggered_rule(
+                    rule, data, configuration, initial_data
+                )
                 continue
 
             for operation in rule.action_operations:
@@ -227,7 +229,7 @@ def iter_evaluate_rules(
                 yield operation
 
 
-def _handle_clear_on_hide(
+def _handle_clear_on_hide_for_untriggered_rule(
     rule: FormLogic,
     data: FormioData,
     configuration: FormioConfigurationWrapper,
@@ -248,10 +250,15 @@ def _handle_clear_on_hide(
             continue
 
         component = configuration[operation.component]
+        was_hidden = component.get("hidden", False)
+        # note - this is an inversion because this codepath triggers when the rule
+        # does *not* trigger!
+        should_be_hidden = operation.value is False
 
-        # To avoid doing unnecessary work, only call ``process_visibility`` when the
-        # component is actually hidden.
-        if not component.get("hidden", False):
+        # is the visibility state going from visible to hidden? Only then the
+        # clear-on-hide should be triggered.
+        require_clear_on_hide_processing = not was_hidden and should_be_hidden
+        if not require_clear_on_hide_processing:
             continue
 
         # Process the visibility of the component. We want to process the component
