@@ -32,6 +32,113 @@ their settings mechanism and now allows for distinct enforced/report-only config
 
 We'll work on bridging this gap, possibly through an upgrade to Django 6.0.
 
+3.5.0-alpha.2 (2026-02-25)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Upgrade procedure
+-----------------
+
+To upgrade to 3.5, please:
+
+* ⚠️ If you haven't done so yet, please review the manual intervention mentioned in the
+  3.4.2 release notes.
+* ⚠️ Ensure that your Helm charts don't use the ``bin/check_celery_worker_liveness.py``
+  script, since it has been removed. You can read about the new health check mechanisms
+  here: :ref:`installation_health_checks`.
+
+* ⚠️ Logic rules using the "disable next" action may need extra attention.
+
+  .. warning::
+
+      In preparation for upcoming logic performance improvements, we changed the
+      "disable next" logic action. The form designers now have to specify on which step
+      they want to execute this action. We included a migration to automatically
+      populate this field for all existing actions. Unfortunately, in some cases we
+      cannot guarantee that the assigned step is correct, i.e. no change in behaviour
+      is observed when filling out a form. Therefore, form designers/maintainers are
+      asked to check these cases manually. The script below outputs a list of logic
+      rules (with their corresponding form) that need manual attention. Use the flag
+      ``--show-all`` to output a complete list of all affected rules.
+
+      .. code-block:: bash
+
+          # in the container via ``docker exec`` or ``kubectl exec``:
+          python /app/bin/check_disable_next_logic_action.py
+
+Deprecations
+------------
+
+**Content-Security-Policy configuration**
+
+The ``CSP_REPORT_ONLY`` environment variable is deprecated. The upstream library changed
+their settings mechanism and now allows for distinct enforced/report-only configurations.
+
+We'll work on bridging this gap, possibly through an upgrade to Django 6.0.
+
+New features
+------------
+
+* Performance:
+
+  - [:backend:`2409`] Circular dependencies detection is introduced for the logic rules:
+    such dependencies as ``ruleA -> ruleB -> ruleC -> ruleA`` are now caught and the validation error
+    is raised.
+
+    .. note::
+
+        This change is turned off by default, it can be enabled by checking "Enable new logic rule evaluation"
+        feature flag.
+
+    .. note::
+
+        The validation and reordering of logic rules happens on form save, so modiying indiviual logic rules might
+        result in out-of-sync analysis.
+
+  - [:backend:`2409`] Show form steps in logic rule overview in the admin.
+
+    .. note::
+
+        This change is turned off by default, it can be enabled by checking "Enable new logic rule evaluation"
+        feature flag.
+
+* [:backend:`5753`] Public references for submissions now are deterministic and can be generated based on the
+  configurable template. With configured ZGW registration Open Forms can now create cases using the generated public reference as
+  a case identifier.
+* [:backend:`5972`] Added support for sending e-mails via the Office365 Graph API.
+* [:backend:`5358`] Added span/trace IDs to log events for correlation and supported linking to traces from logs
+  in Grafana.
+* Translations:
+
+  - [:backend:`5820`] Added components configuration for contact details to the Appointments.
+  - Supported formatjs during runtime for the custom frontend translations.
+
+Bugfixes
+--------
+
+* [:backend:`5790`] Fixed displaying green "live" check for forms in maintenance mode in the admin.
+* [:backend:`5942`] Fixed failed Worldline payments not being updatable to success state.
+* [:backend:`5685`] Fixed an infinite logic check loop when the new renderer is used
+  and components are hidden that have both ``clearOnHide`` enabled and a default value.
+
+Project maintenance
+-------------------
+
+* [:backend:`5351`] Refactored ``logevent`` module to structlog adapters.
+* Updated dependencies to their latest versions:
+
+  - maykin-common
+  - django-health-check
+  - sqlparse
+
+* [:backend:`5946`] Dropped ``zgw-consumers-oas`` dependency and rewrite mock-based tests as VCR tests.
+* Included more checks to the PR checklist template.
+* Removed ``npm`` from the production image, so it won't be affected by vulnerabilities which can be
+  found in the npm dependencies.
+* [:backend:`5946`] Bumped Django to 5.2 and updated all related dependencies.
+* Optimized flower memory usage
+
 3.4.2 (2026-02-20)
 ==================
 
