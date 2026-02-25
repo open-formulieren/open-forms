@@ -44,7 +44,7 @@
   "+d6rRS": [
     {
       "type": 0,
-      "value": "This rule will be executed on step(s): "
+      "value": "Deze regel wordt uitgevoerd in stap(pen): "
     },
     {
       "type": 1,
@@ -3831,7 +3831,7 @@
   "TPy506": [
     {
       "type": 0,
-      "value": "Enable new logic rule evaluation"
+      "value": "Nieuwe logica-regelevaluatie inschakelen"
     }
   ],
   "TR5xSY": [
@@ -6288,7 +6288,7 @@
   "lyU7fP": [
     {
       "type": 0,
-      "value": "Enabling this will analyze logic rules and re-order them according to their dependency on other logic rules (happens when the form is saved). Each rule will be automatically assigned to one or more steps on which it will be executed."
+      "value": "Als je dit inschakelt, worden logische regels geanalyseerd en opnieuw gerangschikt op basis van hun afhankelijkheid van andere logische regels (gebeurt wanneer het formulier wordt opgeslagen). Elke regel wordt automatisch toegewezen aan een of meer stappen waarop deze wordt uitgevoerd."
     }
   ],
   "m/NVtu": [
