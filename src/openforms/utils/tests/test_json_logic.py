@@ -1,3 +1,4 @@
+from collections import UserDict
 from collections.abc import Sequence
 from datetime import date
 from functools import cache
@@ -9,8 +10,10 @@ from django.test import SimpleTestCase, override_settings
 import requests
 from freezegun import freeze_time
 from json_logic.typing import JSON
+from unittest_parametrize import ParametrizedTestCase, param, parametrize
 
 from openforms.tests.utils import can_connect
+from openforms.typing import JSONValue
 
 from ..json_logic import generate_rule_description, partially_evaluate_json_logic
 
@@ -20,6 +23,38 @@ def _load_shared_tests() -> list[Annotated[list[JSON], 3]]:
     response = requests.get("https://jsonlogic.com/tests.json")
     items = response.json()
     return [item for item in items if isinstance(item, list)]
+
+
+class _NestedDict(UserDict):
+    """
+    Basic data structure to enable nested data access of dictionaries through the use of
+    keys with period(s).
+    """
+
+    data: dict[str, JSONValue]
+
+    def __getitem__(self, key: str) -> JSONValue:
+        """
+        Get a value from the internal dictionary. Keys are expected to be strings,
+        and can contain periods to indicate a nested structure.
+        """
+        value = self.data
+        for k in key.split("."):
+            assert isinstance(value, dict)
+            value = value[k]
+        return value
+
+    def __contains__(self, key: object) -> bool:
+        """
+        Check if a key is present in the internal dictionary. Gets called via
+        ``NestedData().get(...)``.
+        """
+        assert isinstance(key, str)
+        try:
+            self[key]
+        except KeyError:
+            return False
+        return True
 
 
 @override_settings(LANGUAGE_CODE="en")
@@ -157,46 +192,61 @@ class RuleDescriptionTests(SimpleTestCase):
                 self.assertEqual(output, expected_description)
 
 
-class PartialEvaluationTests(SimpleTestCase):
+class PartialEvaluationTests(ParametrizedTestCase, SimpleTestCase):
     def test_simple_string(self):
         result, resolved = partially_evaluate_json_logic(
             "I am a string", {"some": "data"}
         )
         self.assertEqual(result, "I am a string")
-        self.assertEqual(resolved, True)
+        self.assertTrue(resolved)
 
-    def test_single_variable(self):
-        with self.subTest("variable available"):
-            expression = {"var": "some"}
-            data = {"some": "data"}
+    @parametrize(
+        ("expression", "data", "expected"),
+        [
+            param({"var": "some"}, {"some": "data"}, "data", id="simple"),
+            param(
+                {"var": "some.nested"},
+                _NestedDict({"some": {"nested": "data"}}),
+                "data",
+                id="nested_data",
+            ),
+            param({"var": ["some"]}, {"some": "data"}, "data", id="list"),
+            param(
+                {"var": {"var": "foo"}},
+                {"foo": "bar", "bar": "data"},
+                "data",
+                id="nested_var",
+            ),
+        ],
+    )
+    def test_single_variable_resolves(self, expression, data, expected):
+        result, resolved = partially_evaluate_json_logic(expression, data)
+        self.assertEqual(result, expected)
+        self.assertTrue(resolved)
 
-            result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, "data")
-            self.assertEqual(resolved, True)
-
-        with self.subTest("variable missing"):
-            expression = {"var": "some"}
-            data = {}
-
-            result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, {"var": "some"})
-            self.assertEqual(resolved, False)
-
-        with self.subTest("nested variable missing"):
-            expression = {"var": "some.nested"}
-            data = {"some": {"other": "data"}}
-
-            result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, None)
-            self.assertEqual(resolved, True)
-
-        with self.subTest("with list"):
-            expression = {"var": ["some"]}
-            data = {"some": "data"}
-
-            result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, "data")
-            self.assertEqual(resolved, True)
+    @parametrize(
+        ("expression", "data", "expected"),
+        [
+            param({"var": "some"}, {}, {"var": ["some"]}, id="simple"),
+            param(
+                {"var": "some.nested"},
+                _NestedDict({"some": {"other": "data"}}),
+                {"var": ["some.nested"]},
+                id="nested_data",
+            ),
+            param({"var": ["some"]}, {}, {"var": ["some"]}, id="list"),
+            param(
+                {"var": {"var": "foo"}},
+                {"foo": "bar"},
+                {"var": ["bar"]},
+                id="nested_var",
+            ),
+        ],
+    )
+    def test_single_variable_does_not_resolve(self, expression, data, expected):
+        result, resolved = partially_evaluate_json_logic(expression, data)
+        self.assertEqual(result, expected)
+        self.assertFalse(resolved)
 
     def test_multiple_variables(self):
         with self.subTest("variables available"):
@@ -204,16 +254,16 @@ class PartialEvaluationTests(SimpleTestCase):
             data = {"foo": 2, "bar": 3}
 
             result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, 6)
-            self.assertEqual(resolved, True)
+            self.assertEqual(result, 1 + 2 + 3)
+            self.assertTrue(resolved)
 
         with self.subTest("variable missing"):
             expression = {"+": [1, {"var": "foo"}, {"var": "bar"}]}
             data = {"foo": 2}
 
             result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, {"+": [1, 2, {"var": "bar"}]})
-            self.assertEqual(resolved, False)
+            self.assertEqual(result, {"+": [1, 2, {"var": ["bar"]}]})
+            self.assertFalse(resolved)
 
     def test_conditional_with_missing_variable(self):
         expression = {
@@ -225,8 +275,8 @@ class PartialEvaluationTests(SimpleTestCase):
         data = {"bar": "some value"}
 
         result, resolved = partially_evaluate_json_logic(expression, data)
-        self.assertEqual(result, {"and": [{"<": [{"var": "foo"}, 10]}, True]})
-        self.assertEqual(resolved, False)
+        self.assertEqual(result, {"and": [{"<": [{"var": ["foo"]}, 10]}, True]})
+        self.assertFalse(resolved)
 
     def test_if(self):
         with self.subTest("all variables available"):
@@ -241,7 +291,7 @@ class PartialEvaluationTests(SimpleTestCase):
 
             result, resolved = partially_evaluate_json_logic(expression, data)
             self.assertEqual(result, "variables are equal")
-            self.assertEqual(resolved, True)
+            self.assertTrue(resolved)
 
         with self.subTest("missing variables"):
             expression = {
@@ -258,13 +308,13 @@ class PartialEvaluationTests(SimpleTestCase):
                 result,
                 {
                     "if": [
-                        {"==": [{"var": "foo"}, 3]},
-                        {"var": "baz"},
+                        {"==": [{"var": ["foo"]}, 3]},
+                        {"var": ["baz"]},
                         "Just a string",
                     ]
                 },
             )
-            self.assertEqual(resolved, False)
+            self.assertFalse(resolved)
 
         with self.subTest("with elseif/then"):
             expression = {
@@ -280,7 +330,7 @@ class PartialEvaluationTests(SimpleTestCase):
 
             result, resolved = partially_evaluate_json_logic(expression, data)
             self.assertEqual(result, "b")
-            self.assertEqual(resolved, True)
+            self.assertTrue(resolved)
 
     def test_negation_operator(self):
         with self.subTest("variable available"):
@@ -289,42 +339,49 @@ class PartialEvaluationTests(SimpleTestCase):
 
             result, resolved = partially_evaluate_json_logic(expression, data)
             self.assertEqual(result, False)
-            self.assertEqual(resolved, True)
+            self.assertTrue(resolved)
 
         with self.subTest("variable missing"):
-            expression = {"!": {"==": [{"var": "foo"}, {"var": "bar"}]}}
+            expression = {"!": [{"==": [{"var": "foo"}, {"var": "bar"}]}]}
             data = {"bar": "a"}
 
             result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, {"!": {"==": [{"var": "foo"}, "a"]}})
-            self.assertEqual(resolved, False)
+            self.assertEqual(result, {"!": [{"==": [{"var": ["foo"]}, "a"]}]})
+            self.assertFalse(resolved)
 
-    def test_date_operators(self):
-        with self.subTest("no variables in expression"):
-            expression = {"+": [{"date": "2026-01-01"}, {"duration": "P1M"}]}
-            data = {}
+    @parametrize(
+        ("expression", "data", "expected"),
+        [
+            param(
+                {"+": [{"date": "2026-01-01"}, {"duration": "P1M"}]},
+                {},
+                "2026-02-01",
+                id="no_variables",
+            ),
+            param(
+                {"+": [{"date": {"var": "foo"}}, {"duration": {"var": "bar"}}]},
+                {"foo": "2026-01-01", "bar": "P1M"},
+                "2026-02-01",
+                id="all_variables",
+            ),
+        ],
+    )
+    def test_date_operators_resolves(self, expression, data, expected):
+        result, resolved = partially_evaluate_json_logic(expression, data)
+        self.assertEqual(result.isoformat(), expected)
+        self.assertTrue(resolved)
 
-            result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result.isoformat(), "2026-02-01")
-            self.assertEqual(resolved, True)
-
-        with self.subTest("all variables available"):
-            expression = {"+": [{"date": {"var": "foo"}}, {"duration": {"var": "bar"}}]}
-            data = {"foo": "2026-01-01", "bar": "P1M"}
-
-            result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result.isoformat(), "2026-02-01")
-            self.assertEqual(resolved, True)
-
+    def test_date_operators_do_not_resolve(self):
         with self.subTest("variable in duration missing"):
             expression = {"+": [{"date": {"var": "foo"}}, {"duration": {"var": "bar"}}]}
             data = {"foo": "2026-01-01"}
 
             result, resolved = partially_evaluate_json_logic(expression, data)
             self.assertEqual(
-                result, {"+": [{"date": "2026-01-01"}, {"duration": {"var": "bar"}}]}
+                result,
+                {"+": [{"date": ["2026-01-01"]}, {"duration": [{"var": ["bar"]}]}]},
             )
-            self.assertEqual(resolved, False)
+            self.assertFalse(resolved)
 
         with self.subTest("variables missing"):
             expression = {
@@ -340,12 +397,12 @@ class PartialEvaluationTests(SimpleTestCase):
                 result,
                 {
                     "+": [
-                        {"date": {"var": "foo"}},
-                        {"rdelta": [0, {"var": "months"}, 1]},
+                        {"date": [{"var": ["foo"]}]},
+                        {"rdelta": [0, {"var": ["months"]}, 1]},
                     ]
                 },
             )
-            self.assertEqual(resolved, False)
+            self.assertFalse(resolved)
 
         with self.subTest("with conditional and today operator"):
             expression = {
@@ -358,8 +415,8 @@ class PartialEvaluationTests(SimpleTestCase):
 
             with freeze_time("2024-01-01T12:00:00"):
                 result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, True)
-            self.assertEqual(resolved, True)
+            self.assertTrue(result)
+            self.assertTrue(resolved)
 
         with self.subTest("with conditional and missing variable"):
             expression = {
@@ -375,12 +432,16 @@ class PartialEvaluationTests(SimpleTestCase):
                 result,
                 {
                     ">": [
-                        {"date": "2002-01-01"},
-                        {"date": {"-": [{"var": "someDate"}, {"duration": "P24Y"}]}},
+                        {"date": ["2002-01-01"]},
+                        {
+                            "date": [
+                                {"-": [{"var": ["someDate"]}, {"duration": ["P24Y"]}]}
+                            ]
+                        },
                     ]
                 },
             )
-            self.assertEqual(resolved, False)
+            self.assertFalse(resolved)
 
         with self.subTest("with the second part of the conditional resolving"):
             expression = {
@@ -402,12 +463,12 @@ class PartialEvaluationTests(SimpleTestCase):
                 result,
                 {
                     ">": [
-                        {"date": {"var": "dateOfBirth"}},
+                        {"date": [{"var": ["dateOfBirth"]}]},
                         date(2002, 2, 23),
                     ]
                 },
             )
-            self.assertEqual(resolved, False)
+            self.assertFalse(resolved)
 
     def test_reduce(self):
         with self.subTest("all variables available"):
@@ -422,7 +483,7 @@ class PartialEvaluationTests(SimpleTestCase):
 
             result, resolved = partially_evaluate_json_logic(expression, data)
             self.assertEqual(result, 15)
-            self.assertEqual(resolved, True)
+            self.assertTrue(resolved)
 
         with self.subTest("with nested-data access"):
             expression = {
@@ -436,7 +497,7 @@ class PartialEvaluationTests(SimpleTestCase):
 
             result, resolved = partially_evaluate_json_logic(expression, data)
             self.assertEqual(result, 6)
-            self.assertEqual(resolved, True)
+            self.assertTrue(resolved)
 
         with self.subTest("nested reduce with missing variable outside reduce"):
             expression = {
@@ -454,23 +515,23 @@ class PartialEvaluationTests(SimpleTestCase):
             data = {"foo": [1, 2, 3, 4, 5]}
 
             result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, {"+": [15, {"var": "bar"}]})
-            self.assertEqual(resolved, False)
+            self.assertEqual(result, {"+": [15, {"var": ["bar"]}]})
+            self.assertFalse(resolved)
 
-        with self.subTest("nested reduce with missing variable"):
+        with self.subTest("nested reduce with nested missing variable"):
             expression = {
                 "+": [
                     {
                         "reduce": [
-                            {"var": "foo"},
+                            {"var": {"var": "foo"}},
                             {"+": [{"var": "current"}, {"var": "accumulator"}]},
                             0,
                         ]
                     },
-                    {"var": "bar"},
+                    {"var": "baz"},
                 ]
             }
-            data = {"bar": 5}
+            data = {"baz": 5, "foo": "bar"}
 
             result, resolved = partially_evaluate_json_logic(expression, data)
             self.assertEqual(
@@ -479,7 +540,7 @@ class PartialEvaluationTests(SimpleTestCase):
                     "+": [
                         {
                             "reduce": [
-                                {"var": "foo"},
+                                {"var": ["bar"]},
                                 {"+": [{"var": "current"}, {"var": "accumulator"}]},
                                 0,
                             ]
@@ -488,7 +549,7 @@ class PartialEvaluationTests(SimpleTestCase):
                     ]
                 },
             )
-            self.assertEqual(resolved, False)
+            self.assertFalse(resolved)
 
     def test_map(self):
         with self.subTest("variable available"):
@@ -497,7 +558,7 @@ class PartialEvaluationTests(SimpleTestCase):
 
             result, resolved = partially_evaluate_json_logic(expression, data)
             self.assertEqual(result, [2, 3, 4])
-            self.assertEqual(resolved, True)
+            self.assertTrue(resolved)
 
         with self.subTest("missing variable"):
             expression = {"map": [{"var": "foo"}, {"+": [{"var": "amount"}, 1]}]}
@@ -505,44 +566,58 @@ class PartialEvaluationTests(SimpleTestCase):
 
             result, resolved = partially_evaluate_json_logic(expression, data)
             self.assertEqual(
-                result, {"map": [{"var": "foo"}, {"+": [{"var": "amount"}, 1]}]}
+                result, {"map": [{"var": ["foo"]}, {"+": [{"var": "amount"}, 1]}]}
             )
-            self.assertEqual(resolved, False)
+            self.assertFalse(resolved)
 
-    def test_merge(self):
-        with self.subTest("variable available"):
-            expression = {"merge": [[1, 2], [3, 4], {"var": "foo"}]}
-            data = {"foo": 5}
-
-            result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, [1, 2, 3, 4, 5])
-            self.assertEqual(resolved, True)
-
-        with self.subTest("variable missing"):
-            expression = {"merge": [[1, 2], [3, 4], {"var": "foo"}]}
+        with self.subTest("no variable"):
+            expression = {"map": [[1, 2, 3], {"+": [{"var": ""}, 1]}]}
             data = {}
 
             result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, {"merge": [[1, 2], [3, 4], {"var": "foo"}]})
-            self.assertEqual(resolved, False)
+            self.assertEqual(result, [2, 3, 4])
+            self.assertTrue(resolved)
 
-        with self.subTest("variable inside sub array"):
-            expression = {"merge": [[1, 2], [3, 4, {"var": "foo"}]]}
-            data = {"foo": 5}
+    @parametrize(
+        ("expression", "data", "expected"),
+        [
+            param(
+                {"merge": [[1, 2], [3, 4], {"var": "foo"}]},
+                {"foo": 5},
+                [1, 2, 3, 4, 5],
+                id="simple",
+            ),
+            param(
+                {"merge": [[1, 2], [3, 4, {"var": "foo"}]]},
+                {"foo": 5},
+                [1, 2, 3, 4, 5],
+                id="inside_sub_array",
+            ),
+        ],
+    )
+    def test_merge_resolves(self, expression, data, expected):
+        result, resolved = partially_evaluate_json_logic(expression, data)
+        self.assertEqual(result, expected)
+        self.assertTrue(resolved)
 
-            result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertEqual(result, [1, 2, 3, 4, 5])
-            self.assertEqual(resolved, True)
-
-        with self.subTest("variable inside sub array missing"):
-            expression = {"merge": [[1, 2], [3, 4, {"var": "foo"}, 6], {"var": "bar"}]}
-            data = {"bar": 7}
-
-            result, resolved = partially_evaluate_json_logic(expression, data)
-            # Note that ideally this should still show `{"var": "foo"}` instead of
-            # `None`, but this requires recursively processing the sub arrays, which
-            # seems like a rare edge case. Form designers could rewrite the expression
-            # to: {"merge": [[1, 2], [3, 4], {"var": "foo"}, 6, {"var": "bar"}]}, which
-            # does support partial evaluation.
-            self.assertEqual(result, [1, 2, 3, 4, None, 6, 7])
-            self.assertEqual(resolved, True)
+    @parametrize(
+        ("expression", "data", "expected"),
+        [
+            param(
+                {"merge": [[1, 2], [3, 4], {"var": "foo"}]},
+                {},
+                {"merge": [[1, 2], [3, 4], {"var": ["foo"]}]},
+                id="simple",
+            ),
+            param(
+                {"merge": [[1, 2], [3, 4, {"var": "foo"}, 6], {"var": "bar"}]},
+                {"bar": 7},
+                {"merge": [[1, 2], [3, 4, {"var": ["foo"]}, 6], 7]},
+                id="inside_sub_array",
+            ),
+        ],
+    )
+    def test_merge_variables_does_not_resolve(self, expression, data, expected):
+        result, resolved = partially_evaluate_json_logic(expression, data)
+        self.assertEqual(result, expected)
+        self.assertFalse(resolved)

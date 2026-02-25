@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 from json_logic import jsonLogic
+from json_logic.meta.expressions import (
+    JSONLogicExpression,
+    destructure,
+)
 from json_logic.typing import JSON
 
 from openforms.typing import VariableValue
@@ -23,12 +27,13 @@ def partially_evaluate_json_logic(
     The following operations are not supported (by `jsonLogic`): 'filter', 'all',
     'some', 'none', and 'substr'.
 
-    An example:
+    An example (note that we apply a normalization to wrap all arguments of an operator
+    in a list):
     >>> expression, resolved = partially_evaluate_json_logic(
     ...     {"+": [{"var": "foo"}, {"var": "bar"}]}, {"foo": 1}
     ... )
     >>> print(expression)
-    {"+": [1, {"var": "bar"}]}
+    {"+": [1, {"var": ["bar"]}]}
 
     :param expression: JSON logic expression.
     :param data: Available data, which should support nested-data access through the use
@@ -37,51 +42,57 @@ def partially_evaluate_json_logic(
       indicating whether the expression was fully resolved. Note that it could return a
       date or datetime object if the expression was evalutated completely.
     """
+    if isinstance(expression, list):
+        fully_resolved = True
+        expression_new = []
+        for expr in expression:
+            expr_new, resolved = partially_evaluate_json_logic(expr, data)
+            expression_new.append(expr_new)
+            fully_resolved = fully_resolved and resolved
+        return expression_new, fully_resolved
+
     if not isinstance(expression, dict):
         return expression, True
 
-    assert len(expression) == 1, "Expression must only have a single operator"
-    operator, argument = next(iter(expression.items()))
+    normalized = JSONLogicExpression.normalize(expression)
+    assert isinstance(normalized, dict)
+    operator, argument = destructure(normalized)
 
     match operator:
         case "var":
-            # Argument could be a list, in which case `jsonLogic` just selects the first
-            # value.
-            if isinstance(argument, list):
-                argument = argument[0]
-            assert isinstance(argument, str)
+            # With the expression being normalized, it has to be a list.
+            assert isinstance(argument, list)
 
-            top_level = argument.split(".")[0]
-            # Return the value if the top-level key is available, otherwise the
-            # expression should stay as is.
-            if top_level in data:
-                return data.get(argument), True
+            # It could be a nested expression
+            argument_new, resolved = partially_evaluate_json_logic(argument, data)
+
+            # Return the value the argument was resolved and the key is available,
+            # otherwise the expression should stay as is.
+            assert isinstance(argument_new, list)
+            if resolved and argument_new[0] in data:
+                assert isinstance(argument_new[0], str)
+                return data.get(argument_new[0]), True
             else:
-                return {operator: argument}, False
+                return {operator: argument_new}, False
         case "map" | "reduce":
             # Map and reduce operations have a fixed order of arguments:
             # 1. Variable operation (must be an array)
             # 2. Operation to perform on each array item(s)
             # 3. Initial value (for reduce only, and cannot be a variable expression)
             assert isinstance(argument, list)
-            var_operation = argument[0]
-            # Note that one could create a logic rule with a list of numbers (e.g.
-            # `[1,2,3]`) instead of a variable operation, but that doesn't make much
-            # sense to do. The desired computed value should just be inserted directly
-            # in that case.
-            assert (
-                isinstance(var_operation, dict)
-                and len(var_operation) == 1
-                and "var" in var_operation
+            var_operation_new, resolved = partially_evaluate_json_logic(
+                argument[0], data
             )
-            assert isinstance(var_operation["var"], str)
             # Both operations only take a single variable, which we cannot substitute
             # with the actual value, because `jsonLogic` will see dict array items as
             # operations. So, we either evaluate the whole expression, or we do nothing.
-            if var_operation["var"] not in data:
-                return {operator: argument}, False
+            if resolved:
+                return jsonLogic(expression, data), True
             else:
-                return jsonLogic({operator: argument}, data), True
+                # Mismatch between the `JSON` type of `json_logic`, and our own
+                # `JSONValue`
+                argument[0] = var_operation_new  # pyright: ignore[reportCallIssue, reportArgumentType]
+                return expression, False  # pyright: ignore[reportReturnType]
         case "rdelta":
             assert isinstance(argument, list)
             # The argument of the "rdelta" operator is a list, which can contain
@@ -104,22 +115,14 @@ def partially_evaluate_json_logic(
         case "today":
             # For the "today" operator, the arguments are ignored, so we just return an
             # unchanged expression, which can be evaluated at the end.
-            return {operator: argument}, True
+            # Mismatch between the `JSON` type of `json_logic`, and our own
+            # `JSONValue`
+            return expression, True  # pyright: ignore[reportReturnType]
         case _:
             pass
 
-    if isinstance(argument, dict):
-        # The argument is another operator
-        argument_new, fully_resolved = partially_evaluate_json_logic(argument, data)
-    else:
-        assert isinstance(argument, list), "argument not a list"
-
-        fully_resolved = True
-        argument_new = []
-        for arg in argument:
-            arg_new, resolved = partially_evaluate_json_logic(arg, data)
-            argument_new.append(arg_new)
-            fully_resolved = fully_resolved and resolved
+    # Evaluate the argument
+    argument_new, fully_resolved = partially_evaluate_json_logic(argument, data)
 
     if fully_resolved:
         return jsonLogic({operator: argument_new}, data), True
