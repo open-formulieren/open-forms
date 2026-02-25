@@ -2,6 +2,7 @@ import uuid
 
 from django.test import override_settings
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -1733,22 +1734,30 @@ class FormLogicAPIGraphValidationTests(APITestCase):
             {
                 "name": "0.jsonLogicTrigger",
                 "code": "cycles-detected",
-                "reason": "Rule contains cycles through variable(s): self.",
+                "reason": _(
+                    "Rule contains cycles through variable(s): {variables}."
+                ).format(variables="self"),
             },
             {
                 "name": "1.jsonLogicTrigger",
                 "code": "cycles-detected",
-                "reason": "Rule contains cycles through variable(s): bar, baz, foo.",
+                "reason": _(
+                    "Rule contains cycles through variable(s): {variables}."
+                ).format(variables="bar, baz, foo"),
             },
             {
                 "name": "2.jsonLogicTrigger",
                 "code": "cycles-detected",
-                "reason": "Rule contains cycles through variable(s): bar, baz, foo.",
+                "reason": _(
+                    "Rule contains cycles through variable(s): {variables}."
+                ).format(variables="bar, baz, foo"),
             },
             {
                 "name": "3.jsonLogicTrigger",
                 "code": "cycles-detected",
-                "reason": "Rule contains cycles through variable(s): bar, baz, foo.",
+                "reason": _(
+                    "Rule contains cycles through variable(s): {variables}."
+                ).format(variables="bar, baz, foo"),
             },
         ]
         self.assertEqual(response.json()["invalidParams"], expected_error)
