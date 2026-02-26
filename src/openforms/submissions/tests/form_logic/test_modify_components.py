@@ -1206,3 +1206,53 @@ class ComponentModificationTests(TestCase):
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_unsaved=True)
         self.assertEqual(data["container.textfield"], "")
+
+    def test_change_component_to_hidden_with_new_logic_evaluation(self):
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "hidden": False,
+                    },
+                ]
+            },
+        )
+        rule = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": "textfield",
+                    "action": {
+                        "name": "Hide textfield",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        rule.form_steps.set([step])
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission, form_step=step
+        )
+
+        configuration = evaluate_form_logic(
+            submission, submission_step, FormioData({"checkbox": True})
+        )
+
+        self.assertTrue(configuration["components"][1]["hidden"])
