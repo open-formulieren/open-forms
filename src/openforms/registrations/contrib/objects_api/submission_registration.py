@@ -452,7 +452,10 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         log = logger.bind(submission_uuid=str(submission.uuid))
         state = submission.load_submission_value_variables_state()
 
-        all_values = state.get_data(include_static_variables=True)
+        all_values = state.get_data(
+            include_static_variables=True,
+            include_unsaved=True,
+        )
         # update with the registration static values - a special subtype of static
         # variables. They're possibly derived from user input.
         registration_vars = state.get_static_data(other_registry=variables_registry)
