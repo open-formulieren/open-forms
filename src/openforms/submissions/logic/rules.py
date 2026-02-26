@@ -124,7 +124,7 @@ def get_rules_to_evaluate_new(
 
     # Note that this an OrderedModelQuerySet, so the logic order is already resolved
     # here
-    return current_step.form_step.logic_rules.iterator()
+    return current_step.form_step.logic_rules.all()
 
 
 def get_current_step(submission: Submission) -> SubmissionStep | None:
