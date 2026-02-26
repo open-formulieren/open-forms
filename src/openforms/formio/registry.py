@@ -167,6 +167,9 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
           evaluation of the conditional.
         :param ignore_hidden_property: Whether to ignore the "hidden" property during
           further processing of its children.
+        :param original_input_data: The input data from the frontend when called through
+          the check logic endpoint. Used to restore values when flipping visibility
+          states.
         """
 
     @staticmethod
@@ -271,6 +274,9 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
           evaluation of the conditional.
         :param ignore_hidden_property: Whether to ignore the "hidden" property during
           further processing of its children.
+        :param original_input_data: The input data from the frontend when called through
+          the check logic endpoint. Used to restore values when flipping visibility
+          states.
         """
         if (component_type := component["type"]) not in self:
             return

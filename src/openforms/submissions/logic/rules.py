@@ -212,19 +212,13 @@ def _handle_clear_on_hide_for_untriggered_rule(
             continue
 
         component = configuration[operation.component]
-        # # is the visibility state going from visible to hidden? Only then the
-        # # clear-on-hide should be triggered.
-        # require_clear_on_hide_processing = not was_hidden and should_be_hidden
-        # if not require_clear_on_hide_processing:
-        #     continue
-
         # Process the visibility of the component. We want to process the component
         # itself, not try to iterate over its children, so we create a 'fake'
         # configuration.
         # Note that we cannot pass ``parent_hidden=True`` here, and skip conditional
         # evaluation (like in ``PropertyAction.eval``), because a component can be
         # affected by a simple conditional which makes it visible.
-        # Additionally (see #6001), when a component flips back to visible after being
+        # Additionally (see #6005), when a component flips back to visible after being
         # hidden and having its value cleared before, we need to restore the original
         # input data, so we must always call this.
         process_visibility(

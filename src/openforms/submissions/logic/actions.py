@@ -121,7 +121,7 @@ class PropertyAction(ActionOperation):
         original_input_data: FormioData,
     ) -> DataMapping | None:
         # To avoid doing unnecessary work, only apply clear-on-hide logic for components
-        # for which their action sets the "hidden" property to True.
+        # for which their action touches the "hidden" property.
         if self.property != "hidden":
             return None
 
@@ -137,21 +137,12 @@ class PropertyAction(ActionOperation):
             return None
 
         component = configuration[self.component]
-        was_hidden = component.get("hidden", False)
         should_be_hidden = self.value is True
 
         # apply the state mutation immediately, so that it's visible to follow up
         # actions and rules operating on the same component. This obsoletes the
         # apply method/side-effects.
         component[self.property] = self.value
-
-        has_visibility_change = was_hidden ^ should_be_hidden
-        # is the visibility state changing? Then we need to do additional processing.
-        # * visible -> hidden: values need to be cleared based on clearOnHide
-        # * hidden -> visible: possibly original input data needs to be restored, as the
-        #   value may have been cleared by earlier visible -> hidden actions.
-        if not has_visibility_change:
-            return None
 
         # Process the visibility of the component. We want to process the component
         # itself, not try to iterate over its children, so we create a 'fake'

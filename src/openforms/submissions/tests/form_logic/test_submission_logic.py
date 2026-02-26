@@ -1132,7 +1132,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertNotIn("date", data["step"]["data"])
 
 
-@tag("gh-6001", "gh-6005")
+@tag("gh-6005")
 class MultipleRulesTargettingSameComponentVisibilityTests(
     SubmissionsMixin, APITestCase
 ):
@@ -1192,6 +1192,9 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             },
         )
 
+        # this assumes there has been a call before with `radio: a` that results in
+        # show-when-a becoming visible, after which the user enters a value for that
+        # field.
         response = self.client.post(
             logic_check_endpoint,
             {"data": {"radio": "a", "show-when-a": "do-not-clear-me"}},
@@ -1338,6 +1341,148 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         )
         # Expected to trigger: the value of the textfield gets cleared because of the
         # above rule.
+        # NOTE: this rule is illegal in 3.5.x due to the cyclic reference. When
+        # backporting, make sure it targets another component.
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [{"var": "hide-when-a-but-show-when-checkbox-checked"}, ""]
+            },
+            actions=[
+                {
+                    "formStep": None,
+                    "component": "hide-when-a-but-show-when-checkbox-checked",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "validate.required", "type": "bool"},
+                        "value": {},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        # Show the textfield when the checkbox is checked
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"var": "checkbox"},
+            actions=[
+                _build_visibility_action(
+                    key="hide-when-a-but-show-when-checkbox-checked", make_hidden=False
+                ),
+                _build_visibility_action(key="fieldset", make_hidden=False),
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            logic_check_endpoint,
+            {
+                "data": {
+                    "radio": "a",
+                    "checkbox": True,
+                    "hide-when-a-but-show-when-checkbox-checked": "do-not-clear-me",
+                    "nestedTextfield": "do-not-clear-me",
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+
+        with self.subTest("textfield"):
+            textfield_component = data["step"]["formStep"]["configuration"][
+                "components"
+            ][2]
+            self.assertFalse(textfield_component["hidden"])
+            self.assertTrue(textfield_component["validate"]["required"])
+
+        with self.subTest("fieldset"):
+            fieldset_component = data["step"]["formStep"]["configuration"][
+                "components"
+            ][3]
+            self.assertFalse(fieldset_component["hidden"])
+            self.assertFalse(fieldset_component["components"][0]["hidden"])
+
+        with self.subTest("data mutations"):
+            self.assertEqual(data["step"]["data"], {})
+
+    def test_rules_flip_from_hidden_to_visible_state_should_not_clear_value_inverse(
+        self,
+    ):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "values": [
+                            {"value": "a", "label": "A"},
+                            {"value": "b", "label": "B"},
+                        ],
+                    },
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "hide-when-a-but-show-when-checkbox-checked",
+                        "hidden": True,
+                    },
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "hidden": True,
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "nestedTextfield",
+                                "hidden": False,
+                            }
+                        ],
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+
+        def _build_visibility_action(key: str, make_hidden: bool):
+            return {
+                "formStep": None,
+                "component": key,
+                "action": {
+                    "type": "property",
+                    "property": {"value": "hidden", "type": "bool"},
+                    "value": {},
+                    "state": make_hidden,
+                },
+            }
+
+        # Hide (and clear) the textfield when 'a' is selected in the radio
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "radio"}, "a"]},
+            actions=[
+                _build_visibility_action(
+                    key="hide-when-a-but-show-when-checkbox-checked", make_hidden=True
+                ),
+                _build_visibility_action(key="fieldset", make_hidden=True),
+            ],
+        )
+        # Expected to trigger: the value of the textfield gets cleared because of the
+        # above rule.
+        # NOTE: this rule is illegal in 3.5.x due to the cyclic reference. When
+        # backporting, make sure it targets another component.
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={
