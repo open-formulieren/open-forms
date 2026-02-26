@@ -50,7 +50,9 @@ def get_variables_for_context(
     """
     state = submission.load_submission_value_variables_state()
     data = state.get_data(
-        include_static_variables=True, is_confirmation_email=is_confirmation_email
+        include_static_variables=True,
+        include_unsaved=True,
+        is_confirmation_email=is_confirmation_email,
     ).data
 
     if settings.ESCAPE_REGISTRATION_OUTPUT:
