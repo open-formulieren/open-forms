@@ -91,7 +91,7 @@ class CosignState:
         """
         from .form_logic import check_submission_logic
 
-        check_submission_logic(self.submission)
+        check_submission_logic(self.submission, reset_configuration_wrapper=False)
 
         # use the complete view on the Formio component tree(s)
         configuration_wrapper = self.submission.total_configuration_wrapper

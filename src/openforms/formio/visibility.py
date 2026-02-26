@@ -91,6 +91,7 @@ def process_visibility(
     parent_hidden: bool = False,
     get_evaluation_data: GetEvaluationData | None = None,
     components_to_ignore_hidden: set[str] | None = None,
+    original_input_data: FormioData | None = None,
 ) -> None:
     """
     Process the visibility of the components inside the configuration, by checking if
@@ -135,6 +136,18 @@ def process_visibility(
             # If we don't have an initial value available, just use the empty value.
             data[key] = initial_data.get(key) or get_component_empty_value(component)
 
+        # if it's visible, check if any input data should be restored because earlier
+        # logic rules may have cleared it (visible -> hidden -> visible)
+        if not hidden and original_input_data is not None:
+            if data.get(key) != (original_value := original_input_data.get(key)):
+                # restore the value from the original input data - likely there was a
+                # sequence in logic that lead to the data being cleared because of hidden
+                # state, while a subsequent action makes the component visible again. In
+                # that case, the frontend will have the component visible and data can
+                # be entered, which needs to be grabbed from the initial data to avoid
+                # wiping user input.
+                data[key] = original_value
+
         # Apply the visibility to children components, if applicable
         register.apply_visibility(
             component,
@@ -144,4 +157,5 @@ def process_visibility(
             parent_hidden=hidden,
             ignore_hidden_property=ignore_hidden_property,
             get_evaluation_data=get_evaluation_data,
+            original_input_data=original_input_data,
         )

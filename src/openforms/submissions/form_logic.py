@@ -287,6 +287,7 @@ def evaluate_conditional_logic(
 def check_submission_logic(
     submission: Submission,
     current_step: SubmissionStep | None = None,
+    reset_configuration_wrapper: bool = True,
 ) -> None:
     if getattr(submission, "_form_logic_evaluated", False):
         return
@@ -330,6 +331,9 @@ def check_submission_logic(
             mutation.apply(step, configuration)
 
     # Note that the total configuration wrapper is a cached property, so we need to
-    # reset to ensure we are not operating on outdated configurations later
-    submission._total_configuration_wrapper = None
+    # reset to ensure we are not operating on outdated configurations later.
+    # XXX: not sure why this is necessary - removing it entirely doesn't seem to break
+    # any tests? Check with Viktor.
+    if reset_configuration_wrapper:
+        submission._total_configuration_wrapper = None
     submission._form_logic_evaluated = True
