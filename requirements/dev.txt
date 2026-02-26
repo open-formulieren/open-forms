@@ -1350,7 +1350,7 @@ urllib3==2.6.3
     #   sentry-sdk
     #   types-requests
     #   vcrpy
-uwsgi==2.0.26
+uwsgi==2.0.31
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
