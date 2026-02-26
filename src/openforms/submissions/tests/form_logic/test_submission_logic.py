@@ -1296,15 +1296,27 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                         "key": "hide-when-a-but-show-when-checkbox-checked",
                         "hidden": False,
                     },
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "hidden": False,
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "nestedTextfield",
+                                "hidden": False,
+                            }
+                        ],
+                    },
                 ]
             },
         )
         form_step = form.formstep_set.get()
 
-        def _build_action(make_hidden: bool):
+        def _build_visibility_action(key: str, make_hidden: bool):
             return {
                 "formStep": None,
-                "component": "hide-when-a-but-show-when-checkbox-checked",
+                "component": key,
                 "action": {
                     "type": "property",
                     "property": {"value": "hidden", "type": "bool"},
@@ -1317,7 +1329,12 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "radio"}, "a"]},
-            actions=[_build_action(make_hidden=True)],
+            actions=[
+                _build_visibility_action(
+                    key="hide-when-a-but-show-when-checkbox-checked", make_hidden=True
+                ),
+                _build_visibility_action(key="fieldset", make_hidden=True),
+            ],
         )
         # Expected to trigger: the value of the textfield gets cleared because of the
         # above rule.
@@ -1343,7 +1360,12 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={"var": "checkbox"},
-            actions=[_build_action(make_hidden=False)],
+            actions=[
+                _build_visibility_action(
+                    key="hide-when-a-but-show-when-checkbox-checked", make_hidden=False
+                ),
+                _build_visibility_action(key="fieldset", make_hidden=False),
+            ],
         )
 
         submission = SubmissionFactory.create(form=form)
@@ -1363,6 +1385,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     "radio": "a",
                     "checkbox": True,
                     "hide-when-a-but-show-when-checkbox-checked": "do-not-clear-me",
+                    "nestedTextfield": "do-not-clear-me",
                 }
             },
         )
@@ -1370,10 +1393,22 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
 
-        textfield_component = data["step"]["formStep"]["configuration"]["components"][2]
-        self.assertFalse(textfield_component["hidden"])
-        self.assertTrue(textfield_component["validate"]["required"])
-        self.assertEqual(data["step"]["data"], {})
+        with self.subTest("textfield"):
+            textfield_component = data["step"]["formStep"]["configuration"][
+                "components"
+            ][2]
+            self.assertFalse(textfield_component["hidden"])
+            self.assertTrue(textfield_component["validate"]["required"])
+
+        with self.subTest("fieldset"):
+            fieldset_component = data["step"]["formStep"]["configuration"][
+                "components"
+            ][3]
+            self.assertFalse(fieldset_component["hidden"])
+            self.assertFalse(fieldset_component["components"][0]["hidden"])
+
+        with self.subTest("data mutations"):
+            self.assertEqual(data["step"]["data"], {})
 
 
 def is_valid_expression(expr: dict):

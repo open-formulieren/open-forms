@@ -152,6 +152,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
+        original_input_data: FormioData | None = None,
     ) -> None:
         """
         Apply (conditional) visibility of this component. This routine should be
@@ -255,6 +256,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
+        original_input_data: FormioData | None = None,
     ) -> None:
         """
         Apply (conditional) visibility of this component. This routine should be
@@ -282,6 +284,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
             parent_hidden=parent_hidden,
             ignore_hidden_property=ignore_hidden_property,
             get_evaluation_data=get_evaluation_data,
+            original_input_data=original_input_data,
         )
 
     def update_config(
