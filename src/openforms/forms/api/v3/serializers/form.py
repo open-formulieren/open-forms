@@ -1,22 +1,29 @@
+from collections import Counter
+
 from django.db import transaction
+from django.utils.text import get_text_list
+from django.utils.translation import gettext as _
 
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
-from openforms.config.models.theme import Theme
+from openforms.config.models import Theme
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
-from openforms.forms.api.v3.typing import FormValidatedData
-from openforms.products.models.product import Product
+from openforms.formio.datastructures import FormioConfigurationWrapper
+from openforms.formio.service import get_readable_path_from_configuration_path
+from openforms.products.models import Product
 from openforms.translations.api.serializers import ModelTranslationsSerializer
+from openforms.typing import StrOrPromise
 
 from ....api.serializers.form import (
     FormLiteralsSerializer,
     SubmissionsRemovalOptionsSerializer,
 )
-from ....models.category import Category
-from ....models.form import Form
+from ....models import Category, Form, FormDefinition, FormStep, FormVariable
+from ..typing import FormStepData, FormValidatedData
+from .form_step import FormStepSerializer
 
 
 @extend_schema_serializer(component_name="FormV3Serializer")
@@ -40,6 +47,8 @@ class FormSerializer(serializers.ModelSerializer):
         slug_field="uuid",
     )
 
+    steps = FormStepSerializer(many=True, source="formstep_set")
+
     appointment_options = AppointmentOptionsSerializer(
         source="*",
         required=False,
@@ -59,7 +68,10 @@ class FormSerializer(serializers.ModelSerializer):
 
     translations = ModelTranslationsSerializer()
 
-    _nested_fields = ("confirmation_email_template",)
+    _nested_fields = (
+        "confirmation_email_template",
+        "formstep_set",
+    )
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = Form
@@ -76,6 +88,7 @@ class FormSerializer(serializers.ModelSerializer):
             "slug",
             "category",
             "theme",
+            "steps",
             "show_progress_indicator",
             "show_summary_progress",
             "maintenance_mode",
@@ -117,10 +130,33 @@ class FormSerializer(serializers.ModelSerializer):
         ConfirmationEmailTemplate.objects.set_for_form(
             form=instance, data=confirmation_email_template
         )
+
+        form_step_data = validated_data["formstep_set"]
+        # fmt:off
+        form_definitions = (
+            FormDefinition.objects
+            .select_for_update(nowait=True)
+            .filter(uuid__in=(step_data["form_definition"]["uuid"] for step_data in form_step_data))
+        )
+        # fmt:on
+        len(form_definitions)  # Evaluate the queryset to acquire the locks.
+        for index, step_data in enumerate(form_step_data):
+            form_definition_data = step_data["form_definition"]
+            form_definition, _ = form_definitions.update_or_create(
+                uuid=form_definition_data["uuid"],
+                defaults={k: v for k, v in form_definition_data.items() if k != "uuid"},
+            )
+
+            FormStep.objects.create(
+                **{**step_data, "form_definition": form_definition},
+                order=index,
+                form=instance,
+            )
+
         return instance
 
     @transaction.atomic()
-    def update(self, instance, validated_data: FormValidatedData) -> Form:
+    def update(self, instance: Form, validated_data: FormValidatedData) -> Form:
         instance = super().update(
             instance,
             {k: v for k, v in validated_data.items() if k not in self._nested_fields},
@@ -132,7 +168,113 @@ class FormSerializer(serializers.ModelSerializer):
         ConfirmationEmailTemplate.objects.set_for_form(
             form=instance, data=confirmation_email_template
         )
+
+        assigned_steps: list[FormStep] = []
+        form_step_data = validated_data["formstep_set"]
+        # fmt:off
+        form_definitions = (
+            FormDefinition.objects
+            .select_for_update(nowait=True)
+            .filter(uuid__in=(step_data["form_definition"]["uuid"] for step_data in form_step_data))
+        )
+        # fmt:on
+        len(form_definitions)  # Evaluate the queryset to acquire the locks.
+        for index, step_data in enumerate(form_step_data):
+            form_definition_data = step_data["form_definition"]
+            form_definition, _ = form_definitions.update_or_create(
+                uuid=form_definition_data["uuid"],
+                defaults={k: v for k, v in form_definition_data.items() if k != "uuid"},
+            )
+
+            step = FormStep(  # TODO: use update_or_create (nice to have)
+                **{**step_data, "form_definition": form_definition},
+                order=index,
+                form=instance,
+            )
+            assigned_steps.append(step)
+
+        steps_to_delete = instance.formstep_set.exclude(
+            pk__in=(step.pk for step in assigned_steps)
+        )
+        for step in steps_to_delete:
+            step.delete()  # Removes the form definition when applicable by calling `.delete`.
+
+        # Generate form steps after deleting existings steps, to allow correct calculation of
+        # the `order` field.
+        for step in sorted(assigned_steps, key=lambda step: step.order):
+            step.save()
         return instance
 
+    def validate_steps(self, value: list[FormStepData]) -> list[FormStepData]:
+        if not value:
+            return value
+
+        # Step 1: Validate form definitions are unique across all steps.
+        unique_fd_uuids = {step["form_definition"]["uuid"] for step in value}
+        if len(unique_fd_uuids) < len(value):
+            raise serializers.ValidationError(
+                _("Non-unique form step - form definition duplicate(s) detected.")
+            )
+
+        # Step 2: Validate that the form definitions don't have duplicate component keys.
+        configurations = [
+            FormioConfigurationWrapper(step["form_definition"]["configuration"])
+            for step in value
+        ]
+        # Use component keys from original data to detect duplicates inside
+        # a single form definition. The FormioConfigurationWrapper's `component_keys`
+        # filters out the duplicates already so we can't use that for this purpose.
+        all_keys = [
+            component["key"]
+            for configuration in configurations
+            for component in configuration.configuration["components"]
+        ]
+
+        # check the counter to find duplicates
+        errors: list[StrOrPromise] = []
+        for component_key, count in Counter(all_keys).items():
+            if count < 2:  # no duplicates
+                continue
+
+            # find all the places where it occurs to produce a human readable error
+            # message
+            readable_paths: list[str] = []
+            for configuration in configurations:
+                if component_key not in configuration:
+                    continue
+
+                paths = [
+                    path
+                    for path, component in configuration.flattened_by_path.items()
+                    if component["key"] == component_key
+                ]
+
+                for path in paths:
+                    readable_path = get_readable_path_from_configuration_path(
+                        configuration.configuration, path
+                    )
+                    readable_paths.append(readable_path)
+
+            error_message = _('"{duplicate_key}" (in {paths})').format(
+                duplicate_key=component_key, paths=", ".join(readable_paths)
+            )
+            errors.append(error_message)
+
+        if errors:
+            raise serializers.ValidationError(
+                _("Detected duplicate keys in configuration: {errors}").format(
+                    errors=get_text_list(errors, ", ")
+                )
+            )
+
+        return value
+
+    @transaction.atomic()
     def save(self, **kwargs):
-        return super().save(**kwargs, uuid=self.context["uuid"])
+        instance = super().save(**kwargs, uuid=self.context["form_uuid"])
+
+        for step in instance.formstep_set.all():
+            # call this synchronously so that it's part of the same DB transaction.
+            FormVariable.objects.synchronize_for(step.form_definition)
+
+        return instance

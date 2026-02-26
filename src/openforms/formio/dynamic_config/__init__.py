@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 
-__all__ = ["rewrite_formio_components", "rewrite_formio_components_for_request"]
+__all__ = ["rewrite_formio_components", "rewrite_formio_components"]
 
 
 def rewrite_formio_components(

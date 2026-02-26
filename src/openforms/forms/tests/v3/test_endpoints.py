@@ -1,7 +1,10 @@
 from datetime import timedelta
+from uuid import uuid4
 
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.text import get_text_list
+from django.utils.translation import gettext as _
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -9,10 +12,16 @@ from rest_framework.test import APITestCase
 from openforms.accounts.tests.factories import UserFactory
 from openforms.config.tests.factories import ThemeFactory
 from openforms.data_removal.constants import RemovalMethods
-from openforms.forms.constants import StatementCheckboxChoices, SubmissionAllowedChoices
-from openforms.forms.models.form import Form
-from openforms.forms.tests.factories import CategoryFactory, FormFactory
 from openforms.products.tests.factories import ProductFactory
+
+from ...constants import StatementCheckboxChoices, SubmissionAllowedChoices
+from ...models import Form, FormDefinition
+from ...tests.factories import (
+    CategoryFactory,
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
 
 
 class FormEndpointTests(APITestCase):
@@ -35,7 +44,7 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Create form",
             "slug": "create-form",
-            "maintenanceMode": True,
+            "steps": [],
         }
         response = self.client.put(url, data=data)
 
@@ -45,12 +54,12 @@ class FormEndpointTests(APITestCase):
 
         self.assertEqual(form.name, "Create form")
         self.assertEqual(form.slug, "create-form")
-        self.assertEqual(form.maintenance_mode, True)
 
     def test_create_detailed_form(self):
         product = ProductFactory.create()
         category = CategoryFactory.create()
         theme = ThemeFactory.create()
+        form_definition_uuid = str(uuid4())
         activate_on = timezone.now() + timedelta(days=1)
         deactivate_on = timezone.now() + timedelta(days=2)
         url = reverse(
@@ -77,6 +86,42 @@ class FormEndpointTests(APITestCase):
             "theme": theme.uuid,
             "showProgressIndicator": True,
             "showSummaryProgress": True,
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "isReusable": True,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "component2",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                }
+            ],
             "maintenanceMode": True,
             "active": True,
             "activateOn": activate_on.isoformat(),
@@ -154,7 +199,7 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(form.name_nl, "Create formulier")
         self.assertEqual(form.internal_name, "Create form internal")
         self.assertEqual(form.internal_remarks, "This form is used for xyz")
-        self.assertFalse(form.login_required)
+        self.assertTrue(form.login_required)
         self.assertTrue(form.translation_enabled)
 
         self.assertTrue(form.is_appointment)
@@ -170,6 +215,36 @@ class FormEndpointTests(APITestCase):
         # theme
         theme = form.theme
         self.assertEqual(form.theme, theme)
+
+        # form step
+        form_step = form.formstep_set.get()
+        self.assertEqual(form_step.order, 0)
+        self.assertEqual(form_step.slug, "step-1")
+
+        # step form definition
+        form_definition = form_step.form_definition
+        self.assertEqual(str(form_definition.uuid), form_definition_uuid)
+        self.assertTrue(form_definition.is_reusable)
+        self.assertTrue(form_definition.login_required)
+        self.assertEqual(
+            form_definition.configuration,
+            {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "component1",
+                        "hidden": False,
+                        "clear_on_hide": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "component2",
+                        "hidden": False,
+                        "clear_on_hide": True,
+                    },
+                ],
+            },
+        )
 
         self.assertTrue(form.show_progress_indicator)
         self.assertTrue(form.show_summary_progress)
@@ -264,6 +339,96 @@ class FormEndpointTests(APITestCase):
 
         self.assertTrue(form.new_renderer_enabled)
 
+    def test_create_reuse_existing_definition(self):
+        form_definition = FormDefinitionFactory.create(
+            name="Form definition",
+            slug="form-definition",
+            is_reusable=True,
+            configuration={"components": [{"key": "textfield", "type": "textfield"}]},
+        )
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": str(form_definition.uuid),
+                        "isReusable": True,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "component2",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                }
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+
+        # form step
+        form_step = form.formstep_set.get()
+        self.assertEqual(form_step.order, 0)
+        self.assertEqual(form_step.slug, "step-1")
+
+        # step form definition
+        self.assertEqual(form_step.form_definition, form_definition)
+        form_definition.refresh_from_db()
+        self.assertEqual(str(form_definition.uuid), str(form_definition.uuid))
+        self.assertTrue(form_definition.is_reusable)
+        self.assertTrue(form_definition.login_required)
+        self.assertEqual(
+            form_definition.configuration,
+            {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "component1",
+                        "hidden": False,
+                        "clear_on_hide": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "component2",
+                        "hidden": False,
+                        "clear_on_hide": True,
+                    },
+                ],
+            },
+        )
+        self.assertEqual(FormDefinition.objects.count(), 1)
+
     def test_create_form_incorrect_request(self):
         url = reverse(
             "api:v3:form-detail",
@@ -272,6 +437,7 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Create form",
             "slug": "Create-form",
+            "steps": [],
             "literals": "foobar",
         }
         response = self.client.put(url, data=data)
@@ -284,6 +450,52 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(response_data["invalidParams"][0]["code"], "invalid")
         self.assertEqual(
             response_data["invalidParams"][0]["name"], "literals.nonFieldErrors"
+        )
+
+    def test_create_incorrect_form_configuration(self):
+        form_definition_uuid = str(uuid4())
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "index": 1,
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "isReusable": True,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [["bogus", "data"]],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                }
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response_data = response.json()
+        assert "invalidParams" in response_data
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["invalidParams"][0]["code"], "not_a_dict")
+        self.assertEqual(
+            response_data["invalidParams"][0]["name"],
+            "steps.0.formDefinition.configuration.components.0",
         )
 
     def test_update_existing_form(self):
@@ -300,6 +512,7 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Update form",
             "slug": "update-form",
+            "steps": [],
         }
         response = self.client.put(url, data=data)
 
@@ -326,6 +539,7 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Update form",
             "slug": "update-form",
+            "steps": [],
         }
         response = self.client.put(url, data=data)
 
@@ -336,6 +550,509 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(form.name, "Update form")
         self.assertEqual(form.slug, "update-form")
         self.assertTrue(form._is_deleted)
+
+    def test_update_clears_existing_form_steps(self):
+        form = FormFactory.create()
+        FormStepFactory.create_batch(size=2, form=form)
+        form_step_1_definition_uuid = uuid4()
+        form_step_2_definition_uuid = uuid4()
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-2",
+                    "formDefinition": {
+                        "uuid": str(form_step_2_definition_uuid),
+                        "isReusable": True,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 2",
+                                "internalName": "Form configuration 2",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 2",
+                                "internalName": "Form configuratie 2",
+                            },
+                        },
+                    },
+                },
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": str(form_step_1_definition_uuid),
+                        "isReusable": False,
+                        "loginRequired": False,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component2",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "component3",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Form.objects.count(), 1)
+        form.refresh_from_db()
+
+        # form step
+        form_steps = form.formstep_set.order_by("order")
+        self.assertEqual(form_steps[0].order, 0)
+        self.assertEqual(form_steps[0].slug, "step-2")
+        self.assertEqual(form_steps[1].order, 1)
+        self.assertEqual(form_steps[1].slug, "step-1")
+
+        # step form definitions
+        form_definition = form_steps[0].form_definition
+        self.assertEqual(form_definition.uuid, form_step_2_definition_uuid)
+        self.assertTrue(form_definition.is_reusable)
+        self.assertTrue(form_definition.login_required)
+        self.assertEqual(
+            form_definition.configuration,
+            {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "component1",
+                        "hidden": False,
+                        "clear_on_hide": True,
+                    },
+                ],
+            },
+        )
+
+        form_definition = form_steps[1].form_definition
+        self.assertEqual(form_definition.uuid, form_step_1_definition_uuid)
+        self.assertFalse(form_definition.is_reusable)
+        self.assertFalse(form_definition.login_required)
+        self.assertEqual(
+            form_definition.configuration,
+            {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "component2",
+                        "hidden": False,
+                        "clear_on_hide": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "component3",
+                        "hidden": False,
+                        "clear_on_hide": True,
+                    },
+                ],
+            },
+        )
+
+    def test_update_reuse_existing_form_definition(self):
+        # Generate an unrelated form with an existing form definition which will be reused
+        existing_form_definition_uuid = uuid4()
+        unrelated_form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [{"key": "textfield", "type": "textfield"}]
+            },
+            form_definition__is_reusable=True,
+            form_definition__uuid=existing_form_definition_uuid,
+        )
+
+        existing_form_step = FormStepFactory.create()
+        existing_form = existing_form_step.form
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": existing_form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": str(existing_form_definition_uuid),
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "component2",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Form.objects.count(), 2)
+        existing_form.refresh_from_db()
+
+        # form step
+        form_step = existing_form.formstep_set.get()
+        self.assertEqual(form_step.order, 0)
+        self.assertEqual(form_step.slug, "step-1")
+
+        # step form definition
+        self.assertEqual(form_step.form_definition, unrelated_form_step.form_definition)
+        self.assertEqual(
+            form_step.form_definition.configuration,
+            {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "component1",
+                        "hidden": False,
+                        "clear_on_hide": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "component2",
+                        "hidden": False,
+                        "clear_on_hide": True,
+                    },
+                ],
+            },
+        )
+        self.assertEqual(FormDefinition.objects.count(), 1)
+
+    def test_update_unique_form_step_form_definition(self):
+        form = FormFactory.create()
+        FormStepFactory.create_batch(size=2, form=form)
+        new_form_definition_uuid = uuid4()
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "index": 2,
+                    "slug": "step-2",
+                    "formDefinition": {
+                        "uuid": str(new_form_definition_uuid),
+                        "isReusable": True,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "component2",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+                {
+                    "index": 1,
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": str(new_form_definition_uuid),
+                        "isReusable": True,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "component2",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert "invalidParams" in response_data
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["invalidParams"][0]["code"], "invalid")
+        self.assertEqual(response_data["invalidParams"][0]["name"], "steps")
+        self.assertEqual(
+            response_data["invalidParams"][0]["reason"],
+            _("Non-unique form step - form definition duplicate(s) detected."),
+        )
+
+        self.assertEqual(Form.objects.count(), 1)
+
+    def test_update_unique_form_definition_keys_across_steps(self):
+        form = FormFactory.create()
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "index": 2,
+                    "slug": "step-2",
+                    "formDefinition": {
+                        "uuid": str(uuid4()),
+                        "isReusable": True,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 2",
+                                "internalName": "Form configuration 2",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 2",
+                                "internalName": "Form configuratie 2",
+                            },
+                        },
+                    },
+                },
+                {
+                    "index": 1,
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": str(uuid4()),
+                        "isReusable": False,
+                        "loginRequired": False,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "component2",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert "invalidParams" in response_data and response_data["invalidParams"]
+        errors = response_data["invalidParams"]
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(errors[0]["code"], "invalid")
+        self.assertEqual(errors[0]["name"], "steps")
+        assert "reason" in errors[0]
+        expected_error_message = _(
+            "Detected duplicate keys in configuration: {errors}"
+        ).format(
+            errors=get_text_list(
+                [
+                    _('"{duplicate_key}" (in {paths})').format(
+                        duplicate_key="component1",
+                        paths="component1, component1",
+                    )
+                ],
+                ", ",
+            )
+        )
+        self.assertEqual(errors[0]["reason"], expected_error_message)
+
+    def test_update_unique_form_definition_keys_one_step(self):
+        form = FormFactory.create()
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "index": 1,
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": str(uuid4()),
+                        "isReusable": False,
+                        "loginRequired": False,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "component2",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert "invalidParams" in response_data and response_data["invalidParams"]
+        errors = response_data["invalidParams"]
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(errors[0]["code"], "invalid")
+        self.assertEqual(errors[0]["name"], "steps")
+        assert "reason" in errors[0]
+        expected_error_message = _(
+            "Detected duplicate keys in configuration: {errors}"
+        ).format(
+            errors=get_text_list(
+                [
+                    _('"{duplicate_key}" (in {paths})').format(
+                        duplicate_key="component1",
+                        paths="component1, component1",
+                    )
+                ],
+                ", ",
+            )
+        )
+        self.assertEqual(errors[0]["reason"], expected_error_message)
 
     def test_update_form_incorrect_request(self):
         form = FormFactory.create(
@@ -350,6 +1067,7 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Update form",
             "slug": "update-form",
+            "steps": [],
             "literals": "foobar",
         }
         response = self.client.put(url, data=data)
@@ -390,6 +1108,7 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Update form",
             "slug": "update-form",
+            "steps": [],
         }
         response = self.client.put(url, data=data)
 
@@ -415,6 +1134,7 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Update form",
             "slug": "update-form",
+            "steps": [],
         }
         response = self.client.patch(url, data=data)
 
@@ -429,7 +1149,7 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Create form",
             "slug": "create-form",
-            "maintenanceMode": True,
+            "steps": [],
         }
         response = self.client.post(url, data=data)
 
@@ -446,7 +1166,7 @@ class FormEndpointAccessTests(APITestCase):
         data = {
             "name": "Create form",
             "slug": "create-form",
-            "maintenanceMode": True,
+            "steps": [],
         }
 
         non_staff_user = UserFactory.create(is_staff=False, user_permissions=tuple())
@@ -464,7 +1184,7 @@ class FormEndpointAccessTests(APITestCase):
         data = {
             "name": "Create form",
             "slug": "create-form",
-            "maintenanceMode": True,
+            "steps": [],
         }
 
         non_staff_user = UserFactory.create(is_staff=True, user_permissions=tuple())
@@ -482,7 +1202,7 @@ class FormEndpointAccessTests(APITestCase):
         data = {
             "name": "Create form",
             "slug": "create-form",
-            "maintenanceMode": True,
+            "steps": [],
         }
 
         response = self.client.put(url, data=data)

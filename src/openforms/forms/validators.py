@@ -1,15 +1,15 @@
 from collections import defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 from django.core.exceptions import ValidationError
 from django.utils.text import get_text_list
 from django.utils.translation import gettext_lazy as _
 
-from openforms.formio.utils import (
-    flatten_by_path,
-    get_readable_path_from_configuration_path,
-)
+from openforms.formio.service import get_readable_path_from_configuration_path
+from openforms.formio.typing import FormioConfiguration
+from openforms.formio.utils import flatten_by_path
 from openforms.formio.variables import validate_configuration
 from openforms.typing import JSONObject
 
@@ -73,21 +73,27 @@ def validate_template_expressions(configuration: JSONObject) -> None:
     raise ValidationError(all_errors)
 
 
+class FormDefinitionLike(Protocol):
+    configuration: FormioConfiguration
+    name: str
+
+
 @dataclass
 class FakeFormDefinition:
-    configuration: JSONObject
+    configuration: FormioConfiguration
     name: str = ""
 
 
 def validate_no_duplicate_keys(
-    configuration: JSONObject,
+    configuration: FormioConfiguration,
 ) -> None:
     form_definition = FakeFormDefinition(configuration=configuration)
     validate_no_duplicate_keys_across_steps(form_definition, other_form_definitions=[])
 
 
 def validate_no_duplicate_keys_across_steps(
-    current_form_definition, other_form_definitions
+    current_form_definition: FormDefinitionLike,
+    other_form_definitions: Sequence[FormDefinitionLike],
 ):
     """
     Validate that there are no duplicate keys in a configuration.
@@ -100,7 +106,7 @@ def validate_no_duplicate_keys_across_steps(
     """
     component_path_map = defaultdict(list)
     duplicate_keys = []
-    for form_definition in [current_form_definition] + other_form_definitions:
+    for form_definition in [current_form_definition, *other_form_definitions]:
         for configuration_path, component in flatten_by_path(
             form_definition.configuration
         ).items():

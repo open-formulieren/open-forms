@@ -36,6 +36,7 @@ from .typing import (
 )
 from .utils import (
     get_component_empty_value,
+    get_readable_path_from_configuration_path,
     iter_components,
     iterate_data_with_components,
 )
@@ -60,6 +61,7 @@ __all__ = [
     "as_json_schema",
     "process_visibility",
     "get_component_empty_value",
+    "get_readable_path_from_configuration_path",
 ]
 
 tracer = trace.get_tracer("openforms.formio.service")

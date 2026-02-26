@@ -125,7 +125,6 @@ class Form(models.Model):
     auto_login_authentication_backend = models.CharField(
         _("automatic login"), max_length=UNIQUE_ID_MAX_LENGTH, blank=True
     )
-    auth_backends: Manager[FormAuthenticationBackend]
 
     # appointments
     is_appointment = models.BooleanField(
@@ -411,6 +410,8 @@ class Form(models.Model):
     objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
         FormManager
     ] = FormManager()
+    formstep_set: models.Manager[FormStep]
+    auth_backends: Manager[FormAuthenticationBackend]
 
     get_begin_text = literal_getter("begin_text", "form_begin_text")
     get_previous_text = literal_getter("previous_text", "form_previous_text")

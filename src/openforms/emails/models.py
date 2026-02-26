@@ -9,18 +9,29 @@ from openforms.emails.validators import URLSanitationValidator
 from openforms.forms.models import Form
 from openforms.template.validators import DjangoTemplateValidator
 
+from .typing import (
+    ConfirmationEmailTemplateData,
+    ConfirmationEmailTemplateTranslatedData,
+)
+
 
 class ConfirmationEmailTemplateManager(models.Manager["ConfirmationEmailTemplate"]):
-    def set_for_form(self, form: Form, data: dict | None):
+    def set_for_form(
+        self,
+        form: Form,
+        data: ConfirmationEmailTemplateData
+        | ConfirmationEmailTemplateTranslatedData
+        | None,
+    ) -> tuple[ConfirmationEmailTemplate, bool]:
         # if there's *no* template data, make sure that we do indeed wipe the fields,
         # making the template not usable
         if not data:
-            data = {
-                "subject": "",
-                "content": "",
-                "cosign_subject": "",
-                "cosign_content": "",
-            }
+            data = ConfirmationEmailTemplateData(
+                subject="",
+                content="",
+                cosign_subject="",
+                cosign_content="",
+            )
 
         return self.update_or_create(form=form, defaults=data)
 
