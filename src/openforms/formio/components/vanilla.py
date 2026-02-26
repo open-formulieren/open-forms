@@ -1138,6 +1138,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
+        original_input_data: FormioData | None = None,
     ):
         key = component["key"]
         # We only need to process children if the value was not already cleared.
@@ -1177,6 +1178,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
                 parent_hidden=parent_hidden,
                 get_evaluation_data=get_evaluation_data,
                 components_to_ignore_hidden=components_to_ignore_hidden,
+                original_input_data=original_input_data,
             )
             edit_grid_data_new.append(item_data)
 
@@ -1195,6 +1197,7 @@ class Columns(BasePlugin[ColumnsComponent]):
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
+        original_input_data: FormioData | None = None,
     ):
         for column in component["columns"]:
             # If the hidden property of the parent should be ignored, so should it for
@@ -1213,6 +1216,7 @@ class Columns(BasePlugin[ColumnsComponent]):
                 parent_hidden=parent_hidden,
                 get_evaluation_data=get_evaluation_data,
                 components_to_ignore_hidden=components_to_ignore_hidden,
+                original_input_data=original_input_data,
             )
 
 
@@ -1228,6 +1232,7 @@ class Fieldset(BasePlugin[FieldsetComponent]):
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
+        original_input_data: FormioData | None = None,
     ):
         # If the hidden property of the parent should be ignored, so should it for
         # its children.
@@ -1247,4 +1252,5 @@ class Fieldset(BasePlugin[FieldsetComponent]):
             parent_hidden=parent_hidden,
             get_evaluation_data=get_evaluation_data,
             components_to_ignore_hidden=components_to_ignore_hidden,
+            original_input_data=original_input_data,
         )
