@@ -116,6 +116,7 @@ COPY \
     ./bin/fix_submission_value_variable_missing_fields.py \
     ./bin/fix_payment_status.py \
     ./bin/check_disable_next_logic_action.py \
+    ./bin/detect_logic_rules_with_hidden_actions_on_the_same_component.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
