@@ -32,6 +32,14 @@ their settings mechanism and now allows for distinct enforced/report-only config
 
 We'll work on bridging this gap, possibly through an upgrade to Django 6.0.
 
+3.4.3 (2026-02-26)
+==================
+
+Hotfix release.
+
+* [:backend:`6005`] Fixed input values unintentionally being cleared when there are
+  multiple backend logic rules that specify the visibility state of the same component.
+
 3.4.2 (2026-02-20)
 ==================
 
