@@ -6,6 +6,14 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.4.3 (2026-02-26)
+==================
+
+Hotfix release.
+
+* [:backend:`6005`] Fixed input values unintentionally being cleared when there are
+  multiple backend logic rules that specify the visibility state of the same component.
+
 3.4.2 (2026-02-20)
 ==================
 

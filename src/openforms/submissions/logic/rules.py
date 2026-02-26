@@ -1,4 +1,5 @@
 from collections.abc import Iterable, Iterator
+from copy import deepcopy
 
 import elasticapm
 from json_logic import jsonLogic
@@ -136,6 +137,18 @@ def iter_evaluate_rules(
     :returns: An iterator yielding :class:`ActionOperation` instances.
     """
     state = submission.load_submission_value_variables_state()
+
+    # keep a copy of the start data that is not affected by the mutations applied by
+    # logic. Due to the instant processing of clearOnHide side-effects and multiple
+    # logic rules potentially changing the visibility of the same component, we need to
+    # make sure to restore the data for every hidden -> visible flip, as the visible ->
+    # hidden flip results in clearing the data - see #6001. For this restoration, we
+    # use the start data as source, as that is coming from the frontend state that is
+    # the result of logic evaluations.
+    # For the hotfix, we deliberately keep this isolated from initial_data, which is
+    # populated differently based on whether the new renderer is enabled or not.
+    original_input_data = deepcopy(data)
+
     for rule in rules:
         with elasticapm.capture_span(
             "evaluate_rule",
@@ -150,12 +163,22 @@ def iter_evaluate_rules(
             # as components can be hidden by default and shown when a logic rule is
             # triggered
             if not triggered:
-                _handle_clear_on_hide(rule, data, configuration, initial_data)
+                _handle_clear_on_hide_for_untriggered_rule(
+                    rule,
+                    data,
+                    configuration,
+                    initial_data,
+                    original_input_data=original_input_data,
+                )
                 continue
 
             for operation in rule.action_operations:
                 if mutations := operation.eval(
-                    data, configuration, submission, initial_data
+                    data,
+                    configuration,
+                    submission,
+                    initial_data,
+                    original_input_data=original_input_data,
                 ):
                     mutations_python = {
                         key: state.variables[key].to_python(value)
@@ -166,11 +189,13 @@ def iter_evaluate_rules(
                 yield operation
 
 
-def _handle_clear_on_hide(
+def _handle_clear_on_hide_for_untriggered_rule(
     rule: FormLogic,
     data: FormioData,
     configuration: FormioConfigurationWrapper,
     initial_data: FormioData,
+    *,
+    original_input_data: FormioData,
 ):
     """
     Handle clear-on-hide behaviour for components of which the "hidden" property
@@ -187,18 +212,19 @@ def _handle_clear_on_hide(
             continue
 
         component = configuration[operation.component]
-
-        # To avoid doing unnecessary work, only call ``process_visibility`` when the
-        # component is actually hidden.
-        if not component.get("hidden", False):
-            continue
-
         # Process the visibility of the component. We want to process the component
         # itself, not try to iterate over its children, so we create a 'fake'
         # configuration.
         # Note that we cannot pass ``parent_hidden=True`` here, and skip conditional
         # evaluation (like in ``PropertyAction.eval``), because a component can be
         # affected by a simple conditional which makes it visible.
+        # Additionally (see #6005), when a component flips back to visible after being
+        # hidden and having its value cleared before, we need to restore the original
+        # input data, so we must always call this.
         process_visibility(
-            {"components": [component]}, data, configuration, initial_data=initial_data
+            {"components": [component]},
+            data,
+            configuration,
+            initial_data=initial_data,
+            original_input_data=original_input_data,
         )
