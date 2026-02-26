@@ -1411,3 +1411,68 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 ],
             },
         )
+
+    @tag("gh-6007")
+    def test_hidden_fields_still_get_emitted_to_object(self):
+        """
+        Assert that components that are hidden are not omitted from the JSON payload.
+
+        4a295cb968ed8f96dee7d27405c9cb4a80defd19 results in hidden fields no longer
+        creating a database record for the hidden variable, but it *is* still available
+        in the submission state and should be processed accordingly.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "textfield",
+                    "hidden": True,
+                },
+                {
+                    "type": "fieldset",
+                    "key": "hiddenFieldset",
+                    "hidden": True,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "nestedTextfield",
+                            "hidden": False,
+                        }
+                    ],
+                },
+            ],
+            completed=True,
+            submitted_data={},
+        )
+        state = submission.load_submission_value_variables_state()
+        assert not state.saved_variables
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "variables_mapping": [
+                {"variable_key": "textfield", "target_path": ["textfield"]},
+                {"variable_key": "nestedTextfield", "target_path": ["nestedTextfield"]},
+            ],
+            "transform_to_list": [],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+        }
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, v2_options)
+
+        assert result is not None
+        self.assertEqual(
+            result["record"]["data"],
+            {
+                "textfield": "",
+                "nestedTextfield": "",
+            },
+        )
