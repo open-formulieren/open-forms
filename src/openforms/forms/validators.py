@@ -87,7 +87,8 @@ def validate_no_duplicate_keys(
 
 
 def validate_no_duplicate_keys_across_steps(
-    current_form_definition, other_form_definitions
+    current_form_definition: "FormDefinition | FakeFormDefinition",
+    other_form_definitions: list["FormDefinition"] | list["FakeFormDefinition"],
 ):
     """
     Validate that there are no duplicate keys in a configuration.
