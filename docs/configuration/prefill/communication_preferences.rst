@@ -25,6 +25,12 @@ What does the Open Forms administrator need?
 
     - an API token to access the API from Open Forms
 
+* A form with a "Profile" component.
+
+  .. note::
+
+      The "Profile" component works only when the new renderer is enabled.
+
 
 Configuration
 =============
@@ -79,6 +85,23 @@ to add the relevant component and a **user defined** form variable:
     the `Customer Interactions API`_. In the Configuration popup select the API group
     created in the "Configuration" section and the profile form variable.
 
+.. _configuration_prefill_communication_preferences_writing:
+
+Writing to the Customer Interactions API
+========================================
+
+The communication preferences prefill configuration is also used to update communication preferences in the
+Customer Interactions API. To enable it you need to check "Open Forms should update customer data after submission"
+in the "Profile" component configuration.
+
+When the form is submitted Open Forms records following data in the Customer Interactions API:
+
+* klantcontact
+* betrokkene
+* onderwerpobject, where a public reference of the submission is stored
+* digitaleadressen, where new communication preferences are stored if user has chosen "Sla mijn gegevens op
+  voor de volgende keer." while filling the form.
+* partij, if user is authenticated in the form, but unknown in the Customer Interactions API.
 
 Technical
 =========
