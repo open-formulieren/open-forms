@@ -1,4 +1,5 @@
 import json
+import textwrap
 
 from django.db import connection
 from django.test import override_settings, tag
@@ -1128,6 +1129,114 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         # The date hasn't changed, so it should not be present in the step data
         self.assertNotIn("date", data["step"]["data"])
+
+    @tag("gh-6001", "gh-6005")
+    def test_initial_hidden_visible_through_backend_logic_does_not_nuke_input_data(
+        self,
+    ):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                    },
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "hidden": False,
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "textfieldClientSide",
+                                "hidden": True,
+                                "conditional": {
+                                    "show": True,
+                                    "when": "checkbox",
+                                    "eq": True,
+                                },
+                            },
+                            {
+                                "type": "textfield",
+                                "key": "textfieldServerSide",
+                                "hidden": True,
+                            },
+                        ],
+                    },
+                    {
+                        "type": "content",
+                        "key": "content",
+                        "html": textwrap.dedent(r"""
+                        textfieldClientSide: {{ textfieldClientSide }}
+                        textfieldServerSide: {{ textfieldServerSide }}
+                        """),
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"var": "checkbox"},
+            actions=[
+                {
+                    "formStep": None,
+                    "component": "textfieldServerSide",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "value": {},
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+
+        # this simulates:
+        # 1. User checkx checkbox, client side logic instantly makes textfieldClientSide
+        #    visible
+        # 2. Server logic check makes textfieldServerSide visible
+        # 3. Input values in both fields, as they're both visible.
+        # 4. Value changes trigger new call and we expect to see the values in the
+        #    content component HTML.
+        response = self.client.post(
+            logic_check_endpoint,
+            {
+                "data": {
+                    "checkbox": True,
+                    "textfieldClientSide": "client-side-visible",
+                    "textfieldServerSide": "server-side-visible",
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+
+        with self.subTest("data mutations"):
+            self.assertEqual(data["step"]["data"], {})
+
+        with self.subTest("evaluated content template"):
+            content_component = data["step"]["formStep"]["configuration"]["components"][
+                2
+            ]
+            self.assertEqual(
+                content_component["html"],
+                textwrap.dedent("""
+                textfieldClientSide: client-side-visible
+                textfieldServerSide: server-side-visible
+                """),
+            )
 
 
 @tag("gh-6005")
