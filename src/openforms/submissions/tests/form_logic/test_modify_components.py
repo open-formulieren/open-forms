@@ -1129,3 +1129,80 @@ class ComponentModificationTests(TestCase):
         }
 
         self.assertEqual(configuration, expected)
+
+    @tag("gh-6014")
+    def test_hidden_fieldset_with_partially_overlapping_key(self):
+        """
+        Ensure that a field inside a layout component (fieldset in this case) gets
+        properly cleared, when the key of the child component ('container.textfield')
+        is a nested version of the parent ('container').
+        """
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "key": "container",
+                        "type": "fieldset",
+                        "hidden": False,
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "container.textfield",
+                                "label": "Textfield",
+                            },
+                            # Components to make codecov happy
+                            {
+                                "type": "coSign",
+                                "key": "coSign",
+                                "label": "Cosign",
+                            },
+                            {
+                                "type": "softRequiredErrors",
+                                "key": "softRequiredErrors",
+                                "label": "Errors",
+                            },
+                        ],
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": "container",
+                    "action": {
+                        "name": "Hide fieldset",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+        )
+
+        evaluate_form_logic(
+            submission,
+            submission_step,
+            FormioData({"checkbox": True, "container": {"textfield": "clear me"}}),
+        )
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_unsaved=True)
+        self.assertEqual(data["container.textfield"], "")

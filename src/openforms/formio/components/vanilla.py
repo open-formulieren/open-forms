@@ -958,6 +958,7 @@ class Content(BasePlugin):
 
     # not really relevant as content components don't have values
     formatter = DefaultFormatter
+    holds_submission_data = False
 
     @staticmethod
     def rewrite_for_request(component: ContentComponent, request: Request):
@@ -1187,6 +1188,8 @@ class EditGrid(BasePlugin[EditGridComponent]):
 
 @register("columns")
 class Columns(BasePlugin[ColumnsComponent]):
+    holds_submission_data = False
+
     @staticmethod
     def apply_visibility(
         component: ColumnsComponent,
@@ -1222,6 +1225,8 @@ class Columns(BasePlugin[ColumnsComponent]):
 
 @register("fieldset")
 class Fieldset(BasePlugin[FieldsetComponent]):
+    holds_submission_data = False
+
     @staticmethod
     def apply_visibility(
         component: FieldsetComponent,
