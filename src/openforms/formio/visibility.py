@@ -157,5 +157,6 @@ def process_visibility(
             parent_hidden=hidden,
             ignore_hidden_property=ignore_hidden_property,
             get_evaluation_data=get_evaluation_data,
+            components_to_ignore_hidden=components_to_ignore_hidden,
             original_input_data=original_input_data,
         )

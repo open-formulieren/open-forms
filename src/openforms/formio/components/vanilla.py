@@ -1138,12 +1138,14 @@ class EditGrid(BasePlugin[EditGridComponent]):
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
+        components_to_ignore_hidden: set[str] | None = None,
         original_input_data: FormioData | None = None,
     ):
         key = component["key"]
         # We only need to process children if the value was not already cleared.
         if not (edit_grid_data := data[key]):
             return
+        assert isinstance(edit_grid_data, list)
 
         # We might be dealing with nested editgrids
         outer_get_evaluation_data = (
@@ -1152,11 +1154,11 @@ class EditGrid(BasePlugin[EditGridComponent]):
 
         # If the hidden property of the parent should be ignored, so should it for its
         # children.
-        components_to_ignore_hidden = (
+        _components_to_ignore_hidden = (
             set(child["key"] for child in component["components"])
             if ignore_hidden_property
-            else None
-        )
+            else set()
+        ).union(components_to_ignore_hidden or set())
         edit_grid_data_new = []
 
         # For evaluation of the conditionals, we only care about the current item, so we
@@ -1177,7 +1179,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
                 initial_data=initial_data,
                 parent_hidden=parent_hidden,
                 get_evaluation_data=get_evaluation_data,
-                components_to_ignore_hidden=components_to_ignore_hidden,
+                components_to_ignore_hidden=_components_to_ignore_hidden,
                 original_input_data=original_input_data,
             )
             edit_grid_data_new.append(item_data)
@@ -1197,16 +1199,17 @@ class Columns(BasePlugin[ColumnsComponent]):
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
+        components_to_ignore_hidden: set[str] | None = None,
         original_input_data: FormioData | None = None,
     ):
         for column in component["columns"]:
             # If the hidden property of the parent should be ignored, so should it for
             # its children.
-            components_to_ignore_hidden = (
+            _components_to_ignore_hidden: set[str] = (
                 set(child["key"] for child in column["components"])
                 if ignore_hidden_property
-                else None
-            )
+                else set()
+            ).union(components_to_ignore_hidden or set())
 
             process_visibility(
                 column,
@@ -1215,7 +1218,7 @@ class Columns(BasePlugin[ColumnsComponent]):
                 initial_data=initial_data,
                 parent_hidden=parent_hidden,
                 get_evaluation_data=get_evaluation_data,
-                components_to_ignore_hidden=components_to_ignore_hidden,
+                components_to_ignore_hidden=_components_to_ignore_hidden,
                 original_input_data=original_input_data,
             )
 
@@ -1232,15 +1235,17 @@ class Fieldset(BasePlugin[FieldsetComponent]):
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
+        components_to_ignore_hidden: set[str] | None = None,
         original_input_data: FormioData | None = None,
     ):
+
         # If the hidden property of the parent should be ignored, so should it for
         # its children.
-        components_to_ignore_hidden = (
+        _components_to_ignore_hidden: set[str] = (
             set(child["key"] for child in component["components"])
             if ignore_hidden_property
-            else None
-        )
+            else set()
+        ).union(components_to_ignore_hidden or set())
 
         # We need to process the children, so we just pass the component as the
         # configuration.
@@ -1251,6 +1256,6 @@ class Fieldset(BasePlugin[FieldsetComponent]):
             initial_data=initial_data,
             parent_hidden=parent_hidden,
             get_evaluation_data=get_evaluation_data,
-            components_to_ignore_hidden=components_to_ignore_hidden,
+            components_to_ignore_hidden=_components_to_ignore_hidden,
             original_input_data=original_input_data,
         )
