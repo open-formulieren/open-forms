@@ -96,8 +96,7 @@ def process_visibility(
     """
     Process the visibility of the components inside the configuration, by checking if
     they were hidden because of conditional logic or a hidden parent, and clearing the
-    value (set to empty component value) when applicable (which is the case unless
-    ``clearOnHide`` is ``False``).
+    value when applicable (``clearOnHide`` is ``True``).
 
     Note that the data mutations are applied directly.
 
@@ -113,6 +112,9 @@ def process_visibility(
     :param components_to_ignore_hidden: Set of components for which the "hidden"
       property is ignored in determining whether the component is hidden. Note that if
       it was not passed, the hidden property WILL be checked.
+    :param original_input_data: The input data from the frontend when called through
+      the check logic endpoint. Used to restore values when flipping visibility
+      states.
     """
     components_to_ignore_hidden = components_to_ignore_hidden or set()
     for component in configuration.get("components", []):
@@ -129,7 +131,8 @@ def process_visibility(
 
         # Need to check whether the component is present in the data because layout
         # components have no value
-        if hidden and clear_on_hide and key in data:
+        holds_submission_data = register.holds_submission_data(component)
+        if hidden and clear_on_hide and holds_submission_data:
             # NOTE - formio.js (and our own renderer) *delete* the key entirely from the
             # data instead, while we assign the empty value to ensure every variable is
             # always present in the submission data
@@ -138,7 +141,7 @@ def process_visibility(
 
         # if it's visible, check if any input data should be restored because earlier
         # logic rules may have cleared it (visible -> hidden -> visible)
-        if not hidden and original_input_data is not None:
+        if not hidden and original_input_data is not None and holds_submission_data:
             if data.get(key) != (original_value := original_input_data.get(key)):
                 # restore the value from the original input data - likely there was a
                 # sequence in logic that lead to the data being cleared because of hidden
