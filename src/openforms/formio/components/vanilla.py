@@ -1243,7 +1243,6 @@ class Fieldset(BasePlugin[FieldsetComponent]):
         components_to_ignore_hidden: set[str] | None = None,
         original_input_data: FormioData | None = None,
     ):
-
         # If the hidden property of the parent should be ignored, so should it for
         # its children.
         _components_to_ignore_hidden: set[str] = (
