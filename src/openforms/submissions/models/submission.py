@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import uuid
+import warnings
 from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass
@@ -752,6 +753,14 @@ class Submission(models.Model):
             Keys containing dots (``.``) will be nested under another mapping.
             Static variables values are *not* included.
         """
+        warnings.warn(
+            "Using `Submission.data` to access submission data is deprecated. Please "
+            "use `SubmissionValueVariablesState.get_data(...)` with the relevant flags "
+            "instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         values_state = self.load_submission_value_variables_state()
         return values_state.get_data()
 

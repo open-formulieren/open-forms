@@ -1,4 +1,5 @@
 import uuid
+import warnings
 from copy import deepcopy
 
 from django.core import serializers
@@ -212,6 +213,14 @@ class SubmissionStep(models.Model):  # noqa: DJ008
 
     @property
     def data(self) -> FormioData:
+        warnings.warn(
+            "Using `SubmissionStep.data` to access submission data is deprecated. "
+            "Please use `SubmissionValueVariablesState.get_data(...)` with the "
+            "relevant flags instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         values_state = self.submission.load_submission_value_variables_state()
         step_data = values_state.get_data(submission_step=self)
         if self._unsaved_data:
