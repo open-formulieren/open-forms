@@ -157,6 +157,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
+        components_to_ignore_hidden: set[str] | None = None,
         original_input_data: FormioData | None = None,
     ) -> None:
         """
@@ -170,6 +171,9 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         :param parent_hidden: Indicates whether the parent component was hidden.
         :param get_evaluation_data: Function used to get the evaluation data used during
           evaluation of the conditional.
+        :param components_to_ignore_hidden: Set of components for which the "hidden"
+          property is ignored in determining whether the component is hidden. Note that if
+          it was not passed, the hidden property WILL be checked.
         :param ignore_hidden_property: Whether to ignore the "hidden" property during
           further processing of its children.
         :param original_input_data: The input data from the frontend when called through
@@ -264,6 +268,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
+        components_to_ignore_hidden: set[str] | None = None,
         original_input_data: FormioData | None = None,
     ) -> None:
         """
@@ -277,6 +282,9 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         :param parent_hidden: Indicates whether the parent component was hidden.
         :param get_evaluation_data: Function used to get the evaluation data used during
           evaluation of the conditional.
+        :param components_to_ignore_hidden: Set of components for which the "hidden"
+          property is ignored in determining whether the component is hidden. Note that if
+          it was not passed, the hidden property WILL be checked.
         :param ignore_hidden_property: Whether to ignore the "hidden" property during
           further processing of its children.
         :param original_input_data: The input data from the frontend when called through
@@ -295,6 +303,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
             parent_hidden=parent_hidden,
             ignore_hidden_property=ignore_hidden_property,
             get_evaluation_data=get_evaluation_data,
+            components_to_ignore_hidden=components_to_ignore_hidden,
             original_input_data=original_input_data,
         )
 

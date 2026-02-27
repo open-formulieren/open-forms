@@ -92,9 +92,9 @@ class ConditionalLogicTests(TestCase):
                     "key": "file",
                     "hidden": False,
                     "conditional": {
-                        "eq": False,
-                        "show": "hide",
+                        "show": False,
                         "when": "textfieldVisible",
+                        "eq": "hide",
                     },
                     "clearOnHide": True,
                 },
