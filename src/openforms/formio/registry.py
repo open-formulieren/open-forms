@@ -17,6 +17,7 @@ from collections.abc import Callable
 from typing import (
     TYPE_CHECKING,
     Any,
+    ClassVar,
     Generic,
     Literal,
     NotRequired,
@@ -91,6 +92,10 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):  # noqa: UP046
     pre_registration_hook: PreRegistrationHookProtocol[ComponentT] | None = None
     """
     Hook to perform component-specific registration logic during the "pre-registration" phase.
+    """
+    holds_submission_data: ClassVar[bool] = True
+    """
+    Flag to indicate whether data can be submitted for this component.
     """
 
     @property
@@ -388,6 +393,13 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         assert hook is not None
 
         return hook(component, submission)
+
+    def holds_submission_data(self, component: Component) -> bool:
+        """Return whether data can be submitted for a particular component."""
+        if (component_type := component["type"]) not in self:
+            return True
+
+        return self[component_type].holds_submission_data
 
 
 # Sentinel to provide the default registry. You can easily instantiate another

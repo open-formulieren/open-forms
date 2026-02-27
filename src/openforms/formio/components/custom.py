@@ -1085,3 +1085,13 @@ class CustomerProfile(BasePlugin):
         )
         result["data"] = data
         return result
+
+
+@register("softRequiredErrors")
+class SoftRequiredErrors(BasePlugin):
+    holds_submission_data = False
+
+
+@register("coSign")
+class CoSign(BasePlugin):
+    holds_submission_data = False
