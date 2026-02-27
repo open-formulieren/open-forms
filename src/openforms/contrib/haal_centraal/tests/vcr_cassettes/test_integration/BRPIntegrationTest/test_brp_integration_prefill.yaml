@@ -14,7 +14,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
       x-doelbinding:
       - BRPACT-AanschrijvenZakelijkGerechtigde
       x-gebruiker:
@@ -39,17 +39,15 @@ interactions:
         heer Holthuizen","adresregel1":"Nieuwe Parklaan 58","adresregel2":"2597 LD  ''S-GRAVENHAGE"},"partners":[{"naam":{"geslachtsnaam":"Wiegman"},"aangaanHuwelijkPartnerschap":{"datum":{"type":"Datum","datum":"1926-07-15","langFormaat":"15
         juli 1926"}}}]}]}'
     headers:
-      Connection:
-      - keep-alive
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 15 Sep 2025 14:52:28 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains
+      - Fri, 27 Feb 2026 15:01:37 GMT
+      Set-Cookie:
+      - route=9da171e351f14238; Path=/
       Transfer-Encoding:
       - chunked
     status:
       code: 200
-      message: ''
+      message: OK
 version: 1
