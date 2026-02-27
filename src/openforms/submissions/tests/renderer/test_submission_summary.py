@@ -354,6 +354,60 @@ class SubmissionSummaryRendererTests(TestCase):
         self.assertEqual(1, len(step_data))
         self.assertEqual(step_data[0]["name"], "")
 
+    @tag("gh-5980")
+    def test_with_conditional_logic(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "label": "Radio",
+                        "values": [
+                            {"label": "A", "value": "a"},
+                            {"label": "B", "value": "b"},
+                        ],
+                        "conditional": {"show": False, "when": "checkbox", "eq": True},
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "clearOnHide": True,
+                        "conditional": {
+                            "show": False,
+                            "when": "radio",
+                            "eq": "",
+                        },
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        # Simulate submitting a step with checkbox checked. Note that because of the
+        # conditionals, neither "radio" nor "textfield" is visible, which means they
+        # will not be included in the submitted step data -> no submission value
+        # variables will be created in the database.
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step, data={"checkbox": True}
+        )
+
+        data = submission.render_summary_page()
+        step_data = data[0]["data"]
+
+        # Only the checkbox should be visible in the overview
+        self.assertEqual(len(step_data), 1)
+        self.assertEqual(step_data[0]["name"], "Checkbox")
+
 
 class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
     def test_summary_page_endpoint(self):

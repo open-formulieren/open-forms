@@ -289,11 +289,13 @@ class FormioNode(Node):
         assert self.step.form_step  # nosec: intended use of B101
         configuration = self.step.form_step.form_definition.configuration
 
+        state = self.step.submission.load_submission_value_variables_state()
+        data = state.get_data(include_unsaved=True, submission_step=self.step)
         for configuration_path, component in iterate_components_with_configuration_path(
             configuration, recursive=False
         ):
             child_node = ComponentNode.build_node(
-                step_data=self.step.data,
+                step_data=data,
                 component=component,
                 renderer=self.renderer,
                 configuration_path=configuration_path,

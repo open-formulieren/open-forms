@@ -124,11 +124,11 @@ class ExportTests(TestCase):
                 "Export test",
                 datetime(2022, 5, 9, 15, 0, 0),
                 "Input 1",
-                None,
+                "",
                 "Input 3",
-                None,
-                None,
-                None,
+                "",
+                "",
+                "",
             ),
         )
 
@@ -247,7 +247,7 @@ class ExportTests(TestCase):
                 "Export form 1",
                 datetime(2022, 5, 9, 15, 0, 0),
                 "sub2.input1",
-                None,
+                "",
             ),
         )
         self.assertEqual(
