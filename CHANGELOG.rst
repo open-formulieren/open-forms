@@ -6,6 +6,28 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.4.4 (2026-02-27)
+==================
+
+Bugfix release.
+
+This patch fixes the remaining issues that were reported due to the logic engine
+rework done in 3.4. We apologise for the disruptions these bugs have caused. The
+rework being done is quite substantial and we've put some controls in place to make
+reverting to old behaviour possible, but unfortunately some things still slip through.
+
+* [:backend:`6007`] Fixed hidden fields not being sent to the Objects API when using the
+  variable mapping (v2 configuration) configuration. Additionally, fixed other places
+  where the "unsaved variables" where not being included in the evaluation scope for
+  templates.
+* [:backend:`6014`] Fixed components using overlapping (nested) keys with their parent
+  component causing logic crashes.
+* [:backend:`6001`] Fixed components inside layout components (fieldset, columns) having
+  their value cleared despite having their visibility state managed through backend
+  logic rules.
+* [:backend:`5980`] Fixed components being listed in the form summary/overview despite
+  being hidden through logic rules.
+
 3.4.3 (2026-02-26)
 ==================
 
