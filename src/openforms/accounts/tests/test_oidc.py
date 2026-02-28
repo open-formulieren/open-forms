@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
+from furl import furl
 from mozilla_django_oidc_db.models import OIDCClient
 from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 
@@ -57,6 +58,20 @@ class OIDCLoginButtonTestCase(OIDCMixin, WebTest):
         self.assertEqual(
             oidc_login_link.attrs["href"], reverse("oidc_authentication_init")
         )
+
+    def test_next_parameter_is_preserved(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_admin=True, enabled=True
+        )
+
+        response = self.app.get(reverse("admin-mfa-login"), {"next": "/foo"})
+
+        oidc_login_link = response.html.find(
+            "a", string=_("Login with organization account")
+        )
+        self.assertIsNotNone(oidc_login_link)
+        parsed_link = furl(oidc_login_link["href"])
+        self.assertEqual(parsed_link.args["next"], "/foo")
 
     def test_config_not_found(self):
         assert not OIDCClient.objects.exists()
