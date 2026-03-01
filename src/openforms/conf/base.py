@@ -328,7 +328,6 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "openforms.forms.context_processors.sdk_urls",
                 "openforms.utils.context_processors.settings",
             ],
         },
@@ -1306,7 +1305,6 @@ LOG_OUTGOING_REQUESTS_RESET_DB_SAVE_AFTER = config(
 #
 FLAGS = {
     "ENABLE_DEMO_PLUGINS": [],
-    "DISPLAY_SDK_INFORMATION": [],
     "DIGID_EHERKENNING_OIDC_STRICT": [
         {
             "condition": "boolean",
