@@ -9,6 +9,7 @@ from openforms.config.models import GlobalConfiguration, Theme
 from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.utils.decorators import conditional_search_engine_index
 from openforms.utils.mixins import UserIsStaffMixin
+from openforms.utils.sdk_static import get_sdk_urls
 
 from ..models import Form
 
@@ -45,7 +46,12 @@ class FormDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context[THEME_OVERRIDE_CONTEXT_VAR] = self.object.theme
+        context.update(
+            {
+                THEME_OVERRIDE_CONTEXT_VAR: self.object.theme,
+                **get_sdk_urls(),
+            }
+        )
         return context
 
 
@@ -60,9 +66,14 @@ class ThemePreviewFormView(UserIsStaffMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context[THEME_OVERRIDE_CONTEXT_VAR] = self.theme
-        context["base_path"] = reverse(
-            "forms:theme-preview",
-            kwargs={"theme_pk": self.theme.pk, "slug": self.object.slug},
+        context.update(
+            {
+                THEME_OVERRIDE_CONTEXT_VAR: self.object.theme,
+                **get_sdk_urls(),
+                "base_path": reverse(
+                    "forms:theme-preview",
+                    kwargs={"theme_pk": self.theme.pk, "slug": self.object.slug},
+                ),
+            }
         )
         return context

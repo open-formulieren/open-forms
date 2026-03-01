@@ -4,7 +4,7 @@ from django.conf import settings
 from django.templatetags.static import static
 
 
-def sdk_urls(request):
+def get_sdk_urls():
     # use the locally included SDK build rather than referring to a hosted variant,
     # which is intended more for 3rd party CMS'es.
     sdk_path = Path("sdk/")
