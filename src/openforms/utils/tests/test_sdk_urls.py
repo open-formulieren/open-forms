@@ -1,7 +1,11 @@
 from django.test import TestCase, override_settings
 
+from unittest_parametrize import ParametrizedTestCase, param, parametrize
 
-class StableSDKUrlTests(TestCase):
+from ..sdk_static import get_sdk_urls
+
+
+class StableSDKUrlTests(ParametrizedTestCase, TestCase):
     """
     Ensure that stable SDK URLs can be used, independent of which version is deployed.
 
@@ -11,39 +15,37 @@ class StableSDKUrlTests(TestCase):
     which emits a 302 redirect to the correct asset location.
     """
 
+    def setUp(self):
+        super().setUp()
+
+        get_sdk_urls.cache_clear()
+        self.addCleanup(get_sdk_urls.cache_clear)
+
+    @parametrize(
+        ("stable_url", "resolved_url"),
+        [
+            param(
+                "/static/sdk/open-forms-sdk.js",
+                "/static/sdk/1.2.3/bundles/open-forms-sdk.js",
+                id="umd",
+            ),
+            param(
+                "/static/sdk/open-forms-sdk.mjs",
+                "/static/sdk/1.2.3/bundles/open-forms-sdk.mjs",
+                id="esm",
+            ),
+            param(
+                "/static/sdk/open-forms-sdk.css",
+                "/static/sdk/1.2.3/bundles/open-forms-sdk.css",
+                id="css",
+            ),
+        ],
+    )
     @override_settings(SDK_RELEASE="1.2.3")
-    def test_sdk_latest(self):
-        base = "/static/sdk/"
+    def test_sdk_latest(self, stable_url: str, resolved_url: str):
+        response = self.client.get(stable_url)
 
-        js_url = f"{base}open-forms-sdk.js"
-        with self.subTest(js_url=js_url):
-            js_response = self.client.get(js_url)
-
-            self.assertRedirects(
-                js_response,
-                f"{base}1.2.3/bundles/open-forms-sdk.js",
-                fetch_redirect_response=False,
-            )
-
-        mjs_url = f"{base}open-forms-sdk.mjs"
-        with self.subTest(js_url=mjs_url):
-            js_response = self.client.get(mjs_url)
-
-            self.assertRedirects(
-                js_response,
-                f"{base}1.2.3/bundles/open-forms-sdk.mjs",
-                fetch_redirect_response=False,
-            )
-
-        css_url = f"{base}open-forms-sdk.css"
-        with self.subTest(css_url=css_url):
-            css_response = self.client.get(css_url)
-
-            self.assertRedirects(
-                css_response,
-                f"{base}1.2.3/bundles/open-forms-sdk.css",
-                fetch_redirect_response=False,
-            )
+        self.assertRedirects(response, resolved_url, fetch_redirect_response=False)
 
     def test_invalid_extension(self):
         response = self.client.get("/static/sdk/open-forms-sdk.svg")

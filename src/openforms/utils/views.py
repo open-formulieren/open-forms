@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.generic import RedirectView, TemplateView
 
+from csp.decorators import csp_exempt
 from rest_framework import exceptions as drf_exceptions
 
 from openforms.emails.context import get_wrapper_context
@@ -42,6 +43,7 @@ class ErrorDetailView(TemplateView):
         return context
 
 
+@method_decorator(csp_exempt(), name="dispatch")
 @method_decorator(never_cache, name="dispatch")
 class SDKRedirectView(RedirectView):
     permanent = False

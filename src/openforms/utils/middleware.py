@@ -27,6 +27,9 @@ class UpdateCSPMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
 
+        if getattr(response, "_csp_exempt", False):
+            return response
+
         update = self.get_csp_update()
         if not update:
             return response
