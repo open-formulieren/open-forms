@@ -1,4 +1,5 @@
 from django.contrib.sessions.backends.base import SessionBase
+from django.core import mail
 from django.core.cache import cache
 from django.test import override_settings, tag
 from django.urls import reverse
@@ -9,10 +10,12 @@ from django_webtest import WebTest
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.frontend.tests import FrontendRedirectMixin
-from openforms.submissions.tests.factories import SubmissionFactory
+
+from ..constants import COSIGN_VERIFICATION_SESSION_KEY
+from .factories import SubmissionFactory
 
 
-class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
+class SearchSubmissionForCosignViewTests(FrontendRedirectMixin, WebTest):
     def setUp(self) -> None:
         super().setUp()
 
@@ -60,15 +63,27 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
         form["code"] = submission.public_registration_reference
         submission_response = form.submit()
 
-        self.assertRedirectsToFrontend(
+        self.assertRedirects(
             submission_response,
-            frontend_base_url="http://url-to-form.nl/",
-            action="cosign",
-            action_params={
-                "submission_uuid": str(submission.uuid),
-            },
-            fetch_redirect_response=False,
+            reverse(
+                "submissions:otp-for-cosign", kwargs={"form_slug": "form-to-cosign"}
+            ),
         )
+        self.assertEqual(
+            self.app.session[COSIGN_VERIFICATION_SESSION_KEY], submission.pk
+        )
+        # expect OTP email
+        self.assertEqual(len(mail.outbox), 1)
+
+        # self.assertRedirectsToFrontend(
+        #     submission_response,
+        #     frontend_base_url="http://url-to-form.nl/",
+        #     action="cosign",
+        #     action_params={
+        #         "submission_uuid": str(submission.uuid),
+        #     },
+        #     fetch_redirect_response=False,
+        # )
 
     def test_successfully_resolve_code_from_GET_params(self):
         submission = SubmissionFactory.from_components(
@@ -106,15 +121,27 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
             {"code": submission.public_registration_reference},
         )
 
-        self.assertRedirectsToFrontend(
+        self.assertRedirects(
             response,
-            frontend_base_url="http://url-to-form.nl/",
-            action="cosign",
-            action_params={
-                "submission_uuid": str(submission.uuid),
-            },
-            fetch_redirect_response=False,
+            reverse(
+                "submissions:otp-for-cosign", kwargs={"form_slug": "form-to-cosign"}
+            ),
         )
+        self.assertEqual(
+            self.app.session[COSIGN_VERIFICATION_SESSION_KEY], submission.pk
+        )
+        # expect OTP email
+        self.assertEqual(len(mail.outbox), 1)
+
+        # self.assertRedirectsToFrontend(
+        #     response,
+        #     frontend_base_url="http://url-to-form.nl/",
+        #     action="cosign",
+        #     action_params={
+        #         "submission_uuid": str(submission.uuid),
+        #     },
+        #     fetch_redirect_response=False,
+        # )
 
     def test_user_no_auth_details_in_session(self):
         SubmissionFactory.from_components(
@@ -140,6 +167,9 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
             ),
             status=403,
         )
+
+        self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_user_has_authenticated_with_wrong_plugin(self):
         SubmissionFactory.from_components(
@@ -175,6 +205,9 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
             ),
             status=403,
         )
+
+        self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_wrong_form_slug_gives_error(self):
         SubmissionFactory.from_components(
@@ -256,6 +289,8 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
             "Could not find a submission corresponding to this code that requires co-signing",
             error_node.text.strip(),
         )
+        self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_submission_already_cosigned_raises_error(self):
         submission = SubmissionFactory.from_components(
@@ -303,6 +338,8 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
             "Could not find a submission corresponding to this code that requires co-signing"
         )
         self.assertEqual(error_node.text.strip(), expected_message)
+        self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
+        self.assertEqual(len(mail.outbox), 0)
 
     @override_settings(LANGUAGE_CODE="en")
     def test_logout_button(self):
@@ -347,17 +384,7 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
 
         self.assertEqual(title_node.text.strip(), "You successfully logged out.")
 
-
-@tag("security-40", "GHSA-2g49-rfm6-5qj5")
-class AccessControlTests(FrontendRedirectMixin, WebTest):
-    def setUp(self) -> None:
-        super().setUp()
-
-        self.addCleanup(cache.clear)
-
-        # Needed so that when we get self.app.session we get a session object and not a dict
-        self.app.get("/", status=403)
-
+    @tag("security-40", "GHSA-2g49-rfm6-5qj5")
     def test_submission_must_require_cosign(self):
         submission = SubmissionFactory.from_components(
             form__authentication_backend="digid",
@@ -398,7 +425,18 @@ class AccessControlTests(FrontendRedirectMixin, WebTest):
         submission_response = form.submit()
 
         self.assertEqual(submission_response.status_code, 200)
+        self.assertFormError(
+            submission_response.context["form"],
+            field=None,
+            errors=_(
+                "Could not find a submission corresponding to this code that "
+                "requires co-signing"
+            ),
+        )
+        self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
+        self.assertEqual(len(mail.outbox), 0)
 
+    @tag("security-40", "GHSA-2g49-rfm6-5qj5")
     def test_rate_limiting_on_submission_lookup_via_code(self):
         SubmissionFactory.from_components(
             form__authentication_backend="digid",
@@ -444,3 +482,48 @@ class AccessControlTests(FrontendRedirectMixin, WebTest):
             last_response = _try_lookup()
 
         self.assertEqual(last_response.status_code, 429)
+
+    @tag("security-40", "GHSA-2g49-rfm6-5qj5")
+    def test_session_resets_on_navigating_back(self):
+        submission = SubmissionFactory.from_components(
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            completed=True,
+            cosign_complete=False,
+            form__slug="form-to-cosign",
+            form_url="http://url-to-form.nl/startpagina",
+            public_registration_reference="OF-IMAREFERENCE",
+        )
+        session = self.app.session
+        assert isinstance(session, SessionBase)
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
+        }
+        session.save()
+        url = reverse(
+            "submissions:find-submission-for-cosign",
+            kwargs={"form_slug": "form-to-cosign"},
+        )
+        response = self.app.get(
+            url, {"code": submission.public_registration_reference}
+        ).follow()
+        assert COSIGN_VERIFICATION_SESSION_KEY in self.app.session
+        self.assertTemplateUsed(response, "submissions/cosign_otp.html")
+
+        # simulate navigating back
+        response2 = response.click(description=_("Go back"))
+
+        self.assertEqual(response2.status_code, 200)
+        self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)

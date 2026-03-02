@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from django.db import models
+from django.template import loader
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext, gettext_lazy as _
@@ -56,3 +57,15 @@ class CosignOTP(models.Model):
     @property
     def is_expired(self) -> bool:
         return self.expires_at <= timezone.now()
+
+    def render_email_template(self) -> str:
+        assert self.submission.is_completed
+        assert self.expires_at > timezone.now()
+        template = loader.get_template("emails/co_sign/otp.html")
+        formatted_code = f"{self.verification_code[:3]}-{self.verification_code[3:]}"
+        context = {
+            "public_reference": self.submission.public_registration_reference,
+            "otp": formatted_code,
+            "expires_at": self.expires_at,
+        }
+        return template.render(context)

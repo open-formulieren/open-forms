@@ -10,6 +10,7 @@ class EmailEventChoices(models.TextChoices):
     registration = "registration", _("Registration")
     confirmation = "confirmation", _("Confirmation")
     cosign_request = "cosign_request", _("Co-sign request")
+    cosign_otp = "cosign_otp", _("Co-sign OTP")
 
 
 class EmailContentTypeChoices(models.TextChoices):

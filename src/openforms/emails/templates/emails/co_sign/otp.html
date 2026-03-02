@@ -1,0 +1,16 @@
+{% load i18n %}
+{# Email with the one-time password code for cosign access verification #}
+
+{% blocktranslate %}
+<p style="text-align: center;">
+    Your one-time password for the submission
+    "{{ public_reference }}" is:
+</p>
+
+<p style="text-align: center;">
+    <strong style="font-size: 200%;">{{ otp }}</strong>
+</p>
+<p style="text-align: center;">
+    The code is valid until {{ expires_at }}.
+</p>
+{% endblocktranslate %}

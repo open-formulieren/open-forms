@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import check_password as check_salted_hash
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, resolve_url
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.utils.translation import gettext_lazy as _
@@ -28,9 +28,10 @@ from openforms.forms.models import Form
 from openforms.frontend import get_frontend_redirect_url
 from openforms.tokens import BaseTokenGenerator
 
-from .constants import RegistrationStatuses
+from .constants import COSIGN_VERIFICATION_SESSION_KEY, RegistrationStatuses
+from .cosigning import send_cosign_otp
 from .exceptions import FormDeactivated, FormMaintenance, FormMaximumSubmissions
-from .forms import SearchSubmissionForCosignForm
+from .forms import CosignOTPForm, SearchSubmissionForCosignForm
 from .models import Submission, SubmissionFileAttachment, SubmissionReport
 from .signals import submission_resumed
 from .tokens import submission_report_token_generator, submission_resume_token_generator
@@ -314,6 +315,10 @@ class SearchSubmissionForCosignFormView(ThrottleMixin, UserPassesTestMixin, Form
             return False
 
     def get(self, request: HttpRequest, *args, **kwargs):
+        # reset potential abandoned state if this page is re-requested
+        if COSIGN_VERIFICATION_SESSION_KEY in self.request.session:
+            del self.request.session[COSIGN_VERIFICATION_SESSION_KEY]
+
         # If we have a code param in the query string, apply the shortcuts and skip
         # the actual lookup screen - the code is already provided in the URL
         if request.GET.get("code"):
@@ -331,12 +336,74 @@ class SearchSubmissionForCosignFormView(ThrottleMixin, UserPassesTestMixin, Form
 
     def form_valid(self, form: SearchSubmissionForCosignForm):
         self.submission = form.cleaned_data["submission"]
-        assert self.submission
-        add_submmission_to_session(self.submission, self.request.session)
+        assert self.submission is not None
+        send_cosign_otp(self.submission)
+        # store the submission reference in the session so we can look it up in the
+        # OTP view (and re-validate!)
+        self.request.session[COSIGN_VERIFICATION_SESSION_KEY] = self.submission.pk
         return super().form_valid(form)
 
     def get_success_url(self):
-        assert self.submission
+        return resolve_url(
+            "submissions:otp-for-cosign",
+            form_slug=self.kwargs["form_slug"],
+        )
+
+
+class CosignOTPFormView(ThrottleMixin, UserPassesTestMixin, FormView):
+    form_class = CosignOTPForm
+    template_name = "submissions/cosign_otp.html"
+    raise_exception = True
+
+    throttle_visits = 5
+    throttle_period = ONE_MINUTE
+
+    submission: Submission | None = None
+
+    def test_func(self):
+        """
+        Verify that the user has access to the OTP step for the cosign flow.
+
+        * The user must have authenticated with one of the auth plugin specified on the
+          form.
+        * The submission in the session from the lookup step (see
+          :class:`SearchSubmissionForCosignFormView`) must belong to the form in the
+          URL parameters (as people can tamper with URLs).
+        * The submission must have cosign enabled and not be cosigned yet.
+        """
+        form = get_object_or_404(Form, slug=self.kwargs["form_slug"])
+        try:
+            plugin_id = get_authentication_plugin(self.request, form)
+            if not meets_plugin_requirements(self.request, form, plugin_id):
+                return False
+        except (ValueError, KeyError):
+            return False
+
+        # check that the submission is in the session...
+        submission_pk = self.request.session.get(COSIGN_VERIFICATION_SESSION_KEY)
+        if not submission_pk:
+            return False
+        submission = get_object_or_404(Submission, pk=submission_pk, form=form)
+        # ... and that it is in a desirable state!
+        if not submission.cosign_state.is_waiting:
+            return False
+
+        self.submission = submission
+        return True
+
+    def get_form_kwargs(self):
+        super_kwargs = super().get_form_kwargs()
+        super_kwargs["instance"] = self.submission
+        return super_kwargs
+
+    def form_valid(self, form: CosignOTPForm):
+        assert self.submission is not None
+        add_submmission_to_session(self.submission, self.request.session)
+        del self.request.session[COSIGN_VERIFICATION_SESSION_KEY]
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        assert self.submission is not None
         return get_frontend_redirect_url(
             self.submission,
             action="cosign",

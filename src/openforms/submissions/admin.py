@@ -653,6 +653,26 @@ class CosignOTPAdmin(admin.ModelAdmin):
     )
     ordering = ("-pk",)
 
+    def get_list_display(self, request):
+        list_display = super().get_list_display(request)
+        assert isinstance(list_display, tuple)
+        if settings.DEBUG:
+            list_display += ("dev_debug",)
+        return list_display
+
     @admin.display(description=_("is usable"), boolean=True)
     def is_usable(self, obj: CosignOTP) -> bool:
         return not obj.is_expired
+
+    @admin.display(description="DEV/DEBUG")
+    def dev_debug(self, obj: CosignOTP):  # pragma: no cover
+        if not settings.DEBUG:
+            raise ImproperlyConfigured("Development-only admin feature!")
+
+        links: list[tuple[str, StrOrPromise]] = [
+            (
+                reverse("dev-email-cosign-otp", kwargs={"otp_id": obj.pk}),
+                _("OTP email preview"),
+            ),
+        ]
+        return format_html_join(" | ", '<a href="{}" target="_blank">{}</a>', links)
