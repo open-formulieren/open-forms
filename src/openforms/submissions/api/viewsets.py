@@ -616,6 +616,7 @@ class SubmissionStepViewSet(
         """
         instance, serializer = self._validate_step_input(request)
         create = instance.pk is None
+        first_time_submitted = not instance.completed
         instance.completed = True
         serializer.save()
 
@@ -657,7 +658,7 @@ class SubmissionStepViewSet(
             attributes={
                 "openforms.step.name": instance.form_step.form_definition.name,
                 "openforms.step.number": current_step_index + 1,
-                "type": "create" if create else "update",
+                "type": "create" if first_time_submitted else "update",
                 "openforms.form.name": submission.form.name,
                 "openforms.form.uuid": str(submission.form.uuid),
             },
