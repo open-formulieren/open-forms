@@ -1,4 +1,5 @@
-from django.test import override_settings
+from django.contrib.sessions.backends.base import SessionBase
+from django.test import override_settings, tag
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -342,3 +343,53 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
         title_node = logout_response.html.find("h1")
 
         self.assertEqual(title_node.text.strip(), "You successfully logged out.")
+
+
+@tag("security-40", "GHSA-2g49-rfm6-5qj5")
+class AccessControlTests(FrontendRedirectMixin, WebTest):
+    def setUp(self) -> None:
+        super().setUp()
+
+        # Needed so that when we get self.app.session we get a session object and not a dict
+        self.app.get("/", status=403)
+
+    def test_submission_must_require_cosign(self):
+        submission = SubmissionFactory.from_components(
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
+            components_list=[
+                {
+                    "key": "textfield",
+                    "type": "textfield",
+                    "label": "Not cosign component",
+                },
+            ],
+            submitted_data={"textfield": "misc"},
+            completed=True,
+            cosign_complete=False,
+            form__slug="form-without-cosign",
+            form_url="http://url-to-form.nl/startpagina",
+            public_registration_reference="OF-IMAREFERENCE",
+        )
+        session = self.app.session
+        assert isinstance(session, SessionBase)
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
+        }
+        session.save()
+
+        response = self.app.get(
+            reverse(
+                "submissions:find-submission-for-cosign",
+                kwargs={"form_slug": "form-without-cosign"},
+            )
+        )
+
+        form = response.forms[0]
+        form["code"] = submission.public_registration_reference
+        submission_response = form.submit()
+
+        self.assertEqual(submission_response.status_code, 200)
