@@ -107,7 +107,7 @@ class FormUserSessionExpiryTests(APITestCase):
                     response.data["steps"][0]["url"], {"data": {"foo": "bar"}}
                 )
 
-                self.assertEqual(step1_response.status_code, status.HTTP_201_CREATED)
+                self.assertEqual(step1_response.status_code, status.HTTP_200_OK)
                 session = step1_response.wsgi_request.session
                 expected_expiry = datetime(2021, 7, 29, 14, 6).replace(tzinfo=UTC)
                 self.assertEqual(session.get_expiry_date(), expected_expiry)
@@ -121,7 +121,7 @@ class FormUserSessionExpiryTests(APITestCase):
                     response.data["steps"][1]["url"], {"data": {"foo": "bar"}}
                 )
 
-                self.assertEqual(step2_response.status_code, status.HTTP_201_CREATED)
+                self.assertEqual(step2_response.status_code, status.HTTP_200_OK)
                 session = step2_response.wsgi_request.session
                 expected_expiry = datetime(2021, 7, 29, 14, 10, 30).replace(tzinfo=UTC)
                 self.assertEqual(session.get_expiry_date(), expected_expiry)
