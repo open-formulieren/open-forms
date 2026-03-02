@@ -351,6 +351,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
+            completed=True,
         )
         self._add_submission_to_session(submission)
 
