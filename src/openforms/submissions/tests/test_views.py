@@ -1,4 +1,5 @@
 from django.contrib.sessions.backends.base import SessionBase
+from django.core.cache import cache
 from django.test import override_settings, tag
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -393,3 +394,51 @@ class AccessControlTests(FrontendRedirectMixin, WebTest):
         submission_response = form.submit()
 
         self.assertEqual(submission_response.status_code, 200)
+
+    def test_rate_limiting_on_submission_lookup_via_code(self):
+        self.addCleanup(cache.clear)
+
+        SubmissionFactory.from_components(
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            completed=True,
+            cosign_complete=False,
+            form__slug="form-to-cosign",
+            form_url="http://url-to-form.nl/startpagina",
+            public_registration_reference="OF-IMAREFERENCE",
+        )
+        session = self.client.session
+        assert isinstance(session, SessionBase)
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
+        }
+        session.save()
+        url = reverse(
+            "submissions:find-submission-for-cosign",
+            kwargs={"form_slug": "form-to-cosign"},
+        )
+        num_lookups = 0
+
+        def _try_lookup():
+            nonlocal num_lookups
+            num_lookups += 1
+            return self.client.post(url, data={"code": f"OF-{num_lookups:0>6}"})
+
+        # do 30 requests in a short time - this exceeds the configured rate limit
+        last_response = _try_lookup()
+        for __ in range(30):
+            last_response = _try_lookup()
+
+        self.assertEqual(last_response.status_code, 429)
