@@ -14,6 +14,7 @@ from django.views.generic.base import TemplateResponseMixin
 
 import structlog
 from furl import furl
+from maykin_common.throttling import ONE_MINUTE, ThrottleMixin
 from privates.views import PrivateMediaView
 from rest_framework.reverse import reverse
 
@@ -290,10 +291,13 @@ class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
         return opts
 
 
-class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
+class SearchSubmissionForCosignFormView(ThrottleMixin, UserPassesTestMixin, FormView):
     form_class = SearchSubmissionForCosignForm
     template_name = "submissions/find_submission_for_cosign.html"
     raise_exception = True
+
+    throttle_visits = 5
+    throttle_period = ONE_MINUTE
 
     form = None
     submission: Submission | None = None

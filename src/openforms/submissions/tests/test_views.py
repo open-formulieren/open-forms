@@ -16,6 +16,8 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
     def setUp(self) -> None:
         super().setUp()
 
+        self.addCleanup(cache.clear)
+
         # Needed so that when we get self.app.session we get a session object and not a dict
         self.app.get("/", status=403)
 
@@ -351,6 +353,8 @@ class AccessControlTests(FrontendRedirectMixin, WebTest):
     def setUp(self) -> None:
         super().setUp()
 
+        self.addCleanup(cache.clear)
+
         # Needed so that when we get self.app.session we get a session object and not a dict
         self.app.get("/", status=403)
 
@@ -396,8 +400,6 @@ class AccessControlTests(FrontendRedirectMixin, WebTest):
         self.assertEqual(submission_response.status_code, 200)
 
     def test_rate_limiting_on_submission_lookup_via_code(self):
-        self.addCleanup(cache.clear)
-
         SubmissionFactory.from_components(
             form__authentication_backend="digid",
             form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
