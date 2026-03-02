@@ -37,7 +37,6 @@ from .utils import (
     get_component_empty_value,
     iter_components,
     iterate_data_with_components,
-    recursive_apply,
 )
 from .variables import inject_variables
 from .visibility import process_visibility
@@ -55,7 +54,6 @@ __all__ = [
     "FormioConfigurationWrapper",
     "FormioData",
     "iterate_data_with_components",
-    "recursive_apply",
     "build_serializer",
     "rewrite_formio_components",
     "as_json_schema",

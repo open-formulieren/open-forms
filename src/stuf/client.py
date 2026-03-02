@@ -12,6 +12,7 @@ Whenever you are implementing a particular StUF integration, you are expected to
 subclass the base class and implement your domain specific logic in your own class.
 """
 
+import copy
 import uuid
 from typing import Any, Literal, Protocol
 
@@ -26,6 +27,7 @@ from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
 
 from .constants import EndpointType
 from .stuf import StuurGegevens, WSSecurity
+from .xml import sanitize_users_input_data
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -211,14 +213,22 @@ class BaseClient(APIClient):
         The context is merged with the base context and the resolved template is
         rendered into a string, suitable to be passed down to :meth:`request`.
         """
-        full_context = {**self.build_base_context(), **(context or {})}
+        initial_full_context = {**self.build_base_context(), **(context or {})}
         structlog.contextvars.bind_contextvars(
             standard="StUF",
             sector_alias=self.sector_alias.upper(),
-            referentienummer=full_context["referentienummer"],
+            soap_action=soap_action,
+            referentienummer=initial_full_context["referentienummer"],
         )
+
+        sanitized_full_context = sanitize_users_input_data(
+            copy.deepcopy(initial_full_context)
+        )
+        if sanitized_full_context != initial_full_context:
+            logger.warning("illegal_xml_characters_removed")
+
         logger.debug("prepare_and_make_request")
-        body = loader.render_to_string(template, full_context)
+        body = loader.render_to_string(template, sanitized_full_context)
         response = self.soap_request(
             soap_action, body=body, endpoint_type=endpoint_type
         )
