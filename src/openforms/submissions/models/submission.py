@@ -638,7 +638,9 @@ class Submission(models.Model):
             else:
                 # there's no known DB record for this, so we create a fresh, unsaved
                 # instance and return this
-                step = SubmissionStep(uuid=None, submission=self, form_step=form_step)
+                step = SubmissionStep(
+                    uuid=None, submission=self, form_step=form_step, completed=False
+                )
             steps.append(step)
 
         state = SubmissionState(

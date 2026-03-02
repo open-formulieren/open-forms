@@ -248,6 +248,11 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         allow_null=True,
         validators=[ValidatePrefillData()],
     )
+    completed = serializers.BooleanField(
+        label=_("completed"),
+        help_text=_("Whether the submission was completed."),
+        read_only=True,
+    )
 
     parent_lookup_kwargs = {
         "submission_uuid": "submission__uuid",
