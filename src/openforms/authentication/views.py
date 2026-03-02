@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMi
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.http import (
+    HttpResponse,
     HttpResponseBadRequest,
     HttpResponseBase,
     HttpResponseNotAllowed,
@@ -241,6 +242,11 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
 
         return response
 
+    def head(self, request: Request, *args, **kwargs) -> HttpResponse:
+        # not really used by a user, implemented in order to handle possible requests
+        # from security scanners for example
+        return HttpResponse(status=200)
+
 
 COMMON_RETURN_RESPONSES = {
     302: None,
@@ -449,6 +455,11 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
     )
     def post(self, request, *args, **kwargs):
         return self._handle_return(request, *args, **kwargs)
+
+    def head(self, request: Request, *args, **kwargs) -> HttpResponse:
+        # not really used by a user, implemented in order to handle possible requests
+        # from security scanners for example
+        return HttpResponse(status=200)
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
