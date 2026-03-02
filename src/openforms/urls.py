@@ -125,6 +125,11 @@ if settings.DEBUG:  # pragma: nocover
             name="dev-email-registration",
         ),
         path(
+            "dev/email/cosign-otp/<int:otp_id>",
+            EmailWrapperTestView.as_view(),
+            name="dev-email-cosign-otp",
+        ),
+        path(
             "dev/submissions/<int:pk>/pdf",
             SubmissionPDFTestView.as_view(),
             name="dev-submissions-pdf",

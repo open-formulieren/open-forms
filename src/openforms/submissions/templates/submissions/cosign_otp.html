@@ -1,0 +1,66 @@
+{% extends 'ui/views/abstract/detail.html' %}
+{% load i18n %}
+
+{% block card %}
+    <div class="openforms-card">
+        <header class="openforms-card__header">
+            <h1 class="title">
+                {% trans "Retrieve submission for co-signing" %}
+            </h1>
+        </header>
+
+        <div class="openforms-card__body">
+            {% block card_body %}
+                <div class="body">
+
+                    <form method="post" action="." id="find-submission-form">
+                        {% csrf_token %}
+                        {% include "includes/forms/errorlist.html" with errors=form.non_field_errors only %}
+                        {% include "includes/forms/field_wrapper.html" with field=form.otp type='text' only %}
+                    </form>
+
+                    <form method="post" action="{% url "authentication:logout" %}" id="logout-form">
+                        {% csrf_token %}
+                    </form>
+
+                    <p role="group" class="utrecht-button-group utrecht-button-group--column openforms-form-navigation">
+                        <button
+                            class="utrecht-button utrecht-button--submit utrecht-button--primary-action openforms-form-navigation__next-button"
+                            type="submit"
+                            form="find-submission-form"
+                            name="next"
+                        >
+                            {% trans "Submit" %}
+                            <span class="utrecht-icon" aria-hidden="true">
+                                <i class="fa fas fa-fw fa-icon" aria-hidden="true"></i>
+                            </span>
+                        </button>
+
+                        <a
+                            href="{% url 'submissions:find-submission-for-cosign' form_slug=view.kwargs.form_slug %}"
+                            class="utrecht-link openforms-previous-link openforms-previous-link--end utrecht-link--html-a utrecht-link--openforms"
+                        >
+                            <span aria-hidden="true" class="utrecht-icon">
+                                <i class="fa fas fa-icon fa-fw" aria-hidden="true"></i>
+                            </span>
+                            {% trans "Go back" %}
+                        </a>
+
+                        <button
+                            class="utrecht-link-button utrecht-link-button--html-button openforms-abort-button"
+                            type="submit"
+                            form="logout-form"
+                            name="abort"
+                        >
+                            <span class="utrecht-icon" aria-hidden="true">
+                                <i class="fa fas fa-fw  fa-icon" aria-hidden="true"></i>
+                            </span>
+                            {% trans "Log out" %}
+                        </button>
+                    </p>
+
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

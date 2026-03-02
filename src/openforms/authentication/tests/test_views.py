@@ -15,6 +15,7 @@ from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.config.tests.factories import ThemeFactory
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
@@ -326,6 +327,29 @@ class AuthenticationFlowTests(APITestCase):
                     )
 
                     self.assertEqual(response.status_code, expected_status)
+
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_login_creates_audit_log_record(self):
+        register = Registry()
+        register("plugin1")(Plugin)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            authentication_backend="plugin1",
+            formstep__form_definition__login_required=True,
+        )
+        plugin = register["plugin1"]
+        factory = RequestFactory()
+        return_view = AuthenticationReturnView.as_view(register=register)
+        url = plugin.get_return_url(factory.get("/irrelevant"), form)
+        request = factory.get(url, {"next": "http://foo.bar"})
+
+        response = return_view(request, slug=form.slug, plugin_id=plugin.identifier)
+
+        self.assertEqual(response.status_code, 302)
+        log_records = TimelineLogProxy.objects.for_object(form).filter_event(
+            "user_authenticated"
+        )
+        self.assertEqual(log_records.count(), 1)
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
