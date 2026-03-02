@@ -28,11 +28,17 @@ class SearchSubmissionForCosignForm(forms.Form):
             form=self.form,
             cosign_complete=False,
         ).first()
+        err_msg = _(
+            "Could not find a submission corresponding to this code that requires "
+            "co-signing"
+        )
         if not submission:
-            raise ValidationError(
-                _(
-                    "Could not find a submission corresponding to this code that requires co-signing"
-                )
-            )
+            raise ValidationError(err_msg)
+
+        # check that we actually expect cosign for this submission
+        if not submission.cosign_state.is_waiting:
+            raise ValidationError(err_msg)
+
         self.cleaned_data["submission"] = submission
+
         return self.cleaned_data
