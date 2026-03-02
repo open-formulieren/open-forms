@@ -272,3 +272,45 @@ class SubmissionStartTests(APITestCase):
 
         response = self.client.post(self.endpoint, body)
         self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    def test_submission_steps_created(self):
+        form = FormFactory.create(name="Cool form", slug="cool-form")
+        step_1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "label": "Textfield",
+                        "key": "textfield",
+                    }
+                ]
+            },
+        )
+        step_2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "label": "Number",
+                        "key": "number",
+                    }
+                ]
+            },
+        )
+
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        body = {
+            "form": f"http://testserver.com{form_url}",
+            "formUrl": "http://testserver.com/cool-form",
+        }
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        submission = Submission.objects.get()
+        self.assertEqual(submission.submissionstep_set.count(), 2)
+        sstep_1, sstep_2 = submission.submissionstep_set.all()
+        self.assertEqual(sstep_1.form_step, step_1)
+        self.assertEqual(sstep_2.form_step, step_2)

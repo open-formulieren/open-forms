@@ -277,7 +277,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
         data = submitted_data or {}
         SubmissionStepFactory.create(
-            submission=submission, form_step=form_step, data=data
+            submission=submission, form_step=form_step, data=data, completed=True
         )
 
         # When the submission was initially created, the method calculate_price has already
@@ -306,6 +306,7 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
     form_step = factory.SubFactory(
         FormStepFactory, form=factory.SelfAttribute("..submission.form")
     )
+    completed = False
 
     class Meta:
         model = SubmissionStep
@@ -315,7 +316,12 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
         cls,
         **kwargs,
     ) -> SubmissionStep:
+        has_data = "data" in kwargs
         step_data = FormioData(kwargs.pop("data", {}))
+        # If data was passed, it means the step was submitted, so we should mark it
+        # accordingly.
+        if has_data:
+            kwargs["completed"] = True
         submission_step = super().create(**kwargs)
 
         form_variables = submission_step.submission.form.formvariable_set.all()
