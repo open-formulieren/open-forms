@@ -1,3 +1,4 @@
+from .cosign import CosignOTP
 from .email_verification import EmailVerification
 from .post_completion_metadata import PostCompletionMetadata
 from .submission import Submission
@@ -26,4 +27,5 @@ __all__ = [
     "submission_file_upload_to",
     "temporary_file_upload_to",
     "EmailVerification",
+    "CosignOTP",
 ]

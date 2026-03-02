@@ -30,6 +30,7 @@ from openforms.typing import StrOrPromise
 from .constants import IMAGE_COMPONENTS, PostSubmissionEvents, RegistrationStatuses
 from .exports import ExportFileTypes, export_submissions
 from .models import (
+    CosignOTP,
     EmailVerification,
     Submission,
     SubmissionFileAttachment,
@@ -639,3 +640,19 @@ class EmailVerificationAdmin(admin.ModelAdmin):
     @admin.display(description=_("is verified"), boolean=True)
     def is_verified(self, obj: EmailVerification) -> bool:
         return obj.verified_on is not None
+
+
+@admin.register(CosignOTP)
+class CosignOTPAdmin(admin.ModelAdmin):
+    list_display = ("submission", "is_usable", "expires_at")
+    list_select_related = ("submission",)
+    list_filter = ("expires_at",)
+    search_fields = (
+        "submission__uuid",
+        "submission__public_registration_reference",
+    )
+    ordering = ("-pk",)
+
+    @admin.display(description=_("is usable"), boolean=True)
+    def is_usable(self, obj: CosignOTP) -> bool:
+        return not obj.is_expired
