@@ -36,7 +36,6 @@ from .typing import (
 from .utils import (
     iter_components,
     iterate_data_with_components,
-    recursive_apply,
 )
 from .variables import inject_variables
 
@@ -53,7 +52,6 @@ __all__ = [
     "FormioConfigurationWrapper",
     "FormioData",
     "iterate_data_with_components",
-    "recursive_apply",
     "build_serializer",
     "rewrite_formio_components",
     "as_json_schema",

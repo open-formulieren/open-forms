@@ -6,10 +6,11 @@ import structlog
 
 from openforms.template import parse, render_from_string
 from openforms.typing import JSONObject, JSONValue
+from openforms.utils.helpers import recursively_apply_function
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
-from .utils import flatten_by_path, recursive_apply
+from .utils import flatten_by_path
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -28,7 +29,7 @@ SUPPORTED_TEMPLATE_PROPERTIES = (
 
 
 def render(formio_bit: JSONValue, context: dict) -> JSONValue:
-    return recursive_apply(formio_bit, render_from_string, context=context)
+    return recursively_apply_function(formio_bit, render_from_string, context=context)
 
 
 def iter_template_properties(component: Component) -> Iterator[tuple[str, JSONValue]]:
@@ -59,7 +60,7 @@ def validate_configuration(configuration: JSONObject) -> dict[str, str]:
     for path, component in flattened_components.items():
         for property_name, property_value in iter_template_properties(component):
             try:
-                recursive_apply(property_value, parse)
+                recursively_apply_function(property_value, parse)
             except TemplateSyntaxError:
                 errored_components[component["key"]] = f"{path}.{property_name}"
     return errored_components
