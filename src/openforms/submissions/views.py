@@ -4,7 +4,7 @@ from pathlib import Path
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, resolve_url
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.utils.translation import gettext_lazy as _
@@ -13,11 +13,13 @@ from django.views.generic.base import TemplateResponseMixin
 
 import structlog
 from furl import furl
+from maykin_common.throttling import ONE_MINUTE, ThrottleMixin
 from privates.views import PrivateMediaView
 from rest_framework.reverse import reverse
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.authentication.service import check_user_is_submission_initiator
+from openforms.authentication.typing import BaseAuth
 from openforms.authentication.utils import (
     get_authentication_plugin,
     is_authenticated_with_plugin,
@@ -25,11 +27,15 @@ from openforms.authentication.utils import (
 )
 from openforms.forms.models import Form
 from openforms.frontend import get_frontend_redirect_url
+from openforms.logging import audit_logger
 from openforms.tokens import BaseTokenGenerator
+from openforms.typing import is_authenticated_request
+from openforms.utils.helpers import obfuscate
 
-from .constants import RegistrationStatuses
+from .constants import COSIGN_VERIFICATION_SESSION_KEY, RegistrationStatuses
+from .cosigning import send_cosign_otp
 from .exceptions import FormDeactivated, FormMaintenance, FormMaximumSubmissions
-from .forms import SearchSubmissionForCosignForm
+from .forms import CosignOTPForm, SearchSubmissionForCosignForm
 from .models import Submission, SubmissionFileAttachment, SubmissionReport
 from .signals import submission_resumed
 from .tokens import submission_report_token_generator, submission_resume_token_generator
@@ -163,7 +169,7 @@ class ResumeSubmissionView(ResumeFormMixin, RedirectView):
         state = submission.load_execution_state()
         last_completed_step = state.get_last_completed_step()
         target_step = last_completed_step or state.submission_steps[0]
-
+        assert target_step.form_step is not None
         return get_frontend_redirect_url(
             submission,
             action="resume",
@@ -229,6 +235,7 @@ class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
     permission_required = "submissions.view_submissionfileattachment"
 
     def has_permission(self):
+        assert is_authenticated_request(self.request)
         if not self.request.user.is_staff:
             return False
         return super().has_permission()
@@ -268,10 +275,13 @@ class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
         return opts
 
 
-class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
+class SearchSubmissionForCosignFormView(ThrottleMixin, UserPassesTestMixin, FormView):
     form_class = SearchSubmissionForCosignForm
     template_name = "submissions/find_submission_for_cosign.html"
     raise_exception = True
+
+    throttle_visits = 5
+    throttle_period = ONE_MINUTE
 
     form = None
     submission: Submission | None = None
@@ -287,13 +297,55 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
         except (ValueError, KeyError):
             return False
 
+    def handle_no_permission(self):
+        auth: BaseAuth | None = self.request.session.get(FORM_AUTH_SESSION_KEY)
+        # we can't use the form validation here as that only kicks in if the user passes
+        # the permission test function
+        if (
+            auth is not None
+            and (code := self.request.POST.get("code", self.request.GET.get("code")))
+            and (
+                submission := Submission.objects.filter(
+                    public_registration_reference=code
+                ).first()
+            )
+        ):
+            audit_logger.warning(
+                "cosign_lookup_blocked",
+                submission_uuid=str(submission.uuid),
+                auth_value=auth["value"],
+                auth_attribute=auth["attribute"],
+                auth_plugin=auth["plugin"],
+            )
+        return super().handle_no_permission()
+
+    def handle_rate_limit_exceeded(self):
+        form = Form.objects.filter(slug=self.kwargs["form_slug"]).first()
+        auth: BaseAuth | None = self.request.session.get(FORM_AUTH_SESSION_KEY)
+        if form:
+            audit_log = audit_logger.bind(form_id=form.pk)
+            if auth is not None:
+                audit_log = audit_log.bind(
+                    auth_value=auth["value"],
+                    auth_attribute=auth["attribute"],
+                    auth_plugin=auth["plugin"],
+                )
+            audit_log.warning("cosign_lookup_rate_limited")
+        return super().handle_rate_limit_exceeded()
+
     def get(self, request: HttpRequest, *args, **kwargs):
+        # reset potential abandoned state if this page is re-requested
+        if COSIGN_VERIFICATION_SESSION_KEY in self.request.session:
+            del self.request.session[COSIGN_VERIFICATION_SESSION_KEY]
+
         # If we have a code param in the query string, apply the shortcuts and skip
         # the actual lookup screen - the code is already provided in the URL
         if request.GET.get("code"):
             form = self.get_form()
             if form.is_valid():
                 return self.form_valid(form)
+            else:
+                return self.form_invalid(form)
         return super().get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -305,14 +357,169 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
         super_kwargs["request"] = self.request
         return super_kwargs
 
+    def form_invalid(self, form: SearchSubmissionForCosignForm):
+        assert self.form
+        auth: BaseAuth = self.request.session[FORM_AUTH_SESSION_KEY]
+        submission: Submission | None = form.cleaned_data.get("submission")
+
+        audit_log = audit_logger.bind(
+            auth_value=auth["value"],
+            auth_attribute=auth["attribute"],
+            auth_plugin=auth["plugin"],
+        )
+        if submission is not None:
+            audit_log.warning(
+                "cosign_lookup_blocked", submission_uuid=str(submission.uuid)
+            )
+        elif code := form.cleaned_data.get("code"):
+            audit_log.warning("cosign_lookup_failed", form_id=self.form.pk, code=code)
+
+        return super().form_invalid(form)
+
     def form_valid(self, form: SearchSubmissionForCosignForm):
         self.submission = form.cleaned_data["submission"]
-        assert self.submission
-        add_submmission_to_session(self.submission, self.request.session)
+        assert self.submission is not None
+        auth: BaseAuth = self.request.session[FORM_AUTH_SESSION_KEY]
+        audit_logger.info(
+            "cosign_lookup_success",
+            submission_uuid=str(self.submission.uuid),
+            auth_value=obfuscate(auth["value"]),
+            auth_attribute=auth["attribute"],
+            auth_plugin=auth["plugin"],
+        )
+        send_cosign_otp(self.submission)
+        # store the submission reference in the session so we can look it up in the
+        # OTP view (and re-validate!)
+        self.request.session[COSIGN_VERIFICATION_SESSION_KEY] = self.submission.pk
         return super().form_valid(form)
 
     def get_success_url(self):
+        return resolve_url(
+            "submissions:otp-for-cosign",
+            form_slug=self.kwargs["form_slug"],
+        )
+
+
+class CosignOTPFormView(ThrottleMixin, UserPassesTestMixin, FormView):
+    form_class = CosignOTPForm
+    template_name = "submissions/cosign_otp.html"
+    raise_exception = True
+
+    throttle_visits = 5
+    throttle_period = ONE_MINUTE
+
+    submission: Submission | None = None
+    _submission_queried: bool = False
+
+    def _get_submission(self) -> Submission | None:
+        if not self._submission_queried:
+            self._submission_queried = True
+            submission_pk = self.request.session.get(COSIGN_VERIFICATION_SESSION_KEY)
+            if submission_pk is None:
+                return None
+            self.submission = Submission.objects.filter(pk=submission_pk).first()
+        return self.submission
+
+    def test_func(self):
+        """
+        Verify that the user has access to the OTP step for the cosign flow.
+
+        * The user must have authenticated with one of the auth plugin specified on the
+          form.
+        * The submission in the session from the lookup step (see
+          :class:`SearchSubmissionForCosignFormView`) must belong to the form in the
+          URL parameters (as people can tamper with URLs).
+        * The submission must have cosign enabled and not be cosigned yet.
+        """
+        form = get_object_or_404(Form, slug=self.kwargs["form_slug"])
+        try:
+            plugin_id = get_authentication_plugin(self.request, form)
+            if not meets_plugin_requirements(self.request, form, plugin_id):
+                return False
+        except (ValueError, KeyError):
+            return False
+
+        # check that the submission is in the session...
+        if (submission := self._get_submission()) is None or submission.form != form:
+            return False
+        # ... and that it is in a desirable state!
+        if not submission.cosign_state.is_waiting:
+            return False
+        return True
+
+    def handle_no_permission(self):
+        # we can't use the form validation here as that only kicks in if the user passes
+        # the permission test function
+        auth: BaseAuth | None = self.request.session.get(FORM_AUTH_SESSION_KEY)
+        submission = self._get_submission()
+        audit_log = audit_logger.bind(form_slug=self.kwargs["form_slug"])
+        if auth is not None:
+            audit_log = audit_log.bind(
+                auth_value=auth["value"],
+                auth_attribute=auth["attribute"],
+                auth_plugin=auth["plugin"],
+            )
+        if submission is not None:
+            audit_log.warning(
+                "cosign_otp_blocked", submission_uuid=str(submission.uuid)
+            )
+        return super().handle_no_permission()
+
+    def handle_rate_limit_exceeded(self):
+        form = Form.objects.filter(slug=self.kwargs["form_slug"]).first()
+        auth: BaseAuth | None = self.request.session.get(FORM_AUTH_SESSION_KEY)
+        if form:
+            audit_log = audit_logger.bind(form_id=form.pk)
+
+            submission_pk = self.request.session.get(COSIGN_VERIFICATION_SESSION_KEY)
+            if submission_pk and (
+                submission := Submission.objects.filter(pk=submission_pk).first()
+            ):
+                audit_log = audit_log.bind(submission_uuid=str(submission.uuid))
+
+            if auth is not None:
+                audit_log = audit_log.bind(
+                    auth_value=auth["value"],
+                    auth_attribute=auth["attribute"],
+                    auth_plugin=auth["plugin"],
+                )
+
+            audit_log.warning("cosign_otp_rate_limited")
+        return super().handle_rate_limit_exceeded()
+
+    def get_form_kwargs(self):
+        super_kwargs = super().get_form_kwargs()
+        super_kwargs["instance"] = self.submission
+        return super_kwargs
+
+    def form_invalid(self, form: CosignOTPForm):
         assert self.submission
+        auth: BaseAuth = self.request.session[FORM_AUTH_SESSION_KEY]
+        audit_log = audit_logger.bind(
+            submission_uuid=str(self.submission.uuid),
+            auth_value=auth["value"],
+            auth_attribute=auth["attribute"],
+            auth_plugin=auth["plugin"],
+        )
+        audit_log.warning("cosign_otp_blocked")
+        return super().form_invalid(form)
+
+    def form_valid(self, form: CosignOTPForm):
+        assert self.submission is not None
+        auth: BaseAuth = self.request.session[FORM_AUTH_SESSION_KEY]
+        audit_logger.info(
+            "cosign_otp_success",
+            submission_uuid=str(self.submission.uuid),
+            auth_value=obfuscate(auth["value"]),
+            auth_attribute=auth["attribute"],
+            auth_plugin=auth["plugin"],
+        )
+        add_submmission_to_session(self.submission, self.request.session)
+        del self.request.session[COSIGN_VERIFICATION_SESSION_KEY]
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        assert self.submission is not None
         return get_frontend_redirect_url(
             self.submission,
             action="cosign",

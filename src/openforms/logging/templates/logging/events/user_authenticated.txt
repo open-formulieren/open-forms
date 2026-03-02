@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_time form=log.fmt_form plugin=log.fmt_plugin identifier=log.extra_data.identifier %}
+   [{{ lead }}] (Form {{ form }}): User authenticated with plugin {{ plugin }} (identifier: {{ identifier }})
+{% endblocktrans %}

@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead identifier=log.extra_data.auth.value %}
+   {{ lead }}: {{ identifier}} successfully looked up the submission for co-signing.
+{% endblocktrans %}
