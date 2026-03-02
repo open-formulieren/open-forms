@@ -476,3 +476,57 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 submission_step=submission_step
             ).exists()
         )
+
+    def test_completed_flag_is_updated(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"}
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(form=step.form)
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+        response = self.client.put(endpoint, {"data": {"text": "some data"}})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        submission_step = submission.submissionstep_set.get()
+        self.assertTrue(submission_step.completed)
+
+    def test_custom_completed_flag_is_ignored(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"}
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(form=step.form)
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+        response = self.client.put(
+            endpoint, {"data": {"text": "some data"}, "completed": False}
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        submission_step = submission.submissionstep_set.get()
+        self.assertTrue(submission_step.completed)

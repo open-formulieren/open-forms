@@ -175,6 +175,13 @@ class SubmissionViewSet(
         check_form_status(self.request, form)
         anonymous: bool = serializer.validated_data["anonymous"]
 
+        # Create submission step instances
+        submission_steps = [
+            SubmissionStep(submission=submission, form_step=step)
+            for step in form.formstep_set.order_by("order").iterator()
+        ]
+        SubmissionStep.objects.bulk_create(submission_steps)
+
         # dispatch signal for modules to tap into
         submission_start.send(
             sender=self.__class__,
@@ -609,6 +616,7 @@ class SubmissionStepViewSet(
         """
         instance, serializer = self._validate_step_input(request)
         create = instance.pk is None
+        instance.completed = True
         serializer.save()
 
         submission = instance.submission
