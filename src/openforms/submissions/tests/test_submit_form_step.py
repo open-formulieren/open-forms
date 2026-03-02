@@ -156,8 +156,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         )
 
         SubmissionStepFactory.create(
-            submission=self.submission,
-            form_step=self.step1,
+            submission=self.submission, form_step=self.step1, completed=True
         )
         submission_step = SubmissionStepFactory.create(
             submission=self.submission,
