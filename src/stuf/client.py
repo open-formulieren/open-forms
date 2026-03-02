@@ -26,6 +26,7 @@ from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
 
 from .constants import EndpointType
 from .stuf import StuurGegevens, WSSecurity
+from .xml import sanitize_users_data
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -198,6 +199,10 @@ class BaseClient(APIClient):
             soap_action=soap_action,
             referentienummer=full_context["referentienummer"],
         )
+
+        logger.debug("sanitize xml context")
+        full_context = sanitize_users_data(full_context)
+
         logger.debug("prepare_and_make_request")
         body = loader.render_to_string(template, full_context)
         response = self.soap_request(

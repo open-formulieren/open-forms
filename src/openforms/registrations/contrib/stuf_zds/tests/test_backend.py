@@ -3372,6 +3372,51 @@ class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
             },
         )
 
+    @tag("gh-6016")
+    def test_illegal_characters_in_xml_are_removed(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "label": "Achternaam",
+                    "type": "textfield",
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={
+                "voornaam": "bad" + chr(1) + "value",
+                "achternaam": "bad" + chr(1) + "value",
+            },
+            language_code="en",
+        )
+
+        plugin = StufZDSRegistration("stuf")
+        plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+
+        xml_doc = etree.fromstring(stuf_request.body)
+        self.assertSoapXMLCommon(xml_doc)
+
+        # Ensure that betrokkene and extraElement value does not contain illegal characters
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "badvalue",
+                "//stuf:extraElementen/stuf:extraElement[@naam='achternaam']": "badvalue",
+            },
+        )
+
 
 @freeze_time("2020-12-22")
 @temp_private_root()
