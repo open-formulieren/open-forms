@@ -1,6 +1,12 @@
+from typing import Any
+
+from django.utils.translation import gettext_lazy as _
+
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
+from rest_framework.fields import Field
 
+from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.config.models.theme import Theme
 from openforms.forms.api.serializers.form import (
@@ -8,6 +14,7 @@ from openforms.forms.api.serializers.form import (
     SubmissionsRemovalOptionsSerializer,
 )
 from openforms.forms.models.category import Category
+from openforms.payments.registry import Registry, register as payment_register
 from openforms.products.models.product import Product
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
@@ -35,6 +42,17 @@ class FormSerializer(serializers.ModelSerializer):
         slug_field="uuid",
     )
 
+    payment_backend = serializers.ChoiceField(
+        choices=[],
+        required=False,
+        default="",
+    )
+    payment_backend_options = serializers.DictField(
+        label=_("payment backend options"),
+        required=False,
+        allow_null=True,
+    )
+
     appointment_options = AppointmentOptionsSerializer(
         source="*",
         required=False,
@@ -59,6 +77,8 @@ class FormSerializer(serializers.ModelSerializer):
             "internal_remarks",
             "login_required",
             "translation_enabled",
+            "payment_backend",
+            "payment_backend_options",
             "appointment_options",
             "literals",
             "product",
@@ -94,6 +114,52 @@ class FormSerializer(serializers.ModelSerializer):
                 "read_only": True,
             },
         }
+
+    def get_fields(self) -> dict[str, Field]:
+        fields = super().get_fields()
+        # lazy set choices
+        if "payment_backend" in fields:
+            fields["payment_backend"].choices = [  # pyright: ignore[reportAttributeAccessIssue]
+                ("", "")
+            ] + payment_register.get_choices()
+
+        return fields
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        super().validate(attrs)
+        self.validate_backend_options(
+            attrs, "payment_backend", "payment_backend_options", payment_register
+        )
+
+        return attrs
+
+    def validate_backend_options(
+        self,
+        attrs: dict[str, Any],
+        backend_field: str,
+        options_field: str,
+        registry: Registry,
+    ) -> None:
+        plugin_id = get_from_serializer_data_or_instance(
+            backend_field, data=attrs, serializer=self
+        )
+        options = get_from_serializer_data_or_instance(
+            options_field, data=attrs, serializer=self
+        )
+        if not plugin_id:
+            return
+        plugin = registry[plugin_id]
+        serializer = plugin.configuration_options(data=options)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError as e:
+            # wrap detail in dict so we can attach it to the field
+            # DRF will create the .invalidParams with a dotted path to nested fields
+            # like registrationBackends.0.options.toEmails.0 if the first email was invalid
+            detail = {options_field: e.detail}
+            raise serializers.ValidationError(detail) from e
+        # serializer does some normalization, so make sure to update the data
+        attrs[options_field] = serializer.data
 
     def save(self, **kwargs):
         return super().save(**kwargs, uuid=self.context["uuid"])

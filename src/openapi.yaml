@@ -8936,6 +8936,15 @@ components:
           readOnly: true
         translationEnabled:
           type: boolean
+        paymentBackend:
+          default: ''
+          oneOf:
+          - $ref: '#/components/schemas/PaymentBackendEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        paymentBackendOptions:
+          type: object
+          additionalProperties: {}
+          nullable: true
         appointmentOptions:
           allOf:
           - $ref: '#/components/schemas/AppointmentOptions'
