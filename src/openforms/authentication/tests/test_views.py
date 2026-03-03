@@ -407,6 +407,45 @@ class CoSignAuthenticationFlowTests(SubmissionsMixin, APITestCase):
         )
         mock_add_co_sign_representation.assert_called_once_with(self.submission, "bsn")
 
+    @tag("gh-6002")
+    def test_co_sign_flow_with_HEAD_method_returns_empty_response(self):
+        self._add_submission_to_session(self.submission)
+
+        with mock_register(self.register):
+            with self.subTest("start ok"):
+                start_url = reverse(
+                    "authentication:start",
+                    kwargs={"slug": "myform", "plugin_id": "plugin1"},
+                )
+
+                response = self.client.head(
+                    start_url,
+                    {
+                        "next": self.next_url,
+                        CO_SIGN_PARAMETER: self.submission.uuid,
+                    },
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.content, b"")
+
+            with self.subTest("return ok"):
+                return_url = reverse(
+                    "authentication:return",
+                    kwargs={"slug": "myform", "plugin_id": "plugin1"},
+                )
+
+                response = self.client.head(
+                    return_url,
+                    {
+                        CO_SIGN_PARAMETER: self.submission.uuid,
+                        "next": self.next_url,
+                    },
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.content, b"")
+
     @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
     def test_co_sign_flow_invalid_submission_id(self):
         """
