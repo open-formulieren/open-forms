@@ -823,8 +823,18 @@ class CosignOTPViewTests(FrontendRedirectMixin, WebTest):
 
         self.app.get(
             reverse("submissions:otp-for-cosign", kwargs={"form_slug": "other-form"}),
-            status=404,
+            status=403,
         )
+
+        # expect an audit log entry
+        logs = TimelineLogProxy.objects.for_object(submission).filter_event(
+            "cosign_otp_blocked"
+        )
+        self.assertEqual(logs.count(), 1)
+        log = logs[0]
+        self.assertEqual(log.extra_data["auth"]["value"], "123456782")
+        self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
+        self.assertEqual(log.extra_data["auth"]["plugin"], "digid")
 
     def test_requires_submission_waiting_for_cosign(self):
         submission = SubmissionFactory.from_components(
@@ -862,6 +872,16 @@ class CosignOTPViewTests(FrontendRedirectMixin, WebTest):
             ),
             status=403,
         )
+
+        # expect an audit log entry
+        logs = TimelineLogProxy.objects.for_object(submission).filter_event(
+            "cosign_otp_blocked"
+        )
+        self.assertEqual(logs.count(), 1)
+        log = logs[0]
+        self.assertEqual(log.extra_data["auth"]["value"], "123456782")
+        self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
+        self.assertEqual(log.extra_data["auth"]["plugin"], "digid")
 
     @tag("security-40", "GHSA-2g49-rfm6-5qj5")
     def test_rate_limiting_on_cosign_otp(self):
@@ -910,6 +930,76 @@ class CosignOTPViewTests(FrontendRedirectMixin, WebTest):
             last_response = _attempt_otp_bruteforce()
 
         self.assertEqual(last_response.status_code, 429)
+        # expect an audit log entry
+        log = (
+            TimelineLogProxy.objects.for_object(submission)
+            .filter_event("cosign_otp_rate_limited")
+            .last()
+        )
+        assert log is not None
+        self.assertEqual(log.extra_data["auth"]["value"], "123456782")
+        self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
+        self.assertEqual(log.extra_data["auth"]["plugin"], "digid")
+
+    def test_requires_valid_otp(self):
+        """
+        Assert that the entire flow leads to a redirect to the frontend.
+        """
+        submission = SubmissionFactory.from_components(
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            completed=True,
+            cosign_complete=False,
+            form__slug="form-to-cosign",
+            form_url="http://url-to-form.nl/startpagina",
+            public_registration_reference="OF-IMAREFERENCE",
+        )
+        session = self.app.session
+        assert isinstance(session, SessionBase)
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
+        }
+        session.save()
+
+        # start with lookup by code -> navigate to OTP page
+        otp_response = self.app.get(
+            reverse(
+                "submissions:find-submission-for-cosign",
+                kwargs={"form_slug": "form-to-cosign"},
+            ),
+            {"code": submission.public_registration_reference},
+        ).follow()
+        # ensure no OTP exists at all
+        CosignOTP.objects.all().delete()
+
+        form = otp_response.forms[0]
+        form["otp"] = "007-420"  # invalid code, but right format
+        submission_response = form.submit()
+
+        self.assertEqual(submission_response.status_code, 200)
+        self.assertIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
+
+        # expect an audit log entry
+        logs = TimelineLogProxy.objects.for_object(submission).filter_event(
+            "cosign_otp_blocked"
+        )
+        self.assertEqual(logs.count(), 1)
+        log = logs[0]
+        self.assertEqual(log.extra_data["auth"]["value"], "123456782")
+        self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
+        self.assertEqual(log.extra_data["auth"]["plugin"], "digid")
 
     def test_successfully_start_cosign_process(self):
         """
@@ -968,3 +1058,12 @@ class CosignOTPViewTests(FrontendRedirectMixin, WebTest):
             fetch_redirect_response=False,
         )
         self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
+        # expect an audit log entry
+        logs = TimelineLogProxy.objects.for_object(submission).filter_event(
+            "cosign_otp_success"
+        )
+        self.assertEqual(logs.count(), 1)
+        log = logs[0]
+        self.assertEqual(log.extra_data["auth"]["value"], "*******82")
+        self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
+        self.assertEqual(log.extra_data["auth"]["plugin"], "digid")

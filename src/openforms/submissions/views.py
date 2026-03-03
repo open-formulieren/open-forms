@@ -341,17 +341,18 @@ class SearchSubmissionForCosignFormView(ThrottleMixin, UserPassesTestMixin, Form
         return super().handle_no_permission()
 
     def handle_rate_limit_exceeded(self):
-        form = get_object_or_404(Form, slug=self.kwargs["form_slug"])
+        form = Form.objects.filter(slug=self.kwargs["form_slug"]).first()
         auth: BaseAuth | None = self.request.session.get(FORM_AUTH_SESSION_KEY)
-        log = logger.bind(form_pk=form.pk)
-        if auth is not None:
-            log = log.bind(
-                auth_value=auth["value"],
-                auth_attribute=auth["attribute"],
-                auth_plugin=auth["plugin"],
-            )
-        log.warning("cosign_lookup_rate_limited")
-        logevent.cosign_lookup_rate_limited(form, auth)
+        if form:
+            log = logger.bind(form_pk=form.pk)
+            if auth is not None:
+                log = log.bind(
+                    auth_value=auth["value"],
+                    auth_attribute=auth["attribute"],
+                    auth_plugin=auth["plugin"],
+                )
+            log.warning("cosign_lookup_rate_limited")
+            logevent.cosign_lookup_rate_limited(form, auth)
         return super().handle_rate_limit_exceeded()
 
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -429,6 +430,16 @@ class CosignOTPFormView(ThrottleMixin, UserPassesTestMixin, FormView):
     throttle_period = ONE_MINUTE
 
     submission: Submission | None = None
+    _submission_queried: bool = False
+
+    def _get_submission(self) -> Submission | None:
+        if not self._submission_queried:
+            self._submission_queried = True
+            submission_pk = self.request.session.get(COSIGN_VERIFICATION_SESSION_KEY)
+            if submission_pk is None:
+                return None
+            self.submission = Submission.objects.filter(pk=submission_pk).first()
+        return self.submission
 
     def test_func(self):
         """
@@ -450,24 +461,84 @@ class CosignOTPFormView(ThrottleMixin, UserPassesTestMixin, FormView):
             return False
 
         # check that the submission is in the session...
-        submission_pk = self.request.session.get(COSIGN_VERIFICATION_SESSION_KEY)
-        if not submission_pk:
+        if (submission := self._get_submission()) is None or submission.form != form:
             return False
-        submission = get_object_or_404(Submission, pk=submission_pk, form=form)
         # ... and that it is in a desirable state!
         if not submission.cosign_state.is_waiting:
             return False
-
-        self.submission = submission
         return True
+
+    def handle_no_permission(self):
+        # we can't use the form validation here as that only kicks in if the user passes
+        # the permission test function
+        auth: BaseAuth | None = self.request.session.get(FORM_AUTH_SESSION_KEY)
+        submission = self._get_submission()
+        log = logger.bind(form_slug=self.kwargs["form_slug"])
+        if auth is not None:
+            log = log.bind(
+                auth_value=auth["value"],
+                auth_attribute=auth["attribute"],
+                auth_plugin=auth["plugin"],
+            )
+        if submission is not None:
+            log.warning("cosign_otp_blocked", submission_uuid=str(submission.uuid))
+            logevent.cosign_otp_blocked(submission, auth)
+        return super().handle_no_permission()
+
+    def handle_rate_limit_exceeded(self):
+        form = Form.objects.filter(slug=self.kwargs["form_slug"]).first()
+        auth: BaseAuth | None = self.request.session.get(FORM_AUTH_SESSION_KEY)
+        if form:
+            log_instance: Form | Submission = form
+            log = logger.bind(form_pk=form.pk)
+
+            submission_pk = self.request.session.get(COSIGN_VERIFICATION_SESSION_KEY)
+            if submission_pk and (
+                submission := Submission.objects.filter(pk=submission_pk).first()
+            ):
+                log_instance = submission
+                log = log.bind(submission_uuid=str(submission.uuid))
+
+            if auth is not None:
+                log = log.bind(
+                    auth_value=auth["value"],
+                    auth_attribute=auth["attribute"],
+                    auth_plugin=auth["plugin"],
+                )
+
+            log.warning("cosign_otp_rate_limited")
+            logevent.cosign_otp_rate_limited(log_instance, auth)
+        return super().handle_rate_limit_exceeded()
 
     def get_form_kwargs(self):
         super_kwargs = super().get_form_kwargs()
         super_kwargs["instance"] = self.submission
         return super_kwargs
 
+    def form_invalid(self, form: CosignOTPForm):
+        assert self.submission
+        auth: BaseAuth = self.request.session[FORM_AUTH_SESSION_KEY]
+        log = logger.bind(
+            submission_uuid=str(self.submission.uuid),
+            auth_value=auth["value"],
+            auth_attribute=auth["attribute"],
+            auth_plugin=auth["plugin"],
+        )
+        log.warning("cosign_otp_blocked")
+        logevent.cosign_otp_blocked(self.submission, auth)
+        return super().form_invalid(form)
+
     def form_valid(self, form: CosignOTPForm):
         assert self.submission is not None
+        auth: BaseAuth = self.request.session[FORM_AUTH_SESSION_KEY]
+        logger.info(
+            "cosign_otp_success",
+            submission_uuid=str(self.submission.uuid),
+            auth_value=obfuscate(auth["value"]),
+            auth_attribute=auth["attribute"],
+            auth_plugin=auth["plugin"],
+        )
+        logevent.cosign_otp_success(self.submission, auth)
         add_submmission_to_session(self.submission, self.request.session)
         del self.request.session[COSIGN_VERIFICATION_SESSION_KEY]
         return super().form_valid(form)

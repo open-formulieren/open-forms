@@ -1,0 +1,5 @@
+{% load i18n capture_tags %}
+{% capture as lead silent %}{% if log.is_submission %}{{ log.fmt_lead }}{% else %}[{{ log.fmt_time }}] (Form {{ log.fmt_form }}){% endif %}{% endcapture %}
+{% blocktrans trimmed %}
+   {{ lead }}: Cosign OTP rate limited.
+{% endblocktrans %}

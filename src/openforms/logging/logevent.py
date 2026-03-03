@@ -876,6 +876,37 @@ def cosign_lookup_failed(form: Form, auth: BaseAuth, code: str):
     )
 
 
+def cosign_otp_success(submission: Submission, auth: BaseAuth):
+    _auth: BaseAuth = {**auth, "value": obfuscate(auth["value"])}
+    _create_log(
+        submission,
+        "cosign_otp_success",
+        tags=[TimelineLogTags.submission_lifecycle],
+        extra_data={"auth": _auth},
+    )
+
+
+def cosign_otp_rate_limited(instance: Form | Submission, auth: BaseAuth | None):
+    _create_log(
+        instance,
+        "cosign_otp_rate_limited",
+        tags=[TimelineLogTags.AVG],
+        extra_data={"auth": auth},
+    )
+
+
+def cosign_otp_blocked(submission: Submission, auth: BaseAuth | None):
+    _create_log(
+        submission,
+        "cosign_otp_blocked",
+        tags=[TimelineLogTags.AVG],
+        extra_data={
+            "auth": auth,
+            "is_waiting": submission.cosign_state.is_waiting,
+        },
+    )
+
+
 # - - -
 
 
