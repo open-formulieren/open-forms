@@ -12,6 +12,7 @@ from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.forms.tests.factories import FormFactory
 from openforms.frontend.tests import FrontendRedirectMixin
+from openforms.logging.models import TimelineLogProxy
 
 from ..constants import COSIGN_VERIFICATION_SESSION_KEY
 from ..models import CosignOTP
@@ -77,6 +78,16 @@ class SearchSubmissionForCosignViewTests(WebTest):
         )
         # expect OTP email
         self.assertEqual(len(mail.outbox), 1)
+
+        # expect an audit log entry
+        logs = TimelineLogProxy.objects.for_object(submission).filter_event(
+            "cosign_lookup_success"
+        )
+        self.assertEqual(logs.count(), 1)
+        log = logs[0]
+        self.assertEqual(log.extra_data["auth"]["value"], "*******82")
+        self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
+        self.assertEqual(log.extra_data["auth"]["plugin"], "digid")
 
     def test_successfully_resolve_code_from_GET_params(self):
         submission = SubmissionFactory.from_components(
@@ -192,6 +203,56 @@ class SearchSubmissionForCosignViewTests(WebTest):
         self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
         self.assertEqual(len(mail.outbox), 0)
 
+    def test_user_has_authenticated_with_wrong_plugin_and_submission_reference(self):
+        submission = SubmissionFactory.from_components(
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            completed=True,
+            cosign_complete=False,
+            form__slug="form-to-cosign",
+            form_url="http://url-to-form.nl/startpagina",
+            public_registration_reference="OF-IMAREFERENCE",
+        )
+
+        session = self.app.session
+        assert isinstance(session, SessionBase)
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "not-digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        self.app.get(
+            reverse(
+                "submissions:find-submission-for-cosign",
+                kwargs={"form_slug": "form-to-cosign"},
+            ),
+            {"code": submission.public_registration_reference},
+            status=403,
+        )
+
+        self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
+        self.assertEqual(len(mail.outbox), 0)
+        # expect an audit log entry
+        logs = TimelineLogProxy.objects.for_object(submission).filter_event(
+            "cosign_lookup_blocked"
+        )
+        self.assertEqual(logs.count(), 1)
+        log = logs[0]
+        self.assertEqual(log.extra_data["auth"]["value"], "123456782")
+        self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
+        self.assertEqual(log.extra_data["auth"]["plugin"], "not-digid")
+
     def test_wrong_form_slug_gives_error(self):
         SubmissionFactory.from_components(
             components_list=[
@@ -227,7 +288,7 @@ class SearchSubmissionForCosignViewTests(WebTest):
 
     @override_settings(LANGUAGE_CODE="en")
     def test_wrong_submission_reference_gives_error(self):
-        SubmissionFactory.from_components(
+        submission = SubmissionFactory.from_components(
             form__authentication_backend="digid",
             form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
             components_list=[
@@ -274,6 +335,16 @@ class SearchSubmissionForCosignViewTests(WebTest):
         )
         self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
         self.assertEqual(len(mail.outbox), 0)
+        # expect an audit log entry
+        logs = TimelineLogProxy.objects.for_object(submission.form).filter_event(
+            "cosign_lookup_failed"
+        )
+        self.assertEqual(logs.count(), 1)
+        log = logs[0]
+        self.assertEqual(log.extra_data["auth"]["value"], "123456782")
+        self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
+        self.assertEqual(log.extra_data["auth"]["plugin"], "digid")
+        self.assertEqual(log.extra_data["code"], "WRONG-REFERENCE")
 
     def test_submission_already_cosigned_raises_error(self):
         submission = SubmissionFactory.from_components(
@@ -323,6 +394,15 @@ class SearchSubmissionForCosignViewTests(WebTest):
         self.assertEqual(error_node.text.strip(), expected_message)
         self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
         self.assertEqual(len(mail.outbox), 0)
+        # expect an audit log entry
+        logs = TimelineLogProxy.objects.for_object(submission).filter_event(
+            "cosign_lookup_blocked"
+        )
+        self.assertEqual(logs.count(), 1)
+        log = logs[0]
+        self.assertEqual(log.extra_data["auth"]["value"], "123456782")
+        self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
+        self.assertEqual(log.extra_data["auth"]["plugin"], "digid")
 
     @override_settings(LANGUAGE_CODE="en")
     def test_logout_button(self):
@@ -418,10 +498,19 @@ class SearchSubmissionForCosignViewTests(WebTest):
         )
         self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.app.session)
         self.assertEqual(len(mail.outbox), 0)
+        # expect an audit log entry
+        logs = TimelineLogProxy.objects.for_object(submission).filter_event(
+            "cosign_lookup_blocked"
+        )
+        self.assertEqual(logs.count(), 1)
+        log = logs[0]
+        self.assertEqual(log.extra_data["auth"]["value"], "123456782")
+        self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
+        self.assertEqual(log.extra_data["auth"]["plugin"], "digid")
 
     @tag("security-40", "GHSA-2g49-rfm6-5qj5")
     def test_rate_limiting_on_submission_lookup_via_code(self):
-        SubmissionFactory.from_components(
+        submission = SubmissionFactory.from_components(
             form__authentication_backend="digid",
             form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
             components_list=[
@@ -465,6 +554,16 @@ class SearchSubmissionForCosignViewTests(WebTest):
             last_response = _try_lookup()
 
         self.assertEqual(last_response.status_code, 429)
+        # expect an audit log entry
+        log = (
+            TimelineLogProxy.objects.for_object(submission.form)
+            .filter_event("cosign_lookup_rate_limited")
+            .last()
+        )
+        assert log is not None
+        self.assertEqual(log.extra_data["auth"]["value"], "123456782")
+        self.assertEqual(log.extra_data["auth"]["attribute"], "bsn")
+        self.assertEqual(log.extra_data["auth"]["plugin"], "digid")
 
     @tag("security-40", "GHSA-2g49-rfm6-5qj5")
     def test_session_resets_on_navigating_back(self):
