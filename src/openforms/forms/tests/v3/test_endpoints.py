@@ -9,10 +9,12 @@ from rest_framework.test import APITestCase
 from openforms.accounts.tests.factories import UserFactory
 from openforms.config.tests.factories import ThemeFactory
 from openforms.data_removal.constants import RemovalMethods
-from openforms.forms.constants import StatementCheckboxChoices, SubmissionAllowedChoices
-from openforms.forms.models.form import Form
-from openforms.forms.tests.factories import CategoryFactory, FormFactory
 from openforms.products.tests.factories import ProductFactory
+
+from ....forms.constants import StatementCheckboxChoices, SubmissionAllowedChoices
+from ....forms.models.form import Form
+from ....forms.models.form_registration_backend import FormRegistrationBackend
+from ....forms.tests.factories import CategoryFactory, FormFactory
 
 
 class FormEndpointTests(APITestCase):
@@ -62,6 +64,19 @@ class FormEndpointTests(APITestCase):
             "internalName": "Create form internal",
             "internalRemarks": "This form is used for xyz",
             "translationEnabled": True,
+            "registrationBackends": [
+                {
+                    "name": "Backend Y",
+                    "key": "camunda-fu",
+                    "backend": "camunda",
+                    "options": {
+                        "processDefinition": "invoice",
+                        "processDefinitionVersion": None,
+                        "processVariables": [],
+                        "complexProcessVariables": [],
+                    },
+                }
+            ],
             "appointmentOptions": {
                 "isAppointment": True,
             },
@@ -155,6 +170,22 @@ class FormEndpointTests(APITestCase):
         theme = form.theme
         self.assertEqual(form.theme, theme)
 
+        # registration backends
+        registration_backend = FormRegistrationBackend.objects.get()
+        self.assertEqual(form.registration_backends.get(), registration_backend)
+        self.assertEqual(registration_backend.name, "Backend Y")
+        self.assertEqual(registration_backend.key, "camunda-fu")
+        self.assertEqual(registration_backend.backend, "camunda")
+        self.assertEqual(
+            registration_backend.options,
+            {
+                "process_definition": "invoice",
+                "process_definition_version": None,
+                "process_variables": [],
+                "complex_process_variables": [],
+            },
+        )
+
         self.assertTrue(form.show_progress_indicator)
         self.assertTrue(form.show_summary_progress)
         self.assertTrue(form.maintenance_mode)
@@ -219,6 +250,46 @@ class FormEndpointTests(APITestCase):
         )
 
         self.assertTrue(form.new_renderer_enabled)
+
+    def test_update_clears_existing_registration_backends(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            registration_backend="camunda",
+        )
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "registrationBackends": [
+                {
+                    "key": "email-fu",
+                    "name": "Email registration backend",
+                    "backend": "email",
+                    "options": {"toEmails": ["booboo@example.com", "yogi@example.com"]},
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Form.objects.count(), 1)
+        form.refresh_from_db()
+
+        registration_backend = FormRegistrationBackend.objects.get()
+        self.assertEqual(form.registration_backends.get(), registration_backend)
+        self.assertEqual(registration_backend.name, "Email registration backend")
+        self.assertEqual(registration_backend.key, "email-fu")
+        self.assertEqual(registration_backend.backend, "email")
+        self.assertEqual(
+            registration_backend.options,
+            {
+                "attach_files_to_email": None,
+                "to_emails": ["booboo@example.com", "yogi@example.com"],
+            },
+        )
 
     def test_create_form_incorrect_request(self):
         url = reverse(
