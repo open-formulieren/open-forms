@@ -76,7 +76,7 @@ class BaseRegistry[PluginT: AbstractBasePlugin]:
             with_demos = flag_enabled("ENABLE_DEMO_PLUGINS")
             enable_all = False
         except OperationalError:
-            # fix CI trying to access non-existing database to generate OAS
+            # fix CI trying to access non-existing database or table to generate OAS
             with_demos = False
             enable_all = True
 
