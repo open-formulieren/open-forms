@@ -24,9 +24,17 @@ from openforms.typing import StrOrPromise
 
 from ....api.serializers.form import (
     FormLiteralsSerializer,
+    FormRegistrationBackendSerializer,
     SubmissionsRemovalOptionsSerializer,
 )
-from ....models import Category, Form, FormDefinition, FormStep, FormVariable
+from ....models import (
+    Category,
+    Form,
+    FormDefinition,
+    FormRegistrationBackend,
+    FormStep,
+    FormVariable,
+)
 from ..typing import FormStepData, FormValidatedData
 from .form_step import FormStepSerializer
 
@@ -73,9 +81,12 @@ class FormSerializer(serializers.ModelSerializer):
 
     translations = ModelTranslationsSerializer()
 
+    registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
+
     _nested_fields = (
         "confirmation_email_template",
         "formstep_set",
+        "registration_backends",
     )
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
@@ -87,6 +98,7 @@ class FormSerializer(serializers.ModelSerializer):
             "internal_remarks",
             "login_required",
             "translation_enabled",
+            "registration_backends",
             "appointment_options",
             "literals",
             "product",
@@ -158,6 +170,12 @@ class FormSerializer(serializers.ModelSerializer):
                 form=instance,
             )
 
+        registration_backends = validated_data.get("registration_backends", [])
+        FormRegistrationBackend.objects.bulk_create(
+            FormRegistrationBackend(form=instance, **backend)
+            for backend in registration_backends
+        )
+
         return instance
 
     @transaction.atomic()
@@ -208,6 +226,15 @@ class FormSerializer(serializers.ModelSerializer):
         # the `order` field.
         for step in sorted(assigned_steps, key=lambda step: step.order):
             step.save()
+
+        registration_backends = validated_data.get("registration_backends", None)
+        if registration_backends is not None:
+            instance.registration_backends.all().delete()
+            FormRegistrationBackend.objects.bulk_create(
+                FormRegistrationBackend(form=instance, **backend)
+                for backend in registration_backends
+            )
+
         return instance
 
     def validate_steps(self, value: list[FormStepData]) -> list[FormStepData]:

@@ -46,7 +46,7 @@ User = get_user_model()
 logger = structlog.stdlib.get_logger(__name__)
 
 if TYPE_CHECKING:
-    from . import FormAuthenticationBackend, FormStep
+    from . import FormAuthenticationBackend, FormRegistrationBackend, FormStep
 
 
 class FormQuerySet(models.QuerySet["Form"]):
@@ -412,6 +412,7 @@ class Form(models.Model):
     ] = FormManager()
     formstep_set: models.Manager[FormStep]
     auth_backends: Manager[FormAuthenticationBackend]
+    registration_backends: Manager[FormRegistrationBackend]
 
     get_begin_text = literal_getter("begin_text", "form_begin_text")
     get_previous_text = literal_getter("previous_text", "form_previous_text")
