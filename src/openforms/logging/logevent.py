@@ -865,3 +865,19 @@ def email_status_change(
         },
         tags=[TimelineLogTags.submission_lifecycle],
     )
+
+
+# - - -
+def user_authenticated(
+    form: Form, identifier: str | None, plugin: AbstractBasePlugin, next: str
+):
+    _create_log(
+        form,
+        "user_authenticated",
+        plugin=plugin,
+        extra_data={
+            "identifier": identifier,
+            "next": next,
+        },
+        tags=[TimelineLogTags.AVG],
+    )
