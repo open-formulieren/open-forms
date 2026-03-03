@@ -6,14 +6,14 @@
             <ns:stuurgegevens>
                 <StUF:berichtcode>La01</StUF:berichtcode>
                 <StUF:zender>
-                    <StUF:applicatie>XXX</StUF:applicatie>
+                    <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
                 </StUF:zender>
                 <StUF:ontvanger>
-                    <StUF:organisatie>XXX</StUF:organisatie>
-                    <StUF:applicatie>XXX</StUF:applicatie>
+                    <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
+                    <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
                 </StUF:ontvanger>
                 <StUF:referentienummer/>
-                <StUF:tijdstipBericht>XXX</StUF:tijdstipBericht>
+                <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
                 <StUF:crossRefnummer>XXX</StUF:crossRefnummer>
                 <StUF:entiteittype>NPS</StUF:entiteittype>
             </ns:stuurgegevens>
