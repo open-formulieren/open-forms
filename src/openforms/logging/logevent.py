@@ -10,11 +10,13 @@ from django.db.models import Model
 from openforms.accounts.models import User
 from openforms.analytics_tools.models import AnalyticsToolsConfiguration
 from openforms.appointments.models import AppointmentInfo
+from openforms.authentication.typing import BaseAuth
 from openforms.forms.models import Form
 from openforms.logging.constants import TimelineLogTags
 from openforms.payments.constants import PaymentStatus
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.typing import JSONObject, JSONValue
+from openforms.utils.helpers import obfuscate
 
 if TYPE_CHECKING:
     from log_outgoing_requests.models import OutgoingRequestsLog
@@ -832,6 +834,45 @@ def skipped_registration_cosign_required(submission: Submission):
         submission,
         "skipped_registration_cosign_required",
         tags=[TimelineLogTags.submission_lifecycle],
+    )
+
+
+def cosign_lookup_success(submission: Submission, auth: BaseAuth):
+    _auth: BaseAuth = {**auth, "value": obfuscate(auth["value"])}
+    _create_log(
+        submission,
+        "cosign_lookup_success",
+        tags=[TimelineLogTags.submission_lifecycle],
+        extra_data={"auth": _auth},
+    )
+
+
+def cosign_lookup_rate_limited(form: Form, auth: BaseAuth | None):
+    _create_log(
+        form,
+        "cosign_lookup_rate_limited",
+        tags=[TimelineLogTags.AVG],
+        extra_data={"auth": auth},
+    )
+
+
+def cosign_lookup_blocked(submission: Submission, auth: BaseAuth):
+    _create_log(
+        submission,
+        "cosign_lookup_blocked",
+        tags=[TimelineLogTags.AVG],
+        extra_data={
+            "auth": auth,
+            "is_waiting": submission.cosign_state.is_waiting,
+        },
+    )
+
+
+def cosign_lookup_failed(form: Form, auth: BaseAuth, code: str):
+    _create_log(
+        form,
+        "cosign_lookup_failed",
+        extra_data={"auth": auth, "code": code},
     )
 
 

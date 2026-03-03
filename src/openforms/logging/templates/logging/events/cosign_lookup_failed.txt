@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_time form=log.fmt_form identifier=log.extra_data.auth.value %}
+   [{{ lead }}] (Form {{ form }}): Cosign lookup with code "{{ code }}" failed (user identifier: {{ identifier }}).
+{% endblocktrans %}
