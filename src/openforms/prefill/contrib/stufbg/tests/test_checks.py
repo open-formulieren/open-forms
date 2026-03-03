@@ -1,4 +1,3 @@
-from contextlib import contextmanager
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -8,21 +7,13 @@ from requests import RequestException
 
 from stuf.stuf_bg.exceptions import InvalidPluginConfiguration
 from stuf.stuf_bg.models import StufBGConfig
-from stuf.stuf_bg.tests.utils import get_mock_response_content
+from stuf.stuf_bg.tests.mixins import StUFBGAssertionsMixin
 from stuf.tests.factories import StufServiceFactory
 
 from ..plugin import StufBgPrefill
 
 
-@contextmanager
-def mock_stufbg_make_request(template: str):
-    content = get_mock_response_content(template)
-    with requests_mock.Mocker() as m:
-        m.register_uri(requests_mock.ANY, requests_mock.ANY, content=content)
-        yield
-
-
-class StufBgCheckTests(TestCase):
+class StufBgCheckTests(StUFBGAssertionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -63,26 +54,61 @@ class StufBgCheckTests(TestCase):
         with self.assertRaises(InvalidPluginConfiguration):
             self.plugin.check_config()
 
-    def test_check_config_ok_not_found(self):
+    @requests_mock.Mocker()
+    def test_check_config_ok_not_found(self, m):
+        # fault is part of SOAP so not able/necessary to test this
+        content = self.extract_soap_response(
+            "stuf_bg/tests/responses/StufBgNotFoundResponse.xml",
+            self.stuf_bg_service,
+        )
+        m.register_uri(requests_mock.ANY, requests_mock.ANY, content=content)
+
         try:
-            with mock_stufbg_make_request("StufBgNotFoundResponse.xml"):
-                self.plugin.check_config()
+            self.plugin.check_config()
         except InvalidPluginConfiguration as exc:
             raise self.failureException("Config should have passed checks") from exc
 
-    def test_check_config_ok_no_object(self):
+    @requests_mock.Mocker()
+    def test_check_config_ok_no_object(self, m):
+        content = self.extract_soap_response(
+            "stuf_bg/tests/responses/StufBgNoObjectResponse.xml",
+            self.stuf_bg_service,
+        )
+
+        # assert response is valid
+        self.assertSoapBodyIsValid(content)
+
+        m.register_uri(requests_mock.ANY, requests_mock.ANY, content=content)
+
         try:
-            with mock_stufbg_make_request("StufBgNoObjectResponse.xml"):
-                self.plugin.check_config()
+            self.plugin.check_config()
         except InvalidPluginConfiguration as exc:
             raise self.failureException("Config should have passed checks") from exc
 
-    def test_check_config_other_error(self):
-        with self.assertRaises(InvalidPluginConfiguration):
-            with mock_stufbg_make_request("StufBgErrorResponse.xml"):
-                self.plugin.check_config()
+    @requests_mock.Mocker()
+    def test_check_config_other_error(self, m):
+        # fault is part of SOAP so not able/necessary to test this
+        content = self.extract_soap_response(
+            "stuf_bg/tests/responses/StufBgErrorResponse.xml",
+            self.stuf_bg_service,
+        )
 
-    def test_check_config_some_unexpected_random_result(self):
+        m.register_uri(requests_mock.ANY, requests_mock.ANY, content=content)
+
         with self.assertRaises(InvalidPluginConfiguration):
-            with mock_stufbg_make_request("StufBgResponseWithVoorvoegsel.xml"):
-                self.plugin.check_config()
+            self.plugin.check_config()
+
+    @requests_mock.Mocker()
+    def test_check_config_some_unexpected_random_result(self, m):
+        content = self.extract_soap_response(
+            "stuf_bg/tests/responses/StufBgResponseWithVoorvoegsel.xml",
+            self.stuf_bg_service,
+        )
+
+        # assert response is valid
+        self.assertSoapBodyIsValid(content)
+
+        m.register_uri(requests_mock.ANY, requests_mock.ANY, content=content)
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            self.plugin.check_config()

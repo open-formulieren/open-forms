@@ -7,24 +7,26 @@
             <ns:stuurgegevens>
                 <StUF:berichtcode>La01</StUF:berichtcode>
                 <StUF:zender>
-                    <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
-                    <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
-                    <StUF:administratie>{{ ontvanger_administratie }}</StUF:administratie>
-                    <StUF:gebruiker>{{ ontvanger_gebruiker }}</StUF:gebruiker>
-                </StUF:zender>
-                <StUF:ontvanger>
                     <StUF:organisatie>{{ zender_organisatie }}</StUF:organisatie>
                     <StUF:applicatie>{{ zender_applicatie }}</StUF:applicatie>
                     <StUF:administratie>{{ zender_administratie }}</StUF:administratie>
                     <StUF:gebruiker>{{ zender_gebruiker }}</StUF:gebruiker>
+                </StUF:zender>
+                <StUF:ontvanger>
+                    <StUF:organisatie>{{ ontvanger_organisatie }}</StUF:organisatie>
+                    <StUF:applicatie>{{ ontvanger_applicatie }}</StUF:applicatie>
+                    <StUF:administratie>{{ ontvanger_administratie }}</StUF:administratie>
+                    <StUF:gebruiker>{{ ontvanger_gebruiker }}</StUF:gebruiker>
                 </StUF:ontvanger>
                 <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
                 <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
+                <StUF:entiteittype>NPS</StUF:entiteittype>
             </ns:stuurgegevens>
             <ns:parameters>
-                <StUF:indicatorAfnemerIndicatie>false</StUF:indicatorAfnemerIndicatie>
+                <StUF:indicatorVervolgvraag>false</StUF:indicatorVervolgvraag>
             </ns:parameters>
             <ns:antwoord>
+                <ns:object StUF:entiteittype="NPS"></ns:object>
             </ns:antwoord>
         </ns:npsLa01>
     </soapenv:Body>

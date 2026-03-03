@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from stuf.stuf_bg.models import StufBGConfig
-from stuf.stuf_bg.tests.utils import mock_stufbg_client
+from stuf.stuf_bg.tests.mixins import StUFBGAssertionsMixin
 from stuf.tests.factories import StufServiceFactory
 
 from ....co_sign import add_co_sign_representation
@@ -16,7 +16,7 @@ plugin = register["stufbg"]
 AUTH_ATTRIBUTE = next(attr for attr in plugin.requires_auth)
 
 
-class CoSignPrefillTests(TestCase):
+class CoSignPrefillTests(StUFBGAssertionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.stuf_bg_service = StufServiceFactory.create()
@@ -40,7 +40,15 @@ class CoSignPrefillTests(TestCase):
         self.addCleanup(stufbg_config_patcher.stop)
 
         # mock out StufBG client
-        client_patcher = mock_stufbg_client("StufBgResponse.xml")
+        response_content = self.extract_soap_response(
+            "stuf_bg/tests/responses/StufBgResponse.xml",
+            self.stuf_bg_service,
+        )
+
+        # validate response
+        self.assertSoapBodyIsValid(response_content)
+
+        client_patcher = self.mock_stufbg_client(response_content)
         self.addCleanup(client_patcher.stop)
 
     def test_store_names_on_co_sign_auth(self):
