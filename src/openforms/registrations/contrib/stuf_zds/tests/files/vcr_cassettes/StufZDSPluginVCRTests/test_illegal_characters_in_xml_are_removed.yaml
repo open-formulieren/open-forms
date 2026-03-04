@@ -6,8 +6,8 @@ interactions:
       \       \n\n<ZKN:zakLk01\n    xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\"\n
       \   xmlns:BG=\"http://www.egem.nl/StUF/sector/bg/0310\"\n    xmlns:GML=\"http://www.opengis.net/gml\"\n>\n
       \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Lk01</StUF:berichtcode>\n
-      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-31</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-31</StUF:applicatie>\n<StUF:administratie>zender_administratie-31</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-31</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-31</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-31</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-31</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-31</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>96e08d0f-2dcc-4a0d-8160-5452a498b86d</StUF:referentienummer>\n<StUF:tijdstipBericht>20260304091941</StUF:tijdstipBericht>\n\n
+      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>5e61c998-a45f-432e-af68-cb9bad74f803</StUF:referentienummer>\n<StUF:tijdstipBericht>20260304115525</StUF:tijdstipBericht>\n\n
       \       <StUF:entiteittype>ZAK</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
       \   <ZKN:parameters>\n        <StUF:mutatiesoort>T</StUF:mutatiesoort>\n        <StUF:indicatorOvername>V</StUF:indicatorOvername>\n
       \   </ZKN:parameters>\n    <ZKN:object StUF:verwerkingssoort=\"T\" StUF:entiteittype=\"ZAK\">\n
@@ -15,7 +15,7 @@ interactions:
       \       \n        \n        \n        <ZKN:startdatum>20260304</ZKN:startdatum>\n
       \       <ZKN:registratiedatum>20260304</ZKN:registratiedatum>\n        <ZKN:betalingsIndicatie>N.v.t.</ZKN:betalingsIndicatie>\n
       \       \n\n        <ZKN:zaakniveau>1</ZKN:zaakniveau>\n        <ZKN:deelzakenIndicatie>N</ZKN:deelzakenIndicatie>\n
-      \       <StUF:tijdstipRegistratie>20260304091941</StUF:tijdstipRegistratie>\n
+      \       <StUF:tijdstipRegistratie>20260304115525</StUF:tijdstipRegistratie>\n
       \       <StUF:extraElementen>\n\n<StUF:extraElement naam=\"language_code\">en</StUF:extraElement>\n\n<StUF:extraElement
       naam=\"achternaam\">badvalue</StUF:extraElement>\n\n</StUF:extraElementen>\n\n\n
       \       <ZKN:isVan StUF:entiteittype=\"ZAKZKT\" StUF:verwerkingssoort=\"T\">\n
@@ -30,10 +30,9 @@ interactions:
       \                           \n                            \n                            \n
       \                           <BG:voornamen>badvalue</BG:voornamen>\n                            \n
       \                           \n\n                            \n                        </ZKN:natuurlijkPersoon>\n
-      \                   \n                </ZKN:gerelateerde>\n                <StUF:tijdstipRegistratie>20260304091941</StUF:tijdstipRegistratie>\n
-      \               \n            </ZKN:heeftAlsInitiator>\n        \n        \n
-      \       \n        \n\n        \n\n        \n    </ZKN:object>\n</ZKN:zakLk01>\n
-      \   </soapenv:Body>\n</soapenv:Envelope>\n"
+      \                   \n                </ZKN:gerelateerde>\n                <StUF:tijdstipRegistratie>20260304115525</StUF:tijdstipRegistratie>\n
+      \           </ZKN:heeftAlsInitiator>\n        \n        \n        \n        \n\n
+      \       \n\n        \n    </ZKN:object>\n</ZKN:zakLk01>\n    </soapenv:Body>\n</soapenv:Envelope>\n"
     headers:
       Accept:
       - '*/*'
@@ -42,15 +41,15 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '3693'
+      - '3668'
       Content-Type:
       - application/soap+xml
       SOAPAction:
       - http://www.egem.nl/StUF/sector/zkn/0310/creeerZaak_Lk01
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.32.4
     method: POST
-    uri: http://localhost:82/stuf-zds
+    uri: http://localhost/stuf-zds
   response:
     body:
       string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\">\n
@@ -75,9 +74,9 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Wed, 04 Mar 2026 09:19:41 GMT
+      - Wed, 04 Mar 2026 11:55:25 GMT
       Server:
-      - Werkzeug/3.1.5 Python/3.12.12
+      - Werkzeug/3.1.3 Python/3.12.11
     status:
       code: 200
       message: OK
@@ -87,8 +86,8 @@ interactions:
       \   <soapenv:Header>\n        \n\n    </soapenv:Header>\n    <soapenv:Body>\n
       \       \n\n<ZKN:genereerDocumentIdentificatie_Di02 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
       \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Di02</StUF:berichtcode>\n
-      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-31</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-31</StUF:applicatie>\n<StUF:administratie>zender_administratie-31</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-31</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-31</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-31</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-31</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-31</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>a221ba59-2c9a-4bf3-9eae-57a9eb60d7a5</StUF:referentienummer>\n<StUF:tijdstipBericht>20260304091941</StUF:tijdstipBericht>\n\n
+      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>b73c789a-e4ae-4cc6-821f-61cc79fdd3ae</StUF:referentienummer>\n<StUF:tijdstipBericht>20260304115525</StUF:tijdstipBericht>\n\n
       \       <StUF:functie>genereerDocumentidentificatie</StUF:functie>\n    </ZKN:stuurgegevens>\n</ZKN:genereerDocumentIdentificatie_Di02>\n
       \   </soapenv:Body>\n</soapenv:Envelope>\n"
     headers:
@@ -99,15 +98,15 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '1355'
+      - '1347'
       Content-Type:
       - application/soap+xml
       SOAPAction:
       - http://www.egem.nl/StUF/sector/zkn/0310/genereerDocumentIdentificatie_Di02
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.32.4
     method: POST
-    uri: http://localhost:82/stuf-zds
+    uri: http://localhost/stuf-zds
   response:
     body:
       string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\">\n
@@ -122,7 +121,7 @@ interactions:
         \               <StUF:functie>genereerDocumentidentificatie</StUF:functie>\n
         \           </ZKN:stuurgegevens>\n            <ZKN:melding>melding</ZKN:melding>\n
         \           <ZKN:document StUF:entiteittype=\"EDC\" StUF:functie=\"entiteit\">\n
-        \               <ZKN:identificatie>4d29edebf6d98fc1</ZKN:identificatie>\n
+        \               <ZKN:identificatie>5f9109d69cb86018</ZKN:identificatie>\n
         \           </ZKN:document>\n        </ZKN:genereerDocumentIdentificatie_Du02>\n
         \   </soapenv:Body>\n</soapenv:Envelope>"
     headers:
@@ -133,9 +132,9 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Wed, 04 Mar 2026 09:19:41 GMT
+      - Wed, 04 Mar 2026 11:55:25 GMT
       Server:
-      - Werkzeug/3.1.5 Python/3.12.12
+      - Werkzeug/3.1.3 Python/3.12.11
     status:
       code: 200
       message: OK
@@ -145,12 +144,12 @@ interactions:
       \   <soapenv:Header>\n        \n\n    </soapenv:Header>\n    <soapenv:Body>\n
       \       \n\n<ZKN:edcLk01 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\"
       xmlns:xmime=\"http://www.w3.org/2005/05/xmlmime\">\n    <ZKN:stuurgegevens>\n
-      \       <StUF:berichtcode>Lk01</StUF:berichtcode>\n        <StUF:zender>\n    <StUF:organisatie>zender_organisatie-31</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-31</StUF:applicatie>\n<StUF:administratie>zender_administratie-31</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-31</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-31</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-31</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-31</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-31</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>2cf563df-9883-4477-ab5c-62317dbba09f</StUF:referentienummer>\n<StUF:tijdstipBericht>20260304091941</StUF:tijdstipBericht>\n\n
+      \       <StUF:berichtcode>Lk01</StUF:berichtcode>\n        <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>3e9d427d-1d2e-493a-9056-73904c851106</StUF:referentienummer>\n<StUF:tijdstipBericht>20260304115525</StUF:tijdstipBericht>\n\n
       \       <StUF:entiteittype>EDC</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
       \   <ZKN:parameters>\n        <StUF:mutatiesoort>T</StUF:mutatiesoort>\n        <StUF:indicatorOvername>I</StUF:indicatorOvername>\n
       \   </ZKN:parameters>\n    <ZKN:object StUF:entiteittype=\"EDC\" StUF:verwerkingssoort=\"T\">\n
-      \       <ZKN:identificatie>4d29edebf6d98fc1</ZKN:identificatie>\n        <ZKN:dct.omschrijving>foo</ZKN:dct.omschrijving>\n
+      \       <ZKN:identificatie>5f9109d69cb86018</ZKN:identificatie>\n        <ZKN:dct.omschrijving>foo</ZKN:dct.omschrijving>\n
       \       <ZKN:creatiedatum>20260304</ZKN:creatiedatum>\n        <ZKN:ontvangstdatum>20260304</ZKN:ontvangstdatum>\n
       \       <ZKN:titel>inzending</ZKN:titel>\n        <ZKN:beschrijving>Ingezonden
       formulier</ZKN:beschrijving>\n        <ZKN:formaat>application/pdf</ZKN:formaat>\n
@@ -160,11 +159,11 @@ interactions:
       StUF:bestandsnaam=\"open-forms-inzending.pdf\"></ZKN:inhoud>\n        <StUF:tijdvakGeldigheid>\n
       \           <StUF:beginGeldigheid>20260304</StUF:beginGeldigheid>\n            <StUF:eindGeldigheid
       StUF:noValue=\"geenWaarde\" xsi:nil=\"true\"/>\n        </StUF:tijdvakGeldigheid>\n
-      \       <StUF:tijdstipRegistratie>20260304091941</StUF:tijdstipRegistratie>\n
+      \       <StUF:tijdstipRegistratie>20260304115525</StUF:tijdstipRegistratie>\n
       \       <ZKN:isRelevantVoor StUF:entiteittype=\"EDCZAK\" StUF:verwerkingssoort=\"T\">\n
       \           <ZKN:gerelateerde StUF:entiteittype=\"ZAK\" StUF:verwerkingssoort=\"I\">\n
       \               <ZKN:identificatie>foo-zaak</ZKN:identificatie>\n                <ZKN:omschrijving>my-form</ZKN:omschrijving>\n
-      \           </ZKN:gerelateerde>\n            <StUF:tijdstipRegistratie>20260304091941</StUF:tijdstipRegistratie>\n
+      \           </ZKN:gerelateerde>\n            <StUF:tijdstipRegistratie>20260304115525</StUF:tijdstipRegistratie>\n
       \       </ZKN:isRelevantVoor>\n    </ZKN:object>\n</ZKN:edcLk01>\n    </soapenv:Body>\n</soapenv:Envelope>\n"
     headers:
       Accept:
@@ -174,15 +173,15 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '3039'
+      - '3031'
       Content-Type:
       - application/soap+xml
       SOAPAction:
       - http://www.egem.nl/StUF/sector/zkn/0310/voegZaakdocumentToe_Lk01
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.32.4
     method: POST
-    uri: http://localhost:82/stuf-zds
+    uri: http://localhost/stuf-zds
   response:
     body:
       string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\">\n
@@ -207,9 +206,9 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Wed, 04 Mar 2026 09:19:41 GMT
+      - Wed, 04 Mar 2026 11:55:25 GMT
       Server:
-      - Werkzeug/3.1.5 Python/3.12.12
+      - Werkzeug/3.1.3 Python/3.12.11
     status:
       code: 200
       message: OK
