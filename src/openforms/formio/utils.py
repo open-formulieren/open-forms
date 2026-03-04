@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator
+from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
@@ -10,7 +10,7 @@ from glom import Coalesce, Path, glom
 from opentelemetry import trace
 from typing_extensions import TypeIs
 
-from openforms.typing import JSONObject, JSONValue
+from openforms.typing import JSONObject
 from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
 from .constants import COMPONENT_DATA_SUBTYPES, COMPONENT_DATATYPES
@@ -491,42 +491,3 @@ def iterate_data_with_components(
                 component_data_path,
                 configuration_path,
             )
-
-
-def recursive_apply(
-    input: JSONValue, func: Callable, transform_leaf: bool = False, *args, **kwargs
-):
-    """
-    Take an input - property value and recursively apply ``func`` to it.
-
-    The ``input`` may be a string to be used as template, another JSON primitive
-    that we can't pass through the template engine or a complex JSON object to
-    recursively render.
-
-    Returns the same datatype as the input datatype, which should be ready for
-    JSON serialization unless transform_leaf flag is set to True where func is
-    applied to the nested value as well.
-    """
-    match input:
-        # string primitive - we can throw it into the template engine
-        case str():
-            return func(input, *args, **kwargs)
-
-        # collection - map every item recursively
-        case list():
-            return [
-                recursive_apply(nested_bit, func, transform_leaf, *args, **kwargs)
-                for nested_bit in input
-            ]
-
-        # mapping - map every key/value pair recursively
-        case dict():
-            return {
-                key: recursive_apply(nested_bit, func, transform_leaf, *args, **kwargs)
-                for key, nested_bit in input.items()
-            }
-
-        case _:
-            # other primitive or complex object - we can't template this out, so return it
-            # unmodified unless the transformation is explicitly requested
-            return func(input, *args, **kwargs) if transform_leaf else input

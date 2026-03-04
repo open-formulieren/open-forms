@@ -9,6 +9,8 @@ from django.test import override_settings, tag
 
 import requests_mock
 from freezegun import freeze_time
+from hypothesis import example, given, settings, strategies as st
+from hypothesis.extra.django import TestCase as HypothesisTestCase
 from lxml import etree
 from privates.test import temp_private_root
 from requests import ConnectTimeout
@@ -44,6 +46,7 @@ from stuf.stuf_zds.models import StufZDSConfig
 from stuf.stuf_zds.tests import StUFZDSTestBase
 from stuf.stuf_zds.tests.utils import load_mock, match_text, xml_from_request_history
 from stuf.tests.factories import StufServiceFactory
+from stuf.tests.testcases import StUFAssertionsMixin
 
 from ....constants import RegistrationAttribute
 from ....exceptions import RegistrationFailed
@@ -3243,6 +3246,69 @@ class StufZDSPluginTests(StUFZDSTestBase):
             "//stuf:extraElementen/stuf:extraElement[@naam='extra_number']",
             "2023",
         )
+
+
+class XMLSanitizerVCRTests(OFVCRMixin, StUFAssertionsMixin, HypothesisTestCase):
+    VCR_TEST_FILES = TESTS_DIR / "files"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.zds_service = StufServiceFactory.create(
+            soap_service__url="http://localhost:82/stuf-zds"
+        )
+        config = StufZDSConfig.get_solo()
+        config.service = cls.zds_service
+        config.save()
+        cls.addClassCleanup(StufZDSConfig.clear_cache)
+
+        cls.options: RegistrationOptions = {
+            "zds_zaaktype_code": "foo",
+            "zds_documenttype_omschrijving_inzending": "foo",
+            "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
+        }
+
+    @tag("gh-6016")
+    @settings(max_examples=20)
+    @given(st.text(min_size=1))
+    @example("bad" + "\x01" + "value")
+    @example("bad" + "\x02" + "value")
+    @example("bad" + "\x03" + "value")
+    def test_xml_generation_with_various_texts(self, text):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "label": "Achternaam",
+                    "type": "textfield",
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={
+                "voornaam": text,
+                "achternaam": text,
+            },
+            language_code="en",
+        )
+
+        plugin = StufZDSRegistration("stuf")
+        plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+
+        xml_doc = etree.fromstring(stuf_request.body)
+        self.assertSoapXMLCommon(xml_doc)
 
 
 class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):

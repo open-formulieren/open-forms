@@ -4,9 +4,10 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from openforms.formio.service import FormioData, recursive_apply
+from openforms.formio.service import FormioData
 from openforms.template import render_from_string, sandbox_backend
 from openforms.typing import JSONPrimitive
+from openforms.utils.helpers import recursively_apply_function
 
 from .constants import DataMappingTypes, ServiceFetchMethods
 from .validators import (
@@ -141,7 +142,9 @@ class ServiceFetchConfiguration(models.Model):
         # extra knowledge not in the RFC: latin1 is a different name for ISO-8859-1
 
         # Explicitly cast values to strings to avoid localization
-        ctx = recursive_apply(context.data, _convert_to_string, transform_leaf=True)
+        ctx = recursively_apply_function(
+            context.data, _convert_to_string, transform_leaf=True
+        )
 
         headers = {
             # map all unicode into what the RFC allows with utf-8; remove padding space
@@ -161,7 +164,7 @@ class ServiceFetchConfiguration(models.Model):
         # this catches faults requests doesn't: https://github.com/psf/requests/issues/6359
         HeaderValidator()(headers)
 
-        escaped_for_path = recursive_apply(
+        escaped_for_path = recursively_apply_function(
             context.data, validate_path_context_values, transform_leaf=True
         )
 
