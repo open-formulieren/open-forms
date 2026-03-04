@@ -12,7 +12,11 @@ from openforms.data_removal.constants import RemovalMethods
 from openforms.forms.constants import StatementCheckboxChoices, SubmissionAllowedChoices
 from openforms.forms.models.form import Form
 from openforms.forms.tests.factories import CategoryFactory, FormFactory
+from openforms.payments.contrib.worldline.tests.factories import (
+    WorldlineMerchantFactory,
+)
 from openforms.products.tests.factories import ProductFactory
+from openforms.utils.tests.feature_flags import enable_feature_flag
 
 
 class FormEndpointTests(APITestCase):
@@ -51,6 +55,7 @@ class FormEndpointTests(APITestCase):
         product = ProductFactory.create()
         category = CategoryFactory.create()
         theme = ThemeFactory.create()
+        merchant = WorldlineMerchantFactory.create(pspid="wordline-merchant")
         activate_on = timezone.now() + timedelta(days=1)
         deactivate_on = timezone.now() + timedelta(days=2)
         url = reverse(
@@ -62,6 +67,12 @@ class FormEndpointTests(APITestCase):
             "internalName": "Create form internal",
             "internalRemarks": "This form is used for xyz",
             "translationEnabled": True,
+            "paymentBackend": "worldline",
+            "paymentBackendOptions": {
+                "merchant": merchant.pspid,
+                "variant": "Form v3 payments",
+                "descriptorTemplate": "{{ foo }}",
+            },
             "appointmentOptions": {
                 "isAppointment": True,
             },
@@ -155,6 +166,18 @@ class FormEndpointTests(APITestCase):
         theme = form.theme
         self.assertEqual(form.theme, theme)
 
+        # payment options
+        self.assertEqual(form.payment_required, True)
+        self.assertEqual(form.payment_backend, "worldline")
+        self.assertEqual(
+            form.payment_backend_options,
+            {
+                "merchant": merchant.pspid,
+                "variant": "Form v3 payments",
+                "descriptor_template": "{{ foo }}",
+            },
+        )
+
         self.assertTrue(form.show_progress_indicator)
         self.assertTrue(form.show_summary_progress)
         self.assertTrue(form.maintenance_mode)
@@ -220,6 +243,27 @@ class FormEndpointTests(APITestCase):
 
         self.assertTrue(form.new_renderer_enabled)
 
+    @enable_feature_flag("ENABLE_DEMO_PLUGINS")
+    def test_create_form_without_configuration_options(self):
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "paymentBackend": "demo",
+            "paymentBackendOptions": {},
+            "slug": "create-form",
+        }
+
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+
+        self.assertEqual(form.payment_backend, "demo")
+
     def test_create_form_incorrect_request(self):
         url = reverse(
             "api:v3:form-detail",
@@ -240,6 +284,32 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(response_data["invalidParams"][0]["code"], "invalid")
         self.assertEqual(
             response_data["invalidParams"][0]["name"], "literals.nonFieldErrors"
+        )
+
+    def test_incorrect_payment_backend_options(self):
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "paymentBackend": "worldline",
+            "paymentBackendOptions": {
+                "foo": "bar",
+            },
+            "slug": "create-form",
+        }
+
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Form.objects.count(), 0)
+        response_data = response.json()
+        assert "invalidParams" in response_data
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["invalidParams"][0]["code"], "required")
+        self.assertEqual(
+            response_data["invalidParams"][0]["name"], "paymentBackendOptions.merchant"
         )
 
     def test_update_existing_form(self):
