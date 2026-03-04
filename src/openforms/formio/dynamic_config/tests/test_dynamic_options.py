@@ -14,7 +14,10 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 from openforms.logging.models import TimelineLogProxy
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+)
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
 
@@ -811,6 +814,11 @@ class TestDynamicConfigAddingOptionsForRequest(SubmissionsMixin, APITestCase):
         )
         step1 = FormStepFactory.create(form=form, form_definition=form_definition)
         submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            completed=False,
+        )
 
         self._add_submission_to_session(submission)
         endpoint = reverse(

@@ -39,7 +39,9 @@ class CreateMissingSubmissionStepsTests(MigratorTestCase):
                 ]
             },
         )
-        FormStep.objects.create(slug="without-submission-step", form=form, form_definition=fd_2, order=1)
+        FormStep.objects.create(
+            slug="without-submission-step", form=form, form_definition=fd_2, order=1
+        )
 
         fd_3 = FormDefinition.objects.create(
             name="fd_3",
@@ -63,6 +65,4 @@ class CreateMissingSubmissionStepsTests(MigratorTestCase):
         submission = Submission.objects.get()
         step_2 = submission.form.formstep_set.get(slug="without-submission-step")
         self.assertEqual(submission.submissionstep_set.count(), 3)
-        self.assertTrue(
-            submission.submissionstep_set.filter(form_step=step_2).exists()
-        )
+        self.assertTrue(submission.submissionstep_set.filter(form_step=step_2).exists())
