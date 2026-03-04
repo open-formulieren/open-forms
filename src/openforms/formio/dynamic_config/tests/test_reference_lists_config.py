@@ -19,7 +19,10 @@ from openforms.formio.typing import (
 )
 from openforms.forms.tests.factories import FormFactory
 from openforms.logging.models import TimelineLogProxy
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+)
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
@@ -791,6 +794,9 @@ class SubmissionStepDetailTest(SubmissionsMixin, APITestCase):
             },
         )
         submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form.formstep_set.get()
+        )
         endpoint = reverse(
             "api:submission-steps-detail",
             kwargs={

@@ -2,7 +2,10 @@ from django.test import TestCase
 
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.prefill.contrib.family_members.plugin import PLUGIN_IDENTIFIER
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+)
 
 from ...typing.custom import Component
 from .helpers import extract_error, validate_formio_data
@@ -19,6 +22,9 @@ class PartnersValidationTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__configuration={"components": [component]},
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=submission.form.formstep_set.get()
         )
         FormVariableFactory.create(
             form=submission.form,

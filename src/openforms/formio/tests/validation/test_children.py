@@ -2,7 +2,10 @@ from django.test import TestCase
 
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.prefill.contrib.family_members.plugin import PLUGIN_IDENTIFIER
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+)
 
 from ...typing.custom import ChildrenComponent
 from .helpers import extract_error, validate_formio_data
@@ -20,6 +23,9 @@ class ChildrenValidationTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__configuration={"components": [component]},
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=submission.form.formstep_set.get()
         )
         FormVariableFactory.create(
             form=submission.form,
@@ -122,6 +128,9 @@ class ChildrenValidationTests(TestCase):
             form__generate_minimal_setup=True,
             form__formstep__form_definition__configuration={"components": [component]},
         )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=submission.form.formstep_set.get()
+        )
         FormVariableFactory.create(
             form=submission.form,
             user_defined=True,
@@ -171,6 +180,9 @@ class ChildrenValidationTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__configuration={"components": [component]},
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=submission.form.formstep_set.get()
         )
         FormVariableFactory.create(
             form=submission.form,

@@ -10,7 +10,7 @@ from openforms.formio.service import (
 )
 from openforms.plugins.registry import BaseRegistry
 from openforms.registrations.service import process_variable_schema
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionStep
 from openforms.typing import JSONObject, JSONValue
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableSources
@@ -69,6 +69,10 @@ def generate_json_schema(
         # Note: we generate a 'fake' submission here to get the total component
         # configuration
         submission = Submission(id=uuid.uuid4(), form=form)
+        submission._steps = [
+            SubmissionStep(submission=submission, form_step=step)
+            for step in form.formstep_set.iterator()
+        ]
 
     # Update the total configuration to add options to components that (possibly) use
     # another variable as a data source (radio, select, and selectboxes).

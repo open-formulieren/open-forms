@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uuid
 import warnings
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime
@@ -345,6 +345,7 @@ class Submission(models.Model):
 
     _form_login_required: bool | None = None  # can be set via annotation
     _total_configuration_wrapper = None
+    _steps: Collection[SubmissionStep] | None = None
 
     # type hints for (reverse) related fields
     auth_info: AuthInfo
@@ -612,7 +613,9 @@ class Submission(models.Model):
         # ⚡️ no select_related/prefetch ON PURPOSE - while processing the form steps,
         # we're doing this in python as we have the objects already from the query
         # above.
-        _submission_steps = self.submissionstep_set.all()
+        _submission_steps = (
+            self._steps if self._steps is not None else self.submissionstep_set.all()
+        )
         submission_steps = {}
         for step in _submission_steps:
             # non-empty value implies that the form_step FK was (cascade) deleted
@@ -629,18 +632,12 @@ class Submission(models.Model):
         # in the database yet - this is on purpose!
         steps: list[SubmissionStep] = []
         for form_step in form_steps:
-            if form_step.id in submission_steps:
-                step = submission_steps[form_step.id]
-                # replace the python objects to avoid extra queries and/or joins in the
-                # submission step query.
-                step.form_step = form_step
-                step.submission = self
-            else:
-                # there's no known DB record for this, so we create a fresh, unsaved
-                # instance and return this
-                step = SubmissionStep(
-                    uuid=None, submission=self, form_step=form_step, completed=False
-                )
+            assert form_step.id in submission_steps
+            step = submission_steps[form_step.id]
+            # replace the python objects to avoid extra queries and/or joins in the
+            # submission step query.
+            step.form_step = form_step
+            step.submission = self
             steps.append(step)
 
         state = SubmissionState(

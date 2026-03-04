@@ -15,7 +15,10 @@ from privates.test import temp_private_root
 from simple_certmanager.test.factories import CertificateFactory
 
 from openforms.forms.tests.factories import FormStepFactory
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+)
 from openforms.submissions.tokens import submission_resume_token_generator
 from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.html_forms import parse_form
@@ -198,22 +201,23 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
 
     def test_resuming_a_suspended_submission(self):
         session: requests.Session = requests.session()
-        form = FormStepFactory.create(
+        step = FormStepFactory.create(
             form__slug="slurm",
             form__authentication_backend=PLUGIN_ID,
             form__authentication_backend_options={
                 "loa": DigiDAssuranceLevels.substantial
             },
             form_definition__login_required=True,
-        ).form
+        )
         submission = SubmissionFactory.create(
             uuid="17399e4c-913f-47de-837a-d71a8308e0a8",  # part for the RelayState
-            form=form,
-            form_url=furl("https://testserver").join(form.get_absolute_url()),
+            form=step.form,
+            form_url=furl("https://testserver").join(step.form.get_absolute_url()),
             auth_info__plugin=PLUGIN_ID,
             auth_info__value="900026236",
             auth_info__loa=DigiDAssuranceLevels.substantial,
         )
+        SubmissionStepFactory.create(submission=submission, form_step=step)
         resume_path = reverse(
             "submissions:resume",
             kwargs={
@@ -397,6 +401,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
             auth_info__value="900026236",
             auth_info__loa=DigiDAssuranceLevels.middle,
         )
+        SubmissionStepFactory.create(submission=submission, form_step=form_step)
         resume_path = reverse(
             "submissions:resume",
             kwargs={
