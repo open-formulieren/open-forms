@@ -1206,3 +1206,126 @@ class ComponentModificationTests(TestCase):
         state = submission.load_submission_value_variables_state()
         data = state.get_data(include_unsaved=True)
         self.assertEqual(data["container.textfield"], "")
+
+    @tag("gh-6040")
+    def test_fields_inside_a_visible_editgrid(self):
+        """
+        Ensure that fields inside visible editgrids do not get cleared unexpectedly.
+        """
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "key": "editgridHiddenByDefault",
+                        "type": "editgrid",
+                        "hidden": True,
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "text.field",
+                                "label": "Textfield",
+                                "clearOnHide": False,
+                            },
+                            {
+                                "type": "textfield",
+                                "key": "textfield2",
+                                "label": "Textfield 2",
+                                "clearOnHide": True,
+                            },
+                        ],
+                    },
+                    {
+                        "key": "editgridShownByDefault",
+                        "type": "editgrid",
+                        "hidden": False,
+                        "components": [
+                            {
+                                "type": "number",
+                                "key": "number",
+                                "label": "Number",
+                                "clearOnHide": False,
+                            },
+                            {
+                                "type": "number",
+                                "key": "number2",
+                                "label": "Number 2",
+                                "clearOnHide": True,
+                            },
+                        ],
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": "editgridHiddenByDefault",
+                    "action": {
+                        "name": "Show editgridHiddenByDefault",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, False]},
+            actions=[
+                {
+                    "component": "editgridShownByDefault",
+                    "action": {
+                        "name": "Hide editgridShownByDefault",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+        )
+
+        # This assumes the user has checked the checkbox, causing
+        # "editgridHiddenByDefault" to be visible in the first place
+        data = FormioData(
+            {
+                "checkbox": True,
+                "editgridHiddenByDefault": [
+                    {"text": {"field": "don't clear me"}, "textfield2": "me neither"}
+                ],
+                "editgridShownByDefault": [{"number": 42, "number2": 100}],
+            }
+        )
+        evaluate_form_logic(submission, submission_step, data)
+
+        # Check the data
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_unsaved=True)
+        self.assertEqual(
+            data["editgridHiddenByDefault.0"],
+            {"text": {"field": "don't clear me"}, "textfield2": "me neither"},
+        )
+        self.assertEqual(
+            data["editgridShownByDefault.0"], {"number": 42, "number2": 100}
+        )
