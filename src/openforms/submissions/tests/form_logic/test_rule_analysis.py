@@ -229,6 +229,18 @@ class DetermineVariablesAndStepTests(TestCase):
                 ]
             },
         )
+        step_4 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "number",
+                        "type": "number",
+                        "label": "Number",
+                    },
+                ]
+            },
+        )
         FormVariableFactory.create(
             form=form,
             name="user_defined",
@@ -241,7 +253,6 @@ class DetermineVariablesAndStepTests(TestCase):
             form=form,
             json_logic_trigger={
                 "and": [
-                    {"==": [{"var": "checkbox"}, True]},
                     {"==": [{"var": "checkbox2"}, True]},
                 ]
             },
@@ -264,13 +275,13 @@ class DetermineVariablesAndStepTests(TestCase):
             ],
         )
 
-        with self.subTest("All input variable steps are set"):
-            self.assertEqual(rule_1.steps, {step_1, step_2})
-            self.assertEqual(rule_1.input_variable_keys, {"checkbox", "checkbox2"})
+        with self.subTest("All steps after the trigger step are set"):
+            self.assertEqual(rule_1.steps, {step_2, step_3, step_4})
+            self.assertEqual(rule_1.input_variable_keys, {"checkbox2"})
             self.assertEqual(rule_1.output_variable_keys, {"textfield"})
 
-        with self.subTest("No step if trigger includes user-defined variable"):
-            self.assertEqual(rule_2.steps, set())
+        with self.subTest("All steps if trigger includes user-defined variable"):
+            self.assertEqual(rule_2.steps, {step_1, step_2, step_3, step_4})
             self.assertEqual(rule_2.input_variable_keys, {"user_defined"})
             self.assertEqual(rule_2.output_variable_keys, {"textfield"})
 
@@ -312,6 +323,18 @@ class DetermineVariablesAndStepTests(TestCase):
                 ]
             },
         )
+        step_4 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "number",
+                        "type": "number",
+                        "label": "Number",
+                    },
+                ]
+            },
+        )
         FormVariableFactory.create(
             form=form,
             name="user_defined",
@@ -324,7 +347,6 @@ class DetermineVariablesAndStepTests(TestCase):
             form=form,
             json_logic_trigger={
                 "and": [
-                    {"==": [{"var": "checkbox"}, True]},
                     {"==": [{"var": "checkbox2"}, True]},
                 ]
             },
@@ -347,13 +369,13 @@ class DetermineVariablesAndStepTests(TestCase):
             ],
         )
 
-        with self.subTest("All input variable steps are set"):
-            self.assertEqual(rule_1.steps, {step_1, step_2})
-            self.assertEqual(rule_1.input_variable_keys, {"checkbox", "checkbox2"})
+        with self.subTest("All steps after the trigger step are set"):
+            self.assertEqual(rule_1.steps, {step_2, step_3, step_4})
+            self.assertEqual(rule_1.input_variable_keys, {"checkbox2"})
             self.assertEqual(rule_1.output_variable_keys, {"textfield"})
 
-        with self.subTest("No step if trigger includes user-defined variable"):
-            self.assertEqual(rule_2.steps, set())
+        with self.subTest("All steps if trigger includes user-defined variable"):
+            self.assertEqual(rule_2.steps, {step_1, step_2, step_3, step_4})
             self.assertEqual(rule_2.input_variable_keys, {"user_defined"})
             self.assertEqual(rule_2.output_variable_keys, {"textfield"})
 
