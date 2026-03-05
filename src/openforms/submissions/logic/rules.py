@@ -185,6 +185,7 @@ def iter_evaluate_rules(
                         for key, value in mutations.items()
                     }
                     data.update(mutations_python)
+                    original_input_data.update(mutations_python)
 
                 yield operation
 
