@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import requests_mock
+from requests import RequestException
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -179,6 +180,47 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
             m.get(
                 "https://bag/api/adressen?huisnummer=117&postcode=1015CJ", json={}
             )  # pretend there are no results
+
+            response = self.client.get(
+                endpoint, {"postcode": "1015CJ", "house_number": "117"}
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            {
+                "streetName": "",
+                "city": "",
+                "secretStreetCity": salt_location_message(
+                    {
+                        "postcode": "1015CJ",
+                        "number": "117",
+                        "city": "",
+                        "street_name": "",
+                    }
+                ),
+            },
+        )
+
+    @patch("openforms.contrib.kadaster.clients.KadasterApiConfig.get_solo")
+    def test_returns_empty_address_result_when_bag_exception_was_thrown(
+        self, m_get_solo
+    ):
+        submission = SubmissionFactory.create()
+        self._add_submission_to_session(submission)
+        m_get_solo.return_value = KadasterApiConfig(
+            bag_service=ServiceFactory.build(
+                api_root="https://bag/api/",
+                auth_type=AuthTypes.no_auth,
+            )
+        )
+        endpoint = reverse("api:geo:address-autocomplete")
+
+        with requests_mock.Mocker() as m:
+            m.get(
+                "https://bag/api/adressen?huisnummer=117&postcode=1015CJ",
+                exc=RequestException,
+            )
 
             response = self.client.get(
                 endpoint, {"postcode": "1015CJ", "house_number": "117"}
