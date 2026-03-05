@@ -25,8 +25,11 @@ Bugfix release.
   ``clearOnHide: true``.
 * [:backend:`5685`] Fixed infinite loop in logic check due to already submitted
   repeating group data not being used in logic evaluation.
+<<<<<<< HEAD
 * [:backend:`5967`] Fixed the theme-specific "back to main website"-link and favicon not
   being applied correctly.
+=======
+>>>>>>> 8e59341aa (:memo: Prepare 3.4.5 changelog)
 
 3.4.4 (2026-02-27)
 ==================
