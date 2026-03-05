@@ -6,6 +6,28 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.4.5 (2026-03-10)
+==================
+
+Bugfix release.
+
+* [:backend:`6016`] Fixed crashes in StUF-ZDS registration because of prohibited control
+  characters from the user input being included in the XML messages.
+* Upgraded lxml-html-clean and Django with their latest security patches.
+* [:backend:`5950`] Fixed BAG-error responses being cached.
+* [:backend:`6040`] Fixed fields inside editgrids unexpectedly being cleared.
+* [:backend:`6046`] Fixed the result of a variable action being overwritten by an
+  untriggered logic action on the same component that affects its visibility.
+* [:backend:`6028`] Fixed a regression causing fields to skip final validation if
+  they're made visible through backend logic.
+* [:backend:`6045`] Fixed infinite loop in logic check with the new renderer when a
+  repeating group with ``clearOnHide: false`` is hidden while a field inside it has
+  ``clearOnHide: true``.
+* [:backend:`5685`] Fixed infinite loop in logic check due to already submitted
+  repeating group data not being used in logic evaluation.
+* [:backend:`5967`] Fixed the theme-specific "back to main website"-link and favicon not
+  being applied correctly.
+
 3.4.4 (2026-02-27)
 ==================
 
