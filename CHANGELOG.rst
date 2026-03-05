@@ -35,7 +35,18 @@ We'll work on bridging this gap, possibly through an upgrade to Django 6.0.
 3.4.4 (2026-02-27)
 ==================
 
-Bugfix release.
+Security and bugfix release.
+
+.. warning:: This release addresses a moderate security issue in Open Forms and we urge
+   everyone to update as soon as possible.
+
+**Security fix**
+
+* [:cve:`CVE-2026-28803`] Fixed a vulnerability where attackers could view form
+  submission data. See :ghsa:`GHSA-2g49-rfm6-5qj5` for details and instructions on how
+  to detect possible intrusions. This advisory will be published on Wednesday March 11th.
+
+**Bugfixes**
 
 This patch fixes the remaining issues that were reported due to the logic engine
 rework done in 3.4. We apologise for the disruptions these bugs have caused. The
