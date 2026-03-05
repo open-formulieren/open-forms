@@ -129,3 +129,63 @@ class GetRulesToEvaluateTests(TestCase):
 
             rules = get_rules_to_evaluate(submission, submission_step_2)
             self.assertEqual(list(rules), [rule_2])
+
+    def test_get_rules_to_evaluate_new_iterating_over_rules_does_not_exhaust_them(self):
+        """
+        Ensure iterating over the rules once does not exhaust them, as we iterate
+        evaluation we iterate over the rules multiple times.
+        """
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "checkbox", "key": "checkbox", "label": "Checkbox"},
+                    {"type": "number", "key": "number", "label": "Number"},
+                ]
+            },
+        )
+        rule_1 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "variable": "number",
+                    "action": {
+                        "name": "Set number",
+                        "type": LogicActionTypes.variable,
+                        "value": 42,
+                    },
+                }
+            ],
+        )
+        rule_1.form_steps.set([step])
+        rule_2 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "number"}, 42]},
+            actions=[
+                {
+                    "action": {
+                        "name": "Disable next step",
+                        "type": LogicActionTypes.disable_next,
+                        "value": 42,
+                    },
+                    "form_step_uuid": str(step.uuid),
+                }
+            ],
+        )
+        rule_2.form_steps.set([step])
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission, form_step=step
+        )
+
+        rules = get_rules_to_evaluate(submission, submission_step)
+
+        for i in (0, 1):
+            rule = None
+            for r in rules:
+                rule = r
+            with self.subTest(f"Iteration {i}"):
+                self.assertEqual(rule, rule_2)
