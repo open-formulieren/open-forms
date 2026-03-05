@@ -9,7 +9,18 @@ Changelog
 3.3.13 (2026-03-10)
 ===================
 
-Bugfix release.
+Security and bugfix release.
+
+.. warning:: This release addresses a moderate security issue in Open Forms and we urge
+   everyone to update as soon as possible.
+
+**Security fix**
+
+* [:cve:`CVE-2026-28803`] Fixed a vulnerability where attackers could view form
+  submission data. See :ghsa:`GHSA-2g49-rfm6-5qj5` for details and instructions on how
+  to detect possible intrusions. This advisory will be published on Wednesday March 11th.
+
+**Bugfixes**
 
 * [:backend:`6016`] Fixed crashes in StUF-ZDS registration because of prohibited control
   characters from the user input being included in the XML messages.
