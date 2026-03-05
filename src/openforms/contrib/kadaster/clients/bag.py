@@ -32,7 +32,13 @@ class BAGClient(HALClient):
     @elasticapm.capture_span(span_type="app.bag.query")
     def get_address(
         self, postcode: str, house_number: str, reraise_errors: bool = False
-    ) -> AddressResult:
+    ) -> AddressResult | None:
+        """
+        Look up the address in the BAG.
+
+        :return: The (empty) address result if we received a valid response, `None`
+          otherwise.
+        """
         params = {
             "huisnummer": house_number,
             "postcode": postcode.replace(" ", ""),
@@ -45,33 +51,34 @@ class BAGClient(HALClient):
             if reraise_errors:
                 raise exc
             logger.exception("bag_request_failure", exc_info=exc)
-            return self.build_address_result(postcode, house_number)
+            return None
 
         response_data = response.json()
         if "_embedded" not in response_data:
             # No addresses were found
-            return self.build_address_result(postcode, house_number)
+            return build_address_result(postcode, house_number)
 
         first_result = response_data["_embedded"]["adressen"][0]
         street_name = first_result.pop("korteNaam")
         city = first_result.pop("woonplaatsNaam")
 
-        return self.build_address_result(postcode, house_number, city, street_name)
+        return build_address_result(postcode, house_number, city, street_name)
 
-    def build_address_result(
-        self, postcode: str, house_number: str, city: str = "", street_name: str = ""
-    ) -> AddressResult:
-        secret_street_city = salt_location_message(
-            {
-                "postcode": postcode.upper().replace(" ", ""),
-                "number": house_number,
-                "city": city,
-                "street_name": street_name,
-            }
-        )
 
-        return AddressResult(
-            street_name=street_name,
-            city=city,
-            secret_street_city=secret_street_city,
-        )
+def build_address_result(
+    postcode: str, house_number: str, city: str = "", street_name: str = ""
+) -> AddressResult:
+    secret_street_city = salt_location_message(
+        {
+            "postcode": postcode.upper().replace(" ", ""),
+            "number": house_number,
+            "city": city,
+            "street_name": street_name,
+        }
+    )
+
+    return AddressResult(
+        street_name=street_name,
+        city=city,
+        secret_street_city=secret_street_city,
+    )
