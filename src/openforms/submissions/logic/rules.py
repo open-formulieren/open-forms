@@ -186,7 +186,7 @@ def iter_evaluate_rules(
     data: FormioData,
     configuration: FormioConfigurationWrapper,
     submission: Submission,
-    initial_data: FormioData,
+    data_for_hidden_state: FormioData,
 ) -> Iterator[ActionOperation]:
     """
     Iterate over the rules and evaluate the trigger, yielding action operations and
@@ -203,21 +203,23 @@ def iter_evaluate_rules(
       structure is updated after every mutation.
     :param configuration: Formio configuration wrapper of a step.
     :param submission: Submission instance.
-    :param initial_data: Initial data for clear-on-hide behavior.
+    :param data_for_hidden_state: Data to apply when a component is hidden.
     :returns: An iterator yielding :class:`ActionOperation` instances.
     """
     state = submission.variables_state
 
     # keep a copy of the start data that is not affected by the mutations applied by
-    # logic. Due to the instant processing of clearOnHide side-effects and multiple
-    # logic rules potentially changing the visibility of the same component, we need to
-    # make sure to restore the data for every hidden -> visible flip, as the visible ->
-    # hidden flip results in clearing the data - see #6001. For this restoration, we
-    # use the start data as source, as that is coming from the frontend state that is
-    # the result of logic evaluations.
-    # For the hotfix, we deliberately keep this isolated from initial_data, which is
-    # populated differently based on whether the new renderer is enabled or not.
-    original_input_data = deepcopy(data)
+    # clearOnHide logic. Due to the instant processing of clearOnHide side-effects and
+    # multiple logic rules potentially changing the visibility of the same component,
+    # we need to make sure to restore the data for every hidden -> visible flip, as the
+    # visible -> hidden flip results in clearing the data - see #6001. For this
+    # restoration, we use the start data as source, as that is coming from the frontend
+    # state that is the result of logic evaluations. Note that we do need to update this
+    # data with non-clearOnHide mutations that have been applied, to make sure we don't
+    # override it again with user data.
+    # We need to keep this isolated from data_for_hidden_state, as this contains values
+    # that should be applied when a component goes from visible -> hidden.
+    data_for_visible_state = deepcopy(data)
 
     for rule in rules:
         with (
@@ -248,8 +250,8 @@ def iter_evaluate_rules(
                     rule,
                     data,
                     configuration,
-                    initial_data,
-                    original_input_data=original_input_data,
+                    data_for_hidden_state=data_for_hidden_state,
+                    data_for_visible_state=data_for_visible_state,
                 )
                 continue
 
@@ -258,15 +260,15 @@ def iter_evaluate_rules(
                     data,
                     configuration,
                     submission,
-                    initial_data,
-                    original_input_data=original_input_data,
+                    data_for_hidden_state=data_for_hidden_state,
+                    data_for_visible_state=data_for_visible_state,
                 ):
                     mutations_python = {
                         key: state.variables[key].to_python(value)
                         for key, value in mutations.items()
                     }
                     data.update(mutations_python)
-                    original_input_data.update(mutations_python)
+                    data_for_visible_state.update(mutations_python)
 
                 yield operation
 
@@ -275,9 +277,9 @@ def _handle_clear_on_hide_for_untriggered_rule(
     rule: FormLogic,
     data: FormioData,
     configuration: FormioConfigurationWrapper,
-    initial_data: FormioData,
     *,
-    original_input_data: FormioData,
+    data_for_hidden_state: FormioData,
+    data_for_visible_state: FormioData,
 ):
     """
     Handle clear-on-hide behaviour for components of which the "hidden" property
@@ -307,6 +309,6 @@ def _handle_clear_on_hide_for_untriggered_rule(
             {"components": [component]},
             data,
             configuration,
-            initial_data=initial_data,
-            original_input_data=original_input_data,
+            data_for_hidden_state=data_for_hidden_state,
+            data_for_visible_state=data_for_visible_state,
         )

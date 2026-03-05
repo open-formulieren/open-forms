@@ -153,12 +153,12 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):  # noqa: UP046
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
         *,
-        initial_data: FormioData,
+        data_for_hidden_state: FormioData,
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
         components_to_ignore_hidden: set[str] | None = None,
-        original_input_data: FormioData | None = None,
+        data_for_visible_state: FormioData | None = None,
     ) -> None:
         """
         Apply (conditional) visibility of this component. This routine should be
@@ -167,7 +167,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):  # noqa: UP046
         :param component: Component configuration.
         :param data: Data used for processing.
         :param wrapper: Formio configuration wrapper. Required for component lookup.
-        :param initial_data: Initial data for clear-on-hide behavior.
+        :param data_for_hidden_state: Data to apply when a component is hidden.
         :param parent_hidden: Indicates whether the parent component was hidden.
         :param get_evaluation_data: Function used to get the evaluation data used during
           evaluation of the conditional.
@@ -176,9 +176,8 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):  # noqa: UP046
           it was not passed, the hidden property WILL be checked.
         :param ignore_hidden_property: Whether to ignore the "hidden" property during
           further processing of its children.
-        :param original_input_data: The input data from the frontend when called through
-          the check logic endpoint. Used to restore values when flipping visibility
-          states.
+        :param data_for_visible_state: The data used to restore values when flipping
+          visibility states.
         """
 
     @staticmethod
@@ -264,12 +263,12 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
         *,
-        initial_data: FormioData,
+        data_for_hidden_state: FormioData,
         parent_hidden: bool,
         ignore_hidden_property: bool,
         get_evaluation_data: Callable | None = None,
         components_to_ignore_hidden: set[str] | None = None,
-        original_input_data: FormioData | None = None,
+        data_for_visible_state: FormioData | None = None,
     ) -> None:
         """
         Apply (conditional) visibility of this component. This routine should be
@@ -278,7 +277,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         :param component: Component configuration.
         :param data: Data used for processing.
         :param wrapper: Formio configuration wrapper. Required for component lookup.
-        :param initial_data: Initial data for clear-on-hide behavior.
+        :param data_for_hidden_state: Data to apply when a component is hidden.
         :param parent_hidden: Indicates whether the parent component was hidden.
         :param get_evaluation_data: Function used to get the evaluation data used during
           evaluation of the conditional.
@@ -287,9 +286,8 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
           it was not passed, the hidden property WILL be checked.
         :param ignore_hidden_property: Whether to ignore the "hidden" property during
           further processing of its children.
-        :param original_input_data: The input data from the frontend when called through
-          the check logic endpoint. Used to restore values when flipping visibility
-          states.
+        :param data_for_visible_state: The data used to restore values when flipping
+          visibility states.
         """
         if (component_type := component["type"]) not in self:
             return
@@ -299,12 +297,12 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
             component,
             data,
             wrapper,
-            initial_data=initial_data,
+            data_for_hidden_state=data_for_hidden_state,
             parent_hidden=parent_hidden,
             ignore_hidden_property=ignore_hidden_property,
             get_evaluation_data=get_evaluation_data,
             components_to_ignore_hidden=components_to_ignore_hidden,
-            original_input_data=original_input_data,
+            data_for_visible_state=data_for_visible_state,
         )
 
     def update_config(

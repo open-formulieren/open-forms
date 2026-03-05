@@ -87,11 +87,11 @@ def process_visibility(
     data: FormioData,
     wrapper: FormioConfigurationWrapper,
     *,
-    initial_data: FormioData,
+    data_for_hidden_state: FormioData,
     parent_hidden: bool = False,
     get_evaluation_data: GetEvaluationData | None = None,
     components_to_ignore_hidden: set[str] | None = None,
-    original_input_data: FormioData | None = None,
+    data_for_visible_state: FormioData | None = None,
 ) -> None:
     """
     Process the visibility of the components inside the configuration, by checking if
@@ -104,7 +104,7 @@ def process_visibility(
       or column.
     :param data: Data used for processing.
     :param wrapper: Formio configuration wrapper. Required for component lookup.
-    :param initial_data: Initial data for clear-on-hide behavior.
+    :param data_for_hidden_state: Data to apply when a component is hidden.
     :param parent_hidden: Indicates whether the parent component was hidden. Note that
       the conditional will not be evaluated at all when this is set to ``True``.
     :param get_evaluation_data: Function used to get the evaluation data used during
@@ -112,9 +112,8 @@ def process_visibility(
     :param components_to_ignore_hidden: Set of components for which the "hidden"
       property is ignored in determining whether the component is hidden. Note that if
       it was not passed, the hidden property WILL be checked.
-    :param original_input_data: The input data from the frontend when called through
-      the check logic endpoint. Used to restore values when flipping visibility
-      states.
+    :param data_for_visible_state: The data used to restore values when flipping
+      visibility states.
     """
     components_to_ignore_hidden = components_to_ignore_hidden or set()
     for component in configuration.get("components", []):
@@ -129,20 +128,22 @@ def process_visibility(
             ignore_hidden_property,
         )
 
-        # Need to check whether the component is present in the data because layout
-        # components have no value
+        # Need to check whether the component holds submission data, as we do not have
+        # to clear those that don't (fieldset, content, softRequiredErrors, etc.)
         holds_submission_data = register.holds_submission_data(component)
         if hidden and clear_on_hide and holds_submission_data:
             # NOTE - formio.js (and our own renderer) *delete* the key entirely from the
             # data instead, while we assign the empty value to ensure every variable is
             # always present in the submission data
             # If we don't have an initial value available, just use the empty value.
-            data[key] = initial_data.get(key) or get_component_empty_value(component)
+            data[key] = data_for_hidden_state.get(key) or get_component_empty_value(
+                component
+            )
 
         # if it's visible, check if any input data should be restored because earlier
         # logic rules may have cleared it (visible -> hidden -> visible)
-        if not hidden and original_input_data is not None and holds_submission_data:
-            if data.get(key) != (original_value := original_input_data.get(key)):
+        if not hidden and data_for_visible_state is not None and holds_submission_data:
+            if data.get(key) != (original_value := data_for_visible_state.get(key)):
                 # restore the value from the original input data - likely there was a
                 # sequence in logic that lead to the data being cleared because of hidden
                 # state, while a subsequent action makes the component visible again. In
@@ -156,10 +157,10 @@ def process_visibility(
             component,
             data,
             wrapper,
-            initial_data=initial_data,
+            data_for_hidden_state=data_for_hidden_state,
             parent_hidden=hidden,
             ignore_hidden_property=ignore_hidden_property,
             get_evaluation_data=get_evaluation_data,
             components_to_ignore_hidden=components_to_ignore_hidden,
-            original_input_data=original_input_data,
+            data_for_visible_state=data_for_visible_state,
         )
