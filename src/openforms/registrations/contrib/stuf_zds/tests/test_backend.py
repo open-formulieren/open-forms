@@ -9,7 +9,7 @@ from django.test import override_settings, tag
 
 import requests_mock
 from freezegun import freeze_time
-from hypothesis import example, given, settings, strategies as st
+from hypothesis import example, given, settings
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from lxml import etree
 from privates.test import temp_private_root
@@ -41,6 +41,7 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
     SubmissionValueVariableFactory,
 )
+from openforms.tests.search_strategies import jsonb_text
 from openforms.utils.tests.vcr import OFVCRMixin
 from stuf.stuf_zds.client import PaymentStatus as StuFPaymentStatus
 from stuf.stuf_zds.models import StufZDSConfig
@@ -3309,7 +3310,7 @@ class XMLSanitizerVCRTests(OFVCRMixin, StUFAssertionsMixin, HypothesisTestCase):
 
     @tag("gh-6016")
     @settings(max_examples=20)
-    @given(st.text(min_size=1))
+    @given(jsonb_text())
     @example("bad" + "\x01" + "value")
     @example("bad" + "\x02" + "value")
     @example("bad" + "\x03" + "value")
