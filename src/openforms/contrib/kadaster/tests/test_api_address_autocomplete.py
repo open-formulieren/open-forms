@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 import requests_mock
 from requests import RequestException
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.formio.components.utils import salt_location_message
