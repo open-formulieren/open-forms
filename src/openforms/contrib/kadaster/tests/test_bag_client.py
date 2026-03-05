@@ -90,18 +90,4 @@ class BAGClientTests(SimpleTestCase):
         with get_bag_client() as client:
             address_data = client.get_address("1015CJ", "115")
 
-        self.assertEqual(
-            address_data,
-            AddressResult(
-                street_name="",
-                city="",
-                secret_street_city=salt_location_message(
-                    {
-                        "postcode": "1015CJ",
-                        "number": "115",
-                        "city": "",
-                        "street_name": "",
-                    }
-                ),
-            ),
-        )
+        self.assertIsNone(address_data)

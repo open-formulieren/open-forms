@@ -1,5 +1,3 @@
-from functools import partial
-
 from django.core.cache import cache
 from django.utils.translation import gettext_lazy as _
 
@@ -12,7 +10,7 @@ from rest_framework.views import APIView
 
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.views.mixins import ListMixin
-from openforms.contrib.kadaster.clients.bag import AddressResult
+from openforms.contrib.kadaster.clients.bag import AddressResult, build_address_result
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 
 from ..clients import get_bag_client, get_locatieserver_client
@@ -74,11 +72,19 @@ class AddressAutocompleteView(APIView):
 
         # check the cache so we avoid hitting the remote API too often (and risk
         # of being throttled, see #1832)
-        address_data = cache.get_or_set(
-            key=f"BAG|get_address|{postcode}|{number}",
-            default=partial(lookup_address, postcode, number),
-            timeout=ADDRESS_AUTOCOMPLETE_CACHE_TIMEOUT,
-        )
+        cache_key = f"BAG|get_address|{postcode}|{number}"
+        # `cache.get(...)` returns `None` if the key does not exist.
+        address_data = cache.get(cache_key)
+        if address_data is None:
+            address_data = lookup_address(postcode, number)
+            # If address data is still `None`, the request to look up the address has
+            # failed for whatever reason, so we shouldn't add it to the cache.
+            if address_data is not None:
+                cache.set(cache_key, address_data, ADDRESS_AUTOCOMPLETE_CACHE_TIMEOUT)
+            else:
+                # Make sure we return an empty address result instead of `None`
+                # (see #4430).
+                address_data = build_address_result(postcode, number)
 
         return Response(GetStreetNameAndCityViewResultSerializer(address_data).data)
 
