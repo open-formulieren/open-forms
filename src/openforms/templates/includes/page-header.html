@@ -20,7 +20,7 @@ include the SDK snippet directly.
 <header class="utrecht-page-header {% if theme.logo %}utrecht-page-header--openforms-with-logo{% endif %}">
     <a
         class="utrecht-link utrecht-link--html-a utrecht-link--openforms utrecht-page-header__openforms-return-url"
-        href="{% firstof config.main_website '#' %}"
+        href="{% firstof theme.main_website config.main_website '#' %}"
         title="{{ logo_alt }}"
         aria-label="{{ logo_alt }}"
     >{% if config.main_website %}{{ logo_alt }}{% endif %}</a>

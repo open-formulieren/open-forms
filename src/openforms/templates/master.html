@@ -20,9 +20,15 @@
     {% endif %}
     
     {% static 'ico/favicon.png' as static_icon %}
-    {% firstof theme.favicon config.favicon static_icon as favicon %}
     
-    <link href="{{ favicon }}" rel="shortcut icon">
+    {% if theme.favicon %}
+        <link href="{{ theme.favicon.url }}" rel="shortcut icon">
+    {% elif config.favicon %}
+        <link href="{{ config.favicon.url }}" rel="shortcut icon">
+    {% else %}
+        <link href="{{ static_icon }}" rel="shortcut icon">
+    {% endif %}
+
         
     <link href="{% static 'bundles/public-styles.css' %}" media="all" rel="stylesheet"/>
     {% include "forms/sdk_css_snippet.html" %}
