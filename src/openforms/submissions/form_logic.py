@@ -101,7 +101,7 @@ def evaluate_form_logic(
     # 4. Apply the (dirty) data to the variable state.
     # We need to get the initial data for clear on hide first, as we don't want it to
     # include the unsaved data.
-    initial_data_for_clear_on_hide = (
+    data_for_hidden_state = (
         _get_initial_data_for_clear_on_hide(step)
         if submission.form.new_renderer_enabled
         else FormioData()
@@ -128,7 +128,7 @@ def evaluate_form_logic(
         data_for_evaluation,
         config_wrapper,
         components_with_hidden_action,
-        initial_data_for_clear_on_hide,
+        data_for_hidden_state,
     )
 
     # 6. Evaluate the logic rules in order
@@ -158,7 +158,7 @@ def evaluate_form_logic(
             data_for_evaluation,
             config_wrapper,
             submission=submission,
-            initial_data=initial_data_for_clear_on_hide,
+            data_for_hidden_state=data_for_hidden_state,
         ):
             mutation_operations.append(operation)
 
@@ -252,7 +252,7 @@ def evaluate_conditional_logic(
     data: FormioData,
     wrapper: FormioConfigurationWrapper,
     components_to_ignore_hidden: set[str],
-    initial_data: FormioData,
+    data_for_hidden_state: FormioData,
 ):
     """
     Evaluate conditional logic through iteration.
@@ -266,7 +266,7 @@ def evaluate_conditional_logic(
     :param wrapper: Formio configuration wrapper. Required for component lookup.
     :param components_to_ignore_hidden: Set of components for which the "hidden"
       property is ignored in determining whether the component is hidden.
-    :param initial_data: Initial data for clear-on-hide behavior.
+    :param data_for_hidden_state: Data to apply when a component is hidden.
     """
     processed_data = None
     _loop_count = 0
@@ -279,7 +279,7 @@ def evaluate_conditional_logic(
             configuration,
             data,
             wrapper,
-            initial_data=initial_data,
+            data_for_hidden_state=data_for_hidden_state,
             components_to_ignore_hidden=components_to_ignore_hidden,
         )
 
