@@ -1329,3 +1329,76 @@ class ComponentModificationTests(TestCase):
         self.assertEqual(
             data["editgridShownByDefault.0"], {"number": 42, "number2": 100}
         )
+
+    @tag("gh-6046")
+    def test_variable_action_with_non_triggered_and_property_action(self):
+        """
+        Ensure that a variable action followed by a (non-triggered) hidden action, will
+        actually update the value.
+        """
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "textfield",
+                    "action": {
+                        "name": "Set textfield",
+                        "type": "variable",
+                        "value": "foo",
+                    },
+                }
+            ],
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": "textfield",
+                    "action": {
+                        "name": "Hide textfield",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+        )
+
+        data = FormioData({"checkbox": False, "textfield": "user_input"})
+        evaluate_form_logic(submission, submission_step, data)
+
+        # The rule with the hidden action was never triggered, so the field must have
+        # the value set by the variable action.
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_unsaved=True)
+        self.assertEqual("foo", data["textfield"])
