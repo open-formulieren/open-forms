@@ -1169,10 +1169,20 @@ class EditGrid(BasePlugin[EditGridComponent]):
         inner_evaluation_data = deepcopy(data)
 
         def get_evaluation_data(item_data_: FormioData) -> FormioData:
-            inner_evaluation_data[key] = item_data_
+            # We cannot have nested FormioData structures.
+            inner_evaluation_data[key] = item_data_.data
             return outer_get_evaluation_data(inner_evaluation_data)
 
-        for item_data in edit_grid_data:
+        original_edit_grid_data = (
+            original_input_data[key] if original_input_data else None
+        )
+        for i, item_data in enumerate(edit_grid_data):
+            original_item_data = (
+                FormioData(original_edit_grid_data[i])
+                if original_edit_grid_data
+                else None
+            )
+            item_data = FormioData(item_data)
             process_visibility(
                 component,
                 item_data,
@@ -1181,9 +1191,9 @@ class EditGrid(BasePlugin[EditGridComponent]):
                 parent_hidden=parent_hidden,
                 get_evaluation_data=get_evaluation_data,
                 components_to_ignore_hidden=_components_to_ignore_hidden,
-                original_input_data=original_input_data,
+                original_input_data=original_item_data,
             )
-            edit_grid_data_new.append(item_data)
+            edit_grid_data_new.append(item_data.data)
 
         data[key] = edit_grid_data_new
 
