@@ -8936,6 +8936,10 @@ components:
           readOnly: true
         translationEnabled:
           type: boolean
+        registrationBackends:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormRegistrationBackend'
         appointmentOptions:
           allOf:
           - $ref: '#/components/schemas/AppointmentOptions'

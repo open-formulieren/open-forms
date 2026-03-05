@@ -1,17 +1,23 @@
+from typing import Any
+
+from django.db import transaction
+
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.config.models.theme import Theme
-from openforms.forms.api.serializers.form import (
-    FormLiteralsSerializer,
-    SubmissionsRemovalOptionsSerializer,
-)
-from openforms.forms.models.category import Category
 from openforms.products.models.product import Product
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
+from ....api.serializers.form import (
+    FormLiteralsSerializer,
+    FormRegistrationBackendSerializer,
+    SubmissionsRemovalOptionsSerializer,
+)
+from ....models.category import Category
 from ....models.form import Form
+from ....models.form_registration_backend import FormRegistrationBackend
 
 
 @extend_schema_serializer(component_name="FormV3Serializer")
@@ -50,6 +56,8 @@ class FormSerializer(serializers.ModelSerializer):
 
     translations = ModelTranslationsSerializer()
 
+    registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
+
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = Form
         fields = (
@@ -59,6 +67,7 @@ class FormSerializer(serializers.ModelSerializer):
             "internal_remarks",
             "login_required",
             "translation_enabled",
+            "registration_backends",
             "appointment_options",
             "literals",
             "product",
@@ -94,6 +103,28 @@ class FormSerializer(serializers.ModelSerializer):
                 "read_only": True,
             },
         }
+
+    @transaction.atomic()
+    def create(self, validated_data: dict[str, Any]) -> Form:
+        registration_backends = validated_data.pop("registration_backends", [])
+        instance = super().create(validated_data)
+        FormRegistrationBackend.objects.bulk_create(
+            FormRegistrationBackend(form=instance, **backend)
+            for backend in registration_backends
+        )
+        return instance
+
+    @transaction.atomic()
+    def update(self, instance: Form, validated_data: dict[str, Any]) -> Form:
+        registration_backends = validated_data.pop("registration_backends", None)
+        instance = super().update(instance, validated_data)
+        if registration_backends is not None:
+            instance.registration_backends.all().delete()  # pyright: ignore[reportAttributeAccessIssue]
+            FormRegistrationBackend.objects.bulk_create(
+                FormRegistrationBackend(form=instance, **backend)
+                for backend in registration_backends
+            )
+        return instance
 
     def save(self, **kwargs):
         return super().save(**kwargs, uuid=self.context["uuid"])
