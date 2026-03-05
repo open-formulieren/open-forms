@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 from django.conf import settings
 from django.core.cache import caches
@@ -163,6 +163,29 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
 
         # assert that the client call was only made once
         m_lookup_address.assert_called_once_with("1015CJ", "117")
+
+    @tag("gh-5950")
+    @patch(
+        "openforms.contrib.kadaster.api.views.lookup_address",
+        side_effect=[
+            None,  # means the client raised an exception
+            AddressResult(
+                street_name="Keizersgracht", city="Amsterdam", secret_street_city=""
+            ),
+        ],
+    )
+    def test_bag_exceptions_are_not_cached(self, m_lookup_address):
+        endpoint = reverse("api:geo:address-autocomplete")
+
+        # Make the request twice - first one shouldn't be cached, because we didn't
+        # receive a valid response.
+        self.client.get(endpoint, {"postcode": "1015CJ", "house_number": "117"})
+        self.client.get(endpoint, {"postcode": "1015CJ", "house_number": "117"})
+
+        # Assert that the client call was made twice.
+        m_lookup_address.assert_has_calls(
+            [call("1015CJ", "117"), call("1015CJ", "117")]
+        )
 
     @patch("openforms.contrib.kadaster.clients.KadasterApiConfig.get_solo")
     def test_bag_config_client_used(self, m_get_solo):
