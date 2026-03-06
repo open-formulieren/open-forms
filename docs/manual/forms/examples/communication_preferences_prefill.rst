@@ -24,6 +24,8 @@ Formulierstappen
     * **Naam**: Communicatievoorkeur
     * Bij *Inloggen* > *Authenticatiemethode*: vink één van de inlogopties aan
       die ``biedt bsn aan`` of ``biedt kvk aan`` bevat.
+    * Bij *Experimentele functionaliteit*: vink **Gebruik nieuwe renderer** aan.
+      Een Profiel-component werkt alleen met de nieuwe renderer.
 
 #. Navigeer naar de tab *Stappen en velden* en voeg een nieuwe stap toe. Kies
    *Maak een nieuwe formulierdefinitie*:
@@ -34,6 +36,11 @@ Formulierstappen
 #. Klap vervolgens de "Speciale velden" open en voeg een Profiel-component toe:
 
     * **Label**: Voorkeursadressen
+    * Vink **Gebruikercommunicatiemethodes bijwerken** aan als je gegevens naar de
+      klantinteracties-API wil sturen.
+
+.. seealso:: De details over welke informatie wordt opgeslagen in de Klanteninteracties API
+   zijn te vinden in de :ref:`configuratiedocumentatie <configuration_prefill_communication_preferences_writing>`.
 
 Pre-fill
 --------
