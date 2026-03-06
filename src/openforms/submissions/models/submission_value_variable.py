@@ -739,6 +739,64 @@ class SubmissionValueVariable(models.Model):
 
         return value
 
+    def get_data_type(self, key) -> str | None:
+        if key == self.key:
+            return self.data_type
+
+        # Key is not relevant for this variable.
+        if not key.startswith(self.key):
+            return None
+
+        if self.data_type != FormVariableDataTypes.array:
+            return self.data_type
+
+        # Should have a data subtype.
+        if self.data_subtype in (
+            FormVariableDataTypes.string,
+            FormVariableDataTypes.boolean,
+            FormVariableDataTypes.object,
+            FormVariableDataTypes.int,
+            FormVariableDataTypes.float,
+            FormVariableDataTypes.date,
+            FormVariableDataTypes.datetime,
+            FormVariableDataTypes.time,
+        ):
+            return self.data_subtype
+
+        # These _should_ be the only relevant data subtypes at this point.
+        assert self.data_subtype in (
+            FormVariableDataTypes.editgrid,
+            FormVariableDataTypes.partners,
+            FormVariableDataTypes.children,
+        )
+
+        # Try parsing it as a child data access key, e.g. "editgrid.0.textfield".
+        item_list = key.lstrip(f"{self.key}.").split(".", 1)
+
+        # If there are no periods, the key doesn't make sense in this context. For
+        # example, "editgrid.textfield" is not a valid data-access key.
+        if len(item_list) == 1:
+            return None
+
+        # Assume no data access to nested components here... :grimacing:
+        child_key = item_list[1]
+        if self.data_subtype == FormVariableDataTypes.editgrid:
+            for child_component in iter_components(self.configuration):
+                if child_key != child_component["key"]:
+                    continue
+                # TODO-6038: it _could_ be a component with `multiple: True`
+                return get_component_datatype(child_component)
+        else:
+            # Partners or children
+            if child_key == "dateOfBirth":
+                return FormVariableDataTypes.date
+            elif child_key == "selected":
+                return FormVariableDataTypes.boolean
+            elif child_key in ("bsn", "initials", "affixes", "lastName", "firstNames"):
+                return FormVariableDataTypes.string
+
+        return None
+
     @cached_property
     def is_registration_attempt_allowed(self) -> bool:
         config = GlobalConfiguration.get_solo()
