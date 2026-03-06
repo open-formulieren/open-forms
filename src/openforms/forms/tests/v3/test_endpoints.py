@@ -100,6 +100,22 @@ class FormEndpointTests(APITestCase):
                 "erroredSubmissionsRemovalMethod": RemovalMethods.delete_permanently,
                 "allSubmissionsRemovalLimit": 30,
             },
+            "confirmationEmailTemplate": {
+                "translations": {
+                    "en": {
+                        "subject": "Submission received",
+                        "content": "{% confirmation_summary %} {% appointment_information %} {% payment_information %}",
+                        "cosign_subject": "Cosign submission received",
+                        "cosign_content": "{% confirmation_summary %} {% appointment_information %} {% payment_information %} {% cosign_information %}",
+                    },
+                    "nl": {
+                        "subject": "Inzending ontvangen",
+                        "content": "{% confirmation_summary %} {% appointment_information %} {% payment_information %}",
+                        "cosign_subject": "Cosign inzending ontvangen",
+                        "cosign_content": "{% confirmation_summary %} {% appointment_information %} {% payment_information %} {% cosign_information %}",
+                    },
+                }
+            },
             "sendConfirmationEmail": True,
             "displayMainWebsiteLink": True,
             "includeConfirmationPageContentInPdf": True,
@@ -193,6 +209,34 @@ class FormEndpointTests(APITestCase):
         self.assertTrue(form.send_confirmation_email)
         self.assertTrue(form.display_main_website_link)
         self.assertTrue(form.include_confirmation_page_content_in_pdf)
+
+        # confirmation email
+        confirmation_email_template = form.confirmation_email_template
+        assert confirmation_email_template, "No confirmation email coupled to form"
+        self.assertEqual(confirmation_email_template.subject_en, "Submission received")
+        self.assertEqual(
+            confirmation_email_template.content_en,
+            "{% confirmation_summary %} {% appointment_information %} {% payment_information %}",
+        )
+        self.assertEqual(
+            confirmation_email_template.cosign_subject_en, "Cosign submission received"
+        )
+        self.assertEqual(
+            confirmation_email_template.cosign_content_en,
+            "{% confirmation_summary %} {% appointment_information %} {% payment_information %} {% cosign_information %}",
+        )
+        self.assertEqual(confirmation_email_template.subject_nl, "Inzending ontvangen")
+        self.assertEqual(
+            confirmation_email_template.content_nl,
+            "{% confirmation_summary %} {% appointment_information %} {% payment_information %}",
+        )
+        self.assertEqual(
+            confirmation_email_template.cosign_subject_nl, "Cosign inzending ontvangen"
+        )
+        self.assertEqual(
+            confirmation_email_template.cosign_content_nl,
+            "{% confirmation_summary %} {% appointment_information %} {% payment_information %} {% cosign_information %}",
+        )
 
         # translations
         self.assertEqual(form.begin_text_en, "start")

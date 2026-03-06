@@ -1,16 +1,22 @@
+from typing import Any
+
+from django.db import transaction
+
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.config.models.theme import Theme
-from openforms.forms.api.serializers.form import (
-    FormLiteralsSerializer,
-    SubmissionsRemovalOptionsSerializer,
-)
-from openforms.forms.models.category import Category
+from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
+from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.products.models.product import Product
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
+from ....api.serializers.form import (
+    FormLiteralsSerializer,
+    SubmissionsRemovalOptionsSerializer,
+)
+from ....models.category import Category
 from ....models.form import Form
 
 
@@ -42,6 +48,10 @@ class FormSerializer(serializers.ModelSerializer):
     )
 
     literals = FormLiteralsSerializer(source="*", required=False)
+
+    confirmation_email_template = ConfirmationEmailTemplateSerializer(
+        required=False, allow_null=True
+    )
 
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
     submissions_removal_options = SubmissionsRemovalOptionsSerializer(
@@ -82,6 +92,7 @@ class FormSerializer(serializers.ModelSerializer):
             "ask_privacy_consent",
             "ask_statement_of_truth",
             "submissions_removal_options",
+            "confirmation_email_template",
             "send_confirmation_email",
             "display_main_website_link",
             "include_confirmation_page_content_in_pdf",
@@ -94,6 +105,28 @@ class FormSerializer(serializers.ModelSerializer):
                 "read_only": True,
             },
         }
+
+    @transaction.atomic()
+    def create(self, validated_data: dict[str, Any]) -> Form:
+        confirmation_email_template = validated_data.pop(
+            "confirmation_email_template", None
+        )
+        instance = super().create(validated_data)
+        ConfirmationEmailTemplate.objects.set_for_form(
+            form=instance, data=confirmation_email_template
+        )
+        return instance
+
+    @transaction.atomic()
+    def update(self, instance, validated_data: dict[str, Any]) -> Form:
+        confirmation_email_template = validated_data.pop(
+            "confirmation_email_template", None
+        )
+        instance = super().update(instance, validated_data)
+        ConfirmationEmailTemplate.objects.set_for_form(
+            form=instance, data=confirmation_email_template
+        )
+        return instance
 
     def save(self, **kwargs):
         return super().save(**kwargs, uuid=self.context["uuid"])
