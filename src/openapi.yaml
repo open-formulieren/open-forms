@@ -8349,6 +8349,14 @@ components:
         components:
           type: array
           items: {}
+    FormDefinitionConfigurationV3:
+      type: object
+      properties:
+        display:
+          $ref: '#/components/schemas/DisplayEnum'
+        components:
+          type: array
+          items: {}
     FormDefinitionDetail:
       type: object
       properties:
@@ -8490,6 +8498,41 @@ components:
           nullable: true
           title: Name [nl]
           maxLength: 50
+    FormDefinitionV3:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          readOnly: true
+        internalName:
+          type: string
+          description: internal name for management purposes
+          maxLength: 50
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+          deprecated: true
+        configuration:
+          allOf:
+          - $ref: '#/components/schemas/FormDefinitionConfigurationV3'
+          title: Form.io configuration
+          description: The form definition as Form.io JSON schema
+        loginRequired:
+          type: boolean
+          description: DigID Login required for form step
+        isReusable:
+          type: boolean
+          description: Allow this definition to be re-used in multiple forms
+        translations:
+          $ref: '#/components/schemas/FormDefinitionModelTranslations'
+      required:
+      - configuration
+      - name
+      - uuid
     FormENTranslations:
       type: object
       description: |-
@@ -8858,6 +8901,15 @@ components:
           $ref: '#/components/schemas/ButtonText'
         nextText:
           $ref: '#/components/schemas/ButtonText'
+    FormStepLiteralsV3:
+      type: object
+      properties:
+        previousText:
+          $ref: '#/components/schemas/ButtonText'
+        saveText:
+          $ref: '#/components/schemas/ButtonText'
+        nextText:
+          $ref: '#/components/schemas/ButtonText'
     FormStepModelTranslations:
       type: object
       description: |-
@@ -8913,6 +8965,33 @@ components:
           description: The text that will be displayed in the form step to go to the
             next step. Leave blank to get value from global configuration.
           maxLength: 50
+    FormStepV3:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        index:
+          type: integer
+        slug:
+          type: string
+          nullable: true
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        formDefinition:
+          $ref: '#/components/schemas/FormDefinitionV3'
+        isApplicable:
+          type: boolean
+          description: Whether the step is applicable by default.
+        literals:
+          $ref: '#/components/schemas/FormStepLiteralsV3'
+        translations:
+          $ref: '#/components/schemas/FormStepModelTranslations'
+      required:
+      - formDefinition
+      - index
+      - uuid
     FormV3:
       type: object
       properties:
@@ -8959,6 +9038,10 @@ components:
           type: string
           format: uuid
           nullable: true
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormStepV3'
         showProgressIndicator:
           type: boolean
           description: Whether the step progression should be displayed in the UI
