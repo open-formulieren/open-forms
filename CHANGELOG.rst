@@ -6,6 +6,16 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.13 (2026-03-10)
+===================
+
+Bugfix release.
+
+* [:backend:`6016`] Fixed crashes in StUF-ZDS registration because of prohibited control
+  characters from the user input being included in the XML messages.
+* Upgraded lxml-html-clean and Django with their latest security patches.
+* [:backend:`5950`] Fixed BAG-error responses being cached.
+
 3.3.12 (2026-02-20)
 ===================
 
