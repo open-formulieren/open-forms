@@ -6,13 +6,14 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.generic import RedirectView, TemplateView
 
+from csp.decorators import csp_exempt
 from rest_framework import exceptions as drf_exceptions
 
 from openforms.emails.context import get_wrapper_context
-from openforms.forms.context_processors import sdk_urls
 from openforms.submissions.models import Submission
 
 from ..api import exceptions
+from .sdk_static import get_sdk_urls
 
 
 class ErrorDetailView(TemplateView):
@@ -42,12 +43,13 @@ class ErrorDetailView(TemplateView):
         return context
 
 
+@method_decorator(csp_exempt(), name="dispatch")
 @method_decorator(never_cache, name="dispatch")
 class SDKRedirectView(RedirectView):
     permanent = False
 
     def get_redirect_url(self, ext: str):
-        urls = sdk_urls(self.request)
+        urls = get_sdk_urls()
         match ext:
             case "js":
                 return urls["sdk_umd_url"]

@@ -1,12 +1,9 @@
 from django.template import Library
 from django.template.defaultfilters import stringfilter
 
-from flags.state import flag_enabled
 from rest_framework.reverse import reverse
 
 from openforms.utils.redirect import allow_redirect_url
-
-from ..context_processors import sdk_urls
 
 register = Library()
 
@@ -22,15 +19,6 @@ def api_base_url(context: dict):
 @stringfilter
 def trim(value):
     return value.strip()
-
-
-@register.inclusion_tag("forms/sdk_info_banner.html")
-def sdk_info_banner():
-    enabled = flag_enabled("DISPLAY_SDK_INFORMATION")
-    return {
-        "enabled": enabled,
-        **sdk_urls(request=None),
-    }
 
 
 @register.simple_tag

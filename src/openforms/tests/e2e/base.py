@@ -23,6 +23,7 @@ from playwright.async_api import (
 )
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.utils.sdk_static import get_sdk_urls
 
 type SupportedBrowser = Literal["chromium", "firefox", "webkit"]
 
@@ -122,6 +123,11 @@ async def browser_page():
 @disable_admin_mfa()
 @override_settings(ALLOWED_HOSTS=["*"])
 class E2ETestCase(StaticLiveServerTestCase):
+    def setUp(self):
+        super().setUp()
+
+        get_sdk_urls.cache_clear()
+
     async def _admin_login(self, page: Page) -> None:
         login_url = furl(self.live_server_url) / reverse("admin-mfa-login")
         await page.goto(str(login_url))
