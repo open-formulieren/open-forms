@@ -644,6 +644,143 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(form.submission_counter, 0)
 
+    @tag("gh-6028")
+    def test_field_required_in_fieldset_hidden_depending_on_another_field(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "personOrCompany",
+                        "label": "Are you a person or a company",
+                        "values": [
+                            {
+                                "label": "Person",
+                                "value": "person",
+                            },
+                            {
+                                "label": "Company",
+                                "value": "company",
+                            },
+                        ],
+                    },
+                    {
+                        "key": "personFieldSet",
+                        "type": "fieldset",
+                        "label": "Person field set",
+                        "hidden": True,
+                        "components": [
+                            {
+                                "key": "lastname",
+                                "type": "textfield",
+                                "label": "Last name",
+                                "validate": {
+                                    "required": True,
+                                },
+                            }
+                        ],
+                    },
+                ]
+            },
+        )
+        step = submission.form.formstep_set.get()
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "personOrCompany"}, "person"]},
+            actions=[
+                {
+                    "uuid": "ec267e7c-b995-4139-a72a-aa14142566c1",
+                    "component": "personFieldSet",
+                    "form_step_uuid": str(step.uuid),
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": False,
+                    },
+                },
+            ],
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"personOrCompany": "person"},
+            form_step=step,
+        )
+
+        self._add_submission_to_session(submission)
+
+        response = self.client.post(
+            reverse("api:submission-complete", kwargs={"uuid": submission.uuid}),
+            {"privacy_policy_accepted": True},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("gh-6028")
+    def test_field_required_hidden_depending_on_another_field(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "personOrCompany",
+                        "label": "Are you a person or a company",
+                        "values": [
+                            {
+                                "label": "Person",
+                                "value": "person",
+                            },
+                            {
+                                "label": "Company",
+                                "value": "company",
+                            },
+                        ],
+                    },
+                    {
+                        "key": "lastname",
+                        "type": "textfield",
+                        "label": "Last name",
+                        "hidden": True,
+                        "validate": {
+                            "required": True,
+                        },
+                    },
+                ]
+            },
+        )
+        step = submission.form.formstep_set.get()
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "personOrCompany"}, "person"]},
+            actions=[
+                {
+                    "uuid": "ec267e7c-b995-4139-a72a-aa14142566c1",
+                    "component": "lastname",
+                    "form_step_uuid": str(step.uuid),
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": False,
+                    },
+                },
+            ],
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"personOrCompany": "person"},
+            form_step=step,
+        )
+
+        self._add_submission_to_session(submission)
+
+        response = self.client.post(
+            reverse("api:submission-complete", kwargs={"uuid": submission.uuid}),
+            {"privacy_policy_accepted": True},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 @temp_private_root()
 class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
