@@ -80,6 +80,11 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
     return register.normalize(component, value)
 
 
+def holds_submission_data(component: Component) -> bool:
+    """Return whether data can be submitted for a particular component."""
+    return register.holds_submission_data(component)
+
+
 @tracer.start_as_current_span(
     name="get-dynamic-configuration",
     attributes={"span.type": "app", "span.subtype": "formio"},
