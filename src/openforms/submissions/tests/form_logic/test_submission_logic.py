@@ -1238,6 +1238,136 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 """),
             )
 
+    @tag("gh-6045")
+    def test_clear_on_hide_clears_children_of_editgrids_new_renderer(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            new_renderer_enabled=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "outerTextfield",
+                        "label": "Outer textfield",
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "editgrid",
+                        "key": "editgrid",
+                        "label": "Edit grid",
+                        "clearOnHide": False,
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "innerTextfield",
+                                "label": "Inner textfield",
+                                "clearOnHide": True,
+                            },
+                        ],
+                    },
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "Checkbox",
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": "outerTextfield",
+                    "action": {
+                        "name": "Hide textfield",
+                        "type": "property",
+                        "property": {
+                            "type": "object",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                },
+                {
+                    "component": "editgrid",
+                    "action": {
+                        "name": "Hide edit grid",
+                        "type": "property",
+                        "property": {
+                            "type": "object",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                },
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
+        )
+        self._add_submission_to_session(submission)
+
+        with self.subTest("initial call after checking checkbox"):
+            response_1 = self.client.post(
+                endpoint,
+                data={
+                    "data": {
+                        "checkbox": True,
+                        "outerTextfield": "clear-me",
+                        "editgrid": [{"innerTextfield": "clear-me"}],
+                    }
+                },
+            )
+
+            self.assertEqual(response_1.status_code, status.HTTP_200_OK)
+            step_data = response_1.json()["step"]
+            # the backend replies with the "empty" values as the result of clear-on-hide,
+            # but the important part is the updated component configurations, which the
+            # renderer handles by itself and *that* leads to the second call.
+            self.assertEqual(
+                step_data["data"],
+                {
+                    "outerTextfield": "",
+                    "editgrid": [{"innerTextfield": ""}],
+                },
+            )
+
+            textfield, editgrid = step_data["formStep"]["configuration"]["components"][
+                0:2
+            ]
+            self.assertTrue(textfield["hidden"])
+            self.assertTrue(editgrid["hidden"])
+
+        # the rendere applies `undefined` to the hidden components, which *removes the
+        # keys* from the submission data.
+        with self.subTest("follow up call after renderer mutations"):
+            response_2 = self.client.post(
+                endpoint,
+                data={
+                    "data": {
+                        "checkbox": True,
+                        # "outerTextfield" key is absent
+                        "editgrid": [{}],  # "innerTextfield" key is absent
+                    }
+                },
+            )
+
+            self.assertEqual(response_2.status_code, status.HTTP_200_OK)
+            step_data = response_2.json()["step"]
+            # we expect *no* data diff to be returned - otherwise you get an infinite
+            # loop
+            self.assertEqual(step_data["data"], {})
+
+            textfield, editgrid = step_data["formStep"]["configuration"]["components"][
+                0:2
+            ]
+            self.assertTrue(textfield["hidden"])
+            self.assertTrue(editgrid["hidden"])
+
 
 @tag("gh-6005")
 class MultipleRulesTargettingSameComponentVisibilityTests(
