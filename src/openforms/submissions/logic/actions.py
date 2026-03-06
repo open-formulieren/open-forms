@@ -179,9 +179,6 @@ class PropertyAction(ActionOperation):
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
-        # handled directly inside eval
-        if self.property_name == "hidden":
-            return None
         if self.component not in configuration:
             return None
         component = configuration[self.component]
