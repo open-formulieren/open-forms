@@ -1185,7 +1185,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                         {"type": "bsn", "key": "bsn"},
                         {
                             "type": "textfield",
-                            "key": "childName",
+                            "key": "firstNames",
                             "label": "Child name",
                         },
                     ],
@@ -1309,7 +1309,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                         {"type": "bsn", "key": "bsn"},
                         {
                             "type": "textfield",
-                            "key": "childName",
+                            "key": "firstNames",
                             "label": "Child name",
                         },
                     ],

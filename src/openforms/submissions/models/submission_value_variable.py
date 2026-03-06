@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime, time
 from typing import TYPE_CHECKING, Any
@@ -16,12 +16,15 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 from typing_extensions import deprecated
 
-from openforms.formio.service import FormioData
+from openforms.formio.service import (
+    FormioData,
+    get_component_empty_value,
+    holds_submission_data,
+)
 from openforms.formio.typing import Component
 from openforms.formio.utils import (
     get_component_data_subtype,
     get_component_datatype,
-    get_component_empty_value,
     iter_components,
 )
 from openforms.forms.models.form_variable import FormVariable
@@ -124,7 +127,7 @@ class SubmissionValueVariablesState:
         data = FormioData()
         for variable in variables.values():
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
-                data[variable.key] = variable.to_python()
+                data[variable.key] = variable.to_python(include_unsaved=include_unsaved)
 
         if include_static_variables:
             data.update(
@@ -586,7 +589,11 @@ class SubmissionValueVariable(models.Model):
 
         return value
 
-    def to_python(self, value: VariableValue | object = empty) -> VariableValue:
+    def to_python(
+        self,
+        value: VariableValue | object = empty,
+        include_unsaved: bool = False,
+    ) -> VariableValue:
         """
         Deserialize a value into the appropriate python type, using the data type
         information.
@@ -598,6 +605,8 @@ class SubmissionValueVariable(models.Model):
         as we focus on NL first.
 
         :param value: JSON value to deserialize. If empty, ``self.value`` is used.
+        :param include_unsaved: When unsaved value are included, missing keys (e.g. in
+          editgrid items) will be populated with their default values.
         """
         if value is empty:
             value = self.value
@@ -609,8 +618,14 @@ class SubmissionValueVariable(models.Model):
             return self._value_to_python(value, self.data_type, self.configuration)
         else:
             assert self.data_type == FormVariableDataTypes.array
+            assert isinstance(value, Sequence)
             return [
-                self._value_to_python(v, self.data_subtype, self.configuration)
+                self._value_to_python(
+                    v,
+                    self.data_subtype,
+                    self.configuration,
+                    include_unsaved=include_unsaved,
+                )
                 for v in value
             ]
 
@@ -619,6 +634,7 @@ class SubmissionValueVariable(models.Model):
         value: VariableValue,
         data_type: str,
         configuration: Component | None = None,
+        include_unsaved: bool = False,
     ) -> VariableValue:
         if value is None:
             return None
@@ -692,24 +708,40 @@ class SubmissionValueVariable(models.Model):
             )
             return value
 
-        if value and data_type == FormVariableDataTypes.editgrid:
+        if data_type == FormVariableDataTypes.editgrid:
+            assert isinstance(value, dict)
             value = FormioData(value)
-            for child_component in iter_components(configuration):
+            for child_component in iter_components(
+                configuration, recurse_into_editgrid=False
+            ):
                 child_key = child_component["key"]
-                if (child_value := value.get(child_key, empty)) is empty:
-                    continue
+                child_value: VariableValue | object = value.get(child_key, empty)
+
+                if child_value is empty:
+                    if include_unsaved and holds_submission_data(child_component):
+                        child_value = get_component_empty_value(child_component)
+                    else:
+                        continue
 
                 data_type = get_component_datatype(child_component)
                 data_subtype = get_component_data_subtype(child_component)
 
                 if not data_subtype:
                     value[child_key] = self._value_to_python(
-                        child_value, data_type, child_component
+                        child_value,
+                        data_type,
+                        child_component,
+                        include_unsaved=include_unsaved,
                     )
                 else:
                     assert data_type == FormVariableDataTypes.array
                     value[child_key] = [
-                        self._value_to_python(v, data_subtype, child_component)
+                        self._value_to_python(
+                            v,
+                            data_subtype,
+                            child_component,
+                            include_unsaved=include_unsaved,
+                        )
                         for v in child_value
                     ]
 

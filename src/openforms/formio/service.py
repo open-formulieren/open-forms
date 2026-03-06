@@ -77,6 +77,11 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
     return register.normalize(component, value)
 
 
+def holds_submission_data(component: Component) -> bool:
+    """Return whether data can be submitted for a particular component."""
+    return register.holds_submission_data(component)
+
+
 @elasticapm.capture_span(span_type="app.formio")
 def get_dynamic_configuration(
     config_wrapper: FormioConfigurationWrapper,
