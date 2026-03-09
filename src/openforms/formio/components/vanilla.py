@@ -1143,9 +1143,11 @@ class EditGrid(BasePlugin[EditGridComponent]):
         original_input_data: FormioData | None = None,
     ):
         key = component["key"]
+        clear_on_hide = component.get("clearOnHide", True)
         # We only need to process children if the value was not already cleared.
-        if not (edit_grid_data := data[key]):
+        if parent_hidden and clear_on_hide:
             return
+        edit_grid_data = data[key]
         assert isinstance(edit_grid_data, list)
 
         # We might be dealing with nested editgrids
