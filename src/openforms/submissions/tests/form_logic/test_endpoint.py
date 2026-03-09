@@ -1123,6 +1123,19 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                         "defaultValue": "foo",
                         "clearOnHide": True,
                     },
+                    {
+                        "type": "editgrid",
+                        "key": "editgrid",
+                        "label": "Editgrid",
+                        "clearOnHide": True,
+                        "components": [
+                            {
+                                "type": "number",
+                                "key": "number",
+                                "label": "Number",
+                            }
+                        ],
+                    },
                 ]
             },
         )
@@ -1142,7 +1155,19 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                         },
                         "state": True,
                     },
-                }
+                },
+                {
+                    "component": "editgrid",
+                    "action": {
+                        "name": "Hide editgrid",
+                        "type": "property",
+                        "property": {
+                            "type": "object",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                },
             ],
         )
         FormLogicFactory.create(
@@ -1163,7 +1188,11 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         SubmissionStepFactory.create(
             submission=submission,
             form_step=step,
-            data={"checkbox": False, "textfield": "already submitted value"},
+            data={
+                "checkbox": False,
+                "textfield": "already submitted value",
+                "editgrid": [{"number": 1}, {"number": 2}],
+            },
         )
 
         # Perform logic check
@@ -1175,10 +1204,22 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
 
         response = self.client.post(
             endpoint,
-            data={"data": {"checkbox": True, "textfield": "some custom input"}},
+            data={
+                "data": {
+                    "checkbox": True,
+                    "textfield": "some custom input",
+                    "editgrid": [{"number": 42}],
+                },
+            },
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         step_data = response.json()["step"]
-        self.assertEqual(step_data["data"], {"textfield": "already submitted value"})
+        self.assertEqual(
+            step_data["data"],
+            {
+                "textfield": "already submitted value",
+                "editgrid": [{"number": 1}, {"number": 2}],
+            },
+        )
         # Logic rule should be triggered
         self.assertEqual(step_data["canSubmit"], False)
