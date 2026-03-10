@@ -2,6 +2,7 @@ import warnings
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.sessions.backends.base import SessionBase
 from django.core.exceptions import PermissionDenied
 from django.http import (
     HttpResponse,
@@ -29,10 +30,12 @@ from rest_framework.request import Request
 from openforms.accounts.models import User
 from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.forms.models import Form, FormAuthenticationBackend
+from openforms.logging import audit_logger
 from openforms.submissions.api.permissions import owns_submission
 from openforms.submissions.cosigning import CosignData
 from openforms.submissions.models import Submission
 from openforms.submissions.serializers import CoSignDataSerializer
+from openforms.utils.helpers import obfuscate
 from openforms.utils.redirect import allow_redirect_url
 
 from .base import BasePlugin
@@ -349,7 +352,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             except KeyError:
                 return HttpResponseBadRequest("unknown plugin")
             self._plugin = plugin
-            structlog.contextvars.bind_contextvars(plugin=type(plugin))
+            structlog.contextvars.bind_contextvars(plugin=plugin)
 
             try:
                 authentication_backend = form.auth_backends.get(
@@ -392,6 +395,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
                 options,
             )
 
+            location: str = ""
             if response.status_code in (301, 302):
                 location = response.get("Location", "")
                 if location and not allow_redirect_url(location):
@@ -402,7 +406,20 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
                     )
                     return HttpResponseBadRequest("redirect not allowed")
 
+            # provide audit-logging options (TODO: promote to audit logger + timelinelog
+            # items in main)
+            session: SessionBase | None = getattr(request, "session", None)
+            identifier = (
+                obfuscate(session.get(FORM_AUTH_SESSION_KEY, {}).get("value") or "")
+                if session
+                else None
+            )
+            audit_logger.info(
+                "user_authenticated", identifier=identifier, next=location
+            )
+
             if hasattr(request, "session") and FORM_AUTH_SESSION_KEY in request.session:
+                # XXX: this signal is unused, it's scheduled for removal
                 authentication_success.send(sender=self.__class__, request=request)
 
         return response

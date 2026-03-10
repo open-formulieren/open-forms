@@ -13,6 +13,8 @@ from django.db import models
 from structlog.typing import EventDict
 from timeline_logger.typing import EventDetailsProtocol
 
+from openforms.authentication.typing import BaseAuth
+
 from .constants import (
     FORM_SUBMIT_SUCCESS_EVENT,
     REGISTRATION_SUCCESS_EVENT,
@@ -102,6 +104,7 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
     from openforms.accounts.models import User
     from openforms.analytics_tools.models import AnalyticsToolsConfiguration
     from openforms.appointments.base import BasePlugin as AppointmentBasePlugin
+    from openforms.authentication.base import BasePlugin as AuthenticationBasePlugin
     from openforms.forms.models import Form, FormsExport
     from openforms.payments.base import BasePlugin as PaymentBasePlugin
     from openforms.payments.models import SubmissionPayment
@@ -272,6 +275,27 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
             )
 
         #
+        # Form authentication
+        #
+        case {
+            "event": "user_authenticated" as event,
+            "form": str(form_uuid),
+            "plugin": AuthenticationBasePlugin() as plugin,
+            "identifier": str() | None as identifier,
+            "next": str(next_location),
+        }:
+            form = Form.objects.get(uuid=form_uuid)
+            return EventDetails(
+                event=event,
+                instance=form,
+                plugin=plugin,
+                extra_data={
+                    "identifier": identifier,
+                    "next": next_location,
+                },
+            )
+
+        #
         # Submissions
         #
         case {
@@ -382,6 +406,102 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
                 instance=form,
                 user=user,
                 tags=[TimelineLogTags.AVG],
+            )
+
+        #
+        # Submission cosign
+        #
+        case {
+            "event": "cosign_lookup_rate_limited" | "cosign_otp_rate_limited" as event,
+            "form_id": int(form_id),
+        }:
+            form = Form.objects.get(pk=form_id)
+            instance: Submission | Form = form
+            if isinstance((submission_uuid := event_dict.get("submission_uuid")), str):
+                instance = Submission.objects.get(uuid=submission_uuid)
+
+            auth: BaseAuth | None = (
+                {
+                    "value": event_dict["auth_value"],
+                    "attribute": event_dict["auth_attribute"],
+                    "plugin": event_dict["auth_plugin"],
+                }
+                if "auth_value" in event_dict
+                else None
+            )
+
+            return EventDetails(
+                event=event,
+                instance=instance,
+                tags=[TimelineLogTags.AVG],
+                extra_data={"auth": auth},
+            )
+
+        case {
+            "event": "cosign_lookup_failed" as event,
+            "form_id": int(form_id),
+            "auth_value": str(auth_value),
+            "auth_attribute": str(auth_attribute),
+            "auth_plugin": str(auth_plugin),
+            "code": str(code),
+        }:
+            form = Form.objects.get(pk=form_id)
+            return EventDetails(
+                event=event,
+                instance=form,
+                extra_data={
+                    "auth": {
+                        "value": auth_value,
+                        "attribute": auth_attribute,
+                        "plugin": auth_plugin,
+                    },
+                    "code": code,
+                },
+            )
+
+        case {
+            "event": "cosign_lookup_blocked" | "cosign_otp_blocked" as event,
+            "submission_uuid": str(submission_uuid),
+        }:
+            submission = Submission.objects.get(uuid=submission_uuid)
+            auth: BaseAuth | None = (
+                {
+                    "value": event_dict["auth_value"],
+                    "attribute": event_dict["auth_attribute"],
+                    "plugin": event_dict["auth_plugin"],
+                }
+                if "auth_value" in event_dict
+                else None
+            )
+            return EventDetails(
+                event=event,
+                instance=submission,
+                tags=[TimelineLogTags.AVG],
+                extra_data={
+                    "auth": auth,
+                    "is_waiting": submission.cosign_state.is_waiting,
+                },
+            )
+
+        case {
+            "event": "cosign_lookup_success" | "cosign_otp_success" as event,
+            "submission_uuid": str(submission_uuid),
+            "auth_value": str(auth_value),
+            "auth_attribute": str(auth_attribute),
+            "auth_plugin": str(auth_plugin),
+        }:
+            submission = Submission.objects.get(uuid=submission_uuid)
+            return EventDetails(
+                event=event,
+                instance=submission,
+                tags=[TimelineLogTags.AVG],
+                extra_data={
+                    "auth": {
+                        "value": auth_value,
+                        "attribute": auth_attribute,
+                        "plugin": auth_plugin,
+                    }
+                },
             )
 
         #
