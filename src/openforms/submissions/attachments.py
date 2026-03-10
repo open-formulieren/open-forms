@@ -227,6 +227,11 @@ def attach_uploads_to_submission_step(
                 "content_type": attachment.content_type,
             },
         )
+        logger.info(
+            "attachment_added",
+            content_type=attachment.content_type,
+            file_size=attachment.content.size,
+        )
 
         if created and resize_apply and resize_size:
             # NOTE there is a possible race-condition if user completes a submission before this resize task is done
