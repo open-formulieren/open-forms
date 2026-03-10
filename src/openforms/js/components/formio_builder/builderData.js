@@ -138,7 +138,7 @@ export const DEFAULT_BUILDER_DATA = {
         schema: {
           label: 'Postcode',
           autocomplete: 'postal-code',
-          type: 'textfield',
+          type: 'postcode',
           key: 'postalcode',
           input: true,
           inputMask: '9999 AA',
@@ -196,7 +196,6 @@ export const DEFAULT_BUILDER_DATA = {
     title: 'Verouderd',
     weight: 15,
     components: {
-      postcode: true,
       coSign: true,
     },
   },
