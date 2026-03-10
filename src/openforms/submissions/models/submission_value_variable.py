@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Collection, Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime, time
@@ -64,6 +65,9 @@ class SubmissionValueVariablesState:
         init=False, default=None
     )
     _static_data: dict[str, Any] | None = field(init=False, default=None)
+    _static_variables: dict[str, SubmissionValueVariable] | None = field(
+        init=False, default=None
+    )
 
     @property
     def variables(self) -> dict[str, SubmissionValueVariable]:
@@ -95,6 +99,22 @@ class SubmissionValueVariablesState:
             for variable in self.variables.values()
             if variable.is_initially_prefilled
         }
+
+    @property
+    def static_variables(self) -> dict[str, SubmissionValueVariable]:
+        if self._static_variables is not None:
+            return self._static_variables
+
+        self._static_variables = {
+            variable.key: SubmissionValueVariable(
+                submission=self.submission,
+                key=variable.key,
+                value=variable.initial_value,
+                data_type=variable.data_type,
+            )
+            for variable in get_static_variables(submission=self.submission)
+        }
+        return self._static_variables
 
     @deprecated("Use `state.variables[key]` instead.")
     def get_variable(self, key: str) -> SubmissionValueVariable:
@@ -771,6 +791,73 @@ class SubmissionValueVariable(models.Model):
             return value.data
 
         return value
+
+    def get_data_type(self, key: str) -> str | None:
+        """
+        Get the data type based on a data-access key.
+
+        For example (valid):
+         - "datetimeMultiple.0" -> "datetime"
+         - "editgrid.0.textfield" -> "string"
+         - "children.3.dateOfBirth -> "date"
+
+        For example (invalid):
+         - "datetimeMultiple.foo" -> None
+         - "editgrid.0.nonExistingChild -> None
+         - "children.invalidIndex" -> None
+
+        .. warning:: It does not support deeply-nested data access keys at the moment,
+          e.g. "editgrid.0.datetimeMultiple.0".
+
+        :param key: The data-access key.
+        :return: The data type, or `None` if the key was invalid.
+        """
+        if key == self.key:
+            return self.data_type
+
+        # Data type is not array -> no support for nested data access -> any key other
+        # than `self.key` is not relevant.
+        if self.data_type != FormVariableDataTypes.array:
+            return None
+
+        # If it doesn't start with `{self.key}.[index](.)` -> it is not relevant.
+        if not re.match(f"^{self.key}.\d+($|\.)", key):
+            return None
+
+        assert self.data_subtype is not None
+        # We cannot infer anything here.
+        if self.data_subtype == FormVariableDataTypes.object:
+            return None
+
+        # Try parsing it as a child data access key, e.g. "editgrid.0.textfield", by
+        # stripping the parent key and index.
+        key_list = key.removeprefix(f"{self.key}.").split(".", 1)
+        match self.data_subtype:
+            case FormVariableDataTypes.editgrid:
+                child_key = key_list[1]
+                for child_component in iter_components(self.configuration):
+                    if child_key != child_component["key"]:
+                        continue
+                    return get_component_datatype(child_component)
+                return None
+            case FormVariableDataTypes.partners | FormVariableDataTypes.children:
+                child_key = key_list[1]
+                match child_key:
+                    case "dateOfBirth":
+                        return FormVariableDataTypes.date
+                    case "selected":
+                        return FormVariableDataTypes.boolean
+                    case "bsn" | "initials" | "affixes" | "lastName" | "firstNames":
+                        return FormVariableDataTypes.string
+                    case _:
+                        return None
+            case _:
+                # For the other types, the only relevant keys are of the format
+                # `{self.key}.[index]` (components with `"multiple": True`), so the key
+                # list must contain a single index.
+                if len(key_list) == 1:
+                    return self.data_subtype
+                return None
 
     @cached_property
     def is_registration_attempt_allowed(self) -> bool:
