@@ -10,11 +10,13 @@ from django.db.models import Model
 from openforms.accounts.models import User
 from openforms.analytics_tools.models import AnalyticsToolsConfiguration
 from openforms.appointments.models import AppointmentInfo
+from openforms.authentication.typing import BaseAuth
 from openforms.forms.models import Form
 from openforms.logging.constants import TimelineLogTags
 from openforms.payments.constants import PaymentStatus
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.typing import JSONObject, JSONValue
+from openforms.utils.helpers import obfuscate
 
 if TYPE_CHECKING:
     from log_outgoing_requests.models import OutgoingRequestsLog
@@ -835,6 +837,76 @@ def skipped_registration_cosign_required(submission: Submission):
     )
 
 
+def cosign_lookup_success(submission: Submission, auth: BaseAuth):
+    _auth: BaseAuth = {**auth, "value": obfuscate(auth["value"])}
+    _create_log(
+        submission,
+        "cosign_lookup_success",
+        tags=[TimelineLogTags.submission_lifecycle],
+        extra_data={"auth": _auth},
+    )
+
+
+def cosign_lookup_rate_limited(form: Form, auth: BaseAuth | None):
+    _create_log(
+        form,
+        "cosign_lookup_rate_limited",
+        tags=[TimelineLogTags.AVG],
+        extra_data={"auth": auth},
+    )
+
+
+def cosign_lookup_blocked(submission: Submission, auth: BaseAuth):
+    _create_log(
+        submission,
+        "cosign_lookup_blocked",
+        tags=[TimelineLogTags.AVG],
+        extra_data={
+            "auth": auth,
+            "is_waiting": submission.cosign_state.is_waiting,
+        },
+    )
+
+
+def cosign_lookup_failed(form: Form, auth: BaseAuth, code: str):
+    _create_log(
+        form,
+        "cosign_lookup_failed",
+        extra_data={"auth": auth, "code": code},
+    )
+
+
+def cosign_otp_success(submission: Submission, auth: BaseAuth):
+    _auth: BaseAuth = {**auth, "value": obfuscate(auth["value"])}
+    _create_log(
+        submission,
+        "cosign_otp_success",
+        tags=[TimelineLogTags.submission_lifecycle],
+        extra_data={"auth": _auth},
+    )
+
+
+def cosign_otp_rate_limited(instance: Form | Submission, auth: BaseAuth | None):
+    _create_log(
+        instance,
+        "cosign_otp_rate_limited",
+        tags=[TimelineLogTags.AVG],
+        extra_data={"auth": auth},
+    )
+
+
+def cosign_otp_blocked(submission: Submission, auth: BaseAuth | None):
+    _create_log(
+        submission,
+        "cosign_otp_blocked",
+        tags=[TimelineLogTags.AVG],
+        extra_data={
+            "auth": auth,
+            "is_waiting": submission.cosign_state.is_waiting,
+        },
+    )
+
+
 # - - -
 
 
@@ -864,4 +936,20 @@ def email_status_change(
             "include_in_daily_digest": include_in_daily_digest,
         },
         tags=[TimelineLogTags.submission_lifecycle],
+    )
+
+
+# - - -
+def user_authenticated(
+    form: Form, identifier: str | None, plugin: AbstractBasePlugin, next: str
+):
+    _create_log(
+        form,
+        "user_authenticated",
+        plugin=plugin,
+        extra_data={
+            "identifier": identifier,
+            "next": next,
+        },
+        tags=[TimelineLogTags.AVG],
     )

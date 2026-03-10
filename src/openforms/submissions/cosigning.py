@@ -18,15 +18,30 @@ Currently there are two versions of cosigning, with a third in the making:
 
 from __future__ import annotations
 
+from datetime import timedelta
 from functools import cached_property
 from typing import TYPE_CHECKING, Literal, NotRequired, TypedDict
+
+from django.conf import settings
+from django.utils import timezone, translation
+from django.utils.translation import gettext as _
 
 import structlog
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.typing import FormAuth
+from openforms.emails.constants import (
+    X_OF_CONTENT_TYPE_HEADER,
+    X_OF_CONTENT_UUID_HEADER,
+    X_OF_EVENT_HEADER,
+    EmailContentTypeChoices,
+    EmailEventChoices,
+)
+from openforms.emails.utils import send_mail_html
 from openforms.formio.typing import Component
 from openforms.typing import JSONObject
+
+from .models import CosignOTP
 
 if TYPE_CHECKING:
     from .models import Submission
@@ -209,3 +224,37 @@ class CosignState:
             "You may only access the signing details after validating the 'is_signed' state."
         )
         return self.submission.co_sign_data
+
+
+def send_cosign_otp(submission: Submission, expires_in_minutes: int = 15) -> None:
+    """
+    Create and send the one-time password for a submission cosign request.
+
+    Creates a one-time password code that expires after ``expires_in_minutes`` minutes,
+    relative to "now". Sends/schedules the email to the designated cosigner email
+    address specified in the submission.
+    """
+    assert submission.cosign_state.is_waiting
+
+    # generate OTP
+    cosign_otp = CosignOTP.objects.create(
+        submission=submission,
+        expires_at=timezone.now() + timedelta(minutes=expires_in_minutes),
+    )
+
+    recipient = submission.cosign_state.email
+    with translation.override(submission.language_code):
+        content = cosign_otp.render_email_template()
+        send_mail_html(
+            subject=_("Co-sign verification code"),
+            html_body=content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[recipient],
+            text_message=content,
+            extra_headers={
+                "Content-Language": submission.language_code,
+                X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
+                X_OF_CONTENT_UUID_HEADER: str(submission.uuid),
+                X_OF_EVENT_HEADER: EmailEventChoices.cosign_otp,
+            },
+        )

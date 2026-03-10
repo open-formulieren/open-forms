@@ -1,10 +1,12 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from openforms.forms.models import Form
 from openforms.utils.widgets import OpenFormsTextInput
 
-from .models import Submission
+from .models import CosignOTP, Submission
 
 
 class SearchSubmissionForCosignForm(forms.Form):
@@ -17,22 +19,58 @@ class SearchSubmissionForCosignForm(forms.Form):
         widget=OpenFormsTextInput(),
     )
 
-    def __init__(self, instance, *args, **kwargs):
+    def __init__(self, instance: Form, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         self.form = instance
 
     def clean(self):
         submission = Submission.objects.filter(
             public_registration_reference=self.cleaned_data["code"],
             form=self.form,
-            cosign_complete=False,
         ).first()
-        if not submission:
-            raise ValidationError(
-                _(
-                    "Could not find a submission corresponding to this code that requires co-signing"
-                )
-            )
+        # always store the resolved submission so that form_invalid can handle it
         self.cleaned_data["submission"] = submission
+
+        err_msg = _(
+            "Could not find a submission corresponding to this code that requires "
+            "co-signing"
+        )
+        # check that we actually expect cosign for this submission
+        if not submission or not submission.cosign_state.is_waiting:
+            raise ValidationError(err_msg)
+
         return self.cleaned_data
+
+
+class CosignOTPForm(forms.Form):
+    otp = forms.CharField(
+        label=_("One-time password"),
+        help_text=_(
+            "The one-time password was sent to the same email address where you "
+            "received the cosign request."
+        ),
+        required=True,
+        max_length=10,  # allow for some spaces/dashes from bad copy-pasting
+        widget=OpenFormsTextInput(),
+    )
+
+    def __init__(self, instance: Submission, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.submission = instance
+
+    def clean_otp(self):
+        # only consider the digits in the code
+        cleaned_code = "".join(
+            char for char in self.cleaned_data["otp"] if char.isdigit()
+        )
+        valid_otp = CosignOTP.objects.filter(
+            submission=self.submission,
+            verification_code=cleaned_code,
+            expires_at__gt=timezone.now(),
+        ).first()
+        if valid_otp is None:
+            raise forms.ValidationError(
+                _("The code you entered is invalid or has expired.")
+            )
+        assert not valid_otp.is_expired
+        return cleaned_code

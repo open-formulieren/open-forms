@@ -10,6 +10,9 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
+from openforms.submissions.constants import COSIGN_VERIFICATION_SESSION_KEY
+from openforms.submissions.cosigning import send_cosign_otp
+from openforms.submissions.models import CosignOTP
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
@@ -176,13 +179,18 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
             "value": "123456782",
             "loa": DIGID_DEFAULT_LOA,
         }
+        session[COSIGN_VERIFICATION_SESSION_KEY] = submission.pk
+        send_cosign_otp(submission)
         session.save()
+
         view_url = reverse(
-            "submissions:find-submission-for-cosign",
+            "submissions:otp-for-cosign",
             kwargs={"form_slug": "form-to-cosign"},
         )
         response = self.client.post(
-            view_url, data={"code": "OF-9999"}, format="multipart"
+            view_url,
+            data={"otp": CosignOTP.objects.get().verification_code},
+            format="multipart",
         )
         assert response.status_code == 302
 
@@ -195,3 +203,4 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
         self.assertEqual(submission.auth_info.value, "111222333")
         uuids = self._get_session_submission_uuids()
         self.assertNotIn(str(submission.uuid), uuids)
+        self.assertNotIn(COSIGN_VERIFICATION_SESSION_KEY, self.client.session)

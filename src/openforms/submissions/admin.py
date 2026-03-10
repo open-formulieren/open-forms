@@ -30,6 +30,7 @@ from openforms.typing import StrOrPromise
 from .constants import IMAGE_COMPONENTS, PostSubmissionEvents, RegistrationStatuses
 from .exports import ExportFileTypes, export_submissions
 from .models import (
+    CosignOTP,
     EmailVerification,
     Submission,
     SubmissionFileAttachment,
@@ -639,3 +640,39 @@ class EmailVerificationAdmin(admin.ModelAdmin):
     @admin.display(description=_("is verified"), boolean=True)
     def is_verified(self, obj: EmailVerification) -> bool:
         return obj.verified_on is not None
+
+
+@admin.register(CosignOTP)
+class CosignOTPAdmin(admin.ModelAdmin):
+    list_display = ("submission", "is_usable", "expires_at")
+    list_select_related = ("submission",)
+    list_filter = ("expires_at",)
+    search_fields = (
+        "submission__uuid",
+        "submission__public_registration_reference",
+    )
+    ordering = ("-pk",)
+
+    def get_list_display(self, request):
+        list_display = super().get_list_display(request)
+        assert isinstance(list_display, tuple)
+        if settings.DEBUG:
+            list_display += ("dev_debug",)
+        return list_display
+
+    @admin.display(description=_("is usable"), boolean=True)
+    def is_usable(self, obj: CosignOTP) -> bool:
+        return not obj.is_expired
+
+    @admin.display(description="DEV/DEBUG")
+    def dev_debug(self, obj: CosignOTP):  # pragma: no cover
+        if not settings.DEBUG:
+            raise ImproperlyConfigured("Development-only admin feature!")
+
+        links: list[tuple[str, StrOrPromise]] = [
+            (
+                reverse("dev-email-cosign-otp", kwargs={"otp_id": obj.pk}),
+                _("OTP email preview"),
+            ),
+        ]
+        return format_html_join(" | ", '<a href="{}" target="_blank">{}</a>', links)
