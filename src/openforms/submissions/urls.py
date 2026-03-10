@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    CosignOTPFormView,
     DownloadSubmissionReportView,
     ResumeSubmissionView,
     SearchSubmissionForCosignFormView,
@@ -29,5 +30,10 @@ urlpatterns = [
         "<slug:form_slug>/find/",
         SearchSubmissionForCosignFormView.as_view(),
         name="find-submission-for-cosign",
+    ),
+    path(
+        "<slug:form_slug>/cosign-otp/",
+        CosignOTPFormView.as_view(),
+        name="otp-for-cosign",
     ),
 ]

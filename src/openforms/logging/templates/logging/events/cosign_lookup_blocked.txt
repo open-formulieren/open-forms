@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead identifier=log.extra_data.auth.value|default:_('n/a') is_waiting=log.extra_data.is_waiting|yesno %}
+   {{ lead }}: Cosign lookup blocked (identifier: {{ identifier }}, waiting for cosign: {{ is_waiting }}).
+{% endblocktrans %}

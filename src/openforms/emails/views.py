@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 
 from openforms.emails.tasks import Digest
 from openforms.submissions.models import Submission
+from openforms.submissions.models.cosign import CosignOTP
 from openforms.utils.views import DevViewMixin, EmailDebugViewMixin
 
 from .confirmation_emails import (
@@ -41,6 +42,13 @@ class EmailWrapperTestView(
                 interval = timezone.now() - timedelta(days=days_before)
                 digest = Digest(since=interval)
                 return digest.render()
+
+            case {"otp_id": int(otp_id)}:
+                cosign_otp = get_object_or_404(CosignOTP, id=otp_id)
+                content = cosign_otp.render_email_template()
+                mode = self._get_mode()
+                if mode == "text":
+                    content = strip_tags_plus(content, keep_leading_whitespace=True)
 
             case _:
                 pass  # render wrapper

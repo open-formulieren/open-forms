@@ -2,6 +2,8 @@ from collections.abc import Callable
 
 from django.db import models
 
+from mozilla_django_oidc_db.utils import obfuscate_claim_value as _obfuscate
+
 from openforms.typing import JSONValue
 
 
@@ -69,3 +71,16 @@ def recursively_apply_function(
             # other primitive or complex object - we can't template this out, so return it
             # unmodified unless the transformation is explicitly requested
             return func(input, *args, **kwargs) if transform_leaf else input
+
+
+def obfuscate(arg: str, /) -> str:
+    """
+    General purpose 'obfuscate this string' helper.
+
+    Internally it uses the same utility from :mod:`mozilla_django_oidc_db` because we
+    have it at hand anyway, but this is the public API in case we need to vendor
+    something like that in here in the future.
+    """
+    result = _obfuscate(arg)
+    assert isinstance(result, str)
+    return result

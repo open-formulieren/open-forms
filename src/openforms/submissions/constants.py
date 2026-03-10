@@ -3,6 +3,8 @@ from django.utils.translation import gettext_lazy as _
 
 SUBMISSIONS_SESSION_KEY = "form-submissions"
 
+COSIGN_VERIFICATION_SESSION_KEY = "submission-to-cosign"
+
 IMAGE_COMPONENTS = ["signature"]
 
 
