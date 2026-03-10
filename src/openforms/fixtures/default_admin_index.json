@@ -101,6 +101,10 @@
             [
                 "submissions",
                 "submissionreport"
+            ],
+            [
+                "submissions",
+                "cosignotp"
             ]
         ]
     }
