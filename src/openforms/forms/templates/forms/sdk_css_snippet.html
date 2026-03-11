@@ -1,1 +1,3 @@
-<link href="{{ sdk_css_url }}" rel="stylesheet" />
+{% load openforms %}
+{% sdk_urls as urls %}
+<link href="{{ urls.sdk_css_url }}" rel="stylesheet" />

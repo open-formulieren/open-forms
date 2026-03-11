@@ -539,7 +539,7 @@ class SearchSubmissionForCosignViewTests(WebTest):
         self.assertEqual(submission_response.status_code, 200)
         self.assertFormError(
             submission_response.context["form"],
-            field=None,
+            field="code",
             errors=_(
                 "Could not find a submission corresponding to this code that "
                 "requires co-signing"

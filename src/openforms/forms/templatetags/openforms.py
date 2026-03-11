@@ -4,6 +4,7 @@ from django.template.defaultfilters import stringfilter
 from rest_framework.reverse import reverse
 
 from openforms.utils.redirect import allow_redirect_url
+from openforms.utils.sdk_static import get_sdk_urls
 
 register = Library()
 
@@ -36,3 +37,8 @@ def get_allowed_redirect_url(*candidates: str) -> str:
         if allow_redirect_url(candidate):
             return candidate
     return ""
+
+
+@register.simple_tag()
+def sdk_urls():
+    return get_sdk_urls()

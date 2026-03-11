@@ -1,10 +1,11 @@
 {% load openforms static %}{% if form %}{% with 'openforms-container' as div_id %}
+{% sdk_urls as urls %}
 {# Preload the module #}
-<link href="{{ sdk_esm_url }}" rel="modulepreload" />
+<link href="{{ urls.sdk_esm_url }}" rel="modulepreload" />
 <div
     class="open-forms-sdk-root"
     id="{{ div_id }}"
-    data-sdk-module="{{ sdk_esm_url }}"
+    data-sdk-module="{{ urls.sdk_esm_url }}"
     data-form-id="{{ form.slug }}"
     data-base-url="{% api_base_url %}"
     data-base-path="{% if base_path %}{{ base_path }}{% else %}{% url 'forms:form-detail' slug=form.slug %}{% endif %}"
@@ -16,7 +17,7 @@
 <script type="module" src="{% static 'sdk-wrapper.mjs' %}"></script>
 
 {# Fallback #}
-<script src="{{ sdk_umd_url }}" nomodule></script>
+<script src="{{ urls.sdk_umd_url }}" nomodule></script>
 <script nonce="{{ request.csp_nonce }}" nomodule>
     const formId = '{{ form.slug|escapejs }}';
     const baseUrl = '{% filter escapejs %}{% api_base_url %}{% endfilter %}';

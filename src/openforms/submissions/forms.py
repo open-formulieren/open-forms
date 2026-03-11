@@ -1,5 +1,4 @@
 from django import forms
-from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -37,22 +36,24 @@ class SearchSubmissionForCosignForm(forms.Form):
         # always store the resolved submission so that form_invalid can handle it
         self.cleaned_data["submission"] = submission
 
-        err_msg = _(
-            "Could not find a submission corresponding to this code that requires "
-            "co-signing"
-        )
         # check that we actually expect cosign for this submission
         if not submission or not submission.cosign_state.is_waiting:
-            raise ValidationError(err_msg)
-
-        if check_user_is_submission_initiator(self.request, submission):
+            self.add_error(
+                "code",
+                _(
+                    "Could not find a submission corresponding to this code that requires "
+                    "co-signing"
+                ),
+            )
+        elif check_user_is_submission_initiator(self.request, submission):
             logger.info(
                 "cosign_start_blocked",
                 reason="cosigner_same_as_submitter",
                 submission_uuid=str(submission.uuid),
             )
-            raise ValidationError(
-                _("The submission cannot be co-signed by the original submitter.")
+            self.add_error(
+                "code",
+                _("The submission cannot be co-signed by the original submitter."),
             )
 
         return self.cleaned_data

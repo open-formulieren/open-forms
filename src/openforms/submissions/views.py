@@ -371,7 +371,7 @@ class SearchSubmissionForCosignFormView(ThrottleMixin, UserPassesTestMixin, Form
             audit_log.warning(
                 "cosign_lookup_blocked", submission_uuid=str(submission.uuid)
             )
-        elif code := form.cleaned_data.get("code"):
+        elif code := form.data.get("code"):
             audit_log.warning("cosign_lookup_failed", form_id=self.form.pk, code=code)
 
         return super().form_invalid(form)
