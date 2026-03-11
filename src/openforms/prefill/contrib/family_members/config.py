@@ -31,7 +31,7 @@ class FamilyMembersChildrenSerializer(serializers.Serializer):
     include_deceased = serializers.BooleanField(
         label=_("include deceased"),
         help_text=_("Whether to include deceased persons or not."),
-        default=True,
+        default=False,
     )
 
 

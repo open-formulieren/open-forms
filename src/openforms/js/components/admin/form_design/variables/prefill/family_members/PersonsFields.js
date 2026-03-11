@@ -51,7 +51,7 @@ const PersonFields = () => {
                   mutableDataFormVariable: '',
                   minAge: null,
                   maxAge: null,
-                  includeDeceased: true,
+                  includeDeceased: false,
                 },
               }));
             }}
