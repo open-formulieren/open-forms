@@ -9048,6 +9048,10 @@ components:
             * `disabled` - Disabled
         submissionsRemovalOptions:
           $ref: '#/components/schemas/SubmissionsRemovalOptions'
+        confirmationEmailTemplate:
+          allOf:
+          - $ref: '#/components/schemas/ConfirmationEmailTemplate'
+          nullable: true
         sendConfirmationEmail:
           type: boolean
           description: Whether a confirmation email should be sent to the end user
