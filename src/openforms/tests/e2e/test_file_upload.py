@@ -46,6 +46,7 @@ class FillInFormTests(E2ETestCase):
                 translation_enabled=False,  # force Dutch
                 ask_privacy_consent=False,
                 ask_statement_of_truth=False,
+                new_renderer_enabled=False,
             )
             return form
 
@@ -107,6 +108,7 @@ class FillInFormTests(E2ETestCase):
                 translation_enabled=False,  # force Dutch
                 ask_privacy_consent=False,
                 ask_statement_of_truth=False,
+                new_renderer_enabled=False,
             )
             return form
 

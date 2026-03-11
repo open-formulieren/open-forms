@@ -394,7 +394,7 @@ class Form(models.Model):
     # feature flags
     new_renderer_enabled = models.BooleanField(
         _("enable new renderer"),
-        default=False,
+        default=True,
         help_text=_("Enable the new renderer."),
     )
     new_logic_evaluation_enabled = models.BooleanField(

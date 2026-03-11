@@ -28,6 +28,7 @@ class InputValidationRegressionTests(E2ETestCase):
                 translation_enabled=False,  # force Dutch
                 ask_privacy_consent=False,
                 ask_statement_of_truth=False,
+                new_renderer_enabled=False,
                 formstep__next_text="Volgende",
                 formstep__form_definition__configuration={
                     "components": [
@@ -104,6 +105,7 @@ class InputValidationRegressionTests(E2ETestCase):
                 translation_enabled=False,  # force Dutch
                 ask_privacy_consent=False,
                 ask_statement_of_truth=False,
+                new_renderer_enabled=False,
                 formstep__next_text="Volgende",
                 formstep__form_definition__configuration={
                     "components": [
@@ -172,6 +174,7 @@ class InputValidationRegressionTests(E2ETestCase):
                 translation_enabled=False,  # force Dutch
                 ask_privacy_consent=False,
                 ask_statement_of_truth=False,
+                new_renderer_enabled=False,
             )
             FormStepFactory.create(
                 form=form,
@@ -240,6 +243,7 @@ class InputValidationRegressionTests(E2ETestCase):
                 translation_enabled=False,  # force Dutch
                 ask_privacy_consent=False,
                 ask_statement_of_truth=False,
+                new_renderer_enabled=False,
                 formstep__next_text="Volgende",
                 formstep__form_definition__configuration={
                     "components": [
