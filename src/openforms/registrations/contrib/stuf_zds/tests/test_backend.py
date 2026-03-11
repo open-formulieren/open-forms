@@ -470,6 +470,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     },
                 },
                 {
+                    "key": "straatnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_straat,
+                    },
+                },
+                {
                     "key": "coordinaat",
                     "type": "map",
                     "registration": {
@@ -505,6 +512,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "postcode": "1000 aa",
+                "straatnaam": "foo bar",
                 "geboortedatum": "2000-12-31",
                 "coordinaat": {
                     "type": "Point",
@@ -597,6 +605,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:heeftAlsAanspreekpunt/zkn:gerelateerde/zkn:naam": "Naam",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:heeftAlsAanspreekpunt/zkn:gerelateerde/zkn:telefoonnummer": "0612345678",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:heeftAlsAanspreekpunt/zkn:gerelateerde/zkn:emailadres": "foo@example.com",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:verblijfsadres/bg:gor.openbareRuimteNaam": "foo bar",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:verblijfsadres/bg:gor.straatnaam": "foo bar",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
                 "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
@@ -865,12 +875,20 @@ class StufZDSPluginTests(StUFZDSTestBase):
                         "attribute": RegistrationAttribute.initiator_postcode,
                     },
                 },
+                {
+                    "key": "straatnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_straat,
+                    },
+                },
             ],
             public_registration_reference="foo-zaak",
             registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "handelsnaam": "Foo",
                 "postcode": "2022XY",
+                "straatnaam": "foo bar",
             },
         )
 
@@ -931,6 +949,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:statutaireNaam": "Foo",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:authentiek": "N",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:bezoekadres/bg:aoa.postcode": "2022XY",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:bezoekadres/bg:gor.openbareRuimteNaam": "foo bar",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:bezoekadres/bg:gor.straatnaam": "foo bar",
             },
         )
 
@@ -971,6 +991,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     },
                 },
                 {
+                    "key": "straatnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_straat,
+                    },
+                },
+                {
                     "key": "coordinaat",
                     "type": "map",
                     "registration": {
@@ -990,6 +1017,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
+                "straatnaam": "foo bar",
                 "coordinaat": {
                     "type": "Point",
                     "coordinates": [4.893164274470299, 52.36673378967122],
@@ -1074,6 +1102,9 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:vestigingsNummer": "87654321",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:handelsnaam": "ACME",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:verblijfsadres/bg:gor.openbareRuimteNaam": "foo bar",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:verblijfsadres/bg:gor.straatnaam": "foo bar",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:verblijfsadres/bg:aoa.postcode": "1000AA",
             },
         )
 
