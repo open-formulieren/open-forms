@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import Counter, defaultdict
 
 from django.db import transaction
 from django.utils.text import get_text_list
@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
+from rest_framework.exceptions import ErrorDetail
 
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.config.models import Theme
@@ -13,6 +14,13 @@ from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.service import get_readable_path_from_configuration_path
+from openforms.forms.logic_analysis import (  # TODO: use service module for this
+    add_missing_steps,
+    create_graph,
+    detect_cycles,
+    resolve_order,
+)
+from openforms.forms.models import FormLogic
 from openforms.products.models import Product
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 from openforms.typing import StrOrPromise
@@ -22,8 +30,9 @@ from ....api.serializers.form import (
     SubmissionsRemovalOptionsSerializer,
 )
 from ....models import Category, Form, FormDefinition, FormStep, FormVariable
-from ..typing import FormStepData, FormValidatedData
+from ..typing import FormLogicRulesData, FormStepData, FormValidatedData
 from .form_step import FormStepSerializer
+from .logic_rules import FormLogicListSerializer
 
 
 @extend_schema_serializer(component_name="FormV3Serializer")
@@ -48,6 +57,7 @@ class FormSerializer(serializers.ModelSerializer):
     )
 
     steps = FormStepSerializer(many=True, source="formstep_set")
+    logic_rules = FormLogicListSerializer(required=False, source="formlogic_set")
 
     appointment_options = AppointmentOptionsSerializer(
         source="*",
@@ -71,6 +81,7 @@ class FormSerializer(serializers.ModelSerializer):
     _nested_fields = (
         "confirmation_email_template",
         "formstep_set",
+        "formlogic_set",
     )
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
@@ -89,6 +100,7 @@ class FormSerializer(serializers.ModelSerializer):
             "category",
             "theme",
             "steps",
+            "logic_rules",
             "show_progress_indicator",
             "show_summary_progress",
             "maintenance_mode",
@@ -120,11 +132,113 @@ class FormSerializer(serializers.ModelSerializer):
             },
         }
 
+    def _validate_form_logic(
+        self,
+        value: list[FormLogicRulesData],
+        form_steps: list[FormStep],
+        new_logic_evaluation_enabled: bool,
+    ) -> list[FormLogicRulesData]:
+        if not new_logic_evaluation_enabled:
+            return value
+
+        # This will only run when the logic rules have passed individual serializer
+        # validation, so we can initialize model instances here.
+        # Note: model instances without a pk are not hashable, which is a requirement to
+        # use them in the graph, so we assign it manually. These rules will just live in
+        # memory, so it will not result in conflicts with existing rules.
+        _temporary_rules: list[FormLogic] = []
+        for index, rule_data in enumerate(value):
+            rule = FormLogic(
+                **{k: v for k, v in rule_data.items() if k != "form_steps"}, pk=index
+            )
+            rule.form = self.instance  # TODO: use mock form here
+
+            _temporary_rules.append(rule)
+
+        # TODO: figure out how to handle this without form instances
+        graph = create_graph(_temporary_rules)
+        cycles = detect_cycles(graph)
+        if cycles:
+            msg = _("Rule contains cycles through variable(s): {variables}.")
+            errors: defaultdict[str, list[ErrorDetail]] = defaultdict(list)
+            for cycle in cycles:
+                # Sort to get consistent order in the error message (rules of a cycle do
+                # not have a start or end, so the order in which they are processed is
+                # not always consistent).
+                var_keys = ", ".join(sorted(cycle.variables))
+                for rule in sorted(cycle.rules, key=lambda r: r.order):
+                    errors[f"{rule.order}.json_logic_trigger"].append(
+                        ErrorDetail(
+                            msg.format(variables=var_keys), code="cycles-detected"
+                        )
+                    )
+            raise serializers.ValidationError(errors)
+
+        # Form steps are added to the context dictionary in
+        # `FormViewSet.logic_rules_bulk_update`. It is a mapping from form step UUID to
+        # form step. We rely on it being ordered.
+        first_step: FormStep = next(iter(form_steps))
+        # Note that the order will remain 0, even if a form step was deleted.
+        assert first_step.order == 0
+        add_missing_steps(graph, first_step)
+        new_rule_order = resolve_order(graph)
+
+        # Reorder the incoming data according to the determined order.
+        data_new: list[dict[str, object]] = []
+        steps: list[list[FormStep]] = []
+        for rule in new_rule_order:
+            # We can get the original rule data by using the (manually set) pk as an
+            # index.
+            rule_data = value[rule.pk]
+            steps.append(list(rule.steps))
+            data_new.append(rule_data)
+
+        field: FormLogicListSerializer = self.fields["logic_rules"]  # pyright: ignore[reportAssignmentType]
+        return field.validate(data_new)
+
+    def validate(self, attrs: FormValidatedData) -> FormValidatedData:
+        validated_data = super().validate(attrs)
+
+        form_step_data = validated_data.get("formstep_set", [])
+        logic_rule_data = validated_data.get("formlogic_set", [])
+        if form_step_data and logic_rule_data:
+            # TODO: check if empty form steps are allowed to be given for logic rules
+            form_steps = [
+                FormStep(order=index, slug=data.get("slug"))
+                for index, data in enumerate(form_step_data)
+            ]
+
+            for rule in logic_rule_data:
+                if rule_form_steps := rule.get("form_steps"):
+                    unknown_form_steps = set(rule_form_steps) - set(
+                        step.slug for step in form_steps
+                    )
+
+                    if unknown_form_steps:
+                        raise serializers.ValidationError(
+                            {
+                                "logic_rules": _(
+                                    "Rule {order} has unknown form steps: {steps}"
+                                ).format(
+                                    order=rule["order"],
+                                    steps=",".join(unknown_form_steps),
+                                )
+                            }
+                        )
+
+            validated_data["formlogic_set"] = self._validate_form_logic(
+                logic_rule_data,
+                form_steps,
+                validated_data.get("new_logic_evaluation_enabled", False),
+            )
+        return validated_data
+
     @transaction.atomic()
     def create(self, validated_data: FormValidatedData) -> Form:
         instance = super().create(
             {k: v for k, v in validated_data.items() if k not in self._nested_fields}
         )
+        logic_rules = validated_data.get("formlogic_set", [])
 
         confirmation_email_template = validated_data.get("confirmation_email_template")
         ConfirmationEmailTemplate.objects.set_for_form(
@@ -140,6 +254,7 @@ class FormSerializer(serializers.ModelSerializer):
         )
         # fmt:on
         len(form_definitions)  # Evaluate the queryset to acquire the locks.
+        form_steps: list[FormStep] = []
         for index, step_data in enumerate(form_step_data):
             form_definition_data = step_data["form_definition"]
             form_definition, _ = form_definitions.update_or_create(
@@ -147,11 +262,28 @@ class FormSerializer(serializers.ModelSerializer):
                 defaults={k: v for k, v in form_definition_data.items() if k != "uuid"},
             )
 
-            FormStep.objects.create(
-                **{**step_data, "form_definition": form_definition},
-                order=index,
-                form=instance,
+            form_steps.append(
+                FormStep(
+                    **{
+                        **step_data,
+                        "form_definition": form_definition,
+                        "form": instance,
+                        "order": index,
+                    }
+                )
             )
+
+        form_steps = FormStep.objects.bulk_create(form_steps)
+        if instance.new_logic_evaluation_enabled:
+            for rule_data in logic_rules:
+                rule = FormLogic.objects.create(**rule_data, form=instance)
+                rule.form_steps.set(
+                    [
+                        form_step
+                        for form_step in form_steps
+                        if form_step.slug in rule_data["form_steps"]
+                    ]
+                )
 
         return instance
 
@@ -201,8 +333,34 @@ class FormSerializer(serializers.ModelSerializer):
 
         # Generate form steps after deleting existings steps, to allow correct calculation of
         # the `order` field.
-        for step in sorted(assigned_steps, key=lambda step: step.order):
+        form_steps: list[FormStep] = sorted(assigned_steps, key=lambda step: step.order)
+        for step in form_steps:
             step.save()
+
+        logic_rules = validated_data.get("formlogic_set", [])
+        if instance.new_logic_evaluation_enabled:
+            logic_rules_ids: list[int] = []
+            for rule_data in logic_rules:
+                rule = FormLogic.objects.create(**rule_data, form=instance)
+                rule.form_steps.set(
+                    [
+                        form_step
+                        for form_step in form_steps
+                        if form_step.slug in rule_data["form_steps"]
+                    ]
+                )
+                logic_rules_ids.append(rule.pk)
+
+            # Remove existing logic rules from the form.
+            # fmt:off
+            (
+                FormLogic.objects
+                .exclude(id__in=logic_rules_ids)
+                .filter(form=instance)
+                .delete()
+            )
+            # fmt:on
+
         return instance
 
     def validate_steps(self, value: list[FormStepData]) -> list[FormStepData]:
