@@ -83,7 +83,7 @@ const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComp
 const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
   const isSelectboxesComponentType = componentSchema.type === 'selectboxes';
 
-  if (registrationBackendOptions.version !== 2 && !isSelectboxesComponentType) return;
+  if (registrationBackendOptions.version !== 2 || !isSelectboxesComponentType) return;
 
   const removed = originalComponent == null;
   if (removed) {
