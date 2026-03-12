@@ -3142,6 +3142,106 @@ class FormEndpointVariableTests(APITestCase):
         )
 
 
+class FormEndpointLogicTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls) -> None:
+        cls.admin_user = UserFactory.create(
+            is_staff=True, user_permissions=("forms.change_form",)
+        )
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.client.force_authenticate(user=self.admin_user)
+
+    def test_create_minimal_form_logic(self):
+        form_definition_uuid = str(uuid4())
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "newLogicEvaluationEnabled": True,
+            "steps": [
+                {
+                    "index": 1,
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "isReusable": True,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "component2",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                }
+            ],
+            "logic_rules": [
+                {
+                    "order": 0,
+                    "json_logic_trigger": {
+                        "==": [
+                            {"var": "step1_textfield1"},
+                            "hide step 1",
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "component": "step1_textfield1",
+                            "action": {
+                                "name": "Hide element",
+                                "type": "property",
+                                "property": {"value": "hidden", "type": "bool"},
+                                "state": True,
+                            },
+                        }
+                    ],
+                    "form_steps": ["step-1"],
+                }
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        from pprint import pprint
+
+        pprint(response.json())
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+
+    def test_create_trigger_from_without_steps(self):
+        raise NotImplementedError
+
+    def test_create_without_steps(self):
+        raise NotImplementedError
+
+
 class FormEndpointAccessTests(APITestCase):
     def test_non_staff_user(self):
         url = reverse(
