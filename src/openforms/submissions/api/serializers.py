@@ -265,20 +265,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             },
         }
 
-    def to_internal_value(self, data):
-        # ensure that backend logic is evaluated, which may alter the formio component
-        # validation rules. The formio configuration is mutated as a side effect.
-        # NOTE - we deliberately *don't* pass the client-side ``data`` here for the
-        # logic evaluated, as it is untrusted and unvalidated input. This assumes that
-        # static variables are used to flip components to readonly/disabled state. If
-        # user input is used to perform this flip, the end-user can manipulate this
-        # value too and force the logic evaluation to mark the component as not readonly,
-        # which beats the point of performing this check.
-        submission = self.instance.submission
-        evaluate_form_logic(submission, step=self.instance, unsaved_data=None)
-
-        return super().to_internal_value(data)
-
     @elasticapm.capture_span(span_type="app.api.serialization")
     def to_representation(self, instance):
         # invoke the configured form logic to dynamically update the Formio.js configuration
@@ -314,10 +300,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
 
     def _run_formio_validation(self, data: FormioData) -> None:
         submission = self.instance.submission
-        # Evaluate dynamic configuration. We need to make sure we are not fetching an
-        # outdated configuration here, so we force re-evaluation of form logic by
-        # setting the `_form_logic_evaluated` property to False.
-        self.instance._form_logic_evaluated = False
         configuration = evaluate_form_logic(
             submission, step=self.instance, unsaved_data=data
         )

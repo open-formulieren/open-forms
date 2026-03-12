@@ -110,7 +110,8 @@ def iter_step_uploads(
     Yield every uploaded file and its context within the form step for further
     processing.
     """
-    data = data or submission_step.data
+    state = submission_step.submission.load_submission_value_variables_state()
+    data = state.get_data(submission_step=submission_step, include_unsaved=False)
     uploads = resolve_uploads_from_data(
         submission_step.form_step.form_definition.configuration, data
     )
