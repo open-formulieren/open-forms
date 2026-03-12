@@ -4,6 +4,8 @@ from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
 
+from unittest_parametrize import ParametrizedTestCase, param, parametrize
+
 from openforms.formio.service import FormioData
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -20,7 +22,7 @@ from ..factories import (
 )
 
 
-class SubmissionValueVariableModelTests(TestCase):
+class SubmissionValueVariableModelTests(ParametrizedTestCase, TestCase):
     def test_unique_together_submission_key(self):
         variable1 = SubmissionValueVariableFactory.create(key="var1")
 
@@ -485,6 +487,116 @@ class SubmissionValueVariableModelTests(TestCase):
 
             stored = SubmissionValueVariable.objects.get(key=variable.key)
             self.assertEqual(stored.value, [{"date": "", "time": [""]}])
+
+    @parametrize(
+        ("key", "expected_data_type"),
+        [
+            param("foo.bar", FormVariableDataTypes.string),
+            param("foo.barbaz", None),
+            param("foo", None),
+            param("foo.bar.baz", None),
+            param("foo.barSomeExtraCharacters", None),
+        ],
+    )
+    def test_get_data_type_textfield(self, key, expected_data_type):
+        var = SubmissionValueVariableFactory.create(
+            key="foo.bar",
+            value="",
+            data_type=FormVariableDataTypes.string,
+            configuration={"type": "textfield", "key": "foo.bar"},
+        )
+        data_type = var.get_data_type(key)
+        self.assertEqual(expected_data_type, data_type)
+
+    @parametrize(
+        ("key", "expected_data_type"),
+        [
+            param("foo.bar", FormVariableDataTypes.array),
+            param("foo.bar.0", FormVariableDataTypes.date),
+            param("foo.bar.0.baz", None),
+            param("foo.bar.0baz", None),
+            param("foo.bar.baz", None),
+        ],
+    )
+    def test_get_data_type_date_multiple(self, key, expected_data_type):
+        var = SubmissionValueVariableFactory.create(
+            key="foo.bar",
+            value=[],
+            data_type=FormVariableDataTypes.array,
+            data_subtype=FormVariableDataTypes.date,
+            configuration={"type": "date", "key": "foo.bar", "multiple": True},
+        )
+        data_type = var.get_data_type(key)
+        self.assertEqual(expected_data_type, data_type)
+
+    @parametrize(
+        ("key", "expected_data_type"),
+        [
+            param("children", FormVariableDataTypes.array),
+            param("children.0.dateOfBirth", FormVariableDataTypes.date),
+            param("children.1.selected", FormVariableDataTypes.boolean),
+            param("children.42.lastName", FormVariableDataTypes.string),
+            param("children.42.nonExisting", None),
+            param("children.lastName", None),
+        ],
+    )
+    def test_get_data_type_children(self, key, expected_data_type):
+        var = SubmissionValueVariableFactory.create(
+            key="children",
+            value=[],
+            data_type=FormVariableDataTypes.array,
+            data_subtype=FormVariableDataTypes.children,
+            configuration={"type": "children", "key": "children"},
+        )
+        data_type = var.get_data_type(key)
+        self.assertEqual(expected_data_type, data_type)
+
+    @parametrize(
+        ("key", "expected_data_type"),
+        [
+            param("editgrid", FormVariableDataTypes.array),
+            param("editgrid.0.date", FormVariableDataTypes.date),
+            param("editgrid.1.textfield", FormVariableDataTypes.string),
+            param("editgrid.2.nonExisting", None),
+            param("editgrid.textfield", None),
+        ],
+    )
+    def test_get_data_type_editgrid(self, key, expected_data_type):
+        var = SubmissionValueVariableFactory.create(
+            key="editgrid",
+            value=[],
+            data_type=FormVariableDataTypes.array,
+            data_subtype=FormVariableDataTypes.editgrid,
+            configuration={
+                "type": "editgrid",
+                "key": "editgrid",
+                "components": [
+                    {"type": "date", "key": "date"},
+                    {"type": "textfield", "key": "textfield"},
+                ],
+            },
+        )
+        data_type = var.get_data_type(key)
+        self.assertEqual(expected_data_type, data_type)
+
+    @parametrize(
+        ("key", "expected_data_type"),
+        [
+            param("file", FormVariableDataTypes.array),
+            param("file.0.url", None),
+            param("file.invalidIndex", None),
+        ],
+    )
+    def test_get_data_file(self, key, expected_data_type):
+        var = SubmissionValueVariableFactory.create(
+            key="file",
+            value=[],
+            data_type=FormVariableDataTypes.array,
+            data_subtype=FormVariableDataTypes.object,
+            configuration={"type": "file", "key": "file"},
+        )
+        data_type = var.get_data_type(key)
+        self.assertEqual(expected_data_type, data_type)
 
 
 class SubmissionValueVariableManagerTests(TestCase):

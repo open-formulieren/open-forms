@@ -88,6 +88,7 @@ include = [
     # core submissions app
     "src/openforms/submissions/api/validation.py",
     "src/openforms/submissions/cosigning.py",
+    "src/openforms/submissions/json_logic.py",
     "src/openforms/submissions/logic/actions.py",
     "src/openforms/submissions/metrics.py",
     "src/openforms/submissions/query.py",
