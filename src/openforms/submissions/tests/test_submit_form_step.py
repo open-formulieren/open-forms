@@ -22,7 +22,7 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 
-from ..models import SubmissionValueVariable
+from ..models import SubmissionFileAttachment, SubmissionValueVariable
 from .factories import (
     SubmissionFactory,
     SubmissionStepFactory,
@@ -444,3 +444,73 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         # logic rule
         state = submission.load_submission_value_variables_state(refresh=True)
         self.assertEqual(state.get_data(include_unsaved=False)["foo"], "persisted")
+
+    @tag("gh-6068")
+    def test_uploads_not_being_attached_to_submission(self):
+        step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                    {"type": "file", "key": "file", "label": "File"},
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=step.form,
+            json_logic_trigger={"!=": [{"var": "textfield"}, "foo"]},
+            actions=[
+                {
+                    "action": {
+                        "name": "Hide file",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "file",
+                },
+            ],
+        )
+        submission = SubmissionFactory.create(form=step.form)
+        self._add_submission_to_session(submission)
+
+        upload = TemporaryFileUploadFactory.create(
+            submission=submission, file_name="my-image.jpg"
+        )
+        file_data = [
+            {
+                "url": f"http://localhost/api/v2/submissions/files/{upload.uuid}",
+                "data": {
+                    "url": f"http://localhost/api/v2/submissions/files/{upload.uuid}",
+                    "form": "",
+                    "name": "my-image.jpg",
+                    "size": upload.file_size,
+                    "baseUrl": "http://localhost",
+                    "project": "",
+                },
+                "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                "size": upload.file_size,
+                "type": "image/jpg",
+                "storage": "url",
+                "originalName": "my-image.jpg",
+            }
+        ]
+
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+        response = self.client.put(
+            endpoint, {"data": {"textfield": "foo", "file": file_data}}
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Ensure attachment is created.
+        submission_step = submission.submissionstep_set.get()
+        self.assertTrue(
+            SubmissionFileAttachment.objects.filter(
+                submission_step=submission_step
+            ).exists()
+        )
