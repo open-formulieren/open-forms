@@ -821,7 +821,7 @@ class SubmissionValueVariable(models.Model):
             return None
 
         # If it doesn't start with `{self.key}.[index](.)` -> it is not relevant.
-        if not re.match(f"^{self.key}.\d+($|\.)", key):
+        if not re.match(rf"^{self.key}.\d+($|\.)", key):
             return None
 
         assert self.data_subtype is not None
