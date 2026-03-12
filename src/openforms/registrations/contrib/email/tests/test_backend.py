@@ -693,6 +693,35 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         # check we used the payment_emails
         self.assertEqual(message.to, ["foo@example.com"])
 
+    def test_register_and_update_paid_product_without_payment_email_recipients(self):
+        """
+        Test that whenever the `wait_for_payment_to_register` global configuration option
+        is enabled and no payment emails were configured for the form, no payment
+        update emails were sent.
+        """
+        config = GlobalConfiguration.get_solo()
+        config.wait_for_payment_to_register = True
+        config.save()
+
+        submission = SubmissionFactory.from_data(
+            {"voornaam": "Foo"},
+            form__product__price=Decimal("11.35"),
+            form__payment_backend="demo",
+            registration_success=True,
+            public_registration_reference="XYZ",
+        )
+        assert submission.payment_required
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            # payment_emails must override to_emails
+            "payment_emails": [],
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
+        plugin.update_payment_status(submission, email_form_options)
+
+        self.assertEqual(len(mail.outbox), 0)
+
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_submission_with_email_backend_export_csv_xlsx(self):
         email_form_options: Options = {
