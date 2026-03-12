@@ -38,8 +38,8 @@ def get_rules_to_evaluate(
     """
     Given a submission, return the logic rules ready for evaluation.
 
-    :arg submission: A submission instance to retrieve the rules for
-    :arg current_step: The (optional) step at which the rules need to be evaluated.
+    :param submission: A submission instance to retrieve the rules for
+    :param current_step: The (optional) step at which the rules need to be evaluated.
     :returns: An iterable of :class`openforms.forms.models.FormLogic` instances. This
       may be a queryset, but could also be a list.
     """
@@ -57,8 +57,8 @@ def get_rules_to_evaluate_old(
 
     As a side-effect, the form logic query results are cached on ``submission.form``.
 
-    :arg submission: A submission instance to retrieve the rules for
-    :arg current_step: The (optional) step at which the rules need to be evaluated. If
+    :param submission: A submission instance to retrieve the rules for
+    :param current_step: The (optional) step at which the rules need to be evaluated. If
       not provided, the step following the last completed step is used, or the first
       step in the form if there are no completed steps.
     :returns: An iterable of :class`openforms.forms.models.FormLogic` instances. This
@@ -105,8 +105,8 @@ def get_rules_to_evaluate_new(
 
     The logic rules are fetched from a many-to-many field on the form step.
 
-    :arg submission: A submission instance to retrieve the rules for
-    :arg current_step: The (optional) step at which the rules need to be evaluated. If
+    :param submission: A submission instance to retrieve the rules for
+    :param current_step: The (optional) step at which the rules need to be evaluated. If
       not provided, the step following the last completed step is used, or the first
       step in the form if there are no completed steps.
     :returns: An iterable of :class`openforms.forms.models.FormLogic` instances. This
@@ -137,7 +137,7 @@ def get_current_step(submission: Submission) -> SubmissionStep | None:
 
     If the last completed step is the last step in the form, then this step is returned.
 
-    :arg submission: The submission instance to get the current step for.
+    :param submission: The submission instance to get the current step for.
     :returns: None if there are no steps in the form, otherwise the first submission
       step that isn't completed.
     """
@@ -177,13 +177,13 @@ def iter_evaluate_rules(
     action operator that updates a variable is processed immediately. The caller is
     responsible for processing (all other) actions accordingly.
 
-    :arg rules: An iterable of form logic rules to evaluate.
-    :arg data: Mapping from variable key to variable value (native Python types), for
+    :param rules: An iterable of form logic rules to evaluate.
+    :param data: Mapping from variable key to variable value (native Python types), for
       all variables present in the :class:`SubmissionValueVariableState`. This data
       structure is updated after every mutation.
-    :arg configuration: Formio configuration wrapper of a step.
-    :arg submission: Submission instance.
-    :arg initial_data: Initial data for clear-on-hide behavior.
+    :param configuration: Formio configuration wrapper of a step.
+    :param submission: Submission instance.
+    :param initial_data: Initial data for clear-on-hide behavior.
     :returns: An iterator yielding :class:`ActionOperation` instances.
     """
     state = submission.load_submission_value_variables_state()

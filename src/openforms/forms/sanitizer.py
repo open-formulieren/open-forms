@@ -10,7 +10,7 @@ def sanitize_component(component: Component):
     All tags and attributes that aren't explicitly allowed, are removed from the
     component content.
 
-    :arg component: the component data.
+    :param component: the component data.
     """
     if "tooltip" in component:
         component["tooltip"] = sanitize_html_content(component["tooltip"])

@@ -106,7 +106,7 @@ def mute_logging(config: dict) -> None:  # pragma: no cover
     """
     Disable (console) output from logging.
 
-    :arg config: The logging config, typically the django LOGGING setting.
+    :param config: The logging config, typically the django LOGGING setting.
     """
 
     # set up the null handler for all loggers so that nothing gets emitted

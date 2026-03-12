@@ -69,18 +69,18 @@ def process_mapped_variable(
     values are translated before they end up in the Objects API record. Often, these
     transformations are dependent on the component type being processed.
 
-    :arg mapping: The mapping of form variable to destination path, including possible
+    :param mapping: The mapping of form variable to destination path, including possible
       component-specific configuration options that influence the mapping behaviour.
-    :arg value: The raw value of the form variable for the submission being processed.
+    :param value: The raw value of the form variable for the submission being processed.
       The type/shape of the value depends on the variable/component data type being
       processed and even the component configuration (such as multiple True/False).
-    :arg transform_to_list: Component keys in this list will be sent as an array of
+    :param transform_to_list: Component keys in this list will be sent as an array of
       values rather than the default object-shape for selectboxes components.
-    :arg variable: Corresponding submission value variable, will be ``None`` for
+    :param variable: Corresponding submission value variable, will be ``None`` for
       registration variables.
-    :arg component: If the variable corresponds to a Formio component, the component
+    :param component: If the variable corresponds to a Formio component, the component
       definition is provided, otherwise ``None``.
-    :arg attachment_urls: The registration plugin uploads attachments to a Documents API
+    :param attachment_urls: The registration plugin uploads attachments to a Documents API
       and provides the API resource URL for each attachment. Keys are the data paths in
       the (Formio) submission data, e.g. `myAttachment` or ``repeatingGroups.2.file``.
 

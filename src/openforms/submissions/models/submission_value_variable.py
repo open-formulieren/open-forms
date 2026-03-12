@@ -341,7 +341,7 @@ class SubmissionValueVariablesState:
         Note: we do not perform any conversions to the native Python types here, this is
         done when fetching the data from the state using ``.get_data()``
 
-        :arg data: mapping of variable key to value.
+        :param data: mapping of variable key to value.
         """
         for key, variable in self.variables.items():
             new_value = data.get(key, default=empty)

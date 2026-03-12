@@ -16,7 +16,7 @@ def suppress_requests_errors(model: type[models.Model], fields: list[str]):
     form field that Django would generate by default and append an error message
     for the end-user.
 
-    :arg fields: A list of model field names for which to suppress errors.
+    :param fields: A list of model field names for which to suppress errors.
     """
 
     def fallback(self, db_field, request, *args, **kwargs):

@@ -42,7 +42,7 @@ def conditional_search_engine_index(config_attr: str, content="noindex, nofollow
 
     If indexing is not allowed, the X_ROBOTS_TAG_HEADER will be emitted in the response.
 
-    :arg config_attr: Name of the configuration attribute from the
+    :param config_attr: Name of the configuration attribute from the
       :class:`GlobalConfiguration` class.
     """
 

@@ -72,7 +72,7 @@ class KVKProfileClient(HALClient):
         """
         Retrieve the profile of a single entity by chamber of commerce number.
 
-        :arg kvk_nummer: a Dutch Chamber of Commerce number consisting of 8 digits.
+        :param kvk_nummer: a Dutch Chamber of Commerce number consisting of 8 digits.
 
         Docs: https://developers.kvk.nl/apis/basisprofiel
         Swagger: https://developers.kvk.nl/documentation/testing/swagger-basisprofiel-api
@@ -96,7 +96,7 @@ class KVKBranchProfileClient(HALClient):
         """
         Retrieve the profile of a single entity by chamber of commerce number.
 
-        :arg branch_number: a brnach number consisting of 12 digits.
+        :param branch_number: a brnach number consisting of 12 digits.
 
         Swagger: https://developers.kvk.nl/documentation/testing/swagger-vestigingsprofiel-api
         """
@@ -121,7 +121,7 @@ class KVKSearchClient(HALClient):
         """
         Perform a search against the KVK zoeken API.
 
-        :arg query_params: a non-empty dictionary of query string parameters for
+        :param query_params: a non-empty dictionary of query string parameters for
           the actual search.
 
         Docs: https://developers.kvk.nl/apis/zoeken

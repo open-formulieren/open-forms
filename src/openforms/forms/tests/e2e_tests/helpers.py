@@ -17,8 +17,8 @@ async def open_fieldset(page: Page, title: str) -> None:
     """
     Toggle a fieldset from collapsed to open state.
 
-    :arg page: The playwright page to find elements in.
-    :arg title: The heading/title of the fieldset displayed on the page, inside the
+    :param page: The playwright page to find elements in.
+    :param title: The heading/title of the fieldset displayed on the page, inside the
       summary element.
     """
     toggle_summary = page.get_by_role("heading", level=2, name=title)
@@ -68,9 +68,9 @@ async def enter_json_in_editor(
     """
     Put some JSON into a monaca-json-editor instance.
 
-    :arg locator: The locator (`page.locator(".monaco-editor")`) pointing to the
+    :param locator: The locator (`page.locator(".monaco-editor")`) pointing to the
       editor instance.
-    :arg expression: The JSON expression. Will be serialized to JSON before putting it
+    :param expression: The JSON expression. Will be serialized to JSON before putting it
       in the input.
     """
     # copy-and-paste does work on Webkit, but I can't get selecting all editor content

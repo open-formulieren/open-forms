@@ -22,12 +22,12 @@ def evaluate_dmn(
     """
     Evaluate the decision definition using the spefified plugin.
 
-    :arg plugin_id: identifier of the plugin to use for evaluation
-    :arg definition_id: identifier of the decision definition to evaluate
-    :arg version: optional version of the definition to evaluate, if supported. If
+    :param plugin_id: identifier of the plugin to use for evaluation
+    :param definition_id: identifier of the decision definition to evaluate
+    :param version: optional version of the definition to evaluate, if supported. If
       versioning is supported but no version is specified, the latest version should be
       used.
-    :arg input_values: A mapping of variable name -> variable value, used as input
+    :param input_values: A mapping of variable name -> variable value, used as input
       variables for the evaluation.
     :returns: A mapping of name -> value output variables.
     """

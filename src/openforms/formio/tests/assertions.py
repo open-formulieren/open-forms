@@ -19,9 +19,9 @@ class FormioMixin:
         """
         Assert that the formio component with specified key has the expected properties.
 
-        :arg configuration: Formio form configuration
-        :arg key: the unique key of the component to check
-        :arg properties_map: a mapping of formio property name to expected property
+        :param configuration: Formio form configuration
+        :param key: the unique key of the component to check
+        :param properties_map: a mapping of formio property name to expected property
           value. Note that the dict keys can be dotted paths for nested properties.
         """
         component = _get_component(configuration, key)

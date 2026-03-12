@@ -75,7 +75,7 @@ def _resolve_documenttype(
     """
     Given the registration options, resolve the documenttype URL to use.
 
-    :arg field: for which kind of upload the document type must be resolved.
+    :param field: for which kind of upload the document type must be resolved.
     :return: the resolved document type URL, if any. Empty string means that the upload
       should be skipped.
     """

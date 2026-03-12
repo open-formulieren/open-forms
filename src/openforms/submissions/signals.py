@@ -24,9 +24,9 @@ submission_start = Signal()
 Signal creation of a new :class:`openforms.models.Submission` instance.
 
 Provides:
-    :arg instance: The :class:`openforms.models.Submission` instance created.
-    :arg request: the HttpRequest instance (or DRF wrapper around it).
-    :arg anonymous: boolean indicating if the user is logged in or not.
+    :param instance: The :class:`openforms.models.Submission` instance created.
+    :param request: the HttpRequest instance (or DRF wrapper around it).
+    :param anonymous: boolean indicating if the user is logged in or not.
 """
 
 submission_resumed = Signal()
@@ -34,8 +34,8 @@ submission_resumed = Signal()
 Signal resumption of an existing :class:`openforms.models.Submission` instance.
 
 Provides:
-    :arg instance: The :class:`openforms.models.Submission` instance created.
-    :arg request: the HttpRequest instance (or DRF wrapper around it).
+    :param instance: The :class:`openforms.models.Submission` instance created.
+    :param request: the HttpRequest instance (or DRF wrapper around it).
 """
 
 
@@ -44,7 +44,7 @@ submission_complete = Signal()
 Signal completion of a :class:`openforms.models.Submission` instance.
 
 Provides:
-    :arg request: the HttpRequest instance (or DRF wrapper around it).
+    :param request: the HttpRequest instance (or DRF wrapper around it).
 """
 
 submission_cosigned = Signal()
@@ -52,8 +52,8 @@ submission_cosigned = Signal()
 Signal that a :class:`openforms.models.Submission` instance has been co-signed.
 
 Provides:
-    :arg submission: the :class:`openforms.models.Submission` instance.
-    :arg request: the HttpRequest instance (or DRF wrapper around it).
+    :param submission: the :class:`openforms.models.Submission` instance.
+    :param request: the HttpRequest instance (or DRF wrapper around it).
 """
 
 

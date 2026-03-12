@@ -77,9 +77,9 @@ def inject_variables(
     component is checked for properties that can be templated. Note that the
     configuration is mutated in the process!
 
-    :arg configuration: A dictionary containing the static Formio configuration (from
+    :param configuration: A dictionary containing the static Formio configuration (from
       the form designer)
-    :arg values: A mapping of variable key to its value (Python native objects)
+    :param values: A mapping of variable key to its value (Python native objects)
     :returns: None - this function mutates the datastructures in place
 
     .. todo:: Support getting non-string based configuration from variables, such as
