@@ -267,7 +267,7 @@ class CatalogiClient(LoggingMixin, NLXClient):
     ) -> Iterator[InformatieObjectType]:
         """List all informatieobjecttypen.
 
-        :arg catalogus: the catalogus URL the informatieobjecttypen should belong to.
+        :param catalogus: the catalogus URL the informatieobjecttypen should belong to.
         """
         params: InformatieObjectTypeListParams = {}
         if catalogus:

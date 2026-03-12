@@ -143,9 +143,9 @@ async def rs_select_option(
     """
     Select the option with specified label in the react-select dropdown.
 
-    :arg dropdown: The react select dropdown, e.g.
+    :param dropdown: The react select dropdown, e.g.
         ``page.get_by_role("combobox", name="<label>")``.
-    :arg option_label: The label text of the option to select.
+    :param option_label: The label text of the option to select.
     """
     page = dropdown.page
     dropdown_root = dropdown.locator("xpath=../../../..")

@@ -39,16 +39,16 @@ co_sign_authentication_success = Signal()
 Signal a successful co-sign authentication.
 
 Provides:
-    :arg request: the HttpRequest instance
-    :arg plugin: authentication plugin identifier
-    :arg submission: The :class:`Submission` instance being co-signed.
+    :param request: the HttpRequest instance
+    :param plugin: authentication plugin identifier
+    :param submission: The :class:`Submission` instance being co-signed.
 """
 authentication_logout = Signal()
 """
 Signals that a user that had logged in with an authentication plugin logged out.
 
 Provides:
-    :arg request: the HttpRequest instance
+    :param request: the HttpRequest instance
 """
 
 

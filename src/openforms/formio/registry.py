@@ -345,9 +345,9 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         """
         Apply component translations for the provided language code.
 
-        :arg component: Form.io component definition to localize
-        :arg language_code: the language code of the language to translate to
-        :arg enabled: whether translations are enabled or not. If translations are not
+        :param component: Form.io component definition to localize
+        :param language_code: the language code of the language to translate to
+        :param enabled: whether translations are enabled or not. If translations are not
           enabled, the translation information should still be stripped from the
           component definition(s).
         """

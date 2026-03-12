@@ -25,9 +25,9 @@ def build_absolute_uri(location: str, request: AnyRequest | None = None):
     If no request argument is provided, the fully qualified URI is constructed via
     :attr:`settings.BASE_URL`.
 
-    :arg location: the path to make absolute, without protocol, netloc or port number.
+    :param location: the path to make absolute, without protocol, netloc or port number.
       Assumed to be an absolute path.
-    :arg request: optionally - the current request object. If provided,
+    :param request: optionally - the current request object. If provided,
       :meth:`request.build_absolute_uri` is called.
     """
     if request:
@@ -80,13 +80,13 @@ def reverse_plus(
     If `make_absolute` is True and no `request` argument is provided, the fully qualified URI is constructed via
     :attr:`settings.BASE_URL`.
 
-    :arg name: the URL name to reverse.
-    :arg args: optionally - arg-argument to reverse().
-    :arg kwargs: optionally - kwargs-argument to reverse().
-    :arg request: optionally - the current request object. If provided,
+    :param name: the URL name to reverse.
+    :param args: optionally - arg-argument to reverse().
+    :param kwargs: optionally - kwargs-argument to reverse().
+    :param request: optionally - the current request object. If provided,
       :meth:`request.build_absolute_uri` is called.
-    :arg query: optionally - add key/values as URL GET parameter
-    :arg make_absolute: optionally - disable absolute URL
+    :param query: optionally - add key/values as URL GET parameter
+    :param make_absolute: optionally - disable absolute URL
     """
     location = reverse(
         name,
@@ -109,7 +109,7 @@ def is_admin_request(request: AnyRequest) -> bool:
     """
     Checks whether a request is made from the admin
 
-    :arg request: the request object to be checked.
+    :param request: the request object to be checked.
     """
     admin_path_prefix = reverse("admin:index")
     if request.path_info.startswith(admin_path_prefix):

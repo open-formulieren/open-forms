@@ -46,9 +46,9 @@ class ConvertComponentsOperation(migrations.RunPython):
     """
     Generate a data migration to apply component conversion.
 
-    :arg component_type: The form.io component type, e.g. "textfield". Only
+    :param component_type: The form.io component type, e.g. "textfield". Only
       components of this type will be targeted.
-    :arg identifier: identifier of the conversion operation, as defined in
+    :param identifier: identifier of the conversion operation, as defined in
       ``CONVERTERS``.
     """
 

@@ -52,11 +52,11 @@ def render_from_string(
     """
     Render a template source string using the provided context.
 
-    :arg source: The template source to render
-    :arg context: The context data for the template to render
-    :arg backend: An optional alternative Django template backend instance to use.
+    :param source: The template source to render
+    :param context: The context data for the template to render
+    :param backend: An optional alternative Django template backend instance to use.
       Defaults to the sandboxed backend.
-    :arg disable_autoescape: Disable escaping of HTML in ``source``.
+    :param disable_autoescape: Disable escaping of HTML in ``source``.
     :raises: :class:`django.template.TemplateSyntaxError` if the template source is
       invalid
     """

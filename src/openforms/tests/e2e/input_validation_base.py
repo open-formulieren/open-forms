@@ -77,11 +77,11 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
         cannot handle array/null datatypes etc. so the backend may be stricter to some
         extent.
 
-        :arg component: Given the component definition, create a form instance and use
+        :param component: Given the component definition, create a form instance and use
           this for both the end-to-end test with playwright and the django test client
           assertions to check for validation issues.
-        :arg ui_input: Input to enter in the field with playwright.
-        :arg expected_ui_error: Content of the validation error to be expected in the
+        :param ui_input: Input to enter in the field with playwright.
+        :param expected_ui_error: Content of the validation error to be expected in the
           playwright test.
         """
         form = create_form(component)

@@ -188,7 +188,7 @@ def sanitize_svg_file(data: File) -> File:
     The entire file content will be replaced with a sanitized version. All tags and
     attributes that aren't explicitly allowed, are removed from the SVG content.
 
-    :arg data: the uploaded SVG file, opened in binary mode.
+    :param data: the uploaded SVG file, opened in binary mode.
     """
     # Making sure that the file is reset properly
     data.seek(0)
@@ -215,7 +215,7 @@ def sanitize_svg_content(svg_content: str) -> str:
     All tags and attributes that aren't explicitly allowed, are removed from the SVG
     content.
 
-    :arg svg_content: decoded SVG content.
+    :param svg_content: decoded SVG content.
 
     .. warning:: Do not use in security-critical contexts - using nh3 or bleach for
        SVG content sanitizing is best-effort and not what it's made for.
@@ -241,7 +241,7 @@ def sanitize_html_content(html_content: str) -> str:
     The provided string is replaced by a html sanitized version. All tags and attributes
     that aren't explicitly allowed, are removed from the SVG content.
 
-    :arg html_content: the html string to sanitize.
+    :param html_content: the html string to sanitize.
     """
     return nh3.clean(
         html_content,

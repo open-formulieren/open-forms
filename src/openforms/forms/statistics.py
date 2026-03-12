@@ -30,12 +30,12 @@ def export_registration_statistics(
     [start_date, end_date]), optionally filtering them down to a set of forms. Only log
     records for successful registration are considered.
 
-    :arg start_date: include log records starting from this date (midnight, in the local
+    :param start_date: include log records starting from this date (midnight, in the local
       timezone).
-    :arg end_date: include log records until (and including) this date. Log record up to
+    :param end_date: include log records until (and including) this date. Log record up to
       midnight (in the local timezone) the next day are included, i.e.
       ``$date, 23:59:59 999999us``.
-    :arg limit_to_forms: A queryset of forms to limit the export to. If not provided or
+    :param limit_to_forms: A queryset of forms to limit the export to. If not provided or
       ``None`` is given, all forms are included.
     """
     title_mappings = {
