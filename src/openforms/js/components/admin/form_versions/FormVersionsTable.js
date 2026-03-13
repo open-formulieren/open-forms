@@ -12,14 +12,15 @@ import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
 import {WarningIcon} from 'components/admin/icons';
 import {get, post} from 'utils/fetch';
 
-const checkVersionsCompatible = (version1, version2) => {
+export const checkVersionsCompatible = (version1, version2) => {
   // if any of the versions is empty, we can't reach any conclusions
   if (!version1 || !version2) return true;
   // if we get non-semver versions -> check for strict equality
   if (!semverValid(version1) || !semverValid(version2)) return version1 === version2;
   const diffLevel = semverDiff(version1, version2);
+  // current version should be ok
   // patch releases are backwards compatible
-  return diffLevel === 'patch';
+  return diffLevel === null || diffLevel === 'patch';
 };
 
 const FormVersionsTable = ({formUuid, currentRelease}) => {
