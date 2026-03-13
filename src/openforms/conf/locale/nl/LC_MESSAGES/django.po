@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-04 19:05+0100\n"
-"PO-Revision-Date: 2026-03-05 12:15+0100\n"
-"Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
+"PO-Revision-Date: 2026-03-11 21:18+0100\n"
+"Last-Translator:   <anna@anna.com>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -1247,31 +1247,29 @@ msgid "Country"
 msgstr "Land"
 
 #: openforms/appointments/contrib/jcc_rest/forms.py:52
-#, fuzzy, python-brace-format
+#, python-brace-format
 #| msgid "form component key"
 msgid "Unknown component keys: {keys}."
-msgstr "formulier veld sleutel"
+msgstr "Onbekende componentsleutels: {keys}."
 
 #: openforms/appointments/contrib/jcc_rest/forms.py:60
 #, python-brace-format
 msgid "Required keys are missing: {keys}."
-msgstr ""
+msgstr "Vereiste sleutels ontbreken: {keys}."
 
 #: openforms/appointments/contrib/jcc_rest/models.py:27
 msgid "JCC Rest API"
 msgstr "JCC REST API"
 
 #: openforms/appointments/contrib/jcc_rest/models.py:34
-#, fuzzy
 #| msgid "component configuration path"
 msgid "components configuration"
-msgstr "Componentconfiguratiepad"
+msgstr "componentinstellingen"
 
 #: openforms/appointments/contrib/jcc_rest/models.py:37
-#, fuzzy
 #| msgid "The form definition as Form.io JSON schema"
 msgid "The contact details components as Form.io JSON schema"
-msgstr "De formulierdefinitie als Form.io JSON schema"
+msgstr "De contactgegevenscomponenten als Form.io JSON-schema"
 
 #: openforms/appointments/contrib/jcc_rest/models.py:43
 msgid "JCC Rest configuration"
@@ -2274,16 +2272,14 @@ msgid "Chamber of Commerce number of the customer"
 msgstr "Kamer van Koophandelnummer van de klant"
 
 #: openforms/authentication/forms.py:42
-#, fuzzy
 #| msgid "KvK number of customer"
 msgid "KvK branch number of customer"
-msgstr "KvK-nummer van de klant"
+msgstr "KvK-vestigingsnummer van de klant"
 
 #: openforms/authentication/forms.py:43
-#, fuzzy
 #| msgid "Chamber of Commerce number of the customer"
 msgid "Chamber of Commerce branch number of the customer"
-msgstr "Kamer van Koophandelnummer van de klant"
+msgstr "Kamer van Koophandel vestigingsnummer van de klant"
 
 #: openforms/authentication/forms.py:50
 msgid "Continue without additional information"
@@ -2295,7 +2291,7 @@ msgstr "Geef een BSN of KvK-nummer op"
 
 #: openforms/authentication/forms.py:70
 msgid "Branch number is only applicable for KvK values"
-msgstr ""
+msgstr "Het vestigingsnummer is alleen van toepassing op KvK-waarden"
 
 #: openforms/authentication/models.py:39 openforms/authentication/views.py:297
 msgid "Identifier of the authentication plugin."
@@ -3100,16 +3096,15 @@ msgid "Service for API used to retrieve basis profielen."
 msgstr "API die gebruikt wordt om basisprofielen in de KVK API op te halen."
 
 #: openforms/contrib/kvk/models.py:40
-#, fuzzy
 #| msgid "KvK API Basisprofiel"
 msgid "KvK API Vestigingsprofiel"
-msgstr "KVK API Basisprofiel"
+msgstr "KVK API Vestigingsprofiel"
 
 #: openforms/contrib/kvk/models.py:41
-#, fuzzy
 #| msgid "Service for API used to retrieve basis profielen."
 msgid "Service for API used to retrieve vestingings profielen."
-msgstr "API die gebruikt wordt om basisprofielen in de KVK API op te halen."
+msgstr ""
+"API die gebruikt wordt om vestingingsprofielen in de KVK API op te halen."
 
 #: openforms/contrib/kvk/models.py:49
 msgid "KvK API Zoeken"
@@ -5088,7 +5083,7 @@ msgid "Ensure this field has no more than {max_length} elements."
 msgstr "Zorg dat dit veld {max_length} of minder waarden heeft."
 
 #: openforms/formio/dynamic_config/dynamic_options.py:60
-#, fuzzy, python-brace-format
+#, python-brace-format
 #| msgid ""
 #| "Variable obtained with expression %(items_expression)s for dynamic options "
 #| "is not an array."
@@ -5096,21 +5091,21 @@ msgid ""
 "Variable obtained with expression {items_expression} for dynamic options is "
 "not an array."
 msgstr ""
-"De variable verkregen via de expressie %(items_expression)s voor dynamische "
+"De variable verkregen via de expressie {items_expression} voor dynamische "
 "keuzelijstopties is geen lijst (array)."
 
 #: openforms/formio/dynamic_config/dynamic_options.py:75
-#, fuzzy, python-brace-format
+#, python-brace-format
 #| msgid ""
 #| "Expression %(items_expression)s did not return a valid option for each item."
 msgid ""
 "Expression {items_expression} did not return a valid option for each item."
 msgstr ""
-"De expressie %(items_expression)s resulteerde niet in bruikbare opties voor "
+"De expressie {items_expression} resulteerde niet in bruikbare opties voor "
 "elk item."
 
 #: openforms/formio/dynamic_config/dynamic_options.py:91
-#, fuzzy, python-brace-format
+#, python-brace-format
 #| msgid ""
 #| "The dynamic options obtained with expression %(items_expression)s contain "
 #| "non-primitive types."
@@ -5118,8 +5113,8 @@ msgid ""
 "The dynamic options obtained with expression {items_expression} contain non-"
 "primitive types."
 msgstr ""
-"De dynamische keuzelijstopties verkregen met de expressie "
-"%(items_expression)s bevat niet-primitieven (objecten of arrays)."
+"De dynamische keuzelijstopties verkregen met de expressie {items_expression}"
+" bevatten niet-primitieve typen (zoals objecten of arrays)."
 
 #: openforms/formio/dynamic_config/dynamic_options.py:115
 msgid "Could not retrieve options from Referentielijsten API."
@@ -5886,7 +5881,7 @@ msgstr "Ongeldige formulierstapverwijzing."
 #: openforms/forms/api/serializers/logic/form_logic.py:49
 #, python-brace-format
 msgid "Rule contains cycles through variable(s): {variables}."
-msgstr ""
+msgstr "De regel bevat verwijzingen naar zichzelf, via de variabele(n): {variables}."
 
 #: openforms/forms/api/serializers/logic/form_logic.py:123
 #: openforms/forms/models/logic.py:42
@@ -5922,6 +5917,9 @@ msgid ""
 "analysis. Note that this is only relevant when the "
 "`new_logic_evaluation_enabled` feature flag on the form is set to `True`."
 msgstr ""
+"Formulierstappen waarop de regel wordt uitgevoerd, bepaald door analyse "
+"van de formulierlogica. Let op: dit is alleen relevant wanneer de feature flag "
+"'gebruik nieuwe logica-evaluatie' ingeschakeld is."
 
 #: openforms/forms/api/serializers/logic/form_logic.py:170
 msgid ""
@@ -5944,10 +5942,9 @@ msgstr ""
 "dat het volgnummer van regels voor/na deze regel opnieuw berekend wordt."
 
 #: openforms/forms/api/v3/viewsets.py:27
-#, fuzzy
 #| msgid "Update all details of a form"
 msgid "Create or update all details of a form"
-msgstr "Formulier in zijn geheel bijwerken"
+msgstr "Alle gegevens van een formulier aanmaken of bijwerken"
 
 #: openforms/forms/api/validators.py:29
 msgid "The first operand must be a `{\"var\": \"<componentKey>\"}` expression."
@@ -6815,7 +6812,7 @@ msgstr "Gebruik de nieuwe renderer."
 
 #: openforms/forms/models/form.py:401
 msgid "enable new logic rule evaluation"
-msgstr ""
+msgstr "gebruik nieuwe logica-evaluatie"
 
 #: openforms/forms/models/form.py:404
 msgid ""
@@ -6824,6 +6821,11 @@ msgid ""
 "will be automatically assigned to one or more steps on which it will be "
 "executed."
 msgstr ""
+"Als je dit inschakelt, dan wordt de formulierlogica geanalyseerd en automatisch  "
+"gesorteerd op basis van hun onderlinge afhankelijkheden (dit gebeurt wanneer "
+"je het formulier opslaat). Elke regel wordt automatisch toegewezen aan een of "
+"meer stappen waarop deze zal worden uitgevoerd. Daarnaast zullen ook "
+"andere snelheidsverbeteringen toegepast worden waar mogelijk."
 
 #: openforms/forms/models/form.py:425
 msgid "forms"
@@ -7227,10 +7229,11 @@ msgid "Form to which the JSON logic applies."
 msgstr "Formulier waar de JSON-logic voor geldt."
 
 #: openforms/forms/models/logic.py:32
-#, fuzzy
 #| msgid "Date and time on which the form should be deactivated."
 msgid "Collection of form steps on which this logic rule should be executed."
-msgstr "Datum en tijdstip waarop het formulier gedeactiveerd moet worden."
+msgstr ""
+"Verzameling van formulierstappen waarop deze logicaregel moet worden "
+"uitgevoerd."
 
 #: openforms/forms/models/logic.py:50
 msgid "JSON logic"
@@ -7711,6 +7714,8 @@ msgid ""
 "%(lead)s: Cosign OTP blocked (identifier: %(identifier)s, waiting for "
 "cosign: %(is_waiting)s)."
 msgstr ""
+"%(lead)s: Mede-ondertekeningverificatie geblokkeerd (identificatie: %(identifier)s,"
+" wacht op mede-ondertekening: %(is_waiting)s)."
 
 #: openforms/logging/templates/logging/events/cosign_otp_rate_limited.txt:3
 #, python-format
@@ -8155,6 +8160,8 @@ msgid ""
 "[%(lead)s] (Form %(form)s): User authenticated with plugin %(plugin)s "
 "(identifier: %(identifier)s)"
 msgstr ""
+"[%(lead)s] (Formulier %(form)s): Gebruiker is ingelogd met plugin "
+"%(plugin)s (identificatie: %(identifier)s)"
 
 #: openforms/multidomain/models.py:9
 msgid "The name to show in the domain switcher."
@@ -11290,13 +11297,15 @@ msgstr "objecten API - JSON-inhoud sjabloon"
 
 #: openforms/registrations/contrib/zgw_apis/models.py:139
 msgid "Use generated zaaknummer"
-msgstr ""
+msgstr "Gebruik gegenereerd zaaknummer"
 
 #: openforms/registrations/contrib/zgw_apis/models.py:142
 msgid ""
 "Indicates whether the zaaknummer is used as public reference. When "
 "unchecked, then the public reference is generated by Open Forms."
 msgstr ""
+"Geeft aan of het zaaknummer wordt gebruikt als openbare referentie. Als dit "
+"uitgeschakeld is, dan genereert Open Formulieren de  publieke referentie."
 
 #: openforms/registrations/contrib/zgw_apis/models.py:148
 #: openforms/registrations/contrib/zgw_apis/options.py:56
@@ -12317,34 +12326,30 @@ msgid "expiry date"
 msgstr "vervaldatum"
 
 #: openforms/submissions/models/cosign.py:39
-#, fuzzy
 #| msgid "Timestamp when the appointment details were created"
 msgid "Timestamp when the one-time password expires."
-msgstr "Tijdstip wanneer de afspraakdetails zijn gemaakt "
+msgstr "Tijdstip vanaf wanneer de toegangscode niet langer geldig is."
 
 #: openforms/submissions/models/cosign.py:43
-#, fuzzy
 #| msgid "Change password"
 msgid "Cosign one-time password"
-msgstr "Wachtwoord wijzigen"
+msgstr "Mede-ondertekentoegangscode"
 
 #: openforms/submissions/models/cosign.py:44
-#, fuzzy
 #| msgid "Change password"
 msgid "Cosign one-time passwords"
-msgstr "Wachtwoord wijzigen"
+msgstr "Mede-ondertekentoegangscodes"
 
 #: openforms/submissions/models/cosign.py:50
-#, fuzzy
 #| msgid "expired"
 msgid "(expired)"
-msgstr "vervallen"
+msgstr "(vervallen)"
 
 #: openforms/submissions/models/cosign.py:52
-#, fuzzy, python-brace-format
+#, python-brace-format
 #| msgid "Submission export"
 msgid "Submission {reference} {expired}"
-msgstr "Inzendingen-export"
+msgstr "Inzending {reference} {expired}"
 
 #: openforms/submissions/models/email_verification.py:49
 msgid "The submission during which the email verification was initiated."
@@ -13716,23 +13721,20 @@ msgid "The template must include the {uid} placeholder."
 msgstr "Het sjabloon moet verplicht de {uid} placeholder bevatten."
 
 #: openforms/utils/validators.py:179
-#, fuzzy
 #| msgid ""
 #| "The template may only consist of alphanumeric, /, ., _ and - characters."
 msgid "The template may only consist of alphanumeric characters."
-msgstr ""
-"Je mag enkel alfanumerieke karakters en de tekens '/', '-', '_' en '.' "
-"gebruiken."
+msgstr "Het sjabloon mag alleen uit alfanumerieke tekens bestaan."
 
 #: openforms/utils/validators.py:182
-#, fuzzy, python-brace-format
+#, python-brace-format
 #| msgid ""
 #| "The template may only consist of alphanumeric, /, ., _ and - characters."
 msgid ""
 "The template may only consist of alphanumeric{csv_chars} and {last_char} "
 "characters."
 msgstr ""
-"Je mag enkel alfanumerieke karakters en de tekens '/', '-', '_' en '.' "
+"Je mag enkel alfanumerieke karakters{csv_chars} en {last_char} tekens "
 "gebruiken."
 
 #: openforms/validations/api/serializers.py:13
@@ -15597,13 +15599,12 @@ msgid ""
 msgstr "Mag een inzending pas verwerkt worden nadat de betaling ontvangen is?"
 
 #: openforms/config/models/config.py:648
-#, fuzzy
 #| msgid "Public reference"
 msgid "Public reference template"
-msgstr "Publieke referentie"
+msgstr "Publiek referentiesjabloon"
 
 #: openforms/config/models/config.py:652
-#, fuzzy, python-brace-format
+#, python-brace-format
 #| msgid ""
 #| "Template to use when generating payment order IDs. It should be alpha-"
 #| "numerical and can contain the '/._-' characters. You can use the placeholder"
@@ -15613,16 +15614,15 @@ msgid ""
 "should be alpha-numerical and can contain the '/._-' characters. You can use"
 " the placeholder tokens: {year}, {uid}."
 msgstr ""
-"Sjabloon voor de generatie van unieke betalingsreferenties. Het sjabloon "
-"moet alfanumeriek zijn en mag de karakters '/._-' bevatten. De placeholder "
-"tokens {year}, {public_reference} en {uid} zijn beschikbaar. Het sjabloon "
-"moet de placeholder {uid} bevatten."
+"Sjabloon voor de generatie van de publieke referentie voor een inzending. "
+"Het sjabloon moet alfanumeriek zijn en mag de karakters '/._-' bevatten. De "
+"placeholder tokens {year} en {uid} zijn beschikbaar. Het sjabloon moet de "
+"placeholder {uid} bevatten."
 
 #: openforms/config/models/config.py:661
-#, fuzzy
 #| msgid "Public reference"
 msgid "Public reference alphabet"
-msgstr "Publieke referentie"
+msgstr "Publiek referentie-alfabet"
 
 #: openforms/config/models/config.py:665
 #, python-brace-format
@@ -15631,6 +15631,9 @@ msgid ""
 "submission. The sequence is shuffled in the unique way for each instance of "
 "Open Forms "
 msgstr ""
+"Alfabet dat wordt gebruikt om het {uid}-gedeelte van de publieke referentie "
+"van de inzending te genereren. Elke Open Formulieren-instantie heeft een "
+"unieke volgorde van het alfabet."
 
 #: openforms/config/models/config.py:673
 msgid "General configuration"

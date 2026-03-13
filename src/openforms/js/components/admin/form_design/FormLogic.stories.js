@@ -384,9 +384,11 @@ export const WithLogicRuleAnalysis = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    expect(await canvas.findByText('This rule will be executed on step(s): Step 1')).toBeVisible();
     expect(
-      await canvas.findByText('This rule will be executed on step(s): Step 1, Step 2')
+      await canvas.findByText('Deze regel wordt uitgevoerd in stap(pen): Step 1')
+    ).toBeVisible();
+    expect(
+      await canvas.findByText('Deze regel wordt uitgevoerd in stap(pen): Step 1, Step 2')
     ).toBeVisible();
   },
 };

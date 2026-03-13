@@ -2,6 +2,7 @@ import json
 from unittest.mock import patch
 
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
@@ -62,7 +63,7 @@ class JccRestAdminTests(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             error_texts[1],
-            "Required keys are missing: another.",
+            _("Required keys are missing: {keys}.").format(keys="another"),
         )
 
     @patch("openforms.appointments.contrib.jcc_rest.forms.CustomerFields")
@@ -86,9 +87,9 @@ class JccRestAdminTests(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             error_texts[1],
-            "Unknown component keys: another.",
+            _("Unknown component keys: {keys}.").format(keys="another"),
         )
         self.assertEqual(
             error_texts[2],
-            "Required keys are missing: initial.",
+            _("Required keys are missing: {keys}.").format(keys="initial"),
         )

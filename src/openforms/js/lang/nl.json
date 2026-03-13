@@ -20,7 +20,7 @@
     "originalDefault": "Optional ZGW configuration"
   },
   "+d6rRS": {
-    "defaultMessage": "This rule will be executed on step(s): {steps}",
+    "defaultMessage": "Deze regel wordt uitgevoerd in stap(pen): {steps}",
     "description": "Execute on step(s) label",
     "originalDefault": "This rule will be executed on step(s): {steps}"
   },
@@ -1874,7 +1874,7 @@
     "originalDefault": "the path should not have a leading slash"
   },
   "TPy506": {
-    "defaultMessage": "Enable new logic rule evaluation",
+    "defaultMessage": "Gebruik nieuwe logica-evaluatie",
     "description": "New logic rule evaluation feature flag label",
     "originalDefault": "Enable new logic rule evaluation"
   },
@@ -2955,7 +2955,7 @@
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
   },
   "lyU7fP": {
-    "defaultMessage": "Enabling this will analyze logic rules and re-order them according to their dependency on other logic rules (happens when the form is saved). Each rule will be automatically assigned to one or more steps on which it will be executed.",
+    "defaultMessage": "Als je dit inschakelt, dan wordt de formulierlogica geanalyseerd en automatisch gesorteerd op basis van hun onderlinge afhankelijkheden (dit gebeurt wanneer je het formulier opslaat). Elke regel wordt automatisch toegewezen aan een of meer stappen waarop deze zal worden uitgevoerd. Daarnaast zullen ook andere snelheidsverbeteringen toegepast worden waar mogelijk.",
     "description": "New logic rule evaluation feature flag help text",
     "originalDefault": "Enabling this will analyze logic rules and re-order them according to their dependency on other logic rules (happens when the form is saved). Each rule will be automatically assigned to one or more steps on which it will be executed."
   },
