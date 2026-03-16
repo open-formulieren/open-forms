@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import uuid as _uuid
-from collections.abc import Collection
+from collections.abc import Collection, Iterator
+from typing import TYPE_CHECKING
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -10,6 +13,9 @@ from ordered_model.models import OrderedModel
 from openforms.forms.models import FormStep
 from openforms.utils.json_logic import introspect_json_logic
 from openforms.variables.service import resolve_key
+
+if TYPE_CHECKING:
+    from openforms.submissions.logic.actions import ActionOperation, PropertyAction
 
 
 class FormLogic(OrderedModel):
@@ -85,7 +91,7 @@ class FormLogic(OrderedModel):
             )
 
     @property
-    def action_operations(self):
+    def action_operations(self) -> Iterator[ActionOperation]:
         from openforms.submissions.logic.actions import compile_action_operation
 
         for action in map(compile_action_operation, self.actions):
@@ -93,7 +99,7 @@ class FormLogic(OrderedModel):
             yield action
 
     @property
-    def hidden_actions(self):
+    def hidden_actions(self) -> Iterator[PropertyAction]:
         """Generator which yields actions that change the "hidden" property."""
         from openforms.submissions.logic.actions import PropertyAction
 
