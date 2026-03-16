@@ -6,6 +6,18 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.14 (2026-03-16)
+==================
+
+Bugfix release.
+
+* [:backend:`6068`] Fixed an issue where attachments would sometimes not be uploaded,
+  depending on the exact logic rule expression used.
+* [:backend:`5701`] Fixed a crash in the form designer when removing a selectboxes
+  component from the form while an Objects API (legacy config) registration backend is
+  used.
+* Updated the PyJWT and Tornado dependencies.
+
 3.3.13 (2026-03-10)
 ===================
 
