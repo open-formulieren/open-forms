@@ -40,7 +40,7 @@ class ValidatePrefillData:
         )
         evaluate_form_logic(instance.submission, step=instance, unsaved_data=None)
 
-        prefilled_data = state.get_prefilled_data()
+        prefilled_data = instance.submission.get_prefilled_data()
 
         errors = {}
         for component in instance.form_step.iter_components():
