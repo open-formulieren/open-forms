@@ -479,7 +479,7 @@ pydantic-settings==2.6.1
     # via django-setup-configuration
 pydyf==0.8.0
     # via weasyprint
-pyjwt==2.6.0
+pyjwt==2.12.1
     # via zgw-consumers
 pyopenssl==25.0.0
     # via
@@ -619,7 +619,7 @@ tinycss2==1.1.0
     #   bleach
     #   cssselect2
     #   weasyprint
-tornado==6.5
+tornado==6.5.5
     # via flower
 tqdm==4.67.1
     # via -r requirements/base.in
