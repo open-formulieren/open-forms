@@ -11109,9 +11109,14 @@ components:
           description: An easily recognizable name for the theme, used to identify
             it.
           maxLength: 100
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
       required:
       - name
       - url
+      - uuid
     Time:
       type: object
       properties:
