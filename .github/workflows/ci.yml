@@ -35,7 +35,7 @@ jobs:
       sdk-version: ${{ steps.sdk-vars.outputs.sdk-version }}
       sdk-ref: ${{ steps.sdk-vars.outputs.sdk-ref }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set output with default values
         id: envars-to-outputs
         run: |
@@ -67,7 +67,9 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
       - name: Set up backend environment
         uses: ./.github/actions/setup-backend
 
@@ -146,7 +148,9 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
       - name: Set up backend environment
         uses: ./.github/actions/setup-backend
 
@@ -191,7 +195,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: open-formulieren/actions/check-message-extraction@v1
         with:
           paths: src/openforms/js/{compiled-lang,lang}
@@ -236,7 +240,7 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up backend environment
         uses: ./.github/actions/setup-backend
 
@@ -285,7 +289,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           path: open-forms
 
@@ -297,7 +301,7 @@ jobs:
           working-directory: 'open-forms'
 
       - name: Checkout SDK repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: 'open-formulieren/open-forms-sdk'
           ref: ${{ needs.setup.outputs.sdk-ref }}
@@ -348,7 +352,7 @@ jobs:
     steps:
       # So the scanner gets commit meta-information
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download built image
         uses: actions/download-artifact@v4
@@ -387,7 +391,7 @@ jobs:
           - '3.3.9'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Download built image
         uses: actions/download-artifact@v4
         with:
@@ -460,7 +464,7 @@ jobs:
             image-tag-prefix: 'all-extensions-'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Download built image
         uses: actions/download-artifact@v4

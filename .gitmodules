@@ -1,0 +1,3 @@
+[submodule "org-dotgithub"]
+	path = org-dotgithub
+	url = git@github.com:open-formulieren/.github.git
