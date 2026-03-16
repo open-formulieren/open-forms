@@ -177,3 +177,16 @@ class FormLogic(OrderedModel):
         return {
             key for key in raw_output_keys if key in self.form.all_form_variable_keys
         }
+
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        """
+        Indicate whether this rule contains any actions that require the backend for
+        logic evaluation.
+
+        :return: ``True`` if any action requires backend, ``False`` otherwise.
+        """
+        return any(
+            action.is_backend_logic_evaluation_required
+            for action in self.action_operations
+        )
