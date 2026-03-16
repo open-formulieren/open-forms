@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Literal
 
 from django.utils.translation import gettext_lazy as _
@@ -7,6 +8,7 @@ from rest_framework.serializers import JSONField
 
 from openforms.formio.service import FormioData
 from openforms.forms.models import Form
+from openforms.submissions.form_logic import evaluate_form_logic
 
 from ..exceptions import FormMaintenance
 from ..models import SubmissionStep
@@ -19,8 +21,25 @@ class ValidatePrefillData:
 
     def __call__(self, data: FormioData, field: JSONField):
         instance: SubmissionStep = field.parent.instance
-        assert instance._form_logic_evaluated, "Logic must be evaluated"
+
+        # ensure that backend logic is evaluated, which may alter the formio component
+        # validation rules. The formio configuration and state are mutated as a side
+        # effect. To prevent using an incorrect configuration and/or state later, we
+        # need to make sure to reset them to the initial state after validating prefill
+        # data.
+        # NOTE - we deliberately *don't* pass the client-side ``data`` here for the
+        # logic evaluated, as it is untrusted and unvalidated input. This assumes that
+        # static variables are used to flip components to readonly/disabled state. If
+        # user input is used to perform this flip, the end-user can manipulate this
+        # value too and force the logic evaluation to mark the component as not
+        # readonly, which beats the point of performing this check.
         state = instance.submission.load_submission_value_variables_state()
+        original_data = state.get_data(include_unsaved=True)
+        original_configuration = deepcopy(
+            instance.form_step.form_definition.configuration
+        )
+        evaluate_form_logic(instance.submission, step=instance, unsaved_data=None)
+
         prefilled_data = state.get_prefilled_data()
 
         errors = {}
@@ -59,6 +78,12 @@ class ValidatePrefillData:
 
         if errors:
             raise serializers.ValidationError(errors)
+
+        # Reset the configuration and data to the state from before validating prefill.
+        state.set_values(original_data)
+        instance.form_step.form_definition.configuration = original_configuration
+        instance._form_logic_evaluated = False
+        del instance.form_step.form_definition.configuration_wrapper
 
 
 class FormMaintenanceModeValidator:
