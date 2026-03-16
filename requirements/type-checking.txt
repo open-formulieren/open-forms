@@ -545,7 +545,7 @@ greenlet==3.3.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   playwright
-grpcio==1.78.1
+grpcio==1.78.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -943,7 +943,7 @@ pygments==2.19.2
     #   rich
     #   sphinx
     #   sphinx-tabs
-pyjwt==2.11.0
+pyjwt==2.12.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1244,7 +1244,7 @@ tinyhtml5==2.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
-tornado==6.5.4
+tornado==6.5.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

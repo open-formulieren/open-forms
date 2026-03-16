@@ -477,7 +477,7 @@ googleapis-common-protos==1.72.0
     #   -r requirements/base.txt
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-grpcio==1.78.1
+grpcio==1.78.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -845,7 +845,7 @@ pygments==2.19.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   rich
-pyjwt==2.11.0
+pyjwt==2.12.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1049,7 +1049,7 @@ tinyhtml5==2.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   weasyprint
-tornado==6.5.4
+tornado==6.5.5
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

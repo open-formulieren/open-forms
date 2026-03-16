@@ -297,7 +297,7 @@ googleapis-common-protos==1.72.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-grpcio==1.78.1
+grpcio==1.78.0
     # via opentelemetry-exporter-otlp-proto-grpc
 humanize==4.15.0
     # via flower
@@ -509,7 +509,7 @@ pydyf==0.12.1
     # via weasyprint
 pygments==2.19.2
     # via rich
-pyjwt==2.11.0
+pyjwt==2.12.1
     # via
     #   msal
     #   zgw-consumers
@@ -636,7 +636,7 @@ tinycss2==1.5.1
     #   weasyprint
 tinyhtml5==2.0.0
     # via weasyprint
-tornado==6.5.4
+tornado==6.5.5
     # via flower
 tqdm==4.67.3
     # via -r requirements/base.in
