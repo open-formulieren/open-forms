@@ -959,7 +959,7 @@ pygments==2.17.2
     #   rich
     #   sphinx
     #   sphinx-tabs
-pyjwt==2.6.0
+pyjwt==2.12.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1292,7 +1292,7 @@ toml==0.10.2
     # via autopep8
 tomlkit==0.13.2
     # via bump-my-version
-tornado==6.5
+tornado==6.5.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
