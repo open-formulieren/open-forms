@@ -29,6 +29,7 @@ author = openforms.__author__
 # The full version, including alpha/beta/rc tags
 release = openforms.__version__
 
+readthedocs_version = os.environ.get("READTHEDOCS_VERSION", "")
 
 # -- General configuration ---------------------------------------------------
 
@@ -40,6 +41,7 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinx.ext.todo",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.ifconfig",
     "sphinx_tabs.tabs",
     "sphinxcontrib.mermaid",
     "django_setup_configuration.documentation.setup_config_example",
@@ -144,3 +146,7 @@ extlinks = {
         "%s",
     ),
 }
+
+
+def setup(app):
+    app.add_config_value("readthedocs_version", "", "env")

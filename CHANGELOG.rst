@@ -6,6 +6,14 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+.. ifconfig:: readthedocs_version != "latest"
+
+    .. tip::
+
+        For the changelog of **all** versions, see the
+        `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
+        version.
+
 3.3.14 (2026-03-16)
 ==================
 
