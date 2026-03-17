@@ -27,7 +27,6 @@ from openforms.formio.service import FormioData, build_serializer
 from openforms.formio.utils import iter_components
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.constants import SubmissionAllowedChoices
-from openforms.forms.models import FormStep
 from openforms.forms.validators import validate_not_deleted
 from openforms.utils.urls import build_absolute_uri
 
@@ -211,36 +210,8 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer[Submission]):
         return super().to_representation(instance)
 
 
-class ContextAwareFormStepSerializer(serializers.ModelSerializer):
-    configuration = serializers.SerializerMethodField()
-
-    class Meta:
-        model = FormStep
-        fields = ("index", "configuration")
-        extra_kwargs = {
-            "index": {"source": "order"},
-        }
-
-    @tracer.start_as_current_span(
-        name="get-configuration",
-        attributes={
-            "span.type": "app",
-            "span.subtype": "api",
-            "span.action": "serialization",
-        },
-    )
-    @elasticapm.capture_span(span_type="app.api.serialization")
-    def get_configuration(self, instance) -> dict:
-        submission = self.root.instance.submission
-        serializer = FormDefinitionSerializer(
-            instance=instance.form_definition,
-            context={**self.context, "submission": submission},
-        )
-        return serializer.data["configuration"]
-
-
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
-    form_step = ContextAwareFormStepSerializer(read_only=True)
+    configuration = serializers.SerializerMethodField()
     slug = serializers.SlugField(source="form_step.slug", read_only=True)
     data = FormioDataField(  # type: ignore
         label=_("data"),
@@ -260,11 +231,11 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         fields = (
             "id",
             "slug",
-            "form_step",
             "data",
             "is_applicable",
             "completed",
             "can_submit",
+            "configuration",
         )
 
         extra_kwargs = {
@@ -311,6 +282,21 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         representation["data"] = serialized_data.data
 
         return representation
+
+    @tracer.start_as_current_span(
+        name="get-configuration",
+        attributes={
+            "span.type": "app",
+            "span.subtype": "api",
+            "span.action": "serialization",
+        },
+    )
+    @elasticapm.capture_span(span_type="app.api.serialization")
+    def get_configuration(self, instance) -> dict:
+        serializer = FormDefinitionSerializer(
+            instance=instance.form_step.form_definition, context=self.context
+        )
+        return serializer.data["configuration"]
 
     def validate_data(self, data: FormioData):
         self._run_formio_validation(data)

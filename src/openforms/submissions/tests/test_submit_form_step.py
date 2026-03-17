@@ -74,11 +74,8 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             {
                 "id": str(submission_step.uuid),
                 "slug": self.step1.slug,
-                "formStep": {
-                    "index": 0,
-                    "configuration": {
-                        "components": [{"type": "textfield", "key": "test-key"}]
-                    },
+                "configuration": {
+                    "components": [{"type": "textfield", "key": "test-key"}]
                 },
                 "data": {
                     "test-key": "example data",
@@ -183,14 +180,11 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             {
                 "id": str(submission_step.uuid),
                 "slug": step2.slug,
-                "formStep": {
-                    "index": 1,
-                    "configuration": {
-                        "components": [
-                            {"key": "foo", "type": "textfield"},
-                            {"key": "modified", "type": "textfield"},
-                        ]
-                    },
+                "configuration": {
+                    "components": [
+                        {"key": "foo", "type": "textfield"},
+                        {"key": "modified", "type": "textfield"},
+                    ]
                 },
                 "data": {"modified": "data", "foo": "bar"},
                 "isApplicable": True,
@@ -316,13 +310,10 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             {
                 "id": str(submission_step.uuid),
                 "slug": step.slug,
-                "formStep": {
-                    "index": 0,
-                    "configuration": {
-                        "components": [
-                            {"key": "nested.key", "type": "textfield"},
-                        ]
-                    },
+                "configuration": {
+                    "components": [
+                        {"key": "nested.key", "type": "textfield"},
+                    ]
                 },
                 "data": {"nested": {"key": "some data"}},
                 "isApplicable": True,

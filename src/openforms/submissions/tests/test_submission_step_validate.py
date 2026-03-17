@@ -511,7 +511,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(
             "invalid_time",
-            response.json()["formStep"]["configuration"]["components"][0]["errors"],
+            response.json()["configuration"]["components"][0]["errors"],
         )
 
     @tag("gh-4143")
@@ -632,7 +632,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         with self.subTest("check valid configuration items expression"):
             resp = self.client.get(endpoint)
 
-            values = resp.json()["formStep"]["configuration"]["components"][0]["values"]
+            values = resp.json()["configuration"]["components"][0]["values"]
             self.assertEqual(len(values), 5)
 
         with self.subTest("valid data"):

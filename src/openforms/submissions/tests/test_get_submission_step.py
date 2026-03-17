@@ -91,23 +91,20 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         expected = {
             "id": None,  # there is no submission step created yet
             "slug": self.step.slug,
-            "formStep": {
-                "index": 0,
-                "configuration": {
-                    "components": [
-                        {
-                            "label": "Some field",
-                            "key": "someField",
-                            "type": "textfield",
-                        },
-                        {
-                            "label": "Other field",
-                            "key": "otherField",
-                            "type": "selectboxes",
-                            "inputType": "checkbox",
-                        },
-                    ]
-                },
+            "configuration": {
+                "components": [
+                    {
+                        "label": "Some field",
+                        "key": "someField",
+                        "type": "textfield",
+                    },
+                    {
+                        "label": "Other field",
+                        "key": "otherField",
+                        "type": "selectboxes",
+                        "inputType": "checkbox",
+                    },
+                ]
             },
             "data": {},
             "isApplicable": True,
@@ -137,23 +134,20 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         expected = {
             "id": None,  # there is no submission step created yet
             "slug": self.step.slug,
-            "formStep": {
-                "index": 0,
-                "configuration": {
-                    "components": [
-                        {
-                            "label": "Rewritten label",
-                            "key": "someField",
-                            "type": "textfield",
-                        },
-                        {
-                            "label": "Other field",
-                            "type": "selectboxes",
-                            "key": "otherField",
-                            "inputType": "checkbox",
-                        },
-                    ]
-                },
+            "configuration": {
+                "components": [
+                    {
+                        "label": "Rewritten label",
+                        "key": "someField",
+                        "type": "textfield",
+                    },
+                    {
+                        "label": "Other field",
+                        "type": "selectboxes",
+                        "key": "otherField",
+                        "inputType": "checkbox",
+                    },
+                ]
             },
             "data": {},
             "isApplicable": True,
@@ -226,7 +220,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
-        component = data["formStep"]["configuration"]["components"][0]
+        component = data["configuration"]["components"][0]
         self.assertEqual(component["key"], "file")
         self.assertEqual(component["type"], "file")
         self.assertEqual(component["url"], "http://testserver/api/v2/formio/fileupload")
@@ -416,9 +410,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             },
         )
 
-        textfield = self.client.get(endpoint).json()["formStep"]["configuration"][
-            "components"
-        ][0]
+        textfield = self.client.get(endpoint).json()["configuration"]["components"][0]
 
         self.assertEqual(textfield["key"], "bar")
         self.assertEqual(textfield["label"], "Kneipe")
@@ -519,7 +511,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             },
         )
 
-        configuration = self.client.get(endpoint).json()["formStep"]["configuration"]
+        configuration = self.client.get(endpoint).json()["configuration"]
 
         wrapped_configuration = FormioConfigurationWrapper(configuration)
         expected = {
@@ -605,7 +597,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        date2 = response.json()["formStep"]["configuration"]["components"][1]
+        date2 = response.json()["configuration"]["components"][1]
 
         self.assertEqual(date2["datePicker"]["minDate"], "2022-09-20T00:00:00+02:00")
         self.assertEqual(date2["datePicker"]["maxDate"], "2022-12-31T00:00:00+01:00")
@@ -654,7 +646,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        date2 = response.json()["formStep"]["configuration"]["components"][1]
+        date2 = response.json()["configuration"]["components"][1]
 
         self.assertEqual(date2["datePicker"]["minDate"], "2022-09-20T00:00:00+02:00")
 
@@ -737,7 +729,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        components = response.data["form_step"]["configuration"]["components"]
+        components = response.data["configuration"]["components"]
         expected = [
             {
                 "type": "textfield",
