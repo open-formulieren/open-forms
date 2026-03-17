@@ -1223,3 +1223,45 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         )
         # Logic rule should be triggered
         self.assertEqual(step_data["canSubmit"], False)
+
+    def test_step_data_with_new_logic_evaluation_flag_enabled(self):
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"}
+                ]
+            },
+        )
+        rule = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "textfield"}, "foo"]},
+            actions=[
+                {
+                    "form_step_uuid": str(step.uuid),
+                    "action": {
+                        "name": "Disable next",
+                        "type": "disable-next",
+                    },
+                }
+            ],
+        )
+        rule.form_steps.set([step])
+
+        submission = SubmissionFactory.create(form=form)
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+
+        # Perform logic check
+        response = self.client.post(endpoint, data={"data": {"textfield": "foo"}})
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        step_data = response.json()["step"]
+        # Ensure some data is not serialized: default configuration and logic rules are
+        # not relevant in the context of the check-logic call.
+        self.assertIsNone(step_data["defaultConfiguration"])
+        self.assertEqual([], step_data["logicRules"])

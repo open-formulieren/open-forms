@@ -4,9 +4,11 @@ from .form_definition import FormDefinitionDetailSerializer, FormDefinitionSeria
 from .form_step import FormStepLiteralsSerializer, FormStepSerializer
 from .form_variable import FormVariableListSerializer, FormVariableSerializer
 from .form_version import FormVersionSerializer
+from .logic.action_serializers import LogicComponentActionSerializer
 from .logic.form_logic import FormLogicSerializer
 
 __all__ = [
+    "LogicComponentActionSerializer",
     "FormLogicSerializer",
     "FormSerializer",
     "FormExportSerializer",

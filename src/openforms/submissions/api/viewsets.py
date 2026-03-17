@@ -725,7 +725,7 @@ class SubmissionStepViewSet(
             context={
                 "request": request,
                 "current_step": submission_step,
-                "unsaved_data_only": True,
+                "in_form_logic_evaluation": True,
             },
         )
         return Response(submission_state_logic_serializer.data)

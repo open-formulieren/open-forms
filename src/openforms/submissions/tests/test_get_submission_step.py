@@ -13,7 +13,9 @@ import uuid
 from unittest.mock import patch
 
 from django.test import tag
+from django.utils.translation import gettext_lazy as _
 
+from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -27,9 +29,11 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 from openforms.variables.constants import FormVariableDataTypes
 
+from ...config.models import GlobalConfiguration
 from ..models import Submission
 from .factories import (
     SubmissionFactory,
@@ -40,6 +44,8 @@ from .mixins import SubmissionsMixin
 
 
 class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
+    maxDiff = None
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -56,7 +62,6 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                     "label": "Other field",
                     "key": "otherField",
                     "type": "selectboxes",
-                    "inputType": "checkbox",
                 },
             ]
         }
@@ -90,7 +95,22 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = {
             "id": None,  # there is no submission step created yet
+            "formStepUuid": str(self.step.uuid),
             "slug": self.step.slug,
+            "defaultConfiguration": {
+                "components": [
+                    {
+                        "label": "Some field",
+                        "key": "someField",
+                        "type": "textfield",
+                    },
+                    {
+                        "label": "Other field",
+                        "key": "otherField",
+                        "type": "selectboxes",
+                    },
+                ]
+            },
             "configuration": {
                 "components": [
                     {
@@ -102,7 +122,6 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                         "label": "Other field",
                         "key": "otherField",
                         "type": "selectboxes",
-                        "inputType": "checkbox",
                     },
                 ]
             },
@@ -110,6 +129,8 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "isApplicable": True,
             "completed": False,
             "canSubmit": True,
+            "requireBackendLogicEvaluation": True,
+            "logicRules": [],
         }
         self.assertEqual(response.json(), expected)
 
@@ -133,7 +154,22 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = {
             "id": None,  # there is no submission step created yet
+            "formStepUuid": str(self.step.uuid),
             "slug": self.step.slug,
+            "defaultConfiguration": {
+                "components": [
+                    {
+                        "label": "Some field",
+                        "key": "someField",
+                        "type": "textfield",
+                    },
+                    {
+                        "label": "Other field",
+                        "key": "otherField",
+                        "type": "selectboxes",
+                    },
+                ]
+            },
             "configuration": {
                 "components": [
                     {
@@ -143,9 +179,8 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                     },
                     {
                         "label": "Other field",
-                        "type": "selectboxes",
                         "key": "otherField",
-                        "inputType": "checkbox",
+                        "type": "selectboxes",
                     },
                 ]
             },
@@ -153,6 +188,8 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "isApplicable": True,
             "completed": False,
             "canSubmit": True,
+            "requireBackendLogicEvaluation": True,
+            "logicRules": [],
         }
         self.assertEqual(response.json(), expected)
 
@@ -227,6 +264,8 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
 
 
 class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
+    maxDiff = None
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -389,6 +428,8 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
     """
     Integration tests where various subsystems come together.
     """
+
+    maxDiff = None
 
     def test_it_only_translates_appropriate_string_properties(self):
         submission = SubmissionFactory.from_data(
@@ -787,3 +828,496 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             response.json()["data"],
             {"date": "", "time": "", "datetime": ""},
         )
+
+    @patch(
+        "openforms.formio.components.vanilla.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            form_upload_default_file_types=["image/png", "application/pdf"]
+        ),
+    )
+    def test_default_configuration_has_components_rewritten_for_request(
+        self, m_get_solo
+    ):
+        step = FormStepFactory.create(
+            form__new_logic_evaluation_enabled=True,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "file",
+                        "label": "File",
+                        "useConfigFiletypes": True,
+                        "filePattern": "*",
+                        "url": "",
+                        "file": {"allowedTypesLabels": []},
+                    }
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(form=step.form)
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "type": "file",
+            "key": "file",
+            "label": "File",
+            "useConfigFiletypes": True,
+            "filePattern": "image/png,application/pdf",
+            "url": "http://testserver/api/v2/formio/fileupload",
+            "file": {"allowedTypesLabels": [".png", ".pdf"]},
+        }
+        self.assertEqual(
+            expected, response.json()["defaultConfiguration"]["components"][0]
+        )
+
+    def test_without_logic_rules_and_without_dynamic_configuration(self):
+        step = FormStepFactory.create(
+            form__new_logic_evaluation_enabled=True,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"}
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=step.form)
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "id": None,  # there is no submission step created yet
+            "formStepUuid": str(step.uuid),
+            "slug": step.slug,
+            "defaultConfiguration": {
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                ]
+            },
+            "configuration": {
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                ]
+            },
+            "data": {},
+            "isApplicable": True,
+            "completed": False,
+            "canSubmit": True,
+            "requireBackendLogicEvaluation": False,
+            "logicRules": [],
+        }
+        self.assertEqual(expected, response.json())
+
+    def test_without_logic_rules_but_with_dynamic_configuration(self):
+        step = FormStepFactory.create(
+            form__new_logic_evaluation_enabled=True,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "{{ foo }}"}
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=step.form,
+            key="foo",
+            data_type=FormVariableDataTypes.string,
+            user_defined=True,
+            initial_value="I am a label!",
+        )
+
+        submission = SubmissionFactory.create(form=step.form)
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "id": None,  # there is no submission step created yet
+            "formStepUuid": str(step.uuid),
+            "slug": step.slug,
+            "defaultConfiguration": {
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "{{ foo }}"},
+                ]
+            },
+            "configuration": {
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "I am a label!"},
+                ]
+            },
+            "data": {},
+            "isApplicable": True,
+            "completed": False,
+            "canSubmit": True,
+            "requireBackendLogicEvaluation": True,
+            "logicRules": [],
+        }
+        self.assertEqual(expected, response.json())
+
+    @freeze_time("2026-03-18")
+    def test_with_logic_rule_that_does_not_require_backend(self):
+        step = FormStepFactory.create(
+            form__new_logic_evaluation_enabled=True,
+            form_definition__configuration={
+                "components": [
+                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                ]
+            },
+        )
+        rule = FormLogicFactory.create(
+            form=step.form,
+            json_logic_trigger={"==": [{"var": "dateOfBirth"}, {"var": "today"}]},
+            actions=[
+                {
+                    "action": {
+                        "type": "variable",
+                        "value": "foo",
+                    },
+                    "variable": "textfield",
+                    "uuid": "3798727a-ae54-4661-93ad-37d873c4d5fc",
+                }
+            ],
+        )
+        # This step will be assigned during logic rule analysis, because the action
+        # affects the "textfield" variable on the first (and only) step.
+        rule.form_steps.set([step])
+
+        submission = SubmissionFactory.create(form=step.form)
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "id": None,  # there is no submission step created yet
+            "formStepUuid": str(step.uuid),
+            "slug": step.slug,
+            "defaultConfiguration": {
+                "components": [
+                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                ]
+            },
+            "configuration": {
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "dateOfBirth",
+                        "label": "Date of birth",
+                        "placeholder": _("dd-mm-yyyy"),
+                    },
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                ]
+            },
+            "data": {},
+            "isApplicable": True,
+            "completed": False,
+            "canSubmit": True,
+            "requireBackendLogicEvaluation": False,
+            "logicRules": [
+                {
+                    # Note the partially evaluated rule with added data-type
+                    # information.
+                    "jsonLogicTrigger": {
+                        "==": [
+                            {"date": [{"var": ["dateOfBirth"]}]},
+                            {"date": ["2026-03-18"]},
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "uuid": "3798727a-ae54-4661-93ad-37d873c4d5fc",
+                            "formStepUuid": None,
+                            "action": {"type": "variable", "value": "foo"},
+                            "variable": "textfield",
+                        }
+                    ],
+                }
+            ],
+        }
+        self.assertEqual(expected, response.json())
+
+    def test_with_logic_rule_that_does_not_require_backend_but_with_dynamic_configuration(
+        self,
+    ):
+        step = FormStepFactory.create(
+            form__new_logic_evaluation_enabled=True,
+            form_definition__configuration={
+                "components": [
+                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
+                    {"type": "textfield", "key": "textfield", "label": "{{ foo }}"},
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=step.form,
+            key="foo",
+            data_type=FormVariableDataTypes.string,
+            user_defined=True,
+            initial_value="I am a label!",
+        )
+        rule = FormLogicFactory.create(
+            form=step.form,
+            json_logic_trigger={"==": [{"var": "dateOfBirth"}, {"var": "today"}]},
+            actions=[
+                {
+                    "action": {
+                        "type": "variable",
+                        "value": "foo",
+                    },
+                    "variable": "textfield",
+                    "uuid": "3798727a-ae54-4661-93ad-37d873c4d5fc",
+                }
+            ],
+        )
+        # This step will be assigned during logic rule analysis, because the action
+        # affects the "textfield" variable on the first (and only) step.
+        rule.form_steps.set([step])
+
+        submission = SubmissionFactory.create(form=step.form)
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "id": None,  # there is no submission step created yet
+            "formStepUuid": str(step.uuid),
+            "slug": step.slug,
+            "defaultConfiguration": {
+                "components": [
+                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
+                    {"type": "textfield", "key": "textfield", "label": "{{ foo }}"},
+                ]
+            },
+            "configuration": {
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "dateOfBirth",
+                        "label": "Date of birth",
+                        "placeholder": _("dd-mm-yyyy"),
+                    },
+                    {"type": "textfield", "key": "textfield", "label": "I am a label!"},
+                ]
+            },
+            "data": {},
+            "isApplicable": True,
+            "completed": False,
+            "canSubmit": True,
+            "requireBackendLogicEvaluation": True,
+            "logicRules": [],  # logic rules are not serialized when the backend is required
+        }
+        self.assertEqual(expected, response.json())
+
+    def test_with_logic_rule_that_requires_backend(self):
+        step = FormStepFactory.create(
+            form__new_logic_evaluation_enabled=True,
+            form_definition__configuration={
+                "components": [
+                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=step.form,
+            key="foo",
+            data_type=FormVariableDataTypes.string,
+            user_defined=True,
+            initial_value="",
+        )
+        # Note that user-defined variables cannot be set in the frontend
+        rule = FormLogicFactory.create(
+            form=step.form,
+            json_logic_trigger={"==": [{"var": "dateOfBirth"}, {"var": "today"}]},
+            actions=[
+                {
+                    "action": {
+                        "type": "variable",
+                        "value": "bar",
+                    },
+                    "variable": "foo",
+                    "uuid": "3798727a-ae54-4661-93ad-37d873c4d5fc",
+                }
+            ],
+        )
+        # This step will be assigned during logic rule analysis, because the action sets
+        # a user-defined variable -> the first (and only) step is assigned.
+        rule.form_steps.set([step])
+
+        submission = SubmissionFactory.create(form=step.form)
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "id": None,  # there is no submission step created yet
+            "formStepUuid": str(step.uuid),
+            "slug": step.slug,
+            "defaultConfiguration": {
+                "components": [
+                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                ]
+            },
+            "configuration": {
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "dateOfBirth",
+                        "label": "Date of birth",
+                        "placeholder": _("dd-mm-yyyy"),
+                    },
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                ]
+            },
+            "data": {},
+            "isApplicable": True,
+            "completed": False,
+            "canSubmit": True,
+            "requireBackendLogicEvaluation": True,
+            "logicRules": [],  # logic rules are not serialized when the backend is required
+        }
+        self.assertEqual(expected, response.json())
+
+    @freeze_time("2026-03-18")
+    def test_logic_rule_is_serialized_properly(self):
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
+        step_1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "number", "key": "number", "label": "Number"},
+                ]
+            },
+        )
+        step_2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
+                    {
+                        "type": "content",
+                        "key": "content",
+                        "html": "I am some content!",
+                        "hidden": False,
+                    },
+                ]
+            },
+        )
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="foo",
+            data_type=FormVariableDataTypes.string,
+            user_defined=True,
+            initial_value="",
+        )
+        rule = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "and": [
+                    {"==": [{"var": "number"}, 42]},
+                    {"==": [{"var": "dateOfBirth"}, {"var": "today"}]},
+                    # This is a weird trigger because a field from a future step (3)
+                    # affects something on the current step (2), but it demonstrates the
+                    # principle of partial evaluation with unsaved variables.
+                    {"==": [{"var": "textfield"}, ""]},
+                ]
+            },
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": False,
+                    },
+                    "component": "content",
+                    "uuid": "3798727a-ae54-4661-93ad-37d873c4d5fc",
+                }
+            ],
+        )
+        # This step will be assigned during logic rule analysis, because the action
+        # affects the "content" component on step 2.
+        rule.form_steps.set([step_2])
+
+        # Simulate submitting step 1
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step_1,
+            data={"number": 42},
+        )
+
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step_2.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        expected = {
+            "jsonLogicTrigger": {
+                "and": [
+                    # {"==": [{"var": "number"}, 42]} evaluates to True with the already submitted data
+                    True,
+                    # data-type information is added and static variables are substituted
+                    {
+                        "==": [
+                            {"date": [{"var": ["dateOfBirth"]}]},
+                            {"date": ["2026-03-18"]},
+                        ]
+                    },
+                    # {"==": [{"var": "textfield"}, ""]} evaluates to True with the empty value
+                    True,
+                ]
+            },
+            "actions": [
+                {
+                    "action": {
+                        "property": {"type": "bool", "value": "hidden"},
+                        "state": False,
+                        "type": "property",
+                    },
+                    "component": "content",
+                    "formStepUuid": None,
+                    "uuid": "3798727a-ae54-4661-93ad-37d873c4d5fc",
+                }
+            ],
+        }
+        data = response.json()
+        self.assertFalse(data["requireBackendLogicEvaluation"])
+        self.assertEqual(expected, data["logicRules"][0])
