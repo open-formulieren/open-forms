@@ -897,7 +897,7 @@ pyjwt==2.12.1
     #   -r requirements/base.txt
     #   msal
     #   zgw-consumers
-pyopenssl==25.3.0
+pyopenssl==26.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

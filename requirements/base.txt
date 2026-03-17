@@ -513,7 +513,7 @@ pyjwt==2.12.1
     # via
     #   msal
     #   zgw-consumers
-pyopenssl==25.3.0
+pyopenssl==26.0.0
     # via webauthn
 pyphen==0.17.2
     # via weasyprint
