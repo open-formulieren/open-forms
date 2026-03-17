@@ -33,7 +33,7 @@ class PrivacyPolicyInfoSerializer(serializers.Serializer):
 class ThemeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = Theme
-        fields = ("url", "name")
+        fields = ("url", "name", "uuid")
         extra_kwargs = {
             "url": {
                 "view_name": "api:themes-detail",

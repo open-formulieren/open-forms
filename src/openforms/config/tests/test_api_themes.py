@@ -65,6 +65,7 @@ class ThemesAPITests(APITestCase):
             data,
             {
                 "url": f"http://testserver{url}",
+                "uuid": str(theme.uuid),
                 "name": "A team",
             },
         )
@@ -81,6 +82,7 @@ class ThemesAPITests(APITestCase):
         self.assertEqual(len(data), 5)
         self.assertIsInstance(data, list)  # no pagination dict
         self.assertIn("url", data[0])
+        self.assertIn("uuid", data[0])
         self.assertIn("name", data[0])
 
     def test_create_form_with_theme(self):
