@@ -237,8 +237,11 @@ class EmailRegistration(BasePlugin[Options]):
 
     def update_payment_status(self, submission: "Submission", options: Options):
         recipients = options.get("payment_emails")
+        config = GlobalConfiguration.get_solo()
 
-        if not recipients:
+        if config.wait_for_payment_to_register and not recipients:
+            return
+        elif not recipients:
             recipients = self.get_recipients(submission, options)
 
         order_ids = submission.payments.get_completed_public_order_ids()
