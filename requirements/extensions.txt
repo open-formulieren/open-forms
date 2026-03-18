@@ -804,7 +804,7 @@ psycopg==3.3.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-pyasn1==0.6.2
+pyasn1==0.6.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

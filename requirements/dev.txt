@@ -912,7 +912,7 @@ psycopg==3.3.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-pyasn1==0.6.2
+pyasn1==0.6.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
