@@ -1,5 +1,3 @@
-from django.utils.translation import gettext_lazy as _
-
 from drf_spectacular.openapi import AutoSchema as _AutoSchema
 from drf_spectacular.plumbing import force_instance
 from drf_spectacular.utils import OpenApiParameter
@@ -20,7 +18,7 @@ class AutoSchema(_AutoSchema):
                     name="Location",
                     type=str,
                     location=OpenApiParameter.HEADER,
-                    description=_("URL of the newly created resource."),
+                    description="URL of the newly created resource.",
                     response=[status.HTTP_201_CREATED],
                     required=False,
                 )
@@ -32,8 +30,6 @@ class AutoSchema(_AutoSchema):
         from rest_framework.serializers import ListSerializer, Serializer
 
         serializer = force_instance(self.get_response_serializers())
-        # Only plain Serializer instances have a fields mapping; ListSerializer,
-        # BaseSerializer and Field subclasses do not.
         if not isinstance(serializer, Serializer) or isinstance(
             serializer, ListSerializer
         ):
