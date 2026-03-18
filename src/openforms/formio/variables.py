@@ -4,7 +4,7 @@ from django.template import TemplateSyntaxError
 
 import structlog
 
-from openforms.template import parse, render_from_string
+from openforms.template import extract_variables_used, parse, render_from_string
 from openforms.typing import JSONObject, JSONValue
 from openforms.utils.helpers import recursively_apply_function
 
@@ -22,8 +22,6 @@ SUPPORTED_TEMPLATE_PROPERTIES = (
     "description",
     "html",
     "placeholder",
-    "values",  # component-types: radio/selectBoxes
-    "data",  # component-type: select
     "tooltip",
 )
 
@@ -106,3 +104,30 @@ def inject_variables(
                 continue
 
             component[property_name] = templated_value
+
+
+def extract_variables_from_template_properties(component: Component) -> set[str]:
+    """
+    Extract all variables used in the template expressions of the relevant properties.
+
+    Relevant properties: label, groupLabel, legend, defaultValue, description, html,
+    placeholder, and tooltip.
+
+    :param component: Component to extract variables from.
+    :return: Set of variable names, empty if no variables were extracted.
+    """
+    variables: set[str] = set()
+    for _property_name, property_value in iter_template_properties(component):
+        match property_value:
+            case str():
+                variables = extract_variables_used(property_value)
+            case [str(), *_]:
+                # Value could be a list of expressions because of
+                # `multiple: True`.
+                variables = set()
+                for v in property_value:
+                    variables.update(extract_variables_used(v))
+            case _:
+                pass
+
+    return variables

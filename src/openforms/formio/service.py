@@ -39,13 +39,14 @@ from .utils import (
     iter_components,
     iterate_data_with_components,
 )
-from .variables import inject_variables
+from .variables import extract_variables_from_template_properties, inject_variables
 from .visibility import process_visibility
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 __all__ = [
+    "extract_variables_from_template_properties",
     "get_dynamic_configuration",
     "normalize_value_for_component",
     "iter_components",

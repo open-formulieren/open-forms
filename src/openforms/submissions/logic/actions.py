@@ -25,6 +25,7 @@ from openforms.forms.models import FormLogic, FormStep
 from openforms.template import extract_variables_used
 from openforms.typing import DataMapping, JSONObject
 from openforms.utils.json_logic import introspect_json_logic
+from openforms.variables.constants import FormVariableSources
 from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.service import resolve_key
 
@@ -123,6 +124,15 @@ class ActionOperation:
         """
         raise NotImplementedError()
 
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        """
+        Indicate whether this action requires the backend for logic evaluation.
+
+        :return: ``True`` if this action requires backend, ``False`` otherwise.
+        """
+        raise NotImplementedError()
+
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
@@ -175,6 +185,10 @@ class PropertyAction(ActionOperation):
             property_name=action["action"]["property"]["value"],
             value=action["action"]["state"],
         )
+
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        return False
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -252,6 +266,10 @@ class DisableNextAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> Self:
         return cls(form_step_identifier=action["form_step_uuid"])
 
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        return False
+
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
@@ -295,6 +313,15 @@ class StepNotApplicableAction(ActionOperation):
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(form_step_identifier=action.get("form_step_uuid", ""))
+
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        # Note that this action also removes data from the database, which cannot be
+        # done in the frontend. However, during filling out a step, we can update the
+        # `isApplicable` flag of the relevant step in the frontend, and update the
+        # database upon step submission. This already happens in
+        # `SubmissionStepViewSet.update`.
+        return False
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -353,6 +380,10 @@ class StepApplicableAction(ActionOperation):
             form_step_identifier=action["form_step_uuid"],
         )
 
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        return False
+
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
@@ -397,6 +428,20 @@ class VariableAction(ActionOperation):
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(variable=action["variable"], value=action["action"]["value"])
+
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        # User-defined variables are not exposed to the frontend, so this action cannot
+        # be executed in the frontend if the output variables are user defined.
+        # TODO: there is one occasion where we can switch this flag: if the input
+        #  variables are static (authentication) variables, and we have executed logic
+        #  once -> input (and in turn output) will not change in subsequent logic
+        #  calls.
+        output_is_user_defined = self.rule.form.formvariable_set.filter(
+            source=FormVariableSources.user_defined,
+            key__in=self.unresolved_output_variables,
+        ).exists()
+        return output_is_user_defined
 
     def eval(
         self,
@@ -457,6 +502,13 @@ class SynchronizeVariablesAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> Self:
         children_config: DataConfig = action["action"]["config"]  # pyright: ignore[reportAssignmentType]
         return cls(**children_config)
+
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        # TODO: this can switch when the input variable (also from logic trigger) steps
+        #  are before the step of the output variable, and we have evaluated logic once
+        #  -> input (and in turn output) will not change with subsequent calls.
+        return True
 
     @staticmethod
     def _map_children_data(
@@ -591,6 +643,13 @@ class ServiceFetchAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> Self:
         return cls(variable=action["variable"])
 
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        # TODO: this can switch if the input variables are static (authentication)
+        #  variables, and we have evaluated form logic already once -> input (and in
+        #  turn output) will not change in subsequent logic calls.
+        return True
+
     def eval(
         self,
         context: FormioData,
@@ -656,6 +715,16 @@ class EvaluateDMNAction(ActionOperation):
         dmn_config: DMNConfig = action["action"]["config"]  # pyright: ignore[reportAssignmentType]
 
         return cls(**dmn_config)
+
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        # TODO: This can switch if the input variables are static (authentication)
+        #  variables, and we have evaluated form logic already once -> input (and in
+        #  turn output) will not change in subsequent logic calls.
+        #  Also, if the output variables are NOT user defined, and the input variable
+        #  steps are before the output variables steps -> input (and in turn output)
+        #  will not change with subsequent logic calls.
+        return True
 
     def eval(
         self,
@@ -723,6 +792,13 @@ class SetRegistrationBackendAction(ActionOperation):
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
         return cls(registration_backend_key=action["action"]["value"])
+
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        # This actually cannot be executed in the frontend, but it does not have to
+        # prevent us from executing other rules in the frontend either. This is because
+        # this action does not influence any submission data while filling out the form.
+        return False
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper

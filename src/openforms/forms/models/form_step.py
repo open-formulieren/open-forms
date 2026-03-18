@@ -7,6 +7,9 @@ from django.utils.translation import gettext_lazy as _
 from autoslug import AutoSlugField
 from ordered_model.models import OrderedModel
 
+from openforms.formio.constants import DataSrcOptions
+from openforms.formio.variables import extract_variables_from_template_properties
+
 from .utils import literal_getter
 
 
@@ -99,6 +102,59 @@ class FormStep(OrderedModel):
             )
         else:
             return super().__str__()
+
+    @property
+    def is_backend_logic_evaluation_required(self) -> bool:
+        """
+        Determine whether the backend is required to evaluate form logic.
+
+        Besides executing logic rules, the backend also handles dynamic formio
+        configuration and injecting variables. This cannot be done by the frontend (at
+        the moment), so we still require the backend in the following cases:
+
+         1. Values of select, selectboxes, or radio components that use another variable
+            as a data source.
+         2. Date and datetime components having "minDate" or "maxDate" mode set to
+            "relativeToVariable".
+         3. Template expressions are used in the relevant properties. Note that the
+            value could be a list of templates because of ``multiple: True``
+
+        .. note:: this assumes logic is executed before submission step serialization
+            once anyway. For example, "minDate" and "maxDate" also have mode "future",
+            which is resolved by the backend as well. This doesn't have to block us from
+            executing in the frontend, though, because the value will not change with
+            subsequent logic evaluations.
+
+        .. note:: there are mitigating circumstances which make executing in the
+            frontend possible anyway. For example, when the input variables are from
+            the previous step and/or static variables. These cases are not taken into
+            account for now, and could be added later.
+
+        :returns: Flag indicating whether the backend is required for logic evaluation.
+        """
+
+        # This is quicker than using `iter_components`
+        for component in self.form_definition.configuration_wrapper:
+            # 1. another variable as data source (only relevant for select, selectboxes,
+            # and radio components)
+            if component.get("openForms", {}).get("dataSrc") == DataSrcOptions.variable:
+                return True
+
+            # 2. Date validation uses other variables (only relevant for date and
+            # datetime components)
+            if (
+                component.get("openForms", {}).get("minDate", {}).get("mode")
+                == "relativeToVariable"
+                or component.get("openForms", {}).get("maxDate", {}).get("mode")
+                == "relativeToVariable"
+            ):
+                return True
+
+            # 3. Template expressions
+            if extract_variables_from_template_properties(component):
+                return True
+
+        return False
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)

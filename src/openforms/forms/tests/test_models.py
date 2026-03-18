@@ -3,7 +3,7 @@ from django.test import TestCase, override_settings, tag
 from django.utils.translation import gettext as _
 
 from hypothesis import given, strategies as st
-from hypothesis.extra.django import TestCase as HypothesisTestCase
+from hypothesis.extra.django import SimpleTestCase, TestCase as HypothesisTestCase
 
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
@@ -501,6 +501,126 @@ class FormStepTestCase(TestCase):
             step_ok_order_1.clean()
 
 
+class FormStepBackendLogicEvaluationRequiredTests(SimpleTestCase):
+    def test_nothing_requires_backend(self):
+        step = FormStepFactory.build(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    }
+                ]
+            }
+        )
+        self.assertFalse(step.is_backend_logic_evaluation_required)
+
+    def test_manual_data_source(self):
+        step = FormStepFactory.build(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "label": "Radio",
+                        "openForms": {"dataSrc": "manual"},
+                        "values": [
+                            {"value": "a", "label": "A"},
+                            {"value": "b", "label": "B"},
+                        ],
+                    }
+                ]
+            }
+        )
+        self.assertFalse(step.is_backend_logic_evaluation_required)
+
+    def test_variable_data_source(self):
+        step = FormStepFactory.build(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "label": "Radio",
+                        "openForms": {"dataSrc": "variable"},
+                        "values": [{"value": "", "label": ""}],
+                    }
+                ]
+            }
+        )
+        self.assertTrue(step.is_backend_logic_evaluation_required)
+
+    def test_fixed_min_date_no_max_date(self):
+        step = FormStepFactory.build(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date",
+                        "label": "Date",
+                        "openForms": {"minDate": {"mode": "fixedValue"}},
+                        "datePicker": {"minDate": "2026-03-16"},
+                    }
+                ]
+            }
+        )
+        self.assertFalse(step.is_backend_logic_evaluation_required)
+
+    def test_fixed_min_date_variable_max_date(self):
+        step = FormStepFactory.build(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date",
+                        "label": "Date",
+                        "openForms": {
+                            "minDate": {"mode": "fixedValue"},
+                            "maxDate": {
+                                "mode": "relativeToVariable",
+                                "variable": "now",
+                                "delta": {"years": None, "months": None, "days": 5},
+                                "operator": "add",
+                            },
+                        },
+                        "datePicker": {"minDate": "2026-03-16", "maxDate": None},
+                    }
+                ]
+            }
+        )
+        self.assertTrue(step.is_backend_logic_evaluation_required)
+
+    def test_template_expression(self):
+        step = FormStepFactory.build(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "{{ foo }}",
+                    }
+                ]
+            }
+        )
+        self.assertTrue(step.is_backend_logic_evaluation_required)
+
+    def test_template_expression_multiple(self):
+        step = FormStepFactory.build(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "defaultValue": ["{{ foo }}", "{{ bar }}"],
+                    }
+                ]
+            }
+        )
+        self.assertTrue(step.is_backend_logic_evaluation_required)
+
+
 class FormLogicTests(TestCase):
     def test_block_form_logic_trigger_step_other_form(self):
         form1, form2 = FormFactory.create_batch(2)
@@ -685,6 +805,172 @@ class FormLogicTests(TestCase):
             self.assertEqual(rule_2.output_variable_keys, {"email"})
 
             self.assertEqual(rule_2.steps, {step_2})
+
+    def test_backend_not_required(self):
+        form = FormFactory.create()
+        step_1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "checkbox",
+                        "type": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                    },
+                    {
+                        "key": "number",
+                        "type": "number",
+                        "label": "Number",
+                    },
+                ],
+            },
+        )
+        step_2 = FormStepFactory.create(is_applicable=True)
+        step_3 = FormStepFactory.create(is_applicable=False)
+        rule = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "action": {
+                        "name": "Hide textfield",
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "textfield",
+                },
+                {
+                    "action": {
+                        "name": "Set number",
+                        "type": "variable",
+                        "value": 42,
+                    },
+                    "variable": "number",
+                },
+                {
+                    "action": {
+                        "name": "Disable next",
+                        "type": "disable-next",
+                    },
+                    "form_step_uuid": str(step_1.uuid),
+                },
+                {
+                    "action": {
+                        "name": "Make step 2 not applicable",
+                        "type": "step-not-applicable",
+                    },
+                    "form_step_uuid": str(step_2.uuid),
+                },
+                {
+                    "action": {
+                        "name": "Make step 3 applicable",
+                        "type": "step-applicable",
+                    },
+                    "form_step_uuid": str(step_3.uuid),
+                },
+                {
+                    "action": {
+                        "name": "Set registration backend",
+                        "type": "set-registration-backend",
+                        "value": "foo",
+                    },
+                },
+            ],
+        )
+
+        self.assertFalse(rule.is_backend_logic_evaluation_required)
+
+    def test_backend_required(self):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "checkbox",
+                        "type": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield",
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="number",
+            user_defined=True,
+            data_type=FormVariableDataTypes.int,
+        )
+
+        actions = [
+            {
+                "action": {
+                    "name": "Set number",
+                    "type": "variable",
+                    "value": 42,
+                },
+                "variable": "number",
+            },
+            {
+                "action": {
+                    "name": "Evaluate DMN",
+                    "type": "evaluate-dmn",
+                    "config": {
+                        "plugin_id": "test",
+                        "decision_definition_id": "dummy",
+                        "input_mapping": [
+                            {"form_variable": "foo", "dmn_variable": "FOO"}
+                        ],
+                        "output_mapping": [
+                            {"form_variable": "bar", "dmn_variable": "BAR"}
+                        ],
+                    },
+                }
+            },
+            {
+                "action": {"name": "Service fetch", "type": "fetch-from-service"},
+                "variable": "foo",
+            },
+            {
+                "action": {
+                    "name": "Synchronize variables",
+                    "type": "synchronize-variables",
+                    "config": {
+                        "source_variable": "foo",
+                        "destination_variable": "bar",
+                        "identifier_variable": "baz",
+                        "data_mappings": [
+                            {
+                                "property": "baz",
+                                "component_key": "baz",
+                            },
+                        ],
+                    },
+                },
+            },
+        ]
+
+        for action in actions:
+            # Note that we exit early when checking whether the rule requires the
+            # backend, so we need to create a separate rule for each action to hit all
+            # code paths.
+            with self.subTest(action_type=action["action"]["type"]):
+                rule = FormLogicFactory.create(
+                    form=form,
+                    json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+                    actions=[action],
+                )
+                self.assertTrue(rule.is_backend_logic_evaluation_required)
 
 
 class FormRegistrationBackendTests(TestCase):
