@@ -37,6 +37,12 @@ class AddDataTypeInformationTests(TestCase):
 
         expressions = [
             {"==": [{"var": "date"}, {"var": "today"}]},  # today is static variable
+            {
+                ">": [
+                    {"date": "2010-04-26"},
+                    {"date": {"-": [{"var": "today"}, {"duration": "P24Y"}]}},
+                ]
+            },
             {"==": [{"datetime": "2026-03-06T15:37:00"}, {"var": "datetime"}]},
             {"==": [{"var": "textfield"}, "foo"]},
         ]
@@ -45,6 +51,21 @@ class AddDataTypeInformationTests(TestCase):
                 "==": [
                     {"date": [{"var": ["date"]}]},
                     {"date": [{"var": ["today"]}]},
+                ]
+            },
+            {
+                ">": [
+                    {"date": ["2010-04-26"]},
+                    {
+                        "date": [
+                            {
+                                "-": [
+                                    {"date": [{"var": ["today"]}]},
+                                    {"duration": ["P24Y"]},
+                                ]
+                            }
+                        ]
+                    },
                 ]
             },
             {

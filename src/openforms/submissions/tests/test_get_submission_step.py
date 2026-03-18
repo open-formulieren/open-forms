@@ -1321,3 +1321,52 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         data = response.json()
         self.assertFalse(data["requireBackendLogicEvaluation"])
         self.assertEqual(expected, data["logicRules"][0])
+
+    @freeze_time("2026-03-18")
+    def test_with_date_trigger_that_could_be_partially_resolved(self):
+        step = FormStepFactory.create(
+            form__new_logic_evaluation_enabled=True,
+            form_definition__configuration={
+                "components": [
+                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
+                ]
+            },
+        )
+        # This is an actual logic rule used by municipalities!
+        rule = FormLogicFactory.create(
+            form=step.form,
+            json_logic_trigger={
+                ">": [
+                    {"date": {"var": "dateOfBirth"}},
+                    {"date": {"-": [{"var": "today"}, {"duration": "P24Y"}]}},
+                ]
+            },
+            actions=[
+                {
+                    "action": {"type": "disable-next"},
+                    "form_step_uuid": str(step.uuid),
+                }
+            ],
+        )
+        rule.form_steps.set([step])
+
+        submission = SubmissionFactory.create(form=step.form)
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        # Even though the second part of the comparison could be evaluated to a date
+        # already, we would lose typing information if it was. The date object would
+        # be serialized to an ISO string in this case, without any remaining date
+        # operation being present.
+        expected = {
+            ">": [
+                {"date": [{"var": ["dateOfBirth"]}]},
+                {"date": [{"-": [{"date": ["2026-03-18"]}, {"duration": ["P24Y"]}]}]},
+            ]
+        }
+        self.assertEqual(expected, response.json()["logicRules"][0]["jsonLogicTrigger"])

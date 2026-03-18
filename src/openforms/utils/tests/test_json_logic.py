@@ -349,28 +349,6 @@ class PartialEvaluationTests(ParametrizedTestCase, SimpleTestCase):
             self.assertEqual(result, {"!": [{"==": [{"var": ["foo"]}, "a"]}]})
             self.assertFalse(resolved)
 
-    @parametrize(
-        ("expression", "data", "expected"),
-        [
-            param(
-                {"+": [{"date": "2026-01-01"}, {"duration": "P1M"}]},
-                {},
-                "2026-02-01",
-                id="no_variables",
-            ),
-            param(
-                {"+": [{"date": {"var": "foo"}}, {"duration": {"var": "bar"}}]},
-                {"foo": "2026-01-01", "bar": "P1M"},
-                "2026-02-01",
-                id="all_variables",
-            ),
-        ],
-    )
-    def test_date_operators_resolves(self, expression, data, expected):
-        result, resolved = partially_evaluate_json_logic(expression, data)
-        self.assertEqual(result.isoformat(), expected)
-        self.assertTrue(resolved)
-
     def test_date_operators_do_not_resolve(self):
         with self.subTest("variable in duration missing"):
             expression = {"+": [{"date": {"var": "foo"}}, {"duration": {"var": "bar"}}]}
@@ -415,8 +393,16 @@ class PartialEvaluationTests(ParametrizedTestCase, SimpleTestCase):
 
             with freeze_time("2024-01-01T12:00:00"):
                 result, resolved = partially_evaluate_json_logic(expression, data)
-            self.assertTrue(result)
-            self.assertTrue(resolved)
+            self.assertEqual(
+                result,
+                {
+                    ">": [
+                        {"date": ["2002-01-01"]},
+                        {"date": [{"-": [{"today": ""}, {"duration": ["P24Y"]}]}]},
+                    ]
+                },
+            )
+            self.assertFalse(resolved)
 
         with self.subTest("with conditional and missing variable"):
             expression = {
@@ -443,28 +429,35 @@ class PartialEvaluationTests(ParametrizedTestCase, SimpleTestCase):
             )
             self.assertFalse(resolved)
 
-        with self.subTest("with the second part of the conditional resolving"):
+        with self.subTest("with the second part of the conditional possibly resolving"):
+            # Note that "today" is a static variable that will have a date operation
+            # added to it before it will be partially evaluated.
             expression = {
                 ">": [
                     {"date": {"var": "dateOfBirth"}},
-                    {"-": [{"var": "today"}, {"duration": "P24Y"}]},
+                    {"date": {"-": [{"date": {"var": "today"}}, {"duration": "P24Y"}]}},
                 ]
             }
             data = {"today": date(2026, 2, 23)}
 
-            # TODO-5962: this will result in a problem when pushing the rule to the
-            #  frontend, because the date object will be serialized into an ISO string.
-            #  We then try to compare a date object to a string, it will always fail.
-            #  It shows that we need to wrap all date-related variables with a date
-            #  operator (or detect date-related objects and wrap them), BEFORE partially
-            #  evaluating logic.
             result, resolved = partially_evaluate_json_logic(expression, data)
+            # Even though we could evaluate the second part of the greater-than
+            # expression, we would lose data type information if we did.
             self.assertEqual(
                 result,
                 {
                     ">": [
                         {"date": [{"var": ["dateOfBirth"]}]},
-                        date(2002, 2, 23),
+                        {
+                            "date": [
+                                {
+                                    "-": [
+                                        {"date": [date(2026, 2, 23)]},
+                                        {"duration": ["P24Y"]},
+                                    ]
+                                }
+                            ]
+                        },
                     ]
                 },
             )
