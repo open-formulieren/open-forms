@@ -467,6 +467,189 @@ class HaalCentraalFindPersonV2Test(OFVCRMixin, HaalCentraalFindPersonTests, Test
 
         self.assertEqual(children, [])
 
+    def test_get_children_exclude_deceased(self):
+        with get_brp_client() as client:
+            children = client.get_family_members(
+                bsn="999970124",
+                include_children=True,
+                include_partner=False,
+                include_deceased=False,
+            )
+
+        self.assertEqual(len(children), 3)  # type: ignore
+
+        child_1 = children[0]
+        self.assertEqual(child_1.bsn, "999970409")  # type: ignore
+        self.assertEqual(child_1.first_names, "Pero")  # type: ignore
+        self.assertEqual(child_1.affixes, "van")  # type: ignore
+        self.assertEqual(child_1.last_name, "Paassen")  # type: ignore
+
+        child_2 = children[1]
+        self.assertEqual(child_2.bsn, "999970161")  # type: ignore
+        self.assertEqual(child_2.first_names, "Peet")  # type: ignore
+        self.assertEqual(child_2.affixes, "van")  # type: ignore
+        self.assertEqual(child_2.last_name, "Paassen")  # type: ignore
+
+        child_3 = children[2]
+        self.assertEqual(child_3.bsn, "999970185")  # type: ignore
+        self.assertEqual(child_3.first_names, "Pep")  # type: ignore
+        self.assertEqual(child_3.affixes, "van")  # type: ignore
+        self.assertEqual(child_3.last_name, "Paassen")  # type: ignore
+
+    def test_get_children_include_deceased(self):
+        with get_brp_client() as client:
+            children = client.get_family_members(
+                bsn="999970124",
+                include_children=True,
+                include_partner=False,
+                include_deceased=True,
+            )
+
+        self.assertEqual(len(children), 4)  # type: ignore
+
+        child_1 = children[0]
+        self.assertEqual(child_1.bsn, "999970409")  # type: ignore
+        self.assertEqual(child_1.first_names, "Pero")  # type: ignore
+        self.assertEqual(child_1.affixes, "van")  # type: ignore
+        self.assertEqual(child_1.last_name, "Paassen")  # type: ignore
+
+        child_2 = children[1]
+        self.assertEqual(child_2.bsn, "999970161")  # type: ignore
+        self.assertEqual(child_2.first_names, "Peet")  # type: ignore
+        self.assertEqual(child_2.affixes, "van")  # type: ignore
+        self.assertEqual(child_2.last_name, "Paassen")  # type: ignore
+
+        child_3 = children[2]
+        self.assertEqual(child_3.bsn, "999970173")  # type: ignore
+        self.assertEqual(child_3.first_names, "Pelle")  # type: ignore
+        self.assertEqual(child_3.affixes, "van")  # type: ignore
+        self.assertEqual(child_3.last_name, "Paassen")  # type: ignore
+
+        child_4 = children[3]
+        self.assertEqual(child_4.bsn, "999970185")  # type: ignore
+        self.assertEqual(child_4.first_names, "Pep")  # type: ignore
+        self.assertEqual(child_4.affixes, "van")  # type: ignore
+        self.assertEqual(child_4.last_name, "Paassen")  # type: ignore
+
+    def test_get_partners_exclude_deceased(self):
+        # This scenario is not supported by the current frontend. Right now, only
+        # children can actively be excluded. This test was added for completeness, as the
+        # BRP client `get_family_members` does support excluding partners.
+
+        with get_brp_client() as client:
+            partners = client.get_family_members(
+                bsn="999999709",
+                include_children=False,
+                include_partner=True,
+                include_deceased=False,
+            )
+
+        self.assertEqual(len(partners), 0)  # type: ignore
+
+    def test_get_partners_include_deceased(self):
+        # This scenario is not supported by the current frontend. Right now, only
+        # children can actively be excluded. This test was added for completeness, as the
+        # BRP client `get_family_members` does support excluding partners.
+
+        with get_brp_client() as client:
+            partners = client.get_family_members(
+                bsn="999999709",
+                include_children=False,
+                include_partner=True,
+                include_deceased=True,
+            )
+
+        self.assertEqual(len(partners), 1)  # type: ignore
+        partner = partners[0]
+        self.assertEqual(partner.bsn, "999999692")  # type: ignore
+        self.assertEqual(partner.first_names, "Brand")  # type: ignore
+        self.assertEqual(partner.affixes, "")  # type: ignore
+        self.assertEqual(partner.last_name, "Berendsen")  # type: ignore
+
+    def test_get_family_members_exclude_deceased(self):
+        # This scenario is not supported by the current frontend. Right now, only
+        # children can actively be excluded. This test was added for completeness, as the
+        # BRP client `get_family_members` does support excluding partners.
+
+        with get_brp_client() as client:
+            family_members = client.get_family_members(
+                bsn="999970124",
+                include_children=True,
+                include_partner=True,
+                include_deceased=False,
+            )
+
+        self.assertEqual(len(family_members), 4)  # type: ignore
+
+        child_1 = family_members[0]
+        self.assertEqual(child_1.bsn, "999970409")  # type: ignore
+        self.assertEqual(child_1.first_names, "Pero")  # type: ignore
+        self.assertEqual(child_1.affixes, "van")  # type: ignore
+        self.assertEqual(child_1.last_name, "Paassen")  # type: ignore
+
+        child_2 = family_members[1]
+        self.assertEqual(child_2.bsn, "999970161")  # type: ignore
+        self.assertEqual(child_2.first_names, "Peet")  # type: ignore
+        self.assertEqual(child_2.affixes, "van")  # type: ignore
+        self.assertEqual(child_2.last_name, "Paassen")  # type: ignore
+
+        child_3 = family_members[2]
+        self.assertEqual(child_3.bsn, "999970185")  # type: ignore
+        self.assertEqual(child_3.first_names, "Pep")  # type: ignore
+        self.assertEqual(child_3.affixes, "van")  # type: ignore
+        self.assertEqual(child_3.last_name, "Paassen")  # type: ignore
+
+        partner = family_members[3]
+        self.assertEqual(partner.bsn, "999970136")  # type: ignore
+        self.assertEqual(partner.first_names, "Pia")  # type: ignore
+        self.assertEqual(partner.affixes, "")  # type: ignore
+        self.assertEqual(partner.last_name, "Pauw")  # type: ignore
+
+    def test_get_family_members_include_deceased(self):
+        # This scenario is not supported by the current frontend. Right now, only
+        # children can actively be excluded. This test was added for completeness, as the
+        # BRP client `get_family_members` does support excluding partners.
+
+        with get_brp_client() as client:
+            family_members = client.get_family_members(
+                bsn="999970124",
+                include_children=True,
+                include_partner=True,
+                include_deceased=True,
+            )
+
+        self.assertEqual(len(family_members), 5)  # type: ignore
+
+        child_1 = family_members[0]
+        self.assertEqual(child_1.bsn, "999970409")  # type: ignore
+        self.assertEqual(child_1.first_names, "Pero")  # type: ignore
+        self.assertEqual(child_1.affixes, "van")  # type: ignore
+        self.assertEqual(child_1.last_name, "Paassen")  # type: ignore
+
+        child_2 = family_members[1]
+        self.assertEqual(child_2.bsn, "999970161")  # type: ignore
+        self.assertEqual(child_2.first_names, "Peet")  # type: ignore
+        self.assertEqual(child_2.affixes, "van")  # type: ignore
+        self.assertEqual(child_2.last_name, "Paassen")  # type: ignore
+
+        child_3 = family_members[2]
+        self.assertEqual(child_3.bsn, "999970173")  # type: ignore
+        self.assertEqual(child_3.first_names, "Pelle")  # type: ignore
+        self.assertEqual(child_3.affixes, "van")  # type: ignore
+        self.assertEqual(child_3.last_name, "Paassen")  # type: ignore
+
+        child_4 = family_members[3]
+        self.assertEqual(child_4.bsn, "999970185")  # type: ignore
+        self.assertEqual(child_4.first_names, "Pep")  # type: ignore
+        self.assertEqual(child_4.affixes, "van")  # type: ignore
+        self.assertEqual(child_4.last_name, "Paassen")  # type: ignore
+
+        partner = family_members[4]
+        self.assertEqual(partner.bsn, "999970136")  # type: ignore
+        self.assertEqual(partner.first_names, "Pia")  # type: ignore
+        self.assertEqual(partner.affixes, "")  # type: ignore
+        self.assertEqual(partner.last_name, "Pauw")  # type: ignore
+
 
 class ClientFactoryInvalidVersionTests(SimpleTestCase):
     def test_invalid_version_raises_error(self):
