@@ -1,0 +1,43 @@
+interactions:
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["111222333"],
+      "fields": ["burgerservicenummer", "naam.voornamen", "naam.geslachtsnaam"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '156'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.5
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[]}'
+    headers:
+      Content-Length:
+      - '56'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 18 Mar 2026 11:31:45 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 200
+      message: OK
+version: 1

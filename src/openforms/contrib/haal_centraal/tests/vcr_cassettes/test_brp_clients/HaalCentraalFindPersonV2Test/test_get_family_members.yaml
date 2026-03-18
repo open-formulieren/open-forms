@@ -1,0 +1,91 @@
+interactions:
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990858"],
+      "fields": ["kinderen.burgerservicenummer", "kinderen.naam.voornamen", "kinderen.naam.voorletters",
+      "kinderen.naam.voorvoegsel", "kinderen.naam.geslachtsnaam", "kinderen.geboorte.datum",
+      "partners.burgerservicenummer", "partners.naam.voornamen", "partners.naam.voorletters",
+      "partners.naam.voorvoegsel", "partners.naam.geslachtsnaam", "partners.geboorte.datum"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '443'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.5
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"kinderen":[{"burgerservicenummer":"999992879","naam":{"voornamen":"Lonneke","geslachtsnaam":"Smit","voorletters":"L."},"geboorte":{"datum":{"type":"Datum","datum":"1978-06-12","langFormaat":"12
+        juni 1978"}}},{"burgerservicenummer":"999993525","naam":{"voornamen":"Koos","geslachtsnaam":"Smit","voorletters":"K."},"geboorte":{"datum":{"type":"Datum","datum":"1975-11-18","langFormaat":"18
+        november 1975"}}}],"partners":[{"burgerservicenummer":"999990949","naam":{"voornamen":"Marianne","voorvoegsel":"de","geslachtsnaam":"Jong","voorletters":"M."},"geboorte":{"datum":{"type":"Datum","datum":"1952-04-22","langFormaat":"22
+        april 1952"}}}]}]}'
+    headers:
+      Content-Length:
+      - '696'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 18 Mar 2026 11:31:45 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999992879",
+      "999993525", "999990949"], "fields": ["burgerservicenummer", "burgerservicenummer",
+      "overlijden"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '179'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.5
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"burgerservicenummer":"999990949"},{"burgerservicenummer":"999992879"},{"burgerservicenummer":"999993525"}]}'
+    headers:
+      Content-Length:
+      - '163'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 18 Mar 2026 11:31:45 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 200
+      message: OK
+version: 1

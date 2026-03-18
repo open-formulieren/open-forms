@@ -1,0 +1,86 @@
+interactions:
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990792"],
+      "fields": ["kinderen.burgerservicenummer", "kinderen.naam.voornamen", "kinderen.naam.voorletters",
+      "kinderen.naam.voorvoegsel", "kinderen.naam.geslachtsnaam", "kinderen.geboorte.datum"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.5
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"geheimhoudingPersoonsgegevens":true,"kinderen":[{"burgerservicenummer":"999990408","naam":{"voornamen":"Paolo","voorvoegsel":"de","geslachtsnaam":"Jager","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"2009-01-01","langFormaat":"1
+        januari 2009"}}}]}]}'
+    headers:
+      Content-Length:
+      - '324'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 18 Mar 2026 11:31:45 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990408"],
+      "fields": ["burgerservicenummer", "burgerservicenummer", "overlijden"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '153'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.5
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"burgerservicenummer":"999990408"}]}'
+    headers:
+      Content-Length:
+      - '91'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 18 Mar 2026 11:31:45 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 200
+      message: OK
+version: 1
