@@ -1,6 +1,7 @@
 from typing import TypedDict, Unpack
 from uuid import UUID
 
+from django.db import OperationalError
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 
@@ -8,6 +9,8 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.request import Request
 from rest_framework.response import Response
+
+from openforms.api.exceptions import Conflict
 
 from ...api.parsers import FormCamelCaseJSONParser
 from ...api.permissions import FormAPIPermissions
@@ -49,12 +52,16 @@ class FormViewSet(viewsets.GenericViewSet):
             data=request.data,
             context={
                 **self.get_serializer_context(),
-                "uuid": kwargs[lookup_url_kwarg],
+                "form_uuid": kwargs[lookup_url_kwarg],
             },
         )
 
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+
+        try:
+            serializer.save()
+        except OperationalError as exc:
+            raise Conflict() from exc
 
         if self.object is None:
             status_code = status.HTTP_201_CREATED

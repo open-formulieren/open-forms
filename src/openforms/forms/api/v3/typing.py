@@ -3,11 +3,13 @@ from typing import NotRequired, TypedDict
 from uuid import UUID
 
 from openforms.appointments.base import Product
-from openforms.config.models.theme import Theme
+from openforms.config.models import Theme
 from openforms.data_removal.constants import RemovalMethods
-from openforms.formio.typing.base import FormioConfiguration
-from openforms.forms.constants import StatementCheckboxChoices
-from openforms.forms.models.category import Category
+from openforms.emails.typing import ConfirmationEmailTemplateTranslatedData
+from openforms.formio.typing import FormioConfiguration
+
+from ...constants import StatementCheckboxChoices
+from ...models import Category
 
 
 class AppointmentData(TypedDict):
@@ -62,7 +64,7 @@ class FormDefinitionData(TypedDict):
     configuration: FormioConfiguration
     login_required: NotRequired[bool]
     is_reusable: NotRequired[bool]
-    translations: FormDefinitionTranslationsData
+    translations: NotRequired[FormDefinitionTranslationsData]
 
 
 class FormStepLiteralData(TypedDict):
@@ -78,7 +80,6 @@ class FormStepTranslationData(TypedDict):
 
 
 class FormStepData(TypedDict):
-    order: int
     slug: NotRequired[str]
     form_definition: FormDefinitionData
     is_applicable: NotRequired[bool]
@@ -123,6 +124,7 @@ class FormValidatedData(TypedDict):
 
     submission_removal_options: NotRequired[SubmissionRemovalOptionsData]
 
+    confirmation_email_template: NotRequired[ConfirmationEmailTemplateTranslatedData]
     send_confirmation_email: NotRequired[bool]
     display_main_website_link: NotRequired[bool]
     include_confirmation_page_content_in_pdf: NotRequired[bool]

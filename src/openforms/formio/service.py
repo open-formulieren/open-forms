@@ -19,7 +19,7 @@ from opentelemetry import trace
 
 from openforms.typing import JSONObject
 
-from .datastructures import FormioConfigurationWrapper, FormioData
+from .datastructures import DuplicateKeyError, FormioConfigurationWrapper, FormioData
 from .dynamic_config import (
     get_translated_custom_error_messages,
     localize_components,
@@ -36,6 +36,7 @@ from .typing import (
 )
 from .utils import (
     get_component_empty_value,
+    get_readable_path_from_configuration_path,
     iter_components,
     iterate_data_with_components,
 )
@@ -46,6 +47,7 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 __all__ = [
+    "DuplicateKeyError",
     "extract_variables_from_template_properties",
     "get_dynamic_configuration",
     "normalize_value_for_component",
@@ -61,6 +63,7 @@ __all__ = [
     "as_json_schema",
     "process_visibility",
     "get_component_empty_value",
+    "get_readable_path_from_configuration_path",
 ]
 
 tracer = trace.get_tracer("openforms.formio.service")

@@ -113,7 +113,7 @@ def iterate_components_with_configuration_path(
     },
 )
 @elasticapm.capture_span(span_type="app.formio.configuration")
-def flatten_by_path(configuration: JSONObject) -> dict[str, Component]:
+def flatten_by_path(configuration: FormioConfiguration) -> dict[str, Component]:
     """
     Flatten the formio configuration.
 
@@ -126,7 +126,7 @@ def flatten_by_path(configuration: JSONObject) -> dict[str, Component]:
 
 
 def get_readable_path_from_configuration_path(
-    configuration: JSONObject, path: str, prefix: str | None = ""
+    configuration: FormioConfiguration, path: str, prefix: str | None = ""
 ) -> str:
     """
     Get a readable version of the configuration path.
