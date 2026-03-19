@@ -16,6 +16,16 @@ from .utils import flatten_by_path, is_visible_in_frontend, iter_components
 RE_PATH = re.compile(r"(components|columns|rows)\.([0-9]+)")
 
 
+class DuplicateKeyError(Exception):
+    """
+    Error raised for unique component key violations.
+    """
+
+    def __init__(self, key: str, *args):
+        super().__init__(*args)
+        self.key = key
+
+
 def _get_editgrid_component_map(component: EditGridComponent) -> dict[str, Component]:
     """
     Given an edit grid component, return a component map with namespaced keys.
@@ -50,8 +60,12 @@ class FormioConfigurationWrapper:
     _flattened_by_path: None | dict[str, Component] = None
     _reverse_flattened: None | dict[str, str] = None
 
-    def __init__(self, configuration: FormioConfiguration):
+    def __init__(
+        self, configuration: FormioConfiguration, *, validate_unique_keys: bool = False
+    ):
         self._configuration = configuration
+        # this flag should not be necessary, but we likely need to address #2713 first
+        self.validate_unique_keys = validate_unique_keys
 
     @property
     def component_map(self) -> dict[str, Component]:
@@ -59,13 +73,21 @@ class FormioConfigurationWrapper:
             self._cached_component_map = {}
 
             for component in iter_components(self.configuration, recursive=True):
+                # Keys are supposed to be unique for the entire form, and the frontend
+                # validates this. However, frontend validation can be bypassed so we
+                # perform an additional check that can be used by backend validation.
+                if (
+                    key := component["key"]
+                ) in self._cached_component_map and self.validate_unique_keys:
+                    raise DuplicateKeyError(key)
+
                 # first, ensure we add every component by its own key so that we can
-                # look it up. This is okay *because* in our UI we enforce unique keys
-                # across the entire form, even if the key is present in an edit grid
-                # (repeating group). Note that formio is perfectly fine with a root
-                # 'foo' key and 'foo' key inside an editgrid. Our behaviour is different
-                # from that because of historical reasons...
-                self._cached_component_map[component["key"]] = component
+                # look it up. This is okay because we just validated its uniqueness.
+                # Even if the key is present in an edit grid (repeating group), we lean
+                # on this uniqueness guarantee. Note that formio is perfectly fine with
+                # a root 'foo' key and 'foo' key inside an editgrid. Our behaviour is
+                # different from that because of historical reasons...
+                self._cached_component_map[key] = component
 
                 # now, formio itself addresses components inside an edit grid with the
                 # pattern ``<editGridKey>.<componentKey>`` (e.g. in simple conditionals),

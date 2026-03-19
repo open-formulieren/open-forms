@@ -2,7 +2,12 @@ from unittest import TestCase
 
 from openforms.formio.typing import Component, EditGridComponent
 
-from ..datastructures import FormioConfiguration, FormioConfigurationWrapper, FormioData
+from ..datastructures import (
+    DuplicateKeyError,
+    FormioConfiguration,
+    FormioConfigurationWrapper,
+    FormioData,
+)
 
 
 class FormioDataTests(TestCase):
@@ -302,3 +307,15 @@ class FormioConfigurationWrapperTests(TestCase):
             config_wrapper["outerEditgrid.innerEditgrid.innerTextfield"],
             inner_textfield,
         )
+
+    def test_raises_when_duplicate_keys_are_encountered(self):
+        duplicate: Component = {
+            "type": "textfield",
+            "key": "duplicated.key",
+            "label": "Duplicated key component",
+        }
+        config: FormioConfiguration = {"components": [duplicate, duplicate]}
+        config_wrapper = FormioConfigurationWrapper(config, validate_unique_keys=True)
+
+        with self.assertRaises(DuplicateKeyError):
+            config_wrapper["duplicated.key"]
