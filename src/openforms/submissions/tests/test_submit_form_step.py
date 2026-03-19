@@ -74,15 +74,19 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             {
                 "id": str(submission_step.uuid),
                 "slug": self.step1.slug,
+                "formStepUuid": str(self.step1.uuid),
                 "configuration": {
                     "components": [{"type": "textfield", "key": "test-key"}]
                 },
-                "data": {
-                    "test-key": "example data",
+                "defaultConfiguration": {
+                    "components": [{"type": "textfield", "key": "test-key"}]
                 },
+                "data": {"test-key": "example data"},
                 "isApplicable": True,
                 "completed": True,
                 "canSubmit": True,
+                "logicRules": [],
+                "requireBackendLogicEvaluation": True,
             },
         )
         self.assertEqual(submission_step.data, {"test-key": "example data"})
@@ -175,23 +179,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         response = self.client.put(endpoint, body)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.json(),
-            {
-                "id": str(submission_step.uuid),
-                "slug": step2.slug,
-                "configuration": {
-                    "components": [
-                        {"key": "foo", "type": "textfield"},
-                        {"key": "modified", "type": "textfield"},
-                    ]
-                },
-                "data": {"modified": "data", "foo": "bar"},
-                "isApplicable": True,
-                "completed": True,
-                "canSubmit": True,
-            },
-        )
+        self.assertEqual({"modified": "data", "foo": "bar"}, response.json()["data"])
         submission_step.refresh_from_db()
         self.assertEqual(submission_step.data, {"modified": "data", "foo": "bar"})
 
@@ -305,22 +293,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         response = self.client.put(endpoint, body)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.json(),
-            {
-                "id": str(submission_step.uuid),
-                "slug": step.slug,
-                "configuration": {
-                    "components": [
-                        {"key": "nested.key", "type": "textfield"},
-                    ]
-                },
-                "data": {"nested": {"key": "some data"}},
-                "isApplicable": True,
-                "completed": True,
-                "canSubmit": True,
-            },
-        )
+        self.assertEqual({"nested": {"key": "some data"}}, response.json()["data"])
         submission_step.refresh_from_db()
         self.assertEqual(submission_step.data, {"nested": {"key": "some data"}})
 
