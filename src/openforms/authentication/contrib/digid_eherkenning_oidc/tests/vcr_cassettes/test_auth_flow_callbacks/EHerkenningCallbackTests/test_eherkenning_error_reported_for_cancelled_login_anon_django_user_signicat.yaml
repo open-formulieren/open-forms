@@ -1,0 +1,34 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.5
+    method: GET
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth?response_type=code&scope=badscope&client_id=testid&redirect_uri=http%3A%2F%2Ftestserver%2Fauth%2Foidc%2Fcallback%2F&state=not-a-random-string&nonce=not-a-random-string
+  response:
+    body:
+      string: ''
+    headers:
+      Location:
+      - http://testserver/auth/oidc/callback/?error=invalid_scope&error_description=Invalid+scopes%3A+badscope&state=not-a-random-string&iss=http%3A%2F%2Flocalhost%3A8080%2Frealms%2Ftest
+      Referrer-Policy:
+      - no-referrer
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '0'
+    status:
+      code: 302
+      message: Found
+version: 1

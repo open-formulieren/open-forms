@@ -159,6 +159,44 @@ class DigiDCallbackTests(IntegrationTestsBase):
         assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
         self.assertEqual(callback_response.request.url, str(expected_url))
 
+    @tag("gh-5938")
+    def test_digid_error_reported_for_cancelled_login_anon_django_user_signicat(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid=True,
+            oidc_rp_scopes_list=["badscope"],
+        )
+
+        form = FormFactory.create(authentication_backend="digid_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
+        # initialize state, but don't actually log in - we have an invalid config and
+        # keycloak redirects back to our callback URL with error parameters.
+        start_response = self.app.get(start_url)
+        auth_response = requests.get(start_response["Location"], allow_redirects=False)
+        # check out assumptions/expectations before proceeding
+        callback_url = furl(auth_response.headers["Location"])
+        assert callback_url.netloc == "testserver"
+        assert "state" in callback_url.args
+        callback_url.args.update(
+            {
+                "error": "IDP-3200",
+                "error_description": (
+                    "Authentication with IdP 'simulator' was aborted, most likely "
+                    "because the end-user cancelled the authentication.",
+                ),
+            }
+        )
+
+        callback_response = self.app.get(str(callback_url), auto_follow=True)
+
+        self.assertEqual(callback_response.status_code, 200)
+        expected_url = furl(url_helper.frontend_start).add(
+            {"_digid-message": "login-cancelled"}
+        )
+        assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
+        self.assertEqual(callback_response.request.url, str(expected_url))
+
     @tag("gh-3656", "gh-3692")
     def test_digid_error_reported_for_cancelled_login_with_staff_django_user(self):
         OFOIDCClientFactory.create(
@@ -308,6 +346,53 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
         )
         self.assertEqual(callback_response.request.url, str(expected_url))
         self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
+
+    @tag("gh-5938")
+    def test_eherkenning_error_reported_for_cancelled_login_anon_django_user_signicat(
+        self,
+    ):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning=True,
+            oidc_rp_scopes_list=["badscope"],
+        )
+
+        form = FormFactory.create(authentication_backend="eherkenning_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
+        # initialize state, but don't actually log in - we have an invalid config and
+        # keycloak redirects back to our callback URL with error parameters.
+        start_response = self.app.get(start_url)
+        auth_response = requests.get(start_response["Location"], allow_redirects=False)
+        # check out assumptions/expectations before proceeding
+        callback_url = furl(auth_response.headers["Location"])
+        assert callback_url.netloc == "testserver"
+        assert "state" in callback_url.args
+        # modify the error parameters - there doesn't seem to be an obvious way to trigger
+        # this via keycloak itself.
+        # Note: this is an example of a specific provider. It may differ when a
+        # different provider is used. According to
+        # https://openid.net/specs/openid-connect-core-1_0.html#AuthError and
+        # https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.2.1 , this is the
+        # error we expect from OIDC.
+        callback_url.args.update(
+            {
+                "error": "IDP-3200",
+                "error_description": (
+                    "Authentication with IdP 'simulator' was aborted, most likely "
+                    "because the end-user cancelled the authentication.",
+                ),
+            }
+        )
+
+        callback_response = self.app.get(str(callback_url), auto_follow=True)
+
+        self.assertEqual(callback_response.status_code, 200)
+        expected_url = furl(url_helper.frontend_start).add(
+            {"_eherkenning-message": "login-cancelled"}
+        )
+        assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
+        self.assertEqual(callback_response.request.url, str(expected_url))
 
     @tag("gh-3656", "gh-3692")
     def test_eherkenning_error_reported_for_cancelled_login_anon_django_user(self):
