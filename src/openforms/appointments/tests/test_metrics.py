@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from openforms.forms.constants import FormTypeChoices
 from openforms.forms.tests.factories import FormFactory
 
 from ..models import AppointmentsConfig
@@ -21,11 +22,13 @@ class ReportPluginUsageTests(TestCase):
 
     def test_report_usages_equal_to_number_of_appointment_forms(self):
         FormFactory.create_batch(
-            3, is_appointment_form=True, active=True, deleted_=False
+            3, type=FormTypeChoices.appointment, active=True, deleted_=False
         )
-        FormFactory.create(is_appointment_form=True, active=True, deleted_=True)
-        FormFactory.create(is_appointment_form=True, active=False, deleted_=False)
-        FormFactory.create(is_appointment_form=False, active=True, deleted_=False)
+        FormFactory.create(type=FormTypeChoices.appointment, active=True, deleted_=True)
+        FormFactory.create(
+            type=FormTypeChoices.appointment, active=False, deleted_=False
+        )
+        FormFactory.create(type=FormTypeChoices.regular, active=True, deleted_=False)
 
         result = {
             plugin.identifier: amount
@@ -45,7 +48,9 @@ class ReportPluginUsageTests(TestCase):
         config.plugin = ""
         config.save()
         self.addCleanup(AppointmentsConfig.clear_cache)
-        FormFactory.create(is_appointment_form=True, active=True, deleted_=False)
+        FormFactory.create(
+            type=FormTypeChoices.appointment, active=True, deleted_=False
+        )
 
         result = {
             plugin.identifier: amount

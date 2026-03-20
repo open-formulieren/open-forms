@@ -4,6 +4,7 @@ from opentelemetry.metrics import CallbackOptions
 
 from openforms.utils.tests.metrics_assert import MetricsAssertMixin
 
+from ..constants import FormTypeChoices
 from ..metrics import count_component_usage, count_forms
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
@@ -11,8 +12,11 @@ from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 class FormCountMetricTests(MetricsAssertMixin, TestCase):
     def test_count_forms_by_type(self):
         # appointment forms
-        FormFactory.create(is_appointment_form=True, deleted_=False)
-        FormFactory.create(is_appointment_form=True, deleted_=True)
+        FormFactory.create(type=FormTypeChoices.appointment, deleted_=False)
+        FormFactory.create(type=FormTypeChoices.appointment, deleted_=True)
+        # single page forms
+        FormFactory.create(type=FormTypeChoices.single_page, deleted_=False)
+        FormFactory.create(type=FormTypeChoices.single_page, deleted_=True)
         # live forms
         FormFactory.create(deleted_=False, active=True, maintenance_mode=False)
         FormFactory.create(deleted_=False, active=True, maintenance_mode=True)
@@ -39,16 +43,18 @@ class FormCountMetricTests(MetricsAssertMixin, TestCase):
         self.assertEqual(
             counts_by_type,
             {
-                # 1 appointment, 2 live, 2 with translations, 1 with new renderer
-                "total": 1 + 2 + 2 + 1,
-                # 1 appointment, two active and not deleted, 1 active with translations,
-                # 1 with new renderer
-                "live": 1 + 2 + 1 + 1,
-                "new_renderer_enabled": 5,  # doesn't matter if active or not
-                "new_logic_evaluation_enabled": 5,  # doesn't matter if active or not
+                # 1 appointment, 1 single page, 2 live, 2 with translations, 1 without
+                # new renderer and logic evaluation
+                "total": 1 + 1 + 2 + 2 + 1,
+                # 1 appointment, 1 single page, 2 active and not deleted, 1 active with translations,
+                # 1 without new renderer and logic evaluation
+                "live": 1 + 1 + 2 + 1 + 1,
+                "new_renderer_enabled": 6,  # doesn't matter if active or not
+                "new_logic_evaluation_enabled": 6,  # doesn't matter if active or not
                 "translation_enabled": 2,  # doesn't matter if they're active or not
                 "is_appointment": 1,  # don't consider deleted forms
-                "trash": 1 + 1 + 1,
+                "is_single_page": 1,  # don't consider deleted forms
+                "trash": 1 + 1 + 1 + 1,
             },
         )
         self.assertMarkedGlobal(result)
@@ -89,7 +95,7 @@ class FormComponentCountMetricTests(MetricsAssertMixin, TestCase):
             }
         )
         form_1, form_2 = FormFactory.create_batch(
-            2, active=True, deleted_=False, is_appointment=False
+            2, active=True, deleted_=False, type=FormTypeChoices.regular
         )
         FormStepFactory.create(form=form_1, form_definition=fd1)
         FormStepFactory.create(form=form_1, form_definition=fd2)

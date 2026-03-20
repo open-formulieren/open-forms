@@ -14,11 +14,12 @@ from rest_framework import status
 from rest_framework.test import APIRequestFactory, APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.appointments.models import AppointmentsConfig
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 
 from ..api.serializers import FormSerializer
-from ..constants import StatementCheckboxChoices
+from ..constants import FormTypeChoices, StatementCheckboxChoices
 from ..models import Form
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
@@ -1411,6 +1412,56 @@ class FormsAPITests(APITestCase):
 
         self.assertEqual(data["backend"], "digid")
         self.assertEqual(data["options"], {"loa": DigiDAssuranceLevels.middle})
+
+    def test_appointment_type_can_be_enabled_when_plugin_configured(self):
+        config = AppointmentsConfig.get_solo()
+        config.plugin = "demo"
+        config.save()
+
+        form = FormFactory.create(type=FormTypeChoices.regular)
+
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "name": form.name,
+            "slug": form.slug,
+            "type": FormTypeChoices.appointment,
+        }
+
+        response = self.client.put(url, data=data)
+        form.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(form.type, FormTypeChoices.appointment)
+
+    def test_appointment_type_cant_be_enabled_when_plugin_not_configured(self):
+        AppointmentsConfig.clear_cache()
+        form = FormFactory.create(type=FormTypeChoices.regular)
+
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "name": form.name,
+            "slug": form.slug,
+            "type": FormTypeChoices.appointment,
+        }
+
+        response = self.client.put(url, data=data)
+        errors = response.data["invalid_params"][0]
+        form.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(form.type, FormTypeChoices.regular)
+        self.assertEqual(
+            errors["reason"],
+            _("This type of form requires an appointment plugin to be configured"),
+        )
 
 
 class FormsAPITranslationTests(APITestCase):
