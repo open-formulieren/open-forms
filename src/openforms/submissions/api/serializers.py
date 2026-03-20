@@ -1,10 +1,11 @@
 from copy import deepcopy
 from dataclasses import dataclass
-from datetime import date, datetime, time, timedelta
+from datetime import timedelta
 from typing import TypedDict
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -35,10 +36,9 @@ from openforms.forms.api.serializers import (
     FormDefinitionSerializer,
     LogicComponentActionSerializer,
 )
-from openforms.forms.constants import SubmissionAllowedChoices
+from openforms.forms.constants import LogicActionTypes, SubmissionAllowedChoices
 from openforms.forms.models import FormLogic
 from openforms.forms.validators import validate_not_deleted
-from openforms.typing import JSONValue, VariableValue
 from openforms.utils.json_logic import partially_evaluate_json_logic
 from openforms.utils.urls import build_absolute_uri
 
@@ -230,21 +230,10 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer[Submission]):
         return super().to_representation(instance)
 
 
-def _to_json(value: VariableValue) -> JSONValue:
-    match value:
-        case dict():
-            return {k: _to_json(v) for k, v in value.items()}
-        case list():
-            return [_to_json(v) for v in value]
-        case date() | datetime() | time():
-            return value.isoformat()
-        case _:
-            return value
-
-
 class FormLogicFrontendSerializer(OrderedModelSerializer):
     """Represent logic rules which can be executed in the frontend."""
 
+    # Note that both fields are processed in the `to_representation` method.
     actions = LogicComponentActionSerializer(
         read_only=True,
         many=True,
@@ -253,12 +242,14 @@ class FormLogicFrontendSerializer(OrderedModelSerializer):
             "Actions triggered when the trigger expression evaluates to 'truthy'."
         ),
     )
-    json_logic_trigger = serializers.SerializerMethodField(
+    json_logic_trigger = serializers.JSONField(
+        read_only=True,
         label=_("JSON Logic Trigger"),
         help_text=_(
             "The trigger expression to determine if the actions should execute. Will "
             "be (partially) evaluated based on available data."
         ),
+        encoder=DjangoJSONEncoder,
     )
 
     class Meta:
@@ -268,8 +259,7 @@ class FormLogicFrontendSerializer(OrderedModelSerializer):
             "actions",
         )
 
-    @extend_schema_field(serializers.JSONField)
-    def get_json_logic_trigger(self, instance) -> JSONValue:
+    def to_representation(self, instance):
         step = self.context["submission_step"]
         state = step.submission.load_submission_value_variables_state()
         # We include all data, to make sure we have a (empty) value for every variable.
@@ -282,14 +272,24 @@ class FormLogicFrontendSerializer(OrderedModelSerializer):
         for key in state.get_variables_in_submission_step(step).keys():
             data.pop(key)
 
-        # Add data type information before partially evaluating - otherwise we lose
-        # the variable context.
+        # Process action
+        for action in instance.actions:
+            if action["action"]["type"] != LogicActionTypes.variable:
+                continue
+
+            value = add_data_type_information(action["action"]["value"], state)
+            value, _ = partially_evaluate_json_logic(value, data)
+            action["action"]["value"] = value
+
+        # Process JSON logic trigger
         json_logic_trigger = add_data_type_information(
             instance.json_logic_trigger, state
         )
         json_logic_trigger, _ = partially_evaluate_json_logic(json_logic_trigger, data)
+        instance.json_logic_trigger = json_logic_trigger
 
-        return _to_json(json_logic_trigger)
+        # Serialize
+        return super().to_representation(instance)
 
 
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
