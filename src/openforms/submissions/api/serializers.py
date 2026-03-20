@@ -87,6 +87,12 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "form_uuid_or_slug": "submission__form__uuid",
         },
     )
+    default_is_applicable = serializers.BooleanField(
+        source="form_step.is_applicable",
+        label=_("Default 'is applicable' flag"),
+        help_text=_("This flag is directly fetched from the form step."),
+        read_only=True,
+    )
 
     class Meta:
         model = SubmissionStep
@@ -96,6 +102,7 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "url",
             "form_step",
             "is_applicable",
+            "default_is_applicable",
             "completed",
             "can_submit",
         )
