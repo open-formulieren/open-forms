@@ -40,7 +40,7 @@ from ...constants import (
     AuthAttribute,
     LegalSubjectIdentifierType,
 )
-from .constants import EIDAS_COMPANY_PLUGIN_ID, EIDAS_PLUGIN_ID
+from .constants import EIDAS_COMPANY_PLUGIN_ID, EIDAS_PLUGIN_ID, SIGNICAT_ERROR_MAPPING
 from .oidc_plugins.constants import (
     OIDC_DIGID_IDENTIFIER,
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
@@ -75,6 +75,15 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, NoOptions]):
             "value": normalized_claims["bsn_claim"],
             "loa": str(normalized_claims.get("loa_claim", "")),
         }
+
+    def get_error_message_parameters(
+        self, error: str, error_description: str
+    ) -> tuple[str, str]:
+        errors = self.get_error_codes()
+
+        if error_mapping_value := SIGNICAT_ERROR_MAPPING.get(error):
+            return errors[error_mapping_value]
+        return super().get_error_message_parameters(error, error_description)
 
     def get_error_codes(self) -> OIDCErrors:
         return {"access_denied": (DIGID_MESSAGE_PARAMETER, DIGID_LOGIN_CANCELLED)}
@@ -122,6 +131,15 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, NoOptions]):
         if service_restriction := normalized_claims.get("branch_number_claim", ""):
             form_auth["legal_subject_service_restriction"] = service_restriction
         return form_auth
+
+    def get_error_message_parameters(
+        self, error: str, error_description: str
+    ) -> tuple[str, str]:
+        errors = self.get_error_codes()
+
+        if error_mapping_value := SIGNICAT_ERROR_MAPPING.get(error):
+            return errors[error_mapping_value]
+        return super().get_error_message_parameters(error, error_description)
 
     def get_error_codes(self) -> OIDCErrors:
         eh_message_parameter = EH_MESSAGE_PARAMETER % {
