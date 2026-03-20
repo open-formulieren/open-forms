@@ -24,7 +24,11 @@ from openforms.products.tests.factories import ProductFactory
 from openforms.typing import JSONObject
 from openforms.utils.tests.feature_flags import enable_feature_flag
 
-from ...constants import StatementCheckboxChoices, SubmissionAllowedChoices
+from ...constants import (
+    FormTypeChoices,
+    StatementCheckboxChoices,
+    SubmissionAllowedChoices,
+)
 from ...models import Form, FormDefinition, FormRegistrationBackend
 from ...tests.factories import (
     CategoryFactory,
@@ -138,6 +142,7 @@ class FormEndpointTests(APITestCase):
             },
             "product": product.uuid,
             "slug": "create-form",
+            "type": FormTypeChoices.appointment,
             "category": category.uuid,
             "theme": theme.uuid,
             "showProgressIndicator": True,
@@ -258,7 +263,7 @@ class FormEndpointTests(APITestCase):
         self.assertTrue(form.login_required)
         self.assertTrue(form.translation_enabled)
 
-        self.assertFalse(form.is_appointment)
+        self.assertEqual(form.type, FormTypeChoices.appointment)
         self.assertEqual(form.slug, "create-form")
 
         # product

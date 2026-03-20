@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from django.test import TestCase
 
+from openforms.forms.constants import FormTypeChoices
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.tests.utils import supress_output
@@ -35,7 +36,7 @@ class ErrorPlugin(DemoAppointment):
 class BookAppointmentTests(TestCase):
     def test_not_an_appointment_form(self):
         submission = SubmissionFactory.create()
-        assert not submission.form.is_appointment
+        assert not submission.form.type == FormTypeChoices.appointment
 
         with self.assertRaises(NoAppointmentForm):
             book_for_submission(submission)
@@ -45,8 +46,8 @@ class BookAppointmentTests(TestCase):
         self.assertFalse(TimelineLogProxy.objects.exists())
 
     def test_appointment_data_missing(self):
-        submission = SubmissionFactory.create(form__is_appointment_form=True)
-        assert submission.form.is_appointment
+        submission = SubmissionFactory.create(form__type=FormTypeChoices.appointment)
+        assert submission.form.type == FormTypeChoices.appointment
 
         with self.assertRaises(AppointmentRegistrationFailed):
             book_for_submission(submission)
@@ -60,7 +61,7 @@ class BookAppointmentTests(TestCase):
         )
 
     def test_creation_fails_logs_errors(self):
-        submission = SubmissionFactory.create(form__is_appointment_form=True)
+        submission = SubmissionFactory.create(form__type=FormTypeChoices.appointment)
         AppointmentFactory.create(submission=submission, plugin="error")
 
         with patch("openforms.appointments.core.register", new=register):
@@ -81,7 +82,7 @@ class BookAppointmentTests(TestCase):
             )
 
     def test_successful_creation(self):
-        submission = SubmissionFactory.create(form__is_appointment_form=True)
+        submission = SubmissionFactory.create(form__type=FormTypeChoices.appointment)
         AppointmentFactory.create(submission=submission, plugin="demo")
 
         with patch("openforms.appointments.core.register", new=register):
@@ -105,7 +106,7 @@ class BookAppointmentTests(TestCase):
             )
 
     def test_plugin_invocation(self):
-        submission = SubmissionFactory.create(form__is_appointment_form=True)
+        submission = SubmissionFactory.create(form__type=FormTypeChoices.appointment)
         start = datetime(2023, 8, 1, 12, 0, 15).replace(tzinfo=UTC)
         appointment = AppointmentFactory.create(
             submission=submission,
