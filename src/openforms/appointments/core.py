@@ -11,6 +11,7 @@ import elasticapm
 import structlog
 from opentelemetry import trace
 
+from openforms.forms.constants import FormTypeChoices
 from openforms.logging import audit_logger
 from openforms.submissions.models import Submission
 
@@ -94,7 +95,7 @@ def book_for_submission(submission: Submission) -> str:
       It could be caused by an existing form being changed into an appointment form with
       old data.
     """
-    if not submission.form.is_appointment:
+    if not submission.form.type == FormTypeChoices.appointment:
         raise NoAppointmentForm("Not an appointment form")
 
     audit_log = audit_logger.bind(submission_uuid=str(submission.uuid))
