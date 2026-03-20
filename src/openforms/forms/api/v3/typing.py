@@ -8,12 +8,12 @@ from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.typing import ConfirmationEmailTemplateTranslatedData
 from openforms.formio.typing import FormioConfiguration
 
-from ...constants import StatementCheckboxChoices
+from ...constants import FormTypeChoices, StatementCheckboxChoices
 from ...models import Category
 
 
 class AppointmentData(TypedDict):
-    is_appointment: bool
+    supports_multiple_products: bool | None
 
 
 class ButtonTextData(TypedDict):
@@ -101,6 +101,7 @@ class NewFormValidatedData(TypedDict):
     literals: NotRequired[FormLiteralData]
     product: NotRequired[Product]
     slug: str
+    type: FormTypeChoices
     category: NotRequired[Category]
     theme: NotRequired[Theme]
     formstep_set: list[FormStepData]

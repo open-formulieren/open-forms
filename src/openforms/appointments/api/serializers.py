@@ -9,6 +9,7 @@ from rest_framework import serializers
 
 from openforms.formio.service import build_serializer
 from openforms.formio.utils import get_component_empty_value
+from openforms.forms.constants import FormTypeChoices
 from openforms.forms.models import Form
 from openforms.submissions.api.fields import PrivacyPolicyAcceptedField
 from openforms.submissions.models import Submission
@@ -20,13 +21,6 @@ from .fields import LocationIDField, ProductIDListField
 
 
 class AppointmentOptionsSerializer(serializers.Serializer):
-    # TODO: validate that appointments cannot be enabled if there's no plugin configured
-    is_appointment = serializers.BooleanField(
-        label=_("Is appointment form"),
-        help_text=_(
-            "Boolean indicating if the form is an appointment form, using the new flow."
-        ),
-    )
     supports_multiple_products = serializers.SerializerMethodField(
         label=_("Multiple products supported?"),
         help_text=_(
@@ -44,7 +38,7 @@ class AppointmentOptionsSerializer(serializers.Serializer):
 
     def get_supports_multiple_products(self, obj: Form) -> bool | None:
         # not an appointment -> don't bother looking up plugin configuration
-        if not obj.is_appointment:
+        if obj.type != FormTypeChoices.appointment:
             return None
         plugin = self._appointment_plugin
         return plugin.supports_multiple_products if plugin else None

@@ -14,6 +14,7 @@ from openforms.api.utils import (
     underscore_to_camel,
 )
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
+from openforms.appointments.utils import get_plugin
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
 from openforms.config.api.constants import STATEMENT_CHECKBOX_SCHEMA
@@ -35,7 +36,7 @@ from openforms.registrations.service import plugin_allows_json_schema_generation
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 from openforms.typing import RegistrationBackendKey
 
-from ...constants import StatementCheckboxChoices
+from ...constants import FormTypeChoices, StatementCheckboxChoices
 from ...models import Category, Form, FormAuthenticationBackend, FormRegistrationBackend
 from .button_text import ButtonTextSerializer
 from .form_step import MinimalFormStepSerializer
@@ -269,6 +270,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "product",
             "slug",
             "url",
+            "type",
             "category",
             "theme",
             "steps",
@@ -320,6 +322,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "payment_options",
             "literals",
             "slug",
+            "type",
             "url",
             "steps",
             "show_progress_indicator",
@@ -520,7 +523,28 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         )
 
         self.validate_auto_login_backend(attrs)
+        self.validate_appointment_type_can_be_enabled(attrs)
         return attrs
+
+    def validate_appointment_type_can_be_enabled(self, attrs) -> None:
+        form_type = attrs.get("type")
+        if form_type != FormTypeChoices.appointment:
+            return
+
+        try:
+            get_plugin()
+        except ValueError:
+            raise serializers.ValidationError(
+                {
+                    "type": ErrorDetail(
+                        _(
+                            "This type of form requires an appointment plugin to be "
+                            "configured"
+                        ),
+                        code="invalid",
+                    )
+                }
+            )
 
     def validate_backend_options(self, attrs, backend_field, options_field, registry):
         plugin_id = get_from_serializer_data_or_instance(
