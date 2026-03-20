@@ -27,7 +27,7 @@ from openforms.logging.processors import (
     drop_user_agent_in_dev,
 )
 
-from .utils import Filesize, get_sentry_integrations
+from .utils import Filesize, get_sentry_integrations, sentry_before_send
 
 # Build paths inside the project, so further paths can be defined relative to
 # the code root. Gets the abspath to src/openforms
@@ -974,7 +974,10 @@ if SENTRY_DSN:
     }
 
     sentry_sdk.init(
-        **SENTRY_CONFIG, integrations=get_sentry_integrations(), send_default_pii=True
+        **SENTRY_CONFIG,
+        integrations=get_sentry_integrations(),
+        send_default_pii=True,
+        before_send=sentry_before_send,
     )
 
 # Sentry for the Open-Forms SDK
