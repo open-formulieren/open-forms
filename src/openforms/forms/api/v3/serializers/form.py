@@ -107,6 +107,7 @@ class FormSerializer(serializers.ModelSerializer):
             "literals",
             "product",
             "slug",
+            "type",
             "category",
             "theme",
             "steps",
