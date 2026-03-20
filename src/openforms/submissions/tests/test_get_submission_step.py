@@ -97,20 +97,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "id": None,  # there is no submission step created yet
             "formStepUuid": str(self.step.uuid),
             "slug": self.step.slug,
-            "defaultConfiguration": {
-                "components": [
-                    {
-                        "label": "Some field",
-                        "key": "someField",
-                        "type": "textfield",
-                    },
-                    {
-                        "label": "Other field",
-                        "key": "otherField",
-                        "type": "selectboxes",
-                    },
-                ]
-            },
+            "defaultConfiguration": None,
             "configuration": {
                 "components": [
                     {
@@ -156,20 +143,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "id": None,  # there is no submission step created yet
             "formStepUuid": str(self.step.uuid),
             "slug": self.step.slug,
-            "defaultConfiguration": {
-                "components": [
-                    {
-                        "label": "Some field",
-                        "key": "someField",
-                        "type": "textfield",
-                    },
-                    {
-                        "label": "Other field",
-                        "key": "otherField",
-                        "type": "selectboxes",
-                    },
-                ]
-            },
+            "defaultConfiguration": None,
             "configuration": {
                 "components": [
                     {
@@ -948,11 +922,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             "id": None,  # there is no submission step created yet
             "formStepUuid": str(step.uuid),
             "slug": step.slug,
-            "defaultConfiguration": {
-                "components": [
-                    {"type": "textfield", "key": "textfield", "label": "{{ foo }}"},
-                ]
-            },
+            "defaultConfiguration": None,
             "configuration": {
                 "components": [
                     {"type": "textfield", "key": "textfield", "label": "I am a label!"},
@@ -1104,12 +1074,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             "id": None,  # there is no submission step created yet
             "formStepUuid": str(step.uuid),
             "slug": step.slug,
-            "defaultConfiguration": {
-                "components": [
-                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
-                    {"type": "textfield", "key": "textfield", "label": "{{ foo }}"},
-                ]
-            },
+            "defaultConfiguration": None,
             "configuration": {
                 "components": [
                     {
@@ -1179,12 +1144,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             "id": None,  # there is no submission step created yet
             "formStepUuid": str(step.uuid),
             "slug": step.slug,
-            "defaultConfiguration": {
-                "components": [
-                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
-                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
-                ]
-            },
+            "defaultConfiguration": None,
             "configuration": {
                 "components": [
                     {

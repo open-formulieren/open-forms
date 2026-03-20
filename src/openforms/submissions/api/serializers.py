@@ -390,7 +390,9 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         )
 
         default_configuration = None
-        if not in_form_logic_evaluation:  # not relevant for the check-logic endpoint
+        if not require_backend:
+            # Creating a default configuration is only useful if we do not require the
+            # backend for logic evaluation.
             wrapper = deepcopy(instance.form_step.form_definition.configuration_wrapper)
             rewrite_formio_components_for_request(
                 wrapper, request=self.context["request"]

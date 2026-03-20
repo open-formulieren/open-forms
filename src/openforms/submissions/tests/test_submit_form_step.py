@@ -78,9 +78,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "configuration": {
                     "components": [{"type": "textfield", "key": "test-key"}]
                 },
-                "defaultConfiguration": {
-                    "components": [{"type": "textfield", "key": "test-key"}]
-                },
+                "defaultConfiguration": None,
                 "data": {"test-key": "example data"},
                 "isApplicable": True,
                 "completed": True,
