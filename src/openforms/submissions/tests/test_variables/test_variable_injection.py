@@ -101,7 +101,7 @@ class VariableInjectionTests(SubmissionsMixin, FormioMixin, APITestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        configuration = response.json()["formStep"]["configuration"]
+        configuration = response.json()["configuration"]
 
         with self.subTest(component="group1"):
             self.assertFormioComponent(
@@ -149,7 +149,7 @@ class VariableInjectionTests(SubmissionsMixin, FormioMixin, APITestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        configuration = response.json()["formStep"]["configuration"]
+        configuration = response.json()["configuration"]
 
         with self.subTest(component="group1"):
             self.assertFormioComponent(
@@ -194,7 +194,7 @@ class VariableInjectionTests(SubmissionsMixin, FormioMixin, APITestCase):
         response = self.client.post(endpoint, {"data": {"text1": "some input"}})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        configuration = response.json()["step"]["formStep"]["configuration"]
+        configuration = response.json()["step"]["configuration"]
 
         with self.subTest(component="group1"):
             self.assertFormioComponent(
@@ -313,7 +313,7 @@ class VariableInjectionI18NTests(SubmissionsMixin, FormioMixin, APITestCase):
 
         step_json = self.client.get(endpoint).json()
         components_by_key = {
-            c["key"]: c for c in step_json["formStep"]["configuration"]["components"]
+            c["key"]: c for c in step_json["configuration"]["components"]
         }
 
         c = components_by_key.get
@@ -353,8 +353,7 @@ class VariableInjectionI18NTests(SubmissionsMixin, FormioMixin, APITestCase):
         ).json()
 
         components_by_key = {
-            c["key"]: c
-            for c in check_json["step"]["formStep"]["configuration"]["components"]
+            c["key"]: c for c in check_json["step"]["configuration"]["components"]
         }
 
         c = components_by_key.get

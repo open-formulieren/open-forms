@@ -46,6 +46,8 @@ jobs:
       - name: Extract SDK version info
         id: sdk-vars
         uses: ./.github/actions/extract-sdk-version
+        with:
+          backend-version: ${{ steps.vars.outputs.version }}
 
   tests:
     name: Run the Django test suite

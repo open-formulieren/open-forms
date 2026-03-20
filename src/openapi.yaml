@@ -7617,19 +7617,6 @@ components:
             %}' instructions. Additionally, you can use the '{% confirmation_summary
             %}' instruction and some additional variables - see the documentation
             for details.
-    ContextAwareFormStep:
-      type: object
-      properties:
-        index:
-          type: integer
-          readOnly: true
-        configuration:
-          type: object
-          additionalProperties: {}
-          readOnly: true
-      required:
-      - configuration
-      - index
     DMNEvaluateAction:
       type: object
       properties:
@@ -8693,6 +8680,24 @@ components:
       - order
       - url
       - uuid
+    FormLogicFrontend:
+      type: object
+      description: Represent logic rules which can be executed in the frontend.
+      properties:
+        jsonLogicTrigger:
+          readOnly: true
+          description: The trigger expression to determine if the actions should execute.
+            Will be (partially) evaluated based on available data.
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogicComponentAction'
+          readOnly: true
+          description: Actions triggered when the trigger expression evaluates to
+            'truthy'.
+      required:
+      - actions
+      - jsonLogicTrigger
     FormModelTranslations:
       type: object
       description: |-
@@ -9763,6 +9768,11 @@ components:
         isApplicable:
           type: boolean
           readOnly: true
+        defaultIsApplicable:
+          type: boolean
+          readOnly: true
+          title: Default 'is applicable' flag
+          description: This flag is directly fetched from the form step.
         completed:
           type: boolean
           readOnly: true
@@ -9772,6 +9782,7 @@ components:
       required:
       - canSubmit
       - completed
+      - defaultIsApplicable
       - formStep
       - id
       - isApplicable
@@ -10919,14 +10930,14 @@ components:
           readOnly: true
           nullable: true
           title: UUID
+        formStepUuid:
+          type: string
+          format: uuid
+          readOnly: true
         slug:
           type: string
           readOnly: true
           pattern: ^[-a-zA-Z0-9_]+$
-        formStep:
-          allOf:
-          - $ref: '#/components/schemas/ContextAwareFormStep'
-          readOnly: true
         data:
           type: object
           additionalProperties: {}
@@ -10940,12 +10951,39 @@ components:
         canSubmit:
           type: boolean
           readOnly: true
+        configuration:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+          description: Form configuration of the corresponding form step, (possibly)
+            mutated by form logic.
+        defaultConfiguration:
+          readOnly: true
+          nullable: true
+          description: Default form configuration of the corresponding form step.
+        requireBackendLogicEvaluation:
+          type: boolean
+          readOnly: true
+          description: Indicates whether the backend is required to execute form logic.
+        logicRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormLogicFrontend'
+          readOnly: true
+          description: Logic rules of the corresponding form step. The JSON logic
+            triggers are partially evaluated with data from user-defined variables,
+            and variables of components from the steps other than the current one.
+            Will be empty if the backend is required to evaluate form logic.
       required:
       - canSubmit
       - completed
-      - formStep
+      - configuration
+      - defaultConfiguration
+      - formStepUuid
       - id
       - isApplicable
+      - logicRules
+      - requireBackendLogicEvaluation
       - slug
     SubmissionStepSummary:
       type: object

@@ -54,12 +54,11 @@ const useFormStep = (identifier = '') => {
  * Look up multiple form steps in the form context by identifiers.
  *
  * @param  {Array[string]} identifiers  Array of URL for persisted steps or generated ID for non-persisted steps.
- * @return {Array[Object]|null}  Array of objects with the step instances from the context, or null if no identifiers were provided.
+ * @return {Array[Object]}  Array of objects with the step instances from the context, empty if no identifiers were provided.
  */
 const useFormSteps = (identifiers = []) => {
   const formContext = useContext(FormContext);
   const formSteps = formContext.formSteps;
-  if (identifiers.length === 0) return null;
 
   const steps = [];
   for (const identifier of identifiers) {

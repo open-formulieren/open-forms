@@ -107,11 +107,10 @@ def partially_evaluate_json_logic(
                 fully_resolved = fully_resolved and resolved
             return {operator: argument_new}, fully_resolved
         case "date" | "datetime" | "duration":
-            # These operators should not be evaluated directly, but only if the entire
-            # expression was resolved at the end. Their arguments could still contain
-            # variable expressions, though.
-            argument_new, resolved = partially_evaluate_json_logic(argument, data)
-            return {operator: argument_new}, resolved
+            # These operators should not be evaluated directly, because we might lose
+            # data type information if part of the expression was already evaluated.
+            argument_new, _ = partially_evaluate_json_logic(argument, data)
+            return {operator: argument_new}, False
         case "today":
             # For the "today" operator, the arguments are ignored, so we just return an
             # unchanged expression, which can be evaluated at the end.

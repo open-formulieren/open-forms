@@ -142,12 +142,17 @@ def add_data_type_information(
                     parent = var_expression["var"][0]
 
             item_expression = add_data_type_information(argument[1], state, parent)
-            return {
-                operator: [var_expression, item_expression],
-            }
+            return {operator: [var_expression, item_expression]}
         case "date" | "datetime":
-            # It already contains a date operator.
-            return normalized  # pyright: ignore[reportReturnType]
+            # Date operations only take a single argument
+            assert len(argument) == 1
+            arg = argument[0]
+            # If the argument is a (ISO-8601) string or a variable expression, we don't
+            # have to do anything. If it is something else, e.g. a subtraction
+            # operation, we do need to process it further to ensure data-type
+            # information is added to any nested variable expressions.
+            if isinstance(arg, str) or (isinstance(arg, dict) and "var" in arg):
+                return normalized  # pyright: ignore[reportReturnType]
         case _:
             pass
 

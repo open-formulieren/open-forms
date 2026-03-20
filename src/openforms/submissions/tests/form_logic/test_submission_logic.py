@@ -474,7 +474,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         data = response.json()
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertFalse(
-            data["step"]["formStep"]["configuration"]["components"][0]["hidden"],
+            data["step"]["configuration"]["components"][0]["hidden"],
         )
 
         response = self.client.post(
@@ -485,7 +485,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual({"textfield": ""}, data["step"]["data"])
         self.assertTrue(
-            data["step"]["formStep"]["configuration"]["components"][0]["hidden"],
+            data["step"]["configuration"]["components"][0]["hidden"],
         )
 
     @tag("gh-5151")
@@ -681,7 +681,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             response = self.client.get(endpoint)
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            configuration = response.json()["formStep"]["configuration"]
+            configuration = response.json()["configuration"]
             self.assertEqual(
                 configuration["components"][1],
                 {
@@ -703,7 +703,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             response = self.client.post(logic_check_endpoint, {"data": {"hide": False}})
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            configuration = response.json()["step"]["formStep"]["configuration"]
+            configuration = response.json()["step"]["configuration"]
             self.assertEqual(
                 configuration["components"][1],
                 {
@@ -725,7 +725,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             response = self.client.post(logic_check_endpoint, {"data": {"hide": True}})
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            configuration = response.json()["step"]["formStep"]["configuration"]
+            configuration = response.json()["step"]["configuration"]
             self.assertEqual(
                 configuration["components"][1],
                 {
@@ -1227,9 +1227,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             self.assertEqual(data["step"]["data"], {})
 
         with self.subTest("evaluated content template"):
-            content_component = data["step"]["formStep"]["configuration"]["components"][
-                2
-            ]
+            content_component = data["step"]["configuration"]["components"][2]
             self.assertEqual(
                 content_component["html"],
                 textwrap.dedent("""
@@ -1336,9 +1334,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 },
             )
 
-            textfield, editgrid = step_data["formStep"]["configuration"]["components"][
-                0:2
-            ]
+            textfield, editgrid = step_data["configuration"]["components"][0:2]
             self.assertTrue(textfield["hidden"])
             self.assertTrue(editgrid["hidden"])
 
@@ -1362,9 +1358,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             # loop
             self.assertEqual(step_data["data"], {})
 
-            textfield, editgrid = step_data["formStep"]["configuration"]["components"][
-                0:2
-            ]
+            textfield, editgrid = step_data["configuration"]["components"][0:2]
             self.assertTrue(textfield["hidden"])
             self.assertTrue(editgrid["hidden"])
 
@@ -1440,9 +1434,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
 
-        self.assertFalse(
-            data["step"]["formStep"]["configuration"]["components"][1]["hidden"]
-        )
+        self.assertFalse(data["step"]["configuration"]["components"][1]["hidden"])
         self.assertEqual(data["step"]["data"], {})
 
     def test_second_rule_triggers_first_does_not_must_not_clear_value(self):
@@ -1509,9 +1501,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
 
-        self.assertFalse(
-            data["step"]["formStep"]["configuration"]["components"][1]["hidden"]
-        )
+        self.assertFalse(data["step"]["configuration"]["components"][1]["hidden"])
         self.assertEqual(data["step"]["data"], {})
 
     def test_rules_flip_from_hidden_to_visible_state_should_not_clear_value(self):
@@ -1636,16 +1626,12 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         data = response.json()
 
         with self.subTest("textfield"):
-            textfield_component = data["step"]["formStep"]["configuration"][
-                "components"
-            ][2]
+            textfield_component = data["step"]["configuration"]["components"][2]
             self.assertFalse(textfield_component["hidden"])
             self.assertTrue(textfield_component["validate"]["required"])
 
         with self.subTest("fieldset"):
-            fieldset_component = data["step"]["formStep"]["configuration"][
-                "components"
-            ][3]
+            fieldset_component = data["step"]["configuration"]["components"][3]
             self.assertFalse(fieldset_component["hidden"])
             self.assertFalse(fieldset_component["components"][0]["hidden"])
 
@@ -1776,16 +1762,12 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         data = response.json()
 
         with self.subTest("textfield"):
-            textfield_component = data["step"]["formStep"]["configuration"][
-                "components"
-            ][2]
+            textfield_component = data["step"]["configuration"]["components"][2]
             self.assertFalse(textfield_component["hidden"])
             self.assertTrue(textfield_component["validate"]["required"])
 
         with self.subTest("fieldset"):
-            fieldset_component = data["step"]["formStep"]["configuration"][
-                "components"
-            ][3]
+            fieldset_component = data["step"]["configuration"]["components"][3]
             self.assertFalse(fieldset_component["hidden"])
             self.assertFalse(fieldset_component["components"][0]["hidden"])
 
@@ -1859,7 +1841,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestC
         response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        configuration = response.json()["formStep"]["configuration"]
+        configuration = response.json()["configuration"]
         self.assertEqual(
             configuration["components"][1],
             {

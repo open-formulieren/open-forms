@@ -1,5 +1,6 @@
+from copy import deepcopy
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import date, datetime, time, timedelta
 from typing import TypedDict
 
 from django.conf import settings
@@ -13,6 +14,7 @@ import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from opentelemetry import trace
+from ordered_model.serializers import OrderedModelSerializer
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
@@ -23,16 +25,26 @@ from openforms.api.utils import mark_experimental
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import render_email_template, send_mail_html
 from openforms.formio.api.fields import FormioDataField
-from openforms.formio.service import FormioData, build_serializer
+from openforms.formio.service import (
+    FormioData,
+    build_serializer,
+    rewrite_formio_components_for_request,
+)
 from openforms.formio.utils import iter_components
-from openforms.forms.api.serializers import FormDefinitionSerializer
+from openforms.forms.api.serializers import (
+    FormDefinitionSerializer,
+    LogicComponentActionSerializer,
+)
 from openforms.forms.constants import SubmissionAllowedChoices
-from openforms.forms.models import FormStep
+from openforms.forms.models import FormLogic
 from openforms.forms.validators import validate_not_deleted
+from openforms.typing import JSONValue, VariableValue
+from openforms.utils.json_logic import partially_evaluate_json_logic
 from openforms.utils.urls import build_absolute_uri
 
 from ..constants import SUBMISSIONS_SESSION_KEY, ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
+from ..json_logic import add_data_type_information
 from ..models import EmailVerification, Submission, SubmissionStep
 from ..tokens import submission_resume_token_generator
 from ..utils import get_report_download_url
@@ -75,6 +87,12 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "form_uuid_or_slug": "submission__form__uuid",
         },
     )
+    default_is_applicable = serializers.BooleanField(
+        source="form_step.is_applicable",
+        label=_("Default 'is applicable' flag"),
+        help_text=_("This flag is directly fetched from the form step."),
+        read_only=True,
+    )
 
     class Meta:
         model = SubmissionStep
@@ -84,6 +102,7 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "url",
             "form_step",
             "is_applicable",
+            "default_is_applicable",
             "completed",
             "can_submit",
         )
@@ -211,42 +230,110 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer[Submission]):
         return super().to_representation(instance)
 
 
-class ContextAwareFormStepSerializer(serializers.ModelSerializer):
-    configuration = serializers.SerializerMethodField()
+def _to_json(value: VariableValue) -> JSONValue:
+    match value:
+        case dict():
+            return {k: _to_json(v) for k, v in value.items()}
+        case list():
+            return [_to_json(v) for v in value]
+        case date() | datetime() | time():
+            return value.isoformat()
+        case _:
+            return value
+
+
+class FormLogicFrontendSerializer(OrderedModelSerializer):
+    """Represent logic rules which can be executed in the frontend."""
+
+    actions = LogicComponentActionSerializer(
+        read_only=True,
+        many=True,
+        label=_("Actions"),
+        help_text=_(
+            "Actions triggered when the trigger expression evaluates to 'truthy'."
+        ),
+    )
+    json_logic_trigger = serializers.SerializerMethodField(
+        label=_("JSON Logic Trigger"),
+        help_text=_(
+            "The trigger expression to determine if the actions should execute. Will "
+            "be (partially) evaluated based on available data."
+        ),
+    )
 
     class Meta:
-        model = FormStep
-        fields = ("index", "configuration")
-        extra_kwargs = {
-            "index": {"source": "order"},
-        }
-
-    @tracer.start_as_current_span(
-        name="get-configuration",
-        attributes={
-            "span.type": "app",
-            "span.subtype": "api",
-            "span.action": "serialization",
-        },
-    )
-    @elasticapm.capture_span(span_type="app.api.serialization")
-    def get_configuration(self, instance) -> dict:
-        submission = self.root.instance.submission
-        serializer = FormDefinitionSerializer(
-            instance=instance.form_definition,
-            context={**self.context, "submission": submission},
+        model = FormLogic
+        fields = (
+            "json_logic_trigger",
+            "actions",
         )
-        return serializer.data["configuration"]
+
+    @extend_schema_field(serializers.JSONField)
+    def get_json_logic_trigger(self, instance) -> JSONValue:
+        step = self.context["submission_step"]
+        state = step.submission.load_submission_value_variables_state()
+        # We include all data, to make sure we have a (empty) value for every variable.
+        # Component variables of the current step need to be excluded, though, as these
+        # are subject to change with user input. If variables from future steps are not
+        # included here, form designers have to take into account that a value can be
+        # `None`, in addition to an empty value. `None` (or `null` in JS) is the value
+        # that will be used by JSON logic if the variable is not present in the data.
+        data = state.get_data(include_unsaved=True, include_static_variables=True)
+        for key in state.get_variables_in_submission_step(step).keys():
+            data.pop(key)
+
+        # Add data type information before partially evaluating - otherwise we lose
+        # the variable context.
+        json_logic_trigger = add_data_type_information(
+            instance.json_logic_trigger, state
+        )
+        json_logic_trigger, _ = partially_evaluate_json_logic(json_logic_trigger, data)
+
+        return _to_json(json_logic_trigger)
 
 
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
-    form_step = ContextAwareFormStepSerializer(read_only=True)
     slug = serializers.SlugField(source="form_step.slug", read_only=True)
-    data = FormioDataField(  # type: ignore
+    form_step_uuid = serializers.UUIDField(source="form_step.uuid", read_only=True)
+    # Note that this field is set in the `to_representation` method.
+    default_configuration = serializers.JSONField(
+        label=_("Default configuration"),
+        help_text=_("Default form configuration of the corresponding form step."),
+        allow_null=True,
+        read_only=True,
+    )
+    configuration = serializers.SerializerMethodField(
+        label=_("Configuration"),
+        help_text=_(
+            "Form configuration of the corresponding form step, (possibly) mutated by "
+            "form logic."
+        ),
+    )
+    data = FormioDataField(
         label=_("data"),
         required=False,
         allow_null=True,
         validators=[ValidatePrefillData()],
+    )
+    # Note that this field is set in the `to_representation` method.
+    require_backend_logic_evaluation = serializers.BooleanField(
+        label=_("Require backend logic evaluation"),
+        help_text=_("Indicates whether the backend is required to execute form logic."),
+        read_only=True,
+    )
+    # Note that this field is set in the `to_representation` method.
+    logic_rules = FormLogicFrontendSerializer(
+        many=True,
+        label=_("Logic rules"),
+        help_text=_(
+            "Logic rules of the corresponding form step. The JSON logic triggers are "
+            "partially evaluated with data from user-defined variables, and variables "
+            "of components from the steps other than the current one. Will be empty if "
+            "the backend is required to evaluate form logic."
+        ),
+        read_only=True,
+        allow_empty=True,
+        default=list,
     )
 
     parent_lookup_kwargs = {
@@ -259,12 +346,16 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         model = SubmissionStep
         fields = (
             "id",
+            "form_step_uuid",
             "slug",
-            "form_step",
             "data",
             "is_applicable",
             "completed",
             "can_submit",
+            "configuration",
+            "default_configuration",
+            "require_backend_logic_evaluation",
+            "logic_rules",
         )
 
         extra_kwargs = {
@@ -285,7 +376,31 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     )
     @elasticapm.capture_span(span_type="app.api.serialization")
     def to_representation(self, instance):
-        # invoke the configured form logic to dynamically update the Formio.js configuration
+        in_form_logic_evaluation = self.context.get("in_form_logic_evaluation", False)
+
+        # Before evaluating logic, we need to ensure we determine the "require backend"
+        # flag and save the default configuration, to avoid doing this on a mutated
+        # configuration.
+        logic_rules = list(instance.form_step.logic_rules.all())
+        require_backend = (
+            not instance.form_step.form.new_logic_evaluation_enabled  # backend is always required if the feature flag is disabled
+            or in_form_logic_evaluation  # not relevant for the check-logic endpoint
+            or instance.form_step.is_backend_logic_evaluation_required
+            or any(rule.is_backend_logic_evaluation_required for rule in logic_rules)
+        )
+
+        default_configuration = None
+        if not require_backend:
+            # Creating a default configuration is only useful if we do not require the
+            # backend for logic evaluation.
+            wrapper = deepcopy(instance.form_step.form_definition.configuration_wrapper)
+            rewrite_formio_components_for_request(
+                wrapper, request=self.context["request"]
+            )
+            default_configuration = wrapper.configuration
+
+        # invoke the configured form logic to dynamically update the Formio.js
+        # configuration
         new_configuration = evaluate_form_logic(instance.submission, instance)
 
         # update the config for serialization
@@ -295,11 +410,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
 
         # Serialize the data to JSON. We can't use a generic JSON encoder here, because
         # we need context from the variable
-        data = (
-            instance.unsaved_data
-            if self.context.get("unsaved_data_only", False)
-            else instance.data
-        )
+        data = instance.unsaved_data if in_form_logic_evaluation else instance.data
         serialized_data = FormioData()
         state = instance.submission.load_submission_value_variables_state()
         variables = state.get_variables_in_submission_step(instance)
@@ -308,9 +419,35 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
                 continue
             serialized_data[key] = variable.to_json(data[key])
 
+        # Add relevant data
         representation["data"] = serialized_data.data
+        representation["require_backend_logic_evaluation"] = require_backend
+        representation["default_configuration"] = default_configuration
+
+        if not require_backend:
+            # Serializing logic rules is only useful if we do not require the backend
+            # for logic evaluation.
+            logic_rules_serializer = FormLogicFrontendSerializer(
+                many=True, instance=logic_rules, context={"submission_step": instance}
+            )
+            representation["logic_rules"] = logic_rules_serializer.data
 
         return representation
+
+    @tracer.start_as_current_span(
+        name="get-configuration",
+        attributes={
+            "span.type": "app",
+            "span.subtype": "api",
+            "span.action": "serialization",
+        },
+    )
+    @elasticapm.capture_span(span_type="app.api.serialization")
+    def get_configuration(self, instance) -> dict:
+        serializer = FormDefinitionSerializer(
+            instance=instance.form_step.form_definition, context=self.context
+        )
+        return serializer.data["configuration"]
 
     def validate_data(self, data: FormioData):
         self._run_formio_validation(data)

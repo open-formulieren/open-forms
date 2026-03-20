@@ -67,9 +67,7 @@ class StaticVariablesTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response_data = response.json()
-        content_field = response_data["formStep"]["configuration"]["components"][0][
-            "html"
-        ]
+        content_field = response_data["configuration"]["components"][0]["html"]
         data = response_data["data"]
 
         # The static variable is used in the dynamic configuration ...

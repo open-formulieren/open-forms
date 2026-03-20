@@ -375,6 +375,19 @@ export const WithLogicRuleAnalysis = {
           },
         ],
       },
+      {
+        uuid: 'baz',
+        _generatedId: 'baz',
+        _logicType: 'simple',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        description: 'New logic rule',
+        _mayGenerateDescription: false,
+        order: 2,
+        jsonLogicTrigger: {},
+        isAdvanced: true,
+        formSteps: [],
+        actions: [],
+      },
     ],
 
     availableFormVariables: AVAILABLE_FORM_VARIABLES,
@@ -390,5 +403,6 @@ export const WithLogicRuleAnalysis = {
     expect(
       await canvas.findByText('Deze regel wordt uitgevoerd in stap(pen): Step 1, Step 2')
     ).toBeVisible();
+    expect(canvas.getByDisplayValue('New logic rule')).toBeVisible();
   },
 };

@@ -824,7 +824,7 @@ class TestDynamicConfigAddingOptionsForRequest(SubmissionsMixin, APITestCase):
         self.client.force_authenticate(user=user)
 
         response = self.client.get(endpoint, HTTP_X_CSP_NONCE="dGvsa==")
-        formio_components = response.json()["formStep"]["configuration"]["components"]
+        formio_components = response.json()["configuration"]["components"]
 
         with self.subTest("HTML of content component with inline style"):
             component1 = next(
