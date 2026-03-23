@@ -107,6 +107,12 @@ class SubmissionStep(models.Model):  # noqa: DJ008
         default=False,
         help_text=_("Whether the submission step has been completed."),
     )
+    is_applicable = models.BooleanField(
+        _("is applicable"),
+        default=None,
+        help_text=_("Whether the submission step is applicable."),
+        null=True,
+    )
 
     # bugfix for #2135
     form_step_history = models.JSONField(
@@ -120,7 +126,6 @@ class SubmissionStep(models.Model):  # noqa: DJ008
 
     # can be modified by logic evaluations/checks
     _can_submit = True
-    _is_applicable: bool | None = None
     _form_logic_evaluated: bool = False
 
     _unsaved_data = None
@@ -158,6 +163,12 @@ class SubmissionStep(models.Model):  # noqa: DJ008
             if not self.form_step_id:
                 self.form_step = self._load_form_step_from_history()
 
+    def save(self, *args, **kwargs):
+        if self.is_applicable is None:
+            self.is_applicable = self.form_step.is_applicable
+
+        return super().save(*args, **kwargs)
+
     def _load_form_step_from_history(self) -> FormStep | None:
         history = deepcopy(self.form_step_history)
 
@@ -191,19 +202,10 @@ class SubmissionStep(models.Model):  # noqa: DJ008
     def can_submit(self, value: bool) -> None:
         self._can_submit = value
 
-    @property
-    def is_applicable(self) -> bool:
-        if self._is_applicable is not None:
-            return self._is_applicable
-        return self.form_step.is_applicable
-
-    @is_applicable.setter
-    def is_applicable(self, value: bool) -> None:
-        self._is_applicable = value
-
     def reset(self):
+        # Not necessary to call `.save()` because data is handled through submission
+        # value variables.
         self.data = FormioData()
-        self.save()
 
     @property
     def unsaved_data(self) -> FormioData | None:

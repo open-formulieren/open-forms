@@ -15,7 +15,12 @@ from openforms.utils.json_logic import introspect_json_logic
 from openforms.variables.service import resolve_key
 
 if TYPE_CHECKING:
-    from openforms.submissions.logic.actions import ActionOperation, PropertyAction
+    from openforms.submissions.logic.actions import (
+        ActionOperation,
+        PropertyAction,
+        StepApplicableAction,
+        StepNotApplicableAction,
+    )
 
 
 class FormLogic(OrderedModel):
@@ -110,6 +115,23 @@ class FormLogic(OrderedModel):
             ):
                 continue
             yield action
+
+    @property
+    def step_applicable_actions(
+        self,
+    ) -> Iterator[StepApplicableAction | StepNotApplicableAction]:
+        """
+        Generator which yields actions that change the "is applicable" flag of
+        submission steps.
+        """
+        from openforms.submissions.logic.actions import (
+            StepApplicableAction,
+            StepNotApplicableAction,
+        )
+
+        for action in self.action_operations:
+            if isinstance(action, StepApplicableAction | StepNotApplicableAction):
+                yield action
 
     @property
     def components_in_hidden_actions(self) -> set[str]:

@@ -639,7 +639,11 @@ class Submission(models.Model):
                 # there's no known DB record for this, so we create a fresh, unsaved
                 # instance and return this
                 step = SubmissionStep(
-                    uuid=None, submission=self, form_step=form_step, completed=False
+                    uuid=None,
+                    submission=self,
+                    form_step=form_step,
+                    completed=False,
+                    is_applicable=form_step.is_applicable,
                 )
             steps.append(step)
 

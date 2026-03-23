@@ -177,7 +177,9 @@ class SubmissionViewSet(
 
         # Create submission step instances
         submission_steps = [
-            SubmissionStep(submission=submission, form_step=step)
+            SubmissionStep(
+                submission=submission, form_step=step, is_applicable=step.is_applicable
+            )
             for step in form.formstep_set.order_by("order").iterator()
         ]
         SubmissionStep.objects.bulk_create(submission_steps)
@@ -639,13 +641,17 @@ class SubmissionStepViewSet(
         current_step_index = execution_state.get_step_index(instance.form_step.uuid)
         subsequent_steps = execution_state.submission_steps[current_step_index + 1 :]
         for subsequent_step in subsequent_steps:
-            if not subsequent_step.pk:
+            if not subsequent_step.completed:
                 continue
 
             # evaluate the logic to determine if the step is applicable or not
             evaluate_form_logic(submission, subsequent_step)
             if not subsequent_step.is_applicable and subsequent_step.completed:
                 subsequent_step.reset()
+
+            # TODO-6035: I don't think it's necessary to save here, because we already
+            #  do that inside (non-triggered) the step (not) applicable actions
+            # subsequent_step.save(update_fields=["is_applicable"])
 
         if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to

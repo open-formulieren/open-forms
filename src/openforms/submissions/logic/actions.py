@@ -307,6 +307,8 @@ class StepNotApplicableAction(ActionOperation):
         if not steps:
             return set(self.rule.form.formstep_set.all())
 
+        return steps
+
         first_step = min(steps, key=lambda step: step.order)
         return set(self.rule.form.formstep_set.filter(order__gte=first_step.order))
 
@@ -333,6 +335,8 @@ class StepNotApplicableAction(ActionOperation):
             self.form_step_identifier
         )
         submission_step_to_modify.is_applicable = False
+        submission_step_to_modify.completed = False
+        submission_step_to_modify.save(update_fields=["is_applicable", "completed"])
 
         # This clears data in the database to make sure that saved steps which later become
         # not-applicable don't have old data
@@ -371,6 +375,8 @@ class StepApplicableAction(ActionOperation):
         if not steps:
             return set(self.rule.form.formstep_set.all())
 
+        return steps
+
         first_step = min(steps, key=lambda step: step.order)
         return set(self.rule.form.formstep_set.filter(order__gte=first_step.order))
 
@@ -394,6 +400,7 @@ class StepApplicableAction(ActionOperation):
             self.form_step_identifier
         )
         submission_step_to_modify.is_applicable = True
+        submission_step_to_modify.save(update_fields=["is_applicable"])
 
 
 @dataclass

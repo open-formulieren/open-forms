@@ -220,10 +220,10 @@ def iter_evaluate_rules(
             with log_errors(rule.json_logic_trigger, rule):
                 triggered = bool(jsonLogic(rule.json_logic_trigger, data.data))
 
-            # If the rule was not triggered, we still need to handle the clear on hide,
-            # as components can be hidden by default and shown when a logic rule is
-            # triggered
             if not triggered:
+                # If the rule was not triggered, we still need to handle the clear on hide,
+                # as components can be hidden by default and shown when a logic rule is
+                # triggered
                 _handle_clear_on_hide_for_untriggered_rule(
                     rule,
                     data,
@@ -231,6 +231,10 @@ def iter_evaluate_rules(
                     initial_data,
                     original_input_data=original_input_data,
                 )
+                # Because the "is applicable" flag is now persisted to the database, we need to
+                # reset it to the default value before evaluating logic, in case the corresponding
+                # rule was not triggered.
+                _handle_is_applicable_flag_for_untriggered_rule(rule, submission)
                 continue
 
             for operation in rule.action_operations:
@@ -290,3 +294,14 @@ def _handle_clear_on_hide_for_untriggered_rule(
             initial_data=initial_data,
             original_input_data=original_input_data,
         )
+
+
+# TODO-6035: better to pre-emptively reset all flags before evaluating rules?
+def _handle_is_applicable_flag_for_untriggered_rule(rule, submission):
+    for operation in rule.step_applicable_actions:
+        execution_state = submission.load_execution_state()
+        step = execution_state.resolve_step(operation.form_step_identifier)
+
+        if step.is_applicable != step.form_step.is_applicable:
+            step.is_applicable = step.form_step.is_applicable
+            step.save(update_fields=["is_applicable"])
