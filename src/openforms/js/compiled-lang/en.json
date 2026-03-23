@@ -2537,12 +2537,6 @@
       "value": "(none)"
     }
   ],
-  "HpKhVP": [
-    {
-      "type": 0,
-      "value": "Appointment enabled"
-    }
-  ],
   "HrSXGN": [
     {
       "type": 0,
@@ -3241,6 +3235,12 @@
     {
       "type": 0,
       "value": "Prefix"
+    }
+  ],
+  "Oayv3l": [
+    {
+      "type": 1,
+      "value": "formType"
     }
   ],
   "Od+jm6": [
@@ -4229,6 +4229,12 @@
     {
       "type": 0,
       "value": "In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?"
+    }
+  ],
+  "WmcA8i": [
+    {
+      "type": 0,
+      "value": "Type"
     }
   ],
   "WnKF/i": [
@@ -7665,12 +7671,6 @@
       "value": "Zoom level"
     }
   ],
-  "xxyIg/": [
-    {
-      "type": 0,
-      "value": "Indicates whether appointments are enabled for this form."
-    }
-  ],
   "xyVtKp": [
     {
       "type": 0,
@@ -7883,6 +7883,12 @@
     {
       "type": 0,
       "value": "Plugin configuration: Ogone legacy"
+    }
+  ],
+  "zgefLw": [
+    {
+      "type": 0,
+      "value": "Type of the form, used in the different design of the forms."
     }
   ],
   "zhPXHY": [

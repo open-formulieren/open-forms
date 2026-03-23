@@ -2524,12 +2524,6 @@
       "value": "(geen)"
     }
   ],
-  "HpKhVP": [
-    {
-      "type": 0,
-      "value": "Is afspraakformulier?"
-    }
-  ],
   "HrSXGN": [
     {
       "type": 0,
@@ -3228,6 +3222,12 @@
     {
       "type": 0,
       "value": "Prefix"
+    }
+  ],
+  "Oayv3l": [
+    {
+      "type": 1,
+      "value": "formType"
     }
   ],
   "Od+jm6": [
@@ -4212,6 +4212,12 @@
     {
       "type": 0,
       "value": "Indien meerdere unieke identificaties beschikbaar zijn (bijvoorbeeld bij eHerkenning Bewindvoering en DigiD Machtigen), welke prefill-gegevens moeten dan opgehaald worden? Deze voor de machtiger of de gemachtigde?"
+    }
+  ],
+  "WmcA8i": [
+    {
+      "type": 0,
+      "value": "Type"
     }
   ],
   "WnKF/i": [
@@ -7649,12 +7655,6 @@
       "value": "Zoomniveau"
     }
   ],
-  "xxyIg/": [
-    {
-      "type": 0,
-      "value": "Markeer het formulier als afspraakformulier, met een aparte flow. Hiervoor dient een afsprakenplugin ingesteld te zijn."
-    }
-  ],
   "xyVtKp": [
     {
       "type": 0,
@@ -7867,6 +7867,12 @@
     {
       "type": 0,
       "value": "Plugin-instellingen: Ogone legacy"
+    }
+  ],
+  "zgefLw": [
+    {
+      "type": 0,
+      "value": "Type of the form, used in the different design of the forms."
     }
   ],
   "zhPXHY": [
