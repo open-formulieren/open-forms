@@ -2,6 +2,7 @@ import uuid
 from collections import Counter
 from datetime import date
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.translation import gettext_lazy as _
 
 from drf_polymorphic.serializers import PolymorphicSerializer
@@ -64,6 +65,7 @@ class LogicValueActionSerializer(serializers.Serializer):
             "(other) Form.io components."
         ),
         validators=[JsonLogicValidator()],
+        encoder=DjangoJSONEncoder,
     )
 
 

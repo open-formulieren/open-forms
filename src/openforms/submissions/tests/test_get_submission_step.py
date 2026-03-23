@@ -1330,3 +1330,73 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             ]
         }
         self.assertEqual(expected, response.json()["logicRules"][0]["jsonLogicTrigger"])
+
+    def test_variable_action_with_json_logic_expression_as_value(self):
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
+        step_1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "isoDuration", "label": "ISO duration"}
+                ]
+            },
+        )
+        step_2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
+                    {
+                        "type": "date",
+                        "key": "dateOfBirthMinusDuration",
+                        "label": "Date of birth minus duration",
+                    },
+                ]
+            },
+        )
+        # This is an actual logic rule used by municipalities!
+        rule = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "variable",
+                        "value": {
+                            "-": [
+                                {"var": "dateOfBirth"},
+                                {"duration": {"var": "isoDuration"}},
+                            ]
+                        },
+                    },
+                    "variable": "dateOfBirthMinusDuration",
+                }
+            ],
+        )
+        # Step 2 will be assigned here, because the variable action applies to
+        # "dateOfBirthMinusDuration".
+        rule.form_steps.set([step_2])
+
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+
+        # Simulate submitting step 1
+        SubmissionStepFactory.create(
+            form_step=step_1, submission=submission, data={"isoDuration": "P18Y"}
+        )
+
+        # Get step 2
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step_2.uuid},
+        )
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        # The "dateOfBrith" variable should have the date operator added to it, and the
+        # "isoDuration" variable should be prefilled because it was already submitted
+        # on the previous step.
+        expected = {"-": [{"date": [{"var": ["dateOfBirth"]}]}, {"duration": ["P18Y"]}]}
+        self.assertEqual(
+            expected, response.json()["logicRules"][0]["actions"][0]["action"]["value"]
+        )
