@@ -9599,7 +9599,7 @@ components:
           format: uuid
           nullable: true
           title: form step
-          description: De UUID van de formulierstap waarop de actie vaninvloed is.
+          description: De UUID van de formulierstap waarop de actie van invloed is.
             Dit veld is verplicht voor actietypen `disable-next`, `step-applicable`,
             `step-not-applicable` - anders is het optioneel.
         action:
