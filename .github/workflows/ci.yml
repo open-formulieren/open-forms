@@ -356,7 +356,7 @@ jobs:
           name: docker-image-all-extensions-${{ needs.setup.outputs.version }}
 
       - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
         with:
           input: ${{ github.workspace }}/image.tar  # from download-artifact
           format: 'sarif'
