@@ -25,3 +25,9 @@ export const DMN_DECISION_DEFINITIONS_LIST = '/api/v2/dmn/decision-definitions';
 export const DMN_DECISION_DEFINITIONS_VERSIONS_LIST = '/api/v2/dmn/decision-definitions/versions';
 export const DMN_DECISION_DEFINITIONS_PARAMS_LIST =
   '/api/v2/dmn/decision-definitions/inputs-outputs';
+
+export const FORM_TYPES = [
+  ['regular', 'Regular'],
+  ['appointment', 'Appointment'],
+  ['single_page', 'Single page'],
+];

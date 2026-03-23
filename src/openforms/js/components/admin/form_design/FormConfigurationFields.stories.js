@@ -15,6 +15,7 @@ export default {
       active: true,
       category: '',
       theme: '',
+      type: 'regular',
       isDeleted: false,
       activateOn: null,
       deactivateOn: null,
@@ -24,9 +25,8 @@ export default {
       suspensionAllowed: true,
       askPrivacyConsent: 'global_setting',
       askStatementOfTruth: 'global_setting',
-      appointmentOptions: {
-        isAppointment: false,
-      },
+      appointmentOptions: {},
+
       authBackends: [],
     },
     onChange: fn(),

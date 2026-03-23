@@ -1756,8 +1756,8 @@ class AppointmentFormTests(E2ETestCase):
             await self._admin_login(page)
             await page.goto(str(admin_url))
 
-            await page.locator("[id='id_form.type']").select_option("appointment")
-            await expect(page.locator("[id='id_form.type']")).to_have_value(
+            await page.locator("input[name='form.type'][value='appointment']").check()
+            await expect(page.locator("input[name='form.type']:checked")).to_have_value(
                 "appointment"
             )
 
