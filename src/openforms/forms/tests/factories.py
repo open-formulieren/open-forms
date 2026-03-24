@@ -32,7 +32,6 @@ class FormFactory(factory.django.DjangoModelFactory):
     payment_backend = ""
     # factory-boy ignores attributes starting with an underscore so we'll use Meta.rename
     deleted_ = False
-    new_logic_evaluation_enabled = True
 
     class Meta:
         model = "forms.Form"
