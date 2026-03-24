@@ -3,8 +3,10 @@ import re
 from collections.abc import Callable, MutableMapping
 from typing import ClassVar
 
+from opentelemetry import trace
 from sentry_sdk.integrations import DidNotEnable, django, redis
 from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.types import Event, Hint
 
 type ConverterMapping = MutableMapping[str, Callable[[int], int]]
 
@@ -100,6 +102,21 @@ def get_sentry_integrations() -> list:
         extra.append(celery.CeleryIntegration())
 
     return [*default, *extra]
+
+
+def sentry_before_send(event: Event, hint: Hint) -> Event | None:
+    span = trace.get_current_span()
+    if span.is_recording():
+        ctx = span.get_span_context()
+        if "extra" not in event:  # type checker doesn't like setdefault
+            event["extra"] = {}
+        event["extra"].update(
+            {
+                "otel.span_id": format(ctx.span_id, "016x"),
+                "otel.trace_id": format(ctx.trace_id, "032x"),
+            }
+        )
+    return event
 
 
 def mute_logging(config: dict) -> None:  # pragma: no cover
