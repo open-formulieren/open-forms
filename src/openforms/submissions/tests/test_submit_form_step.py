@@ -80,8 +80,6 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 },
                 "defaultConfiguration": None,
                 "data": {"test-key": "example data"},
-                "isApplicable": True,
-                "completed": True,
                 "canSubmit": True,
                 "logicRules": [],
                 "requireBackendLogicEvaluation": True,

@@ -305,7 +305,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
             data = response.json()
 
-            self.assertTrue(data["completed"])
             self.assertTrue(data["canSubmit"])
 
         with self.subTest("logic step for step 2 should not allow submitting"):
