@@ -349,8 +349,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "form_step_uuid",
             "slug",
             "data",
-            "is_applicable",
-            "completed",
             "can_submit",
             "configuration",
             "default_configuration",

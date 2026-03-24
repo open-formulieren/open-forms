@@ -10942,12 +10942,6 @@ components:
           type: object
           additionalProperties: {}
           nullable: true
-        isApplicable:
-          type: boolean
-          readOnly: true
-        completed:
-          type: boolean
-          readOnly: true
         canSubmit:
           type: boolean
           readOnly: true
@@ -10976,12 +10970,10 @@ components:
             Will be empty if the backend is required to evaluate form logic.
       required:
       - canSubmit
-      - completed
       - configuration
       - defaultConfiguration
       - formStepUuid
       - id
-      - isApplicable
       - logicRules
       - requireBackendLogicEvaluation
       - slug
