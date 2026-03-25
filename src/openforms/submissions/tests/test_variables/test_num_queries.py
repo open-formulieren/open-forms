@@ -84,26 +84,12 @@ class SubmissionVariablesPerformanceTests(APITestCase):
                 ]
             },
         )
-
-        # ensure there is a submission
-        submission = SubmissionFactory.create(form=form)
-        submission.is_authenticated  # Load the auth info (otherwise an extra query is needed)
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=form_step1,
-            data={"var1": "test1", "var2": "test2"},
-        )
-        submission_step2 = SubmissionStepFactory.create(
-            submission=submission, form_step=form_step2
-        )
-        submission_step2._unsaved_data = {"var3": "test3", "var4": "test4"}
-
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "var2"}, "test2"]},
             actions=[
                 {
-                    "form_step_uuid": f"{form_step1.uuid}",  # Change the saved data of another step
+                    "form_step_uuid": f"{form_step2.uuid}",  # Change the saved data of another step
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",
@@ -111,19 +97,34 @@ class SubmissionVariablesPerformanceTests(APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
+
+        # ensure there is a submission
+        submission = SubmissionFactory.create(form=form)
+        submission.is_authenticated  # Load the auth info (otherwise an extra query is needed)
+        submission_step1 = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step1,
+            data={"var1": "test1", "var2": "test2"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step2,
+            data={"var3": "test3", "var4": "test4"},
+        )
 
         # preload the execution state, this normally happens in the viewset/calling code
         submission.load_execution_state()
 
         # 1.  Loading the variables state - fetch all the form variables
         # 2.  Loading the variables state - fetch all the submission variables
-        # 3.  Retrieve all logic rules related to a form
+        # 3.  Retrieve all logic rules related to a form (step)
         # 4.  Retrieve the submission variables to be deleted - deletion of data happens
         #     because the step is marked N/A
         # 5.  Retrieve the submission attachment files to be deleted
         # 6.  Delete submission values
         with self.assertNumQueries(6):
-            evaluate_form_logic(submission, submission_step2)
+            evaluate_form_logic(submission, submission_step1)
 
     def test_update_step_data(self):
         form = FormFactory.create()

@@ -1238,6 +1238,7 @@ class FormDesignerRegressionTests(E2ETestCase):
             # set up a form
             form = FormFactory.create(
                 name="Form with 2 steps",
+                new_logic_evaluation_enabled=False,
             )
             FormStepFactory.create(
                 form=form,

@@ -78,11 +78,13 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "configuration": {
                     "components": [{"type": "textfield", "key": "test-key"}]
                 },
-                "defaultConfiguration": None,
+                "defaultConfiguration": {
+                    "components": [{"key": "test-key", "type": "textfield"}]
+                },
                 "data": {"test-key": "example data"},
                 "canSubmit": True,
                 "logicRules": [],
-                "requireBackendLogicEvaluation": True,
+                "requireBackendLogicEvaluation": False,
             },
         )
         state = self.submission.load_submission_value_variables_state()
@@ -387,6 +389,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+        step.form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=step.form)
         self._add_submission_to_session(submission)
 
@@ -430,6 +433,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+        step.form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=step.form)
         self._add_submission_to_session(submission)
 

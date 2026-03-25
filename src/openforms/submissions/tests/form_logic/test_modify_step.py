@@ -55,6 +55,7 @@ class StepModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -115,6 +116,7 @@ class StepModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step_1 = SubmissionStepFactory.create(
             submission=submission,
@@ -180,6 +182,7 @@ class StepModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         submission_step_1 = SubmissionStepFactory.create(
@@ -236,6 +239,7 @@ class StepModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
             submission=submission,
@@ -279,6 +283,7 @@ class StepModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
             submission=submission,
@@ -329,6 +334,7 @@ class StepModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
             submission=submission,
@@ -378,6 +384,7 @@ class StepModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
             submission=submission,
@@ -417,6 +424,7 @@ class StepModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
             submission=submission,
@@ -490,6 +498,7 @@ class StepModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
             submission=submission,

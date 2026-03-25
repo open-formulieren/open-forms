@@ -147,6 +147,7 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             form__product=None,
             form__payment_backend="demo",
         )
+        submission.form.apply_logic_analysis()
         submission.calculate_price()
         with self.subTest(part="check data setup"):
             self.assertFalse(submission.payment_required)
@@ -172,6 +173,7 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
         )
+        submission.form.apply_logic_analysis()
         submission.calculate_price()
         with self.subTest(part="check data setup"):
             self.assertTrue(submission.payment_required)
@@ -209,6 +211,7 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},
         )
+        submission.form.apply_logic_analysis()
         # Simulate submitting a step. This will evaluate logic and persist the
         # user-defined variables
         evaluate_form_logic(submission, submission.submissionstep_set.get())
@@ -249,6 +252,7 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
         )
         submission.form.price_variable_key = "calculatedPrice"
         submission.form.save()
+        submission.form.apply_logic_analysis()
         submission.refresh_from_db()
         submission.calculate_price()
         with self.subTest(part="check data setup"):
@@ -299,6 +303,7 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             ],
             order=1,
         )
+        submission.form.apply_logic_analysis()
         # Simulate submitting a step. This will evaluate logic and persist the
         # user-defined variables
         evaluate_form_logic(submission, submission.submissionstep_set.get())

@@ -21,7 +21,7 @@ from ..factories import SubmissionFactory, SubmissionStepFactory
 
 class VariableModificationTests(TestCase):
     def test_modify_variable_related_to_step_being_edited(self):
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -98,7 +98,7 @@ class VariableModificationTests(TestCase):
         self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
 
     def test_modify_variable_related_to_another_step_than_the_one_being_edited(self):
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -175,7 +175,7 @@ class VariableModificationTests(TestCase):
         self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
 
     def test_modify_variable_not_related_to_a_step(self):
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -252,7 +252,7 @@ class VariableModificationTests(TestCase):
         self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
 
     def test_logic_with_repeating_groups(self):
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         form_step = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -359,6 +359,7 @@ class VariableModificationTests(TestCase):
     def test_dates_and_timedeltas(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
+            new_logic_evaluation_enabled=False,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -430,6 +431,7 @@ class VariableModificationTests(TestCase):
 
         form = FormFactory.create(
             generate_minimal_setup=True,
+            new_logic_evaluation_enabled=False,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -526,6 +528,7 @@ class VariableModificationTests(TestCase):
 
         form = FormFactory.create(
             generate_minimal_setup=True,
+            new_logic_evaluation_enabled=False,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -637,6 +640,7 @@ class VariableModificationTests(TestCase):
 
         form = FormFactory.create(
             generate_minimal_setup=True,
+            new_logic_evaluation_enabled=False,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -712,7 +716,7 @@ class VariableModificationTests(TestCase):
         variable. It ensures that the returns from jsonLogic calls are converted to
         the Python-type domain (date object in this case).
         """
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         form_step = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -757,7 +761,7 @@ class VariableModificationTests(TestCase):
         )
 
     def test_children_synchronization_not_allowing_selection(self):
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -893,7 +897,7 @@ class VariableModificationTests(TestCase):
         )
 
     def test_children_synchronization_with_no_destination_data(self):
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -1023,7 +1027,7 @@ class VariableModificationTests(TestCase):
         )
 
     def test_children_synchronization_with_destination_data_update(self):
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -1165,7 +1169,7 @@ class VariableModificationTests(TestCase):
         )
 
     def test_children_synchronization_with_no_destination_and_source_data(self):
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={

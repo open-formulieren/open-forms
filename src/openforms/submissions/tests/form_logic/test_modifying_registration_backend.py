@@ -50,6 +50,7 @@ class RegistrationBackendModificationTests(TestCase):
                 }
             ],
         )
+        self.submission.form.apply_logic_analysis()
 
         evaluate_form_logic(self.submission, self.submission.steps[0])
 
@@ -77,6 +78,7 @@ class RegistrationBackendModificationTests(TestCase):
                 }
             ],
         )
+        self.submission.form.apply_logic_analysis()
 
         evaluate_form_logic(self.submission, self.submission.steps[0])
         self.assertEqual(self.submission.registration_backend.key, "default")

@@ -80,15 +80,18 @@ class FormLogicAPITests(APITestCase):
 
     def test_create_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
-        form = FormFactory.create()
-        FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
                 "components": [
                     {
                         "type": "textfield",
                         "key": "step1_textfield1",
-                    }
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "step1_textfield2",
+                    },
                 ]
             },
         )
@@ -106,7 +109,7 @@ class FormLogicAPITests(APITestCase):
                 },
                 "actions": [
                     {
-                        "component": "step1_textfield1",
+                        "component": "step1_textfield2",
                         "action": {
                             "name": "Hide element",
                             "type": "property",
@@ -271,7 +274,18 @@ class FormLogicAPITests(APITestCase):
 
     def test_delete_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
-        form = FormFactory.create()
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "step1_textfield1",
+                        "label": "Step 1 textfield",
+                    }
+                ]
+            },
+        )
 
         FormLogicFactory.create(
             form=form,
@@ -531,6 +545,10 @@ class FormLogicAPITests(APITestCase):
                         "type": "textfield",
                         "key": "text2",
                     },
+                    {
+                        "type": "textfield",
+                        "key": "text3",
+                    },
                 ]
             },
         )
@@ -547,7 +565,7 @@ class FormLogicAPITests(APITestCase):
                 },
                 "actions": [
                     {
-                        "component": "text2",
+                        "component": "text3",
                         "action": {
                             "type": "property",
                             "property": {
@@ -1049,7 +1067,7 @@ class FormLogicAPITests(APITestCase):
                 ]
             },
         )
-        form_step = form.formstep_set.first()
+        form_step2 = FormStepFactory.create(form=form)
 
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = [
@@ -1059,7 +1077,7 @@ class FormLogicAPITests(APITestCase):
                 "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
                 "actions": [
                     {
-                        "formStepUuid": f"{form_step.uuid}",
+                        "formStepUuid": f"{form_step2.uuid}",
                         "action": {
                             "name": "Mark step as not applicable",
                             "type": "step-not-applicable",
@@ -1080,7 +1098,7 @@ class FormLogicAPITests(APITestCase):
     def test_create_form_logic_with_trigger_from_step(self):
         user = SuperUserFactory.create(username="test", password="test")
         self.client.force_authenticate(user=user)
-        form1, form2 = FormFactory.create_batch(2)
+        form1, form2 = FormFactory.create_batch(2, new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form1,
             form_definition__configuration={

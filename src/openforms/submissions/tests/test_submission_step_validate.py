@@ -202,6 +202,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(
             form=form, prefill_data={"surname": "Doe"}
         )
@@ -928,6 +929,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        submission.form.apply_logic_analysis()
         step = submission.form.formstep_set.get()
         self._add_submission_to_session(submission)
 
