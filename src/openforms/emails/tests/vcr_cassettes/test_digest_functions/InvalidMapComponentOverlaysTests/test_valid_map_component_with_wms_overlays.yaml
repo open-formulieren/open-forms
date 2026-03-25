@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?request=GetCapabilities&service=WMS
   response:
@@ -33,14 +33,14 @@ interactions:
         toegevoegd.</Abstract>\n\t\t<KeywordList>\n\t\t\t<Keyword>Geologie</Keyword>\n\t\t\t<Keyword>Bodem</Keyword>\n\t\t\t<Keyword>Geomorfologie</Keyword>\n\t\t\t<Keyword>Geohydrologie</Keyword>\n\t\t\t<Keyword>infoMapAccessService</Keyword>\n\t\t</KeywordList>\n\t\t<OnlineResource
         xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://www.pdok.nl\"/>\n\t\t<ContactInformation>\n\t\t\t<ContactPersonPrimary>\n\t\t\t\t<ContactPerson>KlantContactCenter
         PDOK</ContactPerson>\n\t\t\t\t<ContactOrganization>PDOK</ContactOrganization>\n\t\t\t</ContactPersonPrimary>\n\t\t\t<ContactPosition>pointOfContact</ContactPosition>\n\t\t\t<ContactAddress>\n\t\t\t\t<AddressType>Work</AddressType>\n\t\t\t\t<Address/>\n\t\t\t\t<City>Apeldoorn</City>\n\t\t\t\t<StateOrProvince/>\n\t\t\t\t<PostCode/>\n\t\t\t\t<Country>Netherlands</Country>\n\t\t\t</ContactAddress>\n\t\t\t<ContactVoiceTelephone/>\n\t\t\t<ContactFacsimileTelephone/>\n\t\t\t<ContactElectronicMailAddress>BeheerPDOK@kadaster.nl</ContactElectronicMailAddress>\n\t\t</ContactInformation>\n\t\t<Fees>NONE</Fees>\n\t\t<AccessConstraints>https://creativecommons.org/publicdomain/zero/1.0/deed.nl</AccessConstraints>\n\t\t<MaxWidth>4000</MaxWidth>\n\t\t<MaxHeight>4000</MaxHeight>\n\t</Service>\n\t<Capability>\n\t\t<Request>\n\t\t\t<GetCapabilities>\n\t\t\t\t<Format>text/xml</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
-        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetCapabilities>\n\t\t\t<GetMap>\n\t\t\t\t<Format>image/png</Format>\n\t\t\t\t<Format>image/jpeg</Format>\n\t\t\t\t<Format>image/png;
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/tno/bro-model-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetCapabilities>\n\t\t\t<GetMap>\n\t\t\t\t<Format>image/png</Format>\n\t\t\t\t<Format>image/jpeg</Format>\n\t\t\t\t<Format>image/png;
         mode=8bit</Format>\n\t\t\t\t<Format>image/vnd.jpeg-png</Format>\n\t\t\t\t<Format>image/vnd.jpeg-png8</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
-        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t\t<Post>\n\t\t\t\t\t\t\t<OnlineResource
-        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0\"/>\n\t\t\t\t\t\t</Post>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetMap>\n\t\t\t<GetFeatureInfo>\n\t\t\t\t<Format>application/json</Format>\n\t\t\t\t<Format>application/json;
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/tno/bro-model-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t\t<Post>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/tno/bro-model-grondwaterspiegeldiepte/wms/v2_0\"/>\n\t\t\t\t\t\t</Post>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetMap>\n\t\t\t<GetFeatureInfo>\n\t\t\t\t<Format>application/json</Format>\n\t\t\t\t<Format>application/json;
         subtype=geojson</Format>\n\t\t\t\t<Format>application/vnd.ogc.gml</Format>\n\t\t\t\t<Format>text/html</Format>\n\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t<Format>text/xml</Format>\n\t\t\t\t<Format>text/xml;
         subtype=gml/3.1.1</Format>\n\t\t\t\t<DCPType>\n\t\t\t\t\t<HTTP>\n\t\t\t\t\t\t<Get>\n\t\t\t\t\t\t\t<OnlineResource
-        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t\t<Post>\n\t\t\t\t\t\t\t<OnlineResource
-        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0\"/>\n\t\t\t\t\t\t</Post>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetFeatureInfo>\n\t\t</Request>\n\t\t<Exception>\n\t\t\t<Format>XML</Format>\n\t\t\t<Format>INIMAGE</Format>\n\t\t\t<Format>BLANK</Format>\n\t\t</Exception>\n\t\t<inspire_vs:ExtendedCapabilities>\n\t\t\t<inspire_common:MetadataUrl>\n\t\t\t\t<inspire_common:URL>https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=757a7c50-540d-4105-9135-73f09f700743</inspire_common:URL>\n\t\t\t\t<inspire_common:MediaType>application/vnd.ogc.csw.GetRecordByIdResponse_xml</inspire_common:MediaType>\n\t\t\t</inspire_common:MetadataUrl>\n\t\t\t<inspire_common:SupportedLanguages>\n\t\t\t\t<inspire_common:DefaultLanguage>\n\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t</inspire_common:DefaultLanguage>\n\t\t\t\t<inspire_common:SupportedLanguage>\n\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t</inspire_common:SupportedLanguage>\n\t\t\t</inspire_common:SupportedLanguages>\n\t\t\t<inspire_common:ResponseLanguage>\n\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t</inspire_common:ResponseLanguage>\n\t\t</inspire_vs:ExtendedCapabilities>\n\t\t<Layer
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/tno/bro-model-grondwaterspiegeldiepte/wms/v2_0?\"/>\n\t\t\t\t\t\t</Get>\n\t\t\t\t\t\t<Post>\n\t\t\t\t\t\t\t<OnlineResource
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://service.pdok.nl/tno/bro-model-grondwaterspiegeldiepte/wms/v2_0\"/>\n\t\t\t\t\t\t</Post>\n\t\t\t\t\t</HTTP>\n\t\t\t\t</DCPType>\n\t\t\t</GetFeatureInfo>\n\t\t</Request>\n\t\t<Exception>\n\t\t\t<Format>XML</Format>\n\t\t\t<Format>INIMAGE</Format>\n\t\t\t<Format>BLANK</Format>\n\t\t</Exception>\n\t\t<inspire_vs:ExtendedCapabilities>\n\t\t\t<inspire_common:MetadataUrl>\n\t\t\t\t<inspire_common:URL>https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=757a7c50-540d-4105-9135-73f09f700743</inspire_common:URL>\n\t\t\t\t<inspire_common:MediaType>application/vnd.ogc.csw.GetRecordByIdResponse_xml</inspire_common:MediaType>\n\t\t\t</inspire_common:MetadataUrl>\n\t\t\t<inspire_common:SupportedLanguages>\n\t\t\t\t<inspire_common:DefaultLanguage>\n\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t</inspire_common:DefaultLanguage>\n\t\t\t\t<inspire_common:SupportedLanguage>\n\t\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t\t</inspire_common:SupportedLanguage>\n\t\t\t</inspire_common:SupportedLanguages>\n\t\t\t<inspire_common:ResponseLanguage>\n\t\t\t\t<inspire_common:Language>dut</inspire_common:Language>\n\t\t\t</inspire_common:ResponseLanguage>\n\t\t</inspire_vs:ExtendedCapabilities>\n\t\t<Layer
         queryable=\"1\">\n\t\t\t<Title>BRO Model Grondwaterspiegeldiepte (WDM) WMS</Title>\n\t\t\t<Abstract>Het
         grondwaterspiegeldieptemodel maakt deel uit van de Basisregistratieondergrond
         (BRO). Het bestaat uit een aantal grondwaterkarakteristieken die samen de
@@ -94,7 +94,7 @@ interactions:
         type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
         xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>observations</Name>\n\t\t\t\t\t<Title>Observations</Title>\n\t\t\t\t\t<LegendURL
         width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
-        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen/observations.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/tno/bro-model-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen/observations.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
         queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GHG</Name>\n\t\t\t\t<Title>BRO
         Grondwaterspiegeldiepte GHG</Title>\n\t\t\t\t<Abstract>Het grondwaterspiegeldieptemodel
         maakt deel uit van de Basisregistratieondergrond (BRO). Het bestaat uit een
@@ -118,7 +118,7 @@ interactions:
         type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
         xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>mediaan</Name>\n\t\t\t\t\t<Title>GHG
         Mediaan</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
-        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GHG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/tno/bro-model-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GHG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
         queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GLG</Name>\n\t\t\t\t<Title>BRO
         Grondwaterspiegeldiepte GLG</Title>\n\t\t\t\t<Abstract>Het grondwaterspiegeldieptemodel
         maakt deel uit van de Basisregistratieondergrond (BRO). Het bestaat uit een
@@ -142,7 +142,7 @@ interactions:
         type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
         xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>mediaan</Name>\n\t\t\t\t\t<Title>GLG
         Mediaan</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
-        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GLG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/tno/bro-model-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GLG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
         queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GVG</Name>\n\t\t\t\t<Title>BRO
         Grondwaterspiegeldiepte GVG</Title>\n\t\t\t\t<Abstract>Het grondwaterspiegeldieptemodel
         maakt deel uit van de Basisregistratieondergrond (BRO). Het bestaat uit een
@@ -168,7 +168,7 @@ interactions:
         type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
         xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>mediaan</Name>\n\t\t\t\t\t<Title>GVG
         Mediaan</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
-        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GVG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/tno/bro-model-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GVG/mediaan.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
         queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldieptemetingen-GT</Name>\n\t\t\t\t<Title>BRO
         Grondwaterspiegeldiepte Grondwatertrappen Gt</Title>\n\t\t\t\t<Abstract>Het
         grondwaterspiegeldieptemodel maakt deel uit van de Basisregistratieondergrond
@@ -198,7 +198,7 @@ interactions:
         type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
         xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>gt-mediane-gxg</Name>\n\t\t\t\t\t<Title>GT
         Mediane GXG</Title>\n\t\t\t\t\t<LegendURL width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
-        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GT/gt-mediane-gxg.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/tno/bro-model-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldieptemetingen-GT/gt-mediane-gxg.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t\t<Layer
         queryable=\"1\">\n\t\t\t\t<Name>bro-grondwaterspiegeldiepte-modeldocumentatie</Name>\n\t\t\t\t<Title>BRO
         Grondwaterspiegeldiepte modeldocumentatie</Title>\n\t\t\t\t<Abstract>Voor
         de realisatie van het grondwaterspiegeldieptemodel wordt een onderscheid gemaakt
@@ -222,7 +222,7 @@ interactions:
         type=\"TC211\">\n\t\t\t\t\t<Format>text/plain</Format>\n\t\t\t\t\t<OnlineResource
         xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://www.nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;version=2.0.2&amp;request=GetRecordById&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=b756dabe-a331-42cd-b45e-f61828ee4534\"/>\n\t\t\t\t</MetadataURL>\n\t\t\t\t<Style>\n\t\t\t\t\t<Name>references</Name>\n\t\t\t\t\t<Title>References</Title>\n\t\t\t\t\t<LegendURL
         width=\"78\" height=\"20\">\n\t\t\t\t\t\t<Format>image/png</Format>\n\t\t\t\t\t\t<OnlineResource
-        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/bzk/bro-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldiepte-modeldocumentatie/references.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t</Layer>\n\t</Capability>\n</WMS_Capabilities>"
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:type=\"simple\" xlink:href=\"https://service.pdok.nl/tno/bro-model-grondwaterspiegeldiepte/wms/v2_0/legend/bro-grondwaterspiegeldiepte-modeldocumentatie/references.png\"/>\n\t\t\t\t\t</LegendURL>\n\t\t\t\t</Style>\n\t\t\t</Layer>\n\t\t</Layer>\n\t</Capability>\n</WMS_Capabilities>"
     headers:
       Accept-Ranges:
       - bytes
@@ -235,11 +235,11 @@ interactions:
       Cache-Control:
       - public, max-age=3600, no-transform
       Content-Length:
-      - '28385'
+      - '28451'
       Content-Type:
       - text/xml; charset=UTF-8
       Date:
-      - Fri, 19 Dec 2025 12:54:40 GMT
+      - Wed, 25 Mar 2026 18:43:55 GMT
       Referrer-Policy:
       - origin
       Strict-Transport-Security:
@@ -259,7 +259,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: https://schemas.opengis.net/wms/1.1.1/capabilities_1_1_1.xml
   response:
@@ -439,7 +439,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Fri, 19 Dec 2025 12:54:40 GMT
+      - Wed, 25 Mar 2026 18:43:56 GMT
       ETag:
       - '"337a-6324eaafa178e-gzip"'
       Keep-Alive:

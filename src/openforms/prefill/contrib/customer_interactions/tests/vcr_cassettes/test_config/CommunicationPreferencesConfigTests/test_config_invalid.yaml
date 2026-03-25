@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      Authorization:
-      - Token INVALID
+    headers: {}
     method: GET
     uri: http://localhost:8005/klantinteracties/api/v1/invalid/
   response:
@@ -27,7 +25,7 @@ interactions:
         \           <p class=\"footer__plain-content footer__plain-content--small\">\n
         \               \n                \n                    Developed by <a class=\"link\"
         href=\"https://www.maykinmedia.nl\">Maykin</a><br> within the <a class=\"link\"
-        href=\"https://opengem.nl\">Open Gemeente Initiatief</a> &copy; 2025<br>\n
+        href=\"https://opengem.nl\">Open Gemeente Initiatief</a> &copy; 2026<br>\n
         \               \n            </p>\n        </section>\n\n        <section>\n
         \           <header class=\"footer__column-header\">Open Klant</header>\n
         \           <ul class=\"footer__list\">\n                \n    <li>\n        <a
@@ -51,10 +49,11 @@ interactions:
       Content-Length:
       - '3224'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline''; img-src ''self'' data: cdn.redoc.ly;
-        default-src ''self''; base-uri ''self''; object-src ''none''; font-src ''self''
-        fonts.gstatic.com; frame-ancestors ''none''; form-action ''self''; worker-src
-        ''self'' blob:; frame-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
+      - 'object-src ''none''; frame-src ''self''; form-action ''self''; default-src
+        ''self''; script-src ''self'' ''unsafe-inline''; font-src ''self'' fonts.gstatic.com;
+        base-uri ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        frame-ancestors ''none''; img-src ''self'' data: cdn.redoc.ly; worker-src
+        ''self'' blob:'
       Content-Type:
       - text/html; charset=utf-8
       Cross-Origin-Opener-Policy:

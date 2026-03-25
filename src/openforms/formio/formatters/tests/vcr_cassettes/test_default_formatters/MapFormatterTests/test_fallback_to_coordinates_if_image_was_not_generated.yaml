@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/fake_layer/EPSG:28992/12/2016/2059.png
   response:
@@ -33,7 +33,7 @@ interactions:
       Content-Type:
       - text/html
       Date:
-      - Fri, 19 Dec 2025 12:56:18 GMT
+      - Wed, 25 Mar 2026 18:46:47 GMT
       Referrer-Policy:
       - origin
       Strict-Transport-Security:
@@ -53,7 +53,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/fake_layer/EPSG:28992/12/2016/2060.png
   response:
@@ -77,7 +77,7 @@ interactions:
       Content-Type:
       - text/html
       Date:
-      - Fri, 19 Dec 2025 12:56:18 GMT
+      - Wed, 25 Mar 2026 18:46:47 GMT
       Referrer-Policy:
       - origin
       Strict-Transport-Security:
@@ -97,7 +97,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/fake_layer/EPSG:28992/12/2017/2059.png
   response:
@@ -121,7 +121,7 @@ interactions:
       Content-Type:
       - text/html
       Date:
-      - Fri, 19 Dec 2025 12:56:18 GMT
+      - Wed, 25 Mar 2026 18:46:47 GMT
       Referrer-Policy:
       - origin
       Strict-Transport-Security:
@@ -141,7 +141,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/fake_layer/EPSG:28992/12/2017/2060.png
   response:
@@ -165,7 +165,7 @@ interactions:
       Content-Type:
       - text/html
       Date:
-      - Fri, 19 Dec 2025 12:56:18 GMT
+      - Wed, 25 Mar 2026 18:46:47 GMT
       Referrer-Policy:
       - origin
       Strict-Transport-Security:
@@ -185,7 +185,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/fake_layer/EPSG:28992/12/2018/2059.png
   response:
@@ -209,7 +209,7 @@ interactions:
       Content-Type:
       - text/html
       Date:
-      - Fri, 19 Dec 2025 12:56:18 GMT
+      - Wed, 25 Mar 2026 18:46:47 GMT
       Referrer-Policy:
       - origin
       Strict-Transport-Security:
@@ -229,7 +229,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/fake_layer/EPSG:28992/12/2018/2060.png
   response:
@@ -253,7 +253,7 @@ interactions:
       Content-Type:
       - text/html
       Date:
-      - Fri, 19 Dec 2025 12:56:18 GMT
+      - Wed, 25 Mar 2026 18:46:47 GMT
       Referrer-Policy:
       - origin
       Strict-Transport-Security:

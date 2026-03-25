@@ -267,12 +267,12 @@
     "model": "klantinteracties.digitaaladres",
     "pk": 7,
     "fields": {
-        "uuid": "d39fc2c1-39ab-4035-be31-bf1755ecec39",
-        "partij": 2,
+        "uuid": "4597f52a-0885-4f57-ab24-f1480c253d1b",
+        "partij": 3,
         "betrokkene": null,
         "soort_digitaal_adres": "telefoonnummer",
         "is_standaard_adres": true,
-        "adres": "0612345678",
+        "adres": "0612345679",
         "omschrijving": "",
         "referentie": "",
         "verificatie_datum": null
@@ -295,14 +295,14 @@
 },
 {
     "model": "klantinteracties.digitaaladres",
-    "pk": 7,
+    "pk": 9,
     "fields": {
-        "uuid": "4597f52a-0885-4f57-ab24-f1480c253d1b",
-        "partij": 3,
+        "uuid": "66089cf4-fe6b-45c8-b618-4c9d46790b16",
+        "partij": 2,
         "betrokkene": null,
         "soort_digitaal_adres": "telefoonnummer",
         "is_standaard_adres": true,
-        "adres": "0612345679",
+        "adres": "0612345678",
         "omschrijving": "",
         "referentie": "",
         "verificatie_datum": null
