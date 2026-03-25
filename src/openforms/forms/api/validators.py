@@ -179,6 +179,19 @@ class FormLogicTriggerFromStepFormValidator:
         if not form or not trigger_from_step:
             return
 
+        if form.new_logic_evaluation_enabled:
+            raise serializers.ValidationError(
+                {
+                    "trigger_from_step": serializers.ErrorDetail(
+                        _(
+                            "'Trigger from step' is not supported in when the new logic "
+                            "evaluation is enabled."
+                        ),
+                        code="invalid",
+                    )
+                }
+            )
+
         if trigger_from_step.form != form:
             raise serializers.ValidationError(
                 {

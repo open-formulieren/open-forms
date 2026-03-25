@@ -117,6 +117,7 @@ COPY \
     ./bin/fix_payment_status.py \
     ./bin/check_disable_next_logic_action.py \
     ./bin/report_completed_submissions_access.py \
+    bin/report_invalid_form_logic.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
