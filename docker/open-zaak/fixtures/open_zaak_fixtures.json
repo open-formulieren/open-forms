@@ -1747,5 +1747,71 @@
         "catalogus": 1,
         "deelzaaktypen": []
     }
+},
+{
+    "model": "zgw_consumers.service",
+    "pk": 1,
+    "fields": {
+        "label": "VNG Selectielijst",
+        "oas": "https://selectielijst.openzaak.nl/api/v1/schema/openapi.yaml",
+        "oas_file": "",
+        "uuid": "fe29c484-4c0d-4492-80e1-6a6d4bf0b8c3",
+        "api_type": "orc",
+        "api_root": "https://selectielijst.openzaak.nl/api/v1/",
+        "client_id": "",
+        "secret": "",
+        "auth_type": "no_auth",
+        "header_key": "",
+        "header_value": "",
+        "nlx": "",
+        "user_id": "",
+        "user_representation": "",
+        "client_certificate": null,
+        "server_certificate": null
+    }
+},
+{
+    "model": "zgw_consumers.service",
+    "pk": 2,
+    "fields": {
+        "label": "Objects API",
+        "oas": "http://host.docker.internal:8002/api/v2/schema/openapi.yaml",
+        "oas_file": "",
+        "uuid": "611a5893-9c37-4e31-9c57-47c4c563526d",
+        "api_type": "orc",
+        "api_root": "http://host.docker.internal:8002/api/v2/",
+        "client_id": "",
+        "secret": "",
+        "auth_type": "api_key",
+        "header_key": "Authorization",
+        "header_value": "Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+        "nlx": "",
+        "user_id": "",
+        "user_representation": "",
+        "client_certificate": null,
+        "server_certificate": null
+    }
+},
+{
+    "model": "zgw_consumers.service",
+    "pk": 3,
+    "fields": {
+        "label": "Objecttypes",
+        "oas": "http://host.docker.internal:8001/api/v2/schema/openapi.yaml",
+        "oas_file": "",
+        "uuid": "510c6ae2-ba8c-49b1-80f9-d31b9571150c",
+        "api_type": "orc",
+        "api_root": "http://host.docker.internal:8001/api/v2/",
+        "client_id": "",
+        "secret": "",
+        "auth_type": "api_key",
+        "header_key": "Authorization",
+        "header_value": "Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
+        "nlx": "",
+        "user_id": "",
+        "user_representation": "",
+        "client_certificate": null,
+        "server_certificate": null
+    }
 }
 ]
