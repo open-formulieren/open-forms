@@ -67,6 +67,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         endpoint = reverse(
@@ -183,6 +184,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         endpoint = reverse(
@@ -279,6 +281,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         endpoint = reverse(
@@ -372,6 +375,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -444,6 +448,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(

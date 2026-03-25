@@ -57,6 +57,7 @@ class TestCacheDMNRequests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        submission.form.apply_logic_analysis()
 
         self._add_submission_to_session(submission)
 
@@ -161,6 +162,7 @@ class TestCacheDMNRequests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        submission.form.apply_logic_analysis()
 
         self._add_submission_to_session(submission)
 

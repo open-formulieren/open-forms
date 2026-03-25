@@ -109,6 +109,7 @@ class StaticVariablesTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
 

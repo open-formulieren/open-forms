@@ -325,6 +325,7 @@ class TestSubmissionAdmin(WebTest):
                 },
             ],
         )
+        form.apply_logic_analysis()
 
         with self.subTest(
             "Submission doesn't trigger logic and uses the default registration backend"

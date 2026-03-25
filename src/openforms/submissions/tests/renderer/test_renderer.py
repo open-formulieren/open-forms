@@ -101,6 +101,7 @@ class FormNodeTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         # set up data that marks step as not-applicable
         self.sstep1._data = FormioData({"input1": "disabled-step-2"})
 
