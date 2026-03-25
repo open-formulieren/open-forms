@@ -12,6 +12,7 @@ os.environ.setdefault("ENVIRONMENT", "production")
 os.environ.setdefault("CACHE_DEFAULT", "127.0.0.1:6379/2")
 os.environ.setdefault("CACHE_AXES", "127.0.0.1:6379/4")
 os.environ.setdefault("CACHE_PORTALOCKER", "127.0.0.1:6379/8")
+os.environ.setdefault("STATICFILES_STORAGE_CLASS", "ManifestStaticFilesStorage")
 
 from .base import *  # noqa isort:skip
 
@@ -22,12 +23,6 @@ for db_config in DATABASES.values():
 # Caching sessions.
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
-
-# The file storage engine to use when collecting static files with the
-# collectstatic management command.
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
-
-# Production logging facility.
 
 # Production logging facility.
 handlers = ["console"] if LOG_STDOUT else ["django"]
