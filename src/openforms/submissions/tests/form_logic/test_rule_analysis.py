@@ -275,8 +275,8 @@ class DetermineVariablesAndStepTests(TestCase):
             ],
         )
 
-        with self.subTest("All steps after the trigger step are set"):
-            self.assertEqual(rule_1.steps, {step_2, step_3, step_4})
+        with self.subTest("All steps are set"):
+            self.assertEqual(rule_1.steps, {step_1, step_2, step_3, step_4})
             self.assertEqual(rule_1.input_variable_keys, {"checkbox2"})
             self.assertEqual(rule_1.output_variable_keys, {"textfield"})
 
@@ -369,8 +369,8 @@ class DetermineVariablesAndStepTests(TestCase):
             ],
         )
 
-        with self.subTest("All steps after the trigger step are set"):
-            self.assertEqual(rule_1.steps, {step_2, step_3, step_4})
+        with self.subTest("All steps are set"):
+            self.assertEqual(rule_1.steps, {step_1, step_2, step_3, step_4})
             self.assertEqual(rule_1.input_variable_keys, {"checkbox2"})
             self.assertEqual(rule_1.output_variable_keys, {"textfield"})
 
