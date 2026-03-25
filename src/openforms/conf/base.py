@@ -367,6 +367,20 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    # The file storage engine to use when collecting static files with the
+    # collectstatic management command.
+    "staticfiles": {
+        "BACKEND": (
+            "django.contrib.staticfiles.storage."
+            f"{config('STATICFILES_STORAGE_CLASS', default='StaticFilesStorage')}"
+        ),
+    },
+}
+
 MEDIA_ROOT = BASE_DIR / "media"
 
 MEDIA_URL = "/media/"
