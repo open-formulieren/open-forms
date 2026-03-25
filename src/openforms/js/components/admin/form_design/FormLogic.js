@@ -199,7 +199,7 @@ const RuleBody = ({
   const [resetRequest, setResetRequest] = useState(0);
   const triggerFromStep = useFormStep(triggerFromStepIdentifier);
   const formSteps = useFormSteps(formStepIdentifiers);
-  const {newLogicEvaluationEnabled} = useContext(FormContext);
+  const {newLogicEvaluationEnabled, formSteps: allFormSteps} = useContext(FormContext);
 
   // Case in which there is an error: a trigger step was specified, but this step cannot be found in the form
   if (!triggerFromStep && triggerFromStepIdentifier && !newLogicEvaluationEnabled)
@@ -285,11 +285,18 @@ const RuleBody = ({
 
         {newLogicEvaluationEnabled && (
           <div className="logic-rule__advanced">
-            <FormattedMessage
-              description="Execute on step(s) label"
-              defaultMessage="This rule will be executed on step(s): {steps}"
-              values={{steps: formSteps.map(step => step.stepName).join(', ')}}
-            />
+            {allFormSteps.length === formSteps.length ? (
+              <FormattedMessage
+                description="Execute on all steps label"
+                defaultMessage="This rule will be executed on all steps."
+              />
+            ) : (
+              <FormattedMessage
+                description="Execute on step(s) label"
+                defaultMessage="This rule will be executed on step(s): {steps}"
+                values={{steps: formSteps.map(step => step.stepName).join(', ')}}
+              />
+            )}
           </div>
         )}
 
