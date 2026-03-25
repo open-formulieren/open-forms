@@ -6,12 +6,10 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Token 171be5abaf41e7856b423ad513df1ef8f867ff48
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e
   response:
@@ -30,11 +28,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Dec 2025 14:47:39 GMT
+      - Wed, 25 Mar 2026 11:32:31 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.1
+      - nginx/1.29.5
       Vary:
       - origin
       X-Content-Type-Options:
@@ -47,14 +45,12 @@ interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"stepwithnulls": {"radio": "2", "tekstveld":
-      "", "bedrag": null}}, "startAt": "2025-12-19"}}'
+      "", "bedrag": null}}, "startAt": "2026-03-25"}}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9
       Connection:
       - keep-alive
       Content-Crs:
@@ -64,12 +60,12 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: POST
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/bc201742-55b2-4abe-a1ed-180687fabd02","uuid":"bc201742-55b2-4abe-a1ed-180687fabd02","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"stepwithnulls":{"radio":"2","tekstveld":"","bedrag":null}},"geometry":null,"startAt":"2025-12-19","endAt":null,"registrationAt":"2025-12-19","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/c499d11a-b782-423d-affc-66664ebdd369","uuid":"c499d11a-b782-423d-affc-66664ebdd369","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"stepwithnulls":{"radio":"2","tekstveld":"","bedrag":null}},"geometry":null,"startAt":"2026-03-25","endAt":null,"registrationAt":"2026-03-25","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -84,13 +80,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Dec 2025 14:47:39 GMT
+      - Wed, 25 Mar 2026 11:32:31 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/bc201742-55b2-4abe-a1ed-180687fabd02
+      - http://localhost:8002/api/v2/objects/c499d11a-b782-423d-affc-66664ebdd369
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.1
+      - nginx/1.29.5
       Vary:
       - origin
       X-Content-Type-Options:

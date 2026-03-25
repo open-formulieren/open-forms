@@ -2,45 +2,43 @@ interactions:
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
       "bronorganisatie": "000000000", "creatiedatum": "2024-03-19", "titel": "Form
-      042", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/postscript",
-      "inhoud": "Y29udGVudA==", "status": "definitief", "bestandsnaam": "attachment1.jpg",
-      "ontvangstdatum": "2024-03-12", "beschrijving": "Bijgevoegd document", "indicatieGebruiksrecht":
+      013", "auteur": "Aanvrager", "taal": "nld", "formaat": "message/http", "inhoud":
+      "Y29udGVudA==", "status": "definitief", "bestandsnaam": "attachment1.jpg", "ontvangstdatum":
+      "2024-03-19", "beschrijving": "Bijgevoegd document", "indicatieGebruiksrecht":
       false, "bestandsomvang": 7}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTcxMDg1NTYzNCwiZXhwIjoxNzEwODk4ODM0LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.1QOj3L9sOzuw2hAb6l55ybVVF5K9Jj7PPd_Ag2LO9NM
       Connection:
       - keep-alive
       Content-Length:
-      - '492'
+      - '482'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: POST
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/5d8ab7fb-34cc-4e3d-b29f-07bddcf242be","identificatie":"DOCUMENT-2024-0000000011","bronorganisatie":"000000000","creatiedatum":"2024-03-19","titel":"Form
-        042","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/postscript","taal":"nld","versie":1,"beginRegistratie":"2025-12-19T14:47:33.133822Z","bestandsnaam":"attachment1.jpg","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/5d8ab7fb-34cc-4e3d-b29f-07bddcf242be/download?versie=1","bestandsomvang":7,"link":"","beschrijving":"Bijgevoegd
-        document","ontvangstdatum":"2024-03-12","verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/04d872ca-c4c4-49e8-a740-b0577f064cd8","identificatie":"DOCUMENT-2024-0000000004","bronorganisatie":"000000000","creatiedatum":"2024-03-19","titel":"Form
+        013","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"message/http","taal":"nld","versie":1,"beginRegistratie":"2026-03-25T11:37:25.565088Z","bestandsnaam":"attachment1.jpg","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/04d872ca-c4c4-49e8-a740-b0577f064cd8/download?versie=1","bestandsomvang":7,"link":"","beschrijving":"Bijgevoegd
+        document","ontvangstdatum":"2024-03-19","verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
       - 1.4.2
       Allow:
       - GET, POST, HEAD, OPTIONS
       Content-Length:
-      - '1048'
+      - '1038'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/5d8ab7fb-34cc-4e3d-b29f-07bddcf242be
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/04d872ca-c4c4-49e8-a740-b0577f064cd8
       Referrer-Policy:
       - same-origin
       Vary:
@@ -55,45 +53,43 @@ interactions:
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
       "bronorganisatie": "000000000", "creatiedatum": "2024-03-19", "titel": "Form
-      042", "auteur": "Aanvrager", "taal": "nld", "formaat": "audio/webm", "inhoud":
-      "Y29udGVudA==", "status": "definitief", "bestandsnaam": "attachment2_1.jpg",
-      "ontvangstdatum": "2024-03-12", "beschrijving": "Bijgevoegd document", "indicatieGebruiksrecht":
+      013", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/xml-dtd",
+      "inhoud": "Y29udGVudA==", "status": "definitief", "bestandsnaam": "attachment2_1.jpg",
+      "ontvangstdatum": "2024-03-19", "beschrijving": "Bijgevoegd document", "indicatieGebruiksrecht":
       false, "bestandsomvang": 7}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTcxMDg1NTYzNCwiZXhwIjoxNzEwODk4ODM0LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.1QOj3L9sOzuw2hAb6l55ybVVF5K9Jj7PPd_Ag2LO9NM
       Connection:
       - keep-alive
       Content-Length:
-      - '482'
+      - '491'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: POST
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1229f031-9144-4c20-b979-d452d8dae12f","identificatie":"DOCUMENT-2024-0000000012","bronorganisatie":"000000000","creatiedatum":"2024-03-19","titel":"Form
-        042","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"audio/webm","taal":"nld","versie":1,"beginRegistratie":"2025-12-19T14:47:33.201809Z","bestandsnaam":"attachment2_1.jpg","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1229f031-9144-4c20-b979-d452d8dae12f/download?versie=1","bestandsomvang":7,"link":"","beschrijving":"Bijgevoegd
-        document","ontvangstdatum":"2024-03-12","verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a011b00d-fe6f-4650-a19e-bafb3766a669","identificatie":"DOCUMENT-2024-0000000005","bronorganisatie":"000000000","creatiedatum":"2024-03-19","titel":"Form
+        013","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/xml-dtd","taal":"nld","versie":1,"beginRegistratie":"2026-03-25T11:37:25.600985Z","bestandsnaam":"attachment2_1.jpg","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a011b00d-fe6f-4650-a19e-bafb3766a669/download?versie=1","bestandsomvang":7,"link":"","beschrijving":"Bijgevoegd
+        document","ontvangstdatum":"2024-03-19","verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
       - 1.4.2
       Allow:
       - GET, POST, HEAD, OPTIONS
       Content-Length:
-      - '1038'
+      - '1047'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1229f031-9144-4c20-b979-d452d8dae12f
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a011b00d-fe6f-4650-a19e-bafb3766a669
       Referrer-Policy:
       - same-origin
       Vary:
@@ -112,12 +108,10 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Token 171be5abaf41e7856b423ad513df1ef8f867ff48
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2
   response:
@@ -136,11 +130,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Dec 2025 14:47:33 GMT
+      - Wed, 25 Mar 2026 11:37:25 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.1
+      - nginx/1.29.5
       Vary:
       - origin
       X-Content-Type-Options:
@@ -152,16 +146,14 @@ interactions:
       message: OK
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2",
-      "record": {"typeVersion": 1, "data": {"multiple_files": ["http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1229f031-9144-4c20-b979-d452d8dae12f",
-      "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/5d8ab7fb-34cc-4e3d-b29f-07bddcf242be"]},
+      "record": {"typeVersion": 1, "data": {"multiple_files": ["http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/04d872ca-c4c4-49e8-a740-b0577f064cd8",
+      "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a011b00d-fe6f-4650-a19e-bafb3766a669"]},
       "startAt": "2024-03-19"}}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9
       Connection:
       - keep-alive
       Content-Crs:
@@ -171,12 +163,12 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: POST
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/cc379e22-03ef-4576-bf74-116918d7425d","uuid":"cc379e22-03ef-4576-bf74-116918d7425d","type":"http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","record":{"index":1,"typeVersion":1,"data":{"multiple_files":["http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1229f031-9144-4c20-b979-d452d8dae12f","http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/5d8ab7fb-34cc-4e3d-b29f-07bddcf242be"]},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2025-12-19","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/3f3beac4-9d7d-4acb-a6dd-fb754a195bf9","uuid":"3f3beac4-9d7d-4acb-a6dd-fb754a195bf9","type":"http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","record":{"index":1,"typeVersion":1,"data":{"multiple_files":["http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/04d872ca-c4c4-49e8-a740-b0577f064cd8","http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a011b00d-fe6f-4650-a19e-bafb3766a669"]},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2026-03-25","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -191,13 +183,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Dec 2025 14:47:33 GMT
+      - Wed, 25 Mar 2026 11:37:25 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/cc379e22-03ef-4576-bf74-116918d7425d
+      - http://localhost:8002/api/v2/objects/3f3beac4-9d7d-4acb-a6dd-fb754a195bf9
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.1
+      - nginx/1.29.5
       Vary:
       - origin
       X-Content-Type-Options:

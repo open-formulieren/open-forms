@@ -6,12 +6,10 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Token 171be5abaf41e7856b423ad513df1ef8f867ff48
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes
   response:
@@ -33,11 +31,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Dec 2025 13:03:35 GMT
+      - Wed, 25 Mar 2026 11:43:58 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.1
+      - nginx/1.29.5
       Vary:
       - origin
       X-Content-Type-Options:
