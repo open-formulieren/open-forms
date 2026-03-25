@@ -89,10 +89,14 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
             "api:submission-steps-detail",
             kwargs={"submission_uuid": submission.uuid, "step_uuid": step2.uuid},
         )
+        submission_url = reverse(
+            "api:submission-detail",
+            kwargs={"uuid": submission.uuid},
+        )
         with self.subTest("Test setup check"):
-            step2_detail = self.client.get(step2_url)
+            submission_detail = self.client.get(submission_url)
 
-            self.assertTrue(step2_detail.data["is_applicable"])
+            self.assertTrue(submission_detail.data["steps"][1]["is_applicable"])
 
         # now alter the data of step one, triggering the N/A logic
         with self.subTest("Modify step 1 data to trigger logic"):
@@ -110,9 +114,10 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
 
         # check the state of step 2 again
         with self.subTest("Verify step 2 state"):
+            submission_detail = self.client.get(submission_url)
             step2_detail = self.client.get(step2_url)
 
-            self.assertFalse(step2_detail.data["is_applicable"])
+            self.assertFalse(submission_detail.data["steps"][1]["is_applicable"])
             self.assertEqual(step2_detail.data["data"], {})
 
     def test_blocked_submission_is_reset(self):

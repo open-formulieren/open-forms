@@ -113,8 +113,6 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                 ]
             },
             "data": {},
-            "isApplicable": True,
-            "completed": False,
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],
@@ -159,8 +157,6 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                 ]
             },
             "data": {},
-            "isApplicable": True,
-            "completed": False,
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],
@@ -884,8 +880,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 ]
             },
             "data": {},
-            "isApplicable": True,
-            "completed": False,
             "canSubmit": True,
             "requireBackendLogicEvaluation": False,
             "logicRules": [],
@@ -929,8 +923,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 ]
             },
             "data": {},
-            "isApplicable": True,
-            "completed": False,
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],
@@ -997,8 +989,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 ]
             },
             "data": {},
-            "isApplicable": True,
-            "completed": False,
             "canSubmit": True,
             "requireBackendLogicEvaluation": False,
             "logicRules": [
@@ -1087,8 +1077,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 ]
             },
             "data": {},
-            "isApplicable": True,
-            "completed": False,
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],  # logic rules are not serialized when the backend is required
@@ -1157,8 +1145,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 ]
             },
             "data": {},
-            "isApplicable": True,
-            "completed": False,
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],  # logic rules are not serialized when the backend is required
