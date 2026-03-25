@@ -289,7 +289,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
         data = response.json()
 
-        self.assertEqual(len(data), 1)
+        self.assertEqual(len(data), 2)
 
     def test_retrieve_filter_by_catalogus_and_case_type_doesnt_exist(self):
         user = StaffUserFactory.create()

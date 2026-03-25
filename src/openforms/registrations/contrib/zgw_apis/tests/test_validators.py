@@ -719,7 +719,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         with self.subTest("document type exists, not related to case type"):
             data = {
                 **base,
-                "document_type_description": "PDF Informatieobjecttype",
+                "document_type_description": "CSV Informatieobjecttype",
             }
             serializer = ZaakOptionsSerializer(data=data)
 
