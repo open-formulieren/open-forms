@@ -1163,6 +1163,47 @@ class FormLogicAPITests(APITestCase):
             )
             self.assertEqual(response.data["invalid_params"][0]["code"], "invalid")
 
+    def test_create_form_logic_with_trigger_from_step_forbidden_with_new_logic_evaluation(
+        self,
+    ):
+        user = SuperUserFactory.create(username="test", password="test")
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            new_logic_evaluation_enabled=True,
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [{"type": "textfield", "key": "textfield"}]
+            },
+        )
+        form_step = form.formstep_set.get()
+        step1_path = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_step.uuid},
+        )
+        rule_data = [
+            {
+                "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+                "order": 0,
+                "json_logic_trigger": {
+                    "==": [
+                        {"var": "textfield"},
+                        "hide step 1",
+                    ]
+                },
+                "triggerFromStep": f"http://testserver{step1_path}",
+                "actions": [],
+            }
+        ]
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.put(url, data=rule_data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response_data = response.json()
+        error = response_data["invalidParams"][0]
+        self.assertEqual(error["name"], "0.triggerFromStep")
+        self.assertEqual(error["code"], "invalid")
+
     def test_create_form_logic_doesnt_crash(self):
         user = SuperUserFactory.create(username="test", password="test")
         form = FormFactory.create()
