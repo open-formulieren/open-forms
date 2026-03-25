@@ -6,7 +6,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.constants import FormVariableDataTypes
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
@@ -21,7 +21,13 @@ class DeterministicEvaluationTests(TestCase):
         FormVariableFactory.create(
             form=form,
             key="a",
-            source=FormVariableSources.user_defined,
+            user_defined=True,
+            data_type=FormVariableDataTypes.int,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="b",
+            user_defined=True,
             data_type=FormVariableDataTypes.int,
         )
         FormLogicFactory.create(
@@ -30,11 +36,11 @@ class DeterministicEvaluationTests(TestCase):
             json_logic_trigger={"==": [1, 1]},
             actions=[
                 {
-                    "variable": "a",
+                    "variable": "b",
                     "action": {
                         "name": "Add 2",
                         "type": "variable",
-                        "value": {"+": [{"var": "a"}, 2]},
+                        "value": {"+": [{"var": "a"}, 2]},  # 3 + 2 = 5
                     },
                 }
             ],
@@ -45,15 +51,16 @@ class DeterministicEvaluationTests(TestCase):
             json_logic_trigger={"==": [1, 1]},
             actions=[
                 {
-                    "variable": "a",
+                    "variable": "b",
                     "action": {
                         "name": "Multiply by 2",
                         "type": "variable",
-                        "value": {"*": [{"var": "a"}, 2]},
+                        "value": {"*": [{"var": "a"}, 2]},  # 3 x 2 = 6
                     },
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
             submission=submission, form_step=step, data={"a": 3}
@@ -62,8 +69,10 @@ class DeterministicEvaluationTests(TestCase):
         evaluate_form_logic(submission, submission_step)
 
         state = submission.variables_state
-        variable = state.variables["a"]
-        self.assertEqual(variable.value, 8)  # ( 3 x 2 ) + 2
+        variable = state.variables["b"]
+        self.assertEqual(
+            variable.value, 5
+        )  # rule with order 1 overwrites result of rule with order 0
 
     def test_evaluate_rules_when_trigger_step_reached(self):
         """
@@ -72,7 +81,7 @@ class DeterministicEvaluationTests(TestCase):
         Set up creates a form with three steps, the logic rule may only kick in from
         step2 onwards (i.e. - evaluate for step 2 and for step 3, but not step 1).
         """
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={

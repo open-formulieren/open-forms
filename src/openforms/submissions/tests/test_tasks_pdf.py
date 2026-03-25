@@ -141,6 +141,7 @@ class SubmissionReportGenerationTests(TestCase):
                 },
             ],
         )
+        submission.form.apply_logic_analysis()
 
         html = submission.report.generate_submission_report_pdf()
 

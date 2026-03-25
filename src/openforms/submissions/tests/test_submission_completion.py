@@ -201,6 +201,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -415,6 +416,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -475,6 +477,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form_step.form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form_step.form)
         SubmissionStepFactory.create(
@@ -704,6 +707,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+        submission.form.apply_logic_analysis()
         SubmissionStepFactory.create(
             submission=submission,
             data={"personOrCompany": "person"},
@@ -769,6 +773,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+        submission.form.apply_logic_analysis()
         SubmissionStepFactory.create(
             submission=submission,
             data={"personOrCompany": "person"},
@@ -802,6 +807,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form_step=submission.steps[0].form_step,
             data={"foo": "bar"},
         )
+        submission.form.apply_logic_analysis()
         with self.subTest(part="check data setup"):
             self.assertFalse(submission.payment_required)
         self._add_submission_to_session(submission)
@@ -831,6 +837,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},
         )
+        submission.form.apply_logic_analysis()
         with self.subTest(part="check data setup"):
             self.assertFalse(submission.payment_required)
         self._add_submission_to_session(submission)
@@ -854,6 +861,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form_step=submission.steps[0].form_step,
             data={"foo": "bar"},
         )
+        submission.form.apply_logic_analysis()
         with self.subTest(part="check data setup"):
             self.assertTrue(submission.payment_required)
         self._add_submission_to_session(submission)
@@ -888,6 +896,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},
         )
+        submission.form.apply_logic_analysis()
         evaluate_form_logic(submission, submission.submissionstep_set.get())
         persist_user_defined_variables(submission)
 
@@ -926,6 +935,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},
         )
+        submission.form.apply_logic_analysis()
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
@@ -1054,6 +1064,7 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        submission.form.apply_logic_analysis()
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
@@ -1097,6 +1108,7 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        submission.form.apply_logic_analysis()
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 

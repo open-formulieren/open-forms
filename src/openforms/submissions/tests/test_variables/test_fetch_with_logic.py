@@ -49,6 +49,7 @@ class ServiceFetchWithActionsTest(TestCase):
                 }
             ],
         )
+        submission.form.apply_logic_analysis()
         m.get("https://httpbin.org/get", json=42)
 
         evaluate_form_logic(submission, submission.submissionstep_set.first())
@@ -85,6 +86,7 @@ class ServiceFetchWithActionsTest(TestCase):
                 }
             ],
         )
+        submission.form.apply_logic_analysis()
 
         m.get("https://httpbin.org/get", status_code=500)
 
@@ -150,6 +152,7 @@ class ServiceFetchWithActionsTest(TestCase):
                 }
             ],
         )
+        submission.form.apply_logic_analysis()
 
         m.get("https://httpbin.org/get", json=42)
 
@@ -198,6 +201,7 @@ class ServiceFetchWithActionsTest(TestCase):
                 }
             ],
         )
+        submission.form.apply_logic_analysis()
 
         m.get("https://httpbin.org/get", json=42)
 

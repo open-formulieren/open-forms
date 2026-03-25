@@ -102,6 +102,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         SubmissionStepFactory.create(
@@ -183,6 +184,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission, form_step=form_step0, data={"some": "data"}
@@ -297,6 +299,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+        submission.form.apply_logic_analysis()
         endpoint = reverse(
             "api:submission-steps-logic-check",
             kwargs={
@@ -368,6 +371,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         endpoint = reverse(
@@ -405,6 +409,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        submission.form.apply_logic_analysis()
 
         step_uuid = submission.form.formstep_set.get().uuid
         check_logic_endpoint = reverse(
@@ -591,6 +596,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 ]
             ],
         )
+        submission.form.apply_logic_analysis()
 
         endpoint = reverse(
             "api:submission-steps-logic-check",
@@ -737,6 +743,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+        submission.form.apply_logic_analysis()
 
         with self.subTest("logic in step 1"):
             endpoint = reverse(
@@ -860,6 +867,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+        submission.form.apply_logic_analysis()
 
         endpoint = reverse(
             "api:submission-steps-logic-check",
@@ -947,6 +955,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(completed=True, form=form)
         endpoint = reverse(
             "api:submission-steps-logic-check",
@@ -976,7 +985,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
 
     @tag("gh-5888")
     @requests_mock.Mocker()
-    def test_date_related_vales_in_service_fetch_configuration(self, m):
+    def test_date_related_values_in_service_fetch_configuration(self, m):
         """
         Ensure that date-related objects are properly formatted when they are used in
         templates in the service fetch configuration.
@@ -1050,6 +1059,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
             json_logic_trigger=True,
             actions=[{"action": {"type": "fetch-from-service"}, "variable": "foo"}],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         # Perform logic check
@@ -1136,6 +1146,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         # Perform logic check
@@ -1235,6 +1246,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         # Simulate an already submitted step
@@ -1287,7 +1299,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        rule = FormLogicFactory.create(
+        FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "textfield"}, "foo"]},
             actions=[
@@ -1300,7 +1312,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
-        rule.form_steps.set([step])
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         endpoint = reverse(

@@ -66,6 +66,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -96,7 +97,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
           becomes relevant from step3 onwards
         * We include calculated variables that determine the availability of step3
         """
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -231,7 +232,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         * In step two the logic rule triggers that prevents us from continuing
         * We go back to step 1 and it should be possible to continue to step 2 from there
         """
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -379,6 +380,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -458,6 +460,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
 
@@ -567,6 +570,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -665,6 +669,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
         url_kwargs = {
@@ -838,6 +843,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
         logic_check_endpoint = reverse(
@@ -946,6 +952,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
         logic_check_endpoint = reverse(
@@ -1007,6 +1014,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
         logic_check_endpoint = reverse(
@@ -1057,6 +1065,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
         logic_check_endpoint = reverse(
@@ -1095,7 +1104,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-
         FormLogicFactory.create(
             form=form,
             json_logic_trigger=True,
@@ -1109,7 +1117,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
-
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         self._add_submission_to_session(submission)
@@ -1191,6 +1199,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
         logic_check_endpoint = reverse(
@@ -1301,6 +1310,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         endpoint = reverse(
             "api:submission-steps-logic-check",
@@ -1671,6 +1681,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             json_logic_trigger={"==": [{"var": "radio"}, "nonsense-value"]},
             actions=[show_textfield_action],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
         logic_check_endpoint = reverse(
@@ -1741,6 +1752,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             json_logic_trigger={"==": [{"var": "radio"}, "a"]},
             actions=[show_textfield_action],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
         logic_check_endpoint = reverse(
@@ -1796,6 +1808,11 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                             }
                         ],
                     },
+                    {
+                        "type": "textfield",
+                        "key": "observer",
+                        "validate": {"required": False},
+                    },
                 ]
             },
         )
@@ -1826,8 +1843,6 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         )
         # Expected to trigger: the value of the textfield gets cleared because of the
         # above rule.
-        # NOTE: this rule is illegal in 3.5.x due to the cyclic reference. When
-        # backporting, make sure it targets another component.
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={
@@ -1836,7 +1851,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             actions=[
                 {
                     "formStep": None,
-                    "component": "hide-when-a-but-show-when-checkbox-checked",
+                    "component": "observer",
                     "action": {
                         "type": "property",
                         "property": {"value": "validate.required", "type": "bool"},
@@ -1857,6 +1872,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                 _build_visibility_action(key="fieldset", make_hidden=False),
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
@@ -1886,12 +1902,15 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         with self.subTest("textfield"):
             textfield_component = data["step"]["configuration"]["components"][2]
             self.assertFalse(textfield_component["hidden"])
-            self.assertTrue(textfield_component["validate"]["required"])
 
         with self.subTest("fieldset"):
             fieldset_component = data["step"]["configuration"]["components"][3]
             self.assertFalse(fieldset_component["hidden"])
             self.assertFalse(fieldset_component["components"][0]["hidden"])
+
+        with self.subTest("observer"):
+            observer_component = data["step"]["configuration"]["components"][4]
+            self.assertTrue(observer_component["validate"]["required"])
 
         with self.subTest("data mutations"):
             self.assertEqual(data["step"]["data"], {})
@@ -1932,6 +1951,11 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                             }
                         ],
                     },
+                    {
+                        "type": "textfield",
+                        "key": "observer",
+                        "validate": {"required": False},
+                    },
                 ]
             },
         )
@@ -1962,8 +1986,6 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         )
         # Expected to trigger: the value of the textfield gets cleared because of the
         # above rule.
-        # NOTE: this rule is illegal in 3.5.x due to the cyclic reference. When
-        # backporting, make sure it targets another component.
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={
@@ -1972,7 +1994,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             actions=[
                 {
                     "formStep": None,
-                    "component": "hide-when-a-but-show-when-checkbox-checked",
+                    "component": "observer",
                     "action": {
                         "type": "property",
                         "property": {"value": "validate.required", "type": "bool"},
@@ -1993,6 +2015,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                 _build_visibility_action(key="fieldset", make_hidden=False),
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
@@ -2022,12 +2045,15 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         with self.subTest("textfield"):
             textfield_component = data["step"]["configuration"]["components"][2]
             self.assertFalse(textfield_component["hidden"])
-            self.assertTrue(textfield_component["validate"]["required"])
 
         with self.subTest("fieldset"):
             fieldset_component = data["step"]["configuration"]["components"][3]
             self.assertFalse(fieldset_component["hidden"])
             self.assertFalse(fieldset_component["components"][0]["hidden"])
+
+        with self.subTest("observer"):
+            observer_component = data["step"]["configuration"]["components"][4]
+            self.assertTrue(observer_component["validate"]["required"])
 
         with self.subTest("data mutations"):
             self.assertEqual(data["step"]["data"], {})
@@ -2086,6 +2112,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         endpoint = reverse(
             "api:submission-steps-detail",
@@ -2138,6 +2165,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -2193,6 +2221,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,

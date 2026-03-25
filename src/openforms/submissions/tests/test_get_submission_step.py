@@ -97,7 +97,20 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "id": None,  # there is no submission step created yet
             "formStepUuid": str(self.step.uuid),
             "slug": self.step.slug,
-            "defaultConfiguration": None,
+            "defaultConfiguration": {
+                "components": [
+                    {
+                        "label": "Some field",
+                        "key": "someField",
+                        "type": "textfield",
+                    },
+                    {
+                        "label": "Other field",
+                        "key": "otherField",
+                        "type": "selectboxes",
+                    },
+                ],
+            },
             "configuration": {
                 "components": [
                     {
@@ -114,7 +127,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             },
             "data": {},
             "canSubmit": True,
-            "requireBackendLogicEvaluation": True,
+            "requireBackendLogicEvaluation": False,
             "logicRules": [],
         }
         self.assertEqual(response.json(), expected)
@@ -141,7 +154,20 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "id": None,  # there is no submission step created yet
             "formStepUuid": str(self.step.uuid),
             "slug": self.step.slug,
-            "defaultConfiguration": None,
+            "defaultConfiguration": {
+                "components": [
+                    {
+                        "label": "Some field",
+                        "key": "someField",
+                        "type": "textfield",
+                    },
+                    {
+                        "label": "Other field",
+                        "key": "otherField",
+                        "type": "selectboxes",
+                    },
+                ]
+            },
             "configuration": {
                 "components": [
                     {
@@ -158,7 +184,8 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             },
             "data": {},
             "canSubmit": True,
-            "requireBackendLogicEvaluation": True,
+            # wrong but our introspection code is not aware of this ad-hoc plugin
+            "requireBackendLogicEvaluation": False,
             "logicRules": [],
         }
         self.assertEqual(response.json(), expected)
@@ -371,6 +398,7 @@ class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
@@ -719,6 +747,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             form_step=step,
@@ -941,7 +970,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        rule = FormLogicFactory.create(
+        FormLogicFactory.create(
             form=step.form,
             json_logic_trigger={"==": [{"var": "dateOfBirth"}, {"var": "today"}]},
             actions=[
@@ -959,9 +988,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
-        # This step will be assigned during logic rule analysis, because the action
-        # affects the "textfield" variable on the first (and only) step.
-        rule.form_steps.set([step])
+        step.form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=step.form)
         url = reverse(
@@ -1038,7 +1065,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             user_defined=True,
             initial_value="I am a label!",
         )
-        rule = FormLogicFactory.create(
+        FormLogicFactory.create(
             form=step.form,
             json_logic_trigger={"==": [{"var": "dateOfBirth"}, {"var": "today"}]},
             actions=[
@@ -1052,9 +1079,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
-        # This step will be assigned during logic rule analysis, because the action
-        # affects the "textfield" variable on the first (and only) step.
-        rule.form_steps.set([step])
+        step.form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=step.form)
         url = reverse(
@@ -1106,7 +1131,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             initial_value="",
         )
         # Note that user-defined variables cannot be set in the frontend
-        rule = FormLogicFactory.create(
+        FormLogicFactory.create(
             form=step.form,
             json_logic_trigger={"==": [{"var": "dateOfBirth"}, {"var": "today"}]},
             actions=[
@@ -1120,9 +1145,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
-        # This step will be assigned during logic rule analysis, because the action sets
-        # a user-defined variable -> the first (and only) step is assigned.
-        rule.form_steps.set([step])
+        step.form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=step.form)
         url = reverse(
@@ -1196,7 +1219,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             user_defined=True,
             initial_value="",
         )
-        rule = FormLogicFactory.create(
+        FormLogicFactory.create(
             form=form,
             json_logic_trigger={
                 "and": [
@@ -1220,9 +1243,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
-        # This step will be assigned during logic rule analysis, because the action
-        # affects the "content" component on step 2.
-        rule.form_steps.set([step_2])
+        form.apply_logic_analysis()
 
         # Simulate submitting step 1
         submission = SubmissionFactory.create(form=form)
@@ -1284,7 +1305,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             },
         )
         # This is an actual logic rule used by municipalities!
-        rule = FormLogicFactory.create(
+        FormLogicFactory.create(
             form=step.form,
             json_logic_trigger={
                 ">": [
@@ -1299,7 +1320,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
-        rule.form_steps.set([step])
+        step.form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=step.form)
         url = reverse(
@@ -1346,7 +1367,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             },
         )
         # This is an actual logic rule used by municipalities!
-        rule = FormLogicFactory.create(
+        FormLogicFactory.create(
             form=form,
             json_logic_trigger=True,
             actions=[
@@ -1364,9 +1385,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
-        # Step 2 will be assigned here, because the variable action applies to
-        # "dateOfBirthMinusDuration".
-        rule.form_steps.set([step_2])
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)

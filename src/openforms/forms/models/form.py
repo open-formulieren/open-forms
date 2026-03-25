@@ -46,7 +46,12 @@ User = get_user_model()
 logger = structlog.stdlib.get_logger(__name__)
 
 if TYPE_CHECKING:
-    from . import FormAuthenticationBackend, FormRegistrationBackend, FormStep
+    from . import (
+        FormAuthenticationBackend,
+        FormLogic,
+        FormRegistrationBackend,
+        FormStep,
+    )
 
 
 class FormQuerySet(models.QuerySet["Form"]):
@@ -413,6 +418,7 @@ class Form(models.Model):
     formstep_set: models.Manager[FormStep]
     auth_backends: Manager[FormAuthenticationBackend]
     registration_backends: Manager[FormRegistrationBackend]
+    formlogic_set: Manager[FormLogic]
 
     get_begin_text = literal_getter("begin_text", "form_begin_text")
     get_previous_text = literal_getter("previous_text", "form_previous_text")
@@ -770,6 +776,33 @@ class Form(models.Model):
             )
 
         return self._component_to_step.get(key, None)
+
+    @transaction.atomic
+    def apply_logic_analysis(self) -> None:
+        """
+        Runs the logic rule analysis and saves the result to the database.
+
+        Broken out from the API serializer so that it can easily be called in tests
+        when setting up low-level data.
+        """
+        from ..logic_analysis import analyze_rules
+        from .logic import FormLogic
+
+        # the (auto-created) through model
+        FormLogicFormSteps = FormLogic._meta.get_field(
+            "form_steps"
+        ).remote_field.through
+
+        # drop the old relations and create the expected ones.
+
+        updated_rules_and_steps = analyze_rules(form=self)
+        expected_relations = [
+            FormLogicFormSteps(formlogic=rule, formstep=step)
+            for rule, steps in updated_rules_and_steps
+            for step in steps
+        ]
+        FormLogicFormSteps.objects.filter(formlogic__form=self).delete()
+        FormLogicFormSteps.objects.bulk_create(expected_relations)
 
 
 class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
