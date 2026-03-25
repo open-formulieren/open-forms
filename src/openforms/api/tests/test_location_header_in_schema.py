@@ -69,9 +69,7 @@ class GetOverrideParametersTests(TestCase):
         schema.view = MagicMock()
         schema.method = "POST" if is_create else "GET"
         with (
-            patch.object(
-                schema, "_is_create_operation", return_value=is_create
-            ),
+            patch.object(schema, "_is_create_operation", return_value=is_create),
             patch.object(
                 schema, "_serializer_has_url_field", return_value=has_url_field
             ),
@@ -108,7 +106,9 @@ class LocationHeaderSchemaIntegrationTests(TestCase):
         list_create = paths["/form-definitions/"]
         detail = paths["/form-definitions/{uuid}/"]
 
-        self.assertIn("Location", list_create["post"]["responses"]["201"].get("headers", {}))
+        self.assertIn(
+            "Location", list_create["post"]["responses"]["201"].get("headers", {})
+        )
 
         for method, responses in [
             ("get", list_create["get"]["responses"]),
