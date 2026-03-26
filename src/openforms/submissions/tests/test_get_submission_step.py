@@ -951,7 +951,11 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                     },
                     "variable": "textfield",
                     "uuid": "3798727a-ae54-4661-93ad-37d873c4d5fc",
-                }
+                },
+                {
+                    "action": {"type": "set-registration-backend", "value": "zgw-api"},
+                    "uuid": "d24c8761-3a1b-4b4f-8cb0-aa9d8ec858ed",
+                },
             ],
         )
         # This step will be assigned during logic rule analysis, because the action
