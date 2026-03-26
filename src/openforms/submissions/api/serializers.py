@@ -39,6 +39,7 @@ from openforms.forms.api.serializers import (
 from openforms.forms.constants import LogicActionTypes, SubmissionAllowedChoices
 from openforms.forms.models import FormLogic
 from openforms.forms.validators import validate_not_deleted
+from openforms.typing import VariableValue
 from openforms.utils.json_logic import partially_evaluate_json_logic
 from openforms.utils.urls import build_absolute_uri
 
@@ -260,7 +261,7 @@ class FormLogicFrontendSerializer(OrderedModelSerializer):
         )
 
     def to_representation(self, instance):
-        step = self.context["submission_step"]
+        step: SubmissionStep = self.context["submission_step"]
         state = step.submission.load_submission_value_variables_state()
         # We include all data, to make sure we have a (empty) value for every variable.
         # Component variables of the current step need to be excluded, though, as these
@@ -273,13 +274,20 @@ class FormLogicFrontendSerializer(OrderedModelSerializer):
             data.pop(key)
 
         # Process action
+        action_list: list[dict[str, VariableValue]] = []
         for action in instance.actions:
+            if action["action"]["type"] == LogicActionTypes.set_registration_backend:
+                continue
+
+            action_list.append(action)
+
             if action["action"]["type"] != LogicActionTypes.variable:
                 continue
 
             value = add_data_type_information(action["action"]["value"], state)
             value, _ = partially_evaluate_json_logic(value, data)
             action["action"]["value"] = value
+        instance.actions = action_list
 
         # Process JSON logic trigger
         json_logic_trigger = add_data_type_information(
