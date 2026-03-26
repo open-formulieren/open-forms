@@ -1238,7 +1238,7 @@ class FamilyMembersBrokenHCConfigurationTests(OFVCRMixin, TestCase):
 @override_settings(LANGUAGE_CODE="en")
 class InvalidCertificatesTests(TestCase):
     def test_expiring_certificates_not_used_by_a_service_are_not_collected(self):
-        # the certificate (test.certificate) expires on Apr 9 05:17:53 2026 GMT
+        # the certificate (test.certificate) expires on Mar 26 10:15:40 2027 GMT
         with open(TEST_FILES / "test.certificate") as client_certificate_f:
             CertificateFactory.create(
                 label="Test certificate",
@@ -1251,7 +1251,7 @@ class InvalidCertificatesTests(TestCase):
         self.assertEqual(len(invalid_certificates), 0)
 
     def test_not_expiring_and_valid_certificates_are_not_collected(self):
-        # the certificate (test.certificate) expires on Apr 9 05:17:53 2026 GMT
+        # the certificate (test.certificate) expires on Mar 26 10:15:40 2027 GMT
         with open(TEST_FILES / "test.certificate") as client_certificate_f:
             certificate = CertificateFactory.create(
                 label="Test certificate",
@@ -1265,7 +1265,7 @@ class InvalidCertificatesTests(TestCase):
         self.assertEqual(len(invalid_certificates), 0)
 
     def test_expiring_certificates_are_collected(self):
-        # the certificate (test.certificate) expires on Apr 9 05:17:53 2026 GMT
+        # the certificate (test.certificate) expires on Mar 26 10:15:40 2027 GMT
         with open(TEST_FILES / "test.certificate") as client_certificate_f:
             certificate = CertificateFactory.create(
                 label="Test certificate",
@@ -1274,22 +1274,22 @@ class InvalidCertificatesTests(TestCase):
             ServiceFactory.create(client_certificate=certificate)
 
         with self.subTest("expiry in the near future"):
-            with freeze_time("2026-04-01T21:15:00Z"):
+            with freeze_time("2027-03-20T21:15:00Z"):
                 invalid_certificates = collect_invalid_certificates()
 
             self.assertEqual(len(invalid_certificates), 1)
             self.assertEqual(invalid_certificates[0].error_message, "will expire soon")
 
         with self.subTest("expiry in the past"):
-            with freeze_time("2026-04-10T21:15:00Z"):
+            with freeze_time("2027-03-27T21:15:00Z"):
                 invalid_certificates = collect_invalid_certificates()
 
             self.assertEqual(len(invalid_certificates), 1)
             self.assertEqual(invalid_certificates[0].error_message, "expired")
 
     def test_invalid_certificates_are_collected(self):
-        # the certificate (test.certificate) expires on Apr 9 05:17:53 2026 GMT and
-        # test2.certificate on Apr 9 05:22:12 2026 GMT. Here the test.key is not valid
+        # the certificate (test.certificate) expires on Mar 26 10:15:40 2027 GMT and
+        # test2.certificate on Mar 26 10:17:31 2027 GMT. Here the test.key is not valid
         # for test2.certificate which causes an invalid keypair error
         with (
             open(TEST_FILES / "test2.certificate") as client_certificate_f,
@@ -1308,8 +1308,8 @@ class InvalidCertificatesTests(TestCase):
         self.assertEqual(invalid_certificates[0].error_message, "has invalid keypair")
 
     def test_both_expiring_and_invalid_certificates_are_collected(self):
-        # the certificate (test.certificate) expires on Apr 9 05:17:53 2026 GMT and
-        # test2.certificate on Apr 9 05:22:12 2026 GMT. Here the test.key is not valid
+        # the certificate (test.certificate) expires on Mar 26 10:15:40 2027 GMT and
+        # test2.certificate on Mar 26 10:17:31 2027 GMT. Here the test.key is not valid
         # for test2.certificate which causes an invalid keypair error
         with (
             open(TEST_FILES / "test2.certificate") as client_certificate_f,
@@ -1323,7 +1323,7 @@ class InvalidCertificatesTests(TestCase):
             ServiceFactory.create(client_certificate=certificate)
 
         with self.subTest("expiry in the near future"):
-            with freeze_time("2026-04-01T21:15:00Z"):
+            with freeze_time("2027-03-21T21:15:00Z"):
                 invalid_certificates = collect_invalid_certificates()
 
             self.assertEqual(len(invalid_certificates), 1)
@@ -1333,7 +1333,7 @@ class InvalidCertificatesTests(TestCase):
             )
 
         with self.subTest("expiry in the past"):
-            with freeze_time("2026-04-10T21:15:00Z"):
+            with freeze_time("2027-03-27T21:15:00Z"):
                 invalid_certificates = collect_invalid_certificates()
 
             self.assertEqual(len(invalid_certificates), 1)
