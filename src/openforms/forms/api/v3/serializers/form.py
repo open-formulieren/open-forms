@@ -61,7 +61,7 @@ class FormSerializer(serializers.ModelSerializer):
         slug_field="uuid",
     )
 
-    steps = FormStepSerializer(many=True, source="formstep_set", min_length=1)  # pyright: ignore[reportCallIssue]
+    steps = FormStepSerializer(many=True, source="formstep_set")
 
     payment = FormPaymentSerializer(required=False, source="*")
 
@@ -306,6 +306,31 @@ class FormSerializer(serializers.ModelSerializer):
             )
 
         return value
+
+    def validate(self, attrs):
+        steps = attrs.get("formstep_set")
+
+        # validate is called multiple times because of the nested serializer fileds and
+        # this means that steps will not exist at every call
+
+        if steps is None:
+            return attrs
+
+        is_appointment = attrs.get("is_appointment")
+
+        # regular form should have at least one step
+        if not is_appointment and len(steps) == 0:
+            raise serializers.ValidationError(
+                _("At least one form step is required in a regular form.")
+            )
+
+        # appointment form should not have any steps
+        if is_appointment and len(steps) > 0:
+            raise serializers.ValidationError(
+                _("Form steps are not allowed in an appointment form.")
+            )
+
+        return attrs
 
     @transaction.atomic()
     def save(self, **kwargs):
