@@ -1,4 +1,5 @@
 import unittest
+from datetime import date
 
 from django.test import TestCase, tag
 
@@ -746,12 +747,25 @@ class ComponentModificationTests(TestCase):
         submission_step = SubmissionStepFactory.create(
             submission=submission,
             form_step=step,
-            data={},
+            data={
+                "CatBirthDate": "2016-03-14",
+                "CatBirthDate2": "2016-03-14",
+            },
         )
 
         configuration = evaluate_form_logic(submission, submission_step)
 
         self.assertTrue(configuration["components"][1]["hidden"])
+
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(include_unsaved=True)
+        self.assertEqual(data["CatBirthDate"], date(2016, 3, 14))
+        # with the default clear on hide, you'd expect this to be cleared, but that
+        # doesn't happen. Eventually the frontend (SDK) will clear the value because
+        # the parent is hidden, and that will lead to another logic evaluation
+        # invocation, without that data included. We can't simply change that now,
+        # because it leads to breaking changes and will likely affect existing forms
+        self.assertEqual(data["CatBirthDate2"], date(2016, 3, 14))
 
     def test_change_component_in_another_step_to_hidden(self):
         form = FormFactory.create()
