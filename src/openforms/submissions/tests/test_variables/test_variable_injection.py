@@ -12,7 +12,6 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.formio.service import FormioData
 from openforms.formio.tests.assertions import FormioMixin
 from openforms.forms.tests.factories import FormFactory, FormVariableFactory
 from openforms.variables.constants import FormVariableDataTypes
@@ -135,9 +134,6 @@ class VariableInjectionTests(SubmissionsMixin, FormioMixin, APITestCase):
 
     def test_detail_endpoint_interpolates_with_submission_data(self):
         self._add_submission_to_session(self.submission)
-        self.submission_step.data = FormioData(
-            {"text1": 'First "textfield"', "checkbox1": True}
-        )
         endpoint = reverse(
             "api:submission-steps-detail",
             kwargs={
@@ -146,8 +142,9 @@ class VariableInjectionTests(SubmissionsMixin, FormioMixin, APITestCase):
             },
         )
 
-        response = self.client.get(endpoint)
-
+        response = self.client.put(
+            endpoint, {"data": {"text1": 'First "textfield"', "checkbox1": True}}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         configuration = response.json()["configuration"]
 

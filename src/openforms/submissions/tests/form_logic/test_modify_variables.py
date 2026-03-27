@@ -5,6 +5,7 @@ from django.test import TestCase
 import requests_mock
 from django_camunda.models import CamundaConfig
 
+from openforms.formio.service import FormioData
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -89,7 +90,6 @@ class VariableModificationTests(TestCase):
         submission_step2 = SubmissionStepFactory.build(
             submission=submission,
             form_step=step2,
-            data={},
         )
 
         evaluate_form_logic(submission, submission_step2)
@@ -167,7 +167,6 @@ class VariableModificationTests(TestCase):
         submission_step2 = SubmissionStepFactory.build(
             submission=submission,
             form_step=step2,
-            data={},
         )
 
         evaluate_form_logic(submission, submission_step2)
@@ -245,7 +244,6 @@ class VariableModificationTests(TestCase):
         submission_step2 = SubmissionStepFactory.build(
             submission=submission,
             form_step=step2,
-            data={},
         )
 
         evaluate_form_logic(submission, submission_step2)
@@ -881,7 +879,6 @@ class VariableModificationTests(TestCase):
         submission_step2 = SubmissionStepFactory.build(
             submission=submission,
             form_step=step2,
-            data={},
         )
         evaluate_form_logic(submission, submission_step2)
 
@@ -1013,7 +1010,6 @@ class VariableModificationTests(TestCase):
         submission_step2 = SubmissionStepFactory.build(
             submission=submission,
             form_step=step2,
-            data={},
         )
         evaluate_form_logic(submission, submission_step2)
 
@@ -1145,14 +1141,19 @@ class VariableModificationTests(TestCase):
         submission_step2 = SubmissionStepFactory.build(
             submission=submission,
             form_step=step2,
-            data={
-                "editgrid": [
-                    {"bsn": "999970409", "childName": "Pero"},
-                    {"bsn": "999970173", "childName": "Pelle"},
-                ]
-            },
         )
-        evaluate_form_logic(submission, submission_step2)
+        evaluate_form_logic(
+            submission,
+            submission_step2,
+            FormioData(
+                {
+                    "editgrid": [
+                        {"bsn": "999970409", "childName": "Pero"},
+                        {"bsn": "999970173", "childName": "Pelle"},
+                    ]
+                }
+            ),
+        )
 
         state = submission.load_submission_value_variables_state()
         self.assertEqual(
@@ -1243,7 +1244,6 @@ class VariableModificationTests(TestCase):
         submission_step2 = SubmissionStepFactory.build(
             submission=submission,
             form_step=step2,
-            data={},
         )
         evaluate_form_logic(submission, submission_step2)
 

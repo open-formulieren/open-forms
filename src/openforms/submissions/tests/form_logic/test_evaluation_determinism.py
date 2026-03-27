@@ -137,10 +137,8 @@ class DeterministicEvaluationTests(TestCase):
             evaluate_form_logic(submission, ss1)
 
             state = submission.load_submission_value_variables_state()
-            var_a = state.variables["a"]
-            var_b = state.variables["b"]
-            self.assertEqual(var_a.value, 2)
-            self.assertEqual(var_b.value, 4)
+            data = state.get_data(include_unsaved=True)
+            self.assertEqual({"a": 2, "b": 4, "c": None, "d": None}, data)
 
         with self.subTest("Evaluation not skipped on step 2"):
             ss2 = SubmissionStepFactory.create(
@@ -150,10 +148,8 @@ class DeterministicEvaluationTests(TestCase):
             evaluate_form_logic(submission, ss2)
 
             state = submission.load_submission_value_variables_state()
-            var_c = state.variables["c"]
-            var_d = state.variables["d"]
-            self.assertEqual(var_c.value, 2)
-            self.assertEqual(var_d.value, 6)
+            data = state.get_data(include_unsaved=True)
+            self.assertEqual({"a": 2, "b": 4, "c": 2, "d": 6}, data)
 
         with self.subTest("Evaluation not skipped on step 3"):
             ss3 = SubmissionStepFactory.create(
@@ -163,4 +159,5 @@ class DeterministicEvaluationTests(TestCase):
             evaluate_form_logic(submission, ss3)
 
             state = submission.load_submission_value_variables_state()
-            self.assertEqual(ss3.data, {"d": 6})
+            data = state.get_data(include_unsaved=True)
+            self.assertEqual({"a": 2, "b": 4, "c": 2, "d": 6}, data)

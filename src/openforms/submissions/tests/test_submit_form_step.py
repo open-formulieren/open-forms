@@ -85,7 +85,9 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "requireBackendLogicEvaluation": True,
             },
         )
-        self.assertEqual(submission_step.data, {"test-key": "example data"})
+        state = self.submission.load_submission_value_variables_state()
+        data = state.get_data(submission_step=submission_step, include_unsaved=False)
+        self.assertEqual({"test-key": "example data"}, data)
 
         submission_variables = SubmissionValueVariable.objects.filter(
             submission=self.submission
@@ -176,18 +178,15 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual({"modified": "data", "foo": "bar"}, response.json()["data"])
-        submission_step.refresh_from_db()
-        self.assertEqual(submission_step.data, {"modified": "data", "foo": "bar"})
+
+        state = self.submission.load_submission_value_variables_state(refresh=True)
+        data = state.get_data(submission_step=submission_step, include_unsaved=False)
+        self.assertEqual({"modified": "data", "foo": "bar"}, data)
 
         submission_variables = SubmissionValueVariable.objects.filter(
             submission=self.submission
         )
-
         self.assertEqual(2, submission_variables.count())
-
-        submission_variable = submission_variables.get(key="modified")
-
-        self.assertEqual("data", submission_variable.value)
 
     def test_data_not_underscored(self):
         form_definition = FormDefinitionFactory.create(
@@ -218,11 +217,13 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         response = self.client.put(endpoint, body)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        saved_data = submission.submissionstep_set.get().data
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(
+            submission_step=submission.submissionstep_set.get(), include_unsaved=False
+        )
 
         # Check that the data has not been converted to snake case
-        self.assertIn("countryOfResidence", saved_data)
-        self.assertNotIn("country_of_residence", saved_data)
+        self.assertEqual({"countryOfResidence": "Netherlands"}, data)
 
     def test_data_not_camelised(self):
         form_definition = FormDefinitionFactory.create(
@@ -290,11 +291,10 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual({"nested": {"key": "some data"}}, response.json()["data"])
-        submission_step.refresh_from_db()
-        self.assertEqual(submission_step.data, {"nested": {"key": "some data"}})
 
-        variable = SubmissionValueVariable.objects.get(key="nested.key")
-        self.assertEqual(variable.value, "some data")
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(submission_step=submission_step, include_unsaved=False)
+        self.assertEqual({"nested": {"key": "some data"}}, data)
 
     @tag("gh-5757")
     def test_create_step_data_with_fileupload(self):

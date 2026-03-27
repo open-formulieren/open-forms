@@ -51,9 +51,13 @@ class CustomFormNodeTests(TestCase):
             },
         )
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         renderer = Renderer(submission, mode=RenderModes.summary, as_html=True)
         component_node = ComponentNode.build_node(
-            step_data=step.data, component=component, renderer=renderer
+            step_data=step_data, component=component, renderer=renderer
         )
 
         nodelist = list(component_node)
@@ -128,9 +132,13 @@ class CustomFormNodeTests(TestCase):
             },
         )
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         renderer = Renderer(submission, mode=RenderModes.summary, as_html=True)
         component_node = ComponentNode.build_node(
-            step_data=step.data, component=component, renderer=renderer
+            step_data=step_data, component=component, renderer=renderer
         )
 
         nodelist = list(component_node)

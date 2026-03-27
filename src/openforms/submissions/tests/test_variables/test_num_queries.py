@@ -155,7 +155,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 3. bulk_create var3 and var4 submission value variables
         # 4. bulk_update var1 and var2 submission value variables
         with self.assertNumQueries(4):
-            submission_step.data = FormioData(
+            submission_step._data = FormioData(
                 {
                     "var1": "test1-modified",
                     "var2": "test2-modified",
@@ -192,7 +192,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 1. load_variables_state: retrieve form variables
         # 2. load_variables_state: retrieve submission value variables
         with self.assertNumQueries(2):
-            submission_step.data
+            submission_step._data
 
     def test_get_variables_state_no_submission_variables(self):
         form = FormFactory.create()

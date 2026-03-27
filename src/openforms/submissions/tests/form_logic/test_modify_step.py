@@ -2,8 +2,6 @@ from django.test import TestCase
 
 from freezegun import freeze_time
 
-from openforms.formio.service import FormioData
-from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -294,61 +292,6 @@ class StepModificationTests(TestCase):
             evaluate_form_logic(submission, submission_step)
 
         self.assertFalse(submission_step.can_submit)
-
-    def test_only_diff_data_returned(self):
-        form = FormFactory.create()
-        step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "name",
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "changingKey",
-                    },
-                ]
-            },
-        )
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={
-                "==": [
-                    {"var": "name"},
-                    "john",
-                ]
-            },
-            actions=[
-                {
-                    "variable": "changingKey",
-                    "action": {
-                        "name": "Set value",
-                        "type": LogicActionTypes.variable,
-                        "value": "changed",
-                    },
-                }
-            ],
-        )
-        submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission, form_step=step
-        )
-
-        data = FormioData(
-            {
-                "name": "john",
-                "changingKey": "original",
-            }
-        )
-
-        evaluate_form_logic(submission, submission_step, data)
-
-        self.assertEqual(
-            submission_step.data,
-            {"changingKey": "changed"},
-        )
 
     def test_select_boxes_trigger(self):
         form = FormFactory.create()
