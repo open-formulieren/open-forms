@@ -17,8 +17,12 @@ from openforms.accounts.models import User
 from openforms.accounts.tests.factories import UserFactory
 from openforms.config.tests.factories import ThemeFactory
 from openforms.data_removal.constants import RemovalMethods
+from openforms.payments.contrib.worldline.tests.factories import (
+    WorldlineMerchantFactory,
+)
 from openforms.products.tests.factories import ProductFactory
 from openforms.typing import JSONObject
+from openforms.utils.tests.feature_flags import enable_feature_flag
 
 from ...constants import StatementCheckboxChoices, SubmissionAllowedChoices
 from ...models import Form, FormDefinition, FormRegistrationBackend
@@ -93,6 +97,7 @@ class FormEndpointTests(APITestCase):
         category = CategoryFactory.create()
         theme = ThemeFactory.create()
         form_definition_uuid = str(uuid4())
+        merchant = WorldlineMerchantFactory.create(pspid="wordline-merchant")
         activate_on = timezone.now() + timedelta(days=1)
         deactivate_on = timezone.now() + timedelta(days=2)
         url = reverse(
@@ -114,6 +119,14 @@ class FormEndpointTests(APITestCase):
                     },
                 }
             ],
+            "payment": {
+                "backend": "worldline",
+                "options": {
+                    "merchant": merchant.pspid,
+                    "variant": "Form v3 payments",
+                    "descriptorTemplate": "{{ foo }}",
+                },
+            },
             "appointmentOptions": {
                 "isAppointment": True,
             },
@@ -300,6 +313,18 @@ class FormEndpointTests(APITestCase):
             {
                 "to_emails": ["foo@example.com"],
                 "attach_files_to_email": None,
+            },
+        )
+
+        # payment options
+        self.assertEqual(form.payment_required, True)
+        self.assertEqual(form.payment_backend, "worldline")
+        self.assertEqual(
+            form.payment_backend_options,
+            {
+                "merchant": merchant.pspid,
+                "variant": "Form v3 payments",
+                "descriptor_template": "{{ foo }}",
             },
         )
 
@@ -554,6 +579,57 @@ class FormEndpointTests(APITestCase):
             },
         )
 
+    @enable_feature_flag("ENABLE_DEMO_PLUGINS")
+    def test_create_form_without_configuration_options(self):
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "payment": {
+                "backend": "demo",
+                "options": {},
+            },
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": str(uuid4()),
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+        }
+
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+
+        self.assertEqual(form.payment_backend, "demo")
+
     def test_create_form_incorrect_request(self):
         url = reverse(
             "api:v3:form-detail",
@@ -675,6 +751,63 @@ class FormEndpointTests(APITestCase):
             _("Ensure this field has at least {min_length} elements.").format(
                 min_length=1
             ),
+        )
+
+    def test_incorrect_payment_backend_options(self):
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "payment": {
+                "backend": "worldline",
+                "options": {
+                    "foo": "bar",
+                },
+            },
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": str(uuid4()),
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+        }
+
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Form.objects.count(), 0)
+        response_data = response.json()
+        assert "invalidParams" in response_data
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["invalidParams"][0]["code"], "required")
+        self.assertEqual(
+            response_data["invalidParams"][0]["name"],
+            "payment.options.merchant",
         )
 
     def test_update_existing_form(self):

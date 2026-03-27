@@ -1138,6 +1138,7 @@ SPECTACULAR_SETTINGS = {
         "IncompleteSubmissionsRemovalMethodEnum": "openforms.data_removal.constants.RemovalMethods",
         "AvailableLanguagesEnum": "django.conf.settings.LANGUAGES",
         "StatementCheckboxEnum": "openforms.forms.constants.StatementCheckboxChoices",
+        "PaymentBackendEnum": "openforms.forms.api.v3.serializers.payment.get_payment_backend_choices",
     },
     "GET_LIB_DOC_EXCLUDES": "openforms.api.drf_spectacular.plumbing.get_lib_doc_excludes",
 }

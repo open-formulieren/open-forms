@@ -3,7 +3,7 @@ from uuid import UUID
 
 from django.db import transaction
 from django.utils.text import get_text_list
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
@@ -37,6 +37,7 @@ from ....models import (
 )
 from ..typing import FormStepData, FormValidatedData
 from .form_step import FormStepSerializer
+from .payment import FormPaymentSerializer
 
 
 @extend_schema_serializer(component_name="FormV3Serializer")
@@ -61,6 +62,8 @@ class FormSerializer(serializers.ModelSerializer):
     )
 
     steps = FormStepSerializer(many=True, source="formstep_set", min_length=1)  # pyright: ignore[reportCallIssue]
+
+    payment = FormPaymentSerializer(required=False, source="*")
 
     appointment_options = AppointmentOptionsSerializer(
         source="*",
@@ -99,6 +102,7 @@ class FormSerializer(serializers.ModelSerializer):
             "login_required",
             "translation_enabled",
             "registration_backends",
+            "payment",
             "appointment_options",
             "literals",
             "product",

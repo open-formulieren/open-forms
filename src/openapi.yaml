@@ -8795,6 +8795,19 @@ components:
           title: Explanation template [nl]
           description: Content that will be shown on the start page of the form, below
             the title and above the log in text.
+    FormPayment:
+      type: object
+      properties:
+        backend:
+          oneOf:
+          - $ref: '#/components/schemas/PaymentBackendEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        options:
+          type: object
+          additionalProperties: {}
+      required:
+      - backend
+      - options
     FormRegistrationBackend:
       type: object
       properties:
@@ -9025,6 +9038,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormRegistrationBackend'
+        payment:
+          $ref: '#/components/schemas/FormPayment'
         appointmentOptions:
           allOf:
           - $ref: '#/components/schemas/AppointmentOptions'

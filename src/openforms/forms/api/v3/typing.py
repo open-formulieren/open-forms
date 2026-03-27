@@ -87,6 +87,11 @@ class FormStepData(TypedDict):
     translations: NotRequired[FormStepTranslationData]
 
 
+class PaymentData(TypedDict):
+    payment_backend: str
+    payment_backend_options: dict
+
+
 class FormValidatedData(TypedDict):
     uuid: UUID
     name: str
@@ -100,6 +105,7 @@ class FormValidatedData(TypedDict):
     category: NotRequired[Category]
     theme: NotRequired[Theme]
     formstep_set: list[FormStepData]
+    payment: NotRequired[PaymentData]
 
     show_progress_indicator: NotRequired[bool]
     show_summary_progress: NotRequired[bool]
