@@ -166,7 +166,7 @@ def send_confirmation_email(submission: Submission) -> None:
 
     subject_template, content_template = get_confirmation_email_templates(submission)
 
-    to_emails = submission.get_email_confirmation_recipients(submission.data)
+    to_emails = submission.get_email_confirmation_recipients()
     if not to_emails:
         audit_log.warning(
             "confirmation_email_skip",

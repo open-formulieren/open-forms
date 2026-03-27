@@ -80,9 +80,11 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             form_step=step2,
             data={"step2": "ik ben een alien"},
         )
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data()
         with self.subTest("check initial data setup"):
             self.assertEqual(
-                submission.data,
+                data,
                 {
                     "step1": "stippenlift",
                     "step2": "ik ben een alien",
@@ -111,8 +113,10 @@ class SubmissionStepDeletedRegressionTests(TestCase):
 
         # reload submission as fresh data object so we don't have any cached states
         submission = Submission.objects.get(pk=submission.pk)
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data()
         self.assertEqual(
-            submission.data,
+            data,
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
@@ -187,8 +191,10 @@ class SubmissionStepDeletedRegressionTests(TestCase):
 
         # reload submission as fresh data object so we don't have any cached states
         submission = Submission.objects.get(pk=submission.pk)
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data()
         self.assertEqual(
-            submission.data,
+            data,
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
@@ -253,8 +259,10 @@ class SubmissionStepDeletedRegressionTests(TestCase):
 
         # reload submission as fresh data object so we don't have any cached states
         submission = Submission.objects.get(pk=submission.pk)
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data()
         self.assertEqual(
-            submission.data,
+            data,
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",

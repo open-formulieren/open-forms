@@ -385,7 +385,7 @@ class CancelAppointmentView(GenericAPIView):
                 audit_logger.warning("appointment_cancel_failure", exc_info=exc)
                 raise
 
-            emails = submission.get_email_confirmation_recipients(submission.data)
+            emails = submission.get_email_confirmation_recipients()
 
             # The user must enter the email address they used when creating
             # the appointment which we validate here

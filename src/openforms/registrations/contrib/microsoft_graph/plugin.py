@@ -70,7 +70,8 @@ class MSGraphRegistration(BasePlugin[MicrosoftGraphOptions]):
             submission_report.content, folder_name / "report.pdf"
         )
 
-        data = submission.data
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data()
         data["__metadata__"] = {"submission_language": submission.language_code}
         uploader.upload_data_as_json(data.data, folder_name / "data.json")
 

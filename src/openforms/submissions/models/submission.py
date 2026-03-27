@@ -785,7 +785,7 @@ class Submission(models.Model):
             self._merged_attachments = self.get_attachments().as_form_dict()
         return self._merged_attachments
 
-    def get_email_confirmation_recipients(self, submitted_data: dict) -> list[str]:
+    def get_email_confirmation_recipients(self) -> list[str]:
         from openforms.appointments.service import get_email_confirmation_recipients
 
         # first check if there are any recipients because it's an appointment form, as that
@@ -794,8 +794,10 @@ class Submission(models.Model):
             return emails
 
         recipient_emails = set()
+        state = self.load_submission_value_variables_state()
+        data = state.get_data()
         for key in self.form.get_keys_for_email_confirmation():
-            value = submitted_data.get(key)
+            value = data.get(key)
             if value:
                 if isinstance(value, str):
                     recipient_emails.add(value)
