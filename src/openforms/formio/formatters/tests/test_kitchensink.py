@@ -24,7 +24,7 @@ def filter_printable(components: Iterable[Component]) -> Iterable[Component]:
 
 def _get_printable_data(submission: Submission) -> list[tuple[str, Any]]:
     printable_data: list[tuple[str, Any]] = []
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
     data = state.get_data()
 
     for component in filter_printable(submission.form.iter_components(recursive=True)):

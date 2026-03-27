@@ -114,7 +114,7 @@ class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
             service.server_certificate.save()
 
         prefill_variables(submission=self.submission)
-        state = self.submission.load_submission_value_variables_state()
+        state = self.submission.variables_state
 
         self.assertPrefillVariableValues(state.variables["address"].value)
 
@@ -140,6 +140,6 @@ class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
         )
 
         prefill_variables(submission=self.submission)
-        state = self.submission.load_submission_value_variables_state()
+        state = self.submission.variables_state
 
         self.assertPrefillVariableValues(state.variables["address"].value)

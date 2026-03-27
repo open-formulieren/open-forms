@@ -61,7 +61,7 @@ class EIDASCitizenTests(TransactionTestCase):
         )
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         # assert that nothing was prefilled
         values = state.get_data()
@@ -85,7 +85,7 @@ class EIDASCitizenTests(TransactionTestCase):
         )
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         # assert that nothing was prefilled
         values = state.get_data()
@@ -166,7 +166,7 @@ class EIDASCompanyPrefillTests(TransactionTestCase):
         )
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         # assert that nothing was prefilled
         values = state.get_data()
@@ -191,7 +191,7 @@ class EIDASCompanyPrefillTests(TransactionTestCase):
         )
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         # assert that nothing was prefilled
         values = state.get_data()

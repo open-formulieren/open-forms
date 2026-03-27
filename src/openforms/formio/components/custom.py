@@ -737,7 +737,7 @@ class PartnerListField(serializers.Field):
     def validate_list(self, partners):
         component_key = self.component["key"]
         submission = self.context["submission"]
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         prefill_data = state.get_prefilled_data()
 
         fm_immutable_variable = FormVariable.objects.filter(
@@ -861,7 +861,7 @@ class ChildListField(serializers.Field):
     def validate_list(self, children):
         component_key = self.component["key"]
         submission = self.context["submission"]
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         prefill_data = state.get_prefilled_data()
 
         fm_immutable_variable = FormVariable.objects.filter(

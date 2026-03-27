@@ -33,7 +33,7 @@ class ValidatePrefillData:
         # user input is used to perform this flip, the end-user can manipulate this
         # value too and force the logic evaluation to mark the component as not
         # readonly, which beats the point of performing this check.
-        state = instance.submission.load_submission_value_variables_state()
+        state = instance.submission.variables_state
         original_data = state.get_data(include_unsaved=True)
         original_configuration = deepcopy(
             instance.form_step.form_definition.configuration

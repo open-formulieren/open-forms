@@ -59,7 +59,7 @@ class EmailRegistration(BasePlugin[Options]):
         log = logger.bind(
             submission_uuid=str(submission.uuid), form_uuid=str(submission.form.uuid)
         )
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         # ensure we have a fallback
         recipients: list[str] = options["to_emails"]
 

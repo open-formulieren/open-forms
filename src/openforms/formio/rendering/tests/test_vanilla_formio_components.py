@@ -1282,7 +1282,7 @@ class FormNodeTests(TestCase):
                 ]
             },
         )
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data()
 
         renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)

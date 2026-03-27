@@ -87,7 +87,7 @@ def update_customer_interaction_data(
     """
 
     # submission profile data
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
     profile_submission_data: list[DigitalAddress] = state.get_data()[profile_key]  # pyright: ignore[reportAssignmentType]
 
     # prefill config

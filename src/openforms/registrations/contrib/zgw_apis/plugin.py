@@ -68,7 +68,7 @@ def get_property_mappings_from_submission(
     simple_mappings = {
         mapping["component_key"]: mapping["eigenschap"] for mapping in mappings
     }
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
     data = state.get_data()
 
     property_mappings = {

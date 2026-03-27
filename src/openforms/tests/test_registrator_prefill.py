@@ -163,7 +163,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(
 
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
             submission = Submission.objects.get()
-            state = submission.load_submission_value_variables_state()
+            state = submission.variables_state
 
             data = state.get_prefilled_data()
             self.assertEqual(len(data), 1)

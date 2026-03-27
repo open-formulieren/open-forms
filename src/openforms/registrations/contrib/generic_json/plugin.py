@@ -41,7 +41,7 @@ class GenericJSONRegistration(BasePlugin):
     def register_submission(
         self, submission: Submission, options: GenericJSONOptions
     ) -> dict:
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         all_values = state.get_data(include_static_variables=True)
         all_values.update(state.get_static_data(other_registry=variables_registry))
@@ -242,7 +242,7 @@ def post_process(
     if transform_to_list is None:
         transform_to_list = []
 
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
     configuration_wrapper = submission.total_configuration_wrapper
 
     # Create attachment mapping from key or component data path to attachment list

@@ -95,7 +95,7 @@ def evaluate_form_logic(
         return config_wrapper.configuration
 
     # 3. Load the (variables) state
-    submission_variables_state = submission.load_submission_value_variables_state()
+    submission_variables_state = submission.variables_state
 
     # 4. Apply the (dirty) data to the variable state.
     # We need to get the initial data for clear on hide first, as we don't want it to
@@ -222,7 +222,7 @@ def _get_initial_data_for_clear_on_hide(step: SubmissionStep) -> FormioData:
     :param step: Submission step.
     :returns: Initial data in a ``FormioData`` instance.
     """
-    state = step.submission.load_submission_value_variables_state()
+    state = step.submission.variables_state
     saved_data = state.get_data(submission_step=step, include_unsaved=False)
 
     initial_data = FormioData()
@@ -299,7 +299,7 @@ def check_submission_logic(
     rules = get_rules_to_evaluate(submission, current_step)
 
     # load the data state and all variables
-    submission_variables_state = submission.load_submission_value_variables_state()
+    submission_variables_state = submission.variables_state
     data_for_evaluation = submission_variables_state.get_data(
         include_unsaved=True, include_static_variables=True
     )

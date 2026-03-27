@@ -49,7 +49,7 @@ def get_process_variables(
         ]
     )
 
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
     data = state.get_data()
     for component in submission.form.iter_components(recursive=True):
         if (key := component.get("key")) not in simple_mappings:

@@ -49,7 +49,7 @@ def add_data_type_information(
     For example (consider a form with a date component "dateField"):
     >>> expression = {"==": [{"var": "dateField"}, {"date": "2026-03-10"}]}
     >>> result = add_data_type_information(
-    ...     expression, submission.load_submission_value_variables_state()
+    ...     expression, submission.variables_state
     ... )
     >>> print(result)
     {"==" [{"date": [{"var": ["dateField"]}]}, {"date": ["2026-03-10"]}]}

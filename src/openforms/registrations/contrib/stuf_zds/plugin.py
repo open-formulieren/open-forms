@@ -173,7 +173,7 @@ def _get_extra_variables_mapping(submission: Submission, options: RegistrationOp
         if variable.key in key_mapping
     }
 
-    state_variables_data = submission.load_submission_value_variables_state().get_data(
+    state_variables_data = submission.variables_state.get_data(
         include_static_variables=True
     )
 
@@ -295,7 +295,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
 
                 # xml file generation depends on whether the variable was prefilled or not
                 # (authentiek)
-                state = submission.load_submission_value_variables_state()
+                state = submission.variables_state
                 submission_variable = state.get_variable(fm_immutable_variable.key)
 
                 # update the zaak data with the information needed for the xml request

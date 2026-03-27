@@ -2268,7 +2268,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         # the submitted data needs extra handling because frontend adds some extra field
         # to it which is not happenning here, so we have to update it manually in order
         # to mimic the frontend behaviour
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         children_data = state.get_data()["children"]
         assert isinstance(children_data, list)
 
@@ -2413,7 +2413,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         # the submitted data needs extra handling because frontend adds some extra field
         # to it which is not happenning here, so we have to update it manually in order
         # to mimic the frontend behaviour
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         children_data = state.get_data()["children"]
         assert isinstance(children_data, list)
         assert isinstance(children_data[0], dict)

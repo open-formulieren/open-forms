@@ -531,6 +531,10 @@ class Submission(models.Model):
     def suspension_allowed(self) -> bool:
         return self.form.suspension_allowed and not self.is_completed
 
+    @property
+    def variables_state(self) -> SubmissionValueVariablesState:
+        return self.load_submission_value_variables_state()
+
     @transaction.atomic()
     def remove_sensitive_data(self):
         from .submission_files import SubmissionFileAttachment
@@ -794,7 +798,7 @@ class Submission(models.Model):
             return emails
 
         recipient_emails = set()
-        state = self.load_submission_value_variables_state()
+        state = self.variables_state
         data = state.get_data()
         for key in self.form.get_keys_for_email_confirmation():
             value = data.get(key)

@@ -85,7 +85,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
         )
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         self.assertEqual(TimelineLogProxy.objects.count(), 2)
         ownership_check_log, prefill_log = TimelineLogProxy.objects.all()
@@ -137,7 +137,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
 
         with self.assertRaises(PermissionDenied):
             prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_unsaved=True)
 
         self.assertEqual(TimelineLogProxy.objects.count(), 1)
@@ -192,7 +192,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
         )
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_unsaved=True)
 
         self.assertEqual(TimelineLogProxy.objects.count(), 2)

@@ -190,7 +190,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def prefill_data(obj, create, extracted, **kwargs):
-        state = obj.load_submission_value_variables_state()
+        state = obj.variables_state
         if extracted:
             state.save_prefill_data(extracted)
         return extracted

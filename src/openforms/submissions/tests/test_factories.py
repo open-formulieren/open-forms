@@ -63,7 +63,7 @@ class SubmissionFactoryTests(TestCase):
             },
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         actual = state.get_data()
         expected = {"foo": 1, "bar": 2}
         self.assertEqual(actual, expected)
@@ -95,7 +95,7 @@ class SubmissionFactoryTests(TestCase):
             }
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         actual = state.get_data()
         expected = {
             "foo": 1,
@@ -113,7 +113,7 @@ class SubmissionFactoryTests(TestCase):
             kvk="111222333",
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         actual = state.get_data()
         expected = {
             "foo": 1,

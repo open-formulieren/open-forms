@@ -417,9 +417,7 @@ class SubmissionValueVariableModelTests(ParametrizedTestCase, TestCase):
             form_step=form_step,
         )
 
-        submission_value_variables_state = (
-            submission_step.submission.load_submission_value_variables_state()
-        )
+        submission_value_variables_state = submission_step.submission.variables_state
         variables = submission_value_variables_state.variables
 
         self.assertEqual(2, len(variables))
@@ -633,7 +631,7 @@ class SubmissionValueVariableManagerTests(TestCase):
             },
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         for key in ("textfield", "email", "date"):
             with self.subTest(f"Initial state: {key}"):
                 variable = state.variables[key]
@@ -690,7 +688,7 @@ class SubmissionValueVariableManagerTests(TestCase):
             },
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         for key in ("textfield", "date"):
             with self.subTest(f"Initial state: {key}"):
                 variable = state.variables[key]
@@ -733,7 +731,7 @@ class SubmissionValueVariableManagerTests(TestCase):
             },
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         with self.subTest("Initial state"):
             variable = state.variables["textfield"]
             # Variable is present in the state, but not in the database (yet)
@@ -776,7 +774,7 @@ class SubmissionValueVariableManagerTests(TestCase):
             initial_value="",
         )
         submission = SubmissionFactory.create(form=form)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         # Create variables
         data = {"textfield": "foo", "date": "2025-12-05", "user_defined": "bar"}

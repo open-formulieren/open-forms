@@ -440,7 +440,7 @@ def execute_component_pre_registration(
     )
     audit_log.info("component_pre_registration_start")
 
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
     component_var = state.get_variable(component_key)
 
     # if it's already completed

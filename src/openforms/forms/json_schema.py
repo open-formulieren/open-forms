@@ -72,7 +72,7 @@ def generate_json_schema(
 
     # Update the total configuration to add options to components that (possibly) use
     # another variable as a data source (radio, select, and selectboxes).
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
     new_configuration = rewrite_formio_components(
         submission.total_configuration_wrapper,
         submission,

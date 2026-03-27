@@ -63,7 +63,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         assert submission.is_authenticated
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected = [
             {
@@ -118,7 +118,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         assert submission.is_authenticated
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         self.assertEqual(state.variables["communication-preferences"].value, [])
 
@@ -157,7 +157,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         assert submission.is_authenticated
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected = [
             {
@@ -208,7 +208,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         assert submission.is_authenticated
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         self.assertEqual(state.variables["communication-preferences"].value, [])
 
@@ -243,7 +243,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         assert not submission.is_authenticated
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         self.assertEqual(state.variables["communication-preferences"].value, [])
 
@@ -282,7 +282,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         assert submission.is_authenticated
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected = [
             {
@@ -332,7 +332,7 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         assert submission.is_authenticated
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected = [
             {
@@ -377,6 +377,6 @@ class CommunicationPreferencesTests(OFVCRMixin, TestCase):
         assert submission.is_authenticated
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         self.assertEqual(state.variables["empty-preferences"].value, [])

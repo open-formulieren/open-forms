@@ -118,7 +118,7 @@ class CosignState:
                 # we can't just blindly return the component, as it may be conditionally
                 # displayed, which is equivalent to "cosign not relevant". See
                 # https://github.com/open-formulieren/open-forms/issues/3901
-                state = self.submission.load_submission_value_variables_state()
+                state = self.submission.variables_state
                 visible = configuration_wrapper.is_visible_in_frontend(
                     component["key"], values=state.get_data(include_unsaved=True)
                 )
@@ -187,7 +187,7 @@ class CosignState:
             "You can only look up the email in forms that have a cosign component"
         )
 
-        variables_state = self.submission.load_submission_value_variables_state()
+        variables_state = self.submission.variables_state
         values = variables_state.get_data()
         # detect inconsistent state - the component may be added after the submission
         # was completed

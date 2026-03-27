@@ -580,7 +580,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         )
         self._add_submission_to_session(submission)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         with freeze_time("2015-10-10"):
             response = self.client.post(endpoint, {"data": state.get_data()})
 

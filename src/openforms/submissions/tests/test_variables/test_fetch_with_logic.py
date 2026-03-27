@@ -53,7 +53,7 @@ class ServiceFetchWithActionsTest(TestCase):
 
         evaluate_form_logic(submission, submission.submissionstep_set.first())
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         variable = state.get_variable("someVariable")
 
