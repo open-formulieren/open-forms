@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999970124"],
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990676"],
       "fields": ["partners.burgerservicenummer", "partners.naam.voornamen", "partners.naam.voorletters",
       "partners.naam.voorvoegsel", "partners.naam.geslachtsnaam", "partners.geboorte.datum"]}'
     headers:
@@ -28,22 +28,23 @@ interactions:
     uri: http://localhost:5010/haalcentraal/api/brp/personen
   response:
     body:
-      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"partners":[{"burgerservicenummer":"999970136","naam":{"voornamen":"Pia","geslachtsnaam":"Pauw","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"1989-04-01","langFormaat":"1
-        april 1989"}}}]}]}'
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"partners":[{"burgerservicenummer":"999990421","naam":{"voornamen":"Adrianus
+        Hendrikus","geslachtsnaam":"Holthuizen","voorletters":"A.H."},"geboorte":{"datum":{"type":"Datum","datum":"1904-02-15","langFormaat":"15
+        februari 1904"}}}]}]}'
     headers:
       Content-Length:
-      - '263'
+      - '290'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 17 Mar 2026 10:03:23 GMT
+      - Wed, 18 Mar 2026 11:31:45 GMT
       Server:
       - Kestrel
     status:
       code: 200
       message: OK
 - request:
-    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999970136"],
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990421"],
       "fields": ["burgerservicenummer", "burgerservicenummer", "overlijden"]}'
     headers:
       Accept:
@@ -70,14 +71,14 @@ interactions:
     uri: http://localhost:5010/haalcentraal/api/brp/personen
   response:
     body:
-      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"burgerservicenummer":"999970136"}]}'
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"burgerservicenummer":"999990421"}]}'
     headers:
       Content-Length:
       - '91'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 17 Mar 2026 10:03:23 GMT
+      - Wed, 18 Mar 2026 11:31:45 GMT
       Server:
       - Kestrel
     status:

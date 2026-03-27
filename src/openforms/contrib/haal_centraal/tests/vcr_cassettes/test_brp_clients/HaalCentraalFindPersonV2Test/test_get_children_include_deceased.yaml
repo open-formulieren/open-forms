@@ -15,7 +15,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
       x-doelbinding:
       - ''
       x-gebruiker:
@@ -39,51 +39,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 19 Dec 2025 13:11:14 GMT
-      Server:
-      - Kestrel
-    status:
-      code: 200
-      message: OK
-- request:
-    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999970409",
-      "999970161", "999970173", "999970185"], "fields": ["burgerservicenummer", "burgerservicenummer",
-      "overlijden"]}'
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, br
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '192'
-      Content-Type:
-      - application/json; charset=utf-8
-      User-Agent:
-      - python-requests/2.32.4
-      x-doelbinding:
-      - ''
-      x-gebruiker:
-      - BurgerZelf
-      x-origin-oin:
-      - ''
-      x-verwerking:
-      - ''
-    method: POST
-    uri: http://localhost:5010/haalcentraal/api/brp/personen
-  response:
-    body:
-      string: "{\"type\":\"RaadpleegMetBurgerservicenummer\",\"personen\":[{\"burgerservicenummer\":\"999970161\"},{\"burgerservicenummer\":\"999970173\",\"opschortingBijhouding\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"2025-12-01\",\"langFormaat\":\"1
-        december 2025\"},\"reden\":{\"code\":\"O\",\"omschrijving\":\"overlijden\"}},\"overlijden\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"2025-12-01\",\"langFormaat\":\"1
-        december 2025\"},\"land\":{\"code\":\"5103\",\"omschrijving\":\"Servi\xEB\"}}},{\"burgerservicenummer\":\"999970185\"},{\"burgerservicenummer\":\"999970409\"}]}"
-    headers:
-      Content-Length:
-      - '493'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Fri, 19 Dec 2025 13:11:14 GMT
+      - Wed, 18 Mar 2026 13:20:05 GMT
       Server:
       - Kestrel
     status:

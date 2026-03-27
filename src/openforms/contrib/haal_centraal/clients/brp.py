@@ -208,7 +208,7 @@ class V2Client(BRPClient):
         bsn: str,
         include_children: bool,
         include_partner: bool,
-        include_deceased: bool = True,
+        include_deceased: bool = False,
         **kwargs,
     ) -> list[NaturalPersonDetails]:
         fields = []

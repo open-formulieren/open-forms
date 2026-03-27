@@ -1,0 +1,46 @@
+interactions:
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990718"],
+      "fields": ["kinderen.burgerservicenummer", "kinderen.naam.voornamen", "kinderen.naam.voorletters",
+      "kinderen.naam.voorvoegsel", "kinderen.naam.geslachtsnaam", "kinderen.geboorte.datum"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.5
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: "{\"type\":\"RaadpleegMetBurgerservicenummer\",\"personen\":[{\"kinderen\":[{\"naam\":{\"voornamen\":\"Carla\",\"geslachtsnaam\":\"Tuinstra\",\"voorletters\":\"C.\"},\"geboorte\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"1973-10-22\",\"langFormaat\":\"22
+        oktober 1973\"}}},{\"naam\":{\"voornamen\":\"Adriaan Franti\u0161ek\",\"geslachtsnaam\":\"Tuinstra\",\"voorletters\":\"A.F.\"},\"geboorte\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"1972-08-20\",\"langFormaat\":\"20
+        augustus 1972\"}}}]}]}"
+    headers:
+      Content-Length:
+      - '422'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 18 Mar 2026 11:31:45 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 200
+      message: OK
+version: 1

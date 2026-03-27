@@ -1,8 +1,8 @@
 interactions:
 - request:
-    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999970124"],
-      "fields": ["partners.burgerservicenummer", "partners.naam.voornamen", "partners.naam.voorletters",
-      "partners.naam.voorvoegsel", "partners.naam.geslachtsnaam", "partners.geboorte.datum"]}'
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990792"],
+      "fields": ["kinderen.burgerservicenummer", "kinderen.naam.voornamen", "kinderen.naam.voorletters",
+      "kinderen.naam.voorvoegsel", "kinderen.naam.geslachtsnaam", "kinderen.geboorte.datum"]}'
     headers:
       Accept:
       - '*/*'
@@ -28,22 +28,22 @@ interactions:
     uri: http://localhost:5010/haalcentraal/api/brp/personen
   response:
     body:
-      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"partners":[{"burgerservicenummer":"999970136","naam":{"voornamen":"Pia","geslachtsnaam":"Pauw","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"1989-04-01","langFormaat":"1
-        april 1989"}}}]}]}'
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"geheimhoudingPersoonsgegevens":true,"kinderen":[{"burgerservicenummer":"999990408","naam":{"voornamen":"Paolo","voorvoegsel":"de","geslachtsnaam":"Jager","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"2009-01-01","langFormaat":"1
+        januari 2009"}}}]}]}'
     headers:
       Content-Length:
-      - '263'
+      - '324'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 17 Mar 2026 10:03:23 GMT
+      - Wed, 18 Mar 2026 11:31:45 GMT
       Server:
       - Kestrel
     status:
       code: 200
       message: OK
 - request:
-    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999970136"],
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990408"],
       "fields": ["burgerservicenummer", "burgerservicenummer", "overlijden"]}'
     headers:
       Accept:
@@ -70,14 +70,14 @@ interactions:
     uri: http://localhost:5010/haalcentraal/api/brp/personen
   response:
     body:
-      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"burgerservicenummer":"999970136"}]}'
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"burgerservicenummer":"999990408"}]}'
     headers:
       Content-Length:
       - '91'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 17 Mar 2026 10:03:23 GMT
+      - Wed, 18 Mar 2026 11:31:45 GMT
       Server:
       - Kestrel
     status:

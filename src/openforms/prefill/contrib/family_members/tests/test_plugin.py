@@ -160,15 +160,6 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
                 "dateOfBirthPrecision": "date",
             },
             {
-                "bsn": "999970173",
-                "firstNames": "Pelle",
-                "initials": "P.",
-                "affixes": "van",
-                "lastName": "Paassen",
-                "dateOfBirth": "2017-09-01",
-                "dateOfBirthPrecision": "date",
-            },
-            {
                 "bsn": "999970185",
                 "firstNames": "Pep",
                 "initials": "P.",
@@ -236,7 +227,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
             state.variables["hc_prefill_children_immutable"].value, expected_data
         )
 
-    def test_children_deceased(self):
+    def test_children_exclude_deceased(self):
         submission = SubmissionFactory.from_components(
             auth_info__value="999970124",
             auth_info__attribute=AuthAttribute.bsn,
@@ -285,6 +276,84 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
                 "affixes": "van",
                 "lastName": "Paassen",
                 "dateOfBirth": "2018-12-01",
+                "dateOfBirthPrecision": "date",
+            },
+            {
+                "bsn": "999970185",
+                "firstNames": "Pep",
+                "initials": "P.",
+                "affixes": "van",
+                "lastName": "Paassen",
+                "dateOfBirth": "2016-05-01",
+                "dateOfBirthPrecision": "date",
+            },
+        ]
+
+        self.assertEqual(
+            state.variables["hc_prefill_children_mutable"].value, expected_data
+        )
+        self.assertEqual(
+            state.variables["hc_prefill_children_immutable"].value, expected_data
+        )
+
+    def test_children_include_deceased(self):
+        submission = SubmissionFactory.from_components(
+            auth_info__value="999970124",
+            auth_info__attribute=AuthAttribute.bsn,
+            components_list=[
+                {
+                    "key": "hc_prefill_children_mutable",
+                    "type": "children",
+                    "label": "Children",
+                },
+            ],
+        )
+        FormVariableFactory.create(
+            key="hc_prefill_children_immutable",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "mutable_data_form_variable": "hc_prefill_children_mutable",
+                "type": "children",
+                "min_age": None,
+                "max_age": None,
+                "include_deceased": True,
+            },
+        )
+
+        with freeze_time("2025-04-25T18:00:00+01:00"):
+            prefill_variables(submission=submission)
+
+        state = submission.load_submission_value_variables_state()
+
+        expected_data = [
+            {
+                "bsn": "999970409",
+                "firstNames": "Pero",
+                "initials": "P.",
+                "affixes": "van",
+                "lastName": "Paassen",
+                "dateOfBirth": "2023-02-01",
+                "dateOfBirthPrecision": "date",
+            },
+            {
+                "bsn": "999970161",
+                "firstNames": "Peet",
+                "initials": "P.",
+                "affixes": "van",
+                "lastName": "Paassen",
+                "dateOfBirth": "2018-12-01",
+                "dateOfBirthPrecision": "date",
+            },
+            {
+                "bsn": "999970173",
+                "firstNames": "Pelle",
+                "initials": "P.",
+                "affixes": "van",
+                "lastName": "Paassen",
+                "dateOfBirth": "2017-09-01",
                 "dateOfBirthPrecision": "date",
             },
             {
@@ -472,15 +541,6 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
                 "dateOfBirth": "",
                 "deceased": False,
             },
-            {
-                "bsn": "789123543",
-                "firstNames": "Other",
-                "initials": "K",
-                "affixes": "van",
-                "lastName": "Doens",
-                "dateOfBirth": "1998-07-16",
-                "deceased": True,
-            },
         ]
 
         self.assertEqual(
@@ -490,7 +550,7 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
             state.variables["stuf_bg_prefill_children_immutable"].value, expected_data
         )
 
-    def test_children_with_deceased_filter(self):
+    def test_children_with_exclude_deceased_filter(self):
         submission = SubmissionFactory.from_components(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
@@ -576,6 +636,104 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
         )
         self.assertEqual(
             state.variables["stuf_bg_prefill_children_immutable"].value, expected_data
+        )
+
+    def test_children_with_include_deceased_filter(self):
+        submission = SubmissionFactory.from_components(
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
+            components_list=[
+                {
+                    "key": "stuf_bg_prefill_children_mutable",
+                    "type": "children",
+                    "label": "Children",
+                },
+            ],
+        )
+        FormVariableFactory.create(
+            key="stuf_bg_prefill_children_immutable",
+            form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin=PLUGIN_IDENTIFIER,
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "stuf_bg_prefill_children_mutable",
+                "min_age": None,
+                "max_age": None,
+                "include_deceased": True,
+            },
+        )
+
+        response_content = self.extract_soap_response(
+            "family_members/tests/responses/stuf_bg_children.xml",
+            self.stuf_bg_service,
+        )
+
+        # validate response
+        self.assertSoapBodyIsValid(response_content)
+
+        with requests_mock.Mocker() as m:
+            m.post(
+                self.stuf_bg_service.get_endpoint(type=EndpointType.vrije_berichten),
+                content=response_content,
+            )
+            prefill_variables(submission=submission)
+
+        request_body = m.last_request.body
+
+        # validate request
+        self.assertSoapBodyIsValid(request_body)
+
+        state = submission.load_submission_value_variables_state()
+
+        expected_data = [
+            {
+                "bsn": "456789123",
+                "firstNames": "Bolly",
+                "initials": "K",
+                "affixes": "van",
+                "lastName": "Doe",
+                "dateOfBirth": "1999-06-15",
+                "deceased": False,
+            },
+            {
+                "bsn": "789123456",
+                "firstNames": "Billy",
+                "initials": "K",
+                "affixes": "van",
+                "lastName": "Doe",
+                "dateOfBirth": "1998-07-16",
+                "deceased": False,
+            },
+            # included because no age filter boundaries are provided, so even the
+            # children without known DOB are returned
+            {
+                "bsn": "123456789",
+                "firstNames": "Billy",
+                "initials": "K",
+                "affixes": "van",
+                "lastName": "Doe",
+                "dateOfBirth": "",
+                "deceased": False,
+            },
+            {
+                "bsn": "789123543",
+                "firstNames": "Other",
+                "initials": "K",
+                "affixes": "van",
+                "lastName": "Doens",
+                "dateOfBirth": "1998-07-16",
+                "deceased": True,
+            },
+        ]
+
+        self.assertEqual(
+            state.variables["stuf_bg_prefill_children_mutable"].value, expected_data
+        )
+        self.assertEqual(
+            state.variables["stuf_bg_prefill_children_immutable"].value,
+            expected_data,
         )
 
     def test_children_with_incomplete_dateOfBirth_are_shown_when_no_filter(self):

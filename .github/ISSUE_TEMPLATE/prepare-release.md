@@ -36,7 +36,7 @@ assignees: sergei-maertens
 
     - [ ] `openforms.contrib.brk`
     - [ ] `openforms.contrib.customer_interactions`
-    - [ ] `openforms.contrib.haal_centraal.tests.test_integration`
+    - [ ] `openforms.contrib.haal_centraal`
     - [ ] `openforms.contrib.kvk`
     - [ ] `openforms.contrib.objects_api`
     - [ ] `openforms.contrib.reference_lists`

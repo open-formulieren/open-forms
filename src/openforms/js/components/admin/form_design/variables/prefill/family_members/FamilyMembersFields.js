@@ -26,7 +26,7 @@ const FamilyMembersFields = () => {
     type: null,
     minAge: null,
     maxAge: null,
-    includeDeceased: true,
+    includeDeceased: false,
   };
 
   //   Merge defaults into options if not already set

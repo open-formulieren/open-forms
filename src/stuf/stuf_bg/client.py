@@ -102,7 +102,7 @@ class Client(BaseClient):
         bsn: str,
         attribute: str,
         relation: Literal["partners", "children"],
-        include_deceased: bool = True,
+        include_deceased: bool = False,
     ) -> list[NaturalPersonDetails]:
         context = {"bsn": bsn}
         response = self.templated_request(

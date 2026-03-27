@@ -4446,7 +4446,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             )
 
         self.plugin.register_submission(submission, self.options)
-        stuf_request = self.cassette.requests[1]
+        stuf_request = self.cassette.requests[2]
         xml_doc = etree.fromstring(stuf_request.body)
 
         self.assertSoapXMLCommon(xml_doc)
@@ -4552,7 +4552,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         )
 
         self.plugin.register_submission(submission, self.options)
-        stuf_request = self.cassette.requests[1]
+        stuf_request = self.cassette.requests[2]
         xml_doc = etree.fromstring(stuf_request.body)
 
         self.assertSoapXMLCommon(xml_doc)
@@ -4880,7 +4880,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             )
 
         self.plugin.register_submission(submission, self.options)
-        stuf_request = self.cassette.requests[1]
+        stuf_request = self.cassette.requests[2]
         xml_doc = etree.fromstring(stuf_request.body)
 
         self.assertSoapXMLCommon(xml_doc)

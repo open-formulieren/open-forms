@@ -2,7 +2,9 @@ interactions:
 - request:
     body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999970124"],
       "fields": ["kinderen.burgerservicenummer", "kinderen.naam.voornamen", "kinderen.naam.voorletters",
-      "kinderen.naam.voorvoegsel", "kinderen.naam.geslachtsnaam", "kinderen.geboorte.datum"]}'
+      "kinderen.naam.voorvoegsel", "kinderen.naam.geslachtsnaam", "kinderen.geboorte.datum",
+      "partners.burgerservicenummer", "partners.naam.voornamen", "partners.naam.voorletters",
+      "partners.naam.voorvoegsel", "partners.naam.geslachtsnaam", "partners.geboorte.datum"]}'
     headers:
       Accept:
       - '*/*'
@@ -11,7 +13,7 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '268'
+      - '443'
       Content-Type:
       - application/json; charset=utf-8
       User-Agent:
@@ -32,14 +34,15 @@ interactions:
         februari 2023"}}},{"burgerservicenummer":"999970161","naam":{"voornamen":"Peet","voorvoegsel":"van","geslachtsnaam":"Paassen","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"2018-12-01","langFormaat":"1
         december 2018"}}},{"burgerservicenummer":"999970173","naam":{"voornamen":"Pelle","voorvoegsel":"van","geslachtsnaam":"Paassen","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"2017-09-01","langFormaat":"1
         september 2017"}}},{"burgerservicenummer":"999970185","naam":{"voornamen":"Pep","voorvoegsel":"van","geslachtsnaam":"Paassen","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"2016-05-01","langFormaat":"1
-        mei 2016"}}}]}]}'
+        mei 2016"}}}],"partners":[{"burgerservicenummer":"999970136","naam":{"voornamen":"Pia","geslachtsnaam":"Pauw","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"1989-04-01","langFormaat":"1
+        april 1989"}}}]}]}'
     headers:
       Content-Length:
-      - '946'
+      - '1152'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 17 Mar 2026 10:03:22 GMT
+      - Wed, 18 Mar 2026 13:20:04 GMT
       Server:
       - Kestrel
     status:
@@ -47,8 +50,8 @@ interactions:
       message: OK
 - request:
     body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999970409",
-      "999970161", "999970173", "999970185"], "fields": ["burgerservicenummer", "burgerservicenummer",
-      "overlijden"]}'
+      "999970161", "999970173", "999970185", "999970136"], "fields": ["burgerservicenummer",
+      "burgerservicenummer", "overlijden"]}'
     headers:
       Accept:
       - '*/*'
@@ -57,7 +60,7 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '192'
+      - '205'
       Content-Type:
       - application/json; charset=utf-8
       User-Agent:
@@ -74,16 +77,16 @@ interactions:
     uri: http://localhost:5010/haalcentraal/api/brp/personen
   response:
     body:
-      string: "{\"type\":\"RaadpleegMetBurgerservicenummer\",\"personen\":[{\"burgerservicenummer\":\"999970161\"},{\"burgerservicenummer\":\"999970173\",\"opschortingBijhouding\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"2025-12-01\",\"langFormaat\":\"1
+      string: "{\"type\":\"RaadpleegMetBurgerservicenummer\",\"personen\":[{\"burgerservicenummer\":\"999970136\"},{\"burgerservicenummer\":\"999970161\"},{\"burgerservicenummer\":\"999970173\",\"opschortingBijhouding\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"2025-12-01\",\"langFormaat\":\"1
         december 2025\"},\"reden\":{\"code\":\"O\",\"omschrijving\":\"overlijden\"}},\"overlijden\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"2025-12-01\",\"langFormaat\":\"1
         december 2025\"},\"land\":{\"code\":\"5103\",\"omschrijving\":\"Servi\xEB\"}}},{\"burgerservicenummer\":\"999970185\"},{\"burgerservicenummer\":\"999970409\"}]}"
     headers:
       Content-Length:
-      - '493'
+      - '529'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 17 Mar 2026 10:03:22 GMT
+      - Wed, 18 Mar 2026 13:20:04 GMT
       Server:
       - Kestrel
     status:
