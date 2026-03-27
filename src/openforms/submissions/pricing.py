@@ -84,7 +84,7 @@ def _price_from_variable(submission: Submission) -> Decimal | None:
     if not (var_key := submission.form.price_variable_key):
         return None
 
-    values_state = submission.load_submission_value_variables_state()
+    values_state = submission.variables_state
     data = values_state.get_data(include_unsaved=True)
     if var_key not in data:
         # Discussed with DH - it's better to crash hard than the possibly make them

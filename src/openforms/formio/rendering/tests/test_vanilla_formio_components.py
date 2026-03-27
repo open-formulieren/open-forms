@@ -1282,10 +1282,12 @@ class FormNodeTests(TestCase):
                 ]
             },
         )
+        state = submission.variables_state
+        data = state.get_data()
 
         renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
         component_node = ComponentNode.build_node(
-            step_data=submission.data, component=component, renderer=renderer
+            step_data=data, component=component, renderer=renderer
         )
         nodelist = list(component_node)
 

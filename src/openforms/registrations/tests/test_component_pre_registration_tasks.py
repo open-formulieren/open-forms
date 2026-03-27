@@ -78,7 +78,7 @@ class PreRegistrationTaskTests(TestCase):
             component=hook_component, submission_id=submission.pk
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         component_var = state.variables["withHook"]
 
         self.assertEqual(
@@ -103,7 +103,7 @@ class PreRegistrationTaskTests(TestCase):
             component=failed_hook_component, submission_id=submission.pk
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         component_var = state.variables["failedHook"]
 
         self.assertEqual(
@@ -123,7 +123,7 @@ class PreRegistrationTaskTests(TestCase):
             [hook_component],
             {"withHook": "foo"},
         )
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         component_var = state.variables["withHook"]
         component_var.pre_registration_status = ComponentPreRegistrationStatuses.success
         component_var.save()
@@ -162,7 +162,7 @@ class PreRegistrationTaskTests(TestCase):
 
         execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         no_hook_var = state.variables["withoutHook"]
         hook_var = state.variables["withHook"]
 
@@ -198,7 +198,7 @@ class PreRegistrationTaskTests(TestCase):
 
         execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         no_hook_var = state.variables["withoutHook"]
         failed_hook_var = state.variables["failedHook"]
 
@@ -235,7 +235,7 @@ class PreRegistrationTaskTests(TestCase):
 
         execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         hook_var = state.variables["withHook"]
         failed_hook_var = state.variables["failedHook"]
 
@@ -271,7 +271,7 @@ class PreRegistrationTaskTests(TestCase):
             mock_hook.side_effect = ValueError("something went wrong")
             execute_component_pre_registration_group.delay(submission_id=submission.pk)  # pyright: ignore[reportFunctionMemberAccess]
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         hook_var = state.variables["withHook"]
 
         self.assertEqual(
@@ -303,7 +303,7 @@ class PreRegistrationTaskTests(TestCase):
         )
         assert submission.needs_on_completion_retry is False
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         hook_var = state.variables["withHook"]
         hook_var.pre_registration_status = ComponentPreRegistrationStatuses.success
         hook_var.save()
@@ -326,7 +326,7 @@ class PreRegistrationTaskTests(TestCase):
             {"failedHook": "bar"},
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         failed_hook_var = state.variables["failedHook"]
         failed_hook_var.pre_registration_status = (
             ComponentPreRegistrationStatuses.failed
@@ -356,7 +356,7 @@ class PreRegistrationTaskTests(TestCase):
             {"withHook": "foo", "failedHook": "bar"},
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         hook_var = state.variables["withHook"]
         hook_var.pre_registration_status = ComponentPreRegistrationStatuses.success
         hook_var.save()

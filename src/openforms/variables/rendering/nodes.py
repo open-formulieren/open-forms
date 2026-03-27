@@ -32,7 +32,7 @@ class VariablesNode(Node):
     @property
     def variables(self):
         if not self._variables:
-            variables_state = self.submission.load_submission_value_variables_state()
+            variables_state = self.submission.variables_state
             relevant_vars = [
                 variable
                 for variable in variables_state.variables.values()

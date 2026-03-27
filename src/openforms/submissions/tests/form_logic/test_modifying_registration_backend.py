@@ -14,10 +14,9 @@ class RegistrationBackendModificationTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.submission = SubmissionFactory.from_data(
-            {
-                "firstname": "Foo",
-            },
+        cls.submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "firstname", "Label": "First name"}],
+            submitted_data={"firstname": "Foo"},
         )
         FormRegistrationBackendFactory.create(
             form=cls.submission.form,

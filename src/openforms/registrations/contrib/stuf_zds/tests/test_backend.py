@@ -4432,7 +4432,8 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         # the submitted data needs extra handling because frontend adds some extra field
         # to it which is not happenning here, so we have to update it manually in order
         # to mimic the frontend behaviour
-        childrenKey_data = submission.data["childrenKey"]
+        state = submission.variables_state
+        childrenKey_data = state.get_data()["childrenKey"]
         assert isinstance(childrenKey_data, list)
 
         for child in childrenKey_data:
@@ -4531,7 +4532,8 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         # the submitted data needs extra handling because frontend adds some extra field
         # to it which is not happenning here, so we have to update it manually in order
         # to mimic the frontend behaviour
-        childrenKey_data = submission.data["childrenKey"]
+        state = submission.variables_state
+        childrenKey_data = state.get_data()["childrenKey"]
         assert isinstance(childrenKey_data, list)
         assert isinstance(childrenKey_data[0], dict)
         assert isinstance(childrenKey_data[1], dict)
@@ -4866,7 +4868,8 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         # the submitted data needs extra handling because frontend adds some extra field
         # to it which is not happenning here, so we have to update it manually in order
         # to mimic the frontend behaviour
-        childrenKey_data = submission.data["childrenKey"]
+        state = submission.variables_state
+        childrenKey_data = state.get_data()["childrenKey"]
         assert isinstance(childrenKey_data, list)
 
         for child in childrenKey_data:

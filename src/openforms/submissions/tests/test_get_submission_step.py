@@ -402,8 +402,9 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
     maxDiff = None
 
     def test_it_only_translates_appropriate_string_properties(self):
-        submission = SubmissionFactory.from_data(
-            {"bar": "Korova Milk Bar"},
+        submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "bar", "label": "Bar"}],
+            submitted_data={"bar": "Korova Milk Bar"},
             language_code="de",
         )
         form_step = submission.steps[0].form_step

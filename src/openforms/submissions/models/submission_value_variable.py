@@ -402,7 +402,7 @@ class SubmissionValueVariableManager(models.Manager):
           the database (if present). The variable instances in the state will be reset
           to their unsaved version (no primary key, and reset to the initial value).
         """
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         variables = (
             state.variables
             if submission_step is None

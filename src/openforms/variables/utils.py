@@ -48,7 +48,7 @@ def get_variables_for_context(
     Note that depending on when it is called, the 'auth' static variables (auth_bsn,
     auth_kvk...) can be already hashed.
     """
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
     data = state.get_data(
         include_static_variables=True,
         include_unsaved=True,

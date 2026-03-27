@@ -74,7 +74,7 @@ def inject_prefill(
     The prefill values are looped over by key: value, and for each value the matching
     component is looked up to normalize it in the context of the component.
     """
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
     prefilled_data = state.get_prefilled_data()
     for key, variable in state.prefilled_variables.items():
         prefill_value = prefilled_data[key]
@@ -123,7 +123,7 @@ def prefill_variables(submission: Submission, register: Registry | None = None) 
     """
     register = register or default_register
 
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
 
     variables_with_attribute: list[SubmissionValueVariable] = []
     variables_with_options: list[SubmissionValueVariable] = []

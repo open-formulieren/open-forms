@@ -24,11 +24,12 @@ def filter_printable(components: Iterable[Component]) -> Iterable[Component]:
 
 def _get_printable_data(submission: Submission) -> list[tuple[str, Any]]:
     printable_data: list[tuple[str, Any]] = []
-    merged_data = submission.data
+    state = submission.variables_state
+    data = state.get_data()
 
     for component in filter_printable(submission.form.iter_components(recursive=True)):
         key = component["key"]
-        value = format_value(component, merged_data.get(key), as_html=False)
+        value = format_value(component, data.get(key), as_html=False)
         printable_data.append((component.get("label", key), value))
 
     return printable_data

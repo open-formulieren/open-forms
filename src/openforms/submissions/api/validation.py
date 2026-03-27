@@ -81,7 +81,8 @@ class SubmissionCompletionSerializer(serializers.Serializer):
         all_step_errors: list[StepValidationErrors] = []
         step_errors: StepValidationErrors
 
-        data = submission.data
+        state = submission.variables_state
+        data = state.get_data()
 
         for step in submission.steps:
             form_step = step.form_step

@@ -90,7 +90,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         )
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected_data = [
             {
@@ -138,7 +138,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         )
 
         prefill_variables(submission=submission)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected_data = [
             {
@@ -206,7 +206,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         with freeze_time("2025-04-25T18:00:00+01:00"):
             prefill_variables(submission=submission)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected_data = [
             {
@@ -257,7 +257,7 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         with freeze_time("2025-04-25T18:00:00+01:00"):
             prefill_variables(submission=submission)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected_data = [
             {
@@ -445,7 +445,7 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
         # validate request
         self.assertSoapBodyIsValid(request_body)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected_data = [
             {
@@ -512,7 +512,7 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
         # validate request
         self.assertSoapBodyIsValid(request_body)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         expected_data = [
             {
                 "bsn": "456789123",
@@ -597,7 +597,7 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
         # validate request
         self.assertSoapBodyIsValid(request_body)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected_data = [
             {
@@ -787,7 +787,7 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
         # validate request
         self.assertSoapBodyIsValid(request_body)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected_data = [
             {
@@ -891,7 +891,7 @@ class FamilyMembersPrefillPluginStufBgTests(StUFBGAssertionsMixin, TestCase):
         # validate request
         self.assertSoapBodyIsValid(request_body)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expected_data = [
             {

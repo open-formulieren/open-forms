@@ -450,7 +450,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         self, submission: Submission, options: RegistrationOptionsV2
     ) -> Record:
         log = logger.bind(submission_uuid=str(submission.uuid))
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         all_values = state.get_data(
             include_static_variables=True,
@@ -549,7 +549,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
     def get_update_payment_status_data(
         self, submission: Submission, options: RegistrationOptionsV2
     ) -> Record:
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         # we only consider the payment variables for payment update status data
         registration_values = FormioData(
             state.get_static_data(other_registry=variables_registry)

@@ -77,7 +77,7 @@ class SubmissionStepSerializerTests(TestCase):
         self.assertTrue(is_valid)
 
         # Ensure state and configuration are not mutated in an unexpected way.
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_unsaved=True)
         self.assertEqual(
             {"textfield": "foo", "number": 42, "user_defined": "Initial value"},

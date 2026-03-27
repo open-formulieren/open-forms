@@ -190,7 +190,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def prefill_data(obj, create, extracted, **kwargs):
-        state = obj.load_submission_value_variables_state()
+        state = obj.variables_state
         if extracted:
             state.save_prefill_data(extracted)
         return extracted
@@ -285,20 +285,6 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         submission.load_execution_state(refresh=True)
         submission.load_submission_value_variables_state(refresh=True)
         return submission
-
-    @staticmethod
-    def from_data(data_dict: dict, **kwargs):
-        components = [
-            {
-                "key": key,
-            }
-            for key in data_dict
-        ]
-        return SubmissionFactory.from_components(
-            components,
-            data_dict,
-            **kwargs,
-        )
 
 
 class SubmissionStepFactory(factory.django.DjangoModelFactory):

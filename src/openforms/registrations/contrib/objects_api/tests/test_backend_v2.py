@@ -819,7 +819,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         # the submitted data needs extra handling because frontend adds some extra field
         # to it which is not happenning here, so we have to update it manually in order
         # to mimic the frontend behaviour
-        children_data = submission.data["children"]
+        state = submission.variables_state
+        children_data = state.get_data()["children"]
         assert isinstance(children_data, list)
 
         for child in children_data:
@@ -936,7 +937,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         # the submitted data needs extra handling because frontend adds some extra field
         # to it which is not happenning here, so we have to update it manually in order
         # to mimic the frontend behaviour
-        children_data = submission.data["children"]
+        state = submission.variables_state
+        children_data = state.get_data()["children"]
         assert isinstance(children_data, list)
         assert isinstance(children_data[0], dict)
         assert isinstance(children_data[1], dict)
@@ -1444,7 +1446,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             completed=True,
             submitted_data={},
         )
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         assert not state.saved_variables
         v2_options: RegistrationOptionsV2 = {
             "version": 2,

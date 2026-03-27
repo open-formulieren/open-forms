@@ -262,7 +262,7 @@ class FormLogicFrontendSerializer(OrderedModelSerializer):
 
     def to_representation(self, instance):
         step: SubmissionStep = self.context["submission_step"]
-        state = step.submission.load_submission_value_variables_state()
+        state = step.submission.variables_state
         # We include all data, to make sure we have a (empty) value for every variable.
         # Component variables of the current step need to be excluded, though, as these
         # are subject to change with user input. If variables from future steps are not
@@ -419,7 +419,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         # we need context from the variable
         data = instance.unsaved_data if in_form_logic_evaluation else instance._data
         serialized_data = FormioData()
-        state = instance.submission.load_submission_value_variables_state()
+        state = instance.submission.variables_state
         variables = state.get_variables_in_submission_step(instance)
         for key, variable in variables.items():
             if key not in data:

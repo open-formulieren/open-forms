@@ -3,7 +3,6 @@ from django.utils.translation import override as override_language
 
 from privates.test import temp_private_root
 
-from openforms.authentication.service import AuthAttribute
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
@@ -63,7 +62,8 @@ class SubmissionFactoryTests(TestCase):
             },
         )
 
-        actual = submission.data
+        state = submission.variables_state
+        actual = state.get_data()
         expected = {"foo": 1, "bar": 2}
         self.assertEqual(actual, expected)
 
@@ -84,41 +84,6 @@ class SubmissionFactoryTests(TestCase):
         )
 
         self.assertEqual(submission.form.name, "MyForm")
-        self.assertEqual(submission.auth_info.value, "111222333")
-
-    def test_from_data__simple(self):
-        submission = SubmissionFactory.from_data(
-            {
-                "foo": 1,
-                "bar": 2,
-            }
-        )
-
-        actual = submission.data
-        expected = {
-            "foo": 1,
-            "bar": 2,
-        }
-        self.assertEqual(actual, expected)
-
-    def test_from_data__kwargs(self):
-        submission = SubmissionFactory.from_data(
-            {
-                "foo": 1,
-                "bar": 2,
-            },
-            form__name="MyForm",
-            kvk="111222333",
-        )
-
-        actual = submission.data
-        expected = {
-            "foo": 1,
-            "bar": 2,
-        }
-        self.assertEqual(actual, expected)
-        self.assertEqual(submission.form.name, "MyForm")
-        self.assertEqual(submission.auth_info.attribute, AuthAttribute.kvk)
         self.assertEqual(submission.auth_info.value, "111222333")
 
     def test_passing_a_language_code_sets__form_translation_enabled(self):

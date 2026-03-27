@@ -1309,8 +1309,9 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         )
 
     def test_register_and_update_paid_product(self):
-        submission = SubmissionFactory.from_data(
-            {"voornaam": "Foo"},
+        submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "voornaam", "label": "Voornaam"}],
+            submitted_data={"voornaam": "Foo"},
             bsn="111222333",
             # setup payment although at this level of testing it is not needed
             form__product__price=Decimal("11.35"),
@@ -2268,7 +2269,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         # the submitted data needs extra handling because frontend adds some extra field
         # to it which is not happenning here, so we have to update it manually in order
         # to mimic the frontend behaviour
-        children_data = submission.data["children"]
+        state = submission.variables_state
+        children_data = state.get_data()["children"]
         assert isinstance(children_data, list)
 
         for child in children_data:
@@ -2412,7 +2414,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         # the submitted data needs extra handling because frontend adds some extra field
         # to it which is not happenning here, so we have to update it manually in order
         # to mimic the frontend behaviour
-        children_data = submission.data["children"]
+        state = submission.variables_state
+        children_data = state.get_data()["children"]
         assert isinstance(children_data, list)
         assert isinstance(children_data[0], dict)
         assert isinstance(children_data[1], dict)

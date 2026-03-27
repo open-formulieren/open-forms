@@ -63,7 +63,7 @@ class CommunicationPreferencesView(ListMixin[VariableValue], views.APIView):
             # it's possible to use profile component without prefill, so no warning
             return []
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         value = state.get_data()[form_variable.key]
         assert isinstance(value, Sequence)
         return value

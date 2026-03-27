@@ -68,12 +68,11 @@ def get_property_mappings_from_submission(
     simple_mappings = {
         mapping["component_key"]: mapping["eigenschap"] for mapping in mappings
     }
-    variable_values = submission.data
+    state = submission.variables_state
+    data = state.get_data()
 
     property_mappings = {
-        simple_mappings[key]: variable_values[key]
-        for key in simple_mappings
-        if key in variable_values
+        simple_mappings[key]: data[key] for key in simple_mappings if key in data
     }
 
     return property_mappings

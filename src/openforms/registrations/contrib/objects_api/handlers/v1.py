@@ -90,7 +90,7 @@ def _get_variables_for_context(submission: Submission) -> dict[str, VariableValu
     that returns JSON values instead (for the submission data). The static variables
     are still date-related objects.
     """
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
 
     data = FormioData()
     # Loop over the saved variables here to mimic the exact behaviour of the original

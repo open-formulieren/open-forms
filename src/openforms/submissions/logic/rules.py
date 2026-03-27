@@ -186,7 +186,7 @@ def iter_evaluate_rules(
     :param initial_data: Initial data for clear-on-hide behavior.
     :returns: An iterator yielding :class:`ActionOperation` instances.
     """
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
 
     # keep a copy of the start data that is not affected by the mutations applied by
     # logic. Due to the instant processing of clearOnHide side-effects and multiple

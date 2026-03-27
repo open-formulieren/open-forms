@@ -346,6 +346,8 @@ class SubmissionTests(TestCase):
             },
         )
 
+        state = submission.variables_state
+        data = state.get_data()
         self.assertEqual(
             {
                 "person": {
@@ -358,7 +360,7 @@ class SubmissionTests(TestCase):
                     },
                 }
             },
-            submission.data,
+            data,
         )
 
     def test_form_login_required(self):

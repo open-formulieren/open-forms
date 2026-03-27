@@ -166,7 +166,7 @@ def send_confirmation_email(submission: Submission) -> None:
 
     subject_template, content_template = get_confirmation_email_templates(submission)
 
-    to_emails = submission.get_email_confirmation_recipients(submission.data)
+    to_emails = submission.get_email_confirmation_recipients()
     if not to_emails:
         audit_log.warning(
             "confirmation_email_skip",
@@ -235,7 +235,7 @@ def send_confirmation_email(submission: Submission) -> None:
 
 
 def initialise_user_defined_variables(submission: Submission):
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
     SubmissionValueVariable.objects.bulk_create(
         [
             variable
@@ -246,7 +246,7 @@ def initialise_user_defined_variables(submission: Submission):
 
 
 def persist_user_defined_variables(submission: Submission) -> None:
-    state = submission.load_submission_value_variables_state()
+    state = submission.variables_state
     user_defined_vars_data = FormioData(
         {
             variable.key: variable.value

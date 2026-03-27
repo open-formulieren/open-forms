@@ -110,7 +110,7 @@ def iter_step_uploads(
     Yield every uploaded file and its context within the form step for further
     processing.
     """
-    state = submission_step.submission.load_submission_value_variables_state()
+    state = submission_step.submission.variables_state
     data = state.get_data(submission_step=submission_step, include_unsaved=False)
     uploads = resolve_uploads_from_data(
         submission_step.form_step.form_definition.configuration, data
@@ -139,7 +139,7 @@ def attach_uploads_to_submission_step(
 
     submission: Submission = submission_step.submission
     execution_state = submission.load_execution_state()
-    variable_state = submission.load_submission_value_variables_state()
+    variable_state = submission.variables_state
     step_variables = variable_state.get_variables_in_submission_step(submission_step)
     assert submission_step.form_step is not None
 

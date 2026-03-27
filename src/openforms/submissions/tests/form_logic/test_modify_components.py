@@ -909,7 +909,7 @@ class ComponentModificationTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_unsaved=True)
 
         self.assertEqual(data["textField"], "Some data that must not be cleared!")
@@ -1207,7 +1207,7 @@ class ComponentModificationTests(TestCase):
             submission_step,
             FormioData({"checkbox": True, "container": {"textfield": "clear me"}}),
         )
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_unsaved=True)
         self.assertEqual(data["container.textfield"], "")
 
@@ -1324,7 +1324,7 @@ class ComponentModificationTests(TestCase):
         evaluate_form_logic(submission, submission_step, data)
 
         # Check the data
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_unsaved=True)
         self.assertEqual(
             data["editgridHiddenByDefault.0"],
@@ -1403,7 +1403,7 @@ class ComponentModificationTests(TestCase):
 
         # The rule with the hidden action was never triggered, so the field must have
         # the value set by the variable action.
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_unsaved=True)
         self.assertEqual("foo", data["textfield"])
 

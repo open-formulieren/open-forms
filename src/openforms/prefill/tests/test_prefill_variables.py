@@ -76,9 +76,7 @@ class PrefillVariablesTests(TestCase):
 
         prefill_variables(submission=submission_step.submission)
 
-        submission_value_variables_state = (
-            submission_step.submission.load_submission_value_variables_state()
-        )
+        submission_value_variables_state = submission_step.submission.variables_state
 
         self.assertEqual(2, len(submission_value_variables_state.variables))
 
@@ -111,9 +109,7 @@ class PrefillVariablesTests(TestCase):
 
         prefill_variables(submission=submission)
 
-        submission_value_variables_state = (
-            submission.load_submission_value_variables_state()
-        )
+        submission_value_variables_state = submission.variables_state
 
         self.assertEqual(1, len(submission_value_variables_state.variables))
 
@@ -219,7 +215,7 @@ class PrefillVariablesTests(TestCase):
         assert "defaultValue" in component_date
         self.assertEqual(component_date["defaultValue"], "1999-06-15")
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertEqual(
             state.get_prefilled_data().data,
             {
@@ -237,9 +233,7 @@ class PrefillVariablesTests(TestCase):
             data={"voornamen": "", "age": None},
         )
 
-        submission_value_variables_state = (
-            submission_step.submission.load_submission_value_variables_state()
-        )
+        submission_value_variables_state = submission_step.submission.variables_state
 
         FormVariable.objects.all().delete()
 
@@ -524,7 +518,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
 
         prefill_variables(submission=submission, register=prefill_from_options_register)
 
-        variables_state = submission.load_submission_value_variables_state()
+        variables_state = submission.variables_state
         self.assertEqual(variables_state.get_data()["voornamen"], "foo, bar")
 
     @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
@@ -559,7 +553,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
 
         prefill_variables(submission=submission, register=prefill_from_options_register)
 
-        variables_state = submission.load_submission_value_variables_state()
+        variables_state = submission.variables_state
 
         self.assertEqual(variables_state.get_data(), {})
 
@@ -591,7 +585,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
 
         prefill_variables(submission=submission, register=prefill_from_options_register)
 
-        variables_state = submission.load_submission_value_variables_state()
+        variables_state = submission.variables_state
 
         self.assertEqual(variables_state.get_data(), {})
 
@@ -623,7 +617,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
 
         prefill_variables(submission=submission, register=prefill_from_options_register)
 
-        variables_state = submission.load_submission_value_variables_state()
+        variables_state = submission.variables_state
 
         self.assertEqual(variables_state.get_data(), {})
 

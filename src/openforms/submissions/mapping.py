@@ -98,7 +98,8 @@ def apply_data_mapping[T: MutableMapping[str, Any]](
             attr_key_lookup[attribute] = key
 
     # grab submitted data
-    data = submission.data
+    state = submission.variables_state
+    data = state.get_data()
 
     for target_path, conf in mapping_config.items():
         if isinstance(conf, str):
@@ -138,7 +139,8 @@ def get_unmapped_data(
     """
     companion to apply_data_mapping() returns data not mapped to RegistrationAttributes
     """
-    data = submission.data
+    state = submission.variables_state
+    data = state.get_data()
 
     attr_key_lookup = dict()
 

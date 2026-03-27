@@ -33,7 +33,7 @@ class AddDataTypeInformationTests(TestCase):
             },
         )
         submission = SubmissionFactory.create(form=form)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expressions = [
             {"==": [{"var": "date"}, {"var": "today"}]},  # today is static variable
@@ -111,7 +111,7 @@ class AddDataTypeInformationTests(TestCase):
             },
         )
         submission = SubmissionFactory.create(form=form)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expressions = [
             {"==": [{"var": "date.0"}, {"date": "2026-03-06"}]},
@@ -157,7 +157,7 @@ class AddDataTypeInformationTests(TestCase):
             },
         )
         submission = SubmissionFactory.create(form=form)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expressions = [
             {"==": [{"var": "children.0.dateOfBirth"}, {"date": "2026-03-06"}]},
@@ -215,7 +215,7 @@ class AddDataTypeInformationTests(TestCase):
             },
         )
         submission = SubmissionFactory.create(form=form)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expressions = [
             {
@@ -322,7 +322,7 @@ class AddDataTypeInformationTests(TestCase):
     def test_array_operations_without_component(self):
         form = FormFactory.create(generate_minimal_setup=True)
         submission = SubmissionFactory.create(form=form)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expressions = [
             {"map": [[1, 2, 3, 4], {">": [{"var": ""}, 3]}]},
@@ -397,7 +397,7 @@ class AddDataTypeInformationTests(TestCase):
             },
         )
         submission = SubmissionFactory.create(form=form)
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
 
         expressions = [
             {

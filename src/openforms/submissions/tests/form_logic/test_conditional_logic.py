@@ -50,7 +50,7 @@ class ConditionalLogicTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
@@ -130,7 +130,7 @@ class ConditionalLogicTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
@@ -201,7 +201,7 @@ class ConditionalLogicTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
@@ -283,7 +283,7 @@ class ConditionalLogicTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
@@ -353,7 +353,7 @@ class ConditionalLogicTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
@@ -432,7 +432,7 @@ class ConditionalLogicTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
@@ -533,7 +533,7 @@ class ConditionalLogicTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
@@ -592,7 +592,7 @@ class ConditionalLogicTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
@@ -661,7 +661,7 @@ class ConditionalLogicTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
@@ -700,7 +700,7 @@ class ConditionalLogicTests(TestCase):
 
         evaluate_form_logic(submission, step)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(data["file"], [])
         self.assertEqual(step.unsaved_data, {})
@@ -747,7 +747,7 @@ class ConditionalLogicTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,

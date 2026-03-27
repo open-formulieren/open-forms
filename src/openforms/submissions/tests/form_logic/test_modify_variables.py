@@ -94,7 +94,7 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step2)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
 
     def test_modify_variable_related_to_another_step_than_the_one_being_edited(self):
@@ -171,7 +171,7 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step2)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
 
     def test_modify_variable_not_related_to_a_step(self):
@@ -248,7 +248,7 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step2)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
 
     def test_logic_with_repeating_groups(self):
@@ -350,7 +350,7 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         data = state.get_data(include_unsaved=True)
         self.assertEqual(2, data["numberOfCars"])
         self.assertEqual(5000, data["totalPrice"])
@@ -399,7 +399,7 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertEqual(state.get_data(include_unsaved=True)["timedelta"], "P368D")
 
     @requests_mock.Mocker()
@@ -493,7 +493,7 @@ class VariableModificationTests(TestCase):
         ):
             evaluate_form_logic(submission, submission_step)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertTrue(state.get_data(include_unsaved=True)["canApply"])
 
     @requests_mock.Mocker()
@@ -605,7 +605,7 @@ class VariableModificationTests(TestCase):
         ):
             evaluate_form_logic(submission, submission_step)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertFalse(state.get_data(include_unsaved=True)["yo.im.nested.canApply"])
 
     @requests_mock.Mocker()
@@ -703,7 +703,7 @@ class VariableModificationTests(TestCase):
         ):
             evaluate_form_logic(submission, submission_step)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertTrue(state.get_data(include_unsaved=True)["canApply"])
 
     def test_two_actions_on_the_same_variable(self):
@@ -751,7 +751,7 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertEqual(
             str(state.get_data(include_unsaved=True)["date"]), "2025-07-06"
         )
@@ -882,7 +882,7 @@ class VariableModificationTests(TestCase):
         )
         evaluate_form_logic(submission, submission_step2)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertEqual(
             state.get_data(include_unsaved=True)["editgrid"],
             [
@@ -1013,7 +1013,7 @@ class VariableModificationTests(TestCase):
         )
         evaluate_form_logic(submission, submission_step2)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertEqual(
             state.get_data(include_unsaved=True)["editgrid"],
             [
@@ -1155,7 +1155,7 @@ class VariableModificationTests(TestCase):
             ),
         )
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertEqual(
             state.get_data(include_unsaved=True)["editgrid"],
             [
@@ -1247,5 +1247,5 @@ class VariableModificationTests(TestCase):
         )
         evaluate_form_logic(submission, submission_step2)
 
-        state = submission.load_submission_value_variables_state()
+        state = submission.variables_state
         self.assertEqual(state.get_data(include_unsaved=True)["editgrid"], [])

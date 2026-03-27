@@ -49,18 +49,18 @@ def get_process_variables(
         ]
     )
 
-    merged_data = submission.data
+    state = submission.variables_state
+    data = state.get_data()
     for component in submission.form.iter_components(recursive=True):
         if (key := component.get("key")) not in simple_mappings:
             continue
 
-        value = merged_data.get(key, None)
+        value = data.get(key, None)
         alias = simple_mappings[key]
         variables[alias] = to_python(component, value)
 
     complex_variables = get_complex_process_variables(
-        options.get("complex_process_variables", []),
-        merged_data,
+        options.get("complex_process_variables", []), data
     )
 
     if intersection := set(complex_variables).intersection(set(variables)):
