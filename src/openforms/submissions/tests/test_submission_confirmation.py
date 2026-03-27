@@ -145,7 +145,13 @@ class SubmissionConfirmationPageTests(APITestCase):
         config.submission_confirmation_template = "See http://example.com/bla"
         config.save()
 
-        submission = SubmissionFactory.from_data({"name": "john", "last_name": "doe"})
+        submission = SubmissionFactory.from_components(
+            [
+                {"type": "textfield", "key": "name", "label": "Name"},
+                {"type": "textfield", "key": "last_name", "label": "Last name"},
+            ],
+            submitted_data={"name": "john", "last_name": "doe"},
+        )
         confirmation_page_content = submission.render_confirmation_page()
 
         self.assertEqual(

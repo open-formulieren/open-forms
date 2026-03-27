@@ -286,20 +286,6 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         submission.load_submission_value_variables_state(refresh=True)
         return submission
 
-    @staticmethod
-    def from_data(data_dict: dict, **kwargs):
-        components = [
-            {
-                "key": key,
-            }
-            for key in data_dict
-        ]
-        return SubmissionFactory.from_components(
-            components,
-            data_dict,
-            **kwargs,
-        )
-
 
 class SubmissionStepFactory(factory.django.DjangoModelFactory):
     submission = factory.SubFactory(SubmissionFactory)

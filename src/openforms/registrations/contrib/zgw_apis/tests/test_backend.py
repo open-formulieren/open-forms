@@ -1309,8 +1309,9 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         )
 
     def test_register_and_update_paid_product(self):
-        submission = SubmissionFactory.from_data(
-            {"voornaam": "Foo"},
+        submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "voornaam", "label": "Voornaam"}],
+            submitted_data={"voornaam": "Foo"},
             bsn="111222333",
             # setup payment although at this level of testing it is not needed
             form__product__price=Decimal("11.35"),

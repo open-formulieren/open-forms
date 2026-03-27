@@ -955,7 +955,10 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         self.monkeypatch = patch_registry(backend_field, mock_register)
 
     def test_single_backend_needs_no_logic(self):
-        submission = SubmissionFactory.from_data({"foo": 1})
+        submission = SubmissionFactory.from_components(
+            [{"type": "number", "key": "foo", "label": "Foo"}],
+            submitted_data={"foo": 1},
+        )
         FormRegistrationBackendFactory.create(
             form=submission.form,
             backend="mock",
@@ -977,7 +980,10 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         )
 
     def test_multi_backend_no_logic(self):
-        submission = SubmissionFactory.from_data({"foo": 1})
+        submission = SubmissionFactory.from_components(
+            [{"type": "number", "key": "foo", "label": "Foo"}],
+            submitted_data={"foo": 1},
+        )
         FormRegistrationBackendFactory.create(
             form=submission.form,
             key="M",
@@ -1021,7 +1027,10 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         )
 
     def test_setting_backend_with_logic(self):
-        submission = SubmissionFactory.from_data({"foo": 1})
+        submission = SubmissionFactory.from_components(
+            [{"type": "number", "key": "foo", "label": "Foo"}],
+            submitted_data={"foo": 1},
+        )
         FormRegistrationBackendFactory.create(
             form=submission.form,
             backend="mock",
@@ -1062,7 +1071,10 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         )
 
     def test_setting_faulty_backend_with_logic(self):
-        submission = SubmissionFactory.from_data({"foo": 1})
+        submission = SubmissionFactory.from_components(
+            [{"type": "number", "key": "foo", "label": "Foo"}],
+            submitted_data={"foo": 1},
+        )
         FormRegistrationBackendFactory.create(
             form=submission.form,
             key="M",

@@ -423,8 +423,10 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             "to_emails": ["foo@bar.nl", "bar@foo.nl"],
             "attach_files_to_email": None,
         }
-        submission = SubmissionFactory.from_data(
-            {"foo": "https://someurl.com"}, completed=True
+        submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "foo", "label": "Link"}],
+            submitted_data={"foo": "https://someurl.com"},
+            completed=True,
         )
         plugin = EmailRegistration("email")
         plugin.register_submission(submission, email_form_options)
@@ -446,8 +448,10 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             "to_emails": ["foo@bar.nl", "bar@foo.nl"],
             "attach_files_to_email": None,
         }
-        submission = SubmissionFactory.from_data(
-            {"foo": "https://allowed.com"}, completed=True
+        submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "foo", "label": "Link"}],
+            submitted_data={"foo": "https://allowed.com"},
+            completed=True,
         )
         plugin = EmailRegistration("email")
         plugin.register_submission(submission, email_form_options)
@@ -606,8 +610,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertEqual(pdf_export[2], "application/pdf")
 
     def test_register_and_update_paid_product_with_payment_email_recipient(self):
-        submission = SubmissionFactory.from_data(
-            {"voornaam": "Foo"},
+        submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "voornaam", "label": "Voornaam"}],
+            submitted_data={"voornaam": "Foo"},
             form__product__price=Decimal("11.35"),
             form__payment_backend="demo",
             registration_success=True,
@@ -632,8 +637,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
     def test_register_and_update_paid_product_with_payment_email_recipient_and_variable_email_recipient(
         self,
     ):
-        submission = SubmissionFactory.from_data(
-            {"voornaam": "Foo"},
+        submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "voornaam", "label": "Voornaam"}],
+            submitted_data={"voornaam": "Foo"},
             form__product__price=Decimal("11.35"),
             form__payment_backend="demo",
             registration_success=True,
@@ -665,8 +671,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
     def test_register_and_update_paid_product_with_variable_email_recipient(
         self,
     ):
-        submission = SubmissionFactory.from_data(
-            {"voornaam": "Foo"},
+        submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "voornaam", "label": "Voornaam"}],
+            submitted_data={"voornaam": "Foo"},
             form__product__price=Decimal("11.35"),
             form__payment_backend="demo",
             registration_success=True,
@@ -703,8 +710,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         config.wait_for_payment_to_register = True
         config.save()
 
-        submission = SubmissionFactory.from_data(
-            {"voornaam": "Foo"},
+        submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "voornaam", "label": "Voornaam"}],
+            submitted_data={"voornaam": "Foo"},
             form__product__price=Decimal("11.35"),
             form__payment_backend="demo",
             registration_success=True,
@@ -1372,8 +1380,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             "to_emails": ["recipient@example.com"],
             "attach_files_to_email": None,
         }
-        submission = SubmissionFactory.from_data(
-            {"whatever": "156/Silence"},
+        submission = SubmissionFactory.from_components(
+            [{"type": "textfield", "key": "whatever", "label": "Whatever"}],
+            submitted_data={"whatever": "156/Silence"},
             completed_not_preregistered=True,
             initial_data_reference="some-reference",
             form__registration_backend=PLUGIN_ID,
