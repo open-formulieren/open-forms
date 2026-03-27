@@ -343,6 +343,10 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "geboortedatum": "2000-12-31",
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
             },
             bsn="111222333",
             form__product__price=Decimal("0"),
@@ -950,7 +954,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
-            "product_url": "http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10",
+            "product_url": "http://localhost:81/product/1234abcd-12ab-34cd-56ef-12345abcde10",
             "objects_api_group": None,
             "partners_roltype": "",
             "partners_description": "",
@@ -972,7 +976,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         )
         self.assertEqual(
             zaak_data["productenOfDiensten"],
-            ["http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10"],
+            ["http://localhost:81/product/1234abcd-12ab-34cd-56ef-12345abcde10"],
         )
 
     @enable_feature_flag("ZGW_APIS_INCLUDE_DRAFTS")

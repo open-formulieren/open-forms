@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8004/api/v1/tabellen?code=tabel1
   response:
@@ -17,16 +17,18 @@ interactions:
       string: '{"count":1,"next":null,"previous":null,"results":[{"code":"tabel1","naam":"Tabel1","beheerder":{"naam":"John
         Doe","email":"john@doe.nl","afdeling":"","organisatie":""},"einddatumGeldigheid":null}]}'
     headers:
+      API-version:
+      - 0.2.0
       Allow:
       - GET, HEAD, OPTIONS
       Content-Length:
       - '197'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline''; worker-src ''self'' blob:; object-src
-        ''none''; form-action ''self''; default-src ''self''; base-uri ''self''; img-src
-        ''self'' data: cdn.redoc.ly; frame-src ''self''; font-src ''self'' fonts.gstatic.com;
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; frame-ancestors
-        ''none'''
+      - 'script-src ''self'' ''unsafe-inline''; frame-src ''self''; frame-ancestors
+        ''none''; default-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        form-action ''self''; font-src ''self'' fonts.gstatic.com; img-src ''self''
+        data: cdn.redoc.ly; worker-src ''self'' blob:; object-src ''none''; base-uri
+        ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -54,7 +56,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8004/api/v1/items?tabel__code=tabel1
   response:
@@ -63,16 +65,18 @@ interactions:
         2","begindatumGeldigheid":"2025-01-07T14:17:59Z","einddatumGeldigheid":null,"aanvullendeGegevens":null},{"code":"option1","naam":"Option
         1","begindatumGeldigheid":"2025-01-07T14:17:53Z","einddatumGeldigheid":null,"aanvullendeGegevens":null}]}'
     headers:
+      API-version:
+      - 0.2.0
       Allow:
       - GET, HEAD, OPTIONS
       Content-Length:
       - '325'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline''; worker-src ''self'' blob:; object-src
-        ''none''; form-action ''self''; default-src ''self''; base-uri ''self''; img-src
-        ''self'' data: cdn.redoc.ly; frame-src ''self''; font-src ''self'' fonts.gstatic.com;
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; frame-ancestors
-        ''none'''
+      - 'script-src ''self'' ''unsafe-inline''; frame-src ''self''; frame-ancestors
+        ''none''; default-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        form-action ''self''; font-src ''self'' fonts.gstatic.com; img-src ''self''
+        data: cdn.redoc.ly; worker-src ''self'' blob:; object-src ''none''; base-uri
+        ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -98,7 +102,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8004/api/v1/tabellen?code=tabel1
   response:
@@ -106,16 +110,18 @@ interactions:
       string: '{"count":1,"next":null,"previous":null,"results":[{"code":"tabel1","naam":"Tabel1","beheerder":{"naam":"John
         Doe","email":"john@doe.nl","afdeling":"","organisatie":""},"einddatumGeldigheid":null}]}'
     headers:
+      API-version:
+      - 0.2.0
       Allow:
       - GET, HEAD, OPTIONS
       Content-Length:
       - '197'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline''; worker-src ''self'' blob:; object-src
-        ''none''; form-action ''self''; default-src ''self''; base-uri ''self''; img-src
-        ''self'' data: cdn.redoc.ly; frame-src ''self''; font-src ''self'' fonts.gstatic.com;
-        style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; frame-ancestors
-        ''none'''
+      - 'script-src ''self'' ''unsafe-inline''; frame-src ''self''; frame-ancestors
+        ''none''; default-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        form-action ''self''; font-src ''self'' fonts.gstatic.com; img-src ''self''
+        data: cdn.redoc.ly; worker-src ''self'' blob:; object-src ''none''; base-uri
+        ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -148,7 +154,7 @@ interactions:
       Content-Length:
       - '494'
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
       content-type:
       - application/json
     method: POST
@@ -174,9 +180,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 19 Dec 2025 13:49:17 GMT
+      - Wed, 25 Mar 2026 19:00:41 GMT
       Server:
-      - Werkzeug/3.1.4 Python/3.12.12
+      - Werkzeug/3.1.7 Python/3.12.13
     status:
       code: 201
       message: CREATED

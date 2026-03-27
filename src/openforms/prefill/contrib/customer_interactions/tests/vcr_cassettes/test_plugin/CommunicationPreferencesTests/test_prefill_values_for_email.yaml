@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      Authorization:
-      - Token 9b17346dbb9493f967e6653bbcdb03ac2f7009fa
+    headers: {}
     method: GET
     uri: http://localhost:8005/klantinteracties/api/v1/digitaleadressen?verstrektDoorPartij__partijIdentificator__codeSoortObjectId=bsn&verstrektDoorPartij__partijIdentificator__codeRegister=brp&verstrektDoorPartij__partijIdentificator__codeObjecttype=natuurlijk_persoon&verstrektDoorPartij__partijIdentificator__objectId=123456782
   response:
@@ -17,10 +15,11 @@ interactions:
       Content-Length:
       - '2616'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline''; img-src ''self'' data: cdn.redoc.ly;
-        default-src ''self''; base-uri ''self''; object-src ''none''; font-src ''self''
-        fonts.gstatic.com; frame-ancestors ''none''; form-action ''self''; worker-src
-        ''self'' blob:; frame-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
+      - 'object-src ''none''; frame-src ''self''; form-action ''self''; default-src
+        ''self''; script-src ''self'' ''unsafe-inline''; font-src ''self'' fonts.gstatic.com;
+        base-uri ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        frame-ancestors ''none''; img-src ''self'' data: cdn.redoc.ly; worker-src
+        ''self'' blob:'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:

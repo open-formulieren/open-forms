@@ -9,16 +9,16 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Mon, 22 Dec 2025 16:49:34 GMT
+      - Thu, 26 Mar 2026 08:00:54 GMT
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
       X-GCS-ServerMetaInfo:
-      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE4LjEtYXJjaDEtMi8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFNhdCwgMTMgRGVjIDIwMjUgMTg6MjM6MjEgKzAwMDAgUHl0aG9uLzMuMTIuMTIgKENQeXRob247IEdDQyAxNS4yLjEgMjAyNTExMTIpIiwKICAgICJzZGtJZGVudGlmaWVyIjogIlB5dGhvblNlcnZlclNESy92NS4xLjAiLAogICAgInNka0NyZWF0b3IiOiAiT25saW5lUGF5bWVudHMiLAogICAgImludGVncmF0b3IiOiAib3BlbmZvcm1zIgp9
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE3LjAtMTAxMS1vZW0vIzExLVVidW50dSBTTVAgUFJFRU1QVF9EWU5BTUlDIEZyaSBKYW4gMjMgMDY6MTg6NDMgVVRDIDIwMjYgUHl0aG9uLzMuMTIuMyAoQ1B5dGhvbjsgR0NDIDEzLjMuMCkiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y3LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
     method: GET
     uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/hostedcheckouts/foobar
   response:
     body:
-      string: '{"errorId":"93e7d3aa-695d-4ad2-909b-a3573f4f3b6b","errors":[{"errorCode":"20001101","category":"DIRECT_PLATFORM_ERROR","code":"9999","httpStatusCode":500,"id":"UNKNOWN_SERVER_ERROR","message":"UNKNOWN_SERVER_ERROR","retriable":false}]}'
+      string: '{"errorId":"a5c588e6-9986-4201-ab94-8303aaf65cea","errors":[{"errorCode":"20001101","category":"DIRECT_PLATFORM_ERROR","code":"9999","httpStatusCode":500,"id":"UNKNOWN_SERVER_ERROR","message":"UNKNOWN_SERVER_ERROR","retriable":false}]}'
     headers:
       content-length:
       - '235'
@@ -31,47 +31,69 @@ interactions:
         https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com; img-src ''self'' data: https://assets.test.cdn.v-psp.com
-        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
-        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
-        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
-        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
-        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
+        https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js; img-src
+        ''self'' data: https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
+        https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
+        https://www.paypalobjects.com https://www.sandbox.paypal.com https://pay.google.com
+        https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js
+        https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png https://us-online.stg.mpay.samsung.com/
+        https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com; style-src ''self'' ''unsafe-inline'' https://assets.test.cdn.v-psp.com
-        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
-        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
-        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
-        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
-        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
+        https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js; style-src
+        ''self'' ''unsafe-inline'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
+        https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
+        https://www.paypalobjects.com https://www.sandbox.paypal.com https://pay.google.com
+        https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js
+        https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png https://us-online.stg.mpay.samsung.com/
+        https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-Ex1+5xaPGZU=''  ; style-src-attr ''unsafe-inline'';
-        style-src-elem ''unsafe-inline'' ''self'' https://assets.test.cdn.v-psp.com
-        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
-        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
-        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
-        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
-        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
+        https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-90hrT6DqfRU=''  ;
+        style-src-attr ''unsafe-inline''; style-src-elem ''unsafe-inline'' ''self''
+        https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
+        https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
+        https://www.paypalobjects.com https://www.sandbox.paypal.com https://pay.google.com
+        https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js
+        https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png https://us-online.stg.mpay.samsung.com/
+        https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com; script-src ''self'' https://assets.test.cdn.v-psp.com
-        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
-        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
-        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
-        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
-        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
+        https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js; script-src
+        ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
+        https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
+        https://www.paypalobjects.com https://www.sandbox.paypal.com https://pay.google.com
+        https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js
+        https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png https://us-online.stg.mpay.samsung.com/
+        https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
         https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
-        https://applepay.cdn-apple.com ''nonce-Ex1+5xaPGZU=''; object-src ''none'';'
+        https://applepay.cdn-apple.com https://assets-staging.oney.io/ https://assets.oney.io/
+        https://widget-stg.oney.io/ https://widget.oney.io/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/oney-simulator/js/oney.js
+        https://payment.preprod.direct.ingenico.com/oney-simulator/js/Oney.js ''nonce-90hrT6DqfRU='';
+        object-src ''none''; report-to reporting-endpoint;'
       content-type:
       - application/json; charset=utf-8
       correlation-id:
-      - 93e7d3aa-695d-4ad2-909b-a3573f4f3b6b
-      - 93e7d3aa-695d-4ad2-909b-a3573f4f3b6b
+      - a5c588e6-9986-4201-ab94-8303aaf65cea
+      - a5c588e6-9986-4201-ab94-8303aaf65cea
       date:
-      - Mon, 22 Dec 2025 16:49:33 GMT
+      - Thu, 26 Mar 2026 08:00:54 GMT
+      reporting-endpoints:
+      - reporting-endpoint="https://payment.preprod.direct.worldline-solutions.com/csp/report-to"
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload;
     status:

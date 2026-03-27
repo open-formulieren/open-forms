@@ -6,12 +6,12 @@ interactions:
       \       \n\n<ZKN:zakLk01 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
       \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Lk01</StUF:berichtcode>\n
       \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-6</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-6</StUF:applicatie>\n<StUF:administratie>zender_administratie-6</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-6</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-6</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-6</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-6</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-6</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>aa247cec-749d-4048-8563-d3c12790c8b9</StUF:referentienummer>\n<StUF:tijdstipBericht>20251219144619</StUF:tijdstipBericht>\n\n
+      \   <StUF:organisatie>ontvanger_organisatie-6</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-6</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-6</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-6</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>f68e5a2a-02c6-42f9-b104-129a2ff84057</StUF:referentienummer>\n<StUF:tijdstipBericht>20260325190759</StUF:tijdstipBericht>\n\n
       \       <StUF:entiteittype>ZAK</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
       \   <ZKN:parameters>\n        <StUF:mutatiesoort>W</StUF:mutatiesoort>\n        <StUF:indicatorOvername>V</StUF:indicatorOvername>\n
       \   </ZKN:parameters>\n    <ZKN:object StUF:verwerkingssoort=\"W\" StUF:entiteittype=\"ZAK\">\n
       \       <ZKN:identificatie>1234</ZKN:identificatie>\n        <ZKN:betalingsIndicatie>Geheel</ZKN:betalingsIndicatie>\n
-      \       <ZKN:laatsteBetaaldatum>20251219</ZKN:laatsteBetaaldatum>\n        <StUF:extraElementen>\n\n<StUF:extraElement
+      \       <ZKN:laatsteBetaaldatum>20260325</ZKN:laatsteBetaaldatum>\n        <StUF:extraElementen>\n\n<StUF:extraElement
       naam=\"language_code\">en</StUF:extraElement>\n\n<StUF:extraElement naam=\"payment_completed\">true</StUF:extraElement>\n\n<StUF:extraElement
       naam=\"payment_amount\">40.0</StUF:extraElement>\n\n<StUF:extraElement naam=\"payment_public_order_ids.0\">foo</StUF:extraElement>\n\n<StUF:extraElement
       naam=\"payment_public_order_ids.1\">bar</StUF:extraElement>\n\n<StUF:extraElement
@@ -32,7 +32,7 @@ interactions:
       SOAPAction:
       - http://www.egem.nl/StUF/sector/zkn/0310/updateZaak_Lk01
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: POST
     uri: http://localhost:82/stuf-zds
   response:
@@ -59,9 +59,9 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Fri, 19 Dec 2025 14:46:19 GMT
+      - Wed, 25 Mar 2026 19:07:59 GMT
       Server:
-      - Werkzeug/3.1.4 Python/3.12.12
+      - Werkzeug/3.1.7 Python/3.12.13
     status:
       code: 200
       message: OK

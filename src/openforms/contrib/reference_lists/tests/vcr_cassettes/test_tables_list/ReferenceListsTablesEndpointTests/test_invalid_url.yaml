@@ -9,54 +9,63 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8004/incorrect/tabellen
   response:
     body:
-      string: "<!DOCTYPE html>\n<html lang=\"en\" class=\"view view---\">\n    <head>\n
-        \       <meta charset=\"utf-8\">\n        <title>Referentielijsten</title>\n
-        \       <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n
-        \       <link href=\"/static/ico/favicon.svg\" sizes=\"any\" rel=\"icon\"
-        type=\"image/svg+xml\" />\n        <link href=\"/static/ico/favicon-96x96.png\"
-        sizes=\"96x96\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/ico/favicon-32x32.png\"
-        sizes=\"32x32\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/ico/favicon.png\"
-        sizes=\"16x16\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/ico/favicon.png\"
+      string: "<!DOCTYPE html>\n<html lang=\"en\" class=\"view view-- landing-page\">\n
+        \   <head>\n        <meta charset=\"utf-8\">\n        <title>API dashboard
+        | Referentielijsten</title>\n        <meta name=\"viewport\" content=\"width=device-width,
+        initial-scale=1.0\">\n        <link href=\"/static/maykin_common/ico/favicon.svg\"
+        sizes=\"any\" rel=\"icon\" type=\"image/svg+xml\" />\n        <link href=\"/static/maykin_common/ico/favicon-96x96.png\"
+        sizes=\"96x96\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/maykin_common/ico/favicon-32x32.png\"
+        sizes=\"32x32\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/maykin_common/ico/favicon.png\"
+        sizes=\"16x16\" rel=\"icon\" type=\"image/png\" />\n        <link href=\"/static/maykin_common/ico/favicon.png\"
         rel=\"shortcut icon\">\n        <link href=\"/static/bundles/referentielijsten-css.css\"
-        media=\"all\" rel=\"stylesheet\" />\n        \n    </head>\n\n    <body class=\"view__body\">\n
-        \       <main>\n            \n\n  <h1>Sorry, the requested page could not
-        be found (404)</h1>\n\n\n\n        </main>\n\n        <footer class=\"footer
-        container\">\n            <div class=\"footer__row\">\n              <div
-        class=\"footer__col footer__col--small\">\n                <img src=\"/static/ico/favicon-96x96.png\"
-        alt=\"Maykin logo\" height=\"48\">\n                <p>\n                  Developed
-        by <a class=\"link\" href=\"https://www.maykinmedia.nl\">Maykin</a><br>\n
-        \                 within the <a class=\"link\" href=\"https://opengem.nl\">Open
-        Gemeente Initiatief</a> &copy; 2025<br>\n                  \n                </p>\n
-        \             </div>\n              <div class=\"footer__col\">\n                <h5
-        class=\"footer__header\">Referentielijsten API</h5>\n                <ul class=\"footer__list\">\n
-        \                 <li><a class=\"link link--muted\" href=\"https://hub.docker.com/r/maykinmedia/referentielijsten-api\">Docker
-        images</a></li>\n                  <li><a class=\"link link--muted\" href=\"https://github.com/maykinmedia/referentielijsten\">Code
-        on Github</a></li>\n                </ul>\n              </div>\n              <div
-        class=\"footer__col\">\n                <h5 class=\"footer__header\">Other</h5>\n
-        \               <ul class=\"footer__list\">\n                  <li>Report
-        <a class=\"link link--muted\" href=\"https://github.com/maykinmedia/referentielijsten/issues\">issues</a>
-        for questions, bugs or wishes</li>\n                  <li>Read more on <a
-        class=\"link link--muted\" href=\"https://commonground.nl/\">Common Ground</a></li>\n
-        \               </ul>\n              </div>\n            </div>\n\n            <div
-        class=\"footer__row\">\n              <div class=\"footer__col\">\n                <code></code>\n
-        \             </div>\n              <div class=\"footer__col footer__col--right\">\n
-        \               <code></code>\n              </div>\n            </div>\n
-        \         </footer>\n        \n        <script src=\"/static/bundles/referentielijsten-js.js\"></script>\n
+        media=\"all\" rel=\"stylesheet\" />\n        \n\n<link href=\"/static/maykin_common/css/api.css\"
+        media=\"all\" rel=\"stylesheet\" />\n\n    </head>\n\n    <body class=\"view__body\">\n
+        \       <header>\n    <!-- TODO -->\n</header>\n\n\n        <main class=\"view__main\">\n
+        \           \n\n    \n        \n        <header class=\"page-title\">\n            <h1
+        class=\"page-title__title\">\n                Referentielijsten\n            </h1>\n
+        \           <p class=\"page-title__description\">\n                API dashboard\n
+        \           </p>\n        </header>\n    \n    \n    <div class=\"container
+        container--center\">\n        <h1>Sorry, de gevraagde pagina kon niet worden
+        gevonden (404)</h1>\n    </div>\n\n        </main>\n\n        \n\n\n\n    \n\n
+        \   \n        \n<footer class=\"footer\">\n    <div class=\"footer__row footer__row--3-cols\">\n
+        \       <section>\n            <img src=\"/static/maykin_common/ico/favicon-96x96.png\"
+        alt=\"Maykin logo\" height=\"48\">\n            <p class=\"footer__plain-content
+        footer__plain-content--small\">\n                \n                \n                    Developed
+        by <a class=\"link\" href=\"https://www.maykinmedia.nl\">Maykin</a><br> within
+        the <a class=\"link\" href=\"https://opengem.nl\">Open Gemeente Initiatief</a>
+        &copy; 2026<br>\n                    \n                \n            </p>\n
+        \       </section>\n\n        <section>\n            <header class=\"footer__column-header\">Referentielijsten</header>\n
+        \           <ul class=\"footer__list\">\n                \n    <li>\n        <a
+        class=\"link link--muted\" href=\"https://referentielijsten-api.readthedocs.io\">\n
+        \           Documentatie\n        </a>\n    </li>\n    <li>\n        <a class=\"link
+        link--muted\" href=\"https://hub.docker.com/r/maykinmedia/referentielijsten-api\">\n
+        \           Docker image\n        </a>\n    </li>\n    <li>\n        <a class=\"link
+        link--muted\" href=\"https://github.com/maykinmedia/referentielijsten\">\n
+        \           Code on Github\n        </a>\n    </li>\n\n            </ul>\n
+        \       </section>\n\n        <section>\n            <header class=\"footer__column-header\">Other</header>\n
+        \           <ul class=\"footer__list\">\n                \n                    <li>\n
+        \                       Report <a class=\"link link--muted\" href=\"https://github.com/maykinmedia/referentielijsten/issues\">issues</a>
+        for questions, bugs or wishes\n                    </li>\n                    <li>\n
+        \                       Read more on <a class=\"link link--muted\" href=\"https://commonground.nl/\">Common
+        Ground</a>\n                    </li>\n                \n            </ul>\n
+        \       </section>\n    </div>\n\n    <div class=\"footer__row footer__row--2-cols\">\n
+        \       <code></code>\n        <code class=\"content content--align-right\"></code>\n
+        \   </div>\n\n</footer>\n\n    \n\n\n\n\n        \n<script src=\"/static/maykin_common/js/nav-tabs.js\"></script>\n\n
         \   </body>\n</html>\n"
     headers:
       Content-Length:
-      - '2760'
+      - '3582'
       Content-Security-Policy:
-      - 'default-src ''self''; form-action ''self''; object-src ''none''; font-src
-        ''self'' fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; base-uri
-        ''self''; frame-src ''self''; worker-src ''self'' blob:; frame-ancestors ''none'';
-        img-src ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline''
-        fonts.googleapis.com'
+      - 'script-src ''self'' ''unsafe-inline''; frame-src ''self''; frame-ancestors
+        ''none''; default-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        form-action ''self''; font-src ''self'' fonts.gstatic.com; img-src ''self''
+        data: cdn.redoc.ly; worker-src ''self'' blob:; object-src ''none''; base-uri
+        ''self'''
       Content-Type:
       - text/html; charset=utf-8
       Cross-Origin-Opener-Policy:

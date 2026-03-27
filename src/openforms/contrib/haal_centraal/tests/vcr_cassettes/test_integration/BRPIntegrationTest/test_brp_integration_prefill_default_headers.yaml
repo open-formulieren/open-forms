@@ -39,15 +39,20 @@ interactions:
         heer Holthuizen","adresregel1":"Nieuwe Parklaan 58","adresregel2":"2597 LD  ''S-GRAVENHAGE"},"partners":[{"naam":{"geslachtsnaam":"Wiegman"},"aangaanHuwelijkPartnerschap":{"datum":{"type":"Datum","datum":"1926-07-15","langFormaat":"15
         juli 1926"}}}]}]}'
     headers:
+      Connection:
+      - keep-alive
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 27 Feb 2026 15:01:39 GMT
+      - Wed, 25 Mar 2026 16:16:04 GMT
       Set-Cookie:
-      - route=9da171e351f14238; Path=/
+      - TS01f825fe=013467672cc7d80c5b86ce51ed493142b54a8d9bf5db75d69016ea71c129445fb550d82dfd3ad72797cdce0afa5ef1271387f8f39e1786a25fd69ede9c781ea054c36e0f78;
+        Path=/; Domain=.apigw.npr.idm.diginetwerk.net
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
       Transfer-Encoding:
       - chunked
     status:
       code: 200
-      message: OK
+      message: ''
 version: 1

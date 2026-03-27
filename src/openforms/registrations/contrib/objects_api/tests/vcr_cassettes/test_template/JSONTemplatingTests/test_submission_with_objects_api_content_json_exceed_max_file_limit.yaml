@@ -1,9 +1,9 @@
 interactions:
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
-      "bronorganisatie": "000000000", "creatiedatum": "2025-12-19", "titel": "Form
-      071", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf", "inhoud":
-      "", "status": "definitief", "bestandsnaam": "open-forms-Form 071.pdf", "ontvangstdatum":
+      "bronorganisatie": "000000000", "creatiedatum": "2026-03-25", "titel": "Form
+      072", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf", "inhoud":
+      "", "status": "definitief", "bestandsnaam": "open-forms-Form 072.pdf", "ontvangstdatum":
       null, "beschrijving": "Ingezonden formulier", "indicatieGebruiksrecht": false,
       "bestandsomvang": 0}'
     headers:
@@ -11,8 +11,6 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc2NjE1NTY2MCwiZXhwIjoxNzY2MTk4ODYwLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.LaPaTQUlgPd5HCPkCUEqSkjYUBugKE6vbgnozpoBZbA
       Connection:
       - keep-alive
       Content-Length:
@@ -20,14 +18,14 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: POST
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/ca0f371d-fe6f-491c-a122-f1f39cc7a40e","identificatie":"DOCUMENT-2025-0000000087","bronorganisatie":"000000000","creatiedatum":"2025-12-19","titel":"Form
-        071","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2025-12-19T14:47:40.893614Z","bestandsnaam":"open-forms-Form
-        071.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/ca0f371d-fe6f-491c-a122-f1f39cc7a40e/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1e2f09a6-074c-469d-a493-e0b69ab3718c","identificatie":"DOCUMENT-2026-0000000097","bronorganisatie":"000000000","creatiedatum":"2026-03-25","titel":"Form
+        072","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2026-03-25T11:32:32.339136Z","bestandsnaam":"open-forms-Form
+        072.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1e2f09a6-074c-469d-a493-e0b69ab3718c/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
         formulier","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
@@ -41,7 +39,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/ca0f371d-fe6f-491c-a122-f1f39cc7a40e
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/1e2f09a6-074c-469d-a493-e0b69ab3718c
       Referrer-Policy:
       - same-origin
       Vary:

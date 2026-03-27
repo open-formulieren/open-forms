@@ -33,7 +33,8 @@ docker compose -f docker-compose.open-zaak.yml run openzaak-web.local \
         authorizations.applicatie \
         vng_api_common.jwtsecret \
         config.featureflags \
-        catalogi
+        catalogi \
+        zgw_consumers.service
 ```
 
 Depending on your OS, you may need to grant extra write permissions:

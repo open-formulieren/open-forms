@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen?domein=TEST&rsin=000000000
   response:
@@ -49,7 +49,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/zaaktypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&identificatie=ZT-001&datumGeldigheid=2024-06-09
   response:
@@ -81,8 +81,8 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-02-18", "startdatum": "2026-02-18", "productenOfDiensten":
-      [], "omschrijving": "Form 000", "toelichting": "Aangemaakt door Open Formulieren",
+      "registratiedatum": "2026-03-25", "startdatum": "2026-03-25", "productenOfDiensten":
+      [], "omschrijving": "Form 013", "toelichting": "Aangemaakt door Open Formulieren",
       "betalingsindicatie": "nvt", "kenmerken": [{"kenmerk": "OF-1234", "bron": "Open
       Formulieren"}]}'
     headers:
@@ -101,13 +101,13 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: POST
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/8ba970a3-683a-4c99-bed7-82e4d0cd40c6","uuid":"8ba970a3-683a-4c99-bed7-82e4d0cd40c6","identificatie":"ZAAK-2026-0000000003","bronorganisatie":"000000000","omschrijving":"Form
-        000","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-02-18","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-02-18","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/44d12cce-56f2-4b2a-beac-f48fceae814b","uuid":"44d12cce-56f2-4b2a-beac-f48fceae814b","identificatie":"ZAAK-2026-0000000072","bronorganisatie":"000000000","omschrijving":"Form
+        013","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-03-25","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-03-25","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[{"kenmerk":"OF-1234","bron":"Open
         Formulieren"}],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
@@ -124,7 +124,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/8ba970a3-683a-4c99-bed7-82e4d0cd40c6
+      - http://localhost:8003/zaken/api/v1/zaken/44d12cce-56f2-4b2a-beac-f48fceae814b
       Referrer-Policy:
       - same-origin
       Vary:
@@ -150,13 +150,13 @@ interactions:
       Content-Crs:
       - EPSG:4326
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
-    uri: http://localhost:8003/zaken/api/v1/zaken/8ba970a3-683a-4c99-bed7-82e4d0cd40c6
+    uri: http://localhost:8003/zaken/api/v1/zaken/44d12cce-56f2-4b2a-beac-f48fceae814b
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/8ba970a3-683a-4c99-bed7-82e4d0cd40c6","uuid":"8ba970a3-683a-4c99-bed7-82e4d0cd40c6","identificatie":"ZAAK-2026-0000000003","bronorganisatie":"000000000","omschrijving":"Form
-        000","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-02-18","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-02-18","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/44d12cce-56f2-4b2a-beac-f48fceae814b","uuid":"44d12cce-56f2-4b2a-beac-f48fceae814b","identificatie":"ZAAK-2026-0000000072","bronorganisatie":"000000000","omschrijving":"Form
+        013","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-03-25","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-03-25","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[{"kenmerk":"OF-1234","bron":"Open
         Formulieren"}],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
@@ -173,7 +173,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"f7d395eca6c87ca260373a0aa51acedc"'
+      - '"f1ec86e54d1c4ba439ba3d76a29eac71"'
       Referrer-Policy:
       - same-origin
       Vary:

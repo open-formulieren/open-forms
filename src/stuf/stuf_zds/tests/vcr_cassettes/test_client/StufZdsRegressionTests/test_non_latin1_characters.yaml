@@ -6,8 +6,8 @@ interactions:
       \       \n\n<ZKN:zakLk01\n    xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\"\n
       \   xmlns:BG=\"http://www.egem.nl/StUF/sector/bg/0310\"\n    xmlns:GML=\"http://www.opengis.net/gml\"\n>\n
       \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Lk01</StUF:berichtcode>\n
-      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>123</StUF:referentienummer>\n<StUF:tijdstipBericht>20260220173420</StUF:tijdstipBericht>\n\n
+      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-1</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-1</StUF:applicatie>\n<StUF:administratie>zender_administratie-1</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-1</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
+      \   <StUF:organisatie>ontvanger_organisatie-1</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-1</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-1</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-1</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>123</StUF:referentienummer>\n<StUF:tijdstipBericht>20260325191930</StUF:tijdstipBericht>\n\n
       \       <StUF:entiteittype>ZAK</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
       \   <ZKN:parameters>\n        <StUF:mutatiesoort>T</StUF:mutatiesoort>\n        <StUF:indicatorOvername>V</StUF:indicatorOvername>\n
       \   </ZKN:parameters>\n    <ZKN:object StUF:verwerkingssoort=\"T\" StUF:entiteittype=\"ZAK\">\n
@@ -72,36 +72,35 @@ interactions:
         van derden.</p>\n\n\n</div>\n\n<div id=\"explanation\">\n  <p><small>Meer
         informatie is beschikbaar met DEBUG=True.</small></p>\n</div>\n\n</body>\n</html>\n"
     headers:
-      Connection:
-      - keep-alive
       Content-Language:
       - nl
       Content-Length:
       - '1866'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' https://formulieren.pleio.nl https://embed.email-provider.eu
-        https://fonts.googleapis.com; form-action ''self'' https://embed.email-provider.eu;
-        frame-src ''self'' https://*.pleio.nl https://www.youtube-nocookie.com https://player.vimeo.com
+      - 'frame-src ''self'' https://*.pleio.nl https://www.youtube-nocookie.com https://player.vimeo.com
         https://api.eu.kaltura.com https://feed.mikle.com https://*.bbvms.com https://collabora.pleio.nl
         https://embed.email-provider.eu https://commonground.email-provider.eu/ https://res.email-provider.eu/
-        https://fonts.googleapis.com https://fonts.gstatic.com; object-src ''none'';
-        upgrade-insecure-requests; script-src ''strict-dynamic'' https://embed.email-provider.eu;
+        https://fonts.googleapis.com https://fonts.gstatic.com; font-src ''self''
+        https://embed.email-provider.eu https://fonts.googleapis.com https://fonts.gstatic.com;
         img-src ''self'' data: https://*.pleio.nl https://statistiek.rijksoverheid.nl
         https://i.ytimg.com https://i.vimeocdn.com https://*.bbvms.com https://account.pleio.nl
         https://embed.email-provider.eu https://commonground.email-provider.eu/ https://res.email-provider.eu/
-        https://fonts.googleapis.com https://fonts.gstatic.com; connect-src ''self''
-        https://*.pleio.nl https://statistiek.rijksoverheid.nl https://vimeo.com https://*.sentry.io
-        https://collabora.pleio.nl https://embed.email-provider.eu; font-src ''self''
-        https://embed.email-provider.eu https://fonts.googleapis.com https://fonts.gstatic.com;
-        frame-ancestors ''self''; base-uri ''none''; default-src ''self'' https://embed.email-provider.eu'
+        https://fonts.googleapis.com https://fonts.gstatic.com; style-src ''self''
+        ''unsafe-inline'' https://formulieren.pleio.nl https://embed.email-provider.eu
+        https://fonts.googleapis.com; connect-src ''self'' https://*.pleio.nl https://statistiek.rijksoverheid.nl
+        https://vimeo.com https://*.sentry.io https://collabora.pleio.nl https://embed.email-provider.eu;
+        script-src ''strict-dynamic'' https://embed.email-provider.eu; object-src
+        ''none''; default-src ''self'' https://embed.email-provider.eu; frame-ancestors
+        ''self''; base-uri ''none''; upgrade-insecure-requests; form-action ''self''
+        https://embed.email-provider.eu'
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Fri, 20 Feb 2026 17:34:48 GMT
+      - Wed, 25 Mar 2026 19:19:31 GMT
       Referrer-Policy:
-      - same-origin
+      - strict-origin-when-cross-origin
       Set-Cookie:
-      - sessionid=rt4enpg5eifggivxddjjrrapj9omch7q; expires=Fri, 06 Mar 2026 17:34:48
+      - sessionid=hde1f3rm5bw9mx6fzsj6qmdq9j3wpjd5; expires=Wed, 08 Apr 2026 19:19:30
         GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax; Secure
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
@@ -109,13 +108,9 @@ interactions:
       - Accept-Language, Cookie
       X-Content-Type-Options:
       - nosniff
-      X-Frame-Options:
-      - sameorigin
       X-Pod:
-      - backend2-api-7975c749c4-8h66f
-      X-Request-Start:
-      - t=1771608888.347
-      X-XSS-Protection:
+      - backend2-api-6cfdfc4667-m5hk9
+      X-Xss-Protection:
       - 1; mode=block
     status:
       code: 403

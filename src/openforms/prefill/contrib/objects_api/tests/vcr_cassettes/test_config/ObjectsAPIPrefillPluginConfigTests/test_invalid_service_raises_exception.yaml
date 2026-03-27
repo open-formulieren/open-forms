@@ -6,12 +6,10 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Token INVALID
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8002/api/v2/invalid/objects?pageSize=1
   response:
@@ -29,7 +27,7 @@ interactions:
         alt=\"Open Gemeente Initiatief logo\" height=\"48\">\n          <p>\n          Developed
         by <a class=\"link\" href=\"https://www.maykinmedia.nl\">Maykin Media</a><br>\n
         \         within the <a class=\"link\" href=\"https://opengem.nl\">Open Gemeente
-        Initiatief</a> &copy; 2025<br>\n          commissioned by the <a class=\"link\"
+        Initiatief</a> &copy; 2026<br>\n          commissioned by the <a class=\"link\"
         href=\"https://www.utrecht.nl\">Municipality of Utrecht</a>\n          </p>\n
         \       </div>\n        <div class=\"footer__col\">\n          <h5 class=\"footer__header\">Objects
         API</h5>\n          <ul class=\"footer__list\">\n            <li><a class=\"link
@@ -58,11 +56,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Dec 2025 13:03:35 GMT
+      - Wed, 25 Mar 2026 11:43:57 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.1
+      - nginx/1.29.5
       Vary:
       - origin
       X-Content-Type-Options:

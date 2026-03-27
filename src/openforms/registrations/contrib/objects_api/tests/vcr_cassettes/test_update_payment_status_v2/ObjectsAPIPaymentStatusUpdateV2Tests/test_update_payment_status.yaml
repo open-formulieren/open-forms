@@ -11,8 +11,6 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9
       Connection:
       - keep-alive
       Content-Crs:
@@ -22,13 +20,13 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: POST
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/5c0a6dbd-2a1e-4015-8300-618b91377494","uuid":"5c0a6dbd-2a1e-4015-8300-618b91377494","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
-        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2025-12-19","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/5f04bf43-6d8f-48b0-ae7e-c32744f0b312","uuid":"5f04bf43-6d8f-48b0-ae7e-c32744f0b312","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2026-03-25","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -43,13 +41,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Dec 2025 14:47:42 GMT
+      - Wed, 25 Mar 2026 11:32:33 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/5c0a6dbd-2a1e-4015-8300-618b91377494
+      - http://localhost:8002/api/v2/objects/5f04bf43-6d8f-48b0-ae7e-c32744f0b312
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.1
+      - nginx/1.29.5
       Vary:
       - origin
       X-Content-Type-Options:
@@ -66,17 +64,15 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Token 171be5abaf41e7856b423ad513df1ef8f867ff48
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48
   response:
     body:
-      string: '{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-11-25","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4"]}'
+      string: '{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-11-25","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4"]}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -89,11 +85,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Dec 2025 14:47:42 GMT
+      - Wed, 25 Mar 2026 11:32:33 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.1
+      - nginx/1.29.5
       Vary:
       - origin
       X-Content-Type-Options:
@@ -113,8 +109,6 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
-      Authorization:
-      - Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9
       Connection:
       - keep-alive
       Content-Crs:
@@ -124,13 +118,13 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: PATCH
-    uri: http://localhost:8002/api/v2/objects/5c0a6dbd-2a1e-4015-8300-618b91377494
+    uri: http://localhost:8002/api/v2/objects/5f04bf43-6d8f-48b0-ae7e-c32744f0b312
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/5c0a6dbd-2a1e-4015-8300-618b91377494","uuid":"5c0a6dbd-2a1e-4015-8300-618b91377494","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
-        last name"},"nested":{"unrelated":"some_value","submission_payment_amount":10.01},"submission_date":"2020-02-02T00:00:00+00:00","submission_csv_url":"http://example.com","submission_pdf_url":"http://example.com","submission_payment_completed":true,"submission_payment_public_ids":["TEST-123"],"submission_provider_payment_ids":["12345"]},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2025-12-19","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/5f04bf43-6d8f-48b0-ae7e-c32744f0b312","uuid":"5f04bf43-6d8f-48b0-ae7e-c32744f0b312","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"nested":{"unrelated":"some_value","submission_payment_amount":10.01},"submission_date":"2020-02-02T00:00:00+00:00","submission_csv_url":"http://example.com","submission_pdf_url":"http://example.com","submission_payment_completed":true,"submission_payment_public_ids":["TEST-123"],"submission_provider_payment_ids":["12345"]},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2026-03-25","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -145,11 +139,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 19 Dec 2025 14:47:42 GMT
+      - Wed, 25 Mar 2026 11:32:33 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.1
+      - nginx/1.29.5
       Vary:
       - origin
       X-Content-Type-Options:

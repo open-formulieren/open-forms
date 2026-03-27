@@ -11,7 +11,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.4
+      - python-requests/2.32.5
     method: GET
     uri: http://localhost:8004/api/v1/items?tabel__code=item-not-geldig-anymore
   response:
@@ -19,16 +19,18 @@ interactions:
       string: '{"count":1,"next":null,"previous":null,"results":[{"code":"not_geldig_option","naam":"Not
         geldig option","begindatumGeldigheid":"2025-01-07T14:17:59Z","einddatumGeldigheid":"2025-02-07T14:17:59Z","aanvullendeGegevens":null}]}'
     headers:
+      API-version:
+      - 0.2.0
       Allow:
       - GET, HEAD, OPTIONS
       Content-Length:
       - '225'
       Content-Security-Policy:
-      - 'default-src ''self''; form-action ''self''; object-src ''none''; font-src
-        ''self'' fonts.gstatic.com; script-src ''self'' ''unsafe-inline''; base-uri
-        ''self''; frame-src ''self''; worker-src ''self'' blob:; frame-ancestors ''none'';
-        img-src ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline''
-        fonts.googleapis.com'
+      - 'script-src ''self'' ''unsafe-inline''; frame-src ''self''; frame-ancestors
+        ''none''; default-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        form-action ''self''; font-src ''self'' fonts.gstatic.com; img-src ''self''
+        data: cdn.redoc.ly; worker-src ''self'' blob:; object-src ''none''; base-uri
+        ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
