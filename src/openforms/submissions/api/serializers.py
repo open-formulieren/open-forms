@@ -310,6 +310,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         ),
     )
     data = FormioDataField(
+        source="_data",
         label=_("data"),
         required=False,
         allow_null=True,
@@ -408,7 +409,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
 
         # Serialize the data to JSON. We can't use a generic JSON encoder here, because
         # we need context from the variable
-        data = instance.unsaved_data if in_form_logic_evaluation else instance.data
+        data = instance.unsaved_data if in_form_logic_evaluation else instance._data
         serialized_data = FormioData()
         state = instance.submission.load_submission_value_variables_state()
         variables = state.get_variables_in_submission_step(instance)
