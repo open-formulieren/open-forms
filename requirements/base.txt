@@ -560,7 +560,7 @@ referencing==0.37.0
     #   -r requirements/base.in
     #   jsonschema
     #   jsonschema-specifications
-requests==2.32.5
+requests==2.33.0
     # via
     #   ape-pie
     #   django-camunda

@@ -922,7 +922,7 @@ referencing==0.37.0
     #   -r requirements/base.txt
     #   jsonschema
     #   jsonschema-specifications
-requests==2.32.5
+requests==2.33.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
