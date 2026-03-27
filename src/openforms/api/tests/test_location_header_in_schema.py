@@ -2,122 +2,100 @@
 
 from unittest.mock import MagicMock, patch
 
-from django.test import TestCase
+from django.test import SimpleTestCase
+from django.urls import path
 
 from drf_spectacular.generators import SchemaGenerator
-from rest_framework import routers, serializers
+from rest_framework import serializers
+from rest_framework.generics import CreateAPIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from openforms.api.schema import AutoSchema
 
 
-def generate_schema(route, viewset):
-    router = routers.SimpleRouter()
-    router.register(route, viewset, basename=route)
-    generator = SchemaGenerator(patterns=router.urls)
+def generate_schema(urlpatterns):
+    generator = SchemaGenerator(patterns=urlpatterns)
     return generator.get_schema(request=None, public=True)
 
 
-class _WithUrlSerializer(serializers.Serializer):
+class WithUrlSerializer(serializers.Serializer):
     url = serializers.URLField()
     name = serializers.CharField()
 
 
-class _WithoutUrlSerializer(serializers.Serializer):
+class WithoutUrlSerializer(serializers.Serializer):
     name = serializers.CharField()
 
 
-class SerializerHasUrlFieldTests(TestCase):
-    """Unit tests for AutoSchema._serializer_has_url_field."""
+class DummyCreateView(CreateAPIView):
+    serializer_class = WithUrlSerializer
+    schema = AutoSchema()
 
-    def _make_schema(self, serializer):
+
+class DummyPlainView(APIView):
+    schema = AutoSchema()
+
+    def post(self, request):
+        return Response({"url": "", "name": ""}, status=201)
+
+
+class SerializerHasUrlFieldTests(SimpleTestCase):
+    """Unit tests for AutoSchema.serializer_has_url_field."""
+
+    def check_schema_has_url_field(self, serializer) -> bool:
         schema = AutoSchema()
         schema.view = MagicMock()
         schema.method = "POST"
         with patch.object(schema, "get_response_serializers", return_value=serializer):
-            return schema._serializer_has_url_field()
+            return schema.serializer_has_url_field()
 
     def test_serializer_with_url_field(self):
-        self.assertTrue(self._make_schema(_WithUrlSerializer()))
+        self.assertTrue(self.check_schema_has_url_field(WithUrlSerializer()))
 
     def test_serializer_without_url_field(self):
-        self.assertFalse(self._make_schema(_WithoutUrlSerializer()))
+        self.assertFalse(self.check_schema_has_url_field(WithoutUrlSerializer()))
 
     def test_list_serializer_is_excluded(self):
         # ListSerializer wraps a child — should return False even if child has url
-        list_ser = serializers.ListSerializer(child=_WithUrlSerializer())
-        self.assertFalse(self._make_schema(list_ser))
+        list_ser = serializers.ListSerializer(child=WithUrlSerializer())
+        self.assertFalse(self.check_schema_has_url_field(list_ser))
 
     def test_base_serializer_is_excluded(self):
         # BaseSerializer has no .fields — should return False
         base_ser = serializers.BaseSerializer()
-        self.assertFalse(self._make_schema(base_ser))
+        self.assertFalse(self.check_schema_has_url_field(base_ser))
 
     def test_serializer_class_accepted(self):
         # force_instance should instantiate the class; class with url → True
-        self.assertTrue(self._make_schema(_WithUrlSerializer))
+        self.assertTrue(self.check_schema_has_url_field(WithUrlSerializer))
 
     def test_none_response_serializer(self):
         # Some views return no serializer
-        self.assertFalse(self._make_schema(None))
+        self.assertFalse(self.check_schema_has_url_field(None))
 
 
-class GetOverrideParametersTests(TestCase):
-    """Unit tests for the Location header injection in get_override_parameters."""
-
-    def _get_location_param(self, is_create, has_url_field):
-        schema = AutoSchema()
-        schema.view = MagicMock()
-        schema.method = "POST" if is_create else "GET"
-        with (
-            patch.object(schema, "_is_create_operation", return_value=is_create),
-            patch.object(
-                schema, "_serializer_has_url_field", return_value=has_url_field
-            ),
-        ):
-            params = schema.get_override_parameters()
-        return [p for p in params if getattr(p, "name", None) == "Location"]
-
-    def test_location_added_for_create_with_url_field(self):
-        location_params = self._get_location_param(is_create=True, has_url_field=True)
-        self.assertEqual(len(location_params), 1)
-
-    def test_no_location_for_create_without_url_field(self):
-        location_params = self._get_location_param(is_create=True, has_url_field=False)
-        self.assertEqual(len(location_params), 0)
-
-    def test_no_location_for_non_create_with_url_field(self):
-        location_params = self._get_location_param(is_create=False, has_url_field=True)
-        self.assertEqual(len(location_params), 0)
-
-
-class LocationHeaderSchemaIntegrationTests(TestCase):
-    """Verify Location header presence/absence using a schema built from FormDefinitionViewSet."""
+class LocationHeaderSchemaIntegrationTests(SimpleTestCase):
+    """Verify Location header targets CreateModelMixin, not plain APIViews."""
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        from openforms.forms.api.viewsets import FormDefinitionViewSet
+        urlpatterns = [
+            path("create/", DummyCreateView.as_view(), name="dummy-create"),
+            path("plain/", DummyPlainView.as_view(), name="dummy-plain"),
+        ]
+        cls.schema = generate_schema(urlpatterns)
 
-        cls.schema = generate_schema("form-definitions", FormDefinitionViewSet)
+    def test_create_view_has_location_header(self):
+        create_op = self.schema["paths"]["/create/"]["post"]
+        self.assertIn("Location", create_op["responses"]["201"].get("headers", {}))
 
-    def test_location_header_only_on_create_responses(self):
-        # POST (create) → Location in 201; GET/PUT/PATCH → absent
-        paths = self.schema["paths"]
-        list_create = paths["/form-definitions/"]
-        detail = paths["/form-definitions/{uuid}/"]
-
-        self.assertIn(
-            "Location", list_create["post"]["responses"]["201"].get("headers", {})
-        )
-
-        for method, responses in [
-            ("get", list_create["get"]["responses"]),
-            ("put", detail.get("put", {}).get("responses", {})),
-            ("patch", detail.get("patch", {}).get("responses", {})),
-        ]:
-            for code, resp in responses.items():
-                self.assertNotIn(
-                    "Location",
-                    resp.get("headers", {}),
-                    f"{method.upper()} {code} should not have Location header",
-                )
+    def test_plain_view_has_no_location_header(self):
+        plain_op = self.schema["paths"]["/plain/"]["post"]
+        for code, resp in plain_op["responses"].items():
+            self.assertNotIn(
+                "Location",
+                resp.get("headers", {}),
+                f"POST {code} on plain APIView should not have Location header",
+            )
