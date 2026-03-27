@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import uuid
-import warnings
 from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass
@@ -25,7 +24,7 @@ from opentelemetry import trace
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.service import FormioConfigurationWrapper, FormioData
+from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.models import FormRegistrationBackend, FormStep
 from openforms.logging import audit_logger
 from openforms.payments.constants import PaymentStatus
@@ -741,28 +740,6 @@ class Submission(models.Model):
         """
         submission_state = self.load_execution_state()
         return submission_state.get_last_completed_step()
-
-    @property
-    def data(self) -> FormioData:
-        """The filled-in data of the submission.
-
-        This is a mapping between variable keys and their corresponding values.
-
-        .. note::
-
-            Keys containing dots (``.``) will be nested under another mapping.
-            Static variables values are *not* included.
-        """
-        warnings.warn(
-            "Using `Submission.data` to access submission data is deprecated. Please "
-            "use `SubmissionValueVariablesState.get_data(...)` with the relevant flags "
-            "instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        values_state = self.load_submission_value_variables_state()
-        return values_state.get_data()
 
     def get_co_signer(self) -> str | SubmissionCosignData:
         # Legacy cosign returns an empty string, cosign v2 returns SubmissionCosignData
