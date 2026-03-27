@@ -1413,7 +1413,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(data["backend"], "digid")
         self.assertEqual(data["options"], {"loa": DigiDAssuranceLevels.middle})
 
-    def test_appointment_type_can_be_enabled_when_plugin_configured(self):
+    def test_appointment_type_can_be_assigned_when_plugin_configured(self):
         config = AppointmentsConfig.get_solo()
         config.plugin = "demo"
         config.save()
@@ -1437,7 +1437,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(form.type, FormTypeChoices.appointment)
 
-    def test_appointment_type_cant_be_enabled_when_plugin_not_configured(self):
+    def test_appointment_type_cant_be_assigned_when_plugin_not_configured(self):
         AppointmentsConfig.clear_cache()
         form = FormFactory.create(type=FormTypeChoices.regular)
 

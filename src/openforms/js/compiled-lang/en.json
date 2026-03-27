@@ -7903,12 +7903,6 @@
       "value": "Plugin configuration: Ogone legacy"
     }
   ],
-  "zgefLw": [
-    {
-      "type": 0,
-      "value": "Type of the form, used in the different design of the forms."
-    }
-  ],
   "zhPXHY": [
     {
       "type": 1,
@@ -7931,6 +7925,12 @@
     {
       "type": 0,
       "value": "Submission settings"
+    }
+  ],
+  "zsTGAG": [
+    {
+      "type": 0,
+      "value": "Type of the form, used to determine how the form is presented and behaves."
     }
   ],
   "zu8ntq": [

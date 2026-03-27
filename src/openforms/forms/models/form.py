@@ -100,8 +100,8 @@ class Form(models.Model):
         choices=FormTypeChoices.choices,
         default=FormTypeChoices.regular,
         help_text=_(
-            "The type of the form. It can be a choice between regular, appointment and "
-            "a single page form. Depending on the choice a different form design is "
+            "The type of the form. The choices are regular, appointment or a single "
+            "page form. Depending on the choice a different form design is "
             "required/rendered."
         ),
         max_length=50,

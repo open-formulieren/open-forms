@@ -641,7 +641,7 @@ const FormConfigurationFields = ({
             label={<FormattedMessage defaultMessage="Type" description="Form type field label" />}
             helpText={
               <FormattedMessage
-                defaultMessage="Type of the form, used in the different design of the forms."
+                defaultMessage="Type of the form, used to determine how the form is presented and behaves."
                 description="Form type field help text"
               />
             }

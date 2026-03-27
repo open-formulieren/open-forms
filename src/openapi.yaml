@@ -8036,7 +8036,7 @@ components:
           - $ref: '#/components/schemas/FormTypeEnum'
           title: Form type
           description: |-
-            The type of the form. It can be a choice between regular, appointment and a single page form. Depending on the choice a different form design is required/rendered.
+            The type of the form. The choices are regular, appointment or a single page form. Depending on the choice a different form design is required/rendered.
 
             * `regular` - Regular
             * `appointment` - Appointment
@@ -9083,7 +9083,7 @@ components:
           - $ref: '#/components/schemas/FormTypeEnum'
           title: Form type
           description: |-
-            The type of the form. It can be a choice between regular, appointment and a single page form. Depending on the choice a different form design is required/rendered.
+            The type of the form. The choices are regular, appointment or a single page form. Depending on the choice a different form design is required/rendered.
 
             * `regular` - Regular
             * `appointment` - Appointment
@@ -10051,7 +10051,7 @@ components:
           - $ref: '#/components/schemas/FormTypeEnum'
           title: Form type
           description: |-
-            The type of the form. It can be a choice between regular, appointment and a single page form. Depending on the choice a different form design is required/rendered.
+            The type of the form. The choices are regular, appointment or a single page form. Depending on the choice a different form design is required/rendered.
 
             * `regular` - Regular
             * `appointment` - Appointment

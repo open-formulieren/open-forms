@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                     ("single_page", "Single page"),
                 ],
                 default="regular",
-                help_text="The type of the form. It can be a choice between regular, appointment and a single page form. Depending on the choice a different form design is required/rendered.",
+                help_text="The type of the form. The choices are regular, appointment or a single page form. Depending on the choice a different form design is required/rendered.",
                 max_length=50,
                 verbose_name="form type",
             ),

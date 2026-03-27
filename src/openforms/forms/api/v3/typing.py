@@ -92,7 +92,7 @@ class PaymentData(TypedDict):
     payment_backend_options: dict
 
 
-class NewFormValidatedData(TypedDict):
+class FormValidatedData(TypedDict):
     name: str
     internal_name: NotRequired[str]
     internal_remarks: NotRequired[str]
@@ -139,7 +139,3 @@ class NewFormValidatedData(TypedDict):
     new_logic_evaluation_enabled: NotRequired[bool]
 
     translations: NotRequired[FormTranslationsData]
-
-
-class FormValidatedData(NewFormValidatedData):
-    uuid: UUID
