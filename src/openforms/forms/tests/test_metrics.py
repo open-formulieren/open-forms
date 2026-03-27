@@ -52,6 +52,7 @@ class FormCountMetricTests(MetricsAssertMixin, TestCase):
                 "new_renderer_enabled": 6,  # doesn't matter if active or not
                 "new_logic_evaluation_enabled": 6,  # doesn't matter if active or not
                 "translation_enabled": 2,  # doesn't matter if they're active or not
+                "is_regular": 5,  # don't consider deleted forms
                 "is_appointment": 1,  # don't consider deleted forms
                 "is_single_page": 1,  # don't consider deleted forms
                 "trash": 1 + 1 + 1 + 1,

@@ -3714,11 +3714,6 @@
     "description": "Ogone legacy options modal title",
     "originalDefault": "Plugin configuration: Ogone legacy"
   },
-  "zgefLw": {
-    "defaultMessage": "Type of the form, used in the different design of the forms.",
-    "description": "Form type field help text",
-    "originalDefault": "Type of the form, used in the different design of the forms."
-  },
   "zhPXHY": {
     "defaultMessage": "{plugin} requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin.",
     "description": "Prefill plugin requires unavailable auth plugin warning",
@@ -3728,6 +3723,11 @@
     "defaultMessage": "Submission settings",
     "description": "Form submission settings fieldset title",
     "originalDefault": "Submission settings"
+  },
+  "zsTGAG": {
+    "defaultMessage": "Type of the form, used to determine how the form is presented and behaves.",
+    "description": "Form type field help text",
+    "originalDefault": "Type of the form, used to determine how the form is presented and behaves."
   },
   "zu8ntq": {
     "defaultMessage": "An error occurred during schema generation",

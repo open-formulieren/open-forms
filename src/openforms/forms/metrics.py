@@ -27,6 +27,9 @@ def count_forms(options: metrics.CallbackOptions) -> Collection[metrics.Observat
         translation_enabled=Count(
             "id", filter=Q(_is_deleted=False, translation_enabled=True)
         ),
+        is_regular=Count(
+            "id", filter=Q(_is_deleted=False, type=FormTypeChoices.regular)
+        ),
         is_appointment=Count(
             "id", filter=Q(_is_deleted=False, type=FormTypeChoices.appointment)
         ),
@@ -67,8 +70,6 @@ def count_component_usage(
     """
     counter = Counter[tuple[UUID, str]]()  # [form uuid, component_type] key
     uuid_to_name_map: dict[UUID, str] = {}
-    # TODO
-    # See if we want to exclude the single page forms too (they do use 2 components but..)
     forms = (
         Form.objects.live()
         .exclude(type=FormTypeChoices.appointment)

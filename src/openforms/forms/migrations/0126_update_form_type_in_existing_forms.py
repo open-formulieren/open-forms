@@ -5,15 +5,18 @@ from django.db.migrations.state import StateApps
 
 from ..constants import FormTypeChoices
 
+# TODO
+# squash the migrations when it's safe
+
 
 def update_existing_form_types(apps: StateApps, _):
     """
     Data migration for form type.
 
-    The forms used to be divided to the regular and the appointment ones. Now, a new type
-    (single_page_form) is required so we have a new field (type) in the Form which is
-    used to define the form type. This function makes sure the existing forms in the db
-    have the new field populated in the correct way.
+    The forms used to be divided between the regular and the appointment types. Now, a
+    new type called single_page_form, is introduced through the new "type" field on the
+    Form. This function makes sure the existing forms in the db have the new field
+    populated in the correct way.
     """
     Form = apps.get_model("forms", "Form")
 
