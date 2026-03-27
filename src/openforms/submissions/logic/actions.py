@@ -300,15 +300,7 @@ class StepNotApplicableAction(ActionOperation):
 
     @property
     def steps(self) -> set[FormStep]:
-        steps = self._get_steps(self.rule.unresolved_input_variables_from_trigger)
-
-        # If we couldn't resolve steps (likely because the input variables are user
-        # defined) we need to execute it on all steps.
-        if not steps:
-            return set(self.rule.form.formstep_set.all())
-
-        first_step = min(steps, key=lambda step: step.order)
-        return set(self.rule.form.formstep_set.filter(order__gte=first_step.order))
+        return set(self.rule.form.formstep_set.all())
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -364,15 +356,7 @@ class StepApplicableAction(ActionOperation):
 
     @property
     def steps(self) -> set[FormStep]:
-        steps = self._get_steps(self.rule.unresolved_input_variables_from_trigger)
-
-        # If we couldn't resolve steps (likely because the input variables are user
-        # defined) we need to execute it on all steps.
-        if not steps:
-            return set(self.rule.form.formstep_set.all())
-
-        first_step = min(steps, key=lambda step: step.order)
-        return set(self.rule.form.formstep_set.filter(order__gte=first_step.order))
+        return set(self.rule.form.formstep_set.all())
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:

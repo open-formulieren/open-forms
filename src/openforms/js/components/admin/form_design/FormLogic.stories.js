@@ -400,9 +400,7 @@ export const WithLogicRuleAnalysis = {
     expect(
       await canvas.findByText('Deze regel wordt uitgevoerd in stap(pen): Step 1')
     ).toBeVisible();
-    expect(
-      await canvas.findByText('Deze regel wordt uitgevoerd in stap(pen): Step 1, Step 2')
-    ).toBeVisible();
+    expect(await canvas.findByText('This rule will be executed on all steps.')).toBeVisible();
     expect(canvas.getByDisplayValue('New logic rule')).toBeVisible();
   },
 };

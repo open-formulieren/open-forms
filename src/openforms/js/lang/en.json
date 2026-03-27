@@ -2599,6 +2599,11 @@
     "description": "App version column header",
     "originalDefault": "App version"
   },
+  "gs234P": {
+    "defaultMessage": "This rule will be executed on all steps.",
+    "description": "Execute on all steps label",
+    "originalDefault": "This rule will be executed on all steps."
+  },
   "gz32s2": {
     "defaultMessage": "If desired, you can specify a different process variable name.",
     "description": "Manage process vars alias help text",

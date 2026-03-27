@@ -5601,6 +5601,12 @@
       "value": "App version"
     }
   ],
+  "gs234P": [
+    {
+      "type": 0,
+      "value": "This rule will be executed on all steps."
+    }
+  ],
   "guySt0": [
     {
       "type": 0,
