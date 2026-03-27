@@ -382,28 +382,67 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
 
     def test_only_changed_data_is_returned_after_submitting_step(self):
         submission = SubmissionFactory.from_components(
-            [{"key": "textfield", "type": "textfield", "label": "Textfield"}]
+            [
+                {"key": "textfield", "type": "textfield", "label": "Textfield"},
+                {
+                    "key": "betterTextfield",
+                    "type": "textfield",
+                    "label": "Better textfield",
+                },
+            ]
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "textfield"}, "foo"]},
+            actions=[
+                {
+                    "variable": "betterTextfield",
+                    "action": {
+                        "name": "Set value",
+                        "type": "variable",
+                        "value": "bar",
+                    },
+                }
+            ],
         )
 
-        endpoint = reverse(
+        step_uuid = submission.form.formstep_set.get().uuid
+        check_logic_endpoint = reverse(
             "api:submission-steps-logic-check",
             kwargs={
                 "submission_uuid": submission.uuid,
-                "step_uuid": submission.form.formstep_set.first().uuid,
+                "step_uuid": step_uuid,
+            },
+        )
+        step_detail_endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step_uuid,
             },
         )
         self._add_submission_to_session(submission)
 
-        response = self.client.post(endpoint, data={"data": {"textfield": "foo"}})
+        response = self.client.post(
+            check_logic_endpoint,
+            data={"data": {"textfield": "foo", "betterTextfield": ""}},
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["step"]["data"], {})
+        # Only returns a data diff of the changed values
+        self.assertEqual(response.json()["step"]["data"], {"betterTextfield": "bar"})
 
-        # Simulate submitting the step (this creates the submission value variables)
-        submission_step = submission.submissionstep_set.first()
-        submission_step.data = {"textfield": "foo"}
+        # Submit the step (this creates the submission value variables)
+        response = self.client.put(
+            step_detail_endpoint,
+            data={"data": {"textfield": "foo", "betterTextfield": "bar"}},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Ensure returned data is still empty after moving back to the submitted step
-        response = self.client.post(endpoint, data={"data": {"textfield": "bar"}})
+        # Move back to the first step and make some changes
+        response = self.client.post(
+            check_logic_endpoint,
+            data={"data": {"textfield": "bar", "betterTextfield": "bar"}},
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # No changes during logic evaluation, so the returned data should be empty
         self.assertEqual(response.json()["step"]["data"], {})
@@ -663,7 +702,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         submission = SubmissionFactory.create(form=form)
         # We assume the user has already gone through both of the steps, entered some
         # data, and returned to the first step
-        submission_step_1 = SubmissionStepFactory.create(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=step_1,
             data={"checkbox": True, "textfieldStep1": "some data"},
@@ -725,8 +764,22 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 response.json()["step"]["data"], {"textfieldStep1": "some data"}
             )
 
-        # Simulate navigating to the next step
-        submission_step_1.data = {"checkbox": False, "textfieldStep1": ""}
+        # There will be another logic call because the textfield is now hidden, so it
+        # won't be included in the data
+        with self.subTest("2nd logic in step 1"):
+            response = self.client.post(endpoint, data={"data": {"checkbox": False}})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.json()["step"]["data"], {})
+
+        with self.subTest("submit the step"):
+            endpoint = reverse(
+                "api:submission-steps-detail",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": step_1.uuid,
+                },
+            )
+            self.client.put(endpoint, data={"data": {"checkbox": False}})
 
         with self.subTest("logic in step 2"):
             endpoint = reverse(

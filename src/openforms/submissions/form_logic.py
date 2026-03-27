@@ -17,7 +17,6 @@ from openforms.formio.typing import FormioConfiguration
 
 from .logic.actions import ActionOperation
 from .logic.rules import get_rules_to_evaluate, iter_evaluate_rules
-from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:
     from .models import Submission, SubmissionStep
@@ -199,7 +198,7 @@ def evaluate_form_logic(
     for key, variable in relevant_variables.items():
         if not variable.form_variable or initial_data[key] != data_for_evaluation[key]:
             updated_step_data[key] = data_for_evaluation[key]
-    step.data = DirtyData(updated_step_data)
+    step.unsaved_data = updated_step_data
 
     step._form_logic_evaluated = True
 

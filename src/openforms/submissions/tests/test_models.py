@@ -102,16 +102,18 @@ class SubmissionTests(TestCase):
             submission.remove_sensitive_data()
 
         submission.refresh_from_db()
-        submission_step.refresh_from_db()
-        submission_step_2.refresh_from_db()
+        state = submission.load_submission_value_variables_state()
 
-        self.assertNotIn("textFieldSensitive", submission_step.data)
-        self.assertEqual(
-            submission_step.data["textFieldNotSensitive"], "this is not sensitive"
+        step_data = state.get_data(
+            submission_step=submission_step, include_unsaved=True
         )
-        self.assertNotIn("textFieldSensitive2", submission_step_2.data)
+        self.assertEqual({"textFieldNotSensitive": "this is not sensitive"}, step_data)
+
+        step_data_2 = state.get_data(
+            submission_step=submission_step_2, include_unsaved=True
+        )
         self.assertEqual(
-            submission_step_2.data["textFieldNotSensitive2"], "this is not sensitive"
+            {"textFieldNotSensitive2": "this is not sensitive"}, step_data_2
         )
         self.assertTrue(submission._is_cleaned)
         self.assertEqual(submission.auth_info.value, "")

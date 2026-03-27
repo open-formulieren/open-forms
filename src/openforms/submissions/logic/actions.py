@@ -30,7 +30,6 @@ from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.service import resolve_key
 
 from ..models import Submission, SubmissionStep
-from ..models.submission_step import DirtyData
 from .log_utils import log_errors
 from .service_fetching import perform_service_fetch
 
@@ -328,10 +327,10 @@ class StepNotApplicableAction(ActionOperation):
 
         # This clears data in the database to make sure that saved steps which later become
         # not-applicable don't have old data
-        submission_step_to_modify.data = FormioData()
+        submission_step_to_modify.reset()
         if submission_step_to_modify == step:
             step.is_applicable = False
-            step.data = DirtyData(FormioData())
+            assert step.unsaved_data is None
 
 
 @dataclass

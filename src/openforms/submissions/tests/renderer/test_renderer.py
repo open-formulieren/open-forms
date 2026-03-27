@@ -102,8 +102,7 @@ class FormNodeTests(TestCase):
             ],
         )
         # set up data that marks step as not-applicable
-        self.sstep1.data = FormioData({"input1": "disabled-step-2"})
-        self.sstep1.save()
+        self.sstep1._data = FormioData({"input1": "disabled-step-2"})
 
         renderer = Renderer(
             submission=self.submission, mode=RenderModes.pdf, as_html=True

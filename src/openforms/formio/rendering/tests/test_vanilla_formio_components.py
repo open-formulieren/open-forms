@@ -201,6 +201,10 @@ class FormNodeTests(TestCase):
         cls.submission = submission
         cls.step = step
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        cls.step_data = state.get_data(submission_step=step)
+
     def test_fieldsets_hidden_if_all_children_hidden(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
@@ -208,7 +212,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "fieldset"
 
         component_node = ComponentNode.build_node(
-            step_data=self.step.data, component=component, renderer=renderer
+            step_data=self.step_data, component=component, renderer=renderer
         )
 
         self.assertFalse(component_node.is_visible)
@@ -221,7 +225,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "fieldset"
 
         component_node = ComponentNode.build_node(
-            step_data=self.step.data, component=component, renderer=renderer
+            step_data=self.step_data, component=component, renderer=renderer
         )
 
         self.assertTrue(component_node.is_visible)
@@ -237,7 +241,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "fieldset"
 
         component_node = ComponentNode.build_node(
-            step_data=self.step.data, component=component, renderer=renderer
+            step_data=self.step_data, component=component, renderer=renderer
         )
 
         self.assertFalse(component_node.is_visible)
@@ -255,7 +259,7 @@ class FormNodeTests(TestCase):
         }
 
         component_node = ComponentNode.build_node(
-            step_data=self.step.data, component=component, renderer=renderer
+            step_data=self.step_data, component=component, renderer=renderer
         )
 
         self.assertEqual(component_node.label, "")
@@ -267,7 +271,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "columns"
 
         component_node = ComponentNode.build_node(
-            step_data=self.step.data, component=component, renderer=renderer
+            step_data=self.step_data, component=component, renderer=renderer
         )
 
         self.assertFalse(component_node.is_visible)
@@ -280,7 +284,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "columns"
 
         component_node = ComponentNode.build_node(
-            step_data=self.step.data, component=component, renderer=renderer
+            step_data=self.step_data, component=component, renderer=renderer
         )
 
         self.assertTrue(component_node.is_visible)
@@ -296,7 +300,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "columns"
 
         component_node = ComponentNode.build_node(
-            step_data=self.step.data, component=component, renderer=renderer
+            step_data=self.step_data, component=component, renderer=renderer
         )
 
         self.assertFalse(component_node.is_visible)
@@ -311,7 +315,7 @@ class FormNodeTests(TestCase):
                 renderer = Renderer(self.submission, mode=render_mode, as_html=False)
 
                 component_node = ComponentNode.build_node(
-                    step_data=self.step.data, component=component, renderer=renderer
+                    step_data=self.step_data, component=component, renderer=renderer
                 )
 
                 self.assertEqual(component_node.label, "")
@@ -339,6 +343,11 @@ class FormNodeTests(TestCase):
             submission=submission,
             form_step=submission.form.formstep_set.get(form__name="public name"),
         )
+
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         expected_visibility = {
             RenderModes.confirmation_email: False,
             RenderModes.pdf: True,
@@ -350,7 +359,7 @@ class FormNodeTests(TestCase):
             with self.subTest(render_mode=render_mode):
                 renderer = Renderer(submission, mode=render_mode, as_html=False)
                 component_node = ComponentNode.build_node(
-                    step_data=step.data, component=component, renderer=renderer
+                    step_data=step_data, component=component, renderer=renderer
                 )
 
                 self.assertEqual(component_node.is_visible, is_visible)
@@ -358,7 +367,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.pdf, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=step.data, component=component, renderer=renderer
+                step_data=step_data, component=component, renderer=renderer
             )
 
             self.assertEqual(
@@ -368,7 +377,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=False):
             renderer = Renderer(submission, mode=RenderModes.pdf, as_html=False)
             component_node = ComponentNode.build_node(
-                step_data=step.data, component=component, renderer=renderer
+                step_data=step_data, component=component, renderer=renderer
             )
 
             self.assertEqual(component_node.value, "WYSIWYG with markup")
@@ -395,6 +404,11 @@ class FormNodeTests(TestCase):
             submission=submission,
             form_step=submission.form.formstep_set.get(form__name="public name"),
         )
+
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         expected_visibility = {
             RenderModes.confirmation_email: False,
             RenderModes.pdf: True,
@@ -406,7 +420,7 @@ class FormNodeTests(TestCase):
             with self.subTest(render_mode=render_mode):
                 renderer = Renderer(submission, mode=render_mode, as_html=False)
                 component_node = ComponentNode.build_node(
-                    step_data=step.data, component=component, renderer=renderer
+                    step_data=step_data, component=component, renderer=renderer
                 )
 
                 self.assertEqual(component_node.is_visible, is_visible)
@@ -414,7 +428,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.pdf, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=step.data, component=component, renderer=renderer
+                step_data=step_data, component=component, renderer=renderer
             )
 
             self.assertEqual(
@@ -424,7 +438,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=False):
             renderer = Renderer(submission, mode=RenderModes.pdf, as_html=False)
             component_node = ComponentNode.build_node(
-                step_data=step.data, component=component, renderer=renderer
+                step_data=step_data, component=component, renderer=renderer
             )
 
             self.assertEqual(component_node.value, "WYSIWYG with markup")
@@ -476,10 +490,14 @@ class FormNodeTests(TestCase):
             _component_data_path="file",
         )
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=step.data,
+                step_data=step_data,
                 component=component,
                 configuration_path="components.0",
                 renderer=renderer,
@@ -498,7 +516,7 @@ class FormNodeTests(TestCase):
                 submission, mode=RenderModes.registration, as_html=False
             )
             component_node = ComponentNode.build_node(
-                step_data=step.data,
+                step_data=step_data,
                 component=component,
                 configuration_path="components.0",
                 renderer=renderer,
@@ -645,10 +663,14 @@ class FormNodeTests(TestCase):
             submission.submissionvaluevariable_set.filter(key="nested.file").exists()
         )
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             repeating_group_node = ComponentNode.build_node(
-                step_data=step.data,
+                step_data=step_data,
                 component=components[0],
                 renderer=renderer,
                 configuration_path="components.0",
@@ -687,7 +709,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             nested_file_node = ComponentNode.build_node(
-                step_data=step.data,
+                step_data=step_data,
                 component=components[1],
                 renderer=renderer,
                 configuration_path="components.1",
@@ -799,10 +821,14 @@ class FormNodeTests(TestCase):
             _component_data_path="attachment",
         )
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             repeating_group_node = ComponentNode.build_node(
-                step_data=step.data,
+                step_data=step_data,
                 component=components[0],
                 configuration_path="components.0",
                 renderer=renderer,
@@ -827,7 +853,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             outside_file_node = ComponentNode.build_node(
-                step_data=step.data,
+                step_data=step_data,
                 component=components[1],
                 configuration_path="components.1",
                 renderer=renderer,
@@ -946,6 +972,10 @@ class FormNodeTests(TestCase):
             _component_data_path="repeatingGroup.0.fileInRepeatingGroup2",
         )
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         self.assertEqual(1, submission.submissionvaluevariable_set.count())
         self.assertTrue(
             submission.submissionvaluevariable_set.filter(key="repeatingGroup").exists()
@@ -953,7 +983,7 @@ class FormNodeTests(TestCase):
 
         renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
         repeating_group_node = ComponentNode.build_node(
-            step_data=step.data,
+            step_data=step_data,
             component=components[0],
             configuration_path="components.0",
             renderer=renderer,
@@ -1001,9 +1031,14 @@ class FormNodeTests(TestCase):
             form_step=submission.form.formstep_set.get(),
             data={},
         )
+
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
         component_node = ComponentNode.build_node(
-            step_data=step.data, component=component, renderer=renderer
+            step_data=step_data, component=component, renderer=renderer
         )
         link = component_node.render()
         self.assertEqual(link, "My File: ")
@@ -1038,10 +1073,14 @@ class FormNodeTests(TestCase):
             },
         )
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=step.data, component=component, renderer=renderer
+                step_data=step_data, component=component, renderer=renderer
             )
             nodelist = list(component_node)
 
@@ -1085,10 +1124,14 @@ class FormNodeTests(TestCase):
             },
         )
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=step.data, component=component, renderer=renderer
+                step_data=step_data, component=component, renderer=renderer
             )
             nodelist = list(component_node)
 
@@ -1164,10 +1207,14 @@ class FormNodeTests(TestCase):
             },
         )
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=step.data, component=component, renderer=renderer
+                step_data=step_data, component=component, renderer=renderer
             )
             nodelist = list(component_node)
 

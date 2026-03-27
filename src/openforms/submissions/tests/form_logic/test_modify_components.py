@@ -167,7 +167,7 @@ class ComponentModificationTests(TestCase):
             ]
         }
         self.assertEqual(configuration, expected)
-        self.assertEqual("", submission_step.data["component2"])
+        self.assertEqual("", submission_step.unsaved_data["component2"])
 
     def test_change_component_to_required(self):
         form = FormFactory.create()
@@ -597,7 +597,9 @@ class ComponentModificationTests(TestCase):
             ]
         }
         self.assertEqual(configuration, expected)
-        self.assertEqual({"step2_textfield1": "some value"}, submission_step_2.data)
+        self.assertEqual(
+            {"step2_textfield1": "some value"}, submission_step_2.unsaved_data
+        )
 
     def test_evaluate_logic_with_empty_data(self):
         """
@@ -855,9 +857,9 @@ class ComponentModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step)
 
-        self.assertEqual(
-            "Some data that must not be cleared!", submission_step.data["textField"]
-        )
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(submission_step=submission_step, include_unsaved=True)
+        self.assertEqual("Some data that must not be cleared!", data["textField"])
 
     @tag("gh-5520")
     @unittest.expectedFailure
@@ -1014,7 +1016,9 @@ class ComponentModificationTests(TestCase):
             FormioData({"radio": "a", "nested": {"component": "test"}}),
         )
 
-        self.assertEqual(submission_step.data["nested"]["component"], "")
+        state = submission.load_submission_value_variables_state()
+        data = state.get_data(submission_step=submission_step, include_unsaved=True)
+        self.assertEqual("", data["nested"]["component"])
 
     @tag("gh-2838")
     def test_hidden_select_component(self):
@@ -1049,7 +1053,7 @@ class ComponentModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step)
 
-        self.assertNotIn("selectboxes", submission_step.data)
+        self.assertEqual({}, submission_step.unsaved_data)
 
     @tag("gh-3744")
     def test_postcode_component_made_optional(self):

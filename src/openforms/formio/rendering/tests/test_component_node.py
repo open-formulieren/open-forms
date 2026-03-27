@@ -248,6 +248,10 @@ class ComponentNodeTests(TestCase):
         cls.submission = submission
         cls.step = submission.steps[0]
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        cls.step_data = state.get_data(submission_step=cls.step)
+
     def test_generic_node_builder(self):
         """
         Assert that ComponentNode.build_node produces node instances.
@@ -259,7 +263,7 @@ class ComponentNodeTests(TestCase):
         assert component["key"] == "input1"
 
         component_node = ComponentNode.build_node(
-            step_data=self.step.data, component=component, renderer=renderer
+            step_data=self.step_data, component=component, renderer=renderer
         )
 
         self.assertIsInstance(component_node, ComponentNode)
@@ -289,7 +293,7 @@ class ComponentNodeTests(TestCase):
 
         with patch("openforms.formio.rendering.registry.register", new=register):
             component_node = ComponentNode.build_node(
-                step_data=self.step.data, component=component, renderer=renderer
+                step_data=self.step_data, component=component, renderer=renderer
             )
 
         self.assertIsInstance(component_node, TextFieldNode)
@@ -306,7 +310,7 @@ class ComponentNodeTests(TestCase):
             assert component["hidden"]
 
             component_node = ComponentNode.build_node(
-                step_data=self.step.data, component=component, renderer=renderer
+                step_data=self.step_data, component=component, renderer=renderer
             )
 
             nodelist = list(component_node)
@@ -324,7 +328,7 @@ class ComponentNodeTests(TestCase):
 
             with patch("openforms.formio.rendering.registry.register", new=register):
                 component_node = ComponentNode.build_node(
-                    step_data=self.step.data, component=fieldset, renderer=renderer
+                    step_data=self.step_data, component=fieldset, renderer=renderer
                 )
 
                 nodelist = list(component_node)
@@ -346,7 +350,7 @@ class ComponentNodeTests(TestCase):
             assert component["hidden"]
 
             component_node = ComponentNode.build_node(
-                step_data=self.step.data, component=component, renderer=renderer
+                step_data=self.step_data, component=component, renderer=renderer
             )
 
             nodelist = list(component_node)
@@ -364,7 +368,7 @@ class ComponentNodeTests(TestCase):
 
             with patch("openforms.formio.rendering.registry.register", new=register):
                 component_node = ComponentNode.build_node(
-                    step_data=self.step.data, component=fieldset, renderer=renderer
+                    step_data=self.step_data, component=fieldset, renderer=renderer
                 )
 
                 nodelist = list(component_node)
@@ -414,7 +418,7 @@ class ComponentNodeTests(TestCase):
             "components"
         ]:
             component_node = ComponentNode.build_node(
-                step_data=self.step.data, component=component, renderer=renderer
+                step_data=self.step_data, component=component, renderer=renderer
             )
             nodelist += list(component_node)
 
@@ -455,7 +459,7 @@ class ComponentNodeTests(TestCase):
                 "components"
             ]:
                 component_node = ComponentNode.build_node(
-                    step_data=self.step.data, component=component, renderer=renderer
+                    step_data=self.step_data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 
@@ -488,7 +492,7 @@ class ComponentNodeTests(TestCase):
                 "components"
             ]:
                 component_node = ComponentNode.build_node(
-                    step_data=self.step.data, component=component, renderer=renderer
+                    step_data=self.step_data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 
@@ -523,7 +527,7 @@ class ComponentNodeTests(TestCase):
                 "components"
             ]:
                 component_node = ComponentNode.build_node(
-                    step_data=self.step.data, component=component, renderer=renderer
+                    step_data=self.step_data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 
@@ -716,12 +720,16 @@ class ComponentNodeTests(TestCase):
         step = submission.steps[0]
         register = Registry()
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         nodelist = []
         with patch("openforms.formio.rendering.registry.register", new=register):
             renderer = Renderer(submission, mode=RenderModes.pdf, as_html=True)
             for component in step.form_step.form_definition.configuration["components"]:
                 component_node = ComponentNode.build_node(
-                    step_data=step.data, component=component, renderer=renderer
+                    step_data=step_data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 
@@ -937,12 +945,16 @@ class ComponentNodeTests(TestCase):
         step = submission.steps[0]
         register = Registry()
 
+        # Get submission data from the state
+        state = submission.load_submission_value_variables_state()
+        step_data = state.get_data(submission_step=step)
+
         nodelist = []
         with patch("openforms.formio.rendering.registry.register", new=register):
             renderer = Renderer(submission, mode=RenderModes.summary, as_html=False)
             for component in step.form_step.form_definition.configuration["components"]:
                 component_node = ComponentNode.build_node(
-                    step_data=step.data, component=component, renderer=renderer
+                    step_data=step_data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 

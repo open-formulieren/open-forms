@@ -1,5 +1,4 @@
 import uuid
-import warnings
 from copy import deepcopy
 
 from django.core import serializers
@@ -183,7 +182,7 @@ class SubmissionStep(models.Model):  # noqa: DJ008
         # TODO: should check that all the data for the form definition is present?
         # and validates?
         # For now - if it's been saved, we assume that was because it was completed
-        return bool(self.pk and self.data is not None)
+        return bool(self.pk)
 
     @property
     def can_submit(self) -> bool:
@@ -204,40 +203,28 @@ class SubmissionStep(models.Model):  # noqa: DJ008
         self._is_applicable = value
 
     def reset(self):
-        self.data = FormioData()
-        self.save()
+        self._data = FormioData()
 
     @property
     def unsaved_data(self) -> FormioData | None:
         return self._unsaved_data
 
-    @property
-    def data(self) -> FormioData:
-        warnings.warn(
-            "Using `SubmissionStep.data` to access submission data is deprecated. "
-            "Please use `SubmissionValueVariablesState.get_data(...)` with the "
-            "relevant flags instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
+    @unsaved_data.setter
+    def unsaved_data(self, value: FormioData) -> None:
+        self._unsaved_data = value
 
+    @property
+    def _data(self) -> FormioData:
         values_state = self.submission.load_submission_value_variables_state()
         step_data = values_state.get_data(submission_step=self)
         if self._unsaved_data:
             step_data.update(self._unsaved_data)
         return step_data
 
-    @data.setter
-    def data(self, data: FormioData | None) -> None:
-        if isinstance(data, DirtyData):
-            self._unsaved_data = data
-        else:
-            from .submission_value_variable import SubmissionValueVariable
+    @_data.setter
+    def _data(self, data: FormioData) -> None:
+        from .submission_value_variable import SubmissionValueVariable
 
-            SubmissionValueVariable.objects.bulk_create_or_update_from_data(
-                data, self.submission, self, reset_missing_variables=True
-            )
-
-
-class DirtyData(FormioData):
-    pass
+        SubmissionValueVariable.objects.bulk_create_or_update_from_data(
+            data, self.submission, self, reset_missing_variables=True
+        )
