@@ -66,6 +66,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
 
         self.addCleanup(GlobalConfiguration.clear_cache)
 
+    @override_settings(ENVIRONMENT_LABEL="")
     def test_that_repeated_failures_are_not_mentioned_multiple_times(self):
         submission = SubmissionFactory.create()
         audit_log = audit_logger.bind(
@@ -99,6 +100,28 @@ class EmailDigestTaskIntegrationTests(TestCase):
             sent_email.recipients(), ["tralala@test.nl", "trblblb@test.nl"]
         )
         self.assertEqual(submission_occurencies, 1)
+
+    @override_settings(ENVIRONMENT_LABEL="test-env")
+    def test_subject_includes_environment_label(self):
+        submission = SubmissionFactory.create()
+
+        with freeze_time("2023-01-02T12:30:00+01:00"):
+            audit_logger.info(
+                "email_status_change",
+                submission_uuid=str(submission.uuid),
+                email_event="registration",
+                new_status=Message.STATUS_FAILED,
+                status_label="Failed",
+            )
+
+        with freeze_time("2023-01-03T01:00:00+01:00"):
+            send_email_digest()
+
+        sent_email = mail.outbox[0]
+        self.assertEqual(
+            sent_email.subject,
+            "[Open Forms] Daily summary of detected problems from: test-env",
+        )
 
     def test_no_email_sent_if_no_logs(self):
         send_email_digest()
