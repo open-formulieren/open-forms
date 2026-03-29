@@ -77,8 +77,16 @@ def send_email_digest() -> None:
     if not content:
         return
 
+    environment = settings.ENVIRONMENT_LABEL
+    if environment:
+        subject = _(
+            "[Open Forms] Daily summary of detected problems from: %(environment)s"
+        ) % {"environment": environment}
+    else:
+        subject = _("[Open Forms] Daily summary of detected problems")
+
     send_mail_html(
-        _("[Open Forms] Daily summary of detected problems"),
+        subject,
         content,
         settings.DEFAULT_FROM_EMAIL,
         recipients,
