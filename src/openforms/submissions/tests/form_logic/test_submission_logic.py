@@ -5,7 +5,6 @@ from django.db import connection
 from django.test import override_settings, tag
 
 from freezegun import freeze_time
-from hypothesis.extra.django import TestCase as HypothesisTestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -1793,7 +1792,7 @@ def is_jsonb_invariant(value: JSONValue) -> bool:
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestCase):
+class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
