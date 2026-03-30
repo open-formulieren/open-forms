@@ -91,11 +91,21 @@ class FormLogicListSerializer(ListWithChildSerializer):
         if not self.context["form"].new_logic_evaluation_enabled:
             return rules
 
-        # Set many-to-many relationship from logic rules to form steps
-        for rule, step_list in zip(
-            rules, self.context["steps_for_each_rule"], strict=True
-        ):
-            rule.form_steps.set(step_list)
+        # the (auto-created) through model
+        FormLogicFormSteps = FormLogic._meta.get_field(
+            "form_steps"
+        ).remote_field.through
+
+        # drop the old relations and create the expected ones.
+        expected_relations = [
+            FormLogicFormSteps(formlogic=rule, formstep=step)
+            for rule, steps in zip(
+                rules, self.context["steps_for_each_rule"], strict=True
+            )
+            for step in steps
+        ]
+        FormLogicFormSteps.objects.filter(formlogic__form=self.context["form"]).delete()
+        FormLogicFormSteps.objects.bulk_create(expected_relations)
 
         return rules
 
