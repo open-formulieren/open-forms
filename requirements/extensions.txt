@@ -122,7 +122,7 @@ click-repl==0.3.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-cryptography==46.0.5
+cryptography==46.0.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

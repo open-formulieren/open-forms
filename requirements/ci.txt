@@ -129,7 +129,7 @@ click-repl==0.3.0
     #   celery
 coverage==7.13.4
     # via -r requirements/test-tools.in
-cryptography==46.0.5
+cryptography==46.0.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
