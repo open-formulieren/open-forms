@@ -14,6 +14,16 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.3.15 (2026-03-30)
+===================
+
+Bugfix release.
+
+* [:backend:`5938`] Fixed incorrect DigiD error message being shown when the user
+  cancels a DigiD login via the "DigiD via OIDC" plugin.
+* [:backend:`6105`] Fixed failing tests due to expiring test certificates.
+* Pinned trivy-action to known good commit following the supply chain attacks.
+
 3.3.14 (2026-03-16)
 ===================
 
