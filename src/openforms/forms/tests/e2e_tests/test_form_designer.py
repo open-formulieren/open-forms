@@ -695,14 +695,18 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
             # first translation tab (NL) is the default
             await page.get_by_role("link", name="NL", exact=True).click()
-            wysiwyg_nl = page.get_by_label("Editor editing area: main")
+            wysiwyg_nl = page.get_by_label(
+                "Rich Text Editor. Editing area: main. Press Alt+0 for help."
+            )
             await expect(wysiwyg_nl).to_be_editable()
 
             await wysiwyg_nl.click()
             await wysiwyg_nl.fill("This is the default/NL translation.")
 
             await page.get_by_role("link", name="EN", exact=True).click()
-            wysiwyg_en = page.get_by_label("Editor editing area: main")
+            wysiwyg_en = page.get_by_label(
+                "Rich Text Editor. Editing area: main. Press Alt+0 for help."
+            )
             await expect(wysiwyg_en).to_be_editable()
             await wysiwyg_en.click()
             await wysiwyg_en.fill("This is the English translation.")
@@ -715,13 +719,17 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             )
 
             await page.get_by_role("link", name="NL", exact=True).click()
-            wysiwyg_nl_2 = page.get_by_label("Editor editing area: main")
+            wysiwyg_nl_2 = page.get_by_label(
+                "Rich Text Editor. Editing area: main. Press Alt+0 for help."
+            )
             await expect(wysiwyg_nl_2).to_contain_text(
                 "This is the default/NL translation."
             )
 
             await page.get_by_role("link", name="EN", exact=True).click()
-            wysiwyg_en_2 = page.get_by_label("Editor editing area: main")
+            wysiwyg_en_2 = page.get_by_label(
+                "Rich Text Editor. Editing area: main. Press Alt+0 for help."
+            )
             await expect(wysiwyg_en_2).to_contain_text(
                 "This is the English translation."
             )
