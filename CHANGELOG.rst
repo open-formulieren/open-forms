@@ -40,6 +40,26 @@ their settings mechanism and now allows for distinct enforced/report-only config
 
 We'll work on bridging this gap, possibly through an upgrade to Django 6.0.
 
+3.4.7 (2026-03-30)
+==================
+
+Bugfix release.
+
+* [:backend:`5938`] Fixed incorrect DigiD error message being shown when the user
+  cancels a DigiD login via the "DigiD via OIDC" plugin.
+* [:backend:`6105`] Fixed failing tests due to expiring test certificates.
+* Pinned trivy-action to known good commit following the supply chain attacks.
+
+3.3.15 (2026-03-30)
+===================
+
+Bugfix release.
+
+* [:backend:`5938`] Fixed incorrect DigiD error message being shown when the user
+  cancels a DigiD login via the "DigiD via OIDC" plugin.
+* [:backend:`6105`] Fixed failing tests due to expiring test certificates.
+* Pinned trivy-action to known good commit following the supply chain attacks.
+
 3.5.0-alpha.2 (2026-03-13)
 ==========================
 
