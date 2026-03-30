@@ -586,6 +586,8 @@ class FormViewSet(viewsets.ModelViewSet):
         # So we can delete any existing rule because they will be replaced.
         logic_rules.delete()
 
+        prefetch_related_objects([form], "formvariable_set")
+
         serializer = FormLogicSerializer(
             data=request.data,
             many=True,
@@ -606,7 +608,7 @@ class FormViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        prefetch_related_objects(serializer.instance, "form_steps")
+        prefetch_related_objects(serializer.instance, "form_steps", "form_steps__form")
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
