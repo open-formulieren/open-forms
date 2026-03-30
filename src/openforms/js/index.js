@@ -1,5 +1,4 @@
-// via @open-formulieren/formio-builder
-import ClassicEditor from '@open-formulieren/ckeditor5-build-classic';
+import ClassicEditor from '@open-formulieren/formio-builder/esm/components/CKEditor';
 import cssHasPseudo from 'css-has-pseudo/browser';
 import {Formio} from 'react-formio';
 
