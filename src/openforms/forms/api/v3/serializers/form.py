@@ -35,7 +35,7 @@ from ....models import (
     FormStep,
     FormVariable,
 )
-from ..typing import FormStepData, FormValidatedData
+from ..typing import FormStepData, FormValidatedData, NewFormValidatedData
 from .form_step import FormStepSerializer
 from .payment import FormPaymentSerializer
 
@@ -61,7 +61,7 @@ class FormSerializer(serializers.ModelSerializer):
         slug_field="uuid",
     )
 
-    steps = FormStepSerializer(many=True, source="formstep_set")
+    steps = FormStepSerializer(many=True, required=True, source="formstep_set")
 
     payment = FormPaymentSerializer(required=False, source="*")
 
@@ -142,7 +142,7 @@ class FormSerializer(serializers.ModelSerializer):
         }
 
     @transaction.atomic()
-    def create(self, validated_data: FormValidatedData) -> Form:
+    def create(self, validated_data: NewFormValidatedData) -> Form:
         instance = super().create(
             {k: v for k, v in validated_data.items() if k not in self._nested_fields}
         )
@@ -307,12 +307,13 @@ class FormSerializer(serializers.ModelSerializer):
 
         return value
 
-    def validate(self, attrs):
+    def validate(self, attrs: FormValidatedData | NewFormValidatedData):
+        # validate is called multiple times because of the nested serializer fields.
+        # For example ModelTranslationsSerializer is calling it 2 times (current amount
+        # of languages) but at this point the attrs contain only the related data (child).
+        # Fixing/updating ModelTranslationsSerializer can be tricky (it's used a lot in
+        # the project), so that's why we do the check here.
         steps = attrs.get("formstep_set")
-
-        # validate is called multiple times because of the nested serializer fileds and
-        # this means that steps will not exist at every call
-
         if steps is None:
             return attrs
 
