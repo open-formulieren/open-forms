@@ -1297,6 +1297,7 @@ class FormLogicAPITests(APITestCase):
         self.client.force_authenticate(user=user)
         form = FormFactory.create(
             generate_minimal_setup=True,
+            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {"type": "textfield", "key": "variable1"},
@@ -1335,16 +1336,18 @@ class FormLogicAPITests(APITestCase):
             },
         ]
 
-        # 1. transaction SAVEPOINT
+        # 1. Transaction SAVEPOINT
         # 2. Fetch the form (from UUID param in endpoint)
         # 3. Delete all the existing logic rules (to be replaced)
-        # 4. Look up all the form steps for the form (once)
-        # 5. Look up all the form variables for the form (once)
+        # 4. Look up all the form variables for the form (prefetched in `FormViewSet.logic_rules_bulk_update`)
+        # 5. Look up all the form steps for the form (`form.form_step_map` in `FormViewSet.logic_rules_bulk_update`)
         # 6. Get max order within form (from ordered_model.models.OrderedModelQuerySet.bulk_create)
         # 7. Bulk insert logic rules
-        # 8. Prefetch form steps for all rules
-        # 9. transaction RELEASE SAVEPOINT
-        with self.assertNumQueries(9):
+        # 8. Delete existing `FormLogic.form_steps` relations (`FormLogicListSerializer.create`)
+        # 9. Bulk create new `FormLogic.form_steps` relations (`FormLogicListSerializer.create`)
+        # 10 and 11. Prefetch form steps and `FormStep.form` relation for all rules (`FormViewSet.logic_rules_bulk_update`)
+        # 12. Transaction RELEASE SAVEPOINT
+        with self.assertNumQueries(12):
             response = self.client.put(url, data=form_logic_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
