@@ -5,7 +5,6 @@ from django.db import connection
 from django.test import override_settings, tag
 
 from freezegun import freeze_time
-from hypothesis.extra.django import TestCase as HypothesisTestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -1362,6 +1361,265 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             self.assertTrue(textfield["hidden"])
             self.assertTrue(editgrid["hidden"])
 
+    @tag("gh-5962")
+    def test_clear_on_hide_behaviour_when_hiding_a_parent_uses_intermediate_cleared_values_for_other_rules(
+        self,
+    ):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            new_renderer_enabled=True,
+            new_logic_evaluation_enabled=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "id": "trigger",
+                        "key": "trigger",
+                        "label": "Trigger",
+                    },
+                    {
+                        "type": "fieldset",
+                        "id": "fieldsetBeingHidden",
+                        "key": "fieldsetBeingHidden",
+                        "label": "Hidden fieldset",
+                        "hidden": False,
+                        "hideHeader": False,
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "id": "textfield",
+                                "key": "textfield",
+                                "label": "Textfield",
+                                "hidden": False,
+                                "clearOnHide": True,
+                                "defaultValue": "default",
+                            },
+                        ],
+                    },
+                    # used as observer of the second logic rule effect.
+                    {
+                        "type": "checkbox",
+                        "id": "observer",
+                        "key": "observer",
+                        "label": "Observer",
+                        "defaultValue": False,
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+        rule1 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"var": "trigger"},
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "fieldsetBeingHidden",
+                },
+            ],
+        )
+        rule1.form_steps.set([form_step])
+        rule2 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "textfield"}, "default"]},
+            actions=[
+                {
+                    "action": {"type": "variable", "value": True},
+                    "variable": "observer",
+                },
+            ],
+        )
+        rule2.form_steps.set([form_step])
+        submission = SubmissionFactory.create(form=form)
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        # Assumes the initial state where:
+        # * checkbox is unchecked
+        # * user enters value in textfield
+        # * user checks checkbox
+        input_data = {
+            "trigger": True,
+            "textfield": "user input",
+            "observer": False,
+        }
+
+        response = self.client.post(endpoint, data={"data": input_data})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = response.json()
+        updated_configuration = response_data["step"]["configuration"]
+        fieldset = updated_configuration["components"][1]
+        self.assertTrue(fieldset["hidden"])
+        self.assertFalse(fieldset["components"][0]["hidden"])
+        data_updates = response_data["step"]["data"]
+        self.assertEqual(data_updates, {"textfield": "default", "observer": True})
+
+    @tag("gh-5962")
+    def test_clear_on_hide_behaviour_applied_during_evaluation(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            new_renderer_enabled=True,
+            new_logic_evaluation_enabled=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "id": "trigger",
+                        "key": "trigger",
+                        "label": "Trigger",
+                    },
+                    {
+                        "type": "textfield",
+                        "id": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "hidden": False,
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "number",
+                        "id": "number",
+                        "key": "number",
+                        "label": "Number",
+                        "hidden": True,
+                        "defaultValue": 67,
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+        rule1 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"var": "trigger"},
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "textfield",
+                },
+            ],
+        )
+        rule1.form_steps.set([form_step])
+        rule2 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!": [{"var": "textfield"}]},
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": False,
+                    },
+                    "component": "number",
+                },
+            ],
+        )
+        rule2.form_steps.set([form_step])
+        submission = SubmissionFactory.create(form=form)
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        input_data = {
+            "trigger": True,
+            "textfield": "clear-me",
+        }
+
+        response = self.client.post(endpoint, data={"data": input_data})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = response.json()
+        updated_configuration = response_data["step"]["configuration"]
+        textfield = updated_configuration["components"][1]
+        self.assertTrue(textfield["hidden"])
+        number = updated_configuration["components"][2]
+        self.assertFalse(number["hidden"])
+        data_updates = response_data["step"]["data"]
+        self.assertEqual(data_updates, {"textfield": ""})
+
+    @tag("gh-5962")
+    def test_clear_on_hide_behaviour_hiding_a_parent_does_not_update_nested_field_data(
+        self,
+    ):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            new_renderer_enabled=True,
+            new_logic_evaluation_enabled=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "id": "trigger",
+                        "key": "trigger",
+                        "label": "Trigger",
+                    },
+                    {
+                        "type": "fieldset",
+                        "id": "fieldsetBecomesHidden",
+                        "key": "fieldsetBecomesHidden",
+                        "label": "Hidden fieldset",
+                        "hidden": False,
+                        "hideHeader": False,
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "id": "textfield",
+                                "key": "textfield",
+                                "label": "Textfield",
+                            },
+                        ],
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+        rule1 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"var": "trigger"},
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "fieldsetBecomesHidden",
+                },
+            ],
+        )
+        rule1.form_steps.set([form_step])
+
+        submission = SubmissionFactory.create(form=form)
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
+        )
+        self._add_submission_to_session(submission)
+        # because the parent is hidden, the renderer removed the `textfield` from the
+        # input data due to its clearOnHide, leaving only the checkbox as input data
+        input_data = {"trigger": True}
+
+        response = self.client.post(endpoint, data={"data": input_data})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = response.json()
+        updated_configuration = response_data["step"]["configuration"]
+        fieldset = updated_configuration["components"][1]
+        self.assertTrue(fieldset["hidden"])
+        data_updates = response_data["step"]["data"]
+        self.assertEqual(data_updates, {})
+
 
 @tag("gh-6005")
 class MultipleRulesTargettingSameComponentVisibilityTests(
@@ -1793,7 +2051,7 @@ def is_jsonb_invariant(value: JSONValue) -> bool:
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestCase):
+class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
