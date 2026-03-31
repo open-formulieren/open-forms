@@ -681,6 +681,10 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
         """
         await create_superuser()
         admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
+        # on webkit in CI, the `ALT+0` doesn't render properly, causing matching issues
+        wysiwyg_editor_label = re.compile(
+            r"^Rich Text Editor\. Editing area: main\. Press .+ for help\."
+        )
 
         async with browser_page() as page:
             await self._admin_login(page)
@@ -695,18 +699,14 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
             # first translation tab (NL) is the default
             await page.get_by_role("link", name="NL", exact=True).click()
-            wysiwyg_nl = page.get_by_label(
-                "Rich Text Editor. Editing area: main. Press Alt+0 for help."
-            )
+            wysiwyg_nl = page.get_by_label(wysiwyg_editor_label)
             await expect(wysiwyg_nl).to_be_editable()
 
             await wysiwyg_nl.click()
             await wysiwyg_nl.fill("This is the default/NL translation.")
 
             await page.get_by_role("link", name="EN", exact=True).click()
-            wysiwyg_en = page.get_by_label(
-                "Rich Text Editor. Editing area: main. Press Alt+0 for help."
-            )
+            wysiwyg_en = page.get_by_label(wysiwyg_editor_label)
             await expect(wysiwyg_en).to_be_editable()
             await wysiwyg_en.click()
             await wysiwyg_en.fill("This is the English translation.")
@@ -719,17 +719,13 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             )
 
             await page.get_by_role("link", name="NL", exact=True).click()
-            wysiwyg_nl_2 = page.get_by_label(
-                "Rich Text Editor. Editing area: main. Press Alt+0 for help."
-            )
+            wysiwyg_nl_2 = page.get_by_label(wysiwyg_editor_label)
             await expect(wysiwyg_nl_2).to_contain_text(
                 "This is the default/NL translation."
             )
 
             await page.get_by_role("link", name="EN", exact=True).click()
-            wysiwyg_en_2 = page.get_by_label(
-                "Rich Text Editor. Editing area: main. Press Alt+0 for help."
-            )
+            wysiwyg_en_2 = page.get_by_label(wysiwyg_editor_label)
             await expect(wysiwyg_en_2).to_contain_text(
                 "This is the English translation."
             )
