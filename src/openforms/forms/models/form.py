@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import uuid as _uuid
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from contextlib import suppress
 from copy import deepcopy
 from functools import cached_property
 from itertools import chain
 from typing import TYPE_CHECKING, ClassVar, Literal
+from uuid import UUID
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -426,6 +427,7 @@ class Form(models.Model):
     get_confirm_text = literal_getter("confirm_text", "form_confirm_text")
 
     _component_to_step: dict[str, FormStep] | None = None
+    _form_step_map: dict[UUID, FormStep] | None = None
     _all_form_variable_keys: set[str] | None = None
 
     class Meta:
@@ -440,6 +442,14 @@ class Form(models.Model):
 
     def get_absolute_url(self):
         return reverse("forms:form-detail", kwargs={"slug": self.slug})
+
+    @property
+    def form_step_map(self) -> Mapping[UUID, FormStep]:
+        """Mapping from form step UUID to form step instance."""
+        if self._form_step_map is None:
+            self._create_form_step_caches()
+        assert self._form_step_map is not None
+        return self._form_step_map
 
     @property
     def is_available(self) -> bool:
@@ -760,10 +770,15 @@ class Form(models.Model):
         :param key: The component key.
         :returns: The corresponding ``FormStep``, or ``None`` if no step could be found.
         """
-        if self._component_to_step is not None:
-            return self._component_to_step.get(key, None)
+        if self._component_to_step is None:
+            self._create_form_step_caches()
 
-        self._component_to_step = {}
+        assert self._component_to_step is not None
+        return self._component_to_step.get(key, None)
+
+    def _create_form_step_caches(self):
+        self._component_to_step: dict[str, FormStep] = {}
+        self._form_step_map: dict[UUID, FormStep] = {}
         for form_step in self.formstep_set.select_related("form_definition"):
             component_list = [
                 component["key"]
@@ -774,8 +789,7 @@ class Form(models.Model):
             self._component_to_step.update(
                 zip(component_list, [form_step] * len(component_list), strict=True)
             )
-
-        return self._component_to_step.get(key, None)
+            self._form_step_map[form_step.uuid] = form_step
 
     @transaction.atomic
     def apply_logic_analysis(self) -> None:

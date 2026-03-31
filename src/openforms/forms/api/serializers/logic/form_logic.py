@@ -30,7 +30,8 @@ class FormLogicListSerializer(ListWithChildSerializer):
     )
 
     def validate(self, attrs):
-        if not self.context["form"].new_logic_evaluation_enabled:
+        form = self.context["form"]
+        if not form.new_logic_evaluation_enabled:
             return super().validate(attrs)
 
         # This will only run when the logic rules have passed individual serializer
@@ -44,12 +45,9 @@ class FormLogicListSerializer(ListWithChildSerializer):
             for i, rule_data in enumerate(attrs)
         }
 
-        # Form steps are added to the context dictionary in
-        # `FormViewSet.logic_rules_bulk_update`. It is a mapping from form step UUID to
-        # form step. We rely on it being ordered.
-        first_step: FormStep = next(iter(self.context["form_steps"].values()))
-        # Note that the order will remain 0, even if a form step was deleted.
-        assert first_step.order == 0
+        first_step: FormStep = min(
+            form.form_step_map.values(), key=lambda step: step.order
+        )
         try:
             updated_rules_and_steps = analyze_rules(
                 self.context["form"],
