@@ -507,7 +507,7 @@ pydantic-settings==2.13.1
     # via django-setup-configuration
 pydyf==0.12.1
     # via weasyprint
-pygments==2.19.2
+pygments==2.20.0
     # via rich
 pyjwt==2.12.1
     # via

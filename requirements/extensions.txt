@@ -840,7 +840,7 @@ pydyf==0.12.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   weasyprint
-pygments==2.19.2
+pygments==2.20.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
