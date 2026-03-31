@@ -128,7 +128,7 @@ class FormEndpointTests(APITestCase):
                 },
             },
             "appointmentOptions": {
-                "isAppointment": True,
+                "isAppointment": False,
             },
             "literals": {
                 "beginText": {"value": "Different Begin Text"},
@@ -258,7 +258,7 @@ class FormEndpointTests(APITestCase):
         self.assertTrue(form.login_required)
         self.assertTrue(form.translation_enabled)
 
-        self.assertTrue(form.is_appointment)
+        self.assertFalse(form.is_appointment)
         self.assertEqual(form.slug, "create-form")
 
         # product
@@ -726,7 +726,7 @@ class FormEndpointTests(APITestCase):
             "steps.0.formDefinition.configuration.components.0",
         )
 
-    def test_create_form_requires_one_step(self):
+    def test_create_regular_form_requires_one_step(self):
         url = reverse(
             "api:v3:form-detail",
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
@@ -734,7 +734,66 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Create form",
             "slug": "create-form",
+            "appointmentOptions": {
+                "isAppointment": False,
+            },
             "steps": [],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        assert "invalidParams" in response_data and response_data["invalidParams"]
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["invalidParams"][0]["code"], "invalid")
+        self.assertEqual(response_data["invalidParams"][0]["name"], "nonFieldErrors")
+        self.assertEqual(
+            response_data["invalidParams"][0]["reason"],
+            _("At least one form step is required in a regular form."),
+        )
+
+    def test_create_appointment_form_requires_zero_steps(self):
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "appointmentOptions": {
+                "isAppointment": True,
+            },
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": uuid4(),
+                        "isReusable": True,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                }
+            ],
         }
         response = self.client.put(url, data=data)
         response_data = response.json()
@@ -742,15 +801,11 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         assert "invalidParams" in response_data and response_data["invalidParams"]
         self.assertEqual(len(response_data["invalidParams"]), 1)
-        self.assertEqual(response_data["invalidParams"][0]["code"], "min_length")
-        self.assertEqual(
-            response_data["invalidParams"][0]["name"], "steps.nonFieldErrors"
-        )
+        self.assertEqual(response_data["invalidParams"][0]["code"], "invalid")
+        self.assertEqual(response_data["invalidParams"][0]["name"], "nonFieldErrors")
         self.assertEqual(
             response_data["invalidParams"][0]["reason"],
-            _("Ensure this field has at least {min_length} elements.").format(
-                min_length=1
-            ),
+            _("Form steps are not allowed in an appointment form."),
         )
 
     def test_incorrect_payment_backend_options(self):
