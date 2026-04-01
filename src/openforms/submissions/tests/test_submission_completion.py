@@ -1136,3 +1136,66 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
                 False,
             )
         )
+
+    def test_submission_completion_evaluates_all_logic_rules(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Visible text field",
+                        "validate": {"required": True},
+                    },
+                ]
+            },
+        )
+        # add a second step
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield2",
+                        "label": "Textfield 2",
+                        "validate": {"required": False},
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "component": "textfield",
+                    "formStepUuid": None,
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "validate.required", "type": "bool"},
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        form.apply_logic_analysis()
+
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form.formstep_set.all()[0],
+            data={"textfield": ""},
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step2,
+            data={"textfield2": ""},
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
