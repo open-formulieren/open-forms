@@ -244,6 +244,14 @@ Objects API       Test status
 2.2.x             Manually verified
 2.3.x             Manually verified
 2.4.x             Manually verified, automated end-to-end testing
+2.5.x             Should work
+3.0.x             Should work
+3.1.x             Should work
+3.2.x             Should work
+3.3.x             Should work
+3.4.x             Should work
+3.5.x             Should work
+3.6.x             Should work
 ================  ===============================================
 
 .. versionchanged:: 2.6.0
