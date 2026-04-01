@@ -59,6 +59,7 @@ __all__ = [
     "process_visibility",
     "get_component_empty_value",
     "get_readable_path_from_configuration_path",
+    "holds_submission_data",
 ]
 
 tracer = trace.get_tracer("openforms.formio.service")
