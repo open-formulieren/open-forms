@@ -1068,6 +1068,12 @@ class LicensePlate(BasePlugin):
 class CustomerProfile(BasePlugin):
     formatter = CustomerProfileFormatter
 
+    def build_serializer_field(
+        self, component: CustomerProfileComponent
+    ) -> serializers.JSONField:
+        required = component.get("validate", {}).get("required", False)
+        return serializers.JSONField(required=required, allow_null=True)
+
     @staticmethod
     def pre_registration_hook(
         component: CustomerProfileComponent, submission: Submission
