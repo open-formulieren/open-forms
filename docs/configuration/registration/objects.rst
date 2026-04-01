@@ -283,5 +283,5 @@ Documenten API    Test status
 
 
 .. _`Objects API`: https://objects-and-objecttypes-api.readthedocs.io/
-.. _`Objecttypes API`: https://objects-and-objecttypes-api.readthedocs.io/en/latest/#objecttypes-api
+.. _`Objecttypes API`: https://objects-and-objecttypes-api.readthedocs.io/en/latest/#objecttypes
 .. _`ProductAanvraag objecttype`: https://github.com/open-objecten/objecttypes/tree/main/community-concepts/productaanvraag/
