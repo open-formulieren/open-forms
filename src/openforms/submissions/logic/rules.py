@@ -1,5 +1,6 @@
 from collections.abc import Iterable, Iterator
 from copy import deepcopy
+from itertools import chain
 
 import elasticapm
 from json_logic import jsonLogic
@@ -33,18 +34,25 @@ def _include_rule(form_steps: list[FormStep], rule: FormLogic, step_index: int) 
 
 
 def get_rules_to_evaluate(
-    submission: Submission, current_step: SubmissionStep | None = None
+    submission: Submission,
+    current_step: SubmissionStep | None = None,
+    *,
+    evaluate_all_rules: bool = False,
 ) -> Iterable[FormLogic]:
     """
     Given a submission, return the logic rules ready for evaluation.
 
     :param submission: A submission instance to retrieve the rules for
     :param current_step: The (optional) step at which the rules need to be evaluated.
+    :param evaluate_all_rules: If ``True``, don't limit the returned rules to the
+      current submission step. Only relevant when the new logic evaluation is enabled.
     :returns: An iterable of :class`openforms.forms.models.FormLogic` instances. This
       may be a queryset, but could also be a list.
     """
     if submission.form.new_logic_evaluation_enabled:
-        return get_rules_to_evaluate_new(submission, current_step)
+        return get_rules_to_evaluate_new(
+            submission, current_step, evaluate_all_rules=evaluate_all_rules
+        )
     else:
         return get_rules_to_evaluate_old(submission, current_step)
 
@@ -98,7 +106,10 @@ def get_rules_to_evaluate_old(
 
 
 def get_rules_to_evaluate_new(
-    submission: Submission, current_step: SubmissionStep | None = None
+    submission: Submission,
+    current_step: SubmissionStep | None = None,
+    *,
+    evaluate_all_rules: bool = False,
 ) -> Iterable[FormLogic]:
     """
     Given a submission, return the logic rules ready for evaluation.
@@ -109,14 +120,23 @@ def get_rules_to_evaluate_new(
     :param current_step: The (optional) step at which the rules need to be evaluated. If
       not provided, the step following the last completed step is used, or the first
       step in the form if there are no completed steps.
+    :param evaluate_all_rules: If ``True``, don't limit the returned rules to the
+      current submission step.
     :returns: An iterable of :class`openforms.forms.models.FormLogic` instances. This
       may be a queryset, but could also be a list.
     """
     submission_state = submission.load_execution_state()
     # if there are no form steps, there is no usable form -> there are no logic rules
     # to evaluate
-    if not submission_state.form_steps:
+    if not (form_steps := submission_state.form_steps):
         return []
+
+    if evaluate_all_rules:
+        # ensure the rules are returned in order of the form steps
+        rules = chain.from_iterable(
+            form_step.logic_rules.all() for form_step in form_steps
+        )
+        return rules
 
     # filter down the rules that are only applicable in the current step context
     current_step = current_step or get_current_step(submission)

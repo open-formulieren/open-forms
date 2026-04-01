@@ -153,7 +153,9 @@ class SubmissionViewSet(
             self._get_object_cache = submission
             # on the fly, calculate the price if it's not set yet (required for overview screen)
             if submission.completed_on is None:
-                check_submission_logic(submission)
+                # price calculation may rely on logic rules before the 'current step',
+                # so we must force full logic rule evaluation
+                check_submission_logic(submission, evaluate_all_rules=True)
                 submission.calculate_price(save=False)
         return self._get_object_cache
 
@@ -360,7 +362,7 @@ class SubmissionViewSet(
 
         # prepare the submission with evaluated logic so that its state can be validated
         submission.load_execution_state()
-        check_submission_logic(submission)
+        check_submission_logic(submission, evaluate_all_rules=True)
 
         # validate the input + submission state
         serializer = SubmissionCompletionSerializer(
