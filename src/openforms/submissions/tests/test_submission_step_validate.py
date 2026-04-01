@@ -1,3 +1,4 @@
+from unittest import expectedFailure
 from unittest.mock import patch
 from uuid import UUID
 
@@ -1468,3 +1469,35 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             },
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    @tag("gh-6155")
+    @expectedFailure
+    def test_validation_of_profile_component_data(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "profile",
+                        "type": "customerProfile",
+                        "digitalAddressTypes": ["email", "phoneNumber"],
+                        "shouldUpdateCustomerData": True,
+                    },
+                ]
+            },
+        )
+        step = submission.form.formstep_set.get()
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            endpoint, {"data": {"profile": "This data makes no sense"}}
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
