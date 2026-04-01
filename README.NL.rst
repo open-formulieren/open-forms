@@ -2,7 +2,7 @@
 Open Formulieren
 ================
 
-:Version: 3.4.7
+:Version: 3.4.8
 :Source: https://github.com/open-formulieren/open-forms
 :Keywords: e-Formulieren, Common Ground, FormIO, API
 

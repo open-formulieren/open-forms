@@ -14,6 +14,14 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.4.8 (2026-04-01)
+==================
+
+Hotfix release.
+
+* [:backend:`6140`] Fixed a crash when conditional logic is used inside a fieldset
+  inside a repeating group.
+
 3.4.7 (2026-03-30)
 ==================
 
