@@ -179,27 +179,6 @@ def get_readable_path_from_configuration_path(
     return " > ".join(keys_path)
 
 
-def is_layout_component(component: Component) -> bool:
-    # Adapted from isLayoutComponent util function in Formio
-    # https://github.com/formio/formio.js/blob/4.13.x/src/utils/formUtils.js#L25
-    # FIXME ideally there would be a cleaner fix for this
-    if component["type"] == "editgrid":
-        return False
-
-    column = component.get("columns")
-    components = component.get("components")
-    rows = component.get("rows")
-
-    if (
-        (column and isinstance(column, list))
-        or (components and isinstance(components, list))
-        or (rows and isinstance(rows, list))
-    ):
-        return True
-
-    return False
-
-
 def get_component_datatype(component: Component):
     component_type = component["type"]
     if component.get("multiple"):
