@@ -411,6 +411,9 @@ class NPFamilyMembers(BasePlugin):
     # not actually relevant, as we transform the component into a different type
     formatter = DefaultFormatter
 
+    def build_serializer_field(self, component: Component) -> serializers.Field:
+        raise NotImplementedError()
+
     @staticmethod
     def _get_handler() -> FamilyMembersHandler:
         handlers = {
@@ -1095,6 +1098,9 @@ class CustomerProfile(BasePlugin):
 class SoftRequiredErrors(BasePlugin):
     holds_submission_data = False
 
+    def build_serializer_field(self, component: Component) -> serializers.Field:
+        raise NotImplementedError()
+
     @staticmethod
     def as_json_schema(component: Component) -> None:
         return None
@@ -1103,6 +1109,9 @@ class SoftRequiredErrors(BasePlugin):
 @register("coSign")
 class CoSign(BasePlugin):
     holds_submission_data = False
+
+    def build_serializer_field(self, component: Component) -> serializers.Field:
+        raise NotImplementedError()
 
     @staticmethod
     def as_json_schema(component: Component) -> None:

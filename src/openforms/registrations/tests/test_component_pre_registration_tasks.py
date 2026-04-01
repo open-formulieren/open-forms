@@ -29,10 +29,15 @@ class HookComponent(Component): ...
 class FailHookComponent(Component): ...
 
 
-class NoHook(BasePlugin[NoHookComponent]): ...
+class NoHook(BasePlugin[NoHookComponent]):
+    def build_serializer_field(self, component):
+        raise NotImplementedError()
 
 
 class Hook(BasePlugin[HookComponent]):
+    def build_serializer_field(self, component):
+        raise NotImplementedError()
+
     @staticmethod
     def pre_registration_hook(
         component: HookComponent, submission: Submission
@@ -41,6 +46,9 @@ class Hook(BasePlugin[HookComponent]):
 
 
 class FailHook(BasePlugin[FailHookComponent]):
+    def build_serializer_field(self, component):
+        raise NotImplementedError()
+
     @staticmethod
     def pre_registration_hook(
         component: HookComponent, submission: Submission

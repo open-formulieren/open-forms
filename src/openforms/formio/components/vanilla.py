@@ -92,6 +92,9 @@ class Default(BasePlugin):
 
     formatter = DefaultFormatter
 
+    def build_serializer_field(self, component: Component) -> serializers.Field:
+        raise NotImplementedError()
+
 
 @register("textfield")
 class TextField(BasePlugin[TextFieldComponent]):
@@ -961,6 +964,9 @@ class Content(BasePlugin):
     formatter = DefaultFormatter
     holds_submission_data = False
 
+    def build_serializer_field(self, component: Component) -> serializers.Field:
+        raise NotImplementedError()
+
     @staticmethod
     def rewrite_for_request(component: ContentComponent, request: Request):
         """
@@ -1194,6 +1200,9 @@ class EditGrid(BasePlugin[EditGridComponent]):
 class Columns(BasePlugin[ColumnsComponent]):
     holds_submission_data = False
 
+    def build_serializer_field(self, component: Component) -> serializers.Field:
+        raise NotImplementedError()
+
     @staticmethod
     def apply_visibility(
         component: ColumnsComponent,
@@ -1238,6 +1247,9 @@ class Columns(BasePlugin[ColumnsComponent]):
 @register("fieldset")
 class Fieldset(BasePlugin[FieldsetComponent]):
     holds_submission_data = False
+
+    def build_serializer_field(self, component: Component) -> serializers.Field:
+        raise NotImplementedError()
 
     @staticmethod
     def apply_visibility(
