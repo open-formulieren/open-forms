@@ -110,7 +110,7 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
     from openforms.payments.models import SubmissionPayment
     from openforms.prefill.base import BasePlugin as PrefillBasePlugin
     from openforms.registrations.base import BasePlugin as RegistrationBasePlugin
-    from openforms.submissions.models import Submission, SubmissionStep
+    from openforms.submissions.models import Submission
 
     assert "event" in event_dict
 
@@ -332,18 +332,20 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
 
         case {
             "event": "submission_step_fill" as event,
+            "submission_uuid": str(submission_uuid),
             "step_id": int(step_pk),
+            "step_name": str(step_name),
         }:
-            step = SubmissionStep.objects.select_related(
-                "submission", "form_step__form_definition"
-            ).get(pk=step_pk)
-            assert step.form_step is not None
+            # when a user is submitting the step for the first time, the SubmissionStep
+            # instance is still being created in a transaction and won't be committed
+            # yet, so we can't query by ID.
+            submission = Submission.objects.get(uuid=submission_uuid)
             return EventDetails(
                 event=event,
-                instance=step.submission,
+                instance=submission,
                 tags=[TimelineLogTags.submission_lifecycle],
                 extra_data={
-                    "step": str(step.form_step.form_definition.name),
+                    "step": step_name,
                     "step_id": step_pk,
                 },
             )
