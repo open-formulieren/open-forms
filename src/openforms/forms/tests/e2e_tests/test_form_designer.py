@@ -874,6 +874,7 @@ class FormDesignerRegressionTests(E2ETestCase):
                 name_nl="Playwright test",
                 generate_minimal_setup=True,
                 formstep__form_definition__name_nl="Playwright test",
+                new_logic_evaluation_enabled=False,
             )
             return form
 

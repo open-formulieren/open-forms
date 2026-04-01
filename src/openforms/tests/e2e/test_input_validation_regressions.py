@@ -287,6 +287,7 @@ class InputValidationRegressionTests(E2ETestCase):
                     }
                 ],
             )
+            form.apply_logic_analysis()
             return form
 
         form = await setUpTestData()
@@ -310,6 +311,7 @@ class InputValidationRegressionTests(E2ETestCase):
 
             # Confirm and finish the form
             await page.get_by_role("button", name="Verzenden").click()
+
             await expect(
                 page.get_by_text("Een moment geduld", exact=False)
             ).to_be_visible()
