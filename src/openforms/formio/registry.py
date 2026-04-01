@@ -12,7 +12,6 @@ smeared out across the codebase in similar but different implementations, while 
 the public API better defined and smaller.
 """
 
-import warnings
 from collections.abc import Callable
 from typing import (
     TYPE_CHECKING,
@@ -37,7 +36,6 @@ from openforms.typing import JSONObject, JSONValue, VariableValue
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
-from .utils import is_layout_component
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
@@ -114,31 +112,8 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):  # noqa: UP046
         pass  # noop by default, specific component types can extend the base behaviour
 
     def build_serializer_field(self, component: ComponentT) -> serializers.Field:
-        # the default implementation is a compatibility shim while we transition to
-        # the new backend validation mechanism.
-        warnings.warn(
-            "Relying on the default/implicit JSONField for component type "
-            f"{component['type']} is deprecated. Instead, define the "
-            "'build_serializer_field' method on the specific component plugin.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        # not considered a layout component (because it doesn't have children)
-        if component["type"] == "content":
-            required = False
-        elif is_layout_component(component):
-            required = False  # they do not hold data, they can never be required
-        else:
-            required = (
-                validate.get("required", False)
-                if (validate := component.get("validate"))
-                else False
-            )
-
-        # Allow anything that is valid JSON, taking into account the 'required'
-        # validation which is common for most components.
-        return serializers.JSONField(required=required, allow_null=True)
+        """Translate a component configuration into a serializer."""
+        raise NotImplementedError()
 
     @staticmethod
     def as_json_schema(component: ComponentT) -> JSONObject:
