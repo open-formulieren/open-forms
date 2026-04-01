@@ -156,8 +156,8 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):  # noqa: UP046
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
         ignore_hidden_property: bool,
+        components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
-        components_to_ignore_hidden: set[str] | None = None,
         data_for_visible_state: FormioData | None = None,
     ) -> None:
         """
@@ -172,8 +172,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):  # noqa: UP046
         :param get_evaluation_data: Function used to get the evaluation data used during
           evaluation of the conditional.
         :param components_to_ignore_hidden: Set of components for which the "hidden"
-          property is ignored in determining whether the component is hidden. Note that if
-          it was not passed, the hidden property WILL be checked.
+          property is ignored in determining whether the component is hidden.
         :param ignore_hidden_property: Whether to ignore the "hidden" property during
           further processing of its children.
         :param data_for_visible_state: The data used to restore values when flipping
@@ -266,8 +265,8 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
         ignore_hidden_property: bool,
+        components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
-        components_to_ignore_hidden: set[str] | None = None,
         data_for_visible_state: FormioData | None = None,
     ) -> None:
         """
@@ -282,8 +281,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         :param get_evaluation_data: Function used to get the evaluation data used during
           evaluation of the conditional.
         :param components_to_ignore_hidden: Set of components for which the "hidden"
-          property is ignored in determining whether the component is hidden. Note that if
-          it was not passed, the hidden property WILL be checked.
+          property is ignored in determining whether the component is hidden.
         :param ignore_hidden_property: Whether to ignore the "hidden" property during
           further processing of its children.
         :param data_for_visible_state: The data used to restore values when flipping

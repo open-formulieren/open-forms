@@ -1138,8 +1138,8 @@ class EditGrid(BasePlugin[EditGridComponent]):
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
         ignore_hidden_property: bool,
+        components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
-        components_to_ignore_hidden: set[str] | None = None,
         data_for_visible_state: FormioData | None = None,
     ):
         key = component["key"]
@@ -1161,7 +1161,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
             set(child["key"] for child in component["components"])
             if ignore_hidden_property
             else set()
-        ).union(components_to_ignore_hidden or set())
+        ).union(components_to_ignore_hidden)
         edit_grid_data_new = []
 
         # For evaluation of the conditionals, we only care about the current item, so we
@@ -1213,8 +1213,8 @@ class Columns(BasePlugin[ColumnsComponent]):
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
         ignore_hidden_property: bool,
+        components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
-        components_to_ignore_hidden: set[str] | None = None,
         data_for_visible_state: FormioData | None = None,
     ):
         for column in component["columns"]:
@@ -1224,7 +1224,7 @@ class Columns(BasePlugin[ColumnsComponent]):
                 set(child["key"] for child in column["components"])
                 if ignore_hidden_property
                 else set()
-            ).union(components_to_ignore_hidden or set())
+            ).union(components_to_ignore_hidden)
 
             process_visibility(
                 column,
@@ -1251,8 +1251,8 @@ class Fieldset(BasePlugin[FieldsetComponent]):
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
         ignore_hidden_property: bool,
+        components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
-        components_to_ignore_hidden: set[str] | None = None,
         data_for_visible_state: FormioData | None = None,
     ):
 
@@ -1262,7 +1262,7 @@ class Fieldset(BasePlugin[FieldsetComponent]):
             set(child["key"] for child in component["components"])
             if ignore_hidden_property
             else set()
-        ).union(components_to_ignore_hidden or set())
+        ).union(components_to_ignore_hidden)
 
         # We need to process the children, so we just pass the component as the
         # configuration.
