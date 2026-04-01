@@ -155,7 +155,6 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):  # noqa: UP046
         *,
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
-        ignore_hidden_property: bool,
         components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
         data_for_visible_state: FormioData | None = None,
@@ -173,8 +172,6 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):  # noqa: UP046
           evaluation of the conditional.
         :param components_to_ignore_hidden: Set of components for which the "hidden"
           property is ignored in determining whether the component is hidden.
-        :param ignore_hidden_property: Whether to ignore the "hidden" property during
-          further processing of its children.
         :param data_for_visible_state: The data used to restore values when flipping
           visibility states.
         """
@@ -264,7 +261,6 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         *,
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
-        ignore_hidden_property: bool,
         components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
         data_for_visible_state: FormioData | None = None,
@@ -282,8 +278,6 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
           evaluation of the conditional.
         :param components_to_ignore_hidden: Set of components for which the "hidden"
           property is ignored in determining whether the component is hidden.
-        :param ignore_hidden_property: Whether to ignore the "hidden" property during
-          further processing of its children.
         :param data_for_visible_state: The data used to restore values when flipping
           visibility states.
         """
@@ -297,7 +291,6 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
             wrapper,
             data_for_hidden_state=data_for_hidden_state,
             parent_hidden=parent_hidden,
-            ignore_hidden_property=ignore_hidden_property,
             get_evaluation_data=get_evaluation_data,
             components_to_ignore_hidden=components_to_ignore_hidden,
             data_for_visible_state=data_for_visible_state,

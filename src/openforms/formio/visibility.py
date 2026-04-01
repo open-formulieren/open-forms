@@ -120,12 +120,11 @@ def process_visibility(
         key = component["key"]
         clear_on_hide = component.get("clearOnHide", True)
 
-        ignore_hidden_property = key in components_to_ignore_hidden
         hidden = parent_hidden or is_hidden(
             component,
             get_evaluation_data(data) if get_evaluation_data else data,
             wrapper,
-            ignore_hidden_property,
+            key in components_to_ignore_hidden,
         )
 
         # Need to check whether the component holds submission data, as we do not have
@@ -159,7 +158,6 @@ def process_visibility(
             wrapper,
             data_for_hidden_state=data_for_hidden_state,
             parent_hidden=hidden,
-            ignore_hidden_property=ignore_hidden_property,
             get_evaluation_data=get_evaluation_data,
             components_to_ignore_hidden=components_to_ignore_hidden,
             data_for_visible_state=data_for_visible_state,

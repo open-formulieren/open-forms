@@ -1137,7 +1137,6 @@ class EditGrid(BasePlugin[EditGridComponent]):
         *,
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
-        ignore_hidden_property: bool,
         components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
         data_for_visible_state: FormioData | None = None,
@@ -1159,7 +1158,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
         # children.
         _components_to_ignore_hidden = (
             set(child["key"] for child in component["components"])
-            if ignore_hidden_property
+            if key in components_to_ignore_hidden
             else set()
         ).union(components_to_ignore_hidden)
         edit_grid_data_new = []
@@ -1212,17 +1211,17 @@ class Columns(BasePlugin[ColumnsComponent]):
         *,
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
-        ignore_hidden_property: bool,
         components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
         data_for_visible_state: FormioData | None = None,
     ):
+        key = component["key"]
         for column in component["columns"]:
             # If the hidden property of the parent should be ignored, so should it for
             # its children.
             _components_to_ignore_hidden: set[str] = (
                 set(child["key"] for child in column["components"])
-                if ignore_hidden_property
+                if key in components_to_ignore_hidden
                 else set()
             ).union(components_to_ignore_hidden)
 
@@ -1250,17 +1249,16 @@ class Fieldset(BasePlugin[FieldsetComponent]):
         *,
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
-        ignore_hidden_property: bool,
         components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
         data_for_visible_state: FormioData | None = None,
     ):
-
+        key = component["key"]
         # If the hidden property of the parent should be ignored, so should it for
         # its children.
         _components_to_ignore_hidden: set[str] = (
             set(child["key"] for child in component["components"])
-            if ignore_hidden_property
+            if key in components_to_ignore_hidden
             else set()
         ).union(components_to_ignore_hidden)
 
