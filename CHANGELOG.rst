@@ -40,6 +40,14 @@ their settings mechanism and now allows for distinct enforced/report-only config
 
 We'll work on bridging this gap, possibly through an upgrade to Django 6.0.
 
+3.4.8 (2026-04-01)
+==================
+
+Hotfix release.
+
+* [:backend:`6140`] Fixed a crash when conditional logic is used inside a fieldset
+  inside a repeating group.
+
 3.4.7 (2026-03-30)
 ==================
 
