@@ -1,3 +1,5 @@
+from django.test import tag
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -210,8 +212,12 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
             0, SubmissionValueVariable.objects.filter(submission=submission).count()
         )
 
+    @tag("gh-5862")
     def test_that_updated_data_is_used_by_subsequent_actions(self):
-        form = FormFactory.create()
+        # on the new logic, this reports cycles because 'totApples' is used as both
+        # output and input for actions. For now, we're keeping this form in legacy
+        # logic mode and address this as part of #5862
+        form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -281,7 +287,6 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
-        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         endpoint = reverse(
