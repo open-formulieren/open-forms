@@ -820,7 +820,7 @@ class ConditionalLogicTests(TestCase):
             ),
         )
 
-        state = submission.variables_state
+        state = submission.load_submission_value_variables_state()
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
