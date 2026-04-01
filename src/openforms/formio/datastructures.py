@@ -22,7 +22,7 @@ def _get_editgrid_component_map(component: EditGridComponent) -> dict[str, Compo
     Given an edit grid component, return a component map with namespaced keys.
     """
     component_map: dict[str, Component] = {}
-    for nested in iter_components(component, recursive=True):
+    for nested in iter_components(component, recursive=False):
         component_map[f"{component['key']}.{nested['key']}"] = nested
 
         # and this needs to recurse, of course...
