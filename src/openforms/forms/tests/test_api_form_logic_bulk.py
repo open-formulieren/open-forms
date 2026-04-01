@@ -135,6 +135,32 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(form, form_logic.form)
 
+    def test_create_form_logic_for_appointment_forms_is_forbidden(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form = FormFactory.create(is_appointment_form=True)
+        form_logic_data = [
+            {
+                "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+                "order": 0,
+                "json_logic_trigger": True,
+                "actions": [],
+                "isAdvanced": True,
+            }
+        ]
+        self.client.force_authenticate(user=user)
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.put(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response_data = response.json()
+        error = response_data["invalidParams"][0]
+        self.assertEqual(error["name"], "nonFieldErrors")
+        self.assertEqual(error["code"], "invalid")
+        self.assertEqual(
+            error["reason"], _("Appointment forms cannot have logic rules.")
+        )
+
     def test_create_logic_with_dates(self):
         user = SuperUserFactory.create(username="test", password="test")
         form = FormFactory.create()
