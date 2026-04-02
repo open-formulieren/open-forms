@@ -617,7 +617,13 @@ class SubmissionStepViewSet(
             # serializer
             persist_user_defined_variables(submission)
 
-        audit_logger.info("submission_step_fill", step_id=instance.pk)
+        assert instance.form_step
+        audit_logger.info(
+            "submission_step_fill",
+            submission_uuid=str(submission.uuid),
+            step_id=instance.pk,
+            step_name=str(instance.form_step.form_definition.name),
+        )
         attach_uploads_to_submission_step(instance)
 
         # See #1480 - if there is navigation between steps and original form field values
