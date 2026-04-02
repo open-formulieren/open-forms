@@ -44,11 +44,42 @@ def create_graph(rules: Iterable[FormLogic]) -> DiGraph:
                     graph.get_edge_data(dep_rule, rule)["variables"].add(key)
                     continue
 
+                # If we have a self cycle, perform some additional checks to determine
+                # whether we need to add it to the graph.
+                if dep_rule == rule and _is_valid_self_cycle(rule, key):
+                    continue
+
                 # Add an edge from the dependency rule to the rule we are currently
                 # evaluating.
                 graph.add_edge(dep_rule, rule, variables={key})
 
     return graph
+
+
+def _is_valid_self_cycle(rule: FormLogic, key: str) -> bool:
+    """
+    Determine whether the self cycle of a rule is valid.
+
+    If a rule contains a self cycle, i.e. a variable key appears in both the input and
+    output variables, it is possible that the rule is still valid. For example, if one
+    action sets a variable, and a subsequent action uses this variable as an input.
+
+    :param rule: Logic rule.
+    :param key: Variable key related to the self cycle.
+    :returns bool: Whether the self cycle is valid.
+    """
+    # If the input variables from the trigger overlap with the output variables of the
+    # action, it is not a valid self cycle.
+    if not rule.input_variables_from_trigger.isdisjoint(
+        rule.output_variables_from_action_map
+    ):
+        return False
+
+    # In this context, the self cycle is valid if the variable is not used as input and
+    # output of a single action.
+    return rule.input_variables_from_action_map[key].isdisjoint(
+        rule.output_variables_from_action_map[key]
+    )
 
 
 @dataclass
