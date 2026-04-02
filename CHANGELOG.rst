@@ -30,6 +30,18 @@ To upgrade to 3.5, please:
 * ⚠️ If you haven't done so yet, please review the manual intervention mentioned in the
   3.4.2 release notes.
 
+* Inventarize the forms that are not compatible yet with the new logic evaluation -
+  we've included a utility script to report the problematic forms. You can run it with:
+
+  .. code-block:: bash
+
+      # in the container via ``docker exec`` or ``kubectl exec``:
+      python /app/bin/report_invalid_form_logic.py.py
+
+  The reported forms have some unstable logic rules that refer to each other, please
+  let the form designers review and correct these. In Open Forms 4.0, this will be a
+  hard requirement.
+
 Deprecations
 ------------
 
