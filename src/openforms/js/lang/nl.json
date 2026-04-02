@@ -2256,6 +2256,11 @@
     "description": "DMN evaluation configuration errors message",
     "originalDefault": "There are errors in the DMN configuration."
   },
+  "aoNZfg": {
+    "defaultMessage": "Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules.",
+    "description": "New logic disabled reason explanation",
+    "originalDefault": "Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules."
+  },
   "auZOcD": {
     "defaultMessage": "Mappingexpressie",
     "description": "Service fetch configuration modal form mapping expression field label",
