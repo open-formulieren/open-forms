@@ -409,3 +409,57 @@ export const DisableNext = {
     ],
   },
 };
+
+export const DisabledProperty = {
+  render,
+  name: 'Disabled property',
+
+  args: {
+    prefixText: 'Action',
+
+    action: {
+      component: 'textfield',
+      variable: '',
+      formStepUuid: '8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+      action: {
+        type: 'property',
+        property: {
+          type: 'bool',
+          value: 'disabled',
+        },
+      },
+    },
+    availableComponents: {
+      textfield: {
+        key: 'textfield',
+        type: 'textfield',
+        label: 'Textfield',
+      },
+      fieldset: {
+        key: 'fieldset',
+        type: 'fieldset',
+        label: 'Fieldset',
+        components: [
+          {
+            key: 'innerTextfield',
+            type: 'textfield',
+            label: 'Inner textfield',
+          },
+        ],
+      },
+    },
+  },
+
+  play: async ({canvasElement}) => {
+    // check that fieldset can't have "hidden" property
+    const componentDropdown = canvasElement.querySelector('select[name="component"]');
+    await userEvent.selectOptions(componentDropdown, 'fieldset');
+
+    const propertyDropdown = canvasElement.querySelector('select[name="action.property"]');
+    const propertyOptions = within(propertyDropdown).getAllByRole('option');
+    expect(propertyOptions).toHaveLength(3);
+    expect(propertyOptions[0]).toHaveValue('');
+    expect(propertyOptions[1]).toHaveValue('validate.required');
+    expect(propertyOptions[2]).toHaveValue('hidden');
+  },
+};
