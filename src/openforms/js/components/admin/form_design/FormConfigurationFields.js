@@ -532,6 +532,7 @@ const FormConfigurationFields = ({
   selectedAuthPlugins,
   onAuthPluginChange,
   availableCategories,
+  hasTriggerFromStep = false,
 }) => {
   const {
     uuid,
@@ -764,6 +765,16 @@ const FormConfigurationFields = ({
             onChange={event => onCheckboxChange(event, newRendererEnabled)}
           />
         </FormRow>
+        {hasTriggerFromStep && (
+          <FormRow>
+            <p>
+              <FormattedMessage
+                description="New logic disabled reason explanation"
+                defaultMessage="Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules."
+              />
+            </p>
+          </FormRow>
+        )}
         <FormRow>
           <Checkbox
             name="form.newLogicEvaluationEnabled"
@@ -783,6 +794,7 @@ const FormConfigurationFields = ({
               />
             }
             checked={newLogicEvaluationEnabled}
+            disabled={hasTriggerFromStep}
             onChange={event => onCheckboxChange(event, newLogicEvaluationEnabled)}
           />
         </FormRow>
@@ -824,6 +836,7 @@ FormConfigurationFields.propTypes = {
   availableAuthPlugins: PropTypes.arrayOf(TYPES.AuthPlugin).isRequired,
   selectedAuthPlugins: PropTypes.array.isRequired,
   onAuthPluginChange: PropTypes.func.isRequired,
+  hasTriggerFromStep: PropTypes.bool,
 };
 
 export default FormConfigurationFields;
