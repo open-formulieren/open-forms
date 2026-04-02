@@ -83,7 +83,7 @@ class ActionOperation:
         directly from the action configuration, and might not represent actual available
         form variables.
 
-        Should be overridden in the child class
+        Should be overridden in the child class.
         """
         raise NotImplementedError()
 
@@ -405,8 +405,7 @@ class VariableAction(ActionOperation):
         # If we cannot resolve a step from the output variables (we are setting a value
         # on a user-defined variable), try to resolve it from the input variables.
         return self._get_steps(
-            self.rule.unresolved_input_variables_from_trigger
-            | self.unresolved_input_variables
+            self.rule.input_variables_from_trigger | self.unresolved_input_variables
         )
 
     @classmethod
@@ -619,8 +618,7 @@ class ServiceFetchAction(ActionOperation):
         # If we cannot resolve a step from the output variables (we are setting a value
         # on a user-defined variable), try to resolve it from the input variables.
         return self._get_steps(
-            self.rule.unresolved_input_variables_from_trigger
-            | self.unresolved_input_variables
+            self.rule.input_variables_from_trigger | self.unresolved_input_variables
         )
 
     @classmethod
@@ -690,8 +688,7 @@ class EvaluateDMNAction(ActionOperation):
         # If we cannot resolve a step from the output variables (we are setting a value
         # on a user-defined variable), try to resolve it from the input variables.
         return self._get_steps(
-            self.rule.unresolved_input_variables_from_trigger
-            | self.unresolved_input_variables
+            self.rule.input_variables_from_trigger | self.unresolved_input_variables
         )
 
     @classmethod
@@ -771,7 +768,7 @@ class SetRegistrationBackendAction(ActionOperation):
 
     @property
     def steps(self) -> set[FormStep]:
-        return self._get_steps(self.rule.unresolved_input_variables_from_trigger)
+        return self._get_steps(self.rule.input_variables_from_trigger)
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
