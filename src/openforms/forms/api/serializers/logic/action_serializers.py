@@ -12,6 +12,8 @@ from rest_framework import serializers
 
 from openforms.api.serializers import DummySerializer
 from openforms.formio.api.fields import FormioVariableKeyField
+from openforms.formio.typing import Component
+from openforms.formio.utils import is_layout_component
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.constants import FormVariableDataTypes
 
@@ -325,6 +327,28 @@ class LogicComponentActionSerializer(serializers.Serializer):
                     ]
                 },
                 code="blank",
+            )
+
+        # check that "disabled" property is not changed for layout components
+        property_component: None | Component = None
+        for formio_component in self.context["form"].iter_components():
+            if formio_component["key"] == component:
+                property_component = formio_component
+                break
+
+        if (
+            action_type == LogicActionTypes.property
+            and property_component
+            and is_layout_component(property_component)
+            and attrs.get("action", {}).get("property", {}).get("value") == "disabled"
+        ):
+            raise serializers.ValidationError(
+                {
+                    "component": _(
+                        "'disabled' property can't be used for layout components."
+                    )
+                },
+                code="invalid",
             )
 
         return attrs
