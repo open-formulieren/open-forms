@@ -1,3 +1,4 @@
+import FormioUtils from 'formiojs/utils';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {useContext, useState} from 'react';
@@ -26,10 +27,13 @@ import {SynchronizeVariablesActionConfig} from './synchronize_variable/Synchroni
 import {ActionError, Action as ActionType} from './types';
 
 const ActionProperty = ({action, errors, onChange}) => {
-  const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES).map(([key, info]) => [
-    key,
-    info.label,
-  ]);
+  const {components} = useContext(FormContext);
+  const isLayout = action.component
+    ? FormioUtils.isLayoutComponent(components[action.component])
+    : false;
+  const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES)
+    .filter(([, info]) => !isLayout || info.useInLayout)
+    .map(([key, info]) => [key, info.label]);
 
   const castValueTypeToString = action => {
     const valueType = action.action.property.type;

@@ -169,6 +169,7 @@ const MODIFIABLE_PROPERTIES = {
     }),
     type: 'bool',
     options: BOOL_OPTIONS,
+    useInLayout: true,
   },
   hidden: {
     label: defineMessage({
@@ -177,6 +178,7 @@ const MODIFIABLE_PROPERTIES = {
     }),
     type: 'bool',
     options: BOOL_OPTIONS,
+    useInLayout: true,
   },
   disabled: {
     label: defineMessage({
@@ -185,6 +187,7 @@ const MODIFIABLE_PROPERTIES = {
     }),
     type: 'bool',
     options: BOOL_OPTIONS,
+    useInLayout: false,
   },
 };
 
