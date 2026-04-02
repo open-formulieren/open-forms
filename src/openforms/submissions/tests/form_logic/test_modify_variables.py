@@ -21,7 +21,7 @@ from ..factories import SubmissionFactory, SubmissionStepFactory
 
 class VariableModificationTests(TestCase):
     def test_modify_variable_related_to_step_being_edited(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create()
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -79,20 +79,17 @@ class VariableModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        # Step being edited
+        submission_step1 = SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
             data={"nLargeBoxes": 2, "nGiganticBoxes": 5},
         )
-        # Step being edited
-        submission_step2 = SubmissionStepFactory.build(
-            submission=submission,
-            form_step=step2,
-        )
 
-        evaluate_form_logic(submission, submission_step2)
+        evaluate_form_logic(submission, submission_step1)
 
         state = submission.variables_state
         self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
@@ -479,7 +476,6 @@ class VariableModificationTests(TestCase):
                 }
             ],
         )
-        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
