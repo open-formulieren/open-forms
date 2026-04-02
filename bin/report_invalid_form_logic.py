@@ -47,8 +47,10 @@ def report_invalid_forms() -> bool:
     # check each individual form for logic rule cycles. Run this in a transaction and
     # roll back, because apply_logic_analysis() saves the result to the DB.
     forms_to_check = Form.objects.filter(
-        _is_deleted=False, new_logic_evaluation_enabled=False
-    )
+        _is_deleted=False,
+        new_logic_evaluation_enabled=False,
+        formlogic__isnull=False,
+    ).distinct()
 
     transaction.set_autocommit(False)
     cycles_detected = False
