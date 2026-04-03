@@ -215,6 +215,143 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertTrue(submission.is_completed)
 
+    @tag("gh-5924")
+    def test_submission_validation_including_non_applicable_steps(self):
+        """
+        Test that non-applicable form steps are not processed during validation of
+        submission completion.
+        """
+        form = FormFactory.create()
+        step_1 = FormStepFactory.create(
+            form=form,
+            is_applicable=True,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "age",
+                    }
+                ]
+            },
+        )
+        FormStepFactory.create(  # non-applicable step 2
+            form=form,
+            is_applicable=False,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "age",
+                    }
+                ]
+            },
+        )
+        step_3 = FormStepFactory.create(
+            form=form,
+            is_applicable=True,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "questionInput",
+                        "values": [
+                            {"label": "Yes", "value": "yes"},
+                            {
+                                "label": "No",
+                                "value": "no",
+                                "openForms": {"translations": {}},
+                            },
+                        ],
+                    },
+                    {
+                        "type": "textfield",
+                        "hidden": True,
+                        "key": "driverId",
+                        "validate": {
+                            "required": True,
+                        },
+                    },
+                ]
+            },
+        )
+        FormStepFactory.create(  # non-applicable step 4
+            form=form,
+            is_applicable=False,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "driverId",
+                    }
+                ]
+            },
+        )
+        step_5 = FormStepFactory.create(
+            form=form,
+            is_applicable=True,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "driverId",
+                    }
+                ]
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "questionInput"}, "yes"]},
+            actions=[
+                {
+                    "component": "driverId",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step_1,
+            data={
+                "age": 18,
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step_3,
+            data={
+                "questionInput": "yes",
+                "driverId": "",
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step_5,
+            data={
+                "driverId": "0001",
+            },
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        errors = response.json()["invalidParams"]
+        self.assertEqual(len(errors), 1)
+        # Non-applicable steps should not be taken into account for validation errors,
+        # hence the offending step is index number 1 (step 3 in this test).
+        self.assertEqual(errors[0]["name"], "steps.1.data.driverId")
+        self.assertEqual(errors[0]["code"], "blank")
+
+        submission.refresh_from_db()
+        self.assertFalse(submission.is_completed)
+
     @override_settings(LANGUAGE_CODE="en")
     def test_submit_form_with_submission_disabled_with_overview(self):
         submission = SubmissionFactory.create(
