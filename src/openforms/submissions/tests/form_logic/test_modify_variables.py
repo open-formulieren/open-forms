@@ -95,6 +95,10 @@ class VariableModificationTests(TestCase):
         self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
 
     def test_modify_variable_related_to_another_step_than_the_one_being_edited(self):
+        # Note that with new logic evaluation, this test doesn't make much sense in this
+        # context. Evaluating form logic for step 2 will not execute the logic rule
+        # at all, since it will be assigned to step 1, and the user-defined variable
+        # will be persisted upon step submission.
         form = FormFactory.create(new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form,
@@ -136,83 +140,6 @@ class VariableModificationTests(TestCase):
                         "!=": [
                             {"var": "nGiganticBoxes"},
                             None,
-                        ]
-                    },
-                ]
-            },
-            actions=[
-                {
-                    "variable": "nTotalBoxes",
-                    "action": {
-                        "name": "Update variable",
-                        "type": "variable",
-                        "value": {
-                            "+": [{"var": "nLargeBoxes"}, {"var": "nGiganticBoxes"}]
-                        },
-                    },
-                }
-            ],
-        )
-
-        submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=step1,
-            data={"nLargeBoxes": 2, "nGiganticBoxes": 5},
-        )
-        # Step being edited
-        submission_step2 = SubmissionStepFactory.build(
-            submission=submission,
-            form_step=step2,
-        )
-
-        evaluate_form_logic(submission, submission_step2)
-
-        state = submission.variables_state
-        self.assertEqual(state.get_data(include_unsaved=True)["nTotalBoxes"], 7)
-
-    def test_modify_variable_not_related_to_a_step(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
-        step1 = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "number",
-                        "key": "nLargeBoxes",
-                    },
-                    {
-                        "type": "number",
-                        "key": "nGiganticBoxes",
-                    },
-                ]
-            },
-        )
-        step2 = FormStepFactory.create(
-            form=form, form_definition__configuration={"components": []}
-        )
-        FormVariableFactory.create(
-            form=form,
-            key="nTotalBoxes",
-            source=FormVariableSources.user_defined,
-            data_type=FormVariableDataTypes.float,
-            form_definition=step1.form_definition,
-        )
-
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={
-                "and": [
-                    {
-                        "!=": [
-                            {"var": "nLargeBoxes"},
-                            "",
-                        ]
-                    },
-                    {
-                        "!=": [
-                            {"var": "nGiganticBoxes"},
-                            "",
                         ]
                     },
                 ]
@@ -357,7 +284,7 @@ class VariableModificationTests(TestCase):
     def test_dates_and_timedeltas(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=False,
+            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -389,9 +316,11 @@ class VariableModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
+            form_step=form.formstep_set.get(),
             submission=submission,
             data={"datum": "2023-09-12"},
         )
@@ -429,7 +358,7 @@ class VariableModificationTests(TestCase):
 
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=False,
+            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -476,9 +405,11 @@ class VariableModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
+            form_step=form.formstep_set.get(),
             submission=submission,
             data={"age": 29, "income": 40000},
         )
@@ -526,7 +457,7 @@ class VariableModificationTests(TestCase):
 
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=False,
+            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -589,9 +520,11 @@ class VariableModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
+            form_step=form.formstep_set.get(),
             submission=submission,
             data={"age": 29, "income": 40000},
         )
@@ -638,7 +571,7 @@ class VariableModificationTests(TestCase):
 
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=False,
+            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -688,6 +621,7 @@ class VariableModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
@@ -714,12 +648,13 @@ class VariableModificationTests(TestCase):
         variable. It ensures that the returns from jsonLogic calls are converted to
         the Python-type domain (date object in this case).
         """
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
         form_step = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
-                    {"type": "date", "key": "date"},
+                    {"type": "date", "key": "date", "label": "Date"},
+                    {"type": "date", "key": "dateResult", "label": "Date result"},
                 ]
             },
         )
@@ -742,7 +677,7 @@ class VariableModificationTests(TestCase):
                     },
                 },
                 {
-                    "variable": "date",
+                    "variable": "dateResult",
                     "action": {
                         "type": "variable",
                         "value": {"+": [{"var": "date"}, {"duration": "P1M"}]},
@@ -750,16 +685,17 @@ class VariableModificationTests(TestCase):
                 },
             ],
         )
+        form.apply_logic_analysis()
 
         evaluate_form_logic(submission, submission_step)
 
         state = submission.variables_state
         self.assertEqual(
-            str(state.get_data(include_unsaved=True)["date"]), "2025-07-06"
+            str(state.get_data(include_unsaved=True)["dateResult"]), "2025-07-06"
         )
 
     def test_children_synchronization_not_allowing_selection(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -831,6 +767,7 @@ class VariableModificationTests(TestCase):
                 },
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
@@ -895,7 +832,7 @@ class VariableModificationTests(TestCase):
         )
 
     def test_children_synchronization_with_no_destination_data(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -962,6 +899,7 @@ class VariableModificationTests(TestCase):
                 },
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
@@ -1025,7 +963,7 @@ class VariableModificationTests(TestCase):
         )
 
     def test_children_synchronization_with_destination_data_update(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -1092,6 +1030,7 @@ class VariableModificationTests(TestCase):
                 },
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
@@ -1167,7 +1106,7 @@ class VariableModificationTests(TestCase):
         )
 
     def test_children_synchronization_with_no_destination_and_source_data(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -1234,6 +1173,7 @@ class VariableModificationTests(TestCase):
                 },
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
