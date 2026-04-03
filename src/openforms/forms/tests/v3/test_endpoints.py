@@ -1526,10 +1526,9 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(errors[0]["name"], "steps")
         assert "reason" in errors[0]
         expected_error_message = _(
-            "Duplicate component key detected in form definition {form_definition}.".format(
-                form_definition=form_definition_uuid
-            )
-        )
+            "Duplicate component key detected in form definition {form_definition}."
+        ).format(form_definition=form_definition_uuid)
+
         self.assertEqual(errors[0]["reason"], expected_error_message)
 
     def test_update_form_incorrect_request(self):
