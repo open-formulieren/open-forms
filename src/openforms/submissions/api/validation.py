@@ -83,6 +83,9 @@ class SubmissionCompletionSerializer(serializers.Serializer):
 
         state = submission.variables_state
         data = state.get_data()
+        applicable_steps: int = len(
+            [step for step in submission.steps if step.is_applicable]
+        )
 
         for step in submission.steps:
             form_step = step.form_step
@@ -90,6 +93,13 @@ class SubmissionCompletionSerializer(serializers.Serializer):
             form_definition = form_step.form_definition
             assert isinstance(form_definition, FormDefinition)
             step_name: str = form_definition.name
+
+            # Omit validation errors for non-applicable form steps so that the
+            # front-end can determine the failing submission steps correctly.
+            # The front-end currently does not process non-applicable form steps.
+            # See the `SubmissionSummary` React component for more details.
+            if not step.is_applicable:
+                continue
 
             step_errors = {}  # we must add *something* to the array
 
@@ -131,7 +141,7 @@ class SubmissionCompletionSerializer(serializers.Serializer):
 
             all_step_errors.append(step_errors)
 
-        assert len(all_step_errors) == len(submission.steps), (
+        assert len(all_step_errors) == applicable_steps, (
             "Detected a mismatch in validation errors list with actual submission steps."
         )
 
