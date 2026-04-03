@@ -86,7 +86,7 @@ class LogicComponentActionSerializerTest(TestCase):
                     "value": {"var": "anotherDate"},
                 },
             },
-            context={"request": None, "form_variables": form_vars},
+            context={"request": None, "form_variables": form_vars, "form": form},
         )
 
         self.assertTrue(serializer.is_valid())
