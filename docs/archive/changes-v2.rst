@@ -1443,7 +1443,7 @@ The 2.5.0-alpha.0 changes are included as well, see the earlier changelog entry.
       Objects API, and it will be related to the created Zaak.
 
       ⚠️ This requires a compatible version of the Objects API, see the
-      `upstream issue <https://github.com/maykinmedia/objects-api/issues/355>`_.
+      `upstream issue <https://github.com/maykinmedia/open-object/issues/355>`_.
 
 * [:backend:`3726`] Reworked the payment flow to make it more obvious that payment is required.
 * [:backend:`3707`] group synchronization/mapping can now be disabled with OIDC SSO.
