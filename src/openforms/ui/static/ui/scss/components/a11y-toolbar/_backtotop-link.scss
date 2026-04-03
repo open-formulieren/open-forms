@@ -1,6 +1,6 @@
 @use 'microscope-sass/lib/bem';
-@use '@utrecht/components/link'; // emits the .utrecht-link {...} styles
-@use '@utrecht/components/icon';
+@use '@utrecht/link-css'; // emits the .utrecht-link {...} styles
+@use '@utrecht/icon-css';
 
 @import 'microscope-sass/lib/responsive';
 
