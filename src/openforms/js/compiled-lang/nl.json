@@ -4707,6 +4707,12 @@
       "value": "De DMN-instellingen zijn niet geldig."
     }
   ],
+  "aoNZfg": [
+    {
+      "type": 0,
+      "value": "Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules."
+    }
+  ],
   "aqYeqv": [
     {
       "type": 0,

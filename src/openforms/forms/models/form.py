@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import uuid as _uuid
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from contextlib import suppress
 from copy import deepcopy
 from functools import cached_property
 from itertools import chain
 from typing import TYPE_CHECKING, ClassVar, Literal
+from uuid import UUID
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -46,7 +47,12 @@ User = get_user_model()
 logger = structlog.stdlib.get_logger(__name__)
 
 if TYPE_CHECKING:
-    from . import FormAuthenticationBackend, FormRegistrationBackend, FormStep
+    from . import (
+        FormAuthenticationBackend,
+        FormLogic,
+        FormRegistrationBackend,
+        FormStep,
+    )
 
 
 class FormQuerySet(models.QuerySet["Form"]):
@@ -398,7 +404,7 @@ class Form(models.Model):
     )
     new_logic_evaluation_enabled = models.BooleanField(
         _("enable new logic rule evaluation"),
-        default=False,
+        default=True,
         help_text=_(
             "Enabling this will analyze logic rules and re-order them according to "
             "their dependency on other logic rules (happens when the form is saved). "
@@ -413,6 +419,7 @@ class Form(models.Model):
     formstep_set: models.Manager[FormStep]
     auth_backends: Manager[FormAuthenticationBackend]
     registration_backends: Manager[FormRegistrationBackend]
+    formlogic_set: Manager[FormLogic]
 
     get_begin_text = literal_getter("begin_text", "form_begin_text")
     get_previous_text = literal_getter("previous_text", "form_previous_text")
@@ -420,6 +427,7 @@ class Form(models.Model):
     get_confirm_text = literal_getter("confirm_text", "form_confirm_text")
 
     _component_to_step: dict[str, FormStep] | None = None
+    _form_step_map: dict[UUID, FormStep] | None = None
     _all_form_variable_keys: set[str] | None = None
 
     class Meta:
@@ -434,6 +442,14 @@ class Form(models.Model):
 
     def get_absolute_url(self):
         return reverse("forms:form-detail", kwargs={"slug": self.slug})
+
+    @property
+    def form_step_map(self) -> Mapping[UUID, FormStep]:
+        """Mapping from form step UUID to form step instance."""
+        if self._form_step_map is None:
+            self._create_form_step_caches()
+        assert self._form_step_map is not None
+        return self._form_step_map
 
     @property
     def is_available(self) -> bool:
@@ -754,10 +770,15 @@ class Form(models.Model):
         :param key: The component key.
         :returns: The corresponding ``FormStep``, or ``None`` if no step could be found.
         """
-        if self._component_to_step is not None:
-            return self._component_to_step.get(key, None)
+        if self._component_to_step is None:
+            self._create_form_step_caches()
 
-        self._component_to_step = {}
+        assert self._component_to_step is not None
+        return self._component_to_step.get(key, None)
+
+    def _create_form_step_caches(self):
+        self._component_to_step: dict[str, FormStep] = {}
+        self._form_step_map: dict[UUID, FormStep] = {}
         for form_step in self.formstep_set.select_related("form_definition"):
             component_list = [
                 component["key"]
@@ -768,8 +789,34 @@ class Form(models.Model):
             self._component_to_step.update(
                 zip(component_list, [form_step] * len(component_list), strict=True)
             )
+            self._form_step_map[form_step.uuid] = form_step
 
-        return self._component_to_step.get(key, None)
+    @transaction.atomic
+    def apply_logic_analysis(self) -> None:
+        """
+        Runs the logic rule analysis and saves the result to the database.
+
+        Broken out from the API serializer so that it can easily be called in tests
+        when setting up low-level data.
+        """
+        from ..logic_analysis import analyze_rules
+        from .logic import FormLogic
+
+        # the (auto-created) through model
+        FormLogicFormSteps = FormLogic._meta.get_field(
+            "form_steps"
+        ).remote_field.through
+
+        # drop the old relations and create the expected ones.
+
+        updated_rules_and_steps = analyze_rules(form=self)
+        expected_relations = [
+            FormLogicFormSteps(formlogic=rule, formstep=step)
+            for rule, steps in updated_rules_and_steps
+            for step in steps
+        ]
+        FormLogicFormSteps.objects.filter(formlogic__form=self).delete()
+        FormLogicFormSteps.objects.bulk_create(expected_relations)
 
 
 class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):

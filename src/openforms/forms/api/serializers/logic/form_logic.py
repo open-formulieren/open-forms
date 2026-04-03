@@ -1,4 +1,5 @@
 from collections import defaultdict
+from collections.abc import Collection
 
 from django.utils.translation import gettext_lazy as _
 
@@ -11,10 +12,8 @@ from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
 
 from ....logic_analysis import (
-    add_missing_steps,
-    create_graph,
-    detect_cycles,
-    resolve_order,
+    CyclesDetected,
+    analyze_rules,
 )
 from ....models import Form, FormLogic, FormStep
 from ...validators import (
@@ -31,24 +30,38 @@ class FormLogicListSerializer(ListWithChildSerializer):
     )
 
     def validate(self, attrs):
-        if not self.context["form"].new_logic_evaluation_enabled:
+        form: Form = self.context["form"]
+        if (is_appointment := form.is_appointment) and attrs:
+            raise serializers.ValidationError(
+                _("Appointment forms cannot have logic rules.")
+            )
+        if not form.new_logic_evaluation_enabled or is_appointment:
             return super().validate(attrs)
 
         # This will only run when the logic rules have passed individual serializer
         # validation, so we can initialize model instances here.
-        # Note: model instances without a pk are not hashable, which is a requirement to
-        # use them in the graph, so we assign it manually. These rules will just live in
-        # memory, so it will not result in conflicts with existing rules.
-        _temporary_rules: list[FormLogic] = [
-            FormLogic(**rule_data, pk=i) for i, rule_data in enumerate(attrs)
-        ]
+        rules_to_index_mapping: dict[FormLogic, int] = {
+            # Note: model instances without a pk are not hashable, which is a
+            # requirement to use them in the analysis graph, so we assign it manually.
+            # These rules will just live in memory, so it will not result in conflicts
+            # with existing rules.
+            FormLogic(**rule_data, pk=-i): i
+            for i, rule_data in enumerate(attrs)
+        }
 
-        graph = create_graph(_temporary_rules)
-        cycles = detect_cycles(graph)
-        if cycles:
+        first_step: FormStep = min(
+            form.form_step_map.values(), key=lambda step: step.order
+        )
+        try:
+            updated_rules_and_steps = analyze_rules(
+                self.context["form"],
+                rules=list(rules_to_index_mapping.keys()),
+                first_step=first_step,
+            )
+        except CyclesDetected as exc:
             msg = _("Rule contains cycles through variable(s): {variables}.")
             errors: defaultdict[str, list[ErrorDetail]] = defaultdict(list)
-            for cycle in cycles:
+            for cycle in exc.cycles:
                 # Sort to get consistent order in the error message (rules of a cycle do
                 # not have a start or end, so the order in which they are processed is
                 # not always consistent).
@@ -61,43 +74,41 @@ class FormLogicListSerializer(ListWithChildSerializer):
                     )
             raise serializers.ValidationError(errors)
 
-        # Form steps are added to the context dictionary in
-        # `FormViewSet.logic_rules_bulk_update`. It is a mapping from form step UUID to
-        # form step. We rely on it being ordered.
-        first_step: FormStep = next(iter(self.context["form_steps"].values()))
-        # Note that the order will remain 0, even if a form step was deleted.
-        assert first_step.order == 0
-        add_missing_steps(graph, first_step)
-        new_rule_order = resolve_order(graph)
-
         # Reorder the incoming data according to the determined order.
-        data_new: list[dict[str, object]] = []
-        steps: list[list[FormStep]] = []
-        for rule in new_rule_order:
-            # We can get the original rule data by using the (manually set) pk as an
-            # index.
-            rule_data = attrs[rule.pk]
-            steps.append(list(rule.steps))
-            data_new.append(rule_data)
+        steps: list[Collection[FormStep]] = []
+        reordered_rule_data: list[dict[str, object]] = []
 
-        # Saving it to the context here to avoid determining the steps again when
-        # assigning them to the `form_steps` model property. It is an expensive
-        # operation, and we can only set a many-to-many relationship after the instances
-        # have been created in the database.
+        for rule, rule_steps in updated_rules_and_steps:
+            # Lookup the original rule data by checking our rule-to-index map created
+            # earlier.
+            rule_data_index = rules_to_index_mapping[rule]
+            reordered_rule_data.append(attrs[rule_data_index])
+            steps.append(rule_steps)
+
         self.context["steps_for_each_rule"] = steps
-
-        return super().validate(data_new)
+        return super().validate(reordered_rule_data)
 
     def create(self, validated_data):
         rules = super().create(validated_data)
-        if not self.context["form"].new_logic_evaluation_enabled:
+        form: Form = self.context["form"]
+        if not form.new_logic_evaluation_enabled or form.is_appointment:
             return rules
 
-        # Set many-to-many relationship from logic rules to form steps
-        for rule, step_list in zip(
-            rules, self.context["steps_for_each_rule"], strict=True
-        ):
-            rule.form_steps.set(step_list)
+        # the (auto-created) through model
+        FormLogicFormSteps = FormLogic._meta.get_field(
+            "form_steps"
+        ).remote_field.through
+
+        # drop the old relations and create the expected ones.
+        expected_relations = [
+            FormLogicFormSteps(formlogic=rule, formstep=step)
+            for rule, steps in zip(
+                rules, self.context["steps_for_each_rule"], strict=True
+            )
+            for step in steps
+        ]
+        FormLogicFormSteps.objects.filter(formlogic__form=self.context["form"]).delete()
+        FormLogicFormSteps.objects.bulk_create(expected_relations)
 
         return rules
 

@@ -586,6 +586,8 @@ class FormViewSet(viewsets.ModelViewSet):
         # So we can delete any existing rule because they will be replaced.
         logic_rules.delete()
 
+        prefetch_related_objects([form], "formvariable_set")
+
         serializer = FormLogicSerializer(
             data=request.data,
             many=True,
@@ -595,18 +597,13 @@ class FormViewSet(viewsets.ModelViewSet):
                 # context for :class:`openforms.api.fields.RelatedFieldFromContext` lookups
                 "forms": {str(form.uuid): form},
                 "form_variables": FormVariableWrapper(form),
-                # During logic analysis, we may have to fetch the first form step, so
-                # make sure this mapping is ordered accordingly.
-                "form_steps": {
-                    form_step.uuid: form_step
-                    for form_step in form.formstep_set.order_by("order").all()
-                },
+                "form_steps": form.form_step_map,
             },
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        prefetch_related_objects(serializer.instance, "form_steps")
+        prefetch_related_objects(serializer.instance, "form_steps", "form_steps__form")
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

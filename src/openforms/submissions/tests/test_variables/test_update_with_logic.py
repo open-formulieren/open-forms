@@ -1,3 +1,5 @@
+from django.test import tag
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -67,6 +69,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         endpoint = reverse(
@@ -183,6 +186,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         endpoint = reverse(
@@ -208,8 +212,9 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
             0, SubmissionValueVariable.objects.filter(submission=submission).count()
         )
 
+    @tag("gh-5862")
     def test_that_updated_data_is_used_by_subsequent_actions(self):
-        form = FormFactory.create()
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -279,6 +284,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
 
         endpoint = reverse(
@@ -372,6 +378,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -444,6 +451,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(

@@ -6,7 +6,7 @@ from networkx import DiGraph
 from networkx.algorithms import simple_cycles, topological_sort
 from networkx.algorithms.dag import lexicographical_topological_sort
 
-from .models import FormLogic, FormStep
+from .models import Form, FormLogic, FormStep
 
 
 def create_graph(rules: Iterable[FormLogic]) -> DiGraph:
@@ -44,11 +44,42 @@ def create_graph(rules: Iterable[FormLogic]) -> DiGraph:
                     graph.get_edge_data(dep_rule, rule)["variables"].add(key)
                     continue
 
+                # If we have a self cycle, perform some additional checks to determine
+                # whether we need to add it to the graph.
+                if dep_rule == rule and _is_valid_self_cycle(rule, key):
+                    continue
+
                 # Add an edge from the dependency rule to the rule we are currently
                 # evaluating.
                 graph.add_edge(dep_rule, rule, variables={key})
 
     return graph
+
+
+def _is_valid_self_cycle(rule: FormLogic, key: str) -> bool:
+    """
+    Determine whether the self cycle of a rule is valid.
+
+    If a rule contains a self cycle, i.e. a variable key appears in both the input and
+    output variables, it is possible that the rule is still valid. For example, if one
+    action sets a variable, and a subsequent action uses this variable as an input.
+
+    :param rule: Logic rule.
+    :param key: Variable key related to the self cycle.
+    :returns bool: Whether the self cycle is valid.
+    """
+    # If the input variables from the trigger overlap with the output variables of the
+    # action, it is not a valid self cycle.
+    if not rule.input_variables_from_trigger.isdisjoint(
+        rule.output_variables_from_action_map
+    ):
+        return False
+
+    # In this context, the self cycle is valid if the variable is not used as input and
+    # output of a single action.
+    return rule.input_variables_from_action_map[key].isdisjoint(
+        rule.output_variables_from_action_map[key]
+    )
 
 
 @dataclass
@@ -163,3 +194,53 @@ def add_missing_steps(graph: DiGraph, first_step: FormStep) -> None:
             parent_steps |= parent.steps
 
         rule.steps = parent_steps
+
+
+class CyclesDetected(Exception):
+    def __init__(self, cycles: Collection[Cycle], *args, **kwargs):
+        self.cycles = cycles
+        super().__init__(*args, **kwargs)
+
+
+type RuleWithSteps = tuple[FormLogic, Collection[FormStep]]
+
+
+def analyze_rules(
+    form: Form,
+    rules: Sequence[FormLogic] | None = None,
+    first_step: FormStep | None = None,
+) -> Sequence[RuleWithSteps]:
+    """
+    Determine which form steps are relevant for each logic rule in the form.
+
+    :param form: The form to analyze. It must have the new logic evaluation enabled.
+    :param rules: Input rules for the form to analyze. If not provided, the current
+      set of rules on the form will be used. The instances can be unsaved, in-memory
+      instances.
+    :param first_step: Optionally pass in the first step as performance optimization. If
+      not provided, it will be queried from the provided ``form``.
+    :returns: An ordered sequence of ``(rule, steps)`` pairs. The input rules are
+      re-ordered according to their dependencies. The collection of steps specifies on
+      which steps the rule must be executed.
+    """
+    if not form.new_logic_evaluation_enabled:
+        raise ValueError("Form to analyze must have the new logic evaluation enabled.")
+
+    if rules is None:
+        rules = list(form.formlogic_set.order_by("order"))
+
+    graph = create_graph(rules)
+    if cycles := detect_cycles(graph):
+        raise CyclesDetected(cycles)
+
+    if first_step is None:
+        form_steps: Sequence[FormStep] = list(form.formstep_set.order_by("order"))
+        assert form_steps, "Forms without any steps are not allowed."
+        first_step = form_steps[0]
+
+    assert first_step.order == 0
+    add_missing_steps(graph, first_step)
+    new_rule_order = resolve_order(graph)
+
+    # Reorder the incoming data according to the determined order.
+    return [(rule, rule.steps) for rule in new_rule_order]

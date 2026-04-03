@@ -121,8 +121,8 @@ const initialFormState = {
       brpPersonenProcessingHeaderValue: '',
     },
     authBackends: [],
-    newRendererEnabled: false,
-    newLogicEvaluationEnabled: false,
+    newRendererEnabled: true,
+    newLogicEvaluationEnabled: true,
   },
   newForm: true,
   formSteps: [],
@@ -1325,6 +1325,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
               availableCategories={state.availableCategories}
               availableThemes={state.availableThemes}
               onAuthPluginChange={onAuthPluginChange}
+              hasTriggerFromStep={state.logicRules.some(rule => !!rule.triggerFromStep)}
             />
           </TabPanel>
 

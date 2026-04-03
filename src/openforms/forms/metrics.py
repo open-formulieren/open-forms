@@ -19,6 +19,10 @@ def count_forms(options: metrics.CallbackOptions) -> Collection[metrics.Observat
             "id",
             filter=Q(_is_deleted=False, new_renderer_enabled=True),
         ),
+        new_logic_evaluation_enabled=Count(
+            "id",
+            filter=Q(_is_deleted=False, new_logic_evaluation_enabled=True),
+        ),
         translation_enabled=Count(
             "id", filter=Q(_is_deleted=False, translation_enabled=True)
         ),

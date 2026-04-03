@@ -44,7 +44,7 @@ register("auth")(DemoAuth)
 class VariablesInLogicBulkAPITests(APITestCase):
     def test_user_defined_variable_in_trigger(self):
         user = SuperUserFactory.create()
-        form = FormFactory.create()
+        form = FormFactory.create(generate_minimal_setup=True)
         FormVariableFactory.create(
             source=FormVariableSources.user_defined, key="testUserDefined", form=form
         )
@@ -75,7 +75,7 @@ class VariablesInLogicBulkAPITests(APITestCase):
 
     def test_invalid_user_defined_variable_in_trigger(self):
         user = SuperUserFactory.create()
-        form = FormFactory.create()
+        form = FormFactory.create(generate_minimal_setup=True)
         FormVariableFactory.create(
             source=FormVariableSources.user_defined, key="testUserDefined", form=form
         )
@@ -114,7 +114,7 @@ class VariablesInLogicBulkAPITests(APITestCase):
 
     def test_invalid_date_format_for_user_defined_variable(self):
         user = SuperUserFactory.create()
-        form = FormFactory.create()
+        form = FormFactory.create(generate_minimal_setup=True)
         FormVariableFactory.create(
             source=FormVariableSources.user_defined,
             key="date_var",
@@ -155,7 +155,7 @@ class VariablesInLogicBulkAPITests(APITestCase):
 
     def test_valid_date_format_for_user_defined_variable(self):
         user = SuperUserFactory.create()
-        form = FormFactory.create()
+        form = FormFactory.create(generate_minimal_setup=True)
         FormVariableFactory.create(
             source=FormVariableSources.user_defined,
             key="date_var",
@@ -192,7 +192,7 @@ class VariablesInLogicBulkAPITests(APITestCase):
 
     def test_static_variable_in_trigger(self):
         user = SuperUserFactory.create()
-        form = FormFactory.create()
+        form = FormFactory.create(generate_minimal_setup=True)
 
         form_logic_data = [
             {

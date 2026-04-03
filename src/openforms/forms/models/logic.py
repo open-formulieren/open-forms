@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import uuid as _uuid
-from collections.abc import Collection, Iterator
+from collections import defaultdict
+from collections.abc import Collection, Iterator, Mapping
 from typing import TYPE_CHECKING
 
 from django.core.exceptions import ValidationError
@@ -70,6 +71,8 @@ class FormLogic(OrderedModel):
 
     order_with_respect_to = "form"
     _steps: set[FormStep] | None = None
+    _input_variables_from_action_map: Mapping[str, set[int]] | None = None
+    _output_variables_from_action_map: Mapping[str, set[int]] | None = None
 
     class Meta(OrderedModel.Meta):
         verbose_name = _("form logic")
@@ -117,11 +120,13 @@ class FormLogic(OrderedModel):
         return {action.component for action in self.hidden_actions}
 
     @property
-    def unresolved_input_variables_from_trigger(self) -> set[str]:
-        """Set of unresolved input variables from the JSON logic trigger."""
+    def input_variables_from_trigger(self) -> set[str]:
+        """Set of resolved input variables from the JSON logic trigger."""
         return {
-            var.key
+            resolved_key
             for var in introspect_json_logic(self.json_logic_trigger).get_input_keys()
+            if (resolved_key := resolve_key(var.key, self.form.all_form_variable_keys))
+            is not None
         }
 
     @property
@@ -146,37 +151,71 @@ class FormLogic(OrderedModel):
         self._steps = v
 
     @property
+    def input_variables_from_action_map(self) -> Mapping[str, set[int]]:
+        """
+        Mapping from action input variable keys (resolved) to a set of action numbers in
+        which they are used.
+        """
+        if self._input_variables_from_action_map is None:
+            self._create_variables_action_maps()
+        assert self._input_variables_from_action_map is not None
+        return self._input_variables_from_action_map
+
+    @property
+    def output_variables_from_action_map(self) -> Mapping[str, set[int]]:
+        """
+        Mapping from action output variable keys (resolved) to a set of action numbers
+        in which they are used.
+        """
+        if self._output_variables_from_action_map is None:
+            self._create_variables_action_maps()
+        assert self._output_variables_from_action_map is not None
+        return self._output_variables_from_action_map
+
+    def _create_variables_action_maps(self) -> None:
+        """
+        Create mappings from variable keys (resolved) to a set of action numbers in
+        which they are used.
+        """
+        input_mapping: defaultdict[str, set[int]] = defaultdict(set)
+        output_mapping: defaultdict[str, set[int]] = defaultdict(set)
+        for i, action in enumerate(self.action_operations):
+            # Input variables mapping
+            for key in action.unresolved_input_variables:
+                resolved_key = resolve_key(key, self.form.all_form_variable_keys)
+                if resolved_key is None:
+                    continue
+                input_mapping[resolved_key].add(i)
+
+            # Output variables mapping
+            for key in action.unresolved_output_variables:
+                # Resolving the key here should not be necessary, as we do not support
+                # changing values inside editgrid items (and also selectboxes, partners,
+                # children), so it should already be the top-level key. We do need to do
+                # the check on all form variables, as they might still include
+                # components for which we don't have a variable (e.g. layout
+                # components).
+                if key not in self.form.all_form_variable_keys:
+                    continue
+                output_mapping[key].add(i)
+
+        self._input_variables_from_action_map = input_mapping
+        self._output_variables_from_action_map = output_mapping
+
+    @property
     def input_variable_keys(self) -> Collection[str]:
         """
-        Set of input form variable keys, determined from the JSON logic trigger and all
-        actions.
+        Collection of input form variable keys, determined from the JSON logic trigger
+        and all actions.
         """
-        raw_input_keys = self.unresolved_input_variables_from_trigger
-        for action in self.action_operations:
-            raw_input_keys |= action.unresolved_input_variables
-
-        return {
-            resolved_key
-            for key in raw_input_keys
-            if (resolved_key := resolve_key(key, self.form.all_form_variable_keys))
-            is not None
-        }
+        return set(self.input_variables_from_action_map).union(
+            self.input_variables_from_trigger
+        )
 
     @property
     def output_variable_keys(self) -> Collection[str]:
-        """Set of output form variable keys, determined from all actions."""
-        raw_output_keys = set()
-        for action in self.action_operations:
-            raw_output_keys |= action.unresolved_output_variables
-
-        # Resolving the key here should not be necessary, as we do not support changing
-        # values inside editgrid items (and also selectboxes, partners, children), so
-        # it should already be the top-level key. We do need to do the check on all
-        # form variables, as they might still include components for which we don't have
-        # a variable (e.g. layout components).
-        return {
-            key for key in raw_output_keys if key in self.form.all_form_variable_keys
-        }
+        """Collection of output form variable keys, determined from all actions."""
+        return set(self.output_variables_from_action_map)
 
     @property
     def is_backend_logic_evaluation_required(self) -> bool:

@@ -65,6 +65,7 @@ class SubmissionStepSerializerTests(TestCase):
                 },
             ],
         )
+        step.form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=step.form)
 
         # Execute validation

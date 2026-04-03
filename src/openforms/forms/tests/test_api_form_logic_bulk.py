@@ -80,15 +80,18 @@ class FormLogicAPITests(APITestCase):
 
     def test_create_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
-        form = FormFactory.create()
-        FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
                 "components": [
                     {
                         "type": "textfield",
                         "key": "step1_textfield1",
-                    }
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "step1_textfield2",
+                    },
                 ]
             },
         )
@@ -106,7 +109,7 @@ class FormLogicAPITests(APITestCase):
                 },
                 "actions": [
                     {
-                        "component": "step1_textfield1",
+                        "component": "step1_textfield2",
                         "action": {
                             "name": "Hide element",
                             "type": "property",
@@ -131,6 +134,32 @@ class FormLogicAPITests(APITestCase):
         form_logic = form_logics_qs.get()
 
         self.assertEqual(form, form_logic.form)
+
+    def test_create_form_logic_for_appointment_forms_is_forbidden(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form = FormFactory.create(is_appointment_form=True)
+        form_logic_data = [
+            {
+                "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+                "order": 0,
+                "json_logic_trigger": True,
+                "actions": [],
+                "isAdvanced": True,
+            }
+        ]
+        self.client.force_authenticate(user=user)
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.put(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response_data = response.json()
+        error = response_data["invalidParams"][0]
+        self.assertEqual(error["name"], "nonFieldErrors")
+        self.assertEqual(error["code"], "invalid")
+        self.assertEqual(
+            error["reason"], _("Appointment forms cannot have logic rules.")
+        )
 
     def test_create_logic_with_dates(self):
         user = SuperUserFactory.create(username="test", password="test")
@@ -271,7 +300,18 @@ class FormLogicAPITests(APITestCase):
 
     def test_delete_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
-        form = FormFactory.create()
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "step1_textfield1",
+                        "label": "Step 1 textfield",
+                    }
+                ]
+            },
+        )
 
         FormLogicFactory.create(
             form=form,
@@ -531,6 +571,10 @@ class FormLogicAPITests(APITestCase):
                         "type": "textfield",
                         "key": "text2",
                     },
+                    {
+                        "type": "textfield",
+                        "key": "text3",
+                    },
                 ]
             },
         )
@@ -547,7 +591,7 @@ class FormLogicAPITests(APITestCase):
                 },
                 "actions": [
                     {
-                        "component": "text2",
+                        "component": "text3",
                         "action": {
                             "type": "property",
                             "property": {
@@ -1049,7 +1093,7 @@ class FormLogicAPITests(APITestCase):
                 ]
             },
         )
-        form_step = form.formstep_set.first()
+        form_step2 = FormStepFactory.create(form=form)
 
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = [
@@ -1059,7 +1103,7 @@ class FormLogicAPITests(APITestCase):
                 "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
                 "actions": [
                     {
-                        "formStepUuid": f"{form_step.uuid}",
+                        "formStepUuid": f"{form_step2.uuid}",
                         "action": {
                             "name": "Mark step as not applicable",
                             "type": "step-not-applicable",
@@ -1080,7 +1124,7 @@ class FormLogicAPITests(APITestCase):
     def test_create_form_logic_with_trigger_from_step(self):
         user = SuperUserFactory.create(username="test", password="test")
         self.client.force_authenticate(user=user)
-        form1, form2 = FormFactory.create_batch(2)
+        form1, form2 = FormFactory.create_batch(2, new_logic_evaluation_enabled=False)
         step1 = FormStepFactory.create(
             form=form1,
             form_definition__configuration={
@@ -1144,6 +1188,47 @@ class FormLogicAPITests(APITestCase):
                 response.data["invalid_params"][0]["name"], "0.triggerFromStep"
             )
             self.assertEqual(response.data["invalid_params"][0]["code"], "invalid")
+
+    def test_create_form_logic_with_trigger_from_step_forbidden_with_new_logic_evaluation(
+        self,
+    ):
+        user = SuperUserFactory.create(username="test", password="test")
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            new_logic_evaluation_enabled=True,
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [{"type": "textfield", "key": "textfield"}]
+            },
+        )
+        form_step = form.formstep_set.get()
+        step1_path = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_step.uuid},
+        )
+        rule_data = [
+            {
+                "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+                "order": 0,
+                "json_logic_trigger": {
+                    "==": [
+                        {"var": "textfield"},
+                        "hide step 1",
+                    ]
+                },
+                "triggerFromStep": f"http://testserver{step1_path}",
+                "actions": [],
+            }
+        ]
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.put(url, data=rule_data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response_data = response.json()
+        error = response_data["invalidParams"][0]
+        self.assertEqual(error["name"], "0.triggerFromStep")
+        self.assertEqual(error["code"], "invalid")
 
     def test_create_form_logic_doesnt_crash(self):
         user = SuperUserFactory.create(username="test", password="test")
@@ -1279,6 +1364,7 @@ class FormLogicAPITests(APITestCase):
         self.client.force_authenticate(user=user)
         form = FormFactory.create(
             generate_minimal_setup=True,
+            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {"type": "textfield", "key": "variable1"},
@@ -1317,20 +1403,104 @@ class FormLogicAPITests(APITestCase):
             },
         ]
 
-        # 1. transaction SAVEPOINT
+        # 1. Transaction SAVEPOINT
         # 2. Fetch the form (from UUID param in endpoint)
         # 3. Delete all the existing logic rules (to be replaced)
-        # 4. Look up all the form steps for the form (once)
-        # 5. Look up all the form variables for the form (once)
+        # 4. Look up all the form variables for the form (prefetched in `FormViewSet.logic_rules_bulk_update`)
+        # 5. Look up all the form steps for the form (`form.form_step_map` in `FormViewSet.logic_rules_bulk_update`)
         # 6. Get max order within form (from ordered_model.models.OrderedModelQuerySet.bulk_create)
         # 7. Bulk insert logic rules
-        # 8. Prefetch form steps for all rules
-        # 9. transaction RELEASE SAVEPOINT
-        with self.assertNumQueries(9):
+        # 8. Delete existing `FormLogic.form_steps` relations (`FormLogicListSerializer.create`)
+        # 9. Bulk create new `FormLogic.form_steps` relations (`FormLogicListSerializer.create`)
+        # 10 and 11. Prefetch form steps and `FormStep.form` relation for all rules (`FormViewSet.logic_rules_bulk_update`)
+        # 12. Transaction RELEASE SAVEPOINT
+        with self.assertNumQueries(12):
             response = self.client.put(url, data=form_logic_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(FormLogic.objects.count(), 2)
+
+    @override_settings(MIDDLEWARE=[])  # cut out some irrelevant queries
+    def test_performance_bulk_create_data_with_step_applicable_and_disable_next_actions(
+        self,
+    ):
+        """
+        Assert that a constant number of queries are performed on logic bulk create,
+        specifically for step-(not)-applicable and disable-next actions.
+        """
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(new_logic_evaluation_enabled=True)
+        step_1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "variable1"},
+                    {"type": "textfield", "key": "variable2"},
+                    {"type": "textfield", "key": "variable3"},
+                ]
+            },
+        )
+        step_2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "variable4"},
+                    {"type": "textfield", "key": "variable5"},
+                ]
+            },
+        )
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+        form_logic_data = [
+            {
+                "form": f"http://testserver{form_path}",
+                "order": 1,
+                "json_logic_trigger": {
+                    "and": [
+                        {"var": "variable1"},
+                        {"var": "variable2"},
+                    ]
+                },
+                # Note that this combination of actions do not make much sense - they
+                # are just used here to test the performance.
+                "actions": [
+                    {
+                        "action": {"type": "step-not-applicable"},
+                        "form_step_uuid": str(step_2.uuid),
+                    },
+                    {
+                        "action": {"type": "step-applicable"},
+                        "form_step_uuid": str(step_2.uuid),
+                    },
+                    {
+                        "action": {"type": "step-not-applicable"},
+                        "form_step_uuid": str(step_2.uuid),
+                    },
+                    {
+                        "action": {"type": "disable-next"},
+                        "form_step_uuid": str(step_1.uuid),
+                    },
+                ],
+            },
+        ]
+
+        # 1. Transaction SAVEPOINT
+        # 2. Fetch the form (from UUID param in endpoint)
+        # 3. Delete all the existing logic rules (to be replaced)
+        # 4. Look up all the form variables for the form (prefetched in `FormViewSet.logic_rules_bulk_update`)
+        # 5. Look up all the form steps for the form (`form.form_step_map` in `FormViewSet.logic_rules_bulk_update`)
+        # 6. Get max order within form (from ordered_model.models.OrderedModelQuerySet.bulk_create)
+        # 7. Bulk insert logic rules
+        # 8. Delete existing `FormLogic.form_steps` relations (`FormLogicListSerializer.create`)
+        # 9. Bulk create new `FormLogic.form_steps` relations (`FormLogicListSerializer.create`)
+        # 10 and 11. Prefetch form steps and `FormStep.form` relation for all rules (`FormViewSet.logic_rules_bulk_update`)
+        # 12. Transaction RELEASE SAVEPOINT
+        with self.assertNumQueries(12):
+            response = self.client.put(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(FormLogic.objects.count(), 1)
 
     def test_create_rule_with_evaluate_dmn_action(self):
         user = SuperUserFactory.create(username="test", password="test")

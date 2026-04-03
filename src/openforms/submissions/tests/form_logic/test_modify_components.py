@@ -63,6 +63,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -134,6 +135,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
             submission=submission, form_step=form_step
@@ -217,6 +219,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -290,6 +293,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -363,6 +367,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -436,6 +441,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -509,6 +515,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -573,6 +580,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -654,6 +662,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
@@ -744,6 +753,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
             submission=submission,
@@ -803,6 +813,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step1 = SubmissionStepFactory.create(
             submission=submission,
@@ -1002,6 +1013,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
@@ -1101,6 +1113,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.build(
@@ -1195,6 +1208,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
@@ -1303,6 +1317,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
@@ -1391,6 +1406,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
@@ -1427,7 +1443,7 @@ class ComponentModificationTests(TestCase):
                 ]
             },
         )
-        rule = FormLogicFactory.create(
+        FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "checkbox"}, True]},
             actions=[
@@ -1445,7 +1461,7 @@ class ComponentModificationTests(TestCase):
                 }
             ],
         )
-        rule.form_steps.set([step])
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
             submission=submission, form_step=step

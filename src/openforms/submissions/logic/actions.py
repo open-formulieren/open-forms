@@ -6,6 +6,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from itertools import chain
 from typing import Any, Self, TypedDict
+from uuid import UUID
 
 from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
@@ -82,7 +83,7 @@ class ActionOperation:
         directly from the action configuration, and might not represent actual available
         form variables.
 
-        Should be overridden in the child class
+        Should be overridden in the child class.
         """
         raise NotImplementedError()
 
@@ -259,7 +260,7 @@ class DisableNextAction(ActionOperation):
 
     @property
     def steps(self) -> set[FormStep]:
-        return {self.rule.form.formstep_set.get(uuid=self.form_step_identifier)}
+        return {self.rule.form.form_step_map[UUID(self.form_step_identifier)]}
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -293,13 +294,13 @@ class StepNotApplicableAction(ActionOperation):
         # Together with detecting "self cycles" in the dependency graph, though, we can
         # detect if the rule uses a field from the current step as input, which would be
         # a weird thing to do.
-        form_step = self.rule.form.formstep_set.get(uuid=self.form_step_identifier)
+        form_step = self.rule.form.form_step_map[UUID(self.form_step_identifier)]
         configuration = form_step.form_definition.configuration_wrapper
         return set(configuration.component_map.keys())
 
     @property
     def steps(self) -> set[FormStep]:
-        return set(self.rule.form.formstep_set.all())
+        return set(self.rule.form.form_step_map.values())
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -349,13 +350,13 @@ class StepApplicableAction(ActionOperation):
         # Together with detecting "self cycles" in the dependency graph, though, we can
         # detect if the rule uses a field from the current step as input, which would be
         # a weird thing to do.
-        form_step = self.rule.form.formstep_set.get(uuid=self.form_step_identifier)
+        form_step = self.rule.form.form_step_map[UUID(self.form_step_identifier)]
         configuration = form_step.form_definition.configuration_wrapper
         return set(configuration.component_map.keys())
 
     @property
     def steps(self) -> set[FormStep]:
-        return set(self.rule.form.formstep_set.all())
+        return set(self.rule.form.form_step_map.values())
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -404,8 +405,7 @@ class VariableAction(ActionOperation):
         # If we cannot resolve a step from the output variables (we are setting a value
         # on a user-defined variable), try to resolve it from the input variables.
         return self._get_steps(
-            self.rule.unresolved_input_variables_from_trigger
-            | self.unresolved_input_variables
+            self.rule.input_variables_from_trigger | self.unresolved_input_variables
         )
 
     @classmethod
@@ -618,8 +618,7 @@ class ServiceFetchAction(ActionOperation):
         # If we cannot resolve a step from the output variables (we are setting a value
         # on a user-defined variable), try to resolve it from the input variables.
         return self._get_steps(
-            self.rule.unresolved_input_variables_from_trigger
-            | self.unresolved_input_variables
+            self.rule.input_variables_from_trigger | self.unresolved_input_variables
         )
 
     @classmethod
@@ -689,8 +688,7 @@ class EvaluateDMNAction(ActionOperation):
         # If we cannot resolve a step from the output variables (we are setting a value
         # on a user-defined variable), try to resolve it from the input variables.
         return self._get_steps(
-            self.rule.unresolved_input_variables_from_trigger
-            | self.unresolved_input_variables
+            self.rule.input_variables_from_trigger | self.unresolved_input_variables
         )
 
     @classmethod
@@ -770,7 +768,7 @@ class SetRegistrationBackendAction(ActionOperation):
 
     @property
     def steps(self) -> set[FormStep]:
-        return self._get_steps(self.rule.unresolved_input_variables_from_trigger)
+        return self._get_steps(self.rule.input_variables_from_trigger)
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:

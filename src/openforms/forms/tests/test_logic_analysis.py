@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
@@ -255,6 +255,7 @@ class DependencyGraphTests(TestCase):
             order = resolve_order(graph)
             self.assertEqual(order, [rule_1, rule_2])
 
+    @tag("gh-5862")
     def test_with_cycle(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -345,6 +346,140 @@ class DependencyGraphTests(TestCase):
             cycle = list(cycles)[0]
             self.assertEqual(set(cycle.rules), {rule_1, rule_2, rule_3})
             self.assertEqual(set(cycle.variables), {"bar", "baz", "foo"})
+
+    @tag("gh-5862")
+    def test_with_self_cycle(self):
+        """
+        Ensure that it is not allowed for rules to have:
+         1. The same variable present in the trigger and the output variables of an
+            action.
+         2. An action to have a variable in both the input and output variables.
+        """
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "foo",
+                        "type": "textfield",
+                        "label": "Foo",
+                    },
+                    {
+                        "key": "bar",
+                        "type": "number",
+                        "label": "Number",
+                    },
+                ],
+            },
+        )
+
+        rule_1 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!=": [{"var": "foo"}, ""]},
+            actions=[
+                {
+                    "action": {
+                        "name": "Set foo",
+                        "type": "property",
+                        "property": {"value": "disabled", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "foo",
+                }
+            ],
+        )
+
+        rule_2 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "name": "Set bar",
+                        "type": "variable",
+                        "value": {"+": [{"var": "bar"}, 1]},
+                    },
+                    "variable": "bar",
+                }
+            ],
+        )
+
+        graph = create_graph([rule_1, rule_2])
+
+        with self.subTest("Graph structure"):
+            self.assertEqual(list(graph.nodes), [rule_1, rule_2])
+            self.assertEqual(list(graph.edges), [(rule_1, rule_1), (rule_2, rule_2)])
+
+        with self.subTest("Cycles"):
+            cycles = detect_cycles(graph)
+            assert cycles is not None
+            cycles = list(cycles)
+            self.assertEqual(len(cycles), 2)
+            self.assertEqual(set(cycles[0].rules), {rule_1})
+            self.assertEqual(set(cycles[0].variables), {"foo"})
+
+            self.assertEqual(set(cycles[1].rules), {rule_2})
+            self.assertEqual(set(cycles[1].variables), {"bar"})
+
+    @tag("gh-5862")
+    def test_with_self_cycle_but_in_separate_actions(self):
+        """
+        Ensure that it is allowed to have one action that sets a variable, and a
+        subsequent action that uses this variable as an input.
+
+        Although the rule as a whole contains the same variable in the input and output
+        variables, the separate actions cause it to resolve to a final state.
+        """
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "foo",
+                        "type": "textfield",
+                        "label": "Foo",
+                    },
+                    {
+                        "key": "bar",
+                        "type": "textfield",
+                        "label": "Bar",
+                    },
+                ],
+            },
+        )
+
+        rule = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "name": "Set foo",
+                        "type": "variable",
+                        "value": "foo",
+                    },
+                    "variable": "foo",
+                },
+                {
+                    "action": {
+                        "name": "Set bar from foo",
+                        "type": "variable",
+                        "value": {"var": "foo"},
+                    },
+                    "variable": "bar",
+                },
+            ],
+        )
+
+        graph = create_graph([rule])
+
+        with self.subTest("Graph structure"):
+            self.assertEqual(list(graph.nodes), [rule])
+            self.assertEqual(list(graph.edges), [])
+
+        with self.subTest("Cycles"):
+            cycles = detect_cycles(graph)
+            self.assertIsNone(cycles)
 
     def test_with_step_not_applicable_action(self):
         form = FormFactory.create()
