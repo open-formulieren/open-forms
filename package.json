@@ -91,7 +91,6 @@
     "@storybook/addon-webpack5-compiler-babel": "^3.0.5",
     "@storybook/react-webpack5": "9.1.19",
     "@storybook/test-runner": "^0.22.0",
-    "@utrecht/components": "^7.4.0",
     "@utrecht/heading-2-css": "^2.0.1",
     "@utrecht/icon-css": "^3.0.1",
     "@utrecht/link-css": "^2.0.1",
