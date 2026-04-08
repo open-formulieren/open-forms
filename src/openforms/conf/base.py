@@ -14,7 +14,7 @@ import structlog
 from celery.schedules import crontab
 from corsheaders.defaults import default_headers as default_cors_headers
 from log_outgoing_requests.datastructures import ContentType
-from log_outgoing_requests.formatters import HttpFormatter
+from log_outgoing_requests.structlog import ExtractRequestAndResponseDetails
 from maykin_common.config import config
 from maykin_common.health_checks import default_health_check_apps
 from upgrade_check import UpgradeCheck, VersionRange
@@ -435,6 +435,7 @@ LOGGING = {
                 structlog.processors.TimeStamper(fmt="iso"),
                 structlog.stdlib.add_logger_name,
                 structlog.stdlib.add_log_level,
+                ExtractRequestAndResponseDetails(expand_headers=False),
                 drop_user_agent_in_dev,
                 add_open_telemetry_spans,
                 structlog.stdlib.PositionalArgumentsFormatter(),
@@ -448,13 +449,12 @@ LOGGING = {
                 structlog.processors.TimeStamper(fmt="iso"),
                 structlog.stdlib.add_logger_name,
                 structlog.stdlib.add_log_level,
+                ExtractRequestAndResponseDetails(expand_headers=True),
                 drop_user_agent_in_dev,
                 add_open_telemetry_spans,
                 structlog.stdlib.PositionalArgumentsFormatter(),
             ],
         },
-        # legacy
-        "outgoing_requests": {"()": HttpFormatter},
     },
     "filters": {},
     "handlers": {
@@ -483,15 +483,11 @@ LOGGING = {
             "buffer_size": 5,
             "flush_interval": 15.0,
         },
-        "log_outgoing_requests": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
-            # TODO: use nicer formatter, OIP has something?
-            "formatter": "outgoing_requests",
-        },
         "save_outgoing_requests": {
             "level": "DEBUG",
-            "class": "log_outgoing_requests.handlers.DatabaseOutgoingRequestsHandler",
+            "()": "log_outgoing_requests.handlers.outgoing_requests_handler_factory",
+            "buffer_size": 3,
+            "flush_interval": 15.0,
         },
     },
     "loggers": {
@@ -536,12 +532,10 @@ LOGGING = {
         },
         "log_outgoing_requests": {
             "handlers": (
-                ["log_outgoing_requests", "save_outgoing_requests"]
-                if LOG_OUTGOING_REQUESTS
-                else []
+                ["console", "save_outgoing_requests"] if LOG_OUTGOING_REQUESTS else []
             ),
             "level": "DEBUG",
-            "propagate": True,
+            "propagate": False,
         },
         "django_structlog": {
             "handlers": [_default_handler],
@@ -1317,6 +1311,8 @@ LOG_OUTGOING_REQUESTS_MAX_AGE = config("LOG_OUTGOING_REQUESTS_MAX_AGE", default=
 LOG_OUTGOING_REQUESTS_RESET_DB_SAVE_AFTER = config(
     "LOG_OUTGOING_REQUESTS_RESET_DB_SAVE_AFTER", default=60
 )
+LOG_OUTGOING_REQUESTS_HANDLER_USE_QUEUE = True
+LOG_OUTGOING_REQUESTS_HANDLER_ON_ERROR = sentry_sdk.capture_exception
 
 #
 # DJANGO-FLAGS - manage feature flags.

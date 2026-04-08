@@ -191,7 +191,7 @@ django-jsonform==2.23.2
     # via
     #   -r requirements/base.in
     #   mozilla-django-oidc-db
-django-log-outgoing-requests==0.7.1
+django-log-outgoing-requests==0.8.0
     # via -r requirements/base.in
 django-modeltranslation==0.19.19
     # via -r requirements/base.in
@@ -646,6 +646,7 @@ typing-extensions==4.15.0
     # via
     #   -r requirements/base.in
     #   beautifulsoup4
+    #   django-log-outgoing-requests
     #   django-modeltranslation
     #   django-timeline-logger
     #   grpcio

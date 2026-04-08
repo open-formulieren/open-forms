@@ -44,6 +44,9 @@ CACHES.update(
 # ensure we insert audit logs in the main thread & DB transaction in tests
 TIMELINE_HANDLER_USE_QUEUE = False
 
+# ensure we insert outgoing request logs in the main thread & DB transaction in tests
+LOG_OUTGOING_REQUESTS_HANDLER_USE_QUEUE = False
+
 # shut up logging
 mute_logging(LOGGING)
 

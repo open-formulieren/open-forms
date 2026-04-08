@@ -126,9 +126,10 @@ if config("PROFILE", default=False):
 # Timeline-logger
 #
 
-# ensure we insert audit logs in the main thread & DB transaction in tests
+# ensure we insert (audit) logs in the main thread & DB transaction in tests
 if "test" in sys.argv:
     TIMELINE_HANDLER_USE_QUEUE = False
+    LOG_OUTGOING_REQUESTS_HANDLER_USE_QUEUE = False
 
 #
 # Disable CSP rate limit
