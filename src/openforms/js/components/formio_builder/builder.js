@@ -8,7 +8,7 @@ import {FeatureFlagsContext, FormContext} from 'components/admin/form_design/Con
 import useOnChanged from 'hooks/useOnChanged';
 import jsonScriptToVar from 'utils/json-script';
 
-import {APPOINTMENT_BUILDER_DATA, DEFAULT_BUILDER_DATA} from './builderData';
+import {BUILDER_FORM_TYPE_MAPPINGS} from './builderData';
 import customTemplates from './customTemplates';
 
 Templates.current = customTemplates;
@@ -18,10 +18,10 @@ const nlStrings = require('lang/formio/nl.json');
 const getBuilderOptions = () => {
   const maxFileUploadSize = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE');
   const formFieldsRequiredDefault = jsonScriptToVar('config-REQUIRED_DEFAULT');
-  const formMode = jsonScriptToVar('FORM_MODE');
+  const formType = jsonScriptToVar('FORM_TYPE');
 
   return {
-    builder: formMode === 'appointment' ? APPOINTMENT_BUILDER_DATA : DEFAULT_BUILDER_DATA,
+    builder: BUILDER_FORM_TYPE_MAPPINGS[formType],
     noDefaultSubmitButton: true,
     language: 'nl',
     i18n: {
