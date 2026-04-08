@@ -961,6 +961,12 @@
       "value": "De tekst op de knop die aangeeft dat het formulier gestart kan worden. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "7KsVk/": [
+    {
+      "type": 0,
+      "value": "Single page can be enabled only when there is exactly one form step configured."
+    }
+  ],
   "7Ldfn+": [
     {
       "type": 0,
@@ -2272,12 +2278,6 @@
       "value": "Annuleren"
     }
   ],
-  "G2rpx2": [
-    {
-      "type": 0,
-      "value": "Geef de voortgang in de formulierstappen wel of niet weer."
-    }
-  ],
   "G5q9GH": [
     {
       "type": 0,
@@ -3478,12 +3478,6 @@
     {
       "type": 0,
       "value": "."
-    }
-  ],
-  "QXfH7G": [
-    {
-      "type": 0,
-      "value": "Geeft aan of de gebruiker het formulier kan inzenden of niet, en of een overzichtspagina getoond wordt indien niet."
     }
   ],
   "QaPqxz": [
@@ -6097,6 +6091,12 @@
       "value": "Toon formulier"
     }
   ],
+  "k6t6Xi": [
+    {
+      "type": 0,
+      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms."
+    }
+  ],
   "k9CT3p": [
     {
       "type": 0,
@@ -6773,6 +6773,12 @@
     {
       "type": 0,
       "value": "De omschrijving die gebruikt wordt voor het registreren van kinderen (als betrokkene)."
+    }
+  ],
+  "pdiR+8": [
+    {
+      "type": 0,
+      "value": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form."
     }
   ],
   "pdmkVe": [

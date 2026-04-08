@@ -414,6 +414,11 @@
     "description": "literals.beginText help text",
     "originalDefault": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
   },
+  "7KsVk/": {
+    "defaultMessage": "Single page can be enabled only when there is exactly one form step configured.",
+    "description": "Single page warning icon text",
+    "originalDefault": "Single page can be enabled only when there is exactly one form step configured."
+  },
   "7Lk/+w": {
     "defaultMessage": "Type",
     "description": "Family members options: 'Type' label",
@@ -993,11 +998,6 @@
     "defaultMessage": "Cancel rule creation",
     "description": "Cancel link help",
     "originalDefault": "Cancel rule creation"
-  },
-  "G2rpx2": {
-    "defaultMessage": "Whether the step progression should be displayed in the UI or not.",
-    "description": "Progress indicator help text",
-    "originalDefault": "Whether the step progression should be displayed in the UI or not."
   },
   "G5q9GH": {
     "defaultMessage": "Reset to default description",
@@ -1693,11 +1693,6 @@
     "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>.",
     "description": "StUF-ZDS registration variablesMapping message",
     "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>."
-  },
-  "QXfH7G": {
-    "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not.",
-    "description": "Form submissionAllowed field help text",
-    "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
   },
   "QaPqxz": {
     "defaultMessage": "No (with overview page)",
@@ -2864,6 +2859,11 @@
     "description": "Show form button",
     "originalDefault": "Show form"
   },
+  "k6t6Xi": {
+    "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms.",
+    "description": "Form submissionAllowed field help text",
+    "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms."
+  },
   "k9CT3p": {
     "defaultMessage": "Whether to show a link to the main website on the confirmation page.",
     "description": "Display main website link help text",
@@ -3168,6 +3168,11 @@
     "defaultMessage": "The description that will be used in children registration.",
     "description": "ZGW APIs registration options 'childrenDescription' help text",
     "originalDefault": "The description that will be used in children registration."
+  },
+  "pdiR+8": {
+    "defaultMessage": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form.",
+    "description": "Progress indicator help text",
+    "originalDefault": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form."
   },
   "piUWzT": {
     "defaultMessage": "Select registration backend",
