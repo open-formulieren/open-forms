@@ -1,4 +1,4 @@
-import {fn} from 'storybook/test';
+import {expect, fn, within} from 'storybook/test';
 
 import {
   AdminChangeFormDecorator,
@@ -72,8 +72,27 @@ export default {
 
 export const Default = {};
 
+export const RegularFormStepsExample = {
+  args: {
+    form: {type: 'regular'},
+  },
+};
+
+export const SinglePageFormStepsExample = {
+  args: {
+    form: {type: 'single_page'},
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const loginRequired = canvas.queryByText('Vereist authenticatie');
+    expect(loginRequired).toBeNull();
+  },
+};
+
 export const WithValidationErrors = {
   args: {
+    form: {type: 'regular'},
     steps: [
       {
         configuration: {

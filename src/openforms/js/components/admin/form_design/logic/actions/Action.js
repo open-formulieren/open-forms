@@ -1,21 +1,28 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {useIntl} from 'react-intl';
 
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import DataPreview from 'components/admin/form_design/logic/DataPreview';
 import ToggleCodeIcon from 'components/admin/form_design/logic/ToggleCodeIcon';
-import {ACTION_TYPES} from 'components/admin/form_design/logic/constants';
+import {
+  REGULAR_ACTION_TYPES,
+  SINGLE_PAGE_FORM_ACTION_TYPES,
+} from 'components/admin/form_design/logic/constants';
 import Select from 'components/admin/forms/Select';
 import {DeleteIcon, WarningIcon} from 'components/admin/icons';
 
+import {FormContext} from '../../Context';
 import {ActionComponent, detectProblems} from './Actions';
 import {ActionError, Action as ActionType} from './types';
 
 const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
   const intl = useIntl();
   const [viewMode, setViewMode] = useState('ui');
+  const {
+    form: {type},
+  } = useContext(FormContext);
 
   const hasErrors = Object.entries(errors).length > 0;
   const problems = detectProblems(action, intl);
@@ -37,7 +44,9 @@ const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
           <DSLEditorNode errors={errors.action?.type}>
             <Select
               name="action.type"
-              choices={ACTION_TYPES}
+              choices={
+                type === 'single_page' ? SINGLE_PAGE_FORM_ACTION_TYPES : REGULAR_ACTION_TYPES
+              }
               translateChoices
               allowBlank
               onChange={onChange}
