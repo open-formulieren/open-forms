@@ -48,11 +48,17 @@ const ActionProperty = ({action, errors, onChange}) => {
   return (
     <>
       <DSLEditorNode errors={errors.component}>
-        <ComponentSelection name="component" value={action.component} onChange={onChange} />
+        <ComponentSelection
+          name="component"
+          accessibleLabel="Component selection"
+          value={action.component}
+          onChange={onChange}
+        />
       </DSLEditorNode>
       <DSLEditorNode errors={errors.action?.property?.value}>
         <Select
           name="action.property"
+          aria-label="Action property selection"
           choices={modifiablePropertyChoices}
           translateChoices
           allowBlank
@@ -76,6 +82,7 @@ const ActionProperty = ({action, errors, onChange}) => {
         <DSLEditorNode errors={errors.action?.state}>
           <Select
             name="action.state"
+            aria-label="Action state selection"
             choices={MODIFIABLE_PROPERTIES[action.action.property.value].options}
             translateChoices
             allowBlank
