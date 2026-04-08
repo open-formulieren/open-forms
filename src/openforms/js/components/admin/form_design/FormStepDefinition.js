@@ -54,6 +54,14 @@ const FormStepDefinition = ({
   ...props
 }) => {
   const intl = useIntl();
+  const {
+    formSteps,
+    registrationBackends,
+    form: {type},
+  } = useContext(FormContext);
+
+  const isSinglePage = type === 'single_page';
+
   const setSlug = langCode => {
     // do nothing if there's already a slug set
     if (slug) return;
@@ -67,8 +75,6 @@ const FormStepDefinition = ({
       },
     });
   };
-
-  const {formSteps, registrationBackends} = useContext(FormContext);
 
   // A 'total configuration': merging all the configurations from the different steps, so that we can figure out if
   // a key is unique across steps
@@ -259,78 +265,82 @@ const FormStepDefinition = ({
                   <TextInput value={slug} onChange={onFieldChange} />
                 </Field>
               </FormRow>
-              <FormRow>
-                <Field
-                  name={`translations.${langCode}.previousText`}
-                  label={
-                    <FormattedMessage
-                      defaultMessage="Previous text"
-                      description="Form step previous text label"
-                    />
-                  }
-                  helpText={
-                    <FormattedMessage
-                      defaultMessage="The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
-                      description="Form step previous text field help text"
-                    />
-                  }
-                  fieldBox
-                >
-                  <TextInput
-                    value={translations[langCode].previousText}
-                    onChange={onFieldChange}
-                    maxLength="50"
-                  />
-                </Field>
-              </FormRow>
-              <FormRow>
-                <Field
-                  name={`translations.${langCode}.saveText`}
-                  label={
-                    <FormattedMessage
-                      defaultMessage="Save text"
-                      description="Form step save text label"
-                    />
-                  }
-                  helpText={
-                    <FormattedMessage
-                      defaultMessage="The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
-                      description="Form step save text field help text"
-                    />
-                  }
-                  fieldBox
-                >
-                  <TextInput
-                    value={translations[langCode].saveText}
-                    onChange={onFieldChange}
-                    maxLength="50"
-                  />
-                </Field>
-              </FormRow>
-              <FormRow>
-                <Field
-                  name={`translations.${langCode}.nextText`}
-                  label={
-                    <FormattedMessage
-                      defaultMessage="Next text"
-                      description="Form step next text label"
-                    />
-                  }
-                  helpText={
-                    <FormattedMessage
-                      defaultMessage="The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
-                      description="Form step next text field help text"
-                    />
-                  }
-                  fieldBox
-                >
-                  <TextInput
-                    value={translations[langCode].nextText}
-                    onChange={onFieldChange}
-                    maxLength="50"
-                  />
-                </Field>
-              </FormRow>
+              {!isSinglePage && (
+                <>
+                  <FormRow>
+                    <Field
+                      name={`translations.${langCode}.previousText`}
+                      label={
+                        <FormattedMessage
+                          defaultMessage="Previous text"
+                          description="Form step previous text label"
+                        />
+                      }
+                      helpText={
+                        <FormattedMessage
+                          defaultMessage="The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
+                          description="Form step previous text field help text"
+                        />
+                      }
+                      fieldBox
+                    >
+                      <TextInput
+                        value={translations[langCode].previousText}
+                        onChange={onFieldChange}
+                        maxLength="50"
+                      />
+                    </Field>
+                  </FormRow>
+                  <FormRow>
+                    <Field
+                      name={`translations.${langCode}.saveText`}
+                      label={
+                        <FormattedMessage
+                          defaultMessage="Save text"
+                          description="Form step save text label"
+                        />
+                      }
+                      helpText={
+                        <FormattedMessage
+                          defaultMessage="The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
+                          description="Form step save text field help text"
+                        />
+                      }
+                      fieldBox
+                    >
+                      <TextInput
+                        value={translations[langCode].saveText}
+                        onChange={onFieldChange}
+                        maxLength="50"
+                      />
+                    </Field>
+                  </FormRow>
+                  <FormRow>
+                    <Field
+                      name={`translations.${langCode}.nextText`}
+                      label={
+                        <FormattedMessage
+                          defaultMessage="Next text"
+                          description="Form step next text label"
+                        />
+                      }
+                      helpText={
+                        <FormattedMessage
+                          defaultMessage="The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
+                          description="Form step next text field help text"
+                        />
+                      }
+                      fieldBox
+                    >
+                      <TextInput
+                        value={translations[langCode].nextText}
+                        onChange={onFieldChange}
+                        maxLength="50"
+                      />
+                    </Field>
+                  </FormRow>
+                </>
+              )}
               <FormRow>
                 <Field
                   name="isApplicable"
@@ -353,28 +363,30 @@ const FormStepDefinition = ({
                   />
                 </Field>
               </FormRow>
-              <FormRow>
-                <Field
-                  name="loginRequired"
-                  errorClassPrefix={'checkbox'}
-                  errorClassModifier={'no-padding'}
-                >
-                  <Checkbox
-                    label={
-                      <FormattedMessage
-                        defaultMessage="Login required?"
-                        description="Form step login required label"
-                      />
-                    }
+              {!isSinglePage && (
+                <FormRow>
+                  <Field
                     name="loginRequired"
-                    checked={loginRequired}
-                    onChange={e =>
-                      onFieldChange({target: {name: 'loginRequired', value: !loginRequired}})
-                    }
-                    disabled={langCode !== defaultLang}
-                  />
-                </Field>
-              </FormRow>
+                    errorClassPrefix={'checkbox'}
+                    errorClassModifier={'no-padding'}
+                  >
+                    <Checkbox
+                      label={
+                        <FormattedMessage
+                          defaultMessage="Login required?"
+                          description="Form step login required label"
+                        />
+                      }
+                      name="loginRequired"
+                      checked={loginRequired}
+                      onChange={e =>
+                        onFieldChange({target: {name: 'loginRequired', value: !loginRequired}})
+                      }
+                      disabled={langCode !== defaultLang}
+                    />
+                  </Field>
+                </FormRow>
+              )}
               <FormRow>
                 <Field
                   name="isReusable"

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {normalizeErrors} from 'components/admin/forms/Field';
@@ -7,6 +7,7 @@ import {EditIcon, ErrorIcon} from 'components/admin/icons';
 import {FormModal} from 'components/admin/modals';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
+import {FormContext} from '../../Context';
 import {IDENTIFIER_ROLE_CHOICES} from '../constants';
 import PrefillConfigurationForm from './PrefillConfigurationForm';
 
@@ -25,6 +26,9 @@ const PrefillSummary = ({
 }) => {
   const intl = useIntl();
   const [modalOpen, setModalOpen] = useState(false);
+  const {
+    form: {type},
+  } = useContext(FormContext);
   const identifierRoleMsg = IDENTIFIER_ROLE_CHOICES[identifierRole] || IDENTIFIER_ROLE_CHOICES.main;
 
   const [hasPluginErrors, pluginErrors] = normalizeErrors(errors.prefillPlugin, intl);
@@ -53,7 +57,7 @@ const PrefillSummary = ({
         </span>
       )}
       {/* Modal control */}
-      {onChange && (
+      {onChange && type !== 'single_page' && (
         <EditIcon
           label={intl.formatMessage({
             defaultMessage: 'Edit prefill configuration',

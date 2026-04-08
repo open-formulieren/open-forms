@@ -91,6 +91,23 @@ const handleAppointmentForm = draft => {
 };
 
 /**
+ * Mutate the draft state in case the form is a single page form.
+ */
+const handleSinglePageForm = draft => {
+  const {form} = draft;
+  if (form.type !== 'single_page') return;
+
+  // single page forms have a different functionality, which is why we clear any lingering
+  // configuration if a form is turned into a single page form
+  draft.selectedAuthPlugins = [];
+  draft.form.loginOptions = [];
+  draft.form.authBackends = [];
+  draft.form.autoLoginAuthenticationBackend = '';
+  draft.form.product = null;
+  draft.form.paymentBackend = '';
+};
+
+/**
  * Options for ZGW registration backend can be empty strings but the serializer does not allow them.
  * This is the way the regular forms treat options, they don't send data for the field when empty str.
  */
@@ -127,6 +144,7 @@ const saveForm = async (state, csrftoken) => {
     normalizeEmptyStrField(draft, 'deactivateOn');
     handleZgwRegistrationOptions(draft);
     handleAppointmentForm(draft);
+    handleSinglePageForm(draft);
   });
 
   const formDetails = produce(cleanedState, draft => {
