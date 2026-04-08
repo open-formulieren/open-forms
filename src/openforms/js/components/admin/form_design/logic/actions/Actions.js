@@ -1,4 +1,3 @@
-import FormioUtils from 'formiojs/utils';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {useContext, useState} from 'react';
@@ -29,7 +28,7 @@ import {ActionError, Action as ActionType} from './types';
 const ActionProperty = ({action, errors, onChange}) => {
   const {components} = useContext(FormContext);
   const isLayout = action.component
-    ? FormioUtils.isLayoutComponent(components[action.component])
+    ? ['columns', 'fieldset'].includes(components[action.component].type)
     : false;
   const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES)
     .filter(([, info]) => !isLayout || info.useInLayout)
