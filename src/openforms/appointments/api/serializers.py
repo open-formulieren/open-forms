@@ -61,6 +61,16 @@ class ProductSerializer(serializers.Serializer):
         help_text=_("Product extra description"),
         allow_blank=True,
     )
+    amount_limit = serializers.IntegerField(
+        label=_("Product amount limit"),
+        min_value=0,
+        default=0,
+        read_only=True,
+        help_text=_(
+            "The maximum number of times a user can request this appointment. "
+            "Defaults to 0 (unlimited) if the plugin does not specify this."
+        ),
+    )
 
     class Meta:
         ref_name = "AppointmentProduct"
@@ -221,7 +231,7 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
         plugin = get_plugin()
         # normalize to data class instances to call plugin methods
         products = [
-            Product(identifier=product["product_id"], name="")
+            Product(identifier=product["product_id"], name="", amount=product["amount"])
             for product in attrs["products"]
         ]
 
@@ -241,16 +251,28 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
         available_products = plugin.get_available_products(
             location_id=config.limit_to_location
         )
-        available_product_ids = set(p.identifier for p in available_products)
+        available_products = {p.identifier: p for p in available_products}
 
         product_errors = []
         for product in products:
-            valid_product = product.identifier in available_product_ids
-            product_errors.append(
-                {}
-                if valid_product
-                else {"product_id": _("Product is unknown in the appointment backend.")}
-            )
+            if product.identifier not in available_products:
+                product_errors.append(
+                    {"product_id": _("Product is unknown in the appointment backend.")}
+                )
+                break
+
+            if (limit := available_products[product.identifier].amount_limit) > 0:
+                valid_amount_of_products = product.amount <= limit
+                product_errors.append(
+                    {}
+                    if valid_amount_of_products
+                    else {
+                        "amount": _(
+                            "The product supports up to {limit} persons."
+                        ).format(limit=limit)
+                    }
+                )
+
         if any(err != {} for err in product_errors):
             raise serializers.ValidationError({"products": product_errors})
 

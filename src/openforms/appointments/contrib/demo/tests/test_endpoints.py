@@ -41,7 +41,7 @@ class DemoPluginTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         products = response.json()
-        self.assertEqual(len(products), 2)
+        self.assertEqual(len(products), 3)
 
     def test_location_list(self):
         endpoint = reverse("api:appointments-locations-list")

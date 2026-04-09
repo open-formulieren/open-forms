@@ -109,6 +109,7 @@ class JccRestPlugin(BasePlugin):
                 identifier=product["id"],
                 name=product.get("description", ""),
                 description=product.get("necessities", ""),
+                amount_limit=product.get("maxCountForEvent", 0),
             )
             for product in data
         ]
