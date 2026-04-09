@@ -25,10 +25,13 @@ import {detectMappingProblems as detectDMNMappingProblems} from './dmn/utils';
 import {SynchronizeVariablesActionConfig} from './synchronize_variable/SynchronizeVariablesConfigModal';
 import {ActionError, Action as ActionType} from './types';
 
+// frontend counterpart of formio.service.holds_submission_data
+const holdsSubmissionDataTypes = ['columns', 'fieldset', 'softRequiredErrors', 'coSign', 'content'];
+
 const ActionProperty = ({action, errors, onChange}) => {
   const {components} = useContext(FormContext);
   const isLayout = action.component
-    ? ['columns', 'fieldset'].includes(components[action.component].type)
+    ? holdsSubmissionDataTypes.includes(components[action.component].type)
     : false;
   const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES)
     .filter(([, info]) => !isLayout || info.useInLayout)
