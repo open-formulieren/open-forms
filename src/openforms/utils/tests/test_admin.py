@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from unittest.mock import patch
 
 from django.test import override_settings
 from django.urls import reverse
@@ -15,6 +16,14 @@ from openforms.logging.models import TimelineLogProxy
 
 @disable_admin_mfa()
 class OutgoingRequestLogAdminTests(WebTest):
+    def setUp(self):
+        super().setUp()
+
+        # prevent celery tasks from being scheduled
+        patcher = patch("log_outgoing_requests.models.schedule_config_reset")
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_view_404(self):
         user = UserFactory.create(is_superuser=True, is_staff=True)
 

@@ -191,7 +191,7 @@ django-jsonform==2.23.2
     # via
     #   -r requirements/base.in
     #   mozilla-django-oidc-db
-django-log-outgoing-requests==0.8.0
+django-log-outgoing-requests==0.9.0
     # via -r requirements/base.in
 django-modeltranslation==0.19.19
     # via -r requirements/base.in
@@ -508,7 +508,9 @@ pydantic-settings==2.13.1
 pydyf==0.12.1
     # via weasyprint
 pygments==2.20.0
-    # via rich
+    # via
+    #   django-log-outgoing-requests
+    #   rich
 pyjwt==2.12.1
     # via
     #   msal
