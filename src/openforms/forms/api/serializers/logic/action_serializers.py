@@ -330,10 +330,11 @@ class LogicComponentActionSerializer(serializers.Serializer):
 
         # check that "disabled" property is not changed for layout components
         property_component: None | Component = None
-        for formio_component in self.context["form"].iter_components():
-            if formio_component["key"] == component:
-                property_component = formio_component
-                break
+        for form_step in self.context.get("form_steps", {}).values():
+            for formio_component in form_step.iter_components():
+                if formio_component["key"] == component:
+                    property_component = formio_component
+                    break
 
         if property_component:
             is_layout = property_component["type"] in ["fieldset", "columns"]
