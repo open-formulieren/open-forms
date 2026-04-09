@@ -124,6 +124,6 @@ def partially_evaluate_json_logic(
     argument_new, fully_resolved = partially_evaluate_json_logic(argument, data)
 
     if fully_resolved:
-        return jsonLogic({operator: argument_new}, data), True
+        return jsonLogic({operator: argument_new}, data, permissive=True), True
     else:
         return {operator: argument_new}, False
