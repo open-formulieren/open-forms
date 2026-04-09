@@ -38,6 +38,7 @@ class DemoAppointment(BasePlugin[CustomerFields]):
         return [
             Product(identifier="1", name="Test product 1"),
             Product(identifier="2", name="Test product 2"),
+            Product(identifier="3", name="Test product 3", amount_limit=3),
         ]
 
     def get_locations(self, products=None):
@@ -96,6 +97,7 @@ class DemoAppointment(BasePlugin[CustomerFields]):
             products=[
                 Product(identifier="1", name="Test product 1"),
                 Product(identifier="2", name="Test product 2"),
+                Product(identifier="3", name="Test product 3", amount_limit=3),
             ],
             location=Location(
                 identifier="1", name="Test location", address="Test address"

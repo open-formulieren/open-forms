@@ -29,6 +29,7 @@ class Product:
     name: str
     code: str = ""
     amount: int = 1
+    amount_limit: int = 0
     description: str = ""
 
     def __str__(self):

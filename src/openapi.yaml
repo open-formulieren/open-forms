@@ -7253,7 +7253,16 @@ components:
         description:
           type: string
           description: Product extra description
+        amountLimit:
+          type: integer
+          minimum: 0
+          readOnly: true
+          default: 0
+          title: Product amount limit
+          description: The maximum number of times a user can request this appointment.
+            Defaults to 0 (unlimited) if the plugin does not specify this.
       required:
+      - amountLimit
       - code
       - description
       - identifier

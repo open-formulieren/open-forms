@@ -950,3 +950,33 @@ class AppointmentCreateValidationErrorTests(
         response = self.client.post(ENDPOINT, data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_amount_exceeded(self):
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
+        base = {
+            "submission": reverse(
+                "api:submission-detail", kwargs={"uuid": self.submission.uuid}
+            ),
+            "location": "1",
+            "date": TODAY.isoformat(),
+            "datetime": appointment_datetime.isoformat(),
+            "contactDetails": {
+                "lastName": "Periwinkle",
+                "email": "user@example.com",
+            },
+            "privacyPolicyAccepted": True,
+        }
+
+        data = {
+            **base,
+            "products": [{"productId": "3", "amount": 4}],
+        }
+
+        response = self.client.post(ENDPOINT, data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        invalid_params = response.json()["invalidParams"]
+        self.assertEqual(len(invalid_params), 1)
+        self.assertEqual(invalid_params[0]["name"], "products.0.amount")
