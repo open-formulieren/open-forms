@@ -120,7 +120,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
         sent_email = mail.outbox[0]
         self.assertEqual(
             sent_email.subject,
-            "[Open Forms] Daily summary of detected problems from: test-env",
+            "[Open Forms test-env] Daily summary of detected problems",
         )
 
     def test_no_email_sent_if_no_logs(self):
