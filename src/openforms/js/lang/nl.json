@@ -1307,6 +1307,11 @@
     "description": "ZGW-APIs registration options 'medewerkerRoltype' help text",
     "originalDefault": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
   },
+  "K5TkEU": {
+    "defaultMessage": "Selecteer actiestatus",
+    "description": "Accessible label for action state selection",
+    "originalDefault": "Action state selection"
+  },
   "KClY/2": {
     "defaultMessage": "Verwerking",
     "description": "Form processing fieldset title",
@@ -1411,6 +1416,11 @@
     "defaultMessage": "Kopiëren",
     "description": "Copy form button",
     "originalDefault": "Copy"
+  },
+  "LOFpy8": {
+    "defaultMessage": "Selecteer component",
+    "description": "Accessible label for component selection",
+    "originalDefault": "Component selection"
   },
   "LaovNg": {
     "defaultMessage": "Variabele toevoegen",
@@ -1877,6 +1887,11 @@
     "defaultMessage": "Gebruik nieuwe logica-evaluatie",
     "description": "New logic rule evaluation feature flag label",
     "originalDefault": "Enable new logic rule evaluation"
+  },
+  "TQv+8T": {
+    "defaultMessage": "Selecteer actie-eigenschap",
+    "description": "Accessible label for action property selection",
+    "originalDefault": "Action property selection"
   },
   "TR5xSY": {
     "defaultMessage": "Weet u zeker dat u deze regel wil verwijderen?",

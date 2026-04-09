@@ -453,10 +453,10 @@ export const DisabledProperty = {
   play: async ({canvasElement}) => {
     // check that fieldset can't have "hidden" property
     const canvas = within(canvasElement);
-    const componentDropdown = canvas.getByRole('combobox', {name: 'Component selection'});
+    const componentDropdown = canvas.getByRole('combobox', {name: 'Selecteer component'});
     await userEvent.selectOptions(componentDropdown, 'fieldset');
 
-    const propertyDropdown = canvas.getByRole('combobox', {name: 'Action property selection'});
+    const propertyDropdown = canvas.getByRole('combobox', {name: 'Selecteer actie-eigenschap'});
     const propertyOptions = within(propertyDropdown).getAllByRole('option');
     expect(propertyOptions).toHaveLength(3);
     expect(propertyOptions[0]).toHaveValue('');

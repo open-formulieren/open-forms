@@ -30,6 +30,7 @@ const holdsSubmissionDataTypes = ['columns', 'fieldset', 'softRequiredErrors', '
 
 const ActionProperty = ({action, errors, onChange}) => {
   const {components} = useContext(FormContext);
+  const intl = useIntl();
   const isLayout = action.component
     ? holdsSubmissionDataTypes.includes(components[action.component].type)
     : false;
@@ -53,7 +54,10 @@ const ActionProperty = ({action, errors, onChange}) => {
       <DSLEditorNode errors={errors.component}>
         <ComponentSelection
           name="component"
-          accessibleLabel="Component selection"
+          accessibleLabel={intl.formatMessage({
+            description: 'Accessible label for component selection',
+            defaultMessage: 'Component selection',
+          })}
           value={action.component}
           onChange={onChange}
         />
@@ -61,7 +65,10 @@ const ActionProperty = ({action, errors, onChange}) => {
       <DSLEditorNode errors={errors.action?.property?.value}>
         <Select
           name="action.property"
-          aria-label="Action property selection"
+          aria-label={intl.formatMessage({
+            description: 'Accessible label for action property selection',
+            defaultMessage: 'Action property selection',
+          })}
           choices={modifiablePropertyChoices}
           translateChoices
           allowBlank
@@ -85,7 +92,10 @@ const ActionProperty = ({action, errors, onChange}) => {
         <DSLEditorNode errors={errors.action?.state}>
           <Select
             name="action.state"
-            aria-label="Action state selection"
+            aria-label={intl.formatMessage({
+              description: 'Accessible label for action state selection',
+              defaultMessage: 'Action state selection',
+            })}
             choices={MODIFIABLE_PROPERTIES[action.action.property.value].options}
             translateChoices
             allowBlank

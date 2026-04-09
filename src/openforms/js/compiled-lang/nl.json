@@ -2776,6 +2776,12 @@
       "value": "Omschrijving van het ROLTYPE te gebruiken voor medewerkers die een formulier invullen voor een inwoner/bedrijf."
     }
   ],
+  "K5TkEU": [
+    {
+      "type": 0,
+      "value": "Selecteer actiestatus"
+    }
+  ],
   "KClY/2": [
     {
       "type": 0,
@@ -2948,6 +2954,12 @@
     {
       "type": 0,
       "value": "Kopiëren"
+    }
+  ],
+  "LOFpy8": [
+    {
+      "type": 0,
+      "value": "Selecteer component"
     }
   ],
   "LZc4TN": [
@@ -3832,6 +3844,12 @@
     {
       "type": 0,
       "value": "Gebruik nieuwe logica-evaluatie"
+    }
+  ],
+  "TQv+8T": [
+    {
+      "type": 0,
+      "value": "Selecteer actie-eigenschap"
     }
   ],
   "TR5xSY": [
