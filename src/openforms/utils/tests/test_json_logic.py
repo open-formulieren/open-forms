@@ -614,3 +614,24 @@ class PartialEvaluationTests(ParametrizedTestCase, SimpleTestCase):
         result, resolved = partially_evaluate_json_logic(expression, data)
         self.assertEqual(result, expected)
         self.assertFalse(resolved)
+
+    @tag("gh-6166")
+    def test_with_list_of_objects_as_data(self):
+        expression = {"==": [{"var": "foo"}, []]}
+        data = {
+            "foo": [
+                {
+                    "affixes": "den",
+                    "bsn": "999994542",
+                    "dateOfBirth": "1968-03-18",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Gerrit",
+                    "initials": "G.",
+                    "lastName": "Braber",
+                }
+            ]
+        }
+
+        result, resolved = partially_evaluate_json_logic(expression, data)
+        self.assertEqual(result, False)
+        self.assertTrue(resolved)
