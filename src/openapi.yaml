@@ -1,4 +1,4 @@
-openapi: 3.0.3
+©: 3.0.3
 info:
   title: Open Forms API
   version: 3.5.0
@@ -1042,12 +1042,11 @@ paths:
       - cookieAuth: []
       responses:
         '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FormDefinition'
-          description: ''
           headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the newly created resource.
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
             X-CSRFToken:
@@ -1056,6 +1055,11 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormDefinition'
+          description: ''
   /api/v2/form-definitions/{uuid}:
     get:
       operationId: form_definitions_retrieve
@@ -1452,12 +1456,11 @@ paths:
       - cookieAuth: []
       responses:
         '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Form'
-          description: ''
           headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the newly created resource.
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
             X-CSRFToken:
@@ -1466,6 +1469,11 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Form'
+          description: ''
   /api/v2/forms-import:
     post:
       operationId: forms_import_create
@@ -1576,12 +1584,11 @@ paths:
       - cookieAuth: []
       responses:
         '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FormStep'
-          description: ''
           headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the newly created resource.
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
             X-CSRFToken:
@@ -1590,6 +1597,11 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormStep'
+          description: ''
   /api/v2/forms/{form_uuid_or_slug}/steps/{uuid}:
     get:
       operationId: forms_steps_retrieve
