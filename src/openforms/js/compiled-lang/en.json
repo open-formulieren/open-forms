@@ -2789,6 +2789,12 @@
       "value": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
     }
   ],
+  "K5TkEU": [
+    {
+      "type": 0,
+      "value": "Action state selection"
+    }
+  ],
   "KClY/2": [
     {
       "type": 0,
@@ -2961,6 +2967,12 @@
     {
       "type": 0,
       "value": "Copy"
+    }
+  ],
+  "LOFpy8": [
+    {
+      "type": 0,
+      "value": "Component selection"
     }
   ],
   "LZc4TN": [
@@ -3849,6 +3861,12 @@
     {
       "type": 0,
       "value": "Enable new logic rule evaluation"
+    }
+  ],
+  "TQv+8T": [
+    {
+      "type": 0,
+      "value": "Action property selection"
     }
   ],
   "TR5xSY": [

@@ -7,7 +7,7 @@ import Select from './Select';
 
 const allowAny = () => true;
 
-const ComponentSelection = ({name, value, onChange, filter = allowAny}) => {
+const ComponentSelection = ({name, value, onChange, filter = allowAny, accessibleLabel = ''}) => {
   const formContext = useContext(FormContext);
   const allComponents = formContext.components;
   const choices = Object.entries(allComponents)
@@ -16,7 +16,16 @@ const ComponentSelection = ({name, value, onChange, filter = allowAny}) => {
     // apply passed in filter to restrict valid choices
     .filter(([key]) => filter(allComponents[key]));
 
-  return <Select name={name} choices={choices} allowBlank onChange={onChange} value={value} />;
+  return (
+    <Select
+      name={name}
+      aria-label={accessibleLabel || undefined}
+      choices={choices}
+      allowBlank
+      onChange={onChange}
+      value={value}
+    />
+  );
 };
 
 ComponentSelection.propTypes = {
@@ -24,6 +33,7 @@ ComponentSelection.propTypes = {
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   filter: PropTypes.func,
+  accessibleLabel: PropTypes.string,
 };
 
 export default ComponentSelection;

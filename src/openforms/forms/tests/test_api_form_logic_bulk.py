@@ -1,6 +1,6 @@
 import uuid
 
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -1691,6 +1691,64 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(data["invalidParams"][6]["code"], "required")
         self.assertEqual(data["invalidParams"][6]["name"], "0.actions.2.action.config")
+
+    @tag("gh-5977")
+    def test_create_rule_with_hidden_property_for_layout(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "text", "label": "Outer text"},
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "label": "Fieldset",
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "innerText",
+                                "label": "inner text",
+                            },
+                        ],
+                    },
+                ]
+            },
+        )
+
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_logic_data = [
+            {
+                "form": f"http://testserver{form_url}",
+                "order": 0,
+                "json_logic_trigger": {"==": [{"var": "text"}, "hi"]},
+                "actions": [
+                    {
+                        "component": "fieldset",
+                        "action": {
+                            "name": "Disable",
+                            "type": "property",
+                            "property": {"value": "disabled", "type": "bool"},
+                            "state": True,
+                        },
+                    }
+                ],
+            }
+        ]
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.put(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            "0.actions.0.component", response.json()["invalidParams"][0]["name"]
+        )
+        self.assertEqual("invalid", response.json()["invalidParams"][0]["code"])
+        self.assertEqual(
+            _("'disabled' property can't be used for layout components."),
+            response.json()["invalidParams"][0]["reason"],
+        )
 
 
 class FormLogicAPIGraphValidationTests(APITestCase):

@@ -12,6 +12,8 @@ from rest_framework import serializers
 
 from openforms.api.serializers import DummySerializer
 from openforms.formio.api.fields import FormioVariableKeyField
+from openforms.formio.service import holds_submission_data
+from openforms.formio.typing import Component
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.constants import FormVariableDataTypes
 
@@ -326,5 +328,30 @@ class LogicComponentActionSerializer(serializers.Serializer):
                 },
                 code="blank",
             )
+
+        # check that "disabled" property is not changed for layout components
+        if action_type == LogicActionTypes.property:
+            formio_component: None | Component = None
+            for form_step in self.context.get("form_steps", {}).values():
+                if component in (
+                    wrapper := form_step.form_definition.configuration_wrapper
+                ):
+                    formio_component = wrapper[component]
+                    break
+
+            if (
+                formio_component
+                and not holds_submission_data(formio_component)
+                and attrs.get("action", {}).get("property", {}).get("value")
+                == "disabled"
+            ):
+                raise serializers.ValidationError(
+                    {
+                        "component": _(
+                            "'disabled' property can't be used for layout components."
+                        )
+                    },
+                    code="invalid",
+                )
 
         return attrs

@@ -25,11 +25,18 @@ import {detectMappingProblems as detectDMNMappingProblems} from './dmn/utils';
 import {SynchronizeVariablesActionConfig} from './synchronize_variable/SynchronizeVariablesConfigModal';
 import {ActionError, Action as ActionType} from './types';
 
+// frontend counterpart of formio.service.holds_submission_data
+const holdsSubmissionDataTypes = ['columns', 'fieldset', 'softRequiredErrors', 'coSign', 'content'];
+
 const ActionProperty = ({action, errors, onChange}) => {
-  const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES).map(([key, info]) => [
-    key,
-    info.label,
-  ]);
+  const {components} = useContext(FormContext);
+  const intl = useIntl();
+  const isLayout = action.component
+    ? holdsSubmissionDataTypes.includes(components[action.component].type)
+    : false;
+  const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES)
+    .filter(([, info]) => !isLayout || info.useInLayout)
+    .map(([key, info]) => [key, info.label]);
 
   const castValueTypeToString = action => {
     const valueType = action.action.property.type;
@@ -45,11 +52,23 @@ const ActionProperty = ({action, errors, onChange}) => {
   return (
     <>
       <DSLEditorNode errors={errors.component}>
-        <ComponentSelection name="component" value={action.component} onChange={onChange} />
+        <ComponentSelection
+          name="component"
+          accessibleLabel={intl.formatMessage({
+            description: 'Accessible label for component selection',
+            defaultMessage: 'Component selection',
+          })}
+          value={action.component}
+          onChange={onChange}
+        />
       </DSLEditorNode>
       <DSLEditorNode errors={errors.action?.property?.value}>
         <Select
           name="action.property"
+          aria-label={intl.formatMessage({
+            description: 'Accessible label for action property selection',
+            defaultMessage: 'Action property selection',
+          })}
           choices={modifiablePropertyChoices}
           translateChoices
           allowBlank
@@ -73,6 +92,10 @@ const ActionProperty = ({action, errors, onChange}) => {
         <DSLEditorNode errors={errors.action?.state}>
           <Select
             name="action.state"
+            aria-label={intl.formatMessage({
+              description: 'Accessible label for action state selection',
+              defaultMessage: 'Action state selection',
+            })}
             choices={MODIFIABLE_PROPERTIES[action.action.property.value].options}
             translateChoices
             allowBlank
