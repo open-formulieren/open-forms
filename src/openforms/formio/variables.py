@@ -33,7 +33,9 @@ def _render_and_force_str(source: str, context: Mapping[str, object]) -> str:
 
 
 def render(formio_bit: JSONValue, context: dict) -> JSONValue:
-    return recursively_apply_function(formio_bit, _render_and_force_str, context=context)
+    return recursively_apply_function(
+        formio_bit, _render_and_force_str, context=context
+    )
 
 
 def iter_template_properties(component: Component) -> Iterator[tuple[str, JSONValue]]:
