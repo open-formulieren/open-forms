@@ -40,7 +40,7 @@ def partially_evaluate_json_logic(
       of periods in keys.
     :return: Tuple of the (partially) evaluated JSON logic expression and a flag
       indicating whether the expression was fully resolved. Note that it could return a
-      date or datetime object if the expression was evalutated completely.
+      date or datetime object if the expression was evaluated completely.
     """
     if isinstance(expression, list):
         fully_resolved = True
@@ -83,12 +83,10 @@ def partially_evaluate_json_logic(
                 argument[0], data
             )
             if resolved:
-                return jsonLogic(expression, data), True
+                return jsonLogic(expression, data), True  # pyright: ignore[reportArgumentType, reportReturnType]
             else:
-                # Mismatch between the `JSON` type of `json_logic`, and our own
-                # `JSONValue`
-                argument[0] = var_operation_new  # pyright: ignore[reportCallIssue, reportArgumentType]
-                return expression, False  # pyright: ignore[reportReturnType]
+                argument_new = [var_operation_new, argument[1]]
+                return {operator: argument_new}, False
         case "reduce":
             # The reduce operations has a fixed order of arguments:
             # 1. Variable operation (must be an array)
@@ -103,13 +101,10 @@ def partially_evaluate_json_logic(
                 argument[2], data
             )
             if var_resolved and initializer_resolved:
-                return jsonLogic(expression, data), True
+                return jsonLogic(expression, data), True  # pyright: ignore[reportArgumentType, reportReturnType]
             else:
-                # Mismatch between the `JSON` type of `json_logic`, and our own
-                # `JSONValue`
-                argument[0] = var_operation_new  # pyright: ignore[reportCallIssue, reportArgumentType]
-                argument[2] = initial_value_new  # pyright: ignore[reportCallIssue, reportArgumentType]
-                return expression, False  # pyright: ignore[reportReturnType]
+                argument_new = [var_operation_new, argument[1], initial_value_new]
+                return {operator: argument_new}, False
         case "rdelta":
             assert isinstance(argument, list)
             # The argument of the "rdelta" operator is a list, which can contain
@@ -141,6 +136,6 @@ def partially_evaluate_json_logic(
     argument_new, fully_resolved = partially_evaluate_json_logic(argument, data)
 
     if fully_resolved:
-        return jsonLogic({operator: argument_new}, data, permissive=True), True
+        return jsonLogic({operator: argument_new}, data, permissive=True), True  # pyright: ignore[reportArgumentType, reportReturnType]
     else:
         return {operator: argument_new}, False

@@ -435,7 +435,7 @@ class VariableAction(ActionOperation):
         data_for_visible_state: FormioData,
     ) -> DataMapping:
         with log_errors(self.value, self.rule):
-            return {self.variable: jsonLogic(self.value, context.data)}
+            return {self.variable: jsonLogic(self.value, context.data)}  # pyright: ignore[reportArgumentType]
 
 
 class DataMappingsConfig(TypedDict):
