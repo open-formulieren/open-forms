@@ -16,7 +16,6 @@ from ..service import format_value
 from ..typing import Component
 from ..utils import (
     get_component_empty_value,
-    is_layout_component,
     is_visible_in_frontend,
     iterate_components_with_configuration_path,
 )
@@ -225,7 +224,9 @@ class ComponentNode(Node):
             return
 
         # in export mode, only emit if the component is not a layout component
-        if self.mode != RenderModes.export or (not is_layout_component(self.component)):
+        if self.mode != RenderModes.export or (
+            self.component["type"] not in ("fieldset", "columns")
+        ):
             yield self
 
         for child in self.get_children():

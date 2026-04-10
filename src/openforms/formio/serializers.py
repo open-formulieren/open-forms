@@ -19,7 +19,7 @@ from openforms.formio.typing.base import FormioConfiguration
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
-from .utils import is_layout_component, iter_components
+from .utils import iter_components
 
 if TYPE_CHECKING:
     from .registry import ComponentRegistry
@@ -31,7 +31,10 @@ type FieldOrNestedFields = serializers.Field | dict[str, "FieldOrNestedFields"]
 
 class StepDataSerializer(serializers.Serializer):
     def apply_hidden_state(
-        self, configuration: FormioConfiguration, fields: dict[str, FieldOrNestedFields]
+        self,
+        configuration: FormioConfiguration,
+        fields: dict[str, FieldOrNestedFields],
+        register: ComponentRegistry,
     ) -> None:
         """
         Apply the hidden/visible state of the formio components to the serializer.
@@ -53,6 +56,11 @@ class StepDataSerializer(serializers.Serializer):
 
         # loop over all components and delegate application to the registry
         for component in iter_components(configuration, recurse_into_editgrid=False):
+            # Components without submission data do not have serializer fields
+            # associated with them.
+            if not register.holds_submission_data(component):
+                continue
+
             # XXX: is_visible_in_frontend does not understand editgrid at all yet, which
             # is a broader issue, but also manifests here.
             is_visible = config_wrapper.is_visible_in_frontend(component["key"], values)
@@ -60,10 +68,6 @@ class StepDataSerializer(serializers.Serializer):
             # we don't have to do anything when the component is visible, regular
             # validation rules apply
             if is_visible:
-                continue
-
-            # Layout components do not have serializer fields associated with them
-            if is_layout_component(component):
                 continue
 
             # when it's not visible, grab the field from the serializer and remove all
@@ -150,12 +154,14 @@ def build_serializer(
 
     config: FormioConfiguration = {"components": components}
     for component in iter_components(config, recurse_into_editgrid=False):
-        if is_layout_component(component):
+        # Components without submission data do not have serializer fields
+        # associated with them.
+        if not register.holds_submission_data(component):
             continue
 
         field = register.build_serializer_field(component)
         assign(obj=fields, path=component["key"], val=field, missing=dict)
 
     serializer = dict_to_serializer(fields, **kwargs)
-    serializer.apply_hidden_state(config, fields)
+    serializer.apply_hidden_state(config, fields, register)
     return serializer

@@ -935,3 +935,56 @@ class FormVariableManagerTests(TestCase):
                     self.assertEqual(textfield_variable.data_format, "")
                     self.assertFalse(textfield_variable.is_sensitive_data)
                     self.assertEqual(textfield_variable.initial_value, [])
+
+    def test_with_component_which_do_not_hold_submission_data(self):
+        """
+        Assert that no form variables are created for components which do not hold
+        submission data.
+        """
+        fd = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "type": "content",
+                        "key": "content",
+                        "label": "Content",
+                        "html": "<p>Some HTML</p>",
+                    },
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "label": "Fieldset",
+                        "components": [
+                            {
+                                "type": "coSign",
+                                "key": "coSign",
+                                "label": "Legacy cosign",
+                            }
+                        ],
+                    },
+                    {
+                        "type": "columns",
+                        "key": "columns",
+                        "label": "Columns",
+                        "columns": [
+                            {
+                                "size": 1,
+                                "components": [
+                                    {
+                                        "key": "softRequiredErrors",
+                                        "type": "softRequiredErrors",
+                                        "html": "<p>Some error</p>",
+                                        "label": "Soft required errors",
+                                    }
+                                ],
+                            }
+                        ],
+                    },
+                ]
+            }
+        )
+
+        # the factory already implicitly calls the synchronize_for, but let's make it
+        # super explicit
+        FormVariable.objects.synchronize_for(fd)
+        self.assertEqual(0, FormVariable.objects.count())
