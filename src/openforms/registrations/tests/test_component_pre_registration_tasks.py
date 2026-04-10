@@ -1,3 +1,4 @@
+from typing import Any
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings
@@ -29,10 +30,10 @@ class HookComponent(Component): ...
 class FailHookComponent(Component): ...
 
 
-class NoHook(BasePlugin[NoHookComponent]): ...
+class NoHook(BasePlugin[NoHookComponent, Any]): ...
 
 
-class Hook(BasePlugin[HookComponent]):
+class Hook(BasePlugin[HookComponent, Any]):
     @staticmethod
     def pre_registration_hook(
         component: HookComponent, submission: Submission
@@ -40,7 +41,7 @@ class Hook(BasePlugin[HookComponent]):
         return {"data": "something"}
 
 
-class FailHook(BasePlugin[FailHookComponent]):
+class FailHook(BasePlugin[FailHookComponent, Any]):
     @staticmethod
     def pre_registration_hook(
         component: HookComponent, submission: Submission

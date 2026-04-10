@@ -44,6 +44,7 @@ class AuthOptionalTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "component1",
+                        "label": "component1",
                     }
                 ]
             },
@@ -125,6 +126,7 @@ class AuthRequiredTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "component1",
+                        "label": "component1",
                     }
                 ]
             },
