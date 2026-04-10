@@ -31,7 +31,7 @@ def name_to_id(arg: str):
 
 
 def evaluate_and_serialize(expression, input_data):
-    result = jsonLogic(expression, input_data)
+    result = jsonLogic(expression, input_data, permissive=True)
     return json.loads(json.dumps(result, cls=DjangoJSONEncoder))
 
 

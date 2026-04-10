@@ -5,7 +5,7 @@ from functools import cache
 from typing import Annotated
 from unittest import skipIf
 
-from django.test import SimpleTestCase, override_settings
+from django.test import SimpleTestCase, override_settings, tag
 
 import requests
 from freezegun import freeze_time
@@ -478,6 +478,29 @@ class PartialEvaluationTests(ParametrizedTestCase, SimpleTestCase):
             self.assertEqual(result, 15)
             self.assertTrue(resolved)
 
+        with self.subTest("with variable expression as initializer"):
+            expression = {
+                "reduce": [
+                    {"var": "foo"},
+                    {"+": [{"var": "current"}, {"var": "accumulator"}]},
+                    {"var": "bar"},
+                ]
+            }
+            data = {"bar": 5}
+
+            result, resolved = partially_evaluate_json_logic(expression, data)
+            self.assertEqual(
+                result,
+                {
+                    "reduce": [
+                        {"var": ["foo"]},
+                        {"+": [{"var": "current"}, {"var": "accumulator"}]},
+                        5,
+                    ]
+                },
+            )
+            self.assertFalse(resolved)
+
         with self.subTest("with nested-data access"):
             expression = {
                 "reduce": [
@@ -614,3 +637,24 @@ class PartialEvaluationTests(ParametrizedTestCase, SimpleTestCase):
         result, resolved = partially_evaluate_json_logic(expression, data)
         self.assertEqual(result, expected)
         self.assertFalse(resolved)
+
+    @tag("gh-6166")
+    def test_with_list_of_objects_as_data(self):
+        expression = {"==": [{"var": "foo"}, []]}
+        data = {
+            "foo": [
+                {
+                    "affixes": "den",
+                    "bsn": "999994542",
+                    "dateOfBirth": "1968-03-18",
+                    "dateOfBirthPrecision": "date",
+                    "firstNames": "Gerrit",
+                    "initials": "G.",
+                    "lastName": "Braber",
+                }
+            ]
+        }
+
+        result, resolved = partially_evaluate_json_logic(expression, data)
+        self.assertEqual(result, False)
+        self.assertTrue(resolved)
