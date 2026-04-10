@@ -23,7 +23,7 @@ body {
   }
 }
 
-div#header {
+header#header {
   // some admin pages (form definitions, form designer) include bootstrap which is
   // just a massive PITA and we need these overrides because of the CSS reset that's
   // loaded.
