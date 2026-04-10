@@ -74,24 +74,41 @@ def partially_evaluate_json_logic(
                 return data.get(argument_new[0]), True
             else:
                 return {operator: argument_new}, False
-        case "map" | "reduce":
-            # Map and reduce operations have a fixed order of arguments:
+        case "map":
+            # The map operation has a fixed order of arguments:
             # 1. Variable operation (must be an array)
             # 2. Operation to perform on each array item(s)
-            # 3. Initial value (for reduce only, and cannot be a variable expression)
             assert isinstance(argument, list)
             var_operation_new, resolved = partially_evaluate_json_logic(
                 argument[0], data
             )
-            # Both operations only take a single variable, which we cannot substitute
-            # with the actual value, because `jsonLogic` will see dict array items as
-            # operations. So, we either evaluate the whole expression, or we do nothing.
             if resolved:
                 return jsonLogic(expression, data), True
             else:
                 # Mismatch between the `JSON` type of `json_logic`, and our own
                 # `JSONValue`
                 argument[0] = var_operation_new  # pyright: ignore[reportCallIssue, reportArgumentType]
+                return expression, False  # pyright: ignore[reportReturnType]
+        case "reduce":
+            # The reduce operations has a fixed order of arguments:
+            # 1. Variable operation (must be an array)
+            # 2. Operation to perform on each array item(s)
+            # 3. Initial value (can be a variable expression)
+            assert isinstance(argument, list)
+            var_operation_new, var_resolved = partially_evaluate_json_logic(
+                argument[0], data
+            )
+
+            initial_value_new, initializer_resolved = partially_evaluate_json_logic(
+                argument[2], data
+            )
+            if var_resolved and initializer_resolved:
+                return jsonLogic(expression, data), True
+            else:
+                # Mismatch between the `JSON` type of `json_logic`, and our own
+                # `JSONValue`
+                argument[0] = var_operation_new  # pyright: ignore[reportCallIssue, reportArgumentType]
+                argument[2] = initial_value_new  # pyright: ignore[reportCallIssue, reportArgumentType]
                 return expression, False  # pyright: ignore[reportReturnType]
         case "rdelta":
             assert isinstance(argument, list)
