@@ -14,13 +14,14 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
-3.5.0 (2026-??-??)
+3.5.0 (2026-03-30)
 ==================
 
-This is a reminder to add a note to the perfomance improvements summary about modifying individual logic
-rules and/or form definitions when the feature flag for new logic rule analysis is enabled:
-The validation and reordering of logic rules happens on form save, so modiying indiviual logic rules might
-result in out-of-sync analysis.
+Open Forms 3.5.0 is a feature release.
+
+This contains the changes from the alpha releases and fixes applied until the stable version.
+BEFORE upgrading to 3.5.0, please read the release notes carefully and review the following
+instructions.
 
 Upgrade procedure
 -----------------
@@ -29,6 +30,28 @@ To upgrade to 3.5, please:
 
 * ⚠️ If you haven't done so yet, please review the manual intervention mentioned in the
   3.4.2 release notes.
+* ⚠️ Ensure that your Helm charts don't use the ``bin/check_celery_worker_liveness.py``
+  script, since it has been removed. You can read about the new health check mechanisms
+  here: :ref:`installation_health_checks`.
+* ⚠️ Logic rules using the "disable next" action may need extra attention.
+
+  .. warning::
+
+      In preparation for upcoming logic performance improvements, we changed the
+      "disable next" logic action. The form designers now have to specify on which step
+      they want to execute this action. We included a migration to automatically
+      populate this field for all existing actions. Unfortunately, in some cases we
+      cannot guarantee that the assigned step is correct, i.e. no change in behaviour
+      is observed when filling out a form. Therefore, form designers/maintainers are
+      asked to check these cases manually. The script below outputs a list of logic
+      rules (with their corresponding form) that need manual attention. Use the flag
+      ``--show-all`` to output a complete list of all affected rules.
+
+      .. code-block:: bash
+
+          # in the container via ``docker exec`` or ``kubectl exec``:
+          python /app/bin/check_disable_next_logic_action.py
+
 
 * Inventarize the forms that are not compatible yet with the new logic evaluation -
   we've included a utility script to report the problematic forms. You can run it with:
@@ -51,6 +74,258 @@ The ``CSP_REPORT_ONLY`` environment variable is deprecated. The upstream library
 their settings mechanism and now allows for distinct enforced/report-only configurations.
 
 We'll work on bridging this gap, possibly through an upgrade to Django 6.0.
+
+Major features
+--------------
+
+**⚡️ Performance**
+
+We've done a lot of work to make the interaction of users with Open Forms smoother and faster.
+One of the main culprits of micro-delays is a logic check that ran every time when the user
+changes the input data, re-evaluating all logic rules each time.
+
+We've done an extensive refactoring of the logic rules to eliminate the unnecessary checks:
+
+- only the logic rules relevant to the current form step are now executed,
+- logic rules are ordered to ensure the correct order of the chain of rules.
+- cycles in logic rules are detected,
+- some of the checks are moved to the frontend.
+
+Both the old and new logic evaluations are available, and you can enable the new one on
+an individual form basis.
+
+Note: executing logic checks in the fronend is only available for the new renderer.
+
+**🚧 New Admin UI**
+
+After investing significant time in designing the new admin interface, implementation has begun.
+We are aiming to ship it in the next major release of Open Forms, but work is already underway.
+
+For now, all the changes are documented for the internal use of developers.
+
+New features
+------------
+
+* Performance:
+
+  .. note::
+
+      We improved the performance of logic rule evaluation in this release. These changes
+      are turned off by default, they can be enabled by checking "Enable new logic rule
+      evaluation" feature flag.
+
+      On form save, logic rules are validated and re-ordered. If you modify individual
+      logic rules (in the admin interface), this can result in out-of-sync analysis. You
+      should avoid doing this.
+
+  - [:backend:`5861`] Updated the "disable next" logic action - it now requires the step
+    to disable to be specified. The automatic migrations update can reliably determine
+    the step most of the time. For the forms to manually review, see the upgrade
+    procedure notes.
+  - [:backend:`2409`] Open Forms can now statically determine which input and output
+    variables are used in logic rules.
+  - [:backend:`2409`] Open Forms now detects cycles in logic rules when one rule depends on the
+    outcome of one or more other rules. Cycles like ``ruleA -> ruleB -> ruleC -> ruleA`` are now caught
+    and validation errors are shown.
+  - [:backend:`2409`] Logic rules are now automatically re-ordered when you opt in to the new logic
+    evaluation, and assigned to the relevant form steps so that only relevant logic rules are evaluated
+    on a particular form step.
+  - [:backend:`5962`] Implemented partial logic evaluation of the logic rules.
+  - [:backend:`6038`] JsonLogic expressions can now be compiled with data-type
+    information for the frontend.
+  - [:backend:`6037`] Set up shared jsonLogic test suite (between backend and frontend).
+  - [:backend:`6072`] Implement "require backend" analysis for logic rules, so for each logic action
+    we know now if the backend evaluation is needed.
+  - Added logic rules to the submission step serializer.
+  - [:backend:`6083`] Added partial evaluation of the variable action before sending logic
+    rules to frontend.
+  - [:backend:`6109`] Removed ``completed`` and ``is_applicable`` fields from the submission step.
+  - [:backend:`6038`] Ensure "set-registration-backend" actions are not included in frontend logic rules.
+  - [:backend:`6099`] Executed step (not) applicable action on all steps.
+  - [:backend:`6018`, :backend:`6129`] Removed ``SubmissionStep.data`` property.
+  - [:backend:`6143`] Added documentation about accessing the variables state from the submission for
+    developers.
+
+* New Admin UI:
+
+  - [:backend:`5952`] Added initial form endpoint.
+  - [:backend:`5955`] Added support for confirmation templates/options in the new endpoint.
+  - [:backend:`6080`] Added ``uuid`` to the ``/api/v2/themes`` endpoint response.
+  - [:backend:`5952`] Added the ``steps`` field to the new v3 ``/api/v3/forms/{uuid}`` endpoint.
+  - [:backend:`5956`] Added the ``registration_backends`` field to the new v3 ``/api/v3/forms/{uuid}`` endpoint.
+  - [:backend:`5957`] Added payment related fields to the new v3 ``/api/v3/forms/{uuid}`` endpoint.
+  - [:backend:`6119`] Supported zero steps for appointment forms in the new v3 endpoint.
+
+* Appointments (JCC):
+
+  - [:backend:`5690`] The additional product information (HTML) is now exposed to the SDK.
+  - [:backend:`5696`] Implemented the remaining API calls for the appointment flow.
+  - [:backend:`5820`] You can now customize the literals and translations used in the contact details components.
+
+* Open telemetry:
+
+  - [:backend:`5450`] Distributed tracing is now mostly stable. The following component
+    traces are now also available:
+
+    - Postgres queries
+    - Redis queries
+    - Celery tasks
+    - Outgoing requests to external services
+    - Application-specific traces
+
+  - [:backend:`5358`] Added span/trace IDs to log events for correlation and supported linking to traces from logs
+    in Grafana.
+  - Captured ``TraceID`` and ``SpanID`` from OTel for Sentry events to allow correlation between
+    Sentry events and traces/logs in Grafana.
+
+* [:backend:`5287`] Low-level health check mechanisms are now exposed in all Open Forms
+  components.
+* [:backend:`5319`] The "Organization login via OpenID Connect" can now be hidden by
+  default. Use the ``authVisible=all`` query parameter to make it visible in the SDK.
+* [:backend:`5820`] Added endpoint to retrieve the overridden frontend translations.
+* [:backend:`5553`]  When starting a form from organization login on behalf of a
+  company, you can now also provide the branch number.
+* [:backend:`5753`] Public reference generation is now deterministic and guaranteed to never generate
+  duplicated reference numbers, even if old submissions have been deleted. Administrators can configure
+  a custom template to use. For the ZGW APIs registration plugin, you can now choose between the
+  generated case numbers and the references generated by Open Forms.
+* [:backend:`5972`] Added support for sending e-mails via the Office365 Graph API.
+* [:backend:`5216`] Skipped sending the payment update email when the payment update emailaddress is
+  empty and the flag "Wait for payment to register" is enabled, so now a user won't receive
+  multiple emails.
+* [:backend:`5887`] Added ``gor.openbareRuimteNaam`` to verblijfsadres and bezoekadres in StUF-ZDS.
+* [:backend:`5857`[ Changed the default to unchecked for the "Include deceased" checkbox in the
+  family members prefill configuration.
+
+Security fix
+------------
+
+* [:cve:`CVE-2026-28803`] Fixed a vulnerability where attackers could view form
+  submission data. See :ghsa:`GHSA-2g49-rfm6-5qj5` for details and instructions on how
+  to detect possible intrusions. This advisory will be published on Wednesday March 11th.
+
+Bugfixes
+--------
+
+* [:backend:`5888`] Fixed empty dates presenting as ``None`` in service fetch rather
+  than an empty string.
+* [:backend:`5885`] Fixed a crash in the date field value normalization when it has
+  prefill configuration, observed in the summary page.
+* [:backend:`5827`] Fixed a registration crash when a form contains children or partners
+  components that are hidden or part of a non-applicable step.
+* [:backend:`5892`] Fixed not being able to use a component key with a ``.`` in it as
+  StUF-ZDS initiator information.
+* [:backend:`5902`] Cleaned up how we handle prefilled data.
+* [:backend:`5893`] Fixed ``amount`` attribute of appointment product not being set when
+  processing query parameters.
+* [:backend:`5790`] Fixed displaying green "live" check for forms in maintenance mode in the admin.
+* [:backend:`5942`] Fixed failed Worldline payments not being updatable to success state.
+* [:backend:`5685`] Fixed an infinite logic check loop when the new renderer is used
+  and components are hidden that have both ``clearOnHide`` enabled and a default value.
+* [:backend:`6005`] Fixed input values unintentionally being cleared when there are
+  multiple backend logic rules that specify the visibility state of the same component.
+* [:backend:`6007`] Fixed hidden fields not being sent to the Objects API when using the
+  variable mapping (v2 configuration) configuration. Additionally, fixed other places
+  where the "unsaved variables" where not being included in the evaluation scope for
+  templates.
+* [:backend:`6014`] Fixed components using overlapping (nested) keys with their parent
+  component causing logic crashes.
+* [:backend:`6001`] Fixed components inside layout components (fieldset, columns) having
+  their value cleared despite having their visibility state managed through backend
+  logic rules.
+* [:backend:`5980`] Fixed components being listed in the form summary/overview despite
+  being hidden through logic rules.
+* [:backend:`6002`] Fixed crash in legacy cosign flow when HEAD requests are sent.
+* [:backend:`6016`] Fixed crashes in StUF-ZDS registration because of prohibited control
+  characters from the user input being included in the XML messages.
+* [:backend:`5950`] Fixed BAG-error responses being cached.
+* [:backend:`6040`] Fixed fields inside editgrids unexpectedly being cleared.
+* [:backend:`6046`] Fixed the result of a variable action being overwritten by an
+  untriggered logic action on the same component that affects its visibility.
+* [:backend:`6028`] Fixed a regression causing fields to skip final validation if
+  they're made visible through backend logic.
+* [:backend:`6045`] Fixed infinite loop in logic check with the new renderer when a
+  repeating group with ``clearOnHide: false`` is hidden while a field inside it has
+  ``clearOnHide: true``.
+* [:backend:`5685`] Fixed infinite loop in logic check due to already submitted
+  repeating group data not being used in logic evaluation.
+* [:backend:`5967`] Fixed the theme-specific "back to main website"-link and favicon not
+  being applied correctly.
+* Validation errors in the cosign lookup flow are now displayed with proper error styling.
+* [:backend:`6068`] Fixed attachement possibly not being uploaded when component's visiblity
+  is affected by logic rule.
+* [:backend:`5701`] Fixed ``selectboxes`` component, so it won't crash when removed if the
+  Objects API v1 is used.
+* [:backend:`5864`] Stopped showing warnings in the form history page when the application version is
+  the current one.
+* [:backend:`6110`] Fixed broken asset cache by configuring staticfiles storage entry.
+* [:backend:`5938`] Fixed incorrect DigiD error message being shown when the user
+  cancels a DigiD login via the "DigiD via OIDC" plugin.
+* [:backend:`6140`] Fixed a crash when conditional logic is used inside a fieldset
+  inside a repeating group.
+
+Project maintenance
+-------------------
+
+* [:backend:`5879`] Extended the component problem detection and added automatic fixes
+  for the issues.
+* Cleaned up inconsistent test setups.
+* Updated ``pyright`` and improved type checking.
+* Replaced the unmaintained bleach with nh3 HTML-sanitizer library.
+* Upgraded to storybook 9.
+* [:backend:`5351`] Refactored ``logevent`` module to structlog adapters.
+* Updated backend dependencies to their latest versions:
+
+  - protobuf
+  - weasyprint
+  - django
+  - urllib3
+  - cbor2
+  - lodash
+  - cryptography
+  - Pillow
+  - webpack
+  - maykin-common
+  - django-health-check
+  - sqlparse
+  - Django
+  - lxml-html-clean
+  - tornado
+  - PyJWT
+  - pyopenssl
+  - pyasn1
+  - cbor2
+  - requests
+  - cryptography
+  - pygments
+
+* Updated frontend dependencies to their latest versions:
+
+  - formio-builder
+  - CKEditor
+  - storybook
+  - copy-webpack-plugin
+
+* [:backend:`5946`] Dropped ``zgw-consumers-oas`` dependency and rewrite mock-based tests as VCR tests.
+* Included more checks to the PR checklist template.
+* Removed ``npm`` from the production image, so it won't be affected by vulnerabilities which can be
+  found in the npm dependencies.
+* [:backend:`5946`] Bumped Django to 5.2 and updated all related dependencies.
+* Optimized flower memory usage.
+* [:backend:`5848`] Re-recorded the PinkRoccade service tests (for HC BRP) with the new certificate/key.
+* [:backend:`5639`] Refactored StUF-BG tests.
+* Optimized the static SDK assets endpoints.
+* The ``next`` parameter is now remembered when you log in to the admin with SSO.
+* Logged file step attachment additions.
+* Un-deprecated postcode component.
+* [:backend:`6066`] Clarified CHANGELOG location on stable docs builds.
+* Pinned trivy-action to known good commit following the supply chain attacks.
+* Updated certificates for unit tests.
+* Fixed label matching for wysiwyg editor on Webkit.
+* Updated documentation for:
+
+  - the "Communication preferences"-plugin,
+  - supported Objects API versions.
 
 3.4.8 (2026-04-01)
 ==================
