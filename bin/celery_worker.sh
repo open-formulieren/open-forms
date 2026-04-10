@@ -13,7 +13,10 @@ export OTEL_SERVICE_NAME="${OTEL_SERVICE_NAME:-openforms-worker-"${QUEUE}"}"
 
 echo "Starting celery worker $WORKER_NAME with queue $QUEUE"
 # unset this if NOT using a process pool
-export _OTEL_DEFER_SETUP="true" _TIMELINE_LOGGER_DEFER_LISTENER="true"
+export \
+    _OTEL_DEFER_SETUP="true" \
+    _TIMELINE_LOGGER_DEFER_LISTENER="true" \
+    _LOG_OUTGOING_REQUESTS_LOGGER_DEFER_LISTENER="true"
 exec celery --workdir src --app openforms.celery worker \
     -Q $QUEUE \
     -n $WORKER_NAME \
