@@ -13,6 +13,7 @@ export default {
       uuid: '',
       internalName: '',
       slug: 'my-form',
+      type: 'regular',
       showProgressIndicator: true,
       showSummaryProgress: false,
       active: true,
@@ -27,9 +28,7 @@ export default {
       suspensionAllowed: true,
       askPrivacyConsent: 'global_setting',
       askStatementOfTruth: 'global_setting',
-      appointmentOptions: {
-        isAppointment: false,
-      },
+      appointmentOptions: {},
       translations: {
         nl: {
           name: 'Mijn formulier',

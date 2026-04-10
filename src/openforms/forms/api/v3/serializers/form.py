@@ -10,6 +10,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
+from openforms.appointments.utils import get_plugin
 from openforms.config.models import Theme
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
@@ -27,6 +28,7 @@ from ....api.serializers.form import (
     FormRegistrationBackendSerializer,
     SubmissionsRemovalOptionsSerializer,
 )
+from ....constants import FormTypeChoices
 from ....models import (
     Category,
     Form,
@@ -35,7 +37,7 @@ from ....models import (
     FormStep,
     FormVariable,
 )
-from ..typing import FormStepData, FormValidatedData, NewFormValidatedData
+from ..typing import FormStepData, FormValidatedData
 from .form_step import FormStepSerializer
 from .payment import FormPaymentSerializer
 
@@ -107,6 +109,7 @@ class FormSerializer(serializers.ModelSerializer):
             "literals",
             "product",
             "slug",
+            "type",
             "category",
             "theme",
             "steps",
@@ -142,7 +145,7 @@ class FormSerializer(serializers.ModelSerializer):
         }
 
     @transaction.atomic()
-    def create(self, validated_data: NewFormValidatedData) -> Form:
+    def create(self, validated_data: FormValidatedData) -> Form:
         instance = super().create(
             {k: v for k, v in validated_data.items() if k not in self._nested_fields}
         )
@@ -307,7 +310,7 @@ class FormSerializer(serializers.ModelSerializer):
 
         return value
 
-    def validate(self, attrs: FormValidatedData | NewFormValidatedData):
+    def validate_amount_of_steps(self, attrs: FormValidatedData) -> None:
         # validate is called multiple times because of the nested serializer fields.
         # For example ModelTranslationsSerializer is calling it 2 times (current amount
         # of languages) but at this point the attrs contain only the related data (child).
@@ -315,21 +318,47 @@ class FormSerializer(serializers.ModelSerializer):
         # the project), so that's why we do the check here.
         steps = attrs.get("formstep_set")
         if steps is None:
-            return attrs
+            return
 
-        is_appointment = attrs.get("is_appointment")
-
+        form_type = attrs.get("type")
         # regular form should have at least one step
-        if not is_appointment and len(steps) == 0:
+        if form_type == FormTypeChoices.regular and len(steps) == 0:
             raise serializers.ValidationError(
                 _("At least one form step is required in a regular form.")
             )
-
         # appointment form should not have any steps
-        if is_appointment and len(steps) > 0:
+        if form_type == FormTypeChoices.appointment and len(steps) > 0:
             raise serializers.ValidationError(
                 _("Form steps are not allowed in an appointment form.")
             )
+        # single page form should have exactly one step
+        if form_type == FormTypeChoices.single_page and len(steps) != 1:
+            raise serializers.ValidationError(
+                _("Exactly one form step is required in a single page form.")
+            )
+
+    def validate_appointment_type_can_be_enabled(
+        self, attrs: FormValidatedData
+    ) -> None:
+        form_type = attrs.get("type")
+        if form_type != FormTypeChoices.appointment:
+            return
+
+        try:
+            get_plugin()
+        except ValueError:
+            raise serializers.ValidationError(
+                {
+                    "type": _(
+                        "This type of form requires an appointment plugin to be "
+                        "configured"
+                    ),
+                }
+            )
+
+    def validate(self, attrs: FormValidatedData) -> FormValidatedData:
+        self.validate_amount_of_steps(attrs)
+        self.validate_appointment_type_can_be_enabled(attrs)
 
         return attrs
 

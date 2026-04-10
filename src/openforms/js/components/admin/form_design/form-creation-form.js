@@ -96,6 +96,7 @@ const initialFormState = {
     active: true,
     activateOn: '',
     deactivateOn: '',
+    type: 'regular',
     category: '',
     isDeleted: false,
     maintenanceMode: false,
@@ -115,7 +116,7 @@ const initialFormState = {
     confirmationEmailTemplate: {subject: '', content: '', translations: {}},
     autoLoginAuthenticationBackend: '',
     translations: {},
-    appointmentOptions: {isAppointment: false},
+    appointmentOptions: {},
     brpPersonenRequestOptions: {
       brpPersonenPurposeLimitationHeaderValue: '',
       brpPersonenProcessingHeaderValue: '',
@@ -1170,7 +1171,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
   // dev/debug helper
   const activeTab = new URLSearchParams(window.location.search).get('tab');
 
-  const {isAppointment = false} = state.form.appointmentOptions;
+  const isAppointment = state.form.type === 'appointment';
   const {submissionLimit = null} = state.form;
 
   const numRulesWithProblems = state.logicRules.filter(

@@ -61,3 +61,9 @@ class StatementCheckboxChoices(models.TextChoices):
     global_setting = "global_setting", _("Global setting")
     required = "required", _("Required")
     disabled = "disabled", _("Disabled")
+
+
+class FormTypeChoices(models.TextChoices):
+    regular = "regular", _("Regular")
+    appointment = "appointment", _("Appointment")
+    single_page = "single_page", _("Single page")

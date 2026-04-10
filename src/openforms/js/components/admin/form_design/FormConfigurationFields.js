@@ -6,12 +6,15 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox, DateTimeInput, TextArea, TextInput} from 'components/admin/forms/Inputs';
+import {Radio} from 'components/admin/forms/Inputs';
+import RadioList from 'components/admin/forms/RadioList';
 import Select from 'components/admin/forms/Select';
 import {getTranslatedChoices} from 'utils/i18n';
 
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 import AuthPluginField from './AuthPluginField';
 import AuthPluginOptions from './AuthPluginOptions';
+import {FORM_TYPES} from './constants';
 import TYPES from './types';
 
 const SUMBISSION_ALLOWED_CHOICES = [
@@ -458,26 +461,6 @@ const FeatureFields = ({isAppointment, translationEnabled, suspensionAllowed, on
     >
       <FormRow>
         <Checkbox
-          name="form.appointmentOptions.isAppointment"
-          label={
-            <FormattedMessage
-              defaultMessage="Appointment enabled"
-              description="Form appointment enabled field label"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Indicates whether appointments are enabled for this form."
-              description="Form appointment enabled field help text"
-            />
-          }
-          checked={isAppointment}
-          onChange={event => onCheckboxChange(event, isAppointment)}
-        />
-      </FormRow>
-
-      <FormRow>
-        <Checkbox
           name="form.translationEnabled"
           label={
             <FormattedMessage
@@ -543,6 +526,7 @@ const FormConfigurationFields = ({
     showSummaryProgress,
     active,
     category,
+    type,
     theme,
     isDeleted,
     activateOn,
@@ -565,7 +549,7 @@ const FormConfigurationFields = ({
     onChange({target: {name, value: !currentValue}});
   };
 
-  const isAppointment = appointmentOptions?.isAppointment ?? false;
+  const isAppointment = type == 'appointment';
 
   return (
     <>
@@ -651,6 +635,39 @@ const FormConfigurationFields = ({
           </Field>
         </FormRow>
 
+        <FormRow>
+          <Field
+            name="form.type"
+            label={<FormattedMessage defaultMessage="Type" description="Form type field label" />}
+            helpText={
+              <FormattedMessage
+                defaultMessage="Type of the form, used to determine how the form is presented and behaves."
+                description="Form type field help text"
+              />
+            }
+            required
+          >
+            <RadioList>
+              {FORM_TYPES.map(([value, label], index) => (
+                <Radio
+                  key={`id_${value}_${index}`}
+                  name="form.type"
+                  idFor={`id_${value}_${index}`}
+                  label={
+                    <FormattedMessage
+                      defaultMessage="{formType}"
+                      description="Form type label"
+                      values={{formType: label}}
+                    />
+                  }
+                  checked={form.type === value}
+                  onChange={onChange}
+                  value={value}
+                />
+              ))}
+            </RadioList>
+          </Field>
+        </FormRow>
         <FormRow>
           <Field
             name="form.category"
@@ -811,6 +828,7 @@ FormConfigurationFields.propTypes = {
     internalName: PropTypes.string.isRequired,
     internalRemarks: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
     showProgressIndicator: PropTypes.bool.isRequired,
     showSummaryProgress: PropTypes.bool.isRequired,
     active: PropTypes.bool.isRequired,
@@ -822,7 +840,7 @@ FormConfigurationFields.propTypes = {
     askPrivacyConsent: statementChoices.isRequired,
     askStatementOfTruth: statementChoices.isRequired,
     appointmentOptions: PropTypes.shape({
-      isAppointment: PropTypes.bool.isRequired,
+      supportsMultipleProducts: PropTypes.oneOf([PropTypes.bool, null]),
     }),
     authBackends: PropTypes.arrayOf(
       PropTypes.shape({

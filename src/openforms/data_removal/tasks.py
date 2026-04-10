@@ -7,6 +7,7 @@ from django.utils import timezone
 import structlog
 
 from openforms.celery import app
+from openforms.forms.constants import FormTypeChoices
 from openforms.submissions.constants import Stages
 from openforms.submissions.models import Submission
 
@@ -30,7 +31,8 @@ def delete_submissions():
     # we want to keep the submissions which have an appointment connected and it's still
     # valid. This keeps the cancel endpoint available until the expiry date.
     future_appointments_filter = Q(
-        form__is_appointment=True, appointment__datetime__gte=timezone.now()
+        form__type=FormTypeChoices.appointment,
+        appointment__datetime__gte=timezone.now(),
     )
 
     successful_submissions_to_delete = base_qs.annotate_removal_fields(

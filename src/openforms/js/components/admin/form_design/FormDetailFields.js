@@ -71,8 +71,9 @@ const IntroductionPageFields = ({translations, onChange}) => (
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
-const FormDetailFields = ({form: {slug, translations, appointmentOptions}, onChange}) => {
-  const {isAppointment = false} = appointmentOptions;
+const FormDetailFields = ({form: {slug, translations, type}, onChange}) => {
+  const isAppointment = type === 'appointment';
+
   const setFormSlug = event => {
     // do nothing if there's already a slug set
     if (slug) return;
