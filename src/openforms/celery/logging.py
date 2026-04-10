@@ -1,10 +1,14 @@
 import logging  # noqa: TID251 - correct use to replace stdlib logging
 import logging.config  # noqa: TID251 - correct use to replace stdlib logging
 
+from django.conf import settings
+
 import structlog
+from log_outgoing_requests.structlog import ExtractRequestAndResponseDetails
 from maykin_common.config import config
 
 from openforms.logging.adapter import from_structlog
+from openforms.logging.processors import add_open_telemetry_spans
 
 
 def receiver_setup_logging(
@@ -24,6 +28,8 @@ def receiver_setup_logging(
                         structlog.processors.TimeStamper(fmt="iso"),
                         structlog.stdlib.add_logger_name,
                         structlog.stdlib.add_log_level,
+                        ExtractRequestAndResponseDetails(expand_headers=False),
+                        add_open_telemetry_spans,
                         structlog.stdlib.PositionalArgumentsFormatter(),
                     ],
                 },
@@ -35,6 +41,8 @@ def receiver_setup_logging(
                         structlog.processors.TimeStamper(fmt="iso"),
                         structlog.stdlib.add_logger_name,
                         structlog.stdlib.add_log_level,
+                        ExtractRequestAndResponseDetails(expand_headers=True),
+                        add_open_telemetry_spans,
                         structlog.stdlib.PositionalArgumentsFormatter(),
                     ],
                 },
@@ -48,6 +56,12 @@ def receiver_setup_logging(
                     "()": "openforms.logging.factories.audit_handler_factory",
                     "adapter": from_structlog,
                     "buffer_size": 5,
+                    "flush_interval": 15.0,
+                },
+                "save_outgoing_requests": {
+                    "level": "DEBUG",
+                    "()": "log_outgoing_requests.handlers.outgoing_requests_handler_factory",
+                    "buffer_size": 3,
                     "flush_interval": 15.0,
                 },
             },
@@ -71,6 +85,15 @@ def receiver_setup_logging(
                 "maykin_common": {
                     "handlers": ["console"],
                     "level": "INFO",
+                },
+                "log_outgoing_requests": {
+                    "handlers": (
+                        ["console", "save_outgoing_requests"]
+                        if settings.LOG_OUTGOING_REQUESTS
+                        else []
+                    ),
+                    "level": "DEBUG",
+                    "propagate": False,
                 },
             },
         }
