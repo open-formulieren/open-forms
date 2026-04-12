@@ -63,7 +63,7 @@ class SingleTextFieldTests(ValidationsTestCase):
         self.assertValidationIsAligned(
             component,
             ui_input="too long",
-            expected_ui_error="Er zijn teveel karakters opgegeven.",
+            expected_ui_error="Er zijn te veel karakters opgegeven.",
         )
 
     def test_regex_huisletter(self):
@@ -247,7 +247,7 @@ class SingleBSNTests(ValidationsTestCase):
         self.assertValidationIsAligned(
             component,
             ui_input="1234",
-            expected_ui_error="Ongeldig BSN",
+            expected_ui_error="Een BSN bestaat uit 9 cijfers.",
         )
 
     def test_elfproef_invalid_bsn(self):
@@ -326,7 +326,7 @@ class SingleDateTests(ValidationsTestCase):
             component,
             ui_input="01-01-2024",
             api_value="2024-01-01",
-            expected_ui_error="De opgegeven datum ligt te ver in het verleden.",
+            expected_ui_error="De datum moet op of na 2024-03-13 zijn.",
         )
 
     def test_max_date_fixed_value(self):
@@ -355,7 +355,7 @@ class SingleDateTests(ValidationsTestCase):
             component,
             ui_input="01-01-2025",
             api_value="2025-01-01",
-            expected_ui_error="De opgegeven datum ligt te ver in de toekomst.",
+            expected_ui_error="De datum moet op of voor 2024-03-13 zijn.",
         )
 
 
@@ -440,7 +440,7 @@ class SingleDatetimeTests(ValidationsTestCase):
             component,
             ui_input="13-03-2024 10:59",
             api_value="2024-03-13T10:59:00+01:00",
-            expected_ui_error="De opgegeven datum ligt te ver in het verleden.",
+            expected_ui_error="De datum en tijd moet gelijk aan of na 13-3-2024, 11:00 zijn.",
         )
 
     def test_max_date_fixed_value(self):
@@ -470,7 +470,7 @@ class SingleDatetimeTests(ValidationsTestCase):
             component,
             ui_input="13-03-2024 13:01",
             api_value="2024-03-13T13:01:00+01:00",
-            expected_ui_error="De opgegeven datum ligt te ver in de toekomst.",
+            expected_ui_error="De datum en tijd moet gelijk aan of voor 13-3-2024, 13:00 zijn.",
         )
 
 
@@ -500,6 +500,7 @@ class SingleCurrencyTests(ValidationsTestCase):
             "type": "currency",
             "key": "requiredCurrency",
             "label": "Required currency",
+            "currency": "EUR",
             "validate": {"required": True},
         }
 
@@ -514,13 +515,14 @@ class SingleCurrencyTests(ValidationsTestCase):
             "type": "currency",
             "key": "minValueCurrency",
             "label": "Min value currency",
+            "currency": "EUR",
             "validate": {"min": 10.7},
         }
 
         self.assertValidationIsAligned(
             component,
             ui_input=2,
-            expected_ui_error="De waarde moet 10.7 of groter zijn.",
+            expected_ui_error="De waarde moet € 10,70 of groter zijn.",
         )
 
     def test_max_value(self):
@@ -528,13 +530,14 @@ class SingleCurrencyTests(ValidationsTestCase):
             "type": "currency",
             "key": "maxValueCurrency",
             "label": "Max value currency",
+            "currency": "EUR",
             "validate": {"max": 15},
         }
 
         self.assertValidationIsAligned(
             component,
             ui_input=50,
-            expected_ui_error="De waarde moet 15 of kleiner zijn.",
+            expected_ui_error="De waarde moet € 15,00 of kleiner zijn.",
         )
 
 
@@ -626,7 +629,7 @@ class SingleTextAreaTests(ValidationsTestCase):
         self.assertValidationIsAligned(
             component,
             ui_input=invalid_sample,
-            expected_ui_error="Er zijn teveel karakters opgegeven.",
+            expected_ui_error="Er zijn te veel karakters opgegeven.",
         )
 
 
@@ -659,7 +662,7 @@ class SingleTimeTests(ValidationsTestCase):
         self.assertValidationIsAligned(
             component,
             ui_input="09:10",
-            expected_ui_error="Alleen tijden tussen 10:00 en 12:00 zijn toegestaan.",
+            expected_ui_error="Tijd moet vallen tussen 10:00 en 12:00.",
         )
 
     def test_max_value(self):
@@ -676,7 +679,7 @@ class SingleTimeTests(ValidationsTestCase):
         self.assertValidationIsAligned(
             component,
             ui_input="12:10",
-            expected_ui_error="Alleen tijden tussen 10:00 en 12:00 zijn toegestaan.",
+            expected_ui_error="Tijd moet vallen tussen 10:00 en 12:00.",
         )
 
     def test_min_max_crossing_midnight(self):
@@ -693,7 +696,7 @@ class SingleTimeTests(ValidationsTestCase):
         self.assertValidationIsAligned(
             component,
             ui_input="15:00",
-            expected_ui_error="Alleen tijden tussen 20:00 en 04:00 zijn toegestaan.",
+            expected_ui_error="Tijd moet vallen tussen 20:00 en 04:00.",
         )
 
 
@@ -801,7 +804,9 @@ class SingleFileTests(ValidationsTestCase):
         form = create_form(component)
 
         with self.subTest("frontend validation"):
-            self._assertFileFrontendValidation(form, ui_files, expected_ui_error)
+            self._assertFileFrontendValidation(
+                form, component["label"], ui_files, expected_ui_error
+            )
 
         with self.subTest("backend validation"):
             self._assertBackendValidation(
@@ -810,7 +815,7 @@ class SingleFileTests(ValidationsTestCase):
 
     @async_to_sync
     async def _assertFileFrontendValidation(
-        self, form: Form, ui_files: list[Path], expected_ui_error: str
+        self, form: Form, label: str, ui_files: list[Path], expected_ui_error: str
     ) -> None:
         frontend_path = reverse("forms:form-detail", kwargs={"slug": form.slug})
         url = str(furl(self.live_server_url) / frontend_path)
@@ -820,7 +825,7 @@ class SingleFileTests(ValidationsTestCase):
             await page.get_by_role("button", name="Formulier starten").click()
 
             async with page.expect_file_chooser() as fc_info:
-                await page.get_by_text("blader").click()
+                await page.get_by_text(label, exact=True).click()
 
             file_chooser = await fc_info.value
             await file_chooser.set_files(ui_files)
@@ -838,6 +843,12 @@ class SingleFileTests(ValidationsTestCase):
             "label": "Required file",
             "validate": {"required": True},
             "storage": "url",
+            "file": {
+                "name": "",
+                "type": ["*"],
+                "allowedTypesLabels": ["any file type"],
+            },
+            "filePattern": "*",
         }
 
         self.assertFileValidationIsAligned(
@@ -854,6 +865,12 @@ class SingleFileTests(ValidationsTestCase):
             "label": "Bad PDF",
             "validate": {"required": True},
             "storage": "url",
+            "file": {
+                "name": "",
+                "type": ["*"],
+                "allowedTypesLabels": ["any file type"],
+            },
+            "filePattern": "*",
         }
 
         # The frontend validation will *not* create a TemporaryFileUpload,
@@ -884,6 +901,7 @@ class SingleFileTests(ValidationsTestCase):
             "validate": {"required": True},
             "storage": "url",
             "file": {
+                "name": "",
                 "type": [
                     "application/pdf",
                 ],
@@ -909,7 +927,7 @@ class SingleFileTests(ValidationsTestCase):
         self.assertFileValidationIsAligned(
             component,
             ui_files=[TEST_FILES / "image-256x256.png"],
-            expected_ui_error="Het geuploaded bestand is niet van een toegestaan type. Het moet .pdf zijn.",
+            expected_ui_error="Het toegevoegde bestand is niet van een toegestaan type. Het moet .pdf zijn.",
             api_value=[
                 SubmittedFileFactory.create(
                     temporary_upload=temporary_upload,
@@ -929,6 +947,7 @@ class SingleFileTests(ValidationsTestCase):
             "validate": {"required": True},
             "storage": "url",
             "file": {
+                "name": "",
                 "type": [
                     "",
                 ],
@@ -936,6 +955,7 @@ class SingleFileTests(ValidationsTestCase):
                     "*",
                 ],
             },
+            "filePattern": "",
         }
 
         # The frontend validation will *not* create a TemporaryFileUpload,
@@ -984,7 +1004,9 @@ class SingleAddressNLTests(ValidationsTestCase):
         form = create_form(component)
 
         with self.subTest("frontend validation"):
-            self._assertAddressNLFrontendValidation(form, ui_inputs, expected_ui_error)
+            self._assertAddressNLFrontendValidation(
+                form, component["key"], ui_inputs, expected_ui_error
+            )
 
         with self.subTest("backend validation"):
             self._assertBackendValidation(
@@ -993,7 +1015,7 @@ class SingleAddressNLTests(ValidationsTestCase):
 
     @async_to_sync
     async def _assertAddressNLFrontendValidation(
-        self, form: Form, ui_inputs: dict[str, str], expected_ui_error: str
+        self, form: Form, key: str, ui_inputs: dict[str, str], expected_ui_error: str
     ) -> None:
         frontend_path = reverse("forms:form-detail", kwargs={"slug": form.slug})
         url = str(furl(self.live_server_url) / frontend_path)
@@ -1003,12 +1025,17 @@ class SingleAddressNLTests(ValidationsTestCase):
             await page.get_by_role("button", name="Formulier starten").click()
 
             for field, value in ui_inputs.items():
-                await page.fill(f"input[name='{field}']", value)
+                await page.fill(f"input[name='{key}.{field}']", value)
+                # triggers client-side validation
+                await page.locator(f"input[name='{key}.{field}']").blur()
 
-            # try to submit the step which should be invalid, so we expect this to
-            # render the error message.
-            await page.get_by_role("button", name="Volgende").click()
-
+            if ui_inputs:
+                # client-side validation disables the submit button already
+                await expect(
+                    page.get_by_role("button", name="Volgende")
+                ).to_have_attribute("aria-disabled", "true")
+            else:
+                await page.get_by_role("button", name="Volgende").click()
             await expect(page.get_by_text(expected_ui_error)).to_be_visible()
 
     def test_required_field(self):
@@ -1029,7 +1056,7 @@ class SingleAddressNLTests(ValidationsTestCase):
                 "houseLetter": "",
                 "houseNumberAddition": "",
             },
-            expected_ui_error="Het verplichte veld Required AddressNL is niet ingevuld.",
+            expected_ui_error="Het verplichte veld Postcode is niet ingevuld.",
         )
 
     def test_regex_failure(self):
@@ -1069,7 +1096,7 @@ class SingleAddressNLTests(ValidationsTestCase):
                     "houseLetter": "89",
                     "houseNumberAddition": "",
                 },
-                "Huisletter moet een enkele letter zijn.",
+                "Huisletter moet één enkele letter zijn.",
             ),
             (
                 "houseNumberAddition",

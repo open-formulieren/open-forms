@@ -40,13 +40,19 @@ class FillInFormTests(E2ETestCase):
                             "validate": {
                                 "required": True,
                             },
+                            "file": {
+                                "name": "",
+                                "type": ["*"],
+                                "allowedTypesLabels": ["any file type"],
+                            },
+                            "filePattern": "*",
                         }
                     ]
                 },
                 translation_enabled=False,  # force Dutch
                 ask_privacy_consent=False,
                 ask_statement_of_truth=False,
-                new_renderer_enabled=False,
+                new_renderer_enabled=True,
             )
             return form
 
@@ -63,7 +69,7 @@ class FillInFormTests(E2ETestCase):
                 await page.get_by_role("button", name="Formulier starten").click()
 
                 async with page.expect_file_chooser() as fc_info:
-                    await page.get_by_text("blader").click()
+                    await page.get_by_text("File Upload", exact=True).click()
 
                 file_chooser = await fc_info.value
                 await file_chooser.set_files(TEST_FILES / "test.txt")
@@ -102,13 +108,19 @@ class FillInFormTests(E2ETestCase):
                             "validate": {
                                 "required": True,
                             },
+                            "file": {
+                                "name": "",
+                                "type": ["*"],
+                                "allowedTypesLabels": ["any file type"],
+                            },
+                            "filePattern": "*",
                         }
                     ]
                 },
                 translation_enabled=False,  # force Dutch
                 ask_privacy_consent=False,
                 ask_statement_of_truth=False,
-                new_renderer_enabled=False,
+                new_renderer_enabled=True,
             )
             return form
 
@@ -125,7 +137,7 @@ class FillInFormTests(E2ETestCase):
                 await page.get_by_role("button", name="Formulier starten").click()
 
                 async with page.expect_file_chooser() as fc_info:
-                    await page.get_by_text("blader").click()
+                    await page.get_by_text("File Upload", exact=True).click()
 
                 file_chooser = await fc_info.value
                 await file_chooser.set_files(TEST_FILES / "test.msg")

@@ -121,9 +121,7 @@ class InputValidationRegressionTests(E2ETestCase):
                             "label": "Optional Text fields",
                             "validate": {"required": False},
                             "multiple": True,
-                            "defaultValue": [
-                                None
-                            ],  # The default value of multiple text fields
+                            "defaultValue": [],
                         },
                         {
                             "type": "editgrid",
