@@ -509,7 +509,7 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
                 "source": form_variable.source,
                 "type": form_variable.data_type,
             }
-            for form_variable in form.formvariable_set.all()  # pyright: ignore[reportAttributeAccessIssue]
+            for form_variable in form.formvariable_set.all()
         }
 
         all_keys = list(static_variables) + list(form_variables)

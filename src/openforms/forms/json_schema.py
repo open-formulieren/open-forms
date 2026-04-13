@@ -36,7 +36,7 @@ def _iter_form_variables(
             variables_registry=additional_variables_registry
         )
     # Handle form variables holding dynamic data (component and user defined)
-    yield from form.formvariable_set.all()  # pyright: ignore[reportAttributeAccessIssue]
+    yield from form.formvariable_set.all()
 
 
 def generate_json_schema(
