@@ -18,9 +18,16 @@ from openforms.formio.service import (
     FormioConfigurationWrapper,
     get_readable_path_from_configuration_path,
 )
+from openforms.formio.typing.base import Component
+from openforms.prefill.contrib.customer_interactions.constants import (
+    PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+)
 from openforms.products.models import Product
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 from openforms.typing import StrOrPromise
+from openforms.variables.constants import FormVariableSources
+from openforms.variables.models import ServiceFetchConfiguration
+from openforms.variables.service import get_static_variables
 
 from ....api.serializers.form import (
     FormLiteralsSerializer,
@@ -37,9 +44,10 @@ from ....models import (
     FormVariable,
 )
 from ...validators import RequireAppointmentsPlugin
-from ..typing import FormStepData, FormValidatedData
+from ..typing import FormStepData, FormValidatedData, FormVariableData
 from .form_step import FormStepSerializer
 from .payment import FormPaymentSerializer
+from .variables import FormVariableSerializer
 
 
 @extend_schema_serializer(component_name="FormV3Serializer")
@@ -64,6 +72,9 @@ class FormSerializer(serializers.ModelSerializer):
     )
 
     steps = FormStepSerializer(many=True, required=True, source="formstep_set")
+    variables = FormVariableSerializer(
+        many=True, source="formvariable_set", required=False
+    )
 
     payment = FormPaymentSerializer(required=False, source="*")
 
@@ -91,6 +102,7 @@ class FormSerializer(serializers.ModelSerializer):
     _nested_fields = (
         "confirmation_email_template",
         "formstep_set",
+        "formvariable_set",
         "registration_backends",
     )
 
@@ -104,6 +116,7 @@ class FormSerializer(serializers.ModelSerializer):
             "login_required",
             "translation_enabled",
             "registration_backends",
+            "variables",
             "payment",
             "appointment_options",
             "literals",
@@ -165,12 +178,14 @@ class FormSerializer(serializers.ModelSerializer):
         )
         # fmt:on
         len(form_definitions)  # Evaluate the queryset to acquire the locks.
+        form_definitions_created: dict[UUID, FormDefinition] = {}
         for index, step_data in enumerate(form_step_data):
             form_definition_data = step_data["form_definition"]
             form_definition, _ = form_definitions.update_or_create(
                 uuid=form_definition_data["uuid"],
                 defaults={k: v for k, v in form_definition_data.items() if k != "uuid"},
             )
+            form_definitions_created[form_definition_data["uuid"]] = form_definition
 
             FormStep.objects.create(
                 **{**step_data, "form_definition": form_definition},
@@ -178,11 +193,37 @@ class FormSerializer(serializers.ModelSerializer):
                 form=instance,
             )
 
+        # These calls are required to create the corresponding component form variables
+        # from the form definitions.
+        for form_definition in form_definitions_created.values():
+            FormVariable.objects.synchronize_for(form_definition)
+
         registration_backends = validated_data.get("registration_backends", [])
         FormRegistrationBackend.objects.bulk_create(
             FormRegistrationBackend(form=instance, **backend)
             for backend in registration_backends
         )
+
+        form_variables_data = validated_data.get("formvariable_set", [])
+        form_variables: list[FormVariable] = []
+        for variable_data in form_variables_data:
+            service_fetch_configuration = None
+            if service_configuration_data := variable_data.pop(
+                "service_fetch_configuration", None
+            ):
+                service_fetch_configuration = ServiceFetchConfiguration.objects.create(
+                    **service_configuration_data
+                )
+
+            variable_kwargs = dict(variable_data)
+            form_variable = FormVariable(
+                form=instance,
+                service_fetch_configuration=service_fetch_configuration,
+                **variable_kwargs,
+            )
+            form_variable.check_data_type_and_initial_value()
+            form_variables.append(form_variable)
+        FormVariable.objects.bulk_create(form_variables)
 
         return instance
 
@@ -210,12 +251,14 @@ class FormSerializer(serializers.ModelSerializer):
         )
         # fmt:on
         len(form_definitions)  # Evaluate the queryset to acquire the locks.
+        form_definitions_created: dict[UUID, FormDefinition] = {}
         for index, step_data in enumerate(form_step_data):
             form_definition_data = step_data["form_definition"]
             form_definition, _ = form_definitions.update_or_create(
                 uuid=form_definition_data["uuid"],
                 defaults={k: v for k, v in form_definition_data.items() if k != "uuid"},
             )
+            form_definitions_created[form_definition.uuid] = form_definition
 
             step = FormStep(  # TODO: use update_or_create (nice to have)
                 **{**step_data, "form_definition": form_definition},
@@ -224,16 +267,30 @@ class FormSerializer(serializers.ModelSerializer):
             )
             assigned_steps.append(step)
 
+        # Remove the form steps not that are not part of the request along with their
+        # form definitions when applicable.
         steps_to_delete = instance.formstep_set.exclude(
             pk__in=(step.pk for step in assigned_steps)
         )
-        for step in steps_to_delete:
-            step.delete()  # Removes the form definition when applicable by calling `.delete`.
+        form_definitions_to_delete = [
+            step.form_definition.pk
+            for step in steps_to_delete
+            if not step.form_definition.is_reusable
+            and step.form_definition.uuid not in form_definitions_created
+        ]
+        # Use query manager delete methods to bypass model defined `delete` methods.
+        steps_to_delete.delete()
+        FormDefinition.objects.filter(pk__in=form_definitions_to_delete).delete()
 
         # Generate form steps after deleting existings steps, to allow correct calculation of
         # the `order` field.
         for step in sorted(assigned_steps, key=lambda step: step.order):
             step.save()
+
+        # These calls are required to create the corresponding component form variables
+        # from the form definitions.
+        for form_definition in form_definitions_created.values():
+            FormVariable.objects.synchronize_for(form_definition)
 
         registration_backends = validated_data.get("registration_backends", None)
         if registration_backends is not None:
@@ -242,6 +299,29 @@ class FormSerializer(serializers.ModelSerializer):
                 FormRegistrationBackend(form=instance, **backend)
                 for backend in registration_backends
             )
+
+        form_variables_data = validated_data.get("formvariable_set", [])
+        form_variables: list[FormVariable] = []
+        for variable_data in form_variables_data:
+            service_fetch_configuration = None
+            if service_configuration_data := variable_data.pop(
+                "service_fetch_configuration", None
+            ):
+                service_fetch_configuration = ServiceFetchConfiguration.objects.create(
+                    **service_configuration_data
+                )
+
+            variable_kwargs = dict(variable_data)
+            form_variable = FormVariable(
+                form=instance,
+                service_fetch_configuration=service_fetch_configuration,
+                **variable_kwargs,
+            )
+            form_variable.check_data_type_and_initial_value()
+            form_variables.append(form_variable)
+        # Remove the stale variables that were not part of the request.
+        instance.formvariable_set.exclude(source=FormVariableSources.component).delete()
+        FormVariable.objects.bulk_create(form_variables)
 
         return instance
 
@@ -260,6 +340,8 @@ class FormSerializer(serializers.ModelSerializer):
             )
             for step in value
         }
+        # Required for the variable validation.
+        self.form_definition_configurations = configurations
 
         all_keys: list[str] = []
         for form_definition, configuration in configurations.items():
@@ -311,6 +393,139 @@ class FormSerializer(serializers.ModelSerializer):
 
         return value
 
+    def validate_variable_profile_options(
+        self,
+        index: int,
+        variable_data: FormVariableData,
+    ) -> None:
+        prefill_options = variable_data.get("prefill_options", {})
+        if not (
+            profile_form_variable_key := prefill_options.get("profile_form_variable")
+        ):
+            return
+
+        component: Component | None = None
+        for form_definition in self.form_definition_configurations.values():
+            if profile_form_variable_key not in form_definition:
+                continue
+            component = form_definition[profile_form_variable_key]
+            break
+        else:
+            raise ValidationError(
+                {
+                    f"variables.{index}.profileFormVariable": _(
+                        "Unknown component key '{key}' specified for profile form variable"
+                    ).format(key=profile_form_variable_key)
+                }
+            )
+
+        if component["type"] != "customerProfile":
+            raise serializers.ValidationError(
+                {
+                    f"variables.{index}.profileFormVariable": _(
+                        "Only variables of 'profile' components are allowed as "
+                        "profile form variable."
+                    )
+                }
+            )
+
+    def validate_variable_prefill_data(
+        self, index: int, attrs: FormVariableData
+    ) -> None:
+        prefill_plugin = attrs.get("prefill_plugin") or ""
+        prefill_attribute = attrs.get("prefill_attribute") or ""
+        prefill_options = attrs.get("prefill_options")
+
+        if prefill_plugin and prefill_options and prefill_attribute:
+            raise ValidationError(
+                {
+                    f"variables.{index}.nonFieldErrors": _(
+                        "Prefill plugin, attribute and options can not be specified at the same time."
+                    ),
+                }
+            )
+
+        if (prefill_plugin and not (prefill_attribute or prefill_options)) or (
+            not prefill_plugin and (prefill_attribute or prefill_options)
+        ):
+            raise ValidationError(
+                {
+                    f"variables.{index}.nonFieldErrors": _(
+                        "Prefill plugin must be specified with either prefill attribute or prefill options."
+                    )
+                }
+            )
+
+    def validate_variable_data(self, attrs: FormValidatedData) -> None:
+        if not (variables_data := attrs.get("formvariable_set", [])):
+            return
+
+        static_keys = [item.key for item in get_static_variables()]
+        component_keys = [
+            component["key"]
+            for configuration in self.form_definition_configurations.values()
+            for component in configuration
+        ]
+        existing_profile_form_vars: list[str] = []
+        for index, variable_data in enumerate(variables_data):
+            # To have a smooth transition in the front-end from v2 to v3, only user-defined
+            # variables will be processed/saved from the request. Component variable
+            # are automagically created/updated when the form gets saved.
+            if variable_data["source"] == FormVariableSources.component:
+                variables_data.pop(index)
+                continue
+
+            if variable_data["key"] in static_keys:
+                raise ValidationError(
+                    {
+                        f"variables.{index}.key": [
+                            (
+                                "The variable key cannot be equal to any of the "
+                                "following static variable keys: {static_keys}."
+                            ).format(static_keys=", ".join(static_keys)),
+                        ]
+                    },
+                    code="unique",
+                )
+            elif variable_data["key"] in component_keys:
+                raise ValidationError(
+                    {
+                        f"variables.{index}.key": [
+                            (
+                                "The variable key cannot be equal to any of the "
+                                "following component variable keys: {component_keys}."
+                            ).format(component_keys=", ".join(component_keys)),
+                        ]
+                    },
+                    code="unique",
+                )
+
+            self.validate_variable_prefill_data(index, variable_data)
+            self.validate_variable_profile_options(index, variable_data)
+
+            prefill_plugin = variable_data.get("prefill_plugin")
+            prefill_options = variable_data.get("prefill_options", {})
+            profile_form_variable = prefill_options.get("profile_form_variable")
+
+            if prefill_plugin != COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER or any(
+                (not prefill_options, not profile_form_variable)
+            ):
+                continue
+
+            assert profile_form_variable, "No profile variable!"
+            if profile_form_variable in existing_profile_form_vars:
+                raise ValidationError(
+                    {
+                        f"variables.{index}.prefillOptions.profileFormVariable": _(
+                            "This profile form variable is already used in another "
+                            "communication preferences prefill plugin."
+                        )
+                    },
+                    code="unique",
+                )
+
+            existing_profile_form_vars.append(profile_form_variable)
+
     def validate_amount_of_steps(self, attrs: FormValidatedData) -> None:
         # validate is called multiple times because of the nested serializer fields.
         # For example ModelTranslationsSerializer is calling it 2 times (current amount
@@ -343,14 +558,10 @@ class FormSerializer(serializers.ModelSerializer):
     def validate(self, attrs: FormValidatedData) -> FormValidatedData:
         self.validate_amount_of_steps(attrs)
 
+        # validate variables after validation of the form definitions were ran
+        self.validate_variable_data(attrs)
         return attrs
 
-    @transaction.atomic()
     def save(self, **kwargs):
         instance = super().save(**kwargs, uuid=self.context["form_uuid"])
-
-        for step in instance.formstep_set.all():
-            # call this synchronously so that it's part of the same DB transaction.
-            FormVariable.objects.synchronize_for(step.form_definition)
-
         return instance

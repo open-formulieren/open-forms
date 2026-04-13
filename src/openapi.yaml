@@ -9033,6 +9033,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormRegistrationBackend'
+        variables:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormVariableV3'
         payment:
           $ref: '#/components/schemas/FormPayment'
         appointmentOptions:
@@ -9276,6 +9280,79 @@ components:
       required:
       - dataType
       - form
+      - key
+      - name
+      - source
+    FormVariableV3:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the variable
+        key:
+          type: string
+          description: Key of the variable, should be unique with the form.
+          pattern: ^(\w|\w[\w.\-]*\w)$
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceEnum'
+          description: |-
+            Where will the data that will be associated with this variable come from
+
+            * `component` - Component
+            * `user_defined` - User defined
+        serviceFetchConfiguration:
+          allOf:
+          - $ref: '#/components/schemas/ServiceFetchConfigurationV3'
+          nullable: true
+        prefillPlugin:
+          type: string
+          description: Which, if any, prefill plugin should be used
+          maxLength: 50
+        prefillAttribute:
+          type: string
+          description: Which attribute from the prefill response should be used to
+            fill this variable
+          maxLength: 200
+        prefillIdentifierRole:
+          allOf:
+          - $ref: '#/components/schemas/PrefillIdentifierRoleEnum'
+          description: |-
+            In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?
+
+            * `main` - Main
+            * `authorizee` - Authorizee
+        prefillOptions: {}
+        dataType:
+          allOf:
+          - $ref: '#/components/schemas/DataTypeEnum'
+          description: |-
+            The type of the value that will be associated with this variable
+
+            * `string` - String
+            * `boolean` - Boolean
+            * `object` - Object
+            * `array` - Array
+            * `int` - Integer
+            * `float` - Float
+            * `datetime` - Datetime
+            * `time` - Time
+            * `date` - Date
+            * `partners` - Partners
+            * `children` - Children
+            * `editgrid` - Edit Grid
+        dataFormat:
+          type: string
+          description: The format of the value that will be associated with this variable
+          maxLength: 250
+        isSensitiveData:
+          type: boolean
+          description: Will this variable be associated with sensitive data?
+        initialValue:
+          nullable: true
+          description: The initial value for this field
+      required:
+      - dataType
       - key
       - name
       - source
@@ -10685,6 +10762,66 @@ components:
             the cached responses will expire after the timeout (in seconds).
       required:
       - id
+      - name
+      - service
+    ServiceFetchConfigurationV3:
+      type: object
+      properties:
+        name:
+          type: string
+          description: human readable name for the configuration
+          maxLength: 250
+        service:
+          type: string
+          format: uuid
+        path:
+          type: string
+          description: path relative to the Service API root
+          maxLength: 250
+        method:
+          allOf:
+          - $ref: '#/components/schemas/MethodEnum'
+          title: HTTP method
+          description: |-
+            POST is allowed, but should not be used to mutate data
+
+            * `GET` - GET
+            * `POST` - POST
+        headers:
+          type: object
+          additionalProperties: {}
+          title: HTTP request headers
+          description: Additions and overrides for the HTTP request headers as defined
+            in the Service.
+        queryParams:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          title: HTTP query string
+        body:
+          nullable: true
+          title: HTTP request body
+          description: Request body for POST requests (only "application/json" is
+            supported)
+        dataMappingType:
+          title: Mapping expression language
+          oneOf:
+          - $ref: '#/components/schemas/DataMappingTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        mappingExpression:
+          nullable: true
+          description: For jq, pass a string containing the filter expression
+        cacheTimeout:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          description: The responses for service fetch are cached to prevent repeating
+            the same request multiple times when performing the logic check. If specified,
+            the cached responses will expire after the timeout (in seconds).
+      required:
       - name
       - service
     SourceEnum:
