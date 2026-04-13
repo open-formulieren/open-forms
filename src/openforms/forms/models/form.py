@@ -56,6 +56,7 @@ if TYPE_CHECKING:
         FormLogic,
         FormRegistrationBackend,
         FormStep,
+        FormVariable,
     )
 
 
@@ -422,6 +423,7 @@ class Form(models.Model):
         FormManager
     ] = FormManager()
     formstep_set: models.Manager[FormStep]
+    formvariable_set: models.Manager[FormVariable]
     auth_backends: Manager[FormAuthenticationBackend]
     registration_backends: Manager[FormRegistrationBackend]
     formlogic_set: Manager[FormLogic]
