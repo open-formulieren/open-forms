@@ -2272,7 +2272,7 @@
     "originalDefault": "There are errors in the DMN configuration."
   },
   "aoNZfg": {
-    "defaultMessage": "Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules.",
+    "defaultMessage": "Voordat je de nieuwe logica-evaluatie kunt inschakelen, moet je de configuratie ‘Inschakelen vanaf stap’ uit je logische regels verwijderen.",
     "description": "New logic disabled reason explanation",
     "originalDefault": "Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules."
   },
@@ -2644,7 +2644,7 @@
     "originalDefault": "App version"
   },
   "gs234P": {
-    "defaultMessage": "This rule will be executed on all steps.",
+    "defaultMessage": "Deze regel wordt bij elke stap uitgevoerd.",
     "description": "Execute on all steps label",
     "originalDefault": "This rule will be executed on all steps."
   },

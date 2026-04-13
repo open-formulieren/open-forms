@@ -4728,7 +4728,7 @@
   "aoNZfg": [
     {
       "type": 0,
-      "value": "Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules."
+      "value": "Voordat je de nieuwe logica-evaluatie kunt inschakelen, moet je de configuratie ‘Inschakelen vanaf stap’ uit je logische regels verwijderen."
     }
   ],
   "aqYeqv": [
@@ -5616,7 +5616,7 @@
   "gs234P": [
     {
       "type": 0,
-      "value": "This rule will be executed on all steps."
+      "value": "Deze regel wordt bij elke stap uitgevoerd."
     }
   ],
   "guySt0": [
