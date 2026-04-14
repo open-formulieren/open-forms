@@ -14,10 +14,17 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
-3.5.0 (2026-04-13)
-==================
+3.5.0 "Kjeld" (2026-04-13)
+==========================
 
 Open Forms 3.5.0 is a feature release.
+
+.. epigraph::
+
+   Kjeld Nuis is a Dutch speed skater who broke the 100kph barrier on natural ice in
+   2022. It took us `just a bit longer` to break speed records with Open Forms,
+   but finally we completed our logic engine rework in the planned timeline and met
+   our goals.
 
 This contains the changes from the alpha releases and fixes applied until the stable version.
 BEFORE upgrading to 3.5.0, please read the release notes carefully and review the following
