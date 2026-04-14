@@ -870,7 +870,7 @@ phonenumberslite==9.0.24
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-pillow==12.1.1
+pillow==12.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
