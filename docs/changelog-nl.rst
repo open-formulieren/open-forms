@@ -10,6 +10,449 @@ Changelog (NL)
     found :ref:`here <changelog>`.
 
 
+3.5.0 "Kjeld" (2026-04-15)
+==========================
+
+Open Forms 3.5.0 is een feature release.
+
+.. epigraph::
+
+   Kjeld Nuis is een Nederlandse schaatser die in 2022 de grens van 100 km/u op
+   natuurijs doorbrak. Het kostte ons `net iets langer` om snelheidsrecords te breken
+   met Open Formulieren, maar uiteindelijk hebben we de herbouw van onze logica- en
+   formulier-engine binnen de geplande termijn afgerond en onze doelen behaald.
+
+Deze release bevat wijzigingen uit de alpha-versies en opgeloste bugs tot aan de
+stabiele versie. Lees de release-opmerkingen aandachtig vóór het upgraden naar versie
+3.5.0 en volg de onderstaande instructies.
+
+.. note::
+
+    Vanaf Open Formulieren 3.5 is de nieuwe renderer standaard ingeschakeld bij het aanmaken
+    van een nieuw formulier. Mocht je problemen tegenkomen, dan kun je via de
+    formulierinstellingen terugschakelen naar de oude renderer.
+
+Update-procedure
+----------------
+
+Om naar 3.5 te upgraden, let dan op:
+
+* ⚠️ Zorg dat de huidige versie 3.3.x is. We raden altijd de meest recente patch release
+  aan, op het moment van schrijven zijn dit 3.4.8 en 3.3.15.
+* ⚠️ Als je dit nog niet hebt gedaan, bekijk dan de handmatige actie die genoemd
+  wordt in de release notes van 3.4.2.
+* ⚠️ Bekijk de :ref:`gedetailleerde release notes <installation_upgrade_350>` in de
+  documentatie onder **Installation** > **Upgrade details to Open Forms 3.5.0** en
+  bereid je hierop voor.
+* ⚠️ Controleer dat je Helm charts het script ``bin/check_celery_worker_liveness.py``
+  niet gebruiken, omdat dit verwijderd is. Je kunt de nieuwe health check-mechanismen
+  hier vinden: :ref:`installation_health_checks`.
+* ⚠️ Logicaregels die de actie "blokkeer doorgaan naar de volgende stap" gebruiken,
+  vereisen mogelijk extra aandacht.
+
+  .. warning::
+
+      Om de snelheidsverbeteringen in deze release te kunnen implementeren moesten we de
+      instellingen van de logica-actie "blokkeer doorgaan naar de volgende stap"
+      aanpassen. Je moet nu expliciet aangeven welke stap geblokkeerd moet worden.
+
+      We hebben een automatische migratie die deze informatie toevoegt, afgeleid uit de
+      bestaande logicaregel, echter kunnen we in sommige gevallen niet garanderen dat de
+      toegekende stap correct is en niet tot een ander gedrag van het formulier leidt.
+
+      Daarom vragen we formulierontwerpers/beheerders om deze gevallen handmatig te
+      controleren en opnieuw te testen. We hebben hiervoor een script die een lijst
+      uitdraait van de logicaregels en formulieren die gecontroleerd moet worden.
+
+      .. code-block:: bash
+
+          # in de container via ``docker exec`` of ``kubectl exec``:
+          python /app/bin/check_disable_next_logic_action.py
+
+      Gebruik de vlag ``--show-all`` om een volledige lijst van alle gewijzigde
+      regels te tonen, ook als er geen twijfel bestaat.
+
+* Inventariseer de formulieren die nog niet compatibel zijn met de nieuwe
+  logica-evaluatie - we hebben hiervoor een script toegevoegd om problematische
+  formulieren te rapporteren. Je kunt dit uitvoeren met:
+
+  .. code-block:: bash
+
+      # in de container via ``docker exec`` of ``kubectl exec``:
+      python /app/bin/report_invalid_form_logic.py.py
+
+  De gerapporteerde formulieren bevatten instabiele logicaregels die naar elkaar
+  verwijzen. Laat formulierontwerpers deze beoordelen en corrigeren. In Open Formulieren
+  4.0 wordt dit een harde eis om te kunnen upgraden.
+
+Uitfaseringen
+-------------
+
+**Content-Security-Policy instellingen**
+
+De omgevingsvariabele ``CSP_REPORT_ONLY`` is uitgefaseerd. De onderliggende bibliotheek
+heeft haar instellingenmechanisme gewijzigd en ondersteunt nu aparte configuraties voor
+afgedwongen en "alleen rapporteren" policies.
+
+Belangrijkste verbeteringen
+---------------------------
+
+**⚡️ Performance**
+
+We hebben veel werk verzet om de interactie van gebruikers met Open Formulieren soepeler
+en sneller te maken. Dit traject is ruim een jaar geleden gestart in Open Formulieren
+3.1 "Lente". Eén van de grootste bronnen van vertraging was dat er steeds communicatie
+met de server nodig was om logicaregels te evalueren terwijl de gebruiker het formulier
+invult.
+
+We hebben dit opnieuw opgebouwd om zoveel mogelijk logica op de server te vermijden:
+
+- alleen de logicaregels die relevant zijn voor de huidige formulierstap worden nog
+  uitgevoerd,
+- logicaregels worden automatisch gesorteerd op basis van hun onderlinge afhankelijkheden,
+- er is detectie van mogelijke oneindige-lussen toegevoegd,
+- de meest-toegepaste logicapatronen kunnen nu "aan de voorkant" uitgevoerd worden
+  zonder dat er communicatie met de server nodig is.
+
+Zowel de oude als de nieuwe logica-evaluatie zijn beschikbaar, en je kunt de nieuwe
+variant per formulier inschakelen.
+
+Let op: het uitvoeren van logica aan de voorkant is alleen beschikbaar als de nieuwe
+renderer (sinds 3.4.0 beschikbaar) ingeschakeld is.
+
+**🔢 Stabiele publieke referentienummers**
+
+Bij het indienen van een formulier krijgt de eindgebruiker altijd een referentienummer.
+Deze werden tot en met 3.4 typisch op willekeurige manier gegenereerd, waardoor een
+kleine kans bestond dat na enige tijd een nummer opnieuw uitgegeven wordt. Nu worden
+deze referenties gegarandeerd uniek gegenereerd, ook als oude inzendingen opgeschoond
+worden.
+
+Daarnaast kunnen beheerders nu ook een sjabloon voor deze referentie instellen, zodat je
+je eigen voorvoegsels (in plaats van "OF-") kan gebruiken. Ook kan je er in de ZGW-API's
+nu voor kiezen om het nummer door de Zaken-API of door Open Formulieren te laten
+genereren.
+
+**🔍 Monitoring en logging**
+
+We hebben (voor nu) de laatste fase geïmplementeerd voor het bewaken en observeren van
+Open Formulieren in de dienstverleningsketen, zodat eventuele verstoringen snel
+gedetecteerd en opgelost kunnen worden.
+
+Alle componenten waaruit Open Formulieren bestaat hebben nu "gezondheidcheck"-mechanismen
+om te bepalen of het component functioneert. Hiermee kan automatisch een
+niet-functionerende component herstart worden.
+
+Daarbovenop ondersteunen we nu "distributed tracing" waarbij een verzoek van een
+gebruiker door de hele keten gevolgd kan worden, inclusief integratie met de bestaande
+logging en foutbewaking zoals Sentry.
+
+Tot slot is de robuustheid van (audit) logs nog verder verbeterd - alle applicatielogs
+worden nu naar de systeemoutput weggeschreven `en` indien gewenst, naar de databank
+voor gebruiksvriendelijke inzage door beheerders.
+
+**✉️ E-mail via de Office365 API**
+
+Microsoft faseert hun ondersteuning voor het SMTP e-mailprotocol uit en
+`is van plan <https://techcommunity.microsoft.com/blog/exchange/updated-exchange-online-smtp-auth-basic-authentication-deprecation-timeline/4489835>`_
+om deze in 2027 volledig te verwijderen.
+
+Om e-mailverzending voor Office365-gebruikers te blijven ondersteunen, kan Open
+Formulieren nu e-mails versturen via de  Microsoft Graph API dankzij een bijdrage van
+`Delta10 <https://www.delta10.nl/>`_.
+
+Nieuwe functies
+---------------
+
+* Performance:
+
+  .. note::
+
+      We hebben in deze release de performance van de evaluatie van logicaregels
+      verbeterd. Deze wijzigingen zijn standaard ingeschakeld voor nieuwe formulieren.
+      Indien nodig kun je deze uitschakelen met de de featureflag "Gebruik nieuwe
+      logica-evaluatie" onder de "Experimentele functionaliteit"-instellingen.
+
+      Bij het opslaan van een formulier worden logicaregels gevalideerd en automatisch
+      geordend. Als je individuele logicaregels rechtstreeks wijzigt (in de
+      beheerinterface), dan kan dit tot analyses leiden die niet meer kloppen, en we
+      raden dus sterk aan om niet via deze weg logicaregels te bewerken.
+
+  - [:backend:`5861`] De logica-actie "blokkeer doorgaan naar de volgende stap" is
+    aangepast - het is nu verplicht om expliciet aan te geven welke stap geblokkeerd
+    moet worden. De automatische migratie kan die stap in de meeste gevallen betrouwbaar
+    bepalen. Zie de opmerkingen in de update-procedure voor formulieren die handmatig
+    gecontroleerd moeten worden.
+  - [:backend:`2409`] Open Formulieren kan nu analyseren welke input- en
+    outputvariabelen gebruikt worden in logicaregels.
+  - [:backend:`2409`] Open Formulieren detecteert nu oneindige-lussen in logicaregels
+    wanneer één regel afhankelijk is van het resultaat van één of meer andere regels.
+    Lussen zoals ``ruleA -> ruleB -> ruleC -> ruleA`` leiden tot validatiefouten.
+  - [:backend:`2409`] Logicaregels worden nu automatisch geordend wanneer je kiest voor
+    de nieuwe logica-evaluatie, en toegewezen aan de relevante formulierstappen zodat op
+    een bepaalde stap alleen relevante logicaregels uitgevoerd worden.
+  - [:backend:`5962`] Logicaregels kunnen nu gedeeltelijk uitgevoerd worden op basis van
+    resultaten uit eerdere stappen.
+  - [:backend:`6038`] JsonLogic-expressies kunnen nu worden gecompileerd met
+    datatype-informatie voor de frontend.
+  - [:backend:`6037`] Er is nu een gedeelde jsonLogic-testsuite tussen backend en
+    frontend.
+  - [:backend:`6072`] Analyse van logicaregels kan nu bepalen of evaluatie op de server
+    noodzakelijk is voor elke regel.
+  - De logicaregels om aan de voorkant uit te voeren worden nu meegegeven naar de
+    frontend.
+  - [:backend:`6083`] Gedeeltelijke evaluatie van de variabele-actie toegevoegd voordat
+    logicaregels naar de frontend worden gestuurd.
+  - [:backend:`6109`] De velden ``completed`` en ``is_applicable`` worden niet gebruikt
+    in de frontend en zijn verwijderd uit de API-endpoint.
+  - [:backend:`6038`] Geborgd dat acties van het type "zet registratieplugin voor
+    inzending" niet naar de frontend verstuurd worden.
+  - [:backend:`6099`] Het markeren van een formulierstap als wel/niet van toepassing
+    wordt nu bij alle stappen uitgevoerd.
+  - [:backend:`6018`, :backend:`6129`] Het overbodige attribuut ``SubmissionStep.data``
+    is verwijderd.
+  - [:backend:`6143`] Documentatie toegevoegd voor ontwikkelaars over het uitlezen van
+    de variabelewaarden vanuit de inzending.
+  - Er is nu een metric die ontsluit hoeveel formulieren de nieuwe logica-evaluatie
+    ingeschakeld hebben.
+  - [:backend:`6018`] Variabelenamen opgeschoond en commentaar en docstrings bijgewerkt
+    met betrekking tot de implementatie van componentzichtbaarheid.
+  - [:backend:`6166`] Vergelijkingen van lijsten in JsonLogic-expressies gecorrigeerd.
+
+* Nieuwe beheerinterface:
+
+  .. note::
+
+      Na veel inspanning in het ontwerp van de nieuwe beheerinterface zijn we gestart
+      met de implementatiefase. Helaas is er voor dit project geen ontwikkelbudget en
+      is dit gepauzeerd.
+
+  - [:backend:`5952`] De nieuwe (v3) formulier-endpoint is toegevoegd, met minimale
+    attributen.
+  - [:backend:`5955`] Ondersteuning toegevoegd voor bevestigingssjablonen/-opties in het
+    nieuwe endpoint.
+  - [:backend:`6080`] ``uuid`` toegevoegd aan de response van het endpoint
+    ``/api/v2/themes``.
+  - [:backend:`5952`] Je kan nu de formulierstappen meesturen in het nieuwe
+    formulier-update endpoint.
+  - [:backend:`5956`] ``registration_backends`` is toegevoegd aan het nieuwe
+    v3-endpoint ``/api/v3/forms/{uuid}``.
+  - [:backend:`5957`] Betaalgerelateerde velden toegevoegd aan het nieuwe v3-endpoint
+    ``/api/v3/forms/{uuid}``.
+  - [:backend:`6119`] Ondersteuning toegevoegd voor nul stappen bij
+    afsprakenformulieren in het nieuwe v3-endpoint.
+
+* Afspraken (JCC):
+
+  - [:backend:`5690`] De aanvullende productinformatie (HTML) is nu beschikbaar voor de
+    publieke frontend.
+  - [:backend:`5696`] De resterende API-calls voor de afsprakenflow zijn
+    geïmplementeerd. We ondersteunen nu de REST API volledig, aangezien SOAP door JCC
+    is uitgefaseerd.
+  - [:backend:`5820`] Je kunt nu de teksten en vertalingen aanpassen die gebruikt
+    worden in de componenten voor contactgegevens.
+  - [:backend:`5691`] De limiet voor het aantal producten in afspraken is nu ontsloten
+    naar de frontend.
+
+* Monitoring en logging:
+
+  - [:backend:`5287`] Alle containers hebben nu low-level health check-mechanismen.
+  - [:backend:`5450`] Er is nu distributed tracing op basis van Open Telemetry. De
+    volgende traces zijn nu beschikbaar:
+
+    - Postgres-queries
+    - Redis-queries
+    - Celery-taken
+    - Uitgaande verzoeken naar externe services
+    - Applicatiespecifieke traces
+
+  - [:backend:`5358`] Log-regels bevatten nu de span-/trace-ID’s voor correlatie.
+  - ``TraceID`` en ``SpanID`` uit OTel worden nu vastgelegd bij Sentry-events, zodat
+    correlatie tussen Sentry-events en traces/logs (bijvoorbeeld in Grafana) mogelijk is.
+  - [:backend:`5351`, :backend:`6149`] De ``logevent`` module is omgebouwd zodat
+    auditlogs altijd naar de systeemoutput weggeschreven worden én ook naar de database
+    voor eenvoudige inzage.
+  - [:backend:`6169`] De uitgaande verzoek-logs zijn nu ook gestructureerd, waarmee nu
+    alle logs een consistente structuur hebben.
+  - Toevoegingen van bijlagen in bestandsstappen worden nu gelogd, zodat precieze
+    statistieken over bestandsuploads weergegeven kunnen worden in dashboards.
+
+* [:backend:`5753`] Generatie van publieke referenties is nu deterministisch en
+  garandeert dat er nooit dubbele referentienummers onstaan, zelfs niet als
+  oude inzendingen zijn verwijderd. Beheerders kunnen een eigen sjabloon configureren.
+  Voor de ZGW API’s-registratieplugin kun je nu kiezen tussen de gegenereerde
+  zaaknummers en de referenties die door Open Formulieren worden gegenereerd.
+* [:backend:`5972`] Ondersteuning toegevoegd voor het verzenden van e-mails via de
+  Office365 Graph API.
+* [:backend:`5319`] "Organization login via OpenID Connect" kan nu standaard verborgen
+  worden. Gebruik de queryparameter ``authVisible=all`` om deze zichtbaar te maken in
+  de publieke frontend.
+* [:backend:`5820`] Endpoint voor de SDK toegevoegd om aangepaste frontend-vertalingen
+  op te halen.
+* [:backend:`5553`] Bij het starten van een formulier via organisatielogin namens een
+  bedrijf kun je nu ook het vestigingsnummer invoeren.
+* [:backend:`5216`] Het versturen van de e-mail over een betaalstatusupdate wordt nu
+  overgeslagen wanneer het e-mailadres voor betaalupdates leeg is én de registratie pas
+  plaats vindt bij voltooing van betaling. Dit voorkomt dubbele e-mails voor de
+  backoffice.
+* [:backend:`5887`] ``gor.openbareRuimteNaam`` is toegevoegd aan verblijfsadres en
+  bezoekadres in StUF-ZDS.
+* [:backend:`5857`] Overleden familieleden worden nu standaard niet ogehaald in de
+  prefill-instellingen voor het ophalen van partners en/of kinderen.
+* [:backend:`4746`] De dagelijkse probleemrapportagemail bevat nu een indicatie van de
+  betreffende omgeving in het onderwerp.
+* [:backend:`5977`] De logica-editor voorkomt nu dat je een component als "uitgeschakeld"
+  kan markeren als het component deze eigenschap niet ondersteunt.
+
+Beveiligingsfix
+---------------
+
+* [:cve:`CVE-2026-28803`] Kwetsbaarheid opgelost waarbij aanvallers gegevens van
+  formulierinzendingen konden bekijken. Zie :ghsa:`GHSA-2g49-rfm6-5qj5` voor details en
+  instructies om mogelijke inbraken te detecteren.
+
+Bugfixes
+--------
+
+* [:backend:`5888`] Verholpen dat lege datums in een service-fetch als ``None`` werden
+  weergegeven in plaats van als een lege string.
+* [:backend:`5885`] Een crash opgelost in de normalisatie van datumveldwaarden wanneer
+  hiervoor prefill-configuratie is ingesteld, waargenomen op de samenvattingspagina.
+* [:backend:`5827`] Een registratiecrash opgelost wanneer een formulier componenten voor
+  kinderen of partners bevat die verborgen zijn of onderdeel zijn van een
+  niet-van-toepassing stap.
+* [:backend:`5892`] Verholpen dat een componentsleutel met een ``.`` erin niet gebruikt
+  kon worden als informatie voor de initiator in StUF-ZDS.
+* [:backend:`5902`] Opgeschoond hoe we omgaan met vooraf ingevulde gegevens.
+* [:backend:`5893`] Verholpen dat het attribuut ``amount`` van een afspraakproduct niet
+  werd gezet bij het verwerken van queryparameters.
+* [:backend:`5790`] Verholpen dat in de beheerinterface ten onrechte een groene
+  "live"-check werd getoond voor formulieren in onderhoudsmodus.
+* [:backend:`5942`] Verholpen dat mislukte Worldline-betalingen niet meer naar een
+  successtatus bijgewerkt konden worden.
+* [:backend:`5685`] Een oneindige lus in logicacontroles opgelost bij gebruik van de
+  nieuwe renderer wanneer verborgen componenten zowel ``clearOnHide`` ingeschakeld
+  hadden als een standaardwaarde.
+* [:backend:`6005`] Verholpen dat invoerwaarden onbedoeld werden gewist wanneer er
+  meerdere backend-logicaregels waren die invloed hadden op de zichtbaarheid van
+  hetzelfde component.
+* [:backend:`6007`] Verholpen dat verborgen velden niet naar de Objecten-API werden
+  verstuurd bij gebruik van variabelenkoppeling (v2-configuratie). Daarnaast zijn ook
+  andere plekken opgelost waar "niet-opgeslagen variabelen" niet werden meegenomen in
+  het renderen van sjablonen.
+* [:backend:`6014`] Verholpen dat componenten met overlappende (geneste) sleutels ten
+  opzichte van hun bovenliggende component crashes in de logica veroorzaakten.
+* [:backend:`6001`] Verholpen dat componenten binnen layout-componenten (veldengroep,
+  kolommen) hun waarde kwijt raakten ondanks dat hun zichtbaarheid via
+  backend-logicaregels ingesteld was.
+* [:backend:`5980`] Verholpen dat componenten in de samenvatting/het overzicht van een
+  formulier werden getoond terwijl ze via logicaregels verborgen waren.
+* [:backend:`6002`] Crash opgelost in de legacy cosign-flow wanneer HEAD-verzoeken
+  worden verstuurd.
+* [:backend:`6016`] Crashes in StUF-ZDS-registratie opgelost die veroorzaakt werden door
+  ongeldige controlekarakters uit gebruikersinvoer in XML-berichten.
+* [:backend:`5950`] Verholpen dat BAG-foutresponses werden gecached.
+* [:backend:`6040`] Verholpen dat velden binnen herhalende groepen onverwacht werden
+  gewist.
+* [:backend:`6046`] Verholpen dat het resultaat van een variabele-actie werd
+  overschreven door een niet-getriggerde logica-actie op hetzelfde component die de
+  zichtbaarheid beïnvloedde.
+* [:backend:`6028`] Een regressie opgelost waardoor velden de eindvalidatie oversloegen
+  als ze via backend-logica zichtbaar werden gemaakt.
+* [:backend:`6045`] Oneindige lus in logicacontrole opgelost in de nieuwe renderer
+  wanneer een herhalende groep met ``clearOnHide: false`` verborgen wordt terwijl een
+  veld daarbinnen ``clearOnHide: true`` heeft.
+* [:backend:`5685`] Oneindige lus in logicacontrole opgelost doordat reeds ingediende
+  gegevens van een herhalende groep niet werden gebruikt in de logica-evaluatie.
+* [:backend:`5967`] Verholpen dat de thema-specifieke link "terug naar de hoofdwebsite"
+  en favicon niet correct werden toegepast.
+* Validatiefouten in de cosign lookup-flow worden nu met correcte foutstyling getoond.
+* [:backend:`6068`] Verholpen dat een bijlage mogelijk niet werd geüpload wanneer de
+  zichtbaarheid van een component door een logicaregel beïnvloed werd.
+* [:backend:`5701`] De ``selectboxes``-component is gecorrigeerd zodat deze niet crasht
+  bij verwijdering in de admin UI als de Objects API v1 wordt gebruikt.
+* [:backend:`5864`] Waarschuwingen op de formuliergeschiedenispagina worden niet langer
+  getoond wanneer de applicatieversie de huidige versie is.
+* [:backend:`6110`] Kapotte asset-cache verholpen door configuratie van de
+  staticfiles-opslag aan te passen.
+* [:backend:`5938`] Verholpen dat een onjuiste DigiD-foutmelding werd getoond wanneer
+  een gebruiker een DigiD-login annuleert via de plugin "DigiD via OIDC".
+* [:backend:`6140`] Een crash opgelost wanneer frontend-logica wordt gebruikt binnen
+  een veldengroep in een herhalende groep.
+* [:backend:`5924`] Verholpen dat validatiemeldingen de verkeerde
+  (niet-toepasselijke) stappen toonden.
+* Verholpen dat de rand van het beheerschermmenu niet over de volledige breedte werd
+  getoond.
+
+Projectonderhoud
+----------------
+
+* [:backend:`5879`] Detectie van componentproblemen uitgebreid en automatische fixes
+  toegevoegd voor de gevonden issues.
+* Inconsistente testopzetten opgeschoond.
+* ``pyright`` bijgewerkt en typechecking verbeterd.
+* De niet-onderhouden library bleach vervangen door de nh3 HTML-sanitizer.
+* Upgrade uitgevoerd naar storybook 9.
+* Backend-afhankelijkheden bijgewerkt naar de nieuwste versies:
+
+  - protobuf
+  - weasyprint
+  - urllib3
+  - cbor2
+  - cryptography
+  - Pillow
+  - maykin-common
+  - django-health-check
+  - sqlparse
+  - Django
+  - lxml-html-clean
+  - tornado
+  - PyJWT
+  - pyopenssl
+  - pyasn1
+  - cbor2
+  - requests
+  - cryptography
+  - pygments
+  - django-log-outgoing-requests
+
+* Frontend-afhankelijkheden bijgewerkt naar de nieuwste versies:
+
+  - formio-builder
+  - CKEditor
+  - storybook
+  - copy-webpack-plugin
+  - lodash en lodash-es
+  - webpack
+
+* [:backend:`5946`] Afhankelijkheid ``zgw-consumers-oas`` verwijderd en op mocks
+  gebaseerde tests herschreven naar VCR-tests.
+* Meer controles toegevoegd aan het PR-checklistsjabloon.
+* ``npm`` verwijderd uit de productie-image, zodat deze niet beïnvloed wordt door
+  kwetsbaarheden die in npm-afhankelijkheden gevonden kunnen worden.
+* [:backend:`5946`] Upgrade uitgevoerd naar Django 5.2 en alle gerelateerde
+  afhankelijkheden bijgewerkt.
+* Geheugengebruik van flower geoptimaliseerd.
+* [:backend:`5848`] De PinkRoccade-servicetests (voor HC BRP) opnieuw opgenomen met het
+  nieuwe certificaat/de nieuwe sleutel.
+* [:backend:`5639`] StUF-BG-tests geherstructureerd.
+* Endpoints voor statische SDK-assets geoptimaliseerd.
+* De parameter ``next`` wordt nu onthouden wanneer je via SSO inlogt in de
+  beheerinterface.
+* Postcode-component opnieuw uit de uitfasering gehaald.
+* [:backend:`6066`] Locatie van de CHANGELOG verduidelijkt in stabiele
+  documentatiebuilds.
+* trivy-action vastgezet op een bekende goede commit naar aanleiding van
+  supply-chain-aanvallen.
+* Certificaten voor unittests bijgewerkt.
+* Labelkoppeling voor de wysiwyg-editor op Webkit gecorrigeerd.
+* Documentatie bijgewerkt voor:
+
+  - de plugin "Communicatievoorkeuren",
+  - ondersteunde versies van de Objects API.
+
+* [:backend:`6162`] Overgestapt op individuele Utrecht NLDS community CSS-packages.
+
 3.4.0 "Gemeentegoed" (2025-01-05)
 =================================
 

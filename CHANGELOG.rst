@@ -44,7 +44,7 @@ To upgrade to 3.5, please:
 * ⚠️ Ensure you are currently on Open Forms 3.4.x or newer.
 * ⚠️ If you haven't done so yet, please review the manual intervention mentioned in the
   3.4.2 release notes.
-* ⚠️Review the :ref:`detailed release notes <installation_upgrade_350>` in the
+* ⚠️ Review the :ref:`detailed release notes <installation_upgrade_350>` in the
   documentation under **Installation** > **Upgrade details to Open Forms 3.5.0** and
   prepare accordingly.
 * ⚠️ Ensure that your Helm charts don't use the ``bin/check_celery_worker_liveness.py``
