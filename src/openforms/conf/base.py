@@ -1358,7 +1358,7 @@ SETUP_CONFIGURATION_STEPS = [
 # DJANGO-UPGRADE-CHECK
 #
 UPGRADE_CHECK_PATHS: UpgradePaths = {
-    "3.4.0": UpgradeCheck(
+    "3.5.0": UpgradeCheck(
         VersionRange(minimum="3.3.1"),
     ),
 }
