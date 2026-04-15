@@ -14,7 +14,7 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
-3.5.0 "Kjeld" (2026-04-13)
+3.5.0 "Kjeld" (2026-04-15)
 ==========================
 
 Open Forms 3.5.0 is a feature release.
@@ -30,18 +30,12 @@ This contains the changes from the alpha releases and fixes applied until the st
 BEFORE upgrading to 3.5.0, please read the release notes carefully and review the following
 instructions.
 
-.. note::
-
-    Starting with Open Forms 3.5 the new renderer is enabled by default when a new
-    form is created. If you encounter problems, you can revert back to the old renderer
-    in the form settings.
-
 Upgrade procedure
 -----------------
 
 To upgrade to 3.5, please:
 
-* ⚠️ Ensure you are currently on Open Forms 3.4.x or newer.
+* ⚠️ Ensure you are currently on Open Forms 3.3.1 or newer.
 * ⚠️ If you haven't done so yet, please review the manual intervention mentioned in the
   3.4.2 release notes.
 * ⚠️ Review the :ref:`detailed release notes <installation_upgrade_350>` in the
@@ -54,8 +48,7 @@ To upgrade to 3.5, please:
 
   .. warning::
 
-      In preparation for upcoming logic performance improvements, we changed the
-      "disable next" logic action. The form designers now have to specify on which step
+      The "disable next" logic action has been changed. The form designers now have to specify on which step
       they want to execute this action. We included a migration to automatically
       populate this field for all existing actions. Unfortunately, in some cases we
       cannot guarantee that the assigned step is correct, i.e. no change in behaviour
@@ -91,6 +84,62 @@ their settings mechanism and now allows for distinct enforced/report-only config
 
 We'll work on bridging this gap, possibly through an upgrade to Django 6.0.
 
+**Textfield Location tab**
+
+Deriving the location via text fields is deprecated in favour of the AdressNL component.
+As mentioned in the release notes of Open Forms 3.4, the new renderer doesn't support
+autofilling address on the Textfield component.
+We plan to resolve all outstanding address autofill issues in the AddressNL component before
+removing the old renderer and Textfield address autofill support.
+
+**Legacy logic evaluation**
+
+The old logic evaluation will be removed in Open Forms 4.0. We will prioritize bugfixes in the new 
+logic evaluation to make sure this migration will be as smooth as possible.
+
+**File Registration tab**
+
+We plan to replace the documenttype configuration by URL in favour of catalog + documenttype
+description and move the configuration to the registration plugin options. We're exploring automatic
+migration options.
+
+**Elastic APM**
+
+Elastic APM agent integration is deprecated in favour of Open Telemetry. We plan to remove
+it in Open Forms 4.0.
+
+**ZGW APIs registration**
+
+The process of creating a zaak and using its identifier as the public reference for a submission is deprecated.
+We plan to change the default for "Use generated zaaknummer" to unchecked in an Open Forms 4.0.
+
+**StUF-ZDS registration**
+
+The usage of the branch number retrieved from the form's submission data will be replaced in 
+Open Forms 4.0 by favouring the branch number obtained through the eHerkenning login.
+
+**DigiD/eHerkenning OIDC Strict mode**
+
+We will make Strict mode the default (currently it's Lax mode) for DigiD and eHerkenning login via OIDC. This
+means that the identity provider is required to provide properties like the level of assurance, acting subject identifier and service IDs when mandates (DigiD, eHerkenning) are applicable.
+
+**Haal Centraal BRP Personen bevragen 1.3**
+
+We are dropping support for Haal Centraal BRP Personen bevragen 1.3. In practice, only version 2.0 has
+been taken into production (nation-wide). In Open Forms 4.0 it will be removed entirely.
+
+**"Clear on hide" logic behaviour changes**
+
+When a component is hidden and cleared, the associated variable will be removed entirely rather
+than reset to its default (or empty) value. This may affect existing logic rules that (unknowingly) depend on the previous behaviour. We're exploring tools to help detect these situations so that you can update your forms.
+
+**Extensions**
+
+Extensions do not seem to be created commonly by third parties and may be removed in
+the future. The public interfaces for plugins/extensions will become semi-private API allowing us
+to make potentially breaking changes without bumping Open Forms to a new major version.
+
+
 Major features
 --------------
 
@@ -100,17 +149,25 @@ We've done a lot of work to make the interaction of users with Open Forms smooth
 One of the main culprits of micro-delays is a logic check that ran every time when the user
 changes the input data, re-evaluating all logic rules each time.
 
-We've done an extensive refactoring of the logic rules to eliminate the unnecessary checks:
+We have extensively reworked our logic engine to eliminate or reduce network traffic:
 
 - only the logic rules relevant to the current form step are now executed,
 - logic rules are ordered to ensure the correct order of the chain of rules.
-- cycles in logic rules are detected,
-- some of the checks are moved to the frontend.
+- rules that would lead to infinite loops are now prevented,
+- the most commonly used logic rule patterns are now evaluated on the frontend.
 
 Both the old and new logic evaluations are available, and you can enable the new one on
 an individual form basis.
 
-Note: executing logic checks in the fronend is only available for the new renderer.
+Note: executing logic checks in the frontend is only available for the new renderer.
+
+**🔢 Stable public references**
+
+Previously, public references were generated randomly, which (theoretically) could lead to duplicate reference
+numbers when old submissions were pruned. References are now generated deterministically guaranteeing unique numbers
+even when old submissions are deleted. Administrators can configure a custom template for the reference format.
+Additionally, for the ZGW APIs registration plugin, you can now choose between the generated case numbers and the references
+generated by Open Forms.
 
 **🔍 Monitoring and logging**
 
@@ -119,21 +176,13 @@ We've put a lot of work to make Open Forms easier to monitor and troubleshoot:
 - All services now have built-in health checks, so problems can be detected earlier.
 - We fully support Open telemetry tracing across the entire application, covering DB and redis queries,
   requests to external services, application-specic traces etc., which improves visibility of the whole submission flow.
-- We support inking to traces from logs in Grafana.
+- Traces and logs are now correlated, making it possible to link from one to the other in dashboards.
 - Errors captured in Sentry can now be correlated with traces and logs, which can help in investigating problems.
 - All logs are now structured.
 - Audit logs are improved: they are now sent to both the database and the system output of containers.
 
-These improvements could help with faster troubleshooting and better insight into how Open Forms is performing
+These improvements enable faster troubleshooting and better insight into how Open Forms is performing
 in production.
-
-**🔢 Stable public references**
-
-Previously, public references were generated randomly, which could lead to duplicate reference
-numbers when old submissions were pruned. References are now generated deterministically guaranteeing unique numbers
-even when old submissions are deleted. Administrators can configure a custom template for the reference format.
-Additionally, for the ZGW APIs registration plugin, you can now choose between the generated case numbers and the references
-generated by Open Forms.
 
 **✉️ Support for sending mail via Office365 Graph API**
 
@@ -149,10 +198,10 @@ New features
   .. note::
 
       We improved the performance of logic rule evaluation in this release. These changes
-      are enabled by default. You can turn them off by unchecking "Enable new logic rule
-      evaluation" feature flag.
+      are enabled by default for newly created forms. You can turn them off by unchecking
+      the "Enable new logic rule evaluation" feature flag.
 
-      On form save, logic rules are validated and re-ordered. If you modify individual
+      With the new logic evaluation,  logic rules are validated and re-ordered on form save. If you modify individual
       logic rules (in the admin interface), this can result in out-of-sync analysis. You
       should avoid doing this.
 
@@ -177,23 +226,23 @@ New features
   - Added logic rules to the submission step serializer.
   - [:backend:`6083`] Added partial evaluation of the variable action before sending logic
     rules to frontend.
-  - [:backend:`6109`] Removed ``completed`` and ``is_applicable`` fields from the submission step.
+  - [:backend:`6109`] Removed obsolete ``completed`` and ``is_applicable`` fields from the submission step.
   - [:backend:`6038`] Ensure "set-registration-backend" actions are not included in frontend logic rules.
-  - [:backend:`6099`] Executed step (not) applicable action on all steps.
-  - [:backend:`6018`, :backend:`6129`] Removed ``SubmissionStep.data`` property.
+  - [:backend:`6018`, :backend:`6129`] Removed the obsolete ``SubmissionStep.data`` property.
   - [:backend:`6143`] Added documentation about accessing the variables state from the submission for
     developers.
   - Added metric for forms with new logic evaluation enabled.
   - [:backend:`6018`] Cleaned up variable names and updated comments and docstrings related to
     component visibility implementation.
   - [:backend:`6166`] Fixed list comparisons in JsonLogic expressions.
+  - Enabled the new renderer and logic evaluation by default for new forms.
 
 * New Admin UI:
 
   .. note::
 
       After investing a lot of effort in designing the new admin interface, we started the implementation phase.
-      Unfortunately due to the budjet issues this project is on hold.
+      Unfortunately due to the budget issues this project is on hold.
 
   - [:backend:`5952`] Added initial form endpoint.
   - [:backend:`5955`] Added support for confirmation templates/options in the new endpoint.
@@ -206,15 +255,15 @@ New features
 * Appointments (JCC):
 
   - [:backend:`5690`] The additional product information (HTML) is now exposed to the SDK.
-  - [:backend:`5696`] Implemented the remaining API calls for the appointment flow. We now fully support REST API,
+  - [:backend:`5696`] Implemented the remaining API calls for the appointment flow. We now fully support the REST API,
     since SOAP is decommissioned by JCC.
   - [:backend:`5820`] You can now customize the literals and translations used in the contact details components.
-  - [:backend:`5691`] Added a limit for the number of products in appointments.
+  - [:backend:`5691`] We now expose the limit for the number of products in appointments to the frontend.
 
 * Monitoring and logging:
 
   - [:backend:`5287`] All containers now have low-level health check mechanisms.
-  - [:backend:`5450`] Distributed tracing is supported. The following component traces are now available:
+  - [:backend:`5450`] We added support for distributed tracing with Open Telemetry. The following component traces are now available:
 
     - Postgres queries
     - Redis queries
@@ -222,40 +271,38 @@ New features
     - Outgoing requests to external services
     - Application-specific traces
 
-  - [:backend:`5358`] Added span/trace IDs to log events for correlation and supported linking to traces from logs
-    in Grafana.
+  - [:backend:`5358`] Added span/trace IDs to log events for correlation.
   - Captured ``TraceID`` and ``SpanID`` from OTel for Sentry events to allow correlation between
     Sentry events and traces/logs in Grafana.
   - [:backend:`5351`, :backend:`6149`] Refactored ``logevent`` module to structlog adapters: audit logs are now
     sent to both container stdout and database.
   - [:backend:`6169`] Improved intergration of outgoing requests logs with structlog. All logs are now structured.
-  - Logged file step attachment additions, which can be used in the dashboards.
+  - File step attachment additions are now logged, which can produce exact insights into typical file upload amounts per form.
 
-* [:backend:`5753`] Public reference generation is now deterministic and guaranteed to never generate
+* [:backend:`5753`] The generation of the public reference is now deterministic and guaranteed to never produce
   duplicated reference numbers, even if old submissions have been deleted. Administrators can configure
   a custom template to use. For the ZGW APIs registration plugin, you can now choose between the
-  generated case numbers and the references generated by Open Forms.
+  case numbers obtained from the Zaken API or the references generated by Open Forms.
 * [:backend:`5972`] Added support for sending e-mails via the Office365 Graph API.
 * [:backend:`5319`] The "Organization login via OpenID Connect" can now be hidden by
-  default. Use the ``authVisible=all`` query parameter to make it visible in the SDK.
-* [:backend:`5820`] Added endpoint to retrieve the overridden frontend translations.
+  default. Use the ``authVisible=all`` query parameter to make it visible in the public frontend.
+* [:backend:`5820`] Added endpoint to retrieve overridden frontend translations.
 * [:backend:`5553`] When starting a form from organization login on behalf of a
   company, you can now also provide the branch number.
-* [:backend:`5216`] Skipped sending the payment update email when the payment update emailaddress is
-  empty and the flag "Wait for payment to register" is enabled, so now a user won't receive
-  multiple emails.
+* [:backend:`5216`] The payment update email is now no longer sent when the payment update emailaddress is
+  empty and the flag "Wait for payment to register" is enabled to prevent the backoffice receiving duplicate
+  emails.
 * [:backend:`5887`] Added ``gor.openbareRuimteNaam`` to verblijfsadres and bezoekadres in StUF-ZDS.
-* [:backend:`5857`] Changed the default to unchecked for the "Include deceased" checkbox in the
-  family members prefill configuration.
+* [:backend:`5857`] In the family members prefill configuration, deceased family members are now excluded by default.
 * [:backend:`4746`] Added environment to the subject of the daily report email.
-* [:backend:`5977`] Ensured that logic actions can't change the "disabled" property for layout fields.
+* [:backend:`5977`] Ensured that logic actions can't change the "disabled" property for components that don't support it.
 
 Security fix
 ------------
 
 * [:cve:`CVE-2026-28803`] Fixed a vulnerability where attackers could view form
   submission data. See :ghsa:`GHSA-2g49-rfm6-5qj5` for details and instructions on how
-  to detect possible intrusions. This advisory will be published on Wednesday March 11th.
+  to detect possible intrusions.
 
 Bugfixes
 --------
@@ -307,16 +354,17 @@ Bugfixes
 * Validation errors in the cosign lookup flow are now displayed with proper error styling.
 * [:backend:`6068`] Fixed attachement possibly not being uploaded when component's visiblity
   is affected by logic rule.
-* [:backend:`5701`] Fixed ``selectboxes`` component, so it won't crash when removed if the
+* [:backend:`5701`] Fixed ``selectboxes`` component, so it won't crash the admin UI when removed if the
   Objects API v1 is used.
-* [:backend:`5864`] Stopped showing warnings in the form history page when the application version is
+* [:backend:`5864`] Fixed the warnings display in the form history page when the application version is
   the current one.
 * [:backend:`6110`] Fixed broken asset cache by configuring staticfiles storage entry.
 * [:backend:`5938`] Fixed incorrect DigiD error message being shown when the user
   cancels a DigiD login via the "DigiD via OIDC" plugin.
 * [:backend:`6140`] Fixed a crash when conditional logic is used inside a fieldset
   inside a repeating group.
-* [:backend:`5924`] Fixed valdation messages showing the wrong (non-applicable) steps.
+* [:backend:`5924`] Fixed validation messages being linked to the wrong (non-applicable) steps, causing
+  confusing error mesages in the public frontend.
 * Fixed admin-index border not stretching full width.
 
 Project maintenance
@@ -335,10 +383,8 @@ Project maintenance
   - django
   - urllib3
   - cbor2
-  - lodash
   - cryptography
   - Pillow
-  - webpack
   - maykin-common
   - django-health-check
   - sqlparse
@@ -359,6 +405,7 @@ Project maintenance
   - formio-builder
   - CKEditor
   - storybook
+  - webpack
   - copy-webpack-plugin
   - lodash and lodash-es
 
