@@ -88,11 +88,82 @@ Om naar 3.5 te upgraden, let dan op:
 Uitfaseringen
 -------------
 
+Deze lijst beschrijft functionaliteiten die nog niet eerder expliciet benoemd waren
+als verouderd. Op `Github <https://github.com/open-formulieren/open-forms/issues/6164>`__
+zie je de voortgang van alle `breaking` wijzigingen.
+
 **Content-Security-Policy instellingen**
 
 De omgevingsvariabele ``CSP_REPORT_ONLY`` is uitgefaseerd. De onderliggende bibliotheek
 heeft haar instellingenmechanisme gewijzigd en ondersteunt nu aparte configuraties voor
 afgedwongen en "alleen rapporteren" policies.
+
+**Tekstveld locatie-instellingen**
+
+Het afleiden van straat en gemeente is niet meer beschikbaar in de nieuwe renderer. Deze
+functionaliteit wordt voorzien via het AddressNL-component. We zullen zorgen dat dit
+component goed werkt zodat migreren mogelijk is, en zullen onderzoeken of we
+automatische migratie-opties kunnen aanbieden.
+
+**Oude logica-evaluatie**
+
+In Open Formulieren 4.0 zal de "oude logica-evaluatie" verwijderd worden, enkel het
+mechanisme wat in deze release geïntroduceerd is zal beschikbaar zijn. Uiteraard
+behandelen we bugs in de nieuwe logica-evaluatie met hoge prioriteit om dit mogelijk te
+maken zodat er een vlotte overgang is.
+
+**Registratie-instellingen van bestanduploads**
+
+De documenttype-instellingen bij bestanduploads zijn nu nog op basis van URLs. Dit wordt
+vervangen met de selectie van een (zaaktype)catalogus en documenttypeomschrijving. De
+instellingen zullen ook verhuizen naar de registratieplugininstellingen.
+
+**Elastic APM**
+
+De Elastic APM-client ondersteuning wordt verwijderd - we zullen vanaf 4.0 enkel Open
+Telemetry ondersteunen.
+
+**ZGW-API's-registratie**
+
+Nu wordt standaard het zaaknummer door de Zaken API gegenereerd en gebruikt Open
+Formulieren dit als publieke referentie naar de klant. Vanaf 4.0 zal Open Formulieren
+standaard zelf een nummer genereren en dit als zaaknummer meesturen.
+
+**StUF-ZDS-registratie**
+
+Vanaf Open Formulieren 4.0 zal het KvK-vestigingsnummer bij voorkeur uit de
+eHerkenning-logingegevens gehaald worden indien beschikbaar, in plaats van uit de
+formuliergegevens (indien uitgevraagd).
+
+**DigiD/eHerkenning via OIDC: Strict mode standaard aan**
+
+Nu staat Strict mode standaard uit, vanaf Open Formulieren gaat deze standaard aan. In
+strikte modus moeten bepaalde claims verplicht aangeleverd worden door de identity
+provider, bijvoorbeeld:
+
+* betrouwbaarheidsniveau
+* identificatie van de handelende persoon (eHerkenning)
+* service ID/UUID wanneer er sprake is van machtigen
+
+**Haal Centraal BRP Personen bevragen 1.3**
+
+We zullen in Open Formulieren 4 niet langer Haal Centraal BRP Personen 1.3 ondersteunen.
+In de praktijk blijkt enkel versie 2.0 landelijk in productie genomen te zijn.
+
+**Wijziging in gedrag van "Wissen als veld verborgen is"**
+
+Vanaf 4.0 al een verborgen veld waarvan de optie om de waarde te wissen ingeschakeld is
+zich anders gedragen: er zal helemaal geen waarde meer in de data beschikbaar zijn, in
+plaats van de standaardwaarde/lege waarde. Dit heeft impact op formulieren met logica
+die nu (onbewust) van dit gedrag afhankelijk zijn. We onderzoeken of we tools kunnen
+aanbieden om het detecteren van deze situaties eenvoudiger te maken.
+
+**Extensies**
+
+Open Formulieren heeft extensie-mechanismen die in de praktijk nauwelijks (of zelfs
+niet?) gebruikt lijken te worden. De programmeer-interfaces hiervoor worden semi-private
+interfaces vanaf 4.0, wat betekent dat er brekende wijzigingen in kunnen gemaakt worden
+zonder dat dit leidt tot een nieuwe major versie van Open Formulieren.
 
 Belangrijkste verbeteringen
 ---------------------------
