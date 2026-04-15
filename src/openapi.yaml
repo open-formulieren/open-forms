@@ -12,8 +12,7 @@ info:
 
     Submissions of forms are supported, where each form step can be submitted individually.
     Complete submissions are sent to the configured backend, which is a pluggable system
-    to hook into [Open Zaak](https://openzaak.org), [Camunda](https://camunda.com/) or
-    other systems.
+    to hook into [Open Zaak](https://openzaak.org) or other systems.
 
     Open Forms fits in the [Common Ground](https://commonground.nl) vision and architecture,
     and it plays nice with other available components.
@@ -4087,33 +4086,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RegistrationPlugin'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-  /api/v2/registration/plugins/camunda/process-definitions:
-    get:
-      operationId: registration_plugins_camunda_process_definitions_list
-      description: List the available process definitions & their versions.
-      summary: List available Camunda process definitions
-      tags:
-      - registration
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProcessDefinition'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -10436,26 +10408,6 @@ components:
       required:
       - jsonSchema
       - targetPath
-    ProcessDefinition:
-      type: object
-      properties:
-        id:
-          type: string
-        key:
-          type: string
-          description: The process definition identifier, used to group different
-            versions.
-        name:
-          type: string
-          description: The human-readable name of the process definition.
-        version:
-          type: integer
-          description: The version identifier relative to the 'key'.
-      required:
-      - id
-      - key
-      - name
-      - version
     Product:
       type: object
       properties:

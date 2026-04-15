@@ -1,7 +1,7 @@
 # Camunda infrastructure
 
-Open Forms supports Camunda as registration backend, where a completed submission
-starts a certain Camunda process.
+Open Forms supports Camunda as DMN plugin, where decision definitions are fetched
+and evaluated from the Camunda REST API.
 
 We include a compose stack for development and CI purposes. This is **NOT** suitable
 for production usage.

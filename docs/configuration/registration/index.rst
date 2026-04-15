@@ -10,7 +10,6 @@ Registration plugins
    objects
    stufzds
    zgw
-   camunda
    msgraph
    email
    generic-json
