@@ -4,11 +4,6 @@
     "description": "Logic rule action deletion confirm message",
     "originalDefault": "Are you sure you want to delete this action?"
   },
-  "+BicbW": {
-    "defaultMessage": "Configureren",
-    "description": "Manage complex process vars configure link text",
-    "originalDefault": "Configure"
-  },
   "+DztEl": {
     "defaultMessage": "Pad",
     "description": "Service fetch configuration modal form Path field label",
@@ -110,11 +105,6 @@
     "description": "New renderer enabled feature flag help text",
     "originalDefault": "Enable the new renderer, which is more performant and has better accessibility."
   },
-  "1ArmQ5": {
-    "defaultMessage": "Bevestigen",
-    "description": "Camunda complex process variables confirm button",
-    "originalDefault": "Confirm"
-  },
   "1HfdUc": {
     "defaultMessage": "De API-groep bepaalt welke services voor de objecten- en objecttypen-API's gebruikt wordt.",
     "description": "Objects API group field help text",
@@ -175,12 +165,6 @@
     "description": "Email registration options 'emailContentTemplateText' helpText",
     "originalDefault": "Content of the registration email message (as text)."
   },
-  "2Z/hNo": {
-    "defaultMessage": "Type",
-    "description": "Camunda complex process var 'type' label",
-    "isTranslated": true,
-    "originalDefault": "Type"
-  },
   "2arYfH": {
     "defaultMessage": "Geeft aan of de geselecteerde waarden als een lijst worden verstuurd in plaats van als een object.",
     "description": "'Transform to list' checkbox help text",
@@ -215,11 +199,6 @@
     "defaultMessage": "Variabelesynchronisatie instellen",
     "description": "Synchronizing variables configuration modal title",
     "originalDefault": "Synchronize variables configuration"
-  },
-  "2uIYst": {
-    "defaultMessage": "De procesdefinitie waarvoor een proces instantie gestart moet worden.",
-    "description": "Camunda 'process definition' help text",
-    "originalDefault": "The process definition for which to start a process instance."
   },
   "36qdVW": {
     "defaultMessage": "De minimale leeftijd die wordt gebruikt om te bepalen welke kinderen worden weergegeven. Laat het veld leeg om alle kinderen weer te geven.",
@@ -296,11 +275,6 @@
     "defaultMessage": "Naam",
     "description": "Form name field label",
     "originalDefault": "Name"
-  },
-  "5AC1+x": {
-    "defaultMessage": "De ingevulde veldwaarde wordt gebruikt als waarde voor de procesvariabele.",
-    "description": "Manage process vars component help text",
-    "originalDefault": "The value of the selected field will be the process variable value."
   },
   "5EOSwM": {
     "defaultMessage": "Aanvullend",
@@ -537,11 +511,6 @@
     "description": "Label for 'key' in MappingArrayInput table column",
     "originalDefault": "Key"
   },
-  "9RDDDn": {
-    "defaultMessage": "{varCount, plural, =0 {} one {(1 variabele ingesteld)} other {({varCount} variabelen ingesteld)} }",
-    "description": "Managed complex Camunda process vars state feedback",
-    "originalDefault": "{varCount, plural, =0 {} one {(1 variable defined)} other {({varCount} variables defined)} }"
-  },
   "9UR5jt": {
     "defaultMessage": "Indien verplicht dient de gebruiker de verklaring naar waarheid te accepteren voor die het formulier indient.",
     "description": "Form askStatementOfTruth field help text",
@@ -651,16 +620,6 @@
     "defaultMessage": "Als een variable geselecteerd is, dan wordt de waarde gebruikt als e-mailadres(sen) van de ontvangers. Je moet nog steeds een vast adres opgeven als terugvaloptie voor het geval er iets fout gaat met de variabele.",
     "description": "Email registration options 'toEmailsFromVariable' helpText",
     "originalDefault": "If specified, the recipient email addresses will be taken from the selected variable. You must still specify 'regular' email addresses as a fallback, in case something is wrong with the variable."
-  },
-  "BKTOtD": {
-    "defaultMessage": "{varCount, plural, =0 {} one {(1 variabele gekoppeld)} other {({varCount} variabelen gekoppeld)} }",
-    "description": "Managed Camunda process vars state feedback",
-    "originalDefault": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }"
-  },
-  "BR6rKB": {
-    "defaultMessage": "Vink aan om het veld op te nemen als procesvariabele",
-    "description": "Manage complex process vars enabled checkbox help text",
-    "originalDefault": "Check to include the field as process variable"
   },
   "BStu9Z": {
     "defaultMessage": "Formulier",
@@ -880,11 +839,6 @@
     "description": "Objects API registration: uploadSubmissionCsv helpText",
     "originalDefault": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the product request."
   },
-  "EBsxTk": {
-    "defaultMessage": "Veld",
-    "description": "Manage process vars component column title",
-    "originalDefault": "Field"
-  },
   "EDwCbX": {
     "defaultMessage": "<code>{componentKey}</code>: in {numSteps, plural, =1 {{tail}} other {{lead} en {tail}} }",
     "description": "Description of which key is duplicated in which steps.",
@@ -1087,20 +1041,10 @@
     "description": "ZGW APIs registration options modal title",
     "originalDefault": "Plugin configuration: ZGW APIs"
   },
-  "H3dRU6": {
-    "defaultMessage": "Vink aan om het veld op te nemen als procesvariabele",
-    "description": "Manage process vars enabled checkbox help text",
-    "originalDefault": "Check to include the field as process variable"
-  },
   "H6VxhG": {
     "defaultMessage": "Onderhoudsmodus",
     "description": "Form maintenance mode field label",
     "originalDefault": "Maintenance mode"
-  },
-  "H7WmS4": {
-    "defaultMessage": "Plugin-instellingen: Camunda",
-    "description": "Camunda registration options modal title",
-    "originalDefault": "Plugin configuration: Camunda"
   },
   "H7z8+8": {
     "defaultMessage": "Extra elementen",
@@ -1151,11 +1095,6 @@
     "defaultMessage": "Versie",
     "description": "Objects API prefill options 'objecttypeVersion' label",
     "originalDefault": "Version"
-  },
-  "Hfdfv2": {
-    "defaultMessage": "Welke versie van de procesdefinitie moet gebruikt worden. Indien niet opgegeven dan wordt altijd de laatste versie gebruikt.",
-    "description": "Camunda 'process definition version' help text",
-    "originalDefault": "Which version of the process definition to start. The latest version is used if not specified."
   },
   "HhZc5C": {
     "defaultMessage": "(geen)",
@@ -1422,11 +1361,6 @@
     "description": "Accessible label for component selection",
     "originalDefault": "Component selection"
   },
-  "LaovNg": {
-    "defaultMessage": "Variabele toevoegen",
-    "description": "Add process variable button",
-    "originalDefault": "Add variable"
-  },
   "LbiXCA": {
     "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare producten binnen het geselecteerde zaaktype. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn.",
     "description": "ZGW APIs registrations options: case product error",
@@ -1461,11 +1395,6 @@
     "defaultMessage": "Authenticatie-opties",
     "description": "Authentication options label",
     "originalDefault": "Authentication options"
-  },
-  "M0kOz9": {
-    "defaultMessage": "Weet u zeker dat u deze variabele wil verwijderen?",
-    "description": "Camunda process variable mapping delete confirmation message",
-    "originalDefault": "Are you sure you want to remove this variable?"
   },
   "M1L9/1": {
     "defaultMessage": "'Wijzigen' tekst",
@@ -1647,11 +1576,6 @@
     "description": "form.introductionPageContent label",
     "originalDefault": "Content"
   },
-  "PC7ICN": {
-    "defaultMessage": "Ingeschakeld",
-    "description": "Manage process vars enabled checkbox column title",
-    "originalDefault": "Enabled"
-  },
   "PN8vFa": {
     "defaultMessage": "{plugin} plugin-instellingen",
     "description": "Authentication plugin options configuration",
@@ -1661,11 +1585,6 @@
     "defaultMessage": "Voeg de inhoud toe aan de PDF",
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Include confirmation page content in PDF"
-  },
-  "PaEo2j": {
-    "defaultMessage": "Proces",
-    "description": "Camunda 'process definition' label",
-    "originalDefault": "Process"
   },
   "PdaMqg": {
     "defaultMessage": "Regel toevoegen",
@@ -1686,12 +1605,6 @@
     "defaultMessage": "De omschrijving die gebruikt wordt voor het registreren van partners (als betrokkene).",
     "description": "ZGW APIs registration options 'partnersDescription' help text",
     "originalDefault": "The description that will be used in partners registration."
-  },
-  "PtZ96W": {
-    "defaultMessage": "Alias",
-    "description": "Manage process vars alias column title",
-    "isTranslated": true,
-    "originalDefault": "Alias"
   },
   "Pvaekr": {
     "defaultMessage": "Plugin-instellingen: Yivi",
@@ -1959,20 +1872,10 @@
     "isTranslated": true,
     "originalDefault": "-"
   },
-  "V21YkS": {
-    "defaultMessage": "Bevestigen",
-    "description": "Camunda process variables confirm button",
-    "originalDefault": "Confirm"
-  },
   "VMMOA0": {
     "defaultMessage": "Inhoud",
     "description": "Confirmation page content label",
     "originalDefault": "Page content"
-  },
-  "VUOOSy": {
-    "defaultMessage": "Naam",
-    "description": "Camunda complex process var 'name' label",
-    "originalDefault": "Name"
   },
   "VV2TCH": {
     "defaultMessage": "blokkeer doorgaan naar de volgende stap.",
@@ -2468,11 +2371,6 @@
     "description": "ZGW APIs registration options 'partnersDescription' label",
     "originalDefault": "Partners description"
   },
-  "eBk+W0": {
-    "defaultMessage": "Beheer procesvariabelen",
-    "description": "Camunda process var selection modal title",
-    "originalDefault": "Manage process variables"
-  },
   "eBtStW": {
     "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor het PDF-document.",
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" description",
@@ -2517,11 +2415,6 @@
     "defaultMessage": "{label} {isPublished, select, false {<draft>(concept)</draft>} other {}}",
     "description": "Document type option label",
     "originalDefault": "{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}"
-  },
-  "evbysh": {
-    "defaultMessage": "Variabeledefinitie",
-    "description": "Camunda complex variable definition title",
-    "originalDefault": "Variable definition"
   },
   "f590Rb": {
     "defaultMessage": "'Start' tekst",
@@ -2648,11 +2541,6 @@
     "description": "Execute on all steps label",
     "originalDefault": "This rule will be executed on all steps."
   },
-  "gz32s2": {
-    "defaultMessage": "Indien gewenst, dan kunt u een alternatieve naam opgeven voor de procesvariabele.",
-    "description": "Manage process vars alias help text",
-    "originalDefault": "If desired, you can specify a different process variable name."
-  },
   "gzAzdU": {
     "defaultMessage": "Opslaan en opnieuw bewerken",
     "description": "Admin save and continue editing submit button",
@@ -2703,11 +2591,6 @@
     "description": "Form design/editor fieldset title",
     "originalDefault": "Form design"
   },
-  "hZl34s": {
-    "defaultMessage": "Ingeschakeld",
-    "description": "Manage complex process vars enabled checkbox column title",
-    "originalDefault": "Enabled"
-  },
   "hefA1X": {
     "defaultMessage": "Bent u zeker dat u deze variabele wilt verwijderen?",
     "description": "User defined variable deletion confirm message",
@@ -2722,11 +2605,6 @@
     "defaultMessage": "Als je dit leeg laat, dan wordt de nieuwste versie gebruikt.",
     "description": "DMN action: definition version field help text",
     "originalDefault": "If left blank, then the most recent version is used."
-  },
-  "huHjRm": {
-    "defaultMessage": "Configureren",
-    "description": "Manage complex process vars configure column title",
-    "originalDefault": "Configure"
   },
   "huzndE": {
     "defaultMessage": "Kinderen",
@@ -2823,11 +2701,6 @@
     "defaultMessage": "DMN-variabele",
     "description": "Accessible label for DMN variable dropdown",
     "originalDefault": "DMN variable"
-  },
-  "jU/t8O": {
-    "defaultMessage": "Wijzig complexe waarde",
-    "description": "Camunda complex process var configuration modal title",
-    "originalDefault": "Edit complex variable"
   },
   "jU6W0l": {
     "defaultMessage": "Overnemen",
@@ -3044,16 +2917,6 @@
     "description": "Fixed metadata table name title",
     "originalDefault": "Name"
   },
-  "myvtu0": {
-    "defaultMessage": "Beheer procesvariabelen",
-    "description": "Open manage camunda process vars modal button",
-    "originalDefault": "Manage process variables"
-  },
-  "n4Y2ex": {
-    "defaultMessage": "Versie",
-    "description": "Camunda 'process definition version' label",
-    "originalDefault": "Version"
-  },
   "nEg4dr": {
     "defaultMessage": "Metagegevens:",
     "description": "Label indicating the 'metadata' part of the data",
@@ -3169,11 +3032,6 @@
     "description": "Form advanced configuration fallback message",
     "originalDefault": "No advanced configuration is available for this form."
   },
-  "p18yml": {
-    "defaultMessage": "Complexe procesvariabelen",
-    "description": "Open manage complex camunda process vars modal button",
-    "originalDefault": "Complex process variables"
-  },
   "p5Iv+R": {
     "defaultMessage": "Documenttype-API-resource-URL in de Catalogi-API.",
     "description": "ZGW APIs registration options 'DocumentType' help text",
@@ -3223,11 +3081,6 @@
     "defaultMessage": "Servicebevraging:",
     "description": "Currently selected service fetch configuration label",
     "originalDefault": "Fetch configuration:"
-  },
-  "pyX2Tl": {
-    "defaultMessage": "Bevestigen",
-    "description": "Confirm complex Camunda variable definition",
-    "originalDefault": "Confirm"
   },
   "q3kxsb": {
     "defaultMessage": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten-API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken.",
@@ -3279,11 +3132,6 @@
     "defaultMessage": "😬 Er ging iets fout.",
     "description": "Unexpected error message",
     "originalDefault": "Oh no! Something went wrong."
-  },
-  "r5Olb9": {
-    "defaultMessage": "Beheer complexe procesvariabelen",
-    "description": "Camunda complex process vars modal title",
-    "originalDefault": "Manage complex process variables"
   },
   "r64cfz": {
     "defaultMessage": "Betaalstatusupdates",
@@ -3456,11 +3304,6 @@
     "description": "Submission confirmation email fieldset title",
     "originalDefault": "Submission confirmation email template"
   },
-  "twWsC2": {
-    "defaultMessage": "Naam",
-    "description": "Manage complex process vars alias column title",
-    "originalDefault": "Name"
-  },
   "u+IP17": {
     "defaultMessage": "Limiet aantal inzendingen",
     "description": "Form submissionLimit field label",
@@ -3545,11 +3388,6 @@
     "defaultMessage": "Er moet een sleutelnaam ingesteld worden voordat deze variabele geconfigureerd kan worden",
     "description": "JSON editor: object entry has empty key name",
     "originalDefault": "Set a key name before you can configure this variable"
-  },
-  "vp12ou": {
-    "defaultMessage": "De variabelenaam om te gebruiken in de procesinstantie.",
-    "description": "Manage process vars alias help text",
-    "originalDefault": "The variable name to be used for the process instance."
   },
   "w4e4jx": {
     "defaultMessage": "Na hoeveel seconden moeten gecachete resultaten vervallen.",
