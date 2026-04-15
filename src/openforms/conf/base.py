@@ -243,7 +243,6 @@ INSTALLED_APPS = [
     "openforms.registrations.contrib.stuf_zds",
     "openforms.registrations.contrib.objects_api",
     "openforms.registrations.contrib.microsoft_graph.apps.MicrosoftGraphApp",
-    "openforms.registrations.contrib.camunda.apps.CamundaApp",
     "openforms.registrations.contrib.generic_json",
     "openforms.prefill",
     "openforms.prefill.contrib.demo",
@@ -1090,8 +1089,7 @@ definitions.
 
 Submissions of forms are supported, where each form step can be submitted individually.
 Complete submissions are sent to the configured backend, which is a pluggable system
-to hook into [Open Zaak](https://openzaak.org), [Camunda](https://camunda.com/) or
-other systems.
+to hook into [Open Zaak](https://openzaak.org) or other systems.
 
 Open Forms fits in the [Common Ground](https://commonground.nl) vision and architecture,
 and it plays nice with other available components.
