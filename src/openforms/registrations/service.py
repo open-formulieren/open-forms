@@ -1,3 +1,4 @@
+from openforms.formio.service import FormioConfigurationWrapper
 from openforms.formio.typing import Component
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject
@@ -42,7 +43,11 @@ def plugin_allows_json_schema_generation(backend: str, options: dict) -> bool:
 
 
 def process_variable_schema(
-    component: Component, schema: JSONObject, backend_id: str, backend_options: dict
+    component: Component,
+    schema: JSONObject,
+    backend_id: str,
+    backend_options: dict,
+    configuration_wrapper: FormioConfigurationWrapper,
 ):
     """Process a variable schema according to the given registration backend.
 
@@ -52,6 +57,7 @@ def process_variable_schema(
     :param backend_options: Backend options. Note: there is no check to ensure the
       options are valid and correspond to the provided ``backend_id``, so please ensure
       that they do.
+    :param configuration_wrapper: Formio configuration wrapper.
     """
     try:
         plugin = registry[backend_id]
@@ -64,4 +70,6 @@ def process_variable_schema(
             f"not implemented."
         )
 
-    plugin.process_variable_schema(component, schema, backend_options)
+    plugin.process_variable_schema(
+        component, schema, backend_options, configuration_wrapper
+    )
