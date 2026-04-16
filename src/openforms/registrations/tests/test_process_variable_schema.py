@@ -260,6 +260,24 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
                                 ],
                                 "validate": {"required": False},
                             },
+                            {
+                                "key": "fieldset",
+                                "type": "fieldset",
+                                "label": "Fieldset",
+                                "components": [
+                                    {
+                                        "type": "file",
+                                        "key": "fileInFieldset",
+                                        "label": "File in fieldset",
+                                        "storage": "url",
+                                        "url": "",
+                                        "useConfigFiletypes": False,
+                                        "filePattern": "",
+                                        "file": {"type": [], "allowedTypesLabels": []},
+                                        "multiple": False,
+                                    }
+                                ],
+                            },
                         ],
                     },
                 ]
@@ -299,8 +317,13 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
                         "required": ["a", "b"],
                         "additionalProperties": False,
                     },
+                    "fileInFieldset": {
+                        "type": "string",
+                        "title": "File in fieldset",
+                        "oneOf": [{"format": "uri"}, {"pattern": "^$"}],
+                    },
                 },
-                "required": ["file", "file_multiple", "selectboxes"],
+                "required": ["file", "file_multiple", "selectboxes", "fileInFieldset"],
                 "additionalProperties": False,
             },
         }
@@ -533,6 +556,24 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
                                 ],
                                 "validate": {"required": False},
                             },
+                            {
+                                "key": "fieldset",
+                                "type": "fieldset",
+                                "label": "Fieldset",
+                                "components": [
+                                    {
+                                        "type": "file",
+                                        "key": "fileInFieldset",
+                                        "label": "File in fieldset",
+                                        "storage": "url",
+                                        "url": "",
+                                        "useConfigFiletypes": False,
+                                        "filePattern": "",
+                                        "file": {"type": [], "allowedTypesLabels": []},
+                                        "multiple": False,
+                                    }
+                                ],
+                            },
                         ],
                     },
                 ]
@@ -585,8 +626,18 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
                         "required": ["a", "b"],
                         "additionalProperties": False,
                     },
+                    "fileInFieldset": {
+                        "title": "File in fieldset",
+                        "type": ["null", "object"],
+                        "properties": {
+                            "file_name": {"type": "string"},
+                            "content": {"type": "string", "format": "base64"},
+                        },
+                        "required": ["file_name", "content"],
+                        "additionalProperties": False,
+                    },
                 },
-                "required": ["file", "file_multiple", "selectboxes"],
+                "required": ["file", "file_multiple", "selectboxes", "fileInFieldset"],
                 "additionalProperties": False,
             },
         }
