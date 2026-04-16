@@ -74,12 +74,8 @@ const normalizeEmptyStrField = (draft, field) => {
  * Mutate the draft state in case the form is an appointment form.
  */
 const handleAppointmentForm = draft => {
-  const {
-    form: {
-      appointmentOptions: {isAppointment = false},
-    },
-  } = draft;
-  if (!isAppointment) return;
+  const {form} = draft;
+  if (form.type !== 'appointment') return;
 
   // appointment forms have very limited functionality, which is why we clear any
   // lingering configuration if a form is turned into an appointment form
@@ -92,6 +88,23 @@ const handleAppointmentForm = draft => {
   draft.formSteps = [];
   draft.logicRules = [];
   draft.formVariables = [];
+};
+
+/**
+ * Mutate the draft state in case the form is a single page form.
+ */
+const handleSinglePageForm = draft => {
+  const {form} = draft;
+  if (form.type !== 'single_page') return;
+
+  // single page forms have a different functionality, which is why we clear any lingering
+  // configuration if a form is turned into a single page form
+  draft.selectedAuthPlugins = [];
+  draft.form.loginOptions = [];
+  draft.form.authBackends = [];
+  draft.form.autoLoginAuthenticationBackend = '';
+  draft.form.product = null;
+  draft.form.paymentBackend = '';
 };
 
 /**
@@ -131,6 +144,7 @@ const saveForm = async (state, csrftoken) => {
     normalizeEmptyStrField(draft, 'deactivateOn');
     handleZgwRegistrationOptions(draft);
     handleAppointmentForm(draft);
+    handleSinglePageForm(draft);
   });
 
   const formDetails = produce(cleanedState, draft => {

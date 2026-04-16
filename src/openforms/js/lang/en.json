@@ -414,6 +414,11 @@
     "description": "literals.beginText help text",
     "originalDefault": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
   },
+  "7KsVk/": {
+    "defaultMessage": "Single page can be enabled only when there is exactly one form step configured.",
+    "description": "Single page warning icon text",
+    "originalDefault": "Single page can be enabled only when there is exactly one form step configured."
+  },
   "7Lk/+w": {
     "defaultMessage": "Type",
     "description": "Family members options: 'Type' label",
@@ -994,11 +999,6 @@
     "description": "Cancel link help",
     "originalDefault": "Cancel rule creation"
   },
-  "G2rpx2": {
-    "defaultMessage": "Whether the step progression should be displayed in the UI or not.",
-    "description": "Progress indicator help text",
-    "originalDefault": "Whether the step progression should be displayed in the UI or not."
-  },
   "G5q9GH": {
     "defaultMessage": "Reset to default description",
     "description": "Reset logic expression icon title",
@@ -1148,11 +1148,6 @@
     "defaultMessage": "(none)",
     "description": "Label for option to disable autoLoginAuthenticationBackend",
     "originalDefault": "(none)"
-  },
-  "HpKhVP": {
-    "defaultMessage": "Appointment enabled",
-    "description": "Form appointment enabled field label",
-    "originalDefault": "Appointment enabled"
   },
   "HrSXGN": {
     "defaultMessage": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?",
@@ -1574,6 +1569,11 @@
     "description": "Session expiry warning (in modal)",
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
   },
+  "Oayv3l": {
+    "defaultMessage": "{formType}",
+    "description": "Form type label",
+    "originalDefault": "{formType}"
+  },
   "Od+jm6": {
     "defaultMessage": "Values:",
     "description": "Label indicating the 'values' part of the data",
@@ -1703,11 +1703,6 @@
     "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>.",
     "description": "StUF-ZDS registration variablesMapping message",
     "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>."
-  },
-  "QXfH7G": {
-    "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not.",
-    "description": "Form submissionAllowed field help text",
-    "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
   },
   "QaPqxz": {
     "defaultMessage": "No (with overview page)",
@@ -2013,6 +2008,11 @@
     "defaultMessage": "There are multiple profile components specified in this form. This configuration is not supported and may lead to unexpected behavior.",
     "description": "Too many profile components",
     "originalDefault": "There are multiple profile components specified in this form. This configuration is not supported and may lead to unexpected behavior."
+  },
+  "WmcA8i": {
+    "defaultMessage": "Type",
+    "description": "Form type field label",
+    "originalDefault": "Type"
   },
   "WnKF/i": {
     "defaultMessage": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments",
@@ -2874,6 +2874,11 @@
     "description": "Show form button",
     "originalDefault": "Show form"
   },
+  "k6t6Xi": {
+    "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms.",
+    "description": "Form submissionAllowed field help text",
+    "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms."
+  },
   "k9CT3p": {
     "defaultMessage": "Whether to show a link to the main website on the confirmation page.",
     "description": "Display main website link help text",
@@ -3178,6 +3183,11 @@
     "defaultMessage": "The description that will be used in children registration.",
     "description": "ZGW APIs registration options 'childrenDescription' help text",
     "originalDefault": "The description that will be used in children registration."
+  },
+  "pdiR+8": {
+    "defaultMessage": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form.",
+    "description": "Progress indicator help text",
+    "originalDefault": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form."
   },
   "piUWzT": {
     "defaultMessage": "Select registration backend",
@@ -3629,11 +3639,6 @@
     "description": "Link label to generate JSON schema of registration backend",
     "originalDefault": "Generate JSON schema"
   },
-  "xxyIg/": {
-    "defaultMessage": "Indicates whether appointments are enabled for this form.",
-    "description": "Form appointment enabled field help text",
-    "originalDefault": "Indicates whether appointments are enabled for this form."
-  },
   "xyVtKp": {
     "defaultMessage": "Plugin configuration: Objects API",
     "description": "Objects API registration options modal title",
@@ -3738,6 +3743,11 @@
     "defaultMessage": "Submission settings",
     "description": "Form submission settings fieldset title",
     "originalDefault": "Submission settings"
+  },
+  "zsTGAG": {
+    "defaultMessage": "Type of the form, used to determine how the form is presented and behaves.",
+    "description": "Form type field help text",
+    "originalDefault": "Type of the form, used to determine how the form is presented and behaves."
   },
   "zu8ntq": {
     "defaultMessage": "An error occurred during schema generation",

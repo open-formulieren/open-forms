@@ -9,6 +9,7 @@ from rest_framework.test import APITestCase
 from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.data_removal.constants import RemovalMethods
 from openforms.data_removal.tasks import delete_submissions
+from openforms.forms.constants import FormTypeChoices
 from openforms.forms.tests.factories import FormFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.models import Submission
@@ -78,7 +79,7 @@ class CancelAppointmentTests(SubmissionsMixin, APITestCase):
     def test_cancel_appointment_and_successful_submissions_pruning(self):
         with freeze_time("2021-07-20T12:00:00Z"):
             form = FormFactory.create(
-                is_appointment=True,
+                type=FormTypeChoices.appointment,
                 successful_submissions_removal_limit=2,
                 successful_submissions_removal_method=(
                     RemovalMethods.delete_permanently
@@ -130,7 +131,7 @@ class CancelAppointmentTests(SubmissionsMixin, APITestCase):
     def test_cancel_appointment_and_all_submissions_pruning(self):
         with freeze_time("2021-07-20T12:00:00Z"):
             form = FormFactory.create(
-                is_appointment=True,
+                type=FormTypeChoices.appointment,
                 all_submissions_removal_limit=2,
             )
             submission = SubmissionFactory.create(form=form)

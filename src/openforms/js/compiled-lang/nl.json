@@ -961,6 +961,12 @@
       "value": "De tekst op de knop die aangeeft dat het formulier gestart kan worden. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "7KsVk/": [
+    {
+      "type": 0,
+      "value": "Single page can be enabled only when there is exactly one form step configured."
+    }
+  ],
   "7Ldfn+": [
     {
       "type": 0,
@@ -2272,12 +2278,6 @@
       "value": "Annuleren"
     }
   ],
-  "G2rpx2": [
-    {
-      "type": 0,
-      "value": "Geef de voortgang in de formulierstappen wel of niet weer."
-    }
-  ],
   "G5q9GH": [
     {
       "type": 0,
@@ -2522,12 +2522,6 @@
     {
       "type": 0,
       "value": "(geen)"
-    }
-  ],
-  "HpKhVP": [
-    {
-      "type": 0,
-      "value": "Is afspraakformulier?"
     }
   ],
   "HrSXGN": [
@@ -3242,6 +3236,12 @@
       "value": "Prefix"
     }
   ],
+  "Oayv3l": [
+    {
+      "type": 1,
+      "value": "formType"
+    }
+  ],
   "Od+jm6": [
     {
       "type": 0,
@@ -3490,12 +3490,6 @@
     {
       "type": 0,
       "value": "."
-    }
-  ],
-  "QXfH7G": [
-    {
-      "type": 0,
-      "value": "Geeft aan of de gebruiker het formulier kan inzenden of niet, en of een overzichtspagina getoond wordt indien niet."
     }
   ],
   "QaPqxz": [
@@ -4230,6 +4224,12 @@
     {
       "type": 0,
       "value": "Indien meerdere unieke identificaties beschikbaar zijn (bijvoorbeeld bij eHerkenning Bewindvoering en DigiD Machtigen), welke prefill-gegevens moeten dan opgehaald worden? Deze voor de machtiger of de gemachtigde?"
+    }
+  ],
+  "WmcA8i": [
+    {
+      "type": 0,
+      "value": "Type"
     }
   ],
   "WnKF/i": [
@@ -6109,6 +6109,12 @@
       "value": "Toon formulier"
     }
   ],
+  "k6t6Xi": [
+    {
+      "type": 0,
+      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms."
+    }
+  ],
   "k9CT3p": [
     {
       "type": 0,
@@ -6785,6 +6791,12 @@
     {
       "type": 0,
       "value": "De omschrijving die gebruikt wordt voor het registreren van kinderen (als betrokkene)."
+    }
+  ],
+  "pdiR+8": [
+    {
+      "type": 0,
+      "value": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form."
     }
   ],
   "pdmkVe": [
@@ -7667,12 +7679,6 @@
       "value": "Zoomniveau"
     }
   ],
-  "xxyIg/": [
-    {
-      "type": 0,
-      "value": "Markeer het formulier als afspraakformulier, met een aparte flow. Hiervoor dient een afsprakenplugin ingesteld te zijn."
-    }
-  ],
   "xyVtKp": [
     {
       "type": 0,
@@ -7909,6 +7915,12 @@
     {
       "type": 0,
       "value": "Inzending-instellingen"
+    }
+  ],
+  "zsTGAG": [
+    {
+      "type": 0,
+      "value": "Type of the form, used to determine how the form is presented and behaves."
     }
   ],
   "zu8ntq": [

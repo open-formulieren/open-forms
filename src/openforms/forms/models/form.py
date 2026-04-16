@@ -40,7 +40,11 @@ from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.variables.constants import FormVariableSources
 
-from ..constants import StatementCheckboxChoices, SubmissionAllowedChoices
+from ..constants import (
+    FormTypeChoices,
+    StatementCheckboxChoices,
+    SubmissionAllowedChoices,
+)
 from .utils import literal_getter
 
 User = get_user_model()
@@ -91,6 +95,17 @@ class Form(models.Model):
     slug = AutoSlugField(
         _("slug"), max_length=100, populate_from="name", editable=True, unique=True
     )
+    type = models.CharField(
+        _("form type"),
+        choices=FormTypeChoices.choices,
+        default=FormTypeChoices.regular,
+        help_text=_(
+            "The type of the form. The choices are regular, appointment or a single "
+            "page form. Depending on the choice a different form design is "
+            "required/rendered."
+        ),
+        max_length=50,
+    )
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
     )
@@ -130,16 +145,6 @@ class Form(models.Model):
     # authentication
     auto_login_authentication_backend = models.CharField(
         _("automatic login"), max_length=UNIQUE_ID_MAX_LENGTH, blank=True
-    )
-
-    # appointments
-    is_appointment = models.BooleanField(
-        _("appointment enabled"),
-        default=False,
-        help_text=_(
-            "Mark the form as an appointment form. "
-            "Appointment forms do not support form designer steps."
-        ),
     )
 
     # submission

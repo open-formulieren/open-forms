@@ -961,6 +961,12 @@
       "value": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
     }
   ],
+  "7KsVk/": [
+    {
+      "type": 0,
+      "value": "Single page can be enabled only when there is exactly one form step configured."
+    }
+  ],
   "7Ldfn+": [
     {
       "type": 0,
@@ -2285,12 +2291,6 @@
       "value": "Cancel rule creation"
     }
   ],
-  "G2rpx2": [
-    {
-      "type": 0,
-      "value": "Whether the step progression should be displayed in the UI or not."
-    }
-  ],
   "G5q9GH": [
     {
       "type": 0,
@@ -2535,12 +2535,6 @@
     {
       "type": 0,
       "value": "(none)"
-    }
-  ],
-  "HpKhVP": [
-    {
-      "type": 0,
-      "value": "Appointment enabled"
     }
   ],
   "HrSXGN": [
@@ -3255,6 +3249,12 @@
       "value": "Prefix"
     }
   ],
+  "Oayv3l": [
+    {
+      "type": 1,
+      "value": "formType"
+    }
+  ],
   "Od+jm6": [
     {
       "type": 0,
@@ -3507,12 +3507,6 @@
     {
       "type": 0,
       "value": "."
-    }
-  ],
-  "QXfH7G": [
-    {
-      "type": 0,
-      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
     }
   ],
   "QaPqxz": [
@@ -4247,6 +4241,12 @@
     {
       "type": 0,
       "value": "In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?"
+    }
+  ],
+  "WmcA8i": [
+    {
+      "type": 0,
+      "value": "Type"
     }
   ],
   "WnKF/i": [
@@ -6121,6 +6121,12 @@
       "value": "Show form"
     }
   ],
+  "k6t6Xi": [
+    {
+      "type": 0,
+      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms."
+    }
+  ],
   "k9CT3p": [
     {
       "type": 0,
@@ -6797,6 +6803,12 @@
     {
       "type": 0,
       "value": "The description that will be used in children registration."
+    }
+  ],
+  "pdiR+8": [
+    {
+      "type": 0,
+      "value": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form."
     }
   ],
   "pdmkVe": [
@@ -7683,12 +7695,6 @@
       "value": "Zoom level"
     }
   ],
-  "xxyIg/": [
-    {
-      "type": 0,
-      "value": "Indicates whether appointments are enabled for this form."
-    }
-  ],
   "xyVtKp": [
     {
       "type": 0,
@@ -7925,6 +7931,12 @@
     {
       "type": 0,
       "value": "Submission settings"
+    }
+  ],
+  "zsTGAG": [
+    {
+      "type": 0,
+      "value": "Type of the form, used to determine how the form is presented and behaves."
     }
   ],
   "zu8ntq": [

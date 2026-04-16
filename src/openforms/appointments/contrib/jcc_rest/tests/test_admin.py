@@ -26,7 +26,7 @@ class JccRestAdminTests(WebTest):
         response = self.app.get(endpoint, user=user)
         context = response.context
 
-        self.assertIn("form_mode", context)
+        self.assertIn("form_type", context)
 
     def test_form_has_configuration_components_populated(self):
         user = SuperUserFactory.create()

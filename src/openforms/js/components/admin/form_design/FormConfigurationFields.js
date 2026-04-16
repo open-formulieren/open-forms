@@ -6,12 +6,16 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox, DateTimeInput, TextArea, TextInput} from 'components/admin/forms/Inputs';
+import {Radio} from 'components/admin/forms/Inputs';
+import RadioList from 'components/admin/forms/RadioList';
 import Select from 'components/admin/forms/Select';
+import {WarningIcon} from 'components/admin/icons';
 import {getTranslatedChoices} from 'utils/i18n';
 
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 import AuthPluginField from './AuthPluginField';
 import AuthPluginOptions from './AuthPluginOptions';
+import {FORM_TYPES} from './constants';
 import TYPES from './types';
 
 const SUMBISSION_ALLOWED_CHOICES = [
@@ -260,7 +264,10 @@ const PresentationFields = ({
   showProgressIndicator,
   showSummaryProgress,
   onChange,
+  formType,
 }) => {
+  const isSinglePage = formType === 'single_page';
+
   const onCheckboxChange = (event, currentValue) => {
     const {
       target: {name},
@@ -309,12 +316,13 @@ const PresentationFields = ({
           }
           helpText={
             <FormattedMessage
-              defaultMessage="Whether the step progression should be displayed in the UI or not."
+              defaultMessage="Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form."
               description="Progress indicator help text"
             />
           }
-          checked={showProgressIndicator}
+          checked={!isSinglePage ? showProgressIndicator : false}
           onChange={event => onCheckboxChange(event, showProgressIndicator)}
+          disabled={isSinglePage}
         />
       </FormRow>
       <FormRow>
@@ -341,13 +349,16 @@ const PresentationFields = ({
 };
 
 const SubmissionFields = ({
-  isAppointment,
+  formType,
   submissionAllowed,
   askPrivacyConsent,
   askStatementOfTruth,
   onChange,
 }) => {
   const intl = useIntl();
+  const isAppointment = formType === 'appointment';
+  const isSinglePage = formType === 'single_page';
+
   return (
     <Fieldset
       title={
@@ -377,15 +388,16 @@ const SubmissionFields = ({
             }
             helpText={
               <FormattedMessage
-                defaultMessage="Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
+                defaultMessage="Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms."
                 description="Form submissionAllowed field help text"
               />
             }
           >
             <Select
               choices={getTranslatedChoices(intl, SUMBISSION_ALLOWED_CHOICES)}
-              value={submissionAllowed}
+              value={!isSinglePage ? submissionAllowed : 'yes'}
               onChange={onChange}
+              disabled={isSinglePage}
             />
           </Field>
         </FormRow>
@@ -440,7 +452,8 @@ const SubmissionFields = ({
   );
 };
 
-const FeatureFields = ({isAppointment, translationEnabled, suspensionAllowed, onChange}) => {
+const FeatureFields = ({formType, translationEnabled, suspensionAllowed, onChange}) => {
+  const isRegular = formType === 'regular';
   const onCheckboxChange = (event, currentValue) => {
     const {
       target: {name},
@@ -456,26 +469,6 @@ const FeatureFields = ({isAppointment, translationEnabled, suspensionAllowed, on
         />
       }
     >
-      <FormRow>
-        <Checkbox
-          name="form.appointmentOptions.isAppointment"
-          label={
-            <FormattedMessage
-              defaultMessage="Appointment enabled"
-              description="Form appointment enabled field label"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Indicates whether appointments are enabled for this form."
-              description="Form appointment enabled field help text"
-            />
-          }
-          checked={isAppointment}
-          onChange={event => onCheckboxChange(event, isAppointment)}
-        />
-      </FormRow>
-
       <FormRow>
         <Checkbox
           name="form.translationEnabled"
@@ -496,7 +489,7 @@ const FeatureFields = ({isAppointment, translationEnabled, suspensionAllowed, on
         />
       </FormRow>
 
-      {!isAppointment && (
+      {isRegular && (
         <FormRow>
           <Checkbox
             name="form.suspensionAllowed"
@@ -532,6 +525,7 @@ const FormConfigurationFields = ({
   selectedAuthPlugins,
   onAuthPluginChange,
   availableCategories,
+  formStepsAmount,
   hasTriggerFromStep = false,
 }) => {
   const {
@@ -543,6 +537,7 @@ const FormConfigurationFields = ({
     showSummaryProgress,
     active,
     category,
+    type,
     theme,
     isDeleted,
     activateOn,
@@ -558,6 +553,8 @@ const FormConfigurationFields = ({
     newLogicEvaluationEnabled,
   } = form;
 
+  const intl = useIntl();
+
   const onCheckboxChange = (event, currentValue) => {
     const {
       target: {name},
@@ -565,7 +562,13 @@ const FormConfigurationFields = ({
     onChange({target: {name, value: !currentValue}});
   };
 
-  const isAppointment = appointmentOptions?.isAppointment ?? false;
+  const isRegular = type === 'regular';
+  const isSinglePage = type === 'single_page';
+  const singlePageWarningText = intl.formatMessage({
+    description: 'Single page warning icon text',
+    defaultMessage:
+      'Single page can be enabled only when there is exactly one form step configured.',
+  });
 
   return (
     <>
@@ -653,6 +656,43 @@ const FormConfigurationFields = ({
 
         <FormRow>
           <Field
+            name="form.type"
+            label={<FormattedMessage defaultMessage="Type" description="Form type field label" />}
+            helpText={
+              <FormattedMessage
+                defaultMessage="Type of the form, used to determine how the form is presented and behaves."
+                description="Form type field help text"
+              />
+            }
+            required
+          >
+            <>
+              <RadioList>
+                {FORM_TYPES.map(([value, label], index) => (
+                  <Radio
+                    key={`id_${value}_${index}`}
+                    name="form.type"
+                    idFor={`id_${value}_${index}`}
+                    label={
+                      <FormattedMessage
+                        defaultMessage="{formType}"
+                        description="Form type label"
+                        values={{formType: label}}
+                      />
+                    }
+                    checked={form.type === value}
+                    onChange={onChange}
+                    value={value}
+                    disabled={value === 'single_page' && formStepsAmount > 1}
+                  />
+                ))}
+              </RadioList>
+              {formStepsAmount > 1 ? <WarningIcon text={singlePageWarningText} /> : null}
+            </>
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field
             name="form.category"
             label={
               <FormattedMessage defaultMessage="Category" description="Form category field label" />
@@ -694,13 +734,13 @@ const FormConfigurationFields = ({
       </Fieldset>
 
       <FeatureFields
-        isAppointment={isAppointment}
+        formType={type}
         translationEnabled={translationEnabled}
         suspensionAllowed={suspensionAllowed}
         onChange={onChange}
       />
 
-      {!isAppointment && (
+      {isRegular && (
         <AuthenticationFields
           availableAuthPlugins={availableAuthPlugins}
           selectedAuthPlugins={selectedAuthPlugins}
@@ -717,6 +757,7 @@ const FormConfigurationFields = ({
         showProgressIndicator={showProgressIndicator}
         showSummaryProgress={showSummaryProgress}
         onChange={onChange}
+        formType={type}
       />
 
       <AvailabilityFields
@@ -728,7 +769,7 @@ const FormConfigurationFields = ({
       />
 
       <SubmissionFields
-        isAppointment={isAppointment}
+        formType={type}
         submissionAllowed={submissionAllowed}
         askPrivacyConsent={askPrivacyConsent}
         askStatementOfTruth={askStatementOfTruth}
@@ -761,8 +802,9 @@ const FormConfigurationFields = ({
                 and has better accessibility.`}
               />
             }
-            checked={newRendererEnabled}
+            checked={!isSinglePage ? newRendererEnabled : true}
             onChange={event => onCheckboxChange(event, newRendererEnabled)}
+            disabled={isSinglePage}
           />
         </FormRow>
         {hasTriggerFromStep && (
@@ -811,6 +853,7 @@ FormConfigurationFields.propTypes = {
     internalName: PropTypes.string.isRequired,
     internalRemarks: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
     showProgressIndicator: PropTypes.bool.isRequired,
     showSummaryProgress: PropTypes.bool.isRequired,
     active: PropTypes.bool.isRequired,
@@ -822,7 +865,7 @@ FormConfigurationFields.propTypes = {
     askPrivacyConsent: statementChoices.isRequired,
     askStatementOfTruth: statementChoices.isRequired,
     appointmentOptions: PropTypes.shape({
-      isAppointment: PropTypes.bool.isRequired,
+      supportsMultipleProducts: PropTypes.oneOf([PropTypes.bool, null]),
     }),
     authBackends: PropTypes.arrayOf(
       PropTypes.shape({
@@ -836,6 +879,7 @@ FormConfigurationFields.propTypes = {
   availableAuthPlugins: PropTypes.arrayOf(TYPES.AuthPlugin).isRequired,
   selectedAuthPlugins: PropTypes.array.isRequired,
   onAuthPluginChange: PropTypes.func.isRequired,
+  formStepsAmount: PropTypes.number.isRequired,
   hasTriggerFromStep: PropTypes.bool,
 };
 
