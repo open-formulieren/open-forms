@@ -218,7 +218,8 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
         options: RegistrationOptions,
         configuration_wrapper: FormioConfigurationWrapper,
     ):
-        """Process a variable schema for the Objects API format.
+        """
+        Process a variable schema for the Objects API format.
 
         The following components need extra attention:
         - File components: we send a url or list of urls, instead of the output from the

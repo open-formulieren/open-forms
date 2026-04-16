@@ -1086,12 +1086,24 @@ class CustomerProfile(BasePlugin):
         result["data"] = data
         return result
 
+    @staticmethod
+    def as_json_schema(component: CustomerProfileComponent) -> None:
+        raise NotImplementedError()
+
 
 @register("softRequiredErrors")
 class SoftRequiredErrors(BasePlugin):
     holds_submission_data = False
 
+    @staticmethod
+    def as_json_schema(component: Component) -> None:
+        return None
+
 
 @register("coSign")
 class CoSign(BasePlugin):
     holds_submission_data = False
+
+    @staticmethod
+    def as_json_schema(component: Component) -> None:
+        return None

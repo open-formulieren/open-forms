@@ -121,7 +121,8 @@ class GenericJSONRegistration(BasePlugin):
         options: GenericJSONOptions,
         configuration_wrapper: FormioConfigurationWrapper,
     ):
-        """Process a variable schema for the Generic JSON format.
+        """
+        Process a variable schema for the Generic JSON format.
 
         The following components need extra attention:
         - File components: we send the content of the file encoded with base64, instead of

@@ -68,6 +68,25 @@ class GenerateJsonSchemaTests(TestCase):
                         ],
                         "dataSrc": DataSrcOptions.manual,
                     },
+                    # Components to make codecov happy. Note that putting coSign and
+                    # softRequiredErrors inside an editgrid doesn't make much sense
+                    {
+                        "type": "editgrid",
+                        "key": "editgrid",
+                        "label": "Editgrid",
+                        "components": [
+                            {
+                                "type": "coSign",
+                                "key": "coSign",
+                                "label": "Cosign",
+                            },
+                            {
+                                "type": "softRequiredErrors",
+                                "key": "softRequiredErrors",
+                                "label": "Errors",
+                            },
+                        ],
+                    },
                 ]
             }
         )
@@ -114,6 +133,7 @@ class GenerateJsonSchemaTests(TestCase):
             "auth_bsn",
             "today",
             "foo",
+            "editgrid",
         )
         schema = generate_json_schema(form, vars_to_include)
 
@@ -195,6 +215,16 @@ class GenerateJsonSchemaTests(TestCase):
                 },
             },
             "foo": {"type": "array", "title": "Foo"},
+            "editgrid": {
+                "title": "Editgrid",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {},
+                    "required": [],
+                    "additionalProperties": False,
+                },
+            },
         }
         expected_required = {
             "today",
@@ -206,6 +236,7 @@ class GenerateJsonSchemaTests(TestCase):
             "radio",
             "file",
             "foo",
+            "editgrid",
         }
 
         with self.subTest("properties"):

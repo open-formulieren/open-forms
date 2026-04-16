@@ -49,7 +49,8 @@ def process_variable_schema(
     backend_options: dict,
     configuration_wrapper: FormioConfigurationWrapper,
 ):
-    """Process a variable schema according to the given registration backend.
+    """
+    Process a variable schema according to the given registration backend.
 
     :param component: Formio component configuration of the variable.
     :param schema: JSON schema of the variable.

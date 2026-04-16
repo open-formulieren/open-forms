@@ -441,7 +441,8 @@ class FormVariable(models.Model):
         self._json_schema = value
 
     def as_json_schema(self) -> JSONObject:
-        """Return JSON schema of form variable.
+        """
+        Return JSON schema of form variable.
 
         If the schema generation for a formio component fails, fall back to a basic
         schema based on the data type.
