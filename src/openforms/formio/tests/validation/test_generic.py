@@ -1,5 +1,7 @@
 from django.test import SimpleTestCase
 
+import msgspec
+
 from openforms.typing import JSONValue
 
 from ...typing import Component
@@ -17,9 +19,8 @@ class FallbackBehaviourTests(SimpleTestCase):
         }
         data: JSONValue = {"value": ["weird", {"data": "structure"}]}
 
-        is_valid, _ = validate_formio_data(component, data)
-
-        self.assertTrue(is_valid)
+        with self.assertRaises(msgspec.ValidationError):
+            validate_formio_data(component, data)
 
     def test_nested_keys_and_fields_being_required(self):
         component: Component = {

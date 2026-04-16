@@ -7,13 +7,13 @@ from django.utils.html import format_html, format_html_join
 
 import structlog
 
-from ..typing import Component
+from formio_types import AnyComponent
 
 logger = structlog.stdlib.get_logger(__name__)
 
 
 @dataclass
-class FormatterBase[T: Component]:
+class FormatterBase[T: AnyComponent]:
     as_html: bool = False
     """
     Format for HTML output or not.
@@ -37,7 +37,7 @@ class FormatterBase[T: Component]:
         return value in self.empty_values
 
     def normalise_value_to_list(self, component: T, value: Any):
-        multiple = component.get("multiple", False)
+        multiple: bool = getattr(component, "multiple", False)
         # this breaks if multiple is true and value not a list
         if multiple:
             if not isinstance(value, tuple | list):
@@ -49,13 +49,14 @@ class FormatterBase[T: Component]:
         return [v for v in value if not self.is_empty_value(component, v)]
 
     def join_formatted_values(
-        self, component: Component, formatted_values: Iterable[str]
+        self, component: T, formatted_values: Iterable[str]
     ) -> str:
         if not self.as_html:
             return self.multiple_separator.join(formatted_values)
 
         args_generator = ((formatted,) for formatted in formatted_values)
-        if component.get("multiple", False):
+        multiple: bool = getattr(component, "multiple", False)
+        if multiple:
             return format_html(
                 "<ul>{values}</ul>",
                 values=format_html_join("", "<li>{}</li>", args_generator),

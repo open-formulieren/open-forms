@@ -4,6 +4,7 @@ from django.test import SimpleTestCase, tag
 
 from rest_framework import serializers
 
+from formio_types import TextField
 from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject, JSONValue
@@ -25,6 +26,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "parent",
             "label": "Repeating group",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",
@@ -81,6 +83,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "parent",
             "label": "Repeating group",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",
@@ -141,6 +144,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "toplevel",
             "label": "Repeating group",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",
@@ -182,6 +186,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "optionalRepeatingGroup",
             "label": "Optional repeating group",
+            "groupLabel": "item",
             "validate": {"required": False},
             "components": [
                 {
@@ -205,6 +210,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "requiredRepeatingGroup",
             "label": "Required repeating group",
+            "groupLabel": "item",
             "validate": {"required": True},
             "components": [
                 {
@@ -219,6 +225,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "fieldset",
             "key": "fieldset",
             "label": "Hidden fieldset",
+            "groupLabel": "item",
             "hidden": True,
             "components": [editgrid],
         }
@@ -314,6 +321,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "editgrid",
             "label": "Edit grid with nested conditional",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",
@@ -359,6 +367,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "editgrid",
             "label": "Edit grid with nested conditional",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",
@@ -377,6 +386,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "fieldset",
             "key": "fieldset",
             "label": "Container",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",
@@ -457,9 +467,7 @@ class EditGridFieldTests(SimpleTestCase):
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
-                components=[
-                    {"type": "textfield", "key": "textfield", "label": "Text field"}
-                ],
+                components=[TextField(key="textfield", label="Text field")],
                 allow_empty=False,
                 min_length=3,
             )
@@ -476,9 +484,7 @@ class EditGridFieldTests(SimpleTestCase):
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
-                components=[
-                    {"type": "textfield", "key": "textfield", "label": "Text field"}
-                ],
+                components=[TextField(key="textfield", label="Text field")],
                 allow_empty=False,
                 max_length=3,
             )
@@ -494,8 +500,7 @@ class EditGridFieldTests(SimpleTestCase):
     def test_to_representation(self):
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
-                registry=register,
-                components=[{"type": "textfield", "key": "bar", "label": "Bar"}],
+                registry=register, components=[TextField(key="bar", label="Bar")]
             )
 
         Foo = namedtuple("Foo", "bar")

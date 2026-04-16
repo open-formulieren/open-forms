@@ -42,7 +42,13 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         cls.step1 = FormStepFactory.create(
             form=cls.form,
             form_definition__configuration={
-                "components": [{"key": "test-key", "type": "textfield"}]
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test-key",
+                        "label": "test",
+                    }
+                ]
             },
         )
 
@@ -76,10 +82,22 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "slug": self.step1.slug,
                 "formStepUuid": str(self.step1.uuid),
                 "configuration": {
-                    "components": [{"type": "textfield", "key": "test-key"}]
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "test-key",
+                            "label": "test",
+                        }
+                    ],
                 },
                 "defaultConfiguration": {
-                    "components": [{"key": "test-key", "type": "textfield"}]
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "test-key",
+                            "label": "test",
+                        }
+                    ]
                 },
                 "data": {"test-key": "example data"},
                 "canSubmit": True,
@@ -148,10 +166,12 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "foo",
+                        "label": "foo",
                     },
                     {
                         "type": "textfield",
                         "key": "modified",
+                        "label": "modified",
                     },
                 ]
             },
@@ -184,7 +204,6 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         state = self.submission.load_submission_value_variables_state(refresh=True)
         data = state.get_data(submission_step=submission_step, include_unsaved=False)
         self.assertEqual({"modified": "data", "foo": "bar"}, data)
-
         submission_variables = SubmissionValueVariable.objects.filter(
             submission=self.submission
         )
@@ -268,7 +287,13 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
     def test_update_step_data_component_with_nested_data(self):
         step = FormStepFactory.create(
             form_definition__configuration={
-                "components": [{"type": "textfield", "key": "nested.key"}]
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "nested.key",
+                        "label": "nested.key",
+                    }
+                ]
             },
         )
         submission = SubmissionFactory.create(form=step.form)
@@ -293,7 +318,6 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual({"nested": {"key": "some data"}}, response.json()["data"])
-
         state = submission.load_submission_value_variables_state()
         data = state.get_data(submission_step=submission_step, include_unsaved=False)
         self.assertEqual({"nested": {"key": "some data"}}, data)
@@ -304,14 +328,28 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         # yet. See Sentry 450470 amongst others.
         step1 = FormStepFactory.create(
             form_definition__configuration={
-                "components": [{"type": "textfield", "key": "text"}]
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text",
+                        "label": "text",
+                    }
+                ]
             },
         )
         form = step1.form
         step2 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
-                "components": [{"type": "file", "key": "attachment"}]
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "attachment",
+                        "label": "attachment",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    }
+                ]
             },
         )
         submission = SubmissionFactory.create(form=step2.form)
@@ -369,7 +407,13 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
     def test_user_defined_variables_are_persisted(self):
         step = FormStepFactory.create(
             form_definition__configuration={
-                "components": [{"type": "textfield", "key": "text"}]
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text",
+                        "label": "text",
+                    }
+                ]
             },
         )
         FormVariableFactory.create(

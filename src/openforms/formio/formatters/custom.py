@@ -8,17 +8,21 @@ from django.utils.html import format_html, format_html_join
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from formio_types import (
+    BSN,
+    AddressNL,
+    CosignV2,
+    CustomerProfile,
+    Date,
+    DateTime,
+    Map,
+    Postcode,
+)
 from geo_visualization import generate_map_image_with_geojson
 from openforms.api.geojson import LineStringGeometry, PointGeometry, PolygonGeometry
 from openforms.config.models import MapTileLayer
 from openforms.typing import StrOrPromise
 
-from ..typing import (
-    AddressNLComponent,
-    Component,
-    CustomerProfileComponent,
-    MapComponent,
-)
 from ..typing.custom import DigitalAddress, SupportedChannels
 from .base import FormatterBase
 
@@ -28,38 +32,57 @@ MAP_IMAGE_SIZE = (400, 300)  # width and height in number of pixels
 MAX_ZOOM_LEVEL = 12
 
 
-class DateFormatter(FormatterBase):
-    def format(self, component: Component, value: date | None) -> str:
+class PostcodeFormatter(FormatterBase[Postcode]):
+    def format(self, component: Postcode, value: str) -> str:
+        return str(value)
+
+
+class BSNFormatter(FormatterBase[BSN]):
+    def format(self, component: BSN, value: str) -> str:
+        return str(value)
+
+
+class DateFormatter(FormatterBase[Date]):
+    def format(self, component: Date, value: date | None) -> str:
         return fmt_date(value)
 
 
-class DateTimeFormatter(FormatterBase):
-    def format(self, component: Component, value: datetime | None) -> str:
+class DateTimeFormatter(FormatterBase[DateTime]):
+    def format(self, component: DateTime, value: datetime | None) -> str:
         return f"{fmt_date(value)} {fmt_time(value, 'H:i')}"
 
 
 type MapValue = PointGeometry | LineStringGeometry | PolygonGeometry
 
 
-class MapFormatter(FormatterBase):
-    def format(self, component: MapComponent, value: MapValue) -> str:
+class MapFormatter(FormatterBase[Map]):
+    def format(self, component: Map, value: MapValue) -> str:
         # Will be an empty string if `value` was empty
         coordinates = ", ".join(str(x) for x in value.get("coordinates", []))
-        overlays = component.get("overlays")
+        overlays = component.overlays
 
         if not self.as_html or not coordinates:
             return coordinates
 
         # Note that "brt" is a default fixture from default_map_tile_layers.json
         tile_layer = MapTileLayer.objects.get(
-            identifier=component.get("tileLayerIdentifier", "brt")
+            identifier=component.tile_layer_identifier or "brt",
         )
         image = generate_map_image_with_geojson(
             value,
             tile_layer.url,
             MAP_IMAGE_SIZE,
-            overlays,  # pyright: ignore[reportArgumentType]
-            MAX_ZOOM_LEVEL,
+            overlays=[
+                {
+                    "type": overlay.type,
+                    "url": overlay.url,
+                    "layers": overlay.layers,
+                }
+                for overlay in overlays
+            ]
+            if overlays
+            else None,
+            max_zoom=MAX_ZOOM_LEVEL,
         )
 
         # Fallback to the coordinates if it couldn't be loaded
@@ -90,10 +113,10 @@ class AddressValue(TypedDict):
     secretStreetCity: NotRequired[str]
 
 
-class AddressNLFormatter(FormatterBase):
+class AddressNLFormatter(FormatterBase[AddressNL]):
     empty_values = ({},)
 
-    def format(self, component: AddressNLComponent, value: AddressValue) -> str:
+    def format(self, component: AddressNL, value: AddressValue) -> str:
         value = value.copy()
         value.setdefault("houseLetter", "")
         value.setdefault("houseNumberAddition", "")
@@ -120,20 +143,18 @@ class AddressNLFormatter(FormatterBase):
         return template.format(sep="\n", **value).strip()
 
 
-class CosignFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
+class CosignFormatter(FormatterBase[CosignV2]):
+    def format(self, component: CosignV2, value: str) -> str:
         return str(value)
 
 
-class CustomerProfileFormatter(FormatterBase):
+class CustomerProfileFormatter(FormatterBase[CustomerProfile]):
     ADDRESS_TYPE_LABELS: ClassVar[Mapping[SupportedChannels, StrOrPromise]] = {
         "email": _("email address"),
         "phoneNumber": _("phone number"),
     }
 
-    def format(
-        self, component: CustomerProfileComponent, value: list[DigitalAddress]
-    ) -> str:
+    def format(self, component: CustomerProfile, value: list[DigitalAddress]) -> str:
         # Gather all filled-in addresses and possibly add "as preferred" suffix
         addresses: list[str] = [
             _("{address} (will become preferred {address_type})").format(

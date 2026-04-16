@@ -703,6 +703,10 @@ msal==1.34.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   o365
+msgspec==0.21.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 networkx==3.6.1
     # via
     #   -c requirements/ci.txt

@@ -85,6 +85,7 @@ class SelectValidationTests(SimpleTestCase):
                 ],
             },
             "validate": {"required": True},
+            "defaultValue": [],
         }
 
         invalid_values = [

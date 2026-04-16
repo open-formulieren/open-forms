@@ -27,6 +27,7 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "radio",
                         "key": "step1",
+                        "label": "step1",
                         "values": [
                             {"label": "A", "value": "a"},
                             {"label": "B", "value": "b"},
@@ -42,6 +43,7 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "step2",
+                        "label": "step2",
                     }
                 ]
             },
