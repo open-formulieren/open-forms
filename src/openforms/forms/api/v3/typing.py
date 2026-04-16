@@ -7,6 +7,13 @@ from openforms.config.models import Theme
 from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.typing import ConfirmationEmailTemplateTranslatedData
 from openforms.formio.typing import FormioConfiguration
+from openforms.prefill.constants import IdentifierRoles
+from openforms.variables.constants import (
+    DataMappingTypes,
+    FormVariableDataTypes,
+    FormVariableSources,
+    ServiceFetchMethods,
+)
 
 from ...constants import StatementCheckboxChoices
 from ...models import Category
@@ -92,7 +99,47 @@ class PaymentData(TypedDict):
     payment_backend_options: dict
 
 
-class NewFormValidatedData(TypedDict):
+class ServiceFetchConfigurationData(TypedDict):
+    name: str
+    service: UUID
+
+    path: NotRequired[str]
+    method: NotRequired[ServiceFetchMethods]
+    headers: NotRequired[dict]
+    query_params: NotRequired[dict]
+    body: NotRequired[dict | None]
+
+    data_mapping_type: NotRequired[DataMappingTypes]
+
+    mapping_expression: NotRequired[str | None]
+
+    cache_timeout: NotRequired[int | None]
+
+
+class FormVariableData(TypedDict):
+    name: str
+    key: str
+    source: FormVariableSources
+    is_sensitive_data: NotRequired[bool]
+
+    form_definition: NotRequired[UUID | None]
+
+    data_type: FormVariableDataTypes
+    data_subtype: NotRequired[FormVariableDataTypes]
+
+    data_format: NotRequired[str]
+
+    prefill_plugin: NotRequired[str]
+    prefill_attribute: NotRequired[str]
+    prefill_identifier_role: NotRequired[IdentifierRoles]
+    prefill_options: NotRequired[dict]
+
+    initial_value: NotRequired[dict | None]
+
+    service_fetch_configuration: NotRequired[ServiceFetchConfigurationData | None]
+
+
+class FormValidatedData(TypedDict):
     name: str
     internal_name: NotRequired[str]
     internal_remarks: NotRequired[str]
@@ -105,6 +152,8 @@ class NewFormValidatedData(TypedDict):
     theme: NotRequired[Theme]
     formstep_set: list[FormStepData]
     payment: NotRequired[PaymentData]
+
+    formvariable_set: list[FormVariableData]
 
     show_progress_indicator: NotRequired[bool]
     show_summary_progress: NotRequired[bool]
@@ -138,7 +187,3 @@ class NewFormValidatedData(TypedDict):
     new_logic_evaluation_enabled: NotRequired[bool]
 
     translations: NotRequired[FormTranslationsData]
-
-
-class FormValidatedData(NewFormValidatedData):
-    uuid: UUID

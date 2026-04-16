@@ -157,9 +157,14 @@ class FormStep(OrderedModel):
         return False
 
     def delete(self, *args, **kwargs):
+        delete_form_definition = kwargs.pop("delete_form_definition", True)
         super().delete(*args, **kwargs)
 
-        if self.form_definition.pk is not None and not self.form_definition.is_reusable:
+        if (
+            self.form_definition.pk is not None
+            and not self.form_definition.is_reusable
+            and delete_form_definition
+        ):
             self.form_definition.delete()
 
     def iter_components(self, recursive=True, **kwargs):
