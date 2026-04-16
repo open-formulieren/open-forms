@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
-from openforms.formio.service import FormioData
+from openforms.formio.service import FormioConfigurationWrapper, FormioData
 from openforms.formio.typing import (
     Component,
     EditGridComponent,
@@ -119,6 +119,7 @@ class GenericJSONRegistration(BasePlugin):
         component: Component,
         schema: JSONObject,
         options: GenericJSONOptions,
+        configuration_wrapper: FormioConfigurationWrapper,
     ):
         """Process a variable schema for the Generic JSON format.
 
@@ -131,8 +132,9 @@ class GenericJSONRegistration(BasePlugin):
 
         :param component: Component
         :param schema: JSON schema.
-        :param backend_options: Backend options, needed for the transform-to-list option of
+        :param options: Backend options, needed for the transform-to-list option of
           selectboxes components.
+        :param configuration_wrapper: Formio configuration wrapper.
         """
         transform_to_list = options["transform_to_list"]
 
@@ -183,15 +185,14 @@ class GenericJSONRegistration(BasePlugin):
                 _properties = schema["items"]["properties"]
                 assert isinstance(_properties, dict)
 
-                component = cast(EditGridComponent, component)
-                for child_component in component["components"]:
-                    child_key = child_component["key"]
-                    child_schema = _properties[child_key]
+                for child_key, child_schema in _properties.items():
+                    child_component = configuration_wrapper[child_key]
                     assert isinstance(child_schema, dict)
                     self.process_variable_schema(
                         child_component,
                         child_schema,
                         options,
+                        configuration_wrapper,
                     )
             case {"type": "partners"}:
                 assert isinstance(schema["items"], dict)
