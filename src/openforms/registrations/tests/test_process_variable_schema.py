@@ -5,6 +5,7 @@ from django.test import TestCase
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
+from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -24,7 +25,13 @@ class ProcessVariableSchemaTests(TestCase):
             "label": "textfield",
         }
         with self.assertRaises(InvalidBackendIdError):
-            process_variable_schema(component, {}, "non_existing_backend", {})
+            process_variable_schema(
+                component,
+                {},
+                "non_existing_backend",
+                {},
+                FormioConfigurationWrapper({"components": []}),
+            )
 
     def test_backend_that_should_not_allow_schema_generation(self):
         component = {
@@ -34,7 +41,11 @@ class ProcessVariableSchemaTests(TestCase):
         }
         with self.assertRaises(InvalidBackendIdError):
             process_variable_schema(
-                component, {}, "email", {"to_emails": ["foo@example.com"]}
+                component,
+                {},
+                "email",
+                {"to_emails": ["foo@example.com"]},
+                FormioConfigurationWrapper({"components": []}),
             )
 
 
@@ -85,7 +96,13 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
         var = form.formvariable_set.get(key="file")
         schema = var.as_json_schema()
 
-        process_variable_schema(component, schema, "objects_api", self.options)
+        process_variable_schema(
+            component,
+            schema,
+            "objects_api",
+            self.options,
+            form_def.configuration_wrapper,
+        )
 
         expected_schema = {
             "title": "file",
@@ -120,7 +137,13 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
         var = form.formvariable_set.get(key="file_multiple")
         schema = var.as_json_schema()
 
-        process_variable_schema(component, schema, "objects_api", self.options)
+        process_variable_schema(
+            component,
+            schema,
+            "objects_api",
+            self.options,
+            form_def.configuration_wrapper,
+        )
 
         expected_schema = {
             "title": "file multiple",
@@ -154,7 +177,13 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
         var = form.formvariable_set.get(key="selectboxes")
         schema = var.as_json_schema()
 
-        process_variable_schema(component, schema, "objects_api", self.options)
+        process_variable_schema(
+            component,
+            schema,
+            "objects_api",
+            self.options,
+            form_def.configuration_wrapper,
+        )
 
         expected_schema = {
             "title": "Selectboxes",
@@ -207,7 +236,9 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
         var = form.formvariable_set.get(key="selectboxes_as_list")
         schema = var.as_json_schema()
 
-        process_variable_schema(component, schema, "objects_api", options)
+        process_variable_schema(
+            component, schema, "objects_api", options, form_def.configuration_wrapper
+        )
 
         expected_schema = {
             "title": "Selectboxes as list",
@@ -259,6 +290,24 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
                                 ],
                                 "validate": {"required": False},
                             },
+                            {
+                                "key": "fieldset",
+                                "type": "fieldset",
+                                "label": "Fieldset",
+                                "components": [
+                                    {
+                                        "type": "file",
+                                        "key": "fileInFieldset",
+                                        "label": "File in fieldset",
+                                        "storage": "url",
+                                        "url": "",
+                                        "useConfigFiletypes": False,
+                                        "filePattern": "",
+                                        "file": {"type": [], "allowedTypesLabels": []},
+                                        "multiple": False,
+                                    }
+                                ],
+                            },
                         ],
                     },
                 ]
@@ -270,7 +319,13 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
         var = form.formvariable_set.get(key="editgrid")
         schema = var.as_json_schema()
 
-        process_variable_schema(component, schema, "objects_api", self.options)
+        process_variable_schema(
+            component,
+            schema,
+            "objects_api",
+            self.options,
+            form_def.configuration_wrapper,
+        )
 
         expected_schema = {
             "title": "Editgrid",
@@ -298,8 +353,13 @@ class ProcessVariableSchemaObjectsApiTests(TestCase):
                         "required": ["a", "b"],
                         "additionalProperties": False,
                     },
+                    "fileInFieldset": {
+                        "type": "string",
+                        "title": "File in fieldset",
+                        "oneOf": [{"format": "uri"}, {"pattern": "^$"}],
+                    },
                 },
-                "required": ["file", "file_multiple", "selectboxes"],
+                "required": ["file", "file_multiple", "selectboxes", "fileInFieldset"],
                 "additionalProperties": False,
             },
         }
@@ -349,7 +409,9 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
         var = form.formvariable_set.get(key="file")
         schema = var.as_json_schema()
 
-        process_variable_schema(component, schema, "json_dump", self.options)
+        process_variable_schema(
+            component, schema, "json_dump", self.options, form_def.configuration_wrapper
+        )
 
         expected_schema = {
             "title": "file",
@@ -389,7 +451,9 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
         var = form.formvariable_set.get(key="file_multiple")
         schema = var.as_json_schema()
 
-        process_variable_schema(component, schema, "json_dump", self.options)
+        process_variable_schema(
+            component, schema, "json_dump", self.options, form_def.configuration_wrapper
+        )
 
         expected_schema = {
             "title": "file multiple",
@@ -431,7 +495,9 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
         var = form.formvariable_set.get(key="selectboxes")
         schema = var.as_json_schema()
 
-        process_variable_schema(component, schema, "json_dump", self.options)
+        process_variable_schema(
+            component, schema, "json_dump", self.options, form_def.configuration_wrapper
+        )
 
         expected_schema = {
             "title": "Selectboxes",
@@ -479,7 +545,9 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
         var = form.formvariable_set.get(key="selectboxes_as_list")
         schema = var.as_json_schema()
 
-        process_variable_schema(component, schema, "json_dump", options)
+        process_variable_schema(
+            component, schema, "json_dump", options, form_def.configuration_wrapper
+        )
 
         expected_schema = {
             "title": "Selectboxes as list",
@@ -531,6 +599,24 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
                                 ],
                                 "validate": {"required": False},
                             },
+                            {
+                                "key": "fieldset",
+                                "type": "fieldset",
+                                "label": "Fieldset",
+                                "components": [
+                                    {
+                                        "type": "file",
+                                        "key": "fileInFieldset",
+                                        "label": "File in fieldset",
+                                        "storage": "url",
+                                        "url": "",
+                                        "useConfigFiletypes": False,
+                                        "filePattern": "",
+                                        "file": {"type": [], "allowedTypesLabels": []},
+                                        "multiple": False,
+                                    }
+                                ],
+                            },
                         ],
                     },
                 ]
@@ -542,7 +628,9 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
         var = form.formvariable_set.get(key="editgrid")
         schema = var.as_json_schema()
 
-        process_variable_schema(component, schema, "json_dump", self.options)
+        process_variable_schema(
+            component, schema, "json_dump", self.options, form_def.configuration_wrapper
+        )
 
         expected_schema = {
             "title": "Editgrid",
@@ -583,8 +671,18 @@ class ProcessVariableSchemaGenericJsonTests(TestCase):
                         "required": ["a", "b"],
                         "additionalProperties": False,
                     },
+                    "fileInFieldset": {
+                        "title": "File in fieldset",
+                        "type": ["null", "object"],
+                        "properties": {
+                            "file_name": {"type": "string"},
+                            "content": {"type": "string", "format": "base64"},
+                        },
+                        "required": ["file_name", "content"],
+                        "additionalProperties": False,
+                    },
                 },
-                "required": ["file", "file_multiple", "selectboxes"],
+                "required": ["file", "file_multiple", "selectboxes", "fileInFieldset"],
                 "additionalProperties": False,
             },
         }

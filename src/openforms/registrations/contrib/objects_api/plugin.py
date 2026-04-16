@@ -15,7 +15,8 @@ from openforms.contrib.objects_api.clients import (
     get_objecttypes_client,
 )
 from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
-from openforms.formio.typing import Component, EditGridComponent
+from openforms.formio.service import FormioConfigurationWrapper
+from openforms.formio.typing import Component
 from openforms.registrations.utils import execute_unless_result_exists
 from openforms.typing import JSONObject
 from openforms.variables.service import get_static_variables
@@ -208,7 +209,11 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
         return options["version"] == 2
 
     def process_variable_schema(
-        self, component: Component, schema: JSONObject, options: RegistrationOptions
+        self,
+        component: Component,
+        schema: JSONObject,
+        options: RegistrationOptions,
+        configuration_wrapper: FormioConfigurationWrapper,
     ):
         """Process a variable schema for the Objects API format.
 
@@ -223,6 +228,7 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
         :param schema: JSON schema.
         :param options: Backend options, needed for the transform-to-list option of
           selectboxes components.
+        :param configuration_wrapper: Formio configuration wrapper.
         """
         assert options["version"] == 2
         transform_to_list = options["transform_to_list"]
@@ -264,21 +270,18 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
                     schema.pop(prop)
 
             case {"type": "editgrid"}:
-                from typing import cast  # noqa: TID251
-
                 assert isinstance(schema["items"], dict)
                 _properties = schema["items"]["properties"]
                 assert isinstance(_properties, dict)
 
-                component = cast(EditGridComponent, component)
-                for child_component in component["components"]:
-                    child_key = child_component["key"]
-                    child_schema = _properties[child_key]
+                for child_key, child_schema in _properties.items():
+                    child_component = configuration_wrapper[child_key]
                     assert isinstance(child_schema, dict)
                     self.process_variable_schema(
                         child_component,
                         child_schema,
                         options,
+                        configuration_wrapper,
                     )
             case _:
                 pass
