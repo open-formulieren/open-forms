@@ -47,7 +47,7 @@ def handle_camunda_error(error: requests.HTTPError):
 
     try:
         response_body = error.response.json()
-    except json.JSONDecodeError as exc:
+    except (json.JSONDecodeError, requests.exceptions.JSONDecodeError) as exc:
         log.exception("json_body_decode_failure", exc_info=exc)
     else:
         log.error("camunda_request_failure", body=response_body)

@@ -1,0 +1,70 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.33.0
+    method: GET
+    uri: http://localhost:8080/engine-rest/decision-definition?key=invoiceClassification&version=1
+  response:
+    body:
+      string: '[{"id":"invoiceClassification:1:b2a37247-3c8c-11f1-b652-520740ce9cfa","key":"invoiceClassification","category":"http://camunda.org/schema/1.0/dmn","name":"Invoice
+        Classification","version":1,"resource":"invoiceBusinessDecisions.dmn","deploymentId":"b28d040f-3c8c-11f1-b652-520740ce9cfa","tenantId":null,"decisionRequirementsDefinitionId":"invoiceBusinessDecisions:1:b2a34b36-3c8c-11f1-b652-520740ce9cfa","decisionRequirementsDefinitionKey":"invoiceBusinessDecisions","historyTimeToLive":null,"versionTag":null}]'
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 20 Apr 2026 13:42:56 GMT
+      Keep-Alive:
+      - timeout=20
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: ''
+- request:
+    body: '{"variables": {"invoiceCategory": {"type": "String", "value": "Misc"},
+      "amount": {"type": "Double", "value": 752.2}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '117'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.33.0
+    method: POST
+    uri: http://localhost:8080/engine-rest/decision-definition/invoiceClassification:1:b2a37247-3c8c-11f1-b652-520740ce9cfa/evaluate
+  response:
+    body:
+      string: '[{"invoiceClassification":{"type":"String","value":"budget","valueInfo":{}}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 20 Apr 2026 13:42:56 GMT
+      Keep-Alive:
+      - timeout=20
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: ''
+version: 1

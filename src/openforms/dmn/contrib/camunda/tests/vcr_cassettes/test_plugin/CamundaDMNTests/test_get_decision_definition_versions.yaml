@@ -1,0 +1,36 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.33.0
+    method: GET
+    uri: http://localhost:8080/engine-rest/decision-definition?key=invoiceClassification&sortBy=version&sortOrder=desc
+  response:
+    body:
+      string: '[{"id":"invoiceClassification:2:b2aa772f-3c8c-11f1-b652-520740ce9cfa","key":"invoiceClassification","category":"http://camunda.org/schema/1.0/dmn","name":"Invoice
+        Classification","version":2,"resource":"invoiceBusinessDecisions.dmn","deploymentId":"b2a60a59-3c8c-11f1-b652-520740ce9cfa","tenantId":null,"decisionRequirementsDefinitionId":"invoiceBusinessDecisions:2:b2aa501e-3c8c-11f1-b652-520740ce9cfa","decisionRequirementsDefinitionKey":"invoiceBusinessDecisions","historyTimeToLive":null,"versionTag":null},{"id":"invoiceClassification:1:b2a37247-3c8c-11f1-b652-520740ce9cfa","key":"invoiceClassification","category":"http://camunda.org/schema/1.0/dmn","name":"Invoice
+        Classification","version":1,"resource":"invoiceBusinessDecisions.dmn","deploymentId":"b28d040f-3c8c-11f1-b652-520740ce9cfa","tenantId":null,"decisionRequirementsDefinitionId":"invoiceBusinessDecisions:1:b2a34b36-3c8c-11f1-b652-520740ce9cfa","decisionRequirementsDefinitionKey":"invoiceBusinessDecisions","historyTimeToLive":null,"versionTag":null}]'
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 20 Apr 2026 13:42:42 GMT
+      Keep-Alive:
+      - timeout=20
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: ''
+version: 1

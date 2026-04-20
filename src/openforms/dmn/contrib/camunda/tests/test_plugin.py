@@ -15,14 +15,14 @@ variables, see :mod:`openforms.contrib.camunda.tests.utils`.
 """
 
 from functools import partial
-from unittest.mock import patch
 
 from django.test import TestCase
 
 import requests_mock
 from lxml import etree
 
-from openforms.contrib.camunda.tests.utils import get_camunda_client, require_camunda
+from openforms.contrib.camunda.tests.utils import CamundaMixin
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....registry import register
 from ....service import evaluate_dmn
@@ -31,20 +31,7 @@ _evaluate_dmn = partial(evaluate_dmn, "camunda7")
 plugin = register["camunda7"]
 
 
-@require_camunda
-class CamundaDMNTests(TestCase):
-    def setUp(self):
-        super().setUp()
-
-        # patch the get_client call to return our configured client
-        self.camunda_client = get_camunda_client()
-        patcher = patch(
-            "openforms.dmn.contrib.camunda.plugin.get_client",
-            return_value=self.camunda_client,
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)
-
+class CamundaDMNTests(CamundaMixin, OFVCRMixin, TestCase):
     def test_list_process_definitions(self):
         definitions = plugin.get_available_decision_definitions()
 
@@ -111,11 +98,11 @@ class CamundaDMNTests(TestCase):
             requests_mock.Mocker() as m,
         ):
             m.get(
-                f"{self.camunda_client.root_url}decision-definition",
+                f"{self.config.api_root}decision-definition",
                 json=[{"id": "mocked-id"}],
             )
             m.post(
-                f"{self.camunda_client.root_url}decision-definition/mocked-id/evaluate",
+                f"{self.config.api_root}decision-definition/mocked-id/evaluate",
                 status_code=500,
                 text="errored",
             )
