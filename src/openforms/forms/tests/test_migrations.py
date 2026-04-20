@@ -522,11 +522,11 @@ class ChangeDisableLogicActionReverseMigrationTests(MigratorTestCase):
 class AddFormTypeFieldMigrationTests(MigratorTestCase):
     migrate_from = (
         "forms",
-        "0124_alter_form_new_renderer_enabled",
+        "0125_alter_form_new_logic_evaluation_enabled",
     )
     migrate_to = (
         "forms",
-        "0127_remove_form_is_appointment",
+        "0128_remove_form_is_appointment",
     )
 
     def prepare(self):
@@ -548,11 +548,11 @@ class AddFormTypeFieldMigrationTests(MigratorTestCase):
 class AddFormTypeFieldReverseMigrationTests(MigratorTestCase):
     migrate_from = (
         "forms",
-        "0127_remove_form_is_appointment",
+        "0128_remove_form_is_appointment",
     )
     migrate_to = (
         "forms",
-        "0124_alter_form_new_renderer_enabled",
+        "0125_alter_form_new_logic_evaluation_enabled",
     )
 
     def prepare(self):
