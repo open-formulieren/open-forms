@@ -13,6 +13,7 @@ from openklant_client.types.resources.onderwerp_object import OnderwerpObject
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.formio.typing.custom import DigitalAddress, SupportedChannels
+from openforms.formio.utils import normalize_phone_number
 from openforms.prefill.contrib.customer_interactions.typing import CommunicationChannel
 from openforms.prefill.contrib.customer_interactions.variables import (
     fetch_user_variable_from_profile_component,
@@ -141,6 +142,9 @@ def update_customer_interaction_data(
             is_address_new_preferred: bool = bool(
                 digital_address.get("preferenceUpdate") == "isNewPreferred"
             )
+            if address_channel == "phoneNumber":
+                address_value = normalize_phone_number(address_value)
+
             # prefill values
             prefill_communication_channel: CommunicationChannel | None = next(
                 (value for value in prefill_value if value["type"] == address_channel),
