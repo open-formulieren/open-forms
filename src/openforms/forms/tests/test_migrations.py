@@ -2,6 +2,8 @@ from django_test_migrations.contrib.unittest_case import MigratorTestCase
 
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
+from ..constants import FormTypeChoices
+
 
 class StufZdsVariablesMappingMigrationTests(MigratorTestCase):
     migrate_from = (
@@ -515,3 +517,57 @@ class ChangeDisableLogicActionReverseMigrationTests(MigratorTestCase):
             {"action": {"type": "set-registration-backend", "value": "foo"}},
         ]
         self.assertEqual(rule.actions, expected_actions)
+
+
+class AddFormTypeFieldMigrationTests(MigratorTestCase):
+    migrate_from = (
+        "forms",
+        "0124_alter_form_new_renderer_enabled",
+    )
+    migrate_to = (
+        "forms",
+        "0128_remove_form_is_appointment",
+    )
+
+    def prepare(self):
+        apps = self.old_state.apps
+        Form = apps.get_model("forms", "Form")
+
+        # create an appointment and a regular form
+        Form.objects.create(name="Appointment form", is_appointment=True)
+        Form.objects.create(name="Regular form", is_appointment=False)
+
+    def test_migration(self):
+        Form = self.new_state.apps.get_model("forms", "Form")
+        forms = Form.objects.all()
+
+        self.assertEqual(forms.first().type, FormTypeChoices.appointment)
+        self.assertEqual(forms.last().type, FormTypeChoices.regular)
+
+
+class AddFormTypeFieldReverseMigrationTests(MigratorTestCase):
+    migrate_from = (
+        "forms",
+        "0128_remove_form_is_appointment",
+    )
+    migrate_to = (
+        "forms",
+        "0124_alter_form_new_renderer_enabled",
+    )
+
+    def prepare(self):
+        apps = self.old_state.apps
+        Form = apps.get_model("forms", "Form")
+
+        # create a form for all the possible types
+        Form.objects.create(name="Appointment form", type=FormTypeChoices.appointment)
+        Form.objects.create(name="Regular form", type=FormTypeChoices.regular)
+        Form.objects.create(name="Single page form", type=FormTypeChoices.single_page)
+
+    def test_migration(self):
+        Form = self.new_state.apps.get_model("forms", "Form")
+        forms = Form.objects.order_by("pk")
+
+        self.assertTrue(forms[0].is_appointment)
+        self.assertFalse(forms[1].is_appointment)
+        self.assertFalse(forms[2].is_appointment)

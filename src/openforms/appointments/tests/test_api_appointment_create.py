@@ -11,7 +11,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.constants import SubmissionAllowedChoices
+from openforms.forms.constants import FormTypeChoices, SubmissionAllowedChoices
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
@@ -53,7 +53,9 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.submission = SubmissionFactory.create(form__is_appointment_form=True)
+        cls.submission = SubmissionFactory.create(
+            form__type=FormTypeChoices.appointment
+        )
 
     def setUp(self):
         super().setUp()
@@ -241,7 +243,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
 
 class AppointmentCreateInvalidPermissionsTests(SubmissionsMixin, APITestCase):
     def test_no_submission_in_session(self):
-        submission = SubmissionFactory.create(form__is_appointment_form=True)
+        submission = SubmissionFactory.create(form__type=FormTypeChoices.appointment)
         submission_url = reverse(
             "api:submission-detail", kwargs={"uuid": submission.uuid}
         )
@@ -251,7 +253,7 @@ class AppointmentCreateInvalidPermissionsTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_no_submission_in_request_body(self):
-        submission = SubmissionFactory.create(form__is_appointment_form=True)
+        submission = SubmissionFactory.create(form__type=FormTypeChoices.appointment)
         self._add_submission_to_session(submission)
 
         empty_ish_bodies = [
@@ -267,7 +269,7 @@ class AppointmentCreateInvalidPermissionsTests(SubmissionsMixin, APITestCase):
 
     def test_different_submission_url_in_request_body(self):
         submission1, submission2 = SubmissionFactory.create_batch(
-            2, form__is_appointment_form=True
+            2, form__type=FormTypeChoices.appointment
         )
         self._add_submission_to_session(submission1)
         submission2_url = reverse(
@@ -288,7 +290,7 @@ class AppointmentCreateInvalidPermissionsTests(SubmissionsMixin, APITestCase):
 
     def test_no_submission_allowed_on_form(self):
         submission = SubmissionFactory.create(
-            form__is_appointment_form=True,
+            form__type=FormTypeChoices.appointment,
             form__submission_allowed=SubmissionAllowedChoices.no_with_overview,
         )
         self._add_submission_to_session(submission)
@@ -308,7 +310,9 @@ class AppointmentCreateValidationErrorTests(
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.submission = SubmissionFactory.create(form__is_appointment_form=True)
+        cls.submission = SubmissionFactory.create(
+            form__type=FormTypeChoices.appointment
+        )
 
     def setUp(self):
         super().setUp()

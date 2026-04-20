@@ -8,6 +8,7 @@ from openforms.products.tests.factories import ProductFactory
 from openforms.registrations.registry import register as registration_registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
+from ..constants import FormTypeChoices
 from ..models import Form, FormDefinition, FormStep, FormVariable
 from ..utils import form_to_json
 
@@ -46,7 +47,7 @@ class FormFactory(factory.django.DjangoModelFactory):
         )
         is_appointment_form = factory.Trait(
             generate_minimal_setup=False,  # there are no form steps
-            is_appointment=True,
+            type=FormTypeChoices.appointment,
         )
         # prevent options passed to Form() and set a default
         registration_backend_options = {}

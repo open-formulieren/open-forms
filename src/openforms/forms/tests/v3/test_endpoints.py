@@ -15,6 +15,7 @@ from rest_framework.test import APIClient, APITestCase, APITransactionTestCase
 
 from openforms.accounts.models import User
 from openforms.accounts.tests.factories import UserFactory
+from openforms.appointments.models import AppointmentsConfig
 from openforms.config.tests.factories import ThemeFactory
 from openforms.data_removal.constants import RemovalMethods
 from openforms.payments.contrib.worldline.tests.factories import (
@@ -24,7 +25,11 @@ from openforms.products.tests.factories import ProductFactory
 from openforms.typing import JSONObject
 from openforms.utils.tests.feature_flags import enable_feature_flag
 
-from ...constants import StatementCheckboxChoices, SubmissionAllowedChoices
+from ...constants import (
+    FormTypeChoices,
+    StatementCheckboxChoices,
+    SubmissionAllowedChoices,
+)
 from ...models import Form, FormDefinition, FormRegistrationBackend
 from ...tests.factories import (
     CategoryFactory,
@@ -127,9 +132,6 @@ class FormEndpointTests(APITestCase):
                     "descriptorTemplate": "{{ foo }}",
                 },
             },
-            "appointmentOptions": {
-                "isAppointment": False,
-            },
             "literals": {
                 "beginText": {"value": "Different Begin Text"},
                 "previousText": {"value": "Different Previous Text"},
@@ -138,6 +140,7 @@ class FormEndpointTests(APITestCase):
             },
             "product": product.uuid,
             "slug": "create-form",
+            "type": FormTypeChoices.regular,
             "category": category.uuid,
             "theme": theme.uuid,
             "showProgressIndicator": True,
@@ -258,7 +261,7 @@ class FormEndpointTests(APITestCase):
         self.assertTrue(form.login_required)
         self.assertTrue(form.translation_enabled)
 
-        self.assertFalse(form.is_appointment)
+        self.assertEqual(form.type, FormTypeChoices.regular)
         self.assertEqual(form.slug, "create-form")
 
         # product
@@ -726,7 +729,7 @@ class FormEndpointTests(APITestCase):
             "steps.0.formDefinition.configuration.components.0",
         )
 
-    def test_create_regular_form_requires_one_step(self):
+    def test_create_regular_form_requires_at_least_one_step(self):
         url = reverse(
             "api:v3:form-detail",
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
@@ -734,9 +737,7 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Create form",
             "slug": "create-form",
-            "appointmentOptions": {
-                "isAppointment": False,
-            },
+            "type": FormTypeChoices.regular,
             "steps": [],
         }
         response = self.client.put(url, data=data)
@@ -761,9 +762,7 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Create form",
             "slug": "create-form",
-            "appointmentOptions": {
-                "isAppointment": True,
-            },
+            "type": FormTypeChoices.appointment,
             "steps": [
                 {
                     "slug": "step-1",
@@ -806,6 +805,81 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(
             response_data["invalidParams"][0]["reason"],
             _("Form steps are not allowed in an appointment form."),
+        )
+
+    def test_create_single_page_form_requires_exactly_one_step(self):
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "type": FormTypeChoices.single_page,
+            "steps": [],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert "invalidParams" in response_data and response_data["invalidParams"]
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["invalidParams"][0]["code"], "invalid")
+        self.assertEqual(response_data["invalidParams"][0]["name"], "nonFieldErrors")
+        self.assertEqual(
+            response_data["invalidParams"][0]["reason"],
+            _("Exactly one form step is required in a single page form."),
+        )
+
+    def test_create_appointment_form_with_appointment_plugin(self):
+        config = AppointmentsConfig.get_solo()
+        config.plugin = "demo"
+        config.save()
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "type": FormTypeChoices.appointment,
+            "steps": [],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+
+        form = Form.objects.get()
+
+        self.assertEqual(form.name, "Create form")
+        self.assertEqual(form.slug, "create-form")
+        self.assertEqual(form.type, FormTypeChoices.appointment)
+
+    def test_create_appointment_form_with_appointment_plugin_disabled(self):
+        AppointmentsConfig.clear_cache()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "type": FormTypeChoices.appointment,
+            "steps": [],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert "invalidParams" in response_data and response_data["invalidParams"]
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        self.assertEqual(response_data["invalidParams"][0]["code"], "invalid")
+        self.assertEqual(response_data["invalidParams"][0]["name"], "type")
+        self.assertEqual(
+            response_data["invalidParams"][0]["reason"],
+            _("This type of form requires an appointment plugin to be configured"),
         )
 
     def test_incorrect_payment_backend_options(self):

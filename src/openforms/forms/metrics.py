@@ -6,6 +6,7 @@ from django.db.models import Count, Prefetch, Q
 
 from opentelemetry import metrics
 
+from .constants import FormTypeChoices
 from .models import Form, FormStep
 
 meter = metrics.get_meter("openforms.forms")
@@ -26,7 +27,15 @@ def count_forms(options: metrics.CallbackOptions) -> Collection[metrics.Observat
         translation_enabled=Count(
             "id", filter=Q(_is_deleted=False, translation_enabled=True)
         ),
-        is_appointment=Count("id", filter=Q(_is_deleted=False, is_appointment=True)),
+        is_regular=Count(
+            "id", filter=Q(_is_deleted=False, type=FormTypeChoices.regular)
+        ),
+        is_appointment=Count(
+            "id", filter=Q(_is_deleted=False, type=FormTypeChoices.appointment)
+        ),
+        is_single_page=Count(
+            "id", filter=Q(_is_deleted=False, type=FormTypeChoices.single_page)
+        ),
         trash=Count("id", filter=Q(_is_deleted=True)),
     )
     return [
@@ -63,7 +72,7 @@ def count_component_usage(
     uuid_to_name_map: dict[UUID, str] = {}
     forms = (
         Form.objects.live()
-        .exclude(is_appointment=True)
+        .exclude(type=FormTypeChoices.appointment)
         .prefetch_related(
             Prefetch(
                 "formstep_set",

@@ -74,12 +74,8 @@ const normalizeEmptyStrField = (draft, field) => {
  * Mutate the draft state in case the form is an appointment form.
  */
 const handleAppointmentForm = draft => {
-  const {
-    form: {
-      appointmentOptions: {isAppointment = false},
-    },
-  } = draft;
-  if (!isAppointment) return;
+  const {form} = draft;
+  if (form.type !== 'appointment') return;
 
   // appointment forms have very limited functionality, which is why we clear any
   // lingering configuration if a form is turned into an appointment form

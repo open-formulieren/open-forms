@@ -11,6 +11,7 @@ from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
 
+from ....constants import FormTypeChoices
 from ....logic_analysis import (
     CyclesDetected,
     analyze_rules,
@@ -31,7 +32,7 @@ class FormLogicListSerializer(ListWithChildSerializer):
 
     def validate(self, attrs):
         form: Form = self.context["form"]
-        if (is_appointment := form.is_appointment) and attrs:
+        if (is_appointment := form.type == FormTypeChoices.appointment) and attrs:
             raise serializers.ValidationError(
                 _("Appointment forms cannot have logic rules.")
             )
@@ -91,7 +92,10 @@ class FormLogicListSerializer(ListWithChildSerializer):
     def create(self, validated_data):
         rules = super().create(validated_data)
         form: Form = self.context["form"]
-        if not form.new_logic_evaluation_enabled or form.is_appointment:
+        if (
+            not form.new_logic_evaluation_enabled
+            or form.type == FormTypeChoices.appointment
+        ):
             return rules
 
         # the (auto-created) through model
