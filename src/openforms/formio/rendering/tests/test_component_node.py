@@ -211,6 +211,19 @@ class ComponentNodeTests(TestCase):
                     "html": "<p>I am hidden</p>",
                     "label": "Soft required errors",
                 },
+                {
+                    "key": "fieldset",
+                    "type": "fieldset",
+                    "label": "Fieldset",
+                    "components": [
+                        {
+                            "type": "columns",
+                            "key": "columns",
+                            "label": "Columns",
+                            "columns": [{"size": 1, "components": []}],
+                        }
+                    ],
+                },
             ]
         }
         data = {
@@ -463,7 +476,7 @@ class ComponentNodeTests(TestCase):
                 )
                 nodelist += list(component_node)
 
-        self.assertEqual(len(nodelist), 11)
+        self.assertEqual(len(nodelist), 13)
         labels = [node.label for node in nodelist]
         expected_labels = [
             "Input 1",
@@ -477,6 +490,8 @@ class ComponentNodeTests(TestCase):
             "Visible editgrid with hidden children",
             "Input 14",
             "Soft required errors",  # not actually rendered in full render mode
+            "Fieldset",
+            "Columns",
         ]
         self.assertEqual(labels, expected_labels)
 
@@ -511,6 +526,8 @@ class ComponentNodeTests(TestCase):
             "Visible editgrid with hidden children",
             "Input 14",
             "Soft required errors",  # not actually rendered in full render mode
+            "Fieldset",
+            "Columns",
         ]
         self.assertEqual(labels, expected_labels)
 

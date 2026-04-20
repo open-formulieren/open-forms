@@ -12,11 +12,10 @@ from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 
 from ..datastructures import FormioData
-from ..service import format_value
+from ..service import format_value, holds_submission_data
 from ..typing import Component
 from ..utils import (
     get_component_empty_value,
-    is_layout_component,
     is_visible_in_frontend,
     iterate_components_with_configuration_path,
 )
@@ -224,8 +223,8 @@ class ComponentNode(Node):
         if not self.is_visible:
             return
 
-        # in export mode, only emit if the component is not a layout component
-        if self.mode != RenderModes.export or (not is_layout_component(self.component)):
+        # in export mode, only emit if the component holds submission data
+        if self.mode != RenderModes.export or holds_submission_data(self.component):
             yield self
 
         for child in self.get_children():
