@@ -4,7 +4,7 @@
 Camunda 7
 =========
 
-Camunda_ is a process engine using BPM models. Open Forms supports Camunda 7.x
+Camunda_ is a process orchestrator with a DMN engine. Open Forms supports Camunda 7.x
 
 .. note::
 
