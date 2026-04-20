@@ -114,6 +114,70 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         submission.refresh_from_db()
         self.assertTrue(submission.confirmation_email_sent)
 
+    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
+    def test_send_confirmation_email_profile_component(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {
+                    "key": "profile",
+                    "type": "customerProfile",
+                    "label": "Profile",
+                    "description": "Foobar",
+                    "digitalAddressTypes": ["email", "phoneNumber"],
+                    "confirmationRecipient": True,
+                }
+            ],
+            submitted_data={
+                "profile": [
+                    {
+                        "type": "email",
+                        "address": "test@example.com",
+                        "preferenceUpdate": "useOnlyOnce",
+                    },
+                    {
+                        "type": "phoneNumber",
+                        "address": "0612345678",
+                        "preferenceUpdate": "useOnlyOnce",
+                    },
+                ]
+            },
+        )
+        # add a second step
+        form_step = FormStepFactory.create(
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "foo",
+                        "type": "textfield",
+                        "label": "Foo",
+                        "showInEmail": True,
+                    }
+                ],
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"foo": "bar"},
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form,
+            subject="Confirmation mail",
+            content="Information filled in: {{foo}}",
+        )
+
+        # "execute" the celery task
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            schedule_emails(submission.id)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["test@example.com"])
+
     def test_complete_submission_without_email_recipient(self):
         submission = SubmissionFactory.create(completed=True)
         ConfirmationEmailTemplateFactory.create(

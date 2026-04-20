@@ -801,11 +801,18 @@ class Submission(models.Model):
         state = self.variables_state
         data = state.get_data()
         for key in self.form.get_keys_for_email_confirmation():
-            value = data.get(key)
-            if value:
-                if isinstance(value, str):
-                    recipient_emails.add(value)
-                elif isinstance(value, list):
+            if not (value := data.get(key)):
+                continue
+
+            if isinstance(value, str):
+                recipient_emails.add(value)
+            elif isinstance(value, list):
+                if isinstance(value[0], dict):  # profile component
+                    for entry in value:
+                        entry_type = entry.get("type")
+                        if entry_type == "email" and (email := entry.get("address")):
+                            recipient_emails.add(email)
+                else:
                     recipient_emails.update(value)
 
         return list(recipient_emails)
