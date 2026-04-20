@@ -102,7 +102,7 @@
                     {% elif initiator.vestigingsNummer %}
                         <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">
                             <BG:vestigingsNummer>{{ initiator.vestigingsNummer }}</BG:vestigingsNummer>
-                            <BG:authentiek>N</BG:authentiek>
+                            <BG:authentiek StUF:metagegeven="true">N</BG:authentiek>
                             {% if initiator.handelsnaam %}<BG:handelsnaam>{{ initiator.handelsnaam }}</BG:handelsnaam>{% endif %}
 
                             {% if initiator.verblijfsadres.postcode or initiator.verblijfsadres.woonplaatsNaam %}
