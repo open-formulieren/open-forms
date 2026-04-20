@@ -526,7 +526,7 @@ class AddFormTypeFieldMigrationTests(MigratorTestCase):
     )
     migrate_to = (
         "forms",
-        "0127_remove_form_is_appointment",
+        "0128_remove_form_is_appointment",
     )
 
     def prepare(self):
@@ -548,7 +548,7 @@ class AddFormTypeFieldMigrationTests(MigratorTestCase):
 class AddFormTypeFieldReverseMigrationTests(MigratorTestCase):
     migrate_from = (
         "forms",
-        "0127_remove_form_is_appointment",
+        "0128_remove_form_is_appointment",
     )
     migrate_to = (
         "forms",
