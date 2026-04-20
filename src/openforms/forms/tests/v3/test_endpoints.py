@@ -514,7 +514,7 @@ class FormEndpointTests(APITestCase):
     def test_update_clears_existing_registration_backends(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            registration_backend="camunda",
+            registration_backend="zgw-create-zaak",
         )
         url = reverse(
             "api:v3:form-detail",

@@ -17,12 +17,6 @@
       "value": "Gebruik variabele"
     }
   ],
-  "+BicbW": [
-    {
-      "type": 0,
-      "value": "Configureren"
-    }
-  ],
   "+DztEl": [
     {
       "type": 0,
@@ -249,12 +243,6 @@
       "value": "Schakel de nieuwe renderer in die sneller is en betere toegankelijkheid biedt."
     }
   ],
-  "1ArmQ5": [
-    {
-      "type": 0,
-      "value": "Bevestigen"
-    }
-  ],
   "1HfdUc": [
     {
       "type": 0,
@@ -383,12 +371,6 @@
       "value": "Inhoud van de registratiemail (platte tekst)."
     }
   ],
-  "2Z/hNo": [
-    {
-      "type": 0,
-      "value": "Type"
-    }
-  ],
   "2ajYIp": [
     {
       "type": 0,
@@ -467,12 +449,6 @@
     {
       "type": 0,
       "value": "Indien aangevinkt, dan worden de straatnaam en stad afgeleid op basis van de ingevoerde postcode en huisnummer."
-    }
-  ],
-  "2uIYst": [
-    {
-      "type": 0,
-      "value": "De procesdefinitie waarvoor een proces instantie gestart moet worden."
     }
   ],
   "3+WIVB": [
@@ -661,12 +637,6 @@
     {
       "type": 0,
       "value": "Naam"
-    }
-  ],
-  "5AC1+x": [
-    {
-      "type": 0,
-      "value": "De ingevulde veldwaarde wordt gebruikt als waarde voor de procesvariabele."
     }
   ],
   "5DyU8e": [
@@ -1225,44 +1195,6 @@
       "value": "Sleutel"
     }
   ],
-  "9RDDDn": [
-    {
-      "offset": 0,
-      "options": {
-        "=0": {
-          "value": [
-          ]
-        },
-        "one": {
-          "value": [
-            {
-              "type": 0,
-              "value": "(1 variabele ingesteld)"
-            }
-          ]
-        },
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": "("
-            },
-            {
-              "type": 1,
-              "value": "varCount"
-            },
-            {
-              "type": 0,
-              "value": " variabelen ingesteld)"
-            }
-          ]
-        }
-      },
-      "pluralType": "cardinal",
-      "type": 6,
-      "value": "varCount"
-    }
-  ],
   "9UR5jt": [
     {
       "type": 0,
@@ -1497,44 +1429,6 @@
       "value": "Als een variable geselecteerd is, dan wordt de waarde gebruikt als e-mailadres(sen) van de ontvangers. Je moet nog steeds een vast adres opgeven als terugvaloptie voor het geval er iets fout gaat met de variabele."
     }
   ],
-  "BKTOtD": [
-    {
-      "offset": 0,
-      "options": {
-        "=0": {
-          "value": [
-          ]
-        },
-        "one": {
-          "value": [
-            {
-              "type": 0,
-              "value": "(1 variabele gekoppeld)"
-            }
-          ]
-        },
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": "("
-            },
-            {
-              "type": 1,
-              "value": "varCount"
-            },
-            {
-              "type": 0,
-              "value": " variabelen gekoppeld)"
-            }
-          ]
-        }
-      },
-      "pluralType": "cardinal",
-      "type": 6,
-      "value": "varCount"
-    }
-  ],
   "BKe/DT": [
     {
       "type": 0,
@@ -1545,12 +1439,6 @@
     {
       "type": 0,
       "value": "Toevoegen/verwijderen"
-    }
-  ],
-  "BR6rKB": [
-    {
-      "type": 0,
-      "value": "Vink aan om het veld op te nemen als procesvariabele"
     }
   ],
   "BStu9Z": [
@@ -2024,12 +1912,6 @@
       "value": "Laat negatieve waarden toe"
     }
   ],
-  "EBsxTk": [
-    {
-      "type": 0,
-      "value": "Veld"
-    }
-  ],
   "EDwCbX": [
     {
       "children": [
@@ -2416,12 +2298,6 @@
       "value": "Plugin-instellingen: Zaakgericht Werken API's"
     }
   ],
-  "H3dRU6": [
-    {
-      "type": 0,
-      "value": "Vink aan om het veld op te nemen als procesvariabele"
-    }
-  ],
   "H4sILo": [
     {
       "type": 0,
@@ -2432,12 +2308,6 @@
     {
       "type": 0,
       "value": "Onderhoudsmodus"
-    }
-  ],
-  "H7WmS4": [
-    {
-      "type": 0,
-      "value": "Plugin-instellingen: Camunda"
     }
   ],
   "H7z8+8": [
@@ -2510,12 +2380,6 @@
     {
       "type": 0,
       "value": "Versie"
-    }
-  ],
-  "Hfdfv2": [
-    {
-      "type": 0,
-      "value": "Welke versie van de procesdefinitie moet gebruikt worden. Indien niet opgegeven dan wordt altijd de laatste versie gebruikt."
     }
   ],
   "HhZc5C": [
@@ -2968,12 +2832,6 @@
       "value": "Longitude"
     }
   ],
-  "LaovNg": [
-    {
-      "type": 0,
-      "value": "Variabele toevoegen"
-    }
-  ],
   "LbiXCA": [
     {
       "type": 0,
@@ -3014,12 +2872,6 @@
     {
       "type": 0,
       "value": "Authenticatie-opties"
-    }
-  ],
-  "M0kOz9": [
-    {
-      "type": 0,
-      "value": "Weet u zeker dat u deze variabele wil verwijderen?"
     }
   ],
   "M1L9/1": [
@@ -3352,12 +3204,6 @@
       "value": "Inhoud"
     }
   ],
-  "PC7ICN": [
-    {
-      "type": 0,
-      "value": "Ingeschakeld"
-    }
-  ],
   "PN8vFa": [
     {
       "type": 1,
@@ -3372,12 +3218,6 @@
     {
       "type": 0,
       "value": "Voeg de inhoud toe aan de PDF"
-    }
-  ],
-  "PaEo2j": [
-    {
-      "type": 0,
-      "value": "Proces"
     }
   ],
   "PdaMqg": [
@@ -3408,12 +3248,6 @@
     {
       "type": 0,
       "value": "De omschrijving die gebruikt wordt voor het registreren van partners (als betrokkene)."
-    }
-  ],
-  "PtZ96W": [
-    {
-      "type": 0,
-      "value": "Alias"
     }
   ],
   "Pvaekr": [
@@ -4034,12 +3868,6 @@
       "value": "Bestand"
     }
   ],
-  "V21YkS": [
-    {
-      "type": 0,
-      "value": "Bevestigen"
-    }
-  ],
   "V6ClU9": [
     {
       "type": 0,
@@ -4062,12 +3890,6 @@
     {
       "type": 0,
       "value": "Maximaal aantal aangevinkte opties (bijv. 1)"
-    }
-  ],
-  "VUOOSy": [
-    {
-      "type": 0,
-      "value": "Naam"
     }
   ],
   "VV2TCH": [
@@ -5211,12 +5033,6 @@
       "value": "Aan het laden..."
     }
   ],
-  "eBk+W0": [
-    {
-      "type": 0,
-      "value": "Beheer procesvariabelen"
-    }
-  ],
   "eBtStW": [
     {
       "type": 0,
@@ -5381,12 +5197,6 @@
     {
       "type": 0,
       "value": "Toon opties om dit veld in te vullen, gebaseerd op eerder ingetypte waarden."
-    }
-  ],
-  "evbysh": [
-    {
-      "type": 0,
-      "value": "Variabeledefinitie"
     }
   ],
   "ewzHfR": [
@@ -5625,12 +5435,6 @@
       "value": "Postcode"
     }
   ],
-  "gz32s2": [
-    {
-      "type": 0,
-      "value": "Indien gewenst, dan kunt u een alternatieve naam opgeven voor de procesvariabele."
-    }
-  ],
   "gzAzdU": [
     {
       "type": 0,
@@ -5723,12 +5527,6 @@
       "value": "Formulierontwerp"
     }
   ],
-  "hZl34s": [
-    {
-      "type": 0,
-      "value": "Ingeschakeld"
-    }
-  ],
   "hduHvs": [
     {
       "type": 0,
@@ -5757,12 +5555,6 @@
     {
       "type": 0,
       "value": "BSN"
-    }
-  ],
-  "huHjRm": [
-    {
-      "type": 0,
-      "value": "Configureren"
     }
   ],
   "huzndE": [
@@ -5953,12 +5745,6 @@
     {
       "type": 0,
       "value": "DMN-variabele"
-    }
-  ],
-  "jU/t8O": [
-    {
-      "type": 0,
-      "value": "Wijzig complexe waarde"
     }
   ],
   "jU6W0l": [
@@ -6441,18 +6227,6 @@
       "value": "De som van de kolombreedtes mag niet meer dan 12 zijn."
     }
   ],
-  "myvtu0": [
-    {
-      "type": 0,
-      "value": "Beheer procesvariabelen"
-    }
-  ],
-  "n4Y2ex": [
-    {
-      "type": 0,
-      "value": "Versie"
-    }
-  ],
   "n9T2Oy": [
     {
       "type": 0,
@@ -6669,12 +6443,6 @@
       "value": "Omhoog"
     }
   ],
-  "p18yml": [
-    {
-      "type": 0,
-      "value": "Complexe procesvariabelen"
-    }
-  ],
   "p5Iv+R": [
     {
       "type": 0,
@@ -6829,12 +6597,6 @@
       "value": "Servicebevraging:"
     }
   ],
-  "pyX2Tl": [
-    {
-      "type": 0,
-      "value": "Bevestigen"
-    }
-  ],
   "q+qVVR": [
     {
       "type": 0,
@@ -6911,12 +6673,6 @@
     {
       "type": 0,
       "value": "😬 Er ging iets fout."
-    }
-  ],
-  "r5Olb9": [
-    {
-      "type": 0,
-      "value": "Beheer complexe procesvariabelen"
     }
   ],
   "r64cfz": [
@@ -7283,12 +7039,6 @@
       "value": "Adres afleiden"
     }
   ],
-  "twWsC2": [
-    {
-      "type": 0,
-      "value": "Naam"
-    }
-  ],
   "u+IP17": [
     {
       "type": 0,
@@ -7457,12 +7207,6 @@
     {
       "type": 0,
       "value": "Er moet een sleutelnaam ingesteld worden voordat deze variabele geconfigureerd kan worden"
-    }
-  ],
-  "vp12ou": [
-    {
-      "type": 0,
-      "value": "De variabelenaam om te gebruiken in de procesinstantie."
     }
   ],
   "vzhWgR": [

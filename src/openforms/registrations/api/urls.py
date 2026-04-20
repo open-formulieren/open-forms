@@ -14,7 +14,6 @@ urlpatterns = [
 # add plugin URL patterns
 # TODO: make this dynamic and include it through the registry?
 urlpatterns += [
-    path("plugins/camunda/", include("openforms.registrations.contrib.camunda.api")),
     path(
         "plugins/objects-api/",
         include("openforms.registrations.contrib.objects_api.api.urls"),

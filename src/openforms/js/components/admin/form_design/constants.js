@@ -13,8 +13,6 @@ export const PAYMENT_PLUGINS_ENDPOINT = '/api/v2/payment/plugins';
 export const PRODUCTS_ENDPOINT = '/api/v2/products';
 export const CATEGORIES_ENDPOINT = '/api/v2/categories';
 export const THEMES_ENDPOINT = '/api/v2/themes';
-export const PROCESS_DEFINITIONS_ENDPOINT =
-  '/api/v2/registration/plugins/camunda/process-definitions';
 export const STATIC_VARIABLES_ENDPOINT = '/api/v2/variables/static';
 export const REGISTRATION_VARIABLES_ENDPOINT = '/api/v2/variables/registration';
 export const LANGUAGE_INFO_ENDPOINT = '/api/v2/i18n/info';

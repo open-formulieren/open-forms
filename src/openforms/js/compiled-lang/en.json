@@ -17,12 +17,6 @@
       "value": "From variable"
     }
   ],
-  "+BicbW": [
-    {
-      "type": 0,
-      "value": "Configure"
-    }
-  ],
   "+DztEl": [
     {
       "type": 0,
@@ -249,12 +243,6 @@
       "value": "Enable the new renderer, which is more performant and has better accessibility."
     }
   ],
-  "1ArmQ5": [
-    {
-      "type": 0,
-      "value": "Confirm"
-    }
-  ],
   "1HfdUc": [
     {
       "type": 0,
@@ -383,12 +371,6 @@
       "value": "Content of the registration email message (as text)."
     }
   ],
-  "2Z/hNo": [
-    {
-      "type": 0,
-      "value": "Type"
-    }
-  ],
   "2ajYIp": [
     {
       "type": 0,
@@ -467,12 +449,6 @@
     {
       "type": 0,
       "value": "When enabled, the street name and city are derived from the entered postcode and house number."
-    }
-  ],
-  "2uIYst": [
-    {
-      "type": 0,
-      "value": "The process definition for which to start a process instance."
     }
   ],
   "3+WIVB": [
@@ -661,12 +637,6 @@
     {
       "type": 0,
       "value": "Name"
-    }
-  ],
-  "5AC1+x": [
-    {
-      "type": 0,
-      "value": "The value of the selected field will be the process variable value."
     }
   ],
   "5DyU8e": [
@@ -1221,44 +1191,6 @@
       "value": "Key"
     }
   ],
-  "9RDDDn": [
-    {
-      "offset": 0,
-      "options": {
-        "=0": {
-          "value": [
-          ]
-        },
-        "one": {
-          "value": [
-            {
-              "type": 0,
-              "value": "(1 variable defined)"
-            }
-          ]
-        },
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": "("
-            },
-            {
-              "type": 1,
-              "value": "varCount"
-            },
-            {
-              "type": 0,
-              "value": " variables defined)"
-            }
-          ]
-        }
-      },
-      "pluralType": "cardinal",
-      "type": 6,
-      "value": "varCount"
-    }
-  ],
   "9UR5jt": [
     {
       "type": 0,
@@ -1493,44 +1425,6 @@
       "value": "If specified, the recipient email addresses will be taken from the selected variable. You must still specify 'regular' email addresses as a fallback, in case something is wrong with the variable."
     }
   ],
-  "BKTOtD": [
-    {
-      "offset": 0,
-      "options": {
-        "=0": {
-          "value": [
-          ]
-        },
-        "one": {
-          "value": [
-            {
-              "type": 0,
-              "value": "(1 variable mapped)"
-            }
-          ]
-        },
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": "("
-            },
-            {
-              "type": 1,
-              "value": "varCount"
-            },
-            {
-              "type": 0,
-              "value": " variables mapped)"
-            }
-          ]
-        }
-      },
-      "pluralType": "cardinal",
-      "type": 6,
-      "value": "varCount"
-    }
-  ],
   "BKe/DT": [
     {
       "type": 0,
@@ -1541,12 +1435,6 @@
     {
       "type": 0,
       "value": "Add/remove"
-    }
-  ],
-  "BR6rKB": [
-    {
-      "type": 0,
-      "value": "Check to include the field as process variable"
     }
   ],
   "BStu9Z": [
@@ -2037,12 +1925,6 @@
       "value": "Allow negative values"
     }
   ],
-  "EBsxTk": [
-    {
-      "type": 0,
-      "value": "Field"
-    }
-  ],
   "EDwCbX": [
     {
       "children": [
@@ -2429,12 +2311,6 @@
       "value": "Plugin configuration: ZGW APIs"
     }
   ],
-  "H3dRU6": [
-    {
-      "type": 0,
-      "value": "Check to include the field as process variable"
-    }
-  ],
   "H4sILo": [
     {
       "type": 0,
@@ -2445,12 +2321,6 @@
     {
       "type": 0,
       "value": "Maintenance mode"
-    }
-  ],
-  "H7WmS4": [
-    {
-      "type": 0,
-      "value": "Plugin configuration: Camunda"
     }
   ],
   "H7z8+8": [
@@ -2523,12 +2393,6 @@
     {
       "type": 0,
       "value": "Version"
-    }
-  ],
-  "Hfdfv2": [
-    {
-      "type": 0,
-      "value": "Which version of the process definition to start. The latest version is used if not specified."
     }
   ],
   "HhZc5C": [
@@ -2981,12 +2845,6 @@
       "value": "Longitude"
     }
   ],
-  "LaovNg": [
-    {
-      "type": 0,
-      "value": "Add variable"
-    }
-  ],
   "LbiXCA": [
     {
       "type": 0,
@@ -3027,12 +2885,6 @@
     {
       "type": 0,
       "value": "Authentication options"
-    }
-  ],
-  "M0kOz9": [
-    {
-      "type": 0,
-      "value": "Are you sure you want to remove this variable?"
     }
   ],
   "M1L9/1": [
@@ -3365,12 +3217,6 @@
       "value": "Content"
     }
   ],
-  "PC7ICN": [
-    {
-      "type": 0,
-      "value": "Enabled"
-    }
-  ],
   "PN8vFa": [
     {
       "type": 1,
@@ -3385,12 +3231,6 @@
     {
       "type": 0,
       "value": "Include confirmation page content in PDF"
-    }
-  ],
-  "PaEo2j": [
-    {
-      "type": 0,
-      "value": "Process"
     }
   ],
   "PdaMqg": [
@@ -3421,12 +3261,6 @@
     {
       "type": 0,
       "value": "The description that will be used in partners registration."
-    }
-  ],
-  "PtZ96W": [
-    {
-      "type": 0,
-      "value": "Alias"
     }
   ],
   "Pvaekr": [
@@ -4051,12 +3885,6 @@
       "value": "File"
     }
   ],
-  "V21YkS": [
-    {
-      "type": 0,
-      "value": "Confirm"
-    }
-  ],
   "V6ClU9": [
     {
       "type": 0,
@@ -4079,12 +3907,6 @@
     {
       "type": 0,
       "value": "Maximum selected checkboxes (e.g. 1)"
-    }
-  ],
-  "VUOOSy": [
-    {
-      "type": 0,
-      "value": "Name"
     }
   ],
   "VV2TCH": [
@@ -5223,12 +5045,6 @@
       "value": "Loading..."
     }
   ],
-  "eBk+W0": [
-    {
-      "type": 0,
-      "value": "Manage process variables"
-    }
-  ],
   "eBtStW": [
     {
       "type": 0,
@@ -5393,12 +5209,6 @@
     {
       "type": 0,
       "value": "Display options to fill in the field, based on earlier typed values."
-    }
-  ],
-  "evbysh": [
-    {
-      "type": 0,
-      "value": "Variable definition"
     }
   ],
   "ewzHfR": [
@@ -5637,12 +5447,6 @@
       "value": "Postcode"
     }
   ],
-  "gz32s2": [
-    {
-      "type": 0,
-      "value": "If desired, you can specify a different process variable name."
-    }
-  ],
   "gzAzdU": [
     {
       "type": 0,
@@ -5735,12 +5539,6 @@
       "value": "Form design"
     }
   ],
-  "hZl34s": [
-    {
-      "type": 0,
-      "value": "Enabled"
-    }
-  ],
   "hduHvs": [
     {
       "type": 0,
@@ -5769,12 +5567,6 @@
     {
       "type": 0,
       "value": "BSN"
-    }
-  ],
-  "huHjRm": [
-    {
-      "type": 0,
-      "value": "Configure"
     }
   ],
   "huzndE": [
@@ -5965,12 +5757,6 @@
     {
       "type": 0,
       "value": "DMN variable"
-    }
-  ],
-  "jU/t8O": [
-    {
-      "type": 0,
-      "value": "Edit complex variable"
     }
   ],
   "jU6W0l": [
@@ -6453,18 +6239,6 @@
       "value": "The sum of column sizes may not exceed 12."
     }
   ],
-  "myvtu0": [
-    {
-      "type": 0,
-      "value": "Manage process variables"
-    }
-  ],
-  "n4Y2ex": [
-    {
-      "type": 0,
-      "value": "Version"
-    }
-  ],
   "n9T2Oy": [
     {
       "type": 0,
@@ -6681,12 +6455,6 @@
       "value": "Move up"
     }
   ],
-  "p18yml": [
-    {
-      "type": 0,
-      "value": "Complex process variables"
-    }
-  ],
   "p5Iv+R": [
     {
       "type": 0,
@@ -6841,12 +6609,6 @@
       "value": "Fetch configuration:"
     }
   ],
-  "pyX2Tl": [
-    {
-      "type": 0,
-      "value": "Confirm"
-    }
-  ],
   "q+qVVR": [
     {
       "type": 0,
@@ -6923,12 +6685,6 @@
     {
       "type": 0,
       "value": "Oh no! Something went wrong."
-    }
-  ],
-  "r5Olb9": [
-    {
-      "type": 0,
-      "value": "Manage complex process variables"
     }
   ],
   "r64cfz": [
@@ -7299,12 +7055,6 @@
       "value": "Derive address"
     }
   ],
-  "twWsC2": [
-    {
-      "type": 0,
-      "value": "Name"
-    }
-  ],
   "u+IP17": [
     {
       "type": 0,
@@ -7473,12 +7223,6 @@
     {
       "type": 0,
       "value": "Set a key name before you can configure this variable"
-    }
-  ],
-  "vp12ou": [
-    {
-      "type": 0,
-      "value": "The variable name to be used for the process instance."
     }
   ],
   "vzhWgR": [

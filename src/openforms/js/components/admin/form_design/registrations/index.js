@@ -1,4 +1,3 @@
-import CamundaOptionsForm from './camunda';
 import DemoOptionsForm from './demo';
 import EmailOptionsForm from './email';
 import {
@@ -10,12 +9,7 @@ import MSGraphOptionsForm from './ms_graph';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import {ObjectsApiVariableConfigurationEditor} from './objectsapi/ObjectsApiVariableConfigurationEditor';
-import {
-  onCamundaStepEdit,
-  onGenericJSONStepEdit,
-  onObjectsAPIStepEdit,
-  onZGWStepEdit,
-} from './stepEditHandlers';
+import {onGenericJSONStepEdit, onObjectsAPIStepEdit, onZGWStepEdit} from './stepEditHandlers';
 import StufZDSOptionsForm from './stufzds';
 import {
   onGenericJSONUserDefinedVariableEdit,
@@ -36,10 +30,6 @@ import ZGWOptionsForm from './zgw';
  * @type {{[key: string]: BackendInfo}}
  */
 export const BACKEND_OPTIONS_FORMS = {
-  camunda: {
-    form: CamundaOptionsForm,
-    onStepEdit: onCamundaStepEdit,
-  },
   objects_api: {
     form: ObjectsApiOptionsForm,
     onStepEdit: onObjectsAPIStepEdit,
