@@ -1,5 +1,5 @@
 <BG:verblijfsadres>
-    <BG:authentiek>N</BG:authentiek>
+    <BG:authentiek StUF:metagegeven="true">N</BG:authentiek>
     {% with verblijfsadres=initiator.verblijfsadres %}
     {% if verblijfsadres.woonplaatsNaam %}<BG:wpl.woonplaatsNaam>{{ verblijfsadres.woonplaatsNaam }}</BG:wpl.woonplaatsNaam>{% endif %}
     {% if verblijfsadres.straatnaam %}<BG:gor.straatnaam>{{ verblijfsadres.straatnaam }}</BG:gor.straatnaam>{% endif %}

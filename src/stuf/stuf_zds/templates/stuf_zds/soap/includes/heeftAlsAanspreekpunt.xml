@@ -1,5 +1,5 @@
-<ZKN:heeftAlsAanspreekpunt StUF:entiteittype="ZAKBTRINICTP">
-    <ZKN:gerelateerde>
+<ZKN:heeftAlsAanspreekpunt StUF:entiteittype="ZAKBTRINICTP" StUF:verwerkingssoort="T">
+    <ZKN:gerelateerde StUF:verwerkingssoort="I">
         {% if initiator.contactpersoonNaam %}<ZKN:naam>{{ initiator.contactpersoonNaam }}</ZKN:naam>{% endif %}
         {% if initiator.telefoonnummer %}<ZKN:telefoonnummer>{{ initiator.telefoonnummer }}</ZKN:telefoonnummer>{% endif %}
         {% if initiator.emailadres %}<ZKN:emailadres>{{ initiator.emailadres }}</ZKN:emailadres>{% endif %}
