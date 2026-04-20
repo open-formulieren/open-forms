@@ -141,8 +141,9 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):  # noqa: UP046
         return serializers.JSONField(required=required, allow_null=True)
 
     @staticmethod
-    def as_json_schema(component: ComponentT) -> JSONObject:
-        """Return JSON schema for this formio component plugin. This routine should be
+    def as_json_schema(component: ComponentT) -> JSONObject | list[JSONObject] | None:
+        """
+        Return JSON schema for this formio component plugin. This routine should be
         implemented in the child class
         """
         raise NotImplementedError()

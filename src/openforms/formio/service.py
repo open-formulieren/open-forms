@@ -28,12 +28,7 @@ from .dynamic_config import (
 )
 from .registry import ComponentRegistry, register
 from .serializers import build_serializer as _build_serializer
-from .typing import (
-    Column,
-    ColumnsComponent,
-    Component,
-    FieldsetComponent,
-)
+from .typing import Component
 from .utils import (
     get_component_empty_value,
     get_readable_path_from_configuration_path,
@@ -145,7 +140,8 @@ def build_serializer(
 def as_json_schema(
     component: Component, _register: ComponentRegistry | None = None
 ) -> JSONObject | list[JSONObject] | None:
-    """Return a JSON schema of a component.
+    """
+    Return a JSON schema of a component.
 
     A description will be added if it is available.
 
@@ -162,45 +158,10 @@ def as_json_schema(
     :returns: None for content and softRequiredErrors components, list of JSON objects
       for columns and fieldsets, and a JSON object otherwise.
     """
-    from typing import cast  # noqa: TID251
-
     registry = _register or register
 
-    match component["type"]:
-        case "content" | "softRequiredErrors":
-            return None
-        case "columns":
-            component = cast(ColumnsComponent, component)
-            schemas = []
-            for column in component["columns"]:
-                _add_child_schemas_to_schema_list(column, schemas)
-            return schemas
-        case "fieldset":
-            component = cast(FieldsetComponent, component)
-            schemas = []
-            _add_child_schemas_to_schema_list(component, schemas)
-            return schemas
-        case _:
-            component_plugin = registry[component["type"]]
-            schema = component_plugin.as_json_schema(component)
-            if description := component.get("description"):
-                schema["description"] = description
-            return schema
-
-
-def _add_child_schemas_to_schema_list(
-    nested_component_with_children: FieldsetComponent | Column,
-    schema_list: list[JSONObject],
-):
-    """Generate and add the children's schemas to the passed schema list."""
-    for child in nested_component_with_children.get("components", []):
-        child_schema = as_json_schema(child)
-        if child_schema is None:
-            # None for content and softRequiredErrors components
-            continue
-        if isinstance(child_schema, list):
-            # Columns and fieldset components return a list of children
-            schema_list.extend(child_schema)
-        else:
-            # Other components get added to the list as a dict with their key
-            schema_list.append({child["key"]: child_schema})
+    component_plugin = registry[component["type"]]
+    schema = component_plugin.as_json_schema(component)
+    if isinstance(schema, dict) and (description := component.get("description")):
+        schema["description"] = description
+    return schema

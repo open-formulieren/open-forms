@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, TypedDict
 
 from rest_framework import serializers
 
+from openforms.formio.service import FormioConfigurationWrapper
 from openforms.formio.typing import Component
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.typing import JSONObject
@@ -113,7 +114,11 @@ class BasePlugin[OptionsT: Options](ABC, AbstractBasePlugin):
         return None
 
     def process_variable_schema(
-        self, component: Component, schema: JSONObject, options: OptionsT
+        self,
+        component: Component,
+        schema: JSONObject,
+        options: OptionsT,
+        configuration_wrapper: FormioConfigurationWrapper,
     ):
         """Process a variable schema for this registration plugin."""
         raise NotImplementedError()
