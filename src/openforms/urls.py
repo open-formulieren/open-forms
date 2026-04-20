@@ -19,26 +19,6 @@ admin.site.site_title = "openforms admin"
 admin.site.index_title = _("Welcome to the Open Forms admin")
 admin.site.enable_nav_sidebar = False
 
-# DeprecationWarning
-# TODO: remove in Open Forms 3.0 - these are moved to /auth/oidc/*
-_legacy_oidc_urls = [
-    path(
-        "",
-        include("openforms.authentication.contrib.digid_eherkenning_oidc.legacy_urls"),
-    ),
-    path(
-        "org-oidc/",
-        include("openforms.authentication.contrib.org_oidc.urls"),
-    ),
-    # still included so that URL reversing for the authentication request view works
-    path("oidc/", include("mozilla_django_oidc.urls")),  # moved to /auth/oidc
-    # included with namespace for backwards compatibility reasons
-    path(
-        "oidc/",
-        include(([path("", include("mozilla_django_oidc.urls"))], "legacy_oidc")),
-    ),
-]
-
 urlpatterns = [
     path("admin/", include("openforms.admin.urls")),
     path(
@@ -55,7 +35,6 @@ urlpatterns = [
     path("tinymce/", decorator_include(login_required, "tinymce.urls")),  # type: ignore
     path("api/", include("openforms.api.urls", namespace="api")),
     path("", include("maykin_common.health_checks.urls")),
-    *_legacy_oidc_urls,
     path("auth/oidc/", include("mozilla_django_oidc.urls")),
     path("auth/", include("openforms.authentication.urls", namespace="authentication")),
     path(

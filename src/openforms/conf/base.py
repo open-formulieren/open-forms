@@ -716,17 +716,6 @@ MAX_UNTRUSTED_JSON_PARSE_SIZE = config(
 ESCAPE_REGISTRATION_OUTPUT = config("ESCAPE_REGISTRATION_OUTPUT", default=False)
 DISABLE_SENDING_HIDDEN_FIELDS = config("DISABLE_SENDING_HIDDEN_FIELDS", default=False)
 
-# TODO: convert to feature flags so that newly deployed instances get the new behaviour
-# while staying backwards compatible for existing instances
-USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS = config(
-    "USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS",
-    default=False,
-)
-USE_LEGACY_ORG_OIDC_ENDPOINTS = config(
-    "USE_LEGACY_ORG_OIDC_ENDPOINTS",
-    default=False,
-)
-
 ##############################
 #                            #
 # 3RD PARTY LIBRARY SETTINGS #
@@ -1157,14 +1146,7 @@ COOKIE_CONSENT_NAME = "cookie_consent"
 # Mozilla Django OIDC (DB) settings
 #
 OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
-# DeprecationWarning
-# XXX: remove in Open Forms 4.0
-_USE_LEGACY_OIDC_ENDPOINTS = config("USE_LEGACY_OIDC_ENDPOINTS", default=False)
-OIDC_AUTHENTICATION_CALLBACK_URL = (
-    "legacy_oidc:oidc_authentication_callback"
-    if _USE_LEGACY_OIDC_ENDPOINTS
-    else "oidc_authentication_callback"
-)
+OIDC_AUTHENTICATION_CALLBACK_URL = "oidc_authentication_callback"
 OIDC_CALLBACK_CLASS = "mozilla_django_oidc_db.views.OIDCCallbackView"
 
 # ID token is required to enable OIDC logout
