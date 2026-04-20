@@ -1,11 +1,64 @@
 .. _configuration_dmn_camunda:
 
-
+=========
 Camunda 7
----------
+=========
+
+Camunda_ is a process engine using BPM models. Open Forms supports Camunda 7.x
+
+.. note::
+
+    This service requires a connection to an external Camunda instance, offered
+    or maintained by a service provider.
+
+What does the Open Forms administrator need?
+============================================
+
+The values for these parameters should be provided to the Open Forms administrator by
+the service provider.
+
+==============================  =======================================================================================
+Parameter                       Description
+==============================  =======================================================================================
+**Camunda instance**
+Camunda root                    The domain where the Camunda instance runs.
+REST api path                   The path where the API of the above Camunda instance can be found.
+Username                        Username for the REST API user (Basic Auth)
+Password                        Password for the REST API user (Basic Auth)
+**Permissions within Camunda**
+List process definitions        Open Forms must be able to read the available process definitions to connect a form to a process.
+Start process instances         Open Forms must be able to start process instances of the selected process definition(s).
+==============================  =======================================================================================
+
+What does the service provider need?
+====================================
+
+The values for these parameters should be provided to the service provider by
+the Open Forms administrator.
+
+============================  =======================================================================================
+Parameter                     Description
+============================  =======================================================================================
+**Security**
+IP address                    The IP address of the Open Forms server (optional, for whitelisting).
+============================  =======================================================================================
+
+
+Plugin configuration
+====================
+
+1. In the Open Forms admin, navigate to: **Configuration** > **Camunda configuration**
+2. In the **Camunda root** field, fill out the protocol and domain (and optional port)
+   of the API root.
+3. In the **REST api path** field, fill out the path of the REST API root, relative to
+   the Camunda root URL.
+4. Under **Auth**, fill out the username and password. Note that the password is never
+   displayed, even if filled out correctly.
+
+The configuration page tests the connection, if any mistakes are made, validation errors will be shown.
 
 Camunda Admin
-^^^^^^^^^^^^^
+=============
 
 In order to deploy a new decision definition and then evaluate it, users should be created with:
 
@@ -48,19 +101,8 @@ Now, the credentials for the user ``deployer`` can be used in the Camunda modell
 The credentials for the user ``openForms`` can be used in the Open Forms admin under the
 **Configuration > Camunda Configuration** page.
 
-Plugin configuration
-^^^^^^^^^^^^^^^^^^^^
-
-In the admin, navigate to **Configuratie** > **Camunda configuration**.
-
-See :ref:`configuration_registration_camunda` for a description of the settings that need to be configured.
-
-This configuration is used both when Camunda is used as a registration backend AND when Camunda is used as the engine to
-evaluate decision tables in form logic rules.
-
-
 Form configuration
-^^^^^^^^^^^^^^^^^^
+==================
 
 In the form designer page in the admin, navigate to the **Logic tab**. Then:
 
@@ -82,3 +124,18 @@ Action configuration:
 #. Save the settings.
 
 For an example form, see :ref:`examples_camunda`.
+
+Technical
+=========
+
+================  ===================
+Camunda version   Test status
+================  ===================
+7.12              Manually verified
+7.13              Untested
+7.14              Untested
+7.15              Untested
+7.16              Tested in CI
+================  ===================
+
+.. _Camunda: https://camunda.com/

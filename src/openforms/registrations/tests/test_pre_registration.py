@@ -154,15 +154,6 @@ class PreRegistrationTests(TestCase):
     def test_plugins_generating_reference_before_during_pre_registration(self):
         plugin_data = [
             ("email", {"to_emails": ["foo@bar.baz"]}),
-            (
-                "camunda",
-                {
-                    "process_definition": "invoice",
-                    "process_definition_version": None,
-                    "process_variables": [],
-                    "complex_process_variables": [],
-                },
-            ),
             ("demo", {}),
             ("failing-demo", {}),
             ("exception-demo", {}),
