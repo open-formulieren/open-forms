@@ -32,7 +32,7 @@ boltons==21.0.0
     #   glom
 brotli==1.1.0
     # via fonttools
-cbor2==5.8.0
+cbor2==5.9.0
     # via webauthn
 celery==5.5.0
     # via
@@ -50,7 +50,7 @@ certifi==2024.7.4
     #   requests
     #   self-certifi
     #   sentry-sdk
-cffi==1.16.0
+cffi==2.0.0
     # via
     #   cryptography
     #   weasyprint
@@ -72,7 +72,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
-cryptography==44.0.1
+cryptography==46.0.7
     # via
     #   django-digid-eherkenning
     #   django-simple-certmanager
@@ -444,7 +444,7 @@ pathable==0.4.3
     # via jsonschema-spec
 phonenumberslite==8.13.29
     # via django-two-factor-auth
-pillow==10.3.0
+pillow==12.2.0
     # via
     #   -r requirements/base.in
     #   django-colorfield
@@ -481,7 +481,7 @@ pydyf==0.8.0
     # via weasyprint
 pyjwt==2.12.1
     # via zgw-consumers
-pyopenssl==25.0.0
+pyopenssl==26.0.0
     # via
     #   josepy
     #   webauthn
@@ -533,7 +533,7 @@ referencing==0.30.2
     #   jsonschema
     #   jsonschema-spec
     #   jsonschema-specifications
-requests==2.32.4
+requests==2.33.1
     # via
     #   ape-pie
     #   django-camunda
@@ -601,7 +601,7 @@ six==1.16.0
     #   rfc3339-validator
 soupsieve==2.3
     # via beautifulsoup4
-sqlparse==0.5.0
+sqlparse==0.5.5
     # via django
 stringcase==1.2.0
     # via o365

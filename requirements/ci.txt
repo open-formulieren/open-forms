@@ -65,7 +65,7 @@ brotli==1.1.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   fonttools
-cbor2==5.8.0
+cbor2==5.9.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -90,7 +90,7 @@ certifi==2024.7.4
     #   requests
     #   self-certifi
     #   sentry-sdk
-cffi==1.16.0
+cffi==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -135,7 +135,7 @@ click-repl==0.2.0
     #   celery
 coverage==7.4.0
     # via -r requirements/test-tools.in
-cryptography==44.0.1
+cryptography==46.0.7
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -783,7 +783,7 @@ phonenumberslite==8.13.29
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-two-factor-auth
-pillow==10.3.0
+pillow==12.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -860,7 +860,7 @@ pydyf==0.8.0
     #   weasyprint
 pyee==12.0.0
     # via playwright
-pygments==2.17.2
+pygments==2.20.0
     # via
     #   sphinx
     #   sphinx-tabs
@@ -869,7 +869,7 @@ pyjwt==2.12.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
-pyopenssl==25.0.0
+pyopenssl==26.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -961,7 +961,7 @@ referencing==0.30.2
     #   jsonschema
     #   jsonschema-spec
     #   jsonschema-specifications
-requests==2.32.4
+requests==2.33.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1109,7 +1109,7 @@ sphinxcontrib-qthelp==1.0.7
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.10
     # via sphinx
-sqlparse==0.5.0
+sqlparse==0.5.5
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

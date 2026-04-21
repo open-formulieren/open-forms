@@ -72,7 +72,7 @@ brotli==1.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   fonttools
-cbor2==5.8.0
+cbor2==5.9.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -97,7 +97,7 @@ certifi==2024.7.4
     #   requests
     #   self-certifi
     #   sentry-sdk
-cffi==1.16.0
+cffi==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -144,7 +144,7 @@ coverage==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==44.0.1
+cryptography==46.0.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -823,7 +823,7 @@ phonenumberslite==8.13.29
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-two-factor-auth
-pillow==10.3.0
+pillow==12.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -908,7 +908,7 @@ pyee==12.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   playwright
-pygments==2.17.2
+pygments==2.20.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -919,7 +919,7 @@ pyjwt==2.12.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   zgw-consumers
-pyopenssl==25.0.0
+pyopenssl==26.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1012,7 +1012,7 @@ referencing==0.30.2
     #   jsonschema
     #   jsonschema-spec
     #   jsonschema-specifications
-requests==2.32.4
+requests==2.33.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1196,7 +1196,7 @@ sphinxcontrib-serializinghtml==1.1.10
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
-sqlparse==0.5.0
+sqlparse==0.5.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
