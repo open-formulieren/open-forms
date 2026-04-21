@@ -47,6 +47,15 @@ body:
     validations:
       required: false
   - type: dropdown
+    id: renderer
+    attributes:
+      label: Which renderer?
+      options:
+        - "not relevant"
+        - "new renderer"
+        - "old renderer"
+        - "both"
+  - type: dropdown
     id: screen-resolution
     attributes:
       label: Screen resolution
