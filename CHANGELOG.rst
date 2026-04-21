@@ -14,6 +14,16 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.3.16 (2026-04-21)
+===================
+
+Final bugfix release in the ``3.3.x`` series.
+
+* [:backend:`5924`] Fixed validation messages being linked to the wrong (non-applicable)
+  steps, causing confusing error mesages in the public frontend.
+* [:backend:`6171`] Fixed missing required XML-attributes in StUF-ZDS messages.
+* Applied latest available security patches of the libraries that we use.
+
 3.5.0 "Kjeld" (2026-04-15)
 ==========================
 
