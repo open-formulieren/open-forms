@@ -61,6 +61,7 @@ from ..registry import BasePlugin, register
 from ..serializers import build_serializer
 from ..service import as_json_schema
 from ..typing import (
+    Column,
     ColumnsComponent,
     Component,
     ContentComponent,
@@ -975,9 +976,9 @@ class Content(BasePlugin):
         component["html"] = post_process_html(component["html"], request)
 
     @staticmethod
-    def as_json_schema(component: ContentComponent) -> JSONObject:
+    def as_json_schema(component: ContentComponent) -> None:
         # Not relevant as content components don't have values
-        raise NotImplementedError()
+        return None
 
 
 class EditGridField(serializers.Field):
@@ -1099,20 +1100,10 @@ class EditGrid(BasePlugin[EditGridComponent]):
         label = component.get("label", "Edit grid")
         validate = component.get("validate", {})
 
-        # Build the edit grid object properties by iterating over the child components
+        # Build the edit grid object properties by iterating over the child schemas
         properties = {}
-        for child in component["components"]:
-            schema = as_json_schema(child)
-
-            match child["type"]:
-                case "content" | "softRequiredErrors":
-                    continue
-                case "fieldset" | "columns":
-                    assert isinstance(schema, list)
-                    for child_schema in schema:
-                        properties.update(child_schema)
-                case _:
-                    properties[child["key"]] = schema
+        for child_schema in _build_child_schema_list(component):
+            properties.update(child_schema)
 
         base = {
             "title": label,
@@ -1236,6 +1227,13 @@ class Columns(BasePlugin[ColumnsComponent]):
                 data_for_visible_state=data_for_visible_state,
             )
 
+    @staticmethod
+    def as_json_schema(component: ColumnsComponent) -> list[JSONObject]:
+        schemas = []
+        for column in component["columns"]:
+            schemas.extend(_build_child_schema_list(column))
+        return schemas
+
 
 @register("fieldset")
 class Fieldset(BasePlugin[FieldsetComponent]):
@@ -1274,3 +1272,24 @@ class Fieldset(BasePlugin[FieldsetComponent]):
             components_to_ignore_hidden=_components_to_ignore_hidden,
             data_for_visible_state=data_for_visible_state,
         )
+
+    @staticmethod
+    def as_json_schema(component: FieldsetComponent) -> list[JSONObject]:
+        return _build_child_schema_list(component)
+
+
+def _build_child_schema_list(
+    component_like: EditGridComponent | FieldsetComponent | Column,
+) -> list[JSONObject]:
+    """Generate and add the children's schemas to a list."""
+    schema_list = []
+    for child in component_like["components"]:
+        child_schema = as_json_schema(child)
+        match child_schema:
+            case None:
+                continue
+            case list():
+                schema_list.extend(child_schema)
+            case _:
+                schema_list.append({child["key"]: child_schema})
+    return schema_list

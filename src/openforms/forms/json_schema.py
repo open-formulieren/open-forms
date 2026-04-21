@@ -148,7 +148,9 @@ def generate_variable_schema(
 
     if backend_id:
         assert backend_options is not None
-        process_variable_schema(component, schema, backend_id, backend_options)
+        process_variable_schema(
+            component, schema, backend_id, backend_options, configuration_wrapper
+        )
 
     return schema
 
