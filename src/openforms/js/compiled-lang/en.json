@@ -2401,12 +2401,6 @@
       "value": "(none)"
     }
   ],
-  "HpKhVP": [
-    {
-      "type": 0,
-      "value": "Appointment enabled"
-    }
-  ],
   "HrSXGN": [
     {
       "type": 0,
@@ -3715,6 +3709,12 @@
       "value": "Base"
     }
   ],
+  "TU0Bku": [
+    {
+      "type": 0,
+      "value": "Appointment"
+    }
+  ],
   "TXwGu1": [
     {
       "type": 0,
@@ -4069,6 +4069,12 @@
     {
       "type": 0,
       "value": "In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?"
+    }
+  ],
+  "WmcA8i": [
+    {
+      "type": 0,
+      "value": "Type"
     }
   ],
   "WnKF/i": [
@@ -5385,6 +5391,12 @@
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
     }
   ],
+  "gI+MHU": [
+    {
+      "type": 0,
+      "value": "Regular"
+    }
+  ],
   "gSSyoc": [
     {
       "type": 0,
@@ -6413,6 +6425,12 @@
       "value": "Which merchant should be used for payments related to this form."
     }
   ],
+  "oqtOzt": [
+    {
+      "type": 0,
+      "value": "Single step"
+    }
+  ],
   "oqv4fM": [
     {
       "type": 0,
@@ -7427,12 +7445,6 @@
       "value": "Zoom level"
     }
   ],
-  "xxyIg/": [
-    {
-      "type": 0,
-      "value": "Indicates whether appointments are enabled for this form."
-    }
-  ],
   "xyVtKp": [
     {
       "type": 0,
@@ -7669,6 +7681,12 @@
     {
       "type": 0,
       "value": "Submission settings"
+    }
+  ],
+  "zsTGAG": [
+    {
+      "type": 0,
+      "value": "Type of the form, used to determine how the form is presented and behaves."
     }
   ],
   "zu8ntq": [

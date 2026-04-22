@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.typing import Component
+from openforms.forms.constants import FormTypeChoices
 from openforms.submissions.tasks import schedule_emails
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.utils import send_confirmation_email
@@ -124,7 +125,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
 
     def test_send_confirmation_mail_disabled(self):
         appointment = AppointmentFactory.create(
-            submission__form__is_appointment_form=True,
+            submission__form__type=FormTypeChoices.appointment,
             submission__form__send_confirmation_email=False,
             products=[Product(identifier="dummy", name="")],
             appointment_info__registration_ok=True,
@@ -139,7 +140,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
     def test_no_available_email_address(self):
         appointment = AppointmentFactory.create(
             plugin="no-email",
-            submission__form__is_appointment_form=True,
+            submission__form__type=FormTypeChoices.appointment,
             submission__form__send_confirmation_email=True,
             products=[Product(identifier="dummy", name="")],
             appointment_info__registration_ok=True,
@@ -153,7 +154,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
 
     def test_no_crash_on_missing_appointment_details(self):
         submission = SubmissionFactory.create(
-            form__is_appointment_form=True,
+            form__type=FormTypeChoices.appointment,
             form__send_confirmation_email=True,
         )
         assert not hasattr(submission, "appointment")
@@ -165,7 +166,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
     def test_bad_data(self):
         appointment = AppointmentFactory.create(
             plugin="with-email",
-            submission__form__is_appointment_form=True,
+            submission__form__type=FormTypeChoices.appointment,
             submission__form__send_confirmation_email=True,
             products=[Product(identifier="dummy", name="")],
             appointment_info__registration_ok=True,
@@ -179,7 +180,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
     def test_confirmation_email_goes_to_correct_recipients(self):
         appointment = AppointmentFactory.create(
             plugin="with-email",
-            submission__form__is_appointment_form=True,
+            submission__form__type=FormTypeChoices.appointment,
             submission__form__send_confirmation_email=True,
             products=[Product(identifier="dummy", name="")],
             appointment_info__registration_ok=True,
@@ -198,7 +199,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
         appointment = AppointmentFactory.create(
             plugin="with-email",
             submission__language_code="nl",
-            submission__form__is_appointment_form=True,
+            submission__form__type=FormTypeChoices.appointment,
             submission__form__send_confirmation_email=True,
             products=[Product(identifier="dummy", name="")],
             appointment_info__registration_ok=True,
@@ -276,7 +277,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
         appointment = AppointmentFactory.create(
             plugin="with-email",
             submission__language_code="nl",
-            submission__form__is_appointment_form=True,
+            submission__form__type=FormTypeChoices.appointment,
             submission__form__send_confirmation_email=True,
             products=[Product(identifier="dummy", name="")],
             appointment_info__registration_ok=True,

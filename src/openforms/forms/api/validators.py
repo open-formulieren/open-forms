@@ -8,12 +8,14 @@ from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
 from openforms.api.utils import get_from_serializer_data_or_instance
+from openforms.appointments.utils import get_plugin
 from openforms.formio.utils import iter_components
 from openforms.formio.variables import validate_configuration
 from openforms.typing import JSONObject
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.service import get_static_variables
 
+from ..constants import FormTypeChoices
 from ..validation.registry import register as formio_validators_registry
 
 
@@ -215,6 +217,19 @@ class FormStepIsApplicableIfFirstValidator:
                         code="invalid",
                     ),
                 }
+            )
+
+
+class RequireAppointmentsPlugin:
+    def __call__(self, value: str) -> None:
+        if value != FormTypeChoices.appointment:
+            return
+
+        try:
+            get_plugin()
+        except ValueError:
+            raise serializers.ValidationError(
+                _("Appointment forms require an appointment plugin to be configured."),
             )
 
 

@@ -37,6 +37,7 @@ from openforms.typing import RegistrationBackendKey
 
 from ...constants import StatementCheckboxChoices
 from ...models import Category, Form, FormAuthenticationBackend, FormRegistrationBackend
+from ..validators import RequireAppointmentsPlugin
 from .button_text import ButtonTextSerializer
 from .form_step import MinimalFormStepSerializer
 
@@ -269,6 +270,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "product",
             "slug",
             "url",
+            "type",
             "category",
             "theme",
             "steps",
@@ -320,6 +322,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "payment_options",
             "literals",
             "slug",
+            "type",
             "url",
             "steps",
             "show_progress_indicator",
@@ -352,6 +355,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
                 "lookup_field": "uuid",
                 "lookup_url_kwarg": "uuid_or_slug",
             },
+            "type": {"validators": [RequireAppointmentsPlugin()]},
         }
 
     @transaction.atomic()
@@ -518,8 +522,8 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         self.validate_backend_options(
             attrs, "payment_backend", "payment_backend_options", payment_register
         )
-
         self.validate_auto_login_backend(attrs)
+
         return attrs
 
     def validate_backend_options(self, attrs, backend_field, options_field, registry):

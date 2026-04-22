@@ -3,6 +3,7 @@ from datetime import UTC
 import factory
 import factory.fuzzy
 
+from openforms.forms.constants import FormTypeChoices
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..base import Product
@@ -36,7 +37,9 @@ class AppointmentInfoFactory(factory.django.DjangoModelFactory):
 
 class AppointmentFactory(factory.django.DjangoModelFactory):
     plugin = "demo"
-    submission = factory.SubFactory(SubmissionFactory, form__is_appointment_form=True)
+    submission = factory.SubFactory(
+        SubmissionFactory, form__type=FormTypeChoices.appointment
+    )
     location = "some-location-id"
     datetime = factory.Faker("future_datetime", tzinfo=UTC)
 

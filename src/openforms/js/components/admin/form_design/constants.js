@@ -1,3 +1,5 @@
+import {defineMessage} from 'react-intl';
+
 export const FORM_ENDPOINT = '/api/v2/forms';
 export const FORM_DEFINITIONS_ENDPOINT = '/api/v2/form-definitions';
 export const REGISTRATION_BACKENDS_ENDPOINT = '/api/v2/registration/plugins';
@@ -23,3 +25,27 @@ export const DMN_DECISION_DEFINITIONS_LIST = '/api/v2/dmn/decision-definitions';
 export const DMN_DECISION_DEFINITIONS_VERSIONS_LIST = '/api/v2/dmn/decision-definitions/versions';
 export const DMN_DECISION_DEFINITIONS_PARAMS_LIST =
   '/api/v2/dmn/decision-definitions/inputs-outputs';
+
+export const FORM_TYPES = [
+  [
+    'regular',
+    defineMessage({
+      description: 'regular form type option label',
+      defaultMessage: 'Regular',
+    }),
+  ],
+  [
+    'appointment',
+    defineMessage({
+      description: 'appointment form type option label',
+      defaultMessage: 'Appointment',
+    }),
+  ],
+  [
+    'single_step',
+    defineMessage({
+      description: 'single page form type option label',
+      defaultMessage: 'Single step',
+    }),
+  ],
+];

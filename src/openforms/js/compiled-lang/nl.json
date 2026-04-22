@@ -2388,12 +2388,6 @@
       "value": "(geen)"
     }
   ],
-  "HpKhVP": [
-    {
-      "type": 0,
-      "value": "Is afspraakformulier?"
-    }
-  ],
   "HrSXGN": [
     {
       "type": 0,
@@ -3698,6 +3692,12 @@
       "value": "Basis"
     }
   ],
+  "TU0Bku": [
+    {
+      "type": 0,
+      "value": "Appointment"
+    }
+  ],
   "TXwGu1": [
     {
       "type": 0,
@@ -4052,6 +4052,12 @@
     {
       "type": 0,
       "value": "Indien meerdere unieke identificaties beschikbaar zijn (bijvoorbeeld bij eHerkenning Bewindvoering en DigiD Machtigen), welke prefill-gegevens moeten dan opgehaald worden? Deze voor de machtiger of de gemachtigde?"
+    }
+  ],
+  "WmcA8i": [
+    {
+      "type": 0,
+      "value": "Type"
     }
   ],
   "WnKF/i": [
@@ -5373,6 +5379,12 @@
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "gI+MHU": [
+    {
+      "type": 0,
+      "value": "Regular"
+    }
+  ],
   "gSSyoc": [
     {
       "type": 0,
@@ -6401,6 +6413,12 @@
       "value": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier."
     }
   ],
+  "oqtOzt": [
+    {
+      "type": 0,
+      "value": "Single step"
+    }
+  ],
   "oqv4fM": [
     {
       "type": 0,
@@ -7411,12 +7429,6 @@
       "value": "Zoomniveau"
     }
   ],
-  "xxyIg/": [
-    {
-      "type": 0,
-      "value": "Markeer het formulier als afspraakformulier, met een aparte flow. Hiervoor dient een afsprakenplugin ingesteld te zijn."
-    }
-  ],
   "xyVtKp": [
     {
       "type": 0,
@@ -7653,6 +7665,12 @@
     {
       "type": 0,
       "value": "Inzending-instellingen"
+    }
+  ],
+  "zsTGAG": [
+    {
+      "type": 0,
+      "value": "Type of the form, used to determine how the form is presented and behaves."
     }
   ],
   "zu8ntq": [

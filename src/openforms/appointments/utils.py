@@ -7,6 +7,7 @@ import qrcode
 import structlog
 from opentelemetry import trace
 
+from openforms.forms.constants import FormTypeChoices
 from openforms.logging import audit_logger
 from openforms.submissions.models import Submission
 
@@ -87,7 +88,7 @@ def create_base64_qrcode(text):
 
 
 def get_appointment(submission: Submission) -> Appointment | None:
-    if not submission.form.is_appointment:
+    if not submission.form.type == FormTypeChoices.appointment:
         return None
     appointment: Appointment | None = getattr(submission, "appointment", None)
     return appointment

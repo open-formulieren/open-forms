@@ -27,6 +27,7 @@ from ....api.serializers.form import (
     FormRegistrationBackendSerializer,
     SubmissionsRemovalOptionsSerializer,
 )
+from ....constants import FormTypeChoices
 from ....models import (
     Category,
     Form,
@@ -35,7 +36,8 @@ from ....models import (
     FormStep,
     FormVariable,
 )
-from ..typing import FormStepData, FormValidatedData, NewFormValidatedData
+from ...validators import RequireAppointmentsPlugin
+from ..typing import FormStepData, FormValidatedData
 from .form_step import FormStepSerializer
 from .payment import FormPaymentSerializer
 
@@ -107,6 +109,7 @@ class FormSerializer(serializers.ModelSerializer):
             "literals",
             "product",
             "slug",
+            "type",
             "category",
             "theme",
             "steps",
@@ -139,10 +142,11 @@ class FormSerializer(serializers.ModelSerializer):
             "uuid": {  # retrieved from the context passed through from the view
                 "read_only": True,
             },
+            "type": {"validators": [RequireAppointmentsPlugin()]},
         }
 
     @transaction.atomic()
-    def create(self, validated_data: NewFormValidatedData) -> Form:
+    def create(self, validated_data: FormValidatedData) -> Form:
         instance = super().create(
             {k: v for k, v in validated_data.items() if k not in self._nested_fields}
         )
@@ -307,29 +311,37 @@ class FormSerializer(serializers.ModelSerializer):
 
         return value
 
-    def validate(self, attrs: FormValidatedData | NewFormValidatedData):
+    def validate_amount_of_steps(self, attrs: FormValidatedData) -> None:
         # validate is called multiple times because of the nested serializer fields.
         # For example ModelTranslationsSerializer is calling it 2 times (current amount
         # of languages) but at this point the attrs contain only the related data (child).
         # Fixing/updating ModelTranslationsSerializer can be tricky (it's used a lot in
         # the project), so that's why we do the check here.
         steps = attrs.get("formstep_set")
-        if steps is None:
-            return attrs
+        form_type = attrs.get("type")
+        if steps is None and form_type is None:
+            return
 
-        is_appointment = attrs.get("is_appointment")
+        num_steps = len(steps)
+        match form_type:
+            # regular form should have at least one step
+            case FormTypeChoices.regular if num_steps == 0:
+                raise serializers.ValidationError(
+                    _("At least one form step is required in a regular form.")
+                )
+            # appointment form should not have any steps
+            case FormTypeChoices.appointment if num_steps > 0:
+                raise serializers.ValidationError(
+                    _("Form steps are not allowed in an appointment form.")
+                )
+            # single step form should have exactly one step
+            case FormTypeChoices.single_step if num_steps != 1:
+                raise serializers.ValidationError(
+                    _("Exactly one form step is required in a single step form.")
+                )
 
-        # regular form should have at least one step
-        if not is_appointment and len(steps) == 0:
-            raise serializers.ValidationError(
-                _("At least one form step is required in a regular form.")
-            )
-
-        # appointment form should not have any steps
-        if is_appointment and len(steps) > 0:
-            raise serializers.ValidationError(
-                _("Form steps are not allowed in an appointment form.")
-            )
+    def validate(self, attrs: FormValidatedData) -> FormValidatedData:
+        self.validate_amount_of_steps(attrs)
 
         return attrs
 

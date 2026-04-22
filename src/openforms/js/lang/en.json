@@ -1089,11 +1089,6 @@
     "description": "Label for option to disable autoLoginAuthenticationBackend",
     "originalDefault": "(none)"
   },
-  "HpKhVP": {
-    "defaultMessage": "Appointment enabled",
-    "description": "Form appointment enabled field label",
-    "originalDefault": "Appointment enabled"
-  },
   "HrSXGN": {
     "defaultMessage": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?",
     "description": "Reset the submissions counter confirmation message",
@@ -1799,6 +1794,11 @@
     "description": "ZGW APIs registration backend options, 'base' tab label",
     "originalDefault": "Base"
   },
+  "TU0Bku": {
+    "defaultMessage": "Appointment",
+    "description": "appointment form type option label",
+    "originalDefault": "Appointment"
+  },
   "TXwGu1": {
     "defaultMessage": "Slug",
     "description": "Form slug field label",
@@ -1918,6 +1918,11 @@
     "defaultMessage": "There are multiple profile components specified in this form. This configuration is not supported and may lead to unexpected behavior.",
     "description": "Too many profile components",
     "originalDefault": "There are multiple profile components specified in this form. This configuration is not supported and may lead to unexpected behavior."
+  },
+  "WmcA8i": {
+    "defaultMessage": "Type",
+    "description": "Form type field label",
+    "originalDefault": "Type"
   },
   "WnKF/i": {
     "defaultMessage": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments",
@@ -2484,6 +2489,11 @@
     "description": "literals.previousText help text",
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
   },
+  "gI+MHU": {
+    "defaultMessage": "Regular",
+    "description": "regular form type option label",
+    "originalDefault": "Regular"
+  },
   "gUl3mu": {
     "defaultMessage": "Are you sure that you want to remove this mapping?",
     "description": "Confirmation message to remove a mapping",
@@ -2989,6 +2999,11 @@
     "description": "Worldline payment options 'merchant' help text",
     "originalDefault": "Which merchant should be used for payments related to this form."
   },
+  "oqtOzt": {
+    "defaultMessage": "Single step",
+    "description": "single page form type option label",
+    "originalDefault": "Single step"
+  },
   "oqv4fM": {
     "defaultMessage": "The prefill values will be taken from an object of the selected type.",
     "description": "Objects API prefill options 'Objecttype' helpText",
@@ -3469,11 +3484,6 @@
     "description": "Link label to generate JSON schema of registration backend",
     "originalDefault": "Generate JSON schema"
   },
-  "xxyIg/": {
-    "defaultMessage": "Indicates whether appointments are enabled for this form.",
-    "description": "Form appointment enabled field help text",
-    "originalDefault": "Indicates whether appointments are enabled for this form."
-  },
   "xyVtKp": {
     "defaultMessage": "Plugin configuration: Objects API",
     "description": "Objects API registration options modal title",
@@ -3578,6 +3588,11 @@
     "defaultMessage": "Submission settings",
     "description": "Form submission settings fieldset title",
     "originalDefault": "Submission settings"
+  },
+  "zsTGAG": {
+    "defaultMessage": "Type of the form, used to determine how the form is presented and behaves.",
+    "description": "Form type field help text",
+    "originalDefault": "Type of the form, used to determine how the form is presented and behaves."
   },
   "zu8ntq": {
     "defaultMessage": "An error occurred during schema generation",

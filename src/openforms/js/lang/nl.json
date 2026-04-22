@@ -1101,11 +1101,6 @@
     "description": "Label for option to disable autoLoginAuthenticationBackend",
     "originalDefault": "(none)"
   },
-  "HpKhVP": {
-    "defaultMessage": "Is afspraakformulier?",
-    "description": "Form appointment enabled field label",
-    "originalDefault": "Appointment enabled"
-  },
   "HrSXGN": {
     "defaultMessage": "Je staat op het punt om het aantal gemaakte inzendingen terug op nul te zetten. Dit kan niet ongedaan gemaakt worden. Ben je zeker dat je door wil gaan?",
     "description": "Reset the submissions counter confirmation message",
@@ -1816,6 +1811,11 @@
     "description": "ZGW APIs registration backend options, 'base' tab label",
     "originalDefault": "Base"
   },
+  "TU0Bku": {
+    "defaultMessage": "Appointment",
+    "description": "appointment form type option label",
+    "originalDefault": "Appointment"
+  },
   "TXwGu1": {
     "defaultMessage": "URL-deel",
     "description": "Form slug field label",
@@ -1938,6 +1938,11 @@
     "defaultMessage": "Er zijn meerdere klantprofielcomponenten aanwezig in het formulier. Deze configuratie is niet ondersteund en kan tot onvoorspelbaar gedrag leiden.",
     "description": "Too many profile components",
     "originalDefault": "There are multiple profile components specified in this form. This configuration is not supported and may lead to unexpected behavior."
+  },
+  "WmcA8i": {
+    "defaultMessage": "Type",
+    "description": "Form type field label",
+    "originalDefault": "Type"
   },
   "WnKF/i": {
     "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor de bijlagen.",
@@ -2506,6 +2511,11 @@
     "description": "literals.previousText help text",
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
   },
+  "gI+MHU": {
+    "defaultMessage": "Regular",
+    "description": "regular form type option label",
+    "originalDefault": "Regular"
+  },
   "gUl3mu": {
     "defaultMessage": "Ben je zeker dat je deze koppeling wil verwijderen?",
     "description": "Confirmation message to remove a mapping",
@@ -3012,6 +3022,11 @@
     "description": "Worldline payment options 'merchant' help text",
     "originalDefault": "Which merchant should be used for payments related to this form."
   },
+  "oqtOzt": {
+    "defaultMessage": "Single step",
+    "description": "single page form type option label",
+    "originalDefault": "Single step"
+  },
   "oqv4fM": {
     "defaultMessage": "Het objecttype van het object waar de voorinvul/productgegevens uit opgehaald worden.",
     "description": "Objects API prefill options 'Objecttype' helpText",
@@ -3495,11 +3510,6 @@
     "description": "Link label to generate JSON schema of registration backend",
     "originalDefault": "Generate JSON schema"
   },
-  "xxyIg/": {
-    "defaultMessage": "Markeer het formulier als afspraakformulier, met een aparte flow. Hiervoor dient een afsprakenplugin ingesteld te zijn.",
-    "description": "Form appointment enabled field help text",
-    "originalDefault": "Indicates whether appointments are enabled for this form."
-  },
   "xyVtKp": {
     "defaultMessage": "Plugin-instellingen: Objecten-API",
     "description": "Objects API registration options modal title",
@@ -3606,6 +3616,11 @@
     "defaultMessage": "Inzending-instellingen",
     "description": "Form submission settings fieldset title",
     "originalDefault": "Submission settings"
+  },
+  "zsTGAG": {
+    "defaultMessage": "Type of the form, used to determine how the form is presented and behaves.",
+    "description": "Form type field help text",
+    "originalDefault": "Type of the form, used to determine how the form is presented and behaves."
   },
   "zu8ntq": {
     "defaultMessage": "Er is een fout opgetreden tijdens het genereren van het schema",

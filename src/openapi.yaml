@@ -7195,11 +7195,6 @@ components:
     AppointmentOptions:
       type: object
       properties:
-        isAppointment:
-          type: boolean
-          title: Is appointment form
-          description: Boolean indicating if the form is an appointment form, using
-            the new flow.
         supportsMultipleProducts:
           type: boolean
           nullable: true
@@ -7208,7 +7203,6 @@ components:
           description: If not supported, only one product/service can be booked at
             once and the UI may not allow the user to select multiple products.
       required:
-      - isAppointment
       - supportsMultipleProducts
     AppointmentProduct:
       type: object
@@ -8009,6 +8003,16 @@ components:
           type: string
           format: uri
           readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/FormTypeEnum'
+          title: Form type
+          description: |-
+            The type of the form. The choices are regular, appointment or a single page form. Depending on the choice a different form design is required/rendered.
+
+            * `regular` - Regular
+            * `appointment` - Appointment
+            * `single_step` - Single step
         category:
           type: string
           format: uri
@@ -8992,6 +8996,16 @@ components:
       - formDefinition
       - index
       - uuid
+    FormTypeEnum:
+      enum:
+      - regular
+      - appointment
+      - single_step
+      type: string
+      description: |-
+        * `regular` - Regular
+        * `appointment` - Appointment
+        * `single_step` - Single step
     FormV3:
       type: object
       properties:
@@ -9036,6 +9050,16 @@ components:
           type: string
           maxLength: 100
           pattern: ^[-a-zA-Z0-9_]+$
+        type:
+          allOf:
+          - $ref: '#/components/schemas/FormTypeEnum'
+          title: Form type
+          description: |-
+            The type of the form. The choices are regular, appointment or a single page form. Depending on the choice a different form design is required/rendered.
+
+            * `regular` - Regular
+            * `appointment` - Appointment
+            * `single_step` - Single step
         category:
           type: string
           format: uuid
@@ -9994,6 +10018,16 @@ components:
           type: string
           format: uri
           readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/FormTypeEnum'
+          title: Form type
+          description: |-
+            The type of the form. The choices are regular, appointment or a single page form. Depending on the choice a different form design is required/rendered.
+
+            * `regular` - Regular
+            * `appointment` - Appointment
+            * `single_step` - Single step
         category:
           type: string
           format: uri

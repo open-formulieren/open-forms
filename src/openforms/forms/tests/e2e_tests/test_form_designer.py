@@ -7,6 +7,7 @@ from asgiref.sync import sync_to_async
 from furl import furl
 from playwright.async_api import Page, expect
 
+from openforms.appointments.models import AppointmentsConfig
 from openforms.formio.constants import DataSrcOptions
 from openforms.products.tests.factories import ProductFactory
 from openforms.tests.e2e.base import (
@@ -18,6 +19,7 @@ from openforms.tests.e2e.base import (
 from openforms.utils.tests.cache import clear_caches
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
+from ...constants import FormTypeChoices
 from ...models import Form
 from ..factories import (
     FormDefinitionFactory,
@@ -1722,11 +1724,18 @@ class AppointmentFormTests(E2ETestCase):
     async def test_appointment_form_nukes_irrelevant_configuration(self):
         @sync_to_async
         def setUpTestData():
+            # set up an appointment plugin
+            appointments_config = AppointmentsConfig.get_solo()
+            appointments_config.plugin = "demo"
+            appointments_config.save()
+
+            self.addCleanup(AppointmentsConfig.clear_cache)
+
             # set up a form
             form = FormFactory.create(
                 name="Playwright appointment test",
                 generate_minimal_setup=True,
-                is_appointment=False,
+                type=FormTypeChoices.regular,
                 product=ProductFactory.create(),
             )
             FormRegistrationBackendFactory.create(
@@ -1749,8 +1758,8 @@ class AppointmentFormTests(E2ETestCase):
             await self._admin_login(page)
             await page.goto(str(admin_url))
 
-            await page.get_by_label("Appointment enabled").click()
-            await expect(page.get_by_label("Appointment enabled")).to_be_checked()
+            await page.get_by_label("Appointment").click()
+            await expect(page.get_by_label("Appointment")).to_be_checked()
 
             with phase("save form changes to backend"):
                 await page.get_by_role("button", name="Save", exact=True).click()
@@ -1763,7 +1772,7 @@ class AppointmentFormTests(E2ETestCase):
         def assertState():
             form.refresh_from_db()
 
-            self.assertTrue(form.is_appointment)
+            self.assertEqual(form.type, FormTypeChoices.appointment)
             self.assertFalse(form.formstep_set.exists())
             self.assertFalse(form.formvariable_set.exists())
             self.assertFalse(form.registration_backends.exists())
