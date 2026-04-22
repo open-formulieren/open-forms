@@ -33,6 +33,7 @@ After installation, follow the :ref:`configuration_index` instructions to enable
    redis
    additional_scipts
    issues/index
+   upgrade-400
    upgrade-350
    upgrade-340
    upgrade-300

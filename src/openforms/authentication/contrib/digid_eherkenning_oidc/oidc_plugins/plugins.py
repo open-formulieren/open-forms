@@ -1,9 +1,7 @@
-import warnings
 from abc import abstractmethod
 from collections.abc import Collection
-from typing import Any, override
+from typing import override
 
-from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
@@ -20,7 +18,6 @@ from mozilla_django_oidc_db.plugins import AnonymousUserOIDCPlugin
 from mozilla_django_oidc_db.registry import register
 from mozilla_django_oidc_db.typing import ClaimPath, JSONObject
 from mozilla_django_oidc_db.utils import obfuscate_claims
-from typing_extensions import deprecated
 
 from openforms.contrib.auth_oidc.typing import (
     ClaimPathDetails,
@@ -46,22 +43,6 @@ logger = structlog.stdlib.get_logger(__name__)
 
 
 class BaseDigiDeHerkenningPlugin(AnonymousUserOIDCPlugin):
-    @override
-    def get_setting(self, attr: str, *args) -> Any:
-        attr_lower = attr.lower()
-
-        if attr_lower == "oidc_authentication_callback_url":
-            if settings.USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS:
-                warnings.warn(
-                    "Legacy DigiD-eHerkenning callback endpoints will be removed in 4.0",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
-                return self._get_legacy_callback()
-            return "oidc_authentication_callback"
-
-        return super().get_setting(attr, *args)
-
     @override
     def get_or_create_user(
         self,
@@ -124,18 +105,6 @@ class BaseDigiDeHerkenningPlugin(AnonymousUserOIDCPlugin):
     def handle_callback(self, request: HttpRequest) -> HttpResponse:
         return anon_user_callback_view(request)  # pyright: ignore[reportReturnType] # .as_view() returns HttpResponseBase
 
-    @deprecated(
-        "These plugin-specific callback URLs are deprecated. "
-        "Instead, use the generic callback URL in urls.py - it"
-        " can handle the different configs."
-    )
-    @abstractmethod
-    def _get_legacy_callback(self) -> str:
-        """
-        Get the django URL name of the callback URL.
-        """
-        ...
-
     @abstractmethod
     def get_sensitive_claims(self) -> Collection[ClaimPath]: ...
 
@@ -147,9 +116,6 @@ class BaseDigiDeHerkenningPlugin(AnonymousUserOIDCPlugin):
 class OIDCDigidPlugin(BaseDigiDeHerkenningPlugin):
     def get_schema(self) -> JSONObject:
         return DIGID_OPTIONS_SCHEMA
-
-    def _get_legacy_callback(self) -> str:
-        return "digid_oidc:callback"
 
     def get_sensitive_claims(self) -> list[ClaimPath]:
         config = self.get_config()
@@ -219,9 +185,6 @@ class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin):
             },
         }
 
-    def _get_legacy_callback(self) -> str:
-        return "digid_machtigen_oidc:callback"
-
     def get_sensitive_claims(self) -> list[ClaimPath]:
         config = self.get_config()
 
@@ -285,9 +248,6 @@ class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin):
                 "processed_path": ["loa_claim"],
             },
         }
-
-    def _get_legacy_callback(self) -> str:
-        return "eherkenning_oidc:callback"
 
     def get_sensitive_claims(self) -> list[ClaimPath]:
         config = self.get_config()
@@ -376,9 +336,6 @@ class OIDCeHerkenningBewindvoeringPlugin(BaseDigiDeHerkenningPlugin):
             },
         }
 
-    def _get_legacy_callback(self) -> str:
-        return "eherkenning_bewindvoering_oidc:callback"
-
     def get_sensitive_claims(self) -> list[ClaimPath]:
         config = self.get_config()
 
@@ -412,9 +369,6 @@ class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
             config.options["identity_settings"]["legal_subject_first_name_claim_path"],
             config.options["identity_settings"]["legal_subject_family_name_claim_path"],
         ]
-
-    def _get_legacy_callback(self) -> str:
-        return "oidc_authentication_callback"
 
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
@@ -494,9 +448,6 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
                 "acting_subject_family_name_claim_path"
             ],
         ]
-
-    def _get_legacy_callback(self) -> str:
-        return "oidc_authentication_callback"
 
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
