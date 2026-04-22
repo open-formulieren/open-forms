@@ -140,6 +140,9 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         class TextField(BasePlugin):
             formatter = TextFieldFormatter
 
+            def build_serializer_field(self, component):
+                raise NotImplementedError()
+
             @staticmethod
             def mutate_config_dynamically(component, submission, data):
                 component["label"] = "Rewritten label"
@@ -698,6 +701,9 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         @register("testCustomType")
         class CustomType(BasePlugin):
             formatter = TextFieldFormatter
+
+            def build_serializer_field(self, component):
+                raise NotImplementedError()
 
             @staticmethod
             def mutate_config_dynamically(component, submission, data):

@@ -411,6 +411,9 @@ class NPFamilyMembers(BasePlugin):
     # not actually relevant, as we transform the component into a different type
     formatter = DefaultFormatter
 
+    def build_serializer_field(self, component: Component) -> serializers.Field:
+        raise NotImplementedError()
+
     @staticmethod
     def _get_handler() -> FamilyMembersHandler:
         handlers = {
@@ -1068,6 +1071,12 @@ class LicensePlate(BasePlugin):
 class CustomerProfile(BasePlugin):
     formatter = CustomerProfileFormatter
 
+    def build_serializer_field(
+        self, component: CustomerProfileComponent
+    ) -> serializers.JSONField:
+        required = component.get("validate", {}).get("required", False)
+        return serializers.JSONField(required=required, allow_null=True)
+
     @staticmethod
     def pre_registration_hook(
         component: CustomerProfileComponent, submission: Submission
@@ -1095,6 +1104,9 @@ class CustomerProfile(BasePlugin):
 class SoftRequiredErrors(BasePlugin):
     holds_submission_data = False
 
+    def build_serializer_field(self, component: Component) -> serializers.Field:
+        raise NotImplementedError()
+
     @staticmethod
     def as_json_schema(component: Component) -> None:
         return None
@@ -1103,6 +1115,9 @@ class SoftRequiredErrors(BasePlugin):
 @register("coSign")
 class CoSign(BasePlugin):
     holds_submission_data = False
+
+    def build_serializer_field(self, component: Component) -> serializers.Field:
+        raise NotImplementedError()
 
     @staticmethod
     def as_json_schema(component: Component) -> None:

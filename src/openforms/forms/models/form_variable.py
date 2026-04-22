@@ -14,11 +14,11 @@ import elasticapm
 import structlog
 from opentelemetry import trace
 
+from openforms.formio.service import holds_submission_data
 from openforms.formio.utils import (
     get_component_data_subtype,
     get_component_datatype,
     get_component_default_value,
-    is_layout_component,
     iter_components,
 )
 from openforms.formio.validators import variable_key_validator
@@ -117,9 +117,7 @@ class FormVariableManager(models.Manager["FormVariable"]):
         ):
             # we need to ignore components that don't actually hold any values - there's
             # no point to create variables for those.
-            if is_layout_component(component):
-                continue
-            if component["type"] in ("content", "softRequiredErrors"):
+            if not holds_submission_data(component):
                 continue
 
             # extract options from the component
