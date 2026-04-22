@@ -77,6 +77,14 @@ development machine.
        $ source env/bin/activate
        $ pip install -r requirements/dev.txt
 
+
+Optionally, if you would like to have complete LSP support in your IDE, you can install the type checking dependencies:
+
+   .. code-block:: bash
+
+       $ pip install -r requirements/type-checking.txt
+
+
 4. Install and build the frontend libraries:
 
    .. code-block:: bash
