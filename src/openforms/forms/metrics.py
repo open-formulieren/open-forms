@@ -33,8 +33,8 @@ def count_forms(options: metrics.CallbackOptions) -> Collection[metrics.Observat
         is_appointment=Count(
             "id", filter=Q(_is_deleted=False, type=FormTypeChoices.appointment)
         ),
-        is_single_page=Count(
-            "id", filter=Q(_is_deleted=False, type=FormTypeChoices.single_page)
+        is_single_step=Count(
+            "id", filter=Q(_is_deleted=False, type=FormTypeChoices.single_step)
         ),
         trash=Count("id", filter=Q(_is_deleted=True)),
     )

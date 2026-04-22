@@ -104,7 +104,7 @@ see the :ref:`Submission <installation_observability_metrics_submissions>` metri
     - ``scope`` - fixed, set to ``global`` to enable de-duplication.
     - ``type`` - one of ``total``, ``live``, ``new_renderer_enabled``,
       ``new_logic_evaluation_enabled``, ``translation_enabled``, ``is_regular``, 
-      ``is_appointment`` , ``is_single_page`` or ``trash``. For all but ``trash`` the 
+      ``is_appointment`` , ``is_single_step`` or ``trash``. For all but ``trash`` the 
       forms in the trash are excluded.
 
 ``openforms.form_component_count``

@@ -541,6 +541,7 @@ const FormConfigurationFields = ({
     newRendererEnabled,
     newLogicEvaluationEnabled,
   } = form;
+  const intl = useIntl();
 
   const onCheckboxChange = (event, currentValue) => {
     const {
@@ -653,13 +654,7 @@ const FormConfigurationFields = ({
                   key={`id_${value}_${index}`}
                   name="form.type"
                   idFor={`id_${value}_${index}`}
-                  label={
-                    <FormattedMessage
-                      defaultMessage="{formType}"
-                      description="Form type label"
-                      values={{formType: label}}
-                    />
-                  }
+                  label={intl.formatMessage(label)}
                   checked={form.type === value}
                   onChange={onChange}
                   value={value}
@@ -828,7 +823,7 @@ FormConfigurationFields.propTypes = {
     internalName: PropTypes.string.isRequired,
     internalRemarks: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
+    type: PropTypes.oneOf(['regular', 'appointment', 'single_step']).isRequired,
     showProgressIndicator: PropTypes.bool.isRequired,
     showSummaryProgress: PropTypes.bool.isRequired,
     active: PropTypes.bool.isRequired,
@@ -840,7 +835,7 @@ FormConfigurationFields.propTypes = {
     askPrivacyConsent: statementChoices.isRequired,
     askStatementOfTruth: statementChoices.isRequired,
     appointmentOptions: PropTypes.shape({
-      supportsMultipleProducts: PropTypes.oneOf([PropTypes.bool, null]),
+      supportsMultipleProducts: PropTypes.oneOfType([PropTypes.bool, null]),
     }),
     authBackends: PropTypes.arrayOf(
       PropTypes.shape({

@@ -1729,6 +1729,8 @@ class AppointmentFormTests(E2ETestCase):
             appointments_config.plugin = "demo"
             appointments_config.save()
 
+            self.addCleanup(AppointmentsConfig.clear_cache)
+
             # set up a form
             form = FormFactory.create(
                 name="Playwright appointment test",
@@ -1756,10 +1758,8 @@ class AppointmentFormTests(E2ETestCase):
             await self._admin_login(page)
             await page.goto(str(admin_url))
 
-            await page.locator("input[name='form.type'][value='appointment']").check()
-            await expect(page.locator("input[name='form.type']:checked")).to_have_value(
-                "appointment"
-            )
+            await page.get_by_label("Appointment").click()
+            await expect(page.get_by_label("Appointment")).to_be_checked()
 
             with phase("save form changes to backend"):
                 await page.get_by_role("button", name="Save", exact=True).click()

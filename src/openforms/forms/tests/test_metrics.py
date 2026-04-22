@@ -14,9 +14,9 @@ class FormCountMetricTests(MetricsAssertMixin, TestCase):
         # appointment forms
         FormFactory.create(type=FormTypeChoices.appointment, deleted_=False)
         FormFactory.create(type=FormTypeChoices.appointment, deleted_=True)
-        # single page forms
-        FormFactory.create(type=FormTypeChoices.single_page, deleted_=False)
-        FormFactory.create(type=FormTypeChoices.single_page, deleted_=True)
+        # single step forms
+        FormFactory.create(type=FormTypeChoices.single_step, deleted_=False)
+        FormFactory.create(type=FormTypeChoices.single_step, deleted_=True)
         # live forms
         FormFactory.create(deleted_=False, active=True, maintenance_mode=False)
         FormFactory.create(deleted_=False, active=True, maintenance_mode=True)
@@ -43,10 +43,10 @@ class FormCountMetricTests(MetricsAssertMixin, TestCase):
         self.assertEqual(
             counts_by_type,
             {
-                # 1 appointment, 1 single page, 2 live, 2 with translations, 1 without
+                # 1 appointment, 1 single step, 2 live, 2 with translations, 1 without
                 # new renderer and logic evaluation
                 "total": 1 + 1 + 2 + 2 + 1,
-                # 1 appointment, 1 single page, 2 active and not deleted, 1 active with translations,
+                # 1 appointment, 1 single step, 2 active and not deleted, 1 active with translations,
                 # 1 without new renderer and logic evaluation
                 "live": 1 + 1 + 2 + 1 + 1,
                 "new_renderer_enabled": 6,  # doesn't matter if active or not
@@ -54,7 +54,7 @@ class FormCountMetricTests(MetricsAssertMixin, TestCase):
                 "translation_enabled": 2,  # doesn't matter if they're active or not
                 "is_regular": 5,  # don't consider deleted forms
                 "is_appointment": 1,  # don't consider deleted forms
-                "is_single_page": 1,  # don't consider deleted forms
+                "is_single_step": 1,  # don't consider deleted forms
                 "trash": 1 + 1 + 1 + 1,
             },
         )

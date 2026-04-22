@@ -562,7 +562,7 @@ class AddFormTypeFieldReverseMigrationTests(MigratorTestCase):
         # create a form for all the possible types
         Form.objects.create(name="Appointment form", type=FormTypeChoices.appointment)
         Form.objects.create(name="Regular form", type=FormTypeChoices.regular)
-        Form.objects.create(name="Single page form", type=FormTypeChoices.single_page)
+        Form.objects.create(name="Single step form", type=FormTypeChoices.single_step)
 
     def test_migration(self):
         Form = self.new_state.apps.get_model("forms", "Form")

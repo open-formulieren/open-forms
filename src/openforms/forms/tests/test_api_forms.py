@@ -1418,6 +1418,8 @@ class FormsAPITests(APITestCase):
         config.plugin = "demo"
         config.save()
 
+        self.addCleanup(AppointmentsConfig.clear_cache)
+
         form = FormFactory.create(type=FormTypeChoices.regular)
 
         self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
@@ -1460,7 +1462,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.type, FormTypeChoices.regular)
         self.assertEqual(
             errors["reason"],
-            _("This type of form requires an appointment plugin to be configured"),
+            _("Appointment forms require an appointment plugin to be configured."),
         )
 
 

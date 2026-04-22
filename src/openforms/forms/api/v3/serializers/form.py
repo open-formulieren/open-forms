@@ -10,7 +10,6 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
-from openforms.appointments.utils import get_plugin
 from openforms.config.models import Theme
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
@@ -37,6 +36,7 @@ from ....models import (
     FormStep,
     FormVariable,
 )
+from ...validators import RequireAppointmentsPlugin
 from ..typing import FormStepData, FormValidatedData
 from .form_step import FormStepSerializer
 from .payment import FormPaymentSerializer
@@ -142,6 +142,7 @@ class FormSerializer(serializers.ModelSerializer):
             "uuid": {  # retrieved from the context passed through from the view
                 "read_only": True,
             },
+            "type": {"validators": [RequireAppointmentsPlugin()]},
         }
 
     @transaction.atomic()
@@ -317,48 +318,30 @@ class FormSerializer(serializers.ModelSerializer):
         # Fixing/updating ModelTranslationsSerializer can be tricky (it's used a lot in
         # the project), so that's why we do the check here.
         steps = attrs.get("formstep_set")
-        if steps is None:
+        form_type = attrs.get("type")
+        if steps is None and form_type is None:
             return
 
-        form_type = attrs.get("type")
-        # regular form should have at least one step
-        if form_type == FormTypeChoices.regular and len(steps) == 0:
-            raise serializers.ValidationError(
-                _("At least one form step is required in a regular form.")
-            )
-        # appointment form should not have any steps
-        if form_type == FormTypeChoices.appointment and len(steps) > 0:
-            raise serializers.ValidationError(
-                _("Form steps are not allowed in an appointment form.")
-            )
-        # single page form should have exactly one step
-        if form_type == FormTypeChoices.single_page and len(steps) != 1:
-            raise serializers.ValidationError(
-                _("Exactly one form step is required in a single page form.")
-            )
-
-    def validate_appointment_type_can_be_enabled(
-        self, attrs: FormValidatedData
-    ) -> None:
-        form_type = attrs.get("type")
-        if form_type != FormTypeChoices.appointment:
-            return
-
-        try:
-            get_plugin()
-        except ValueError:
-            raise serializers.ValidationError(
-                {
-                    "type": _(
-                        "This type of form requires an appointment plugin to be "
-                        "configured"
-                    ),
-                }
-            )
+        num_steps = len(steps)
+        match form_type:
+            # regular form should have at least one step
+            case FormTypeChoices.regular if num_steps == 0:
+                raise serializers.ValidationError(
+                    _("At least one form step is required in a regular form.")
+                )
+            # appointment form should not have any steps
+            case FormTypeChoices.appointment if num_steps > 0:
+                raise serializers.ValidationError(
+                    _("Form steps are not allowed in an appointment form.")
+                )
+            # single step form should have exactly one step
+            case FormTypeChoices.single_step if num_steps != 1:
+                raise serializers.ValidationError(
+                    _("Exactly one form step is required in a single step form.")
+                )
 
     def validate(self, attrs: FormValidatedData) -> FormValidatedData:
         self.validate_amount_of_steps(attrs)
-        self.validate_appointment_type_can_be_enabled(attrs)
 
         return attrs
 

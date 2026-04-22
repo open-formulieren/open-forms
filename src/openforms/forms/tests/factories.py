@@ -49,6 +49,14 @@ class FormFactory(factory.django.DjangoModelFactory):
             generate_minimal_setup=False,  # there are no form steps
             type=FormTypeChoices.appointment,
         )
+        is_single_step_form = factory.Trait(
+            generate_minimal_setup__form_step__form_definition__login_required=False,
+            type=FormTypeChoices.single_step,
+            submission_allowed=True,
+            suspension_allowed=False,
+            show_progress_indicator=False,
+            introduction_page_content="",
+        )
         # prevent options passed to Form() and set a default
         registration_backend_options = {}
         authentication_backend_options = {}

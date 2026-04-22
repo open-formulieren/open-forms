@@ -8040,7 +8040,7 @@ components:
 
             * `regular` - Regular
             * `appointment` - Appointment
-            * `single_page` - Single page
+            * `single_step` - Single step
         category:
           type: string
           format: uri
@@ -9028,12 +9028,12 @@ components:
       enum:
       - regular
       - appointment
-      - single_page
+      - single_step
       type: string
       description: |-
         * `regular` - Regular
         * `appointment` - Appointment
-        * `single_page` - Single page
+        * `single_step` - Single step
     FormV3:
       type: object
       properties:
@@ -9087,7 +9087,7 @@ components:
 
             * `regular` - Regular
             * `appointment` - Appointment
-            * `single_page` - Single page
+            * `single_step` - Single step
         category:
           type: string
           format: uuid
@@ -10055,7 +10055,7 @@ components:
 
             * `regular` - Regular
             * `appointment` - Appointment
-            * `single_page` - Single page
+            * `single_step` - Single step
         category:
           type: string
           format: uri

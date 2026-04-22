@@ -93,6 +93,7 @@ class PaymentData(TypedDict):
 
 
 class FormValidatedData(TypedDict):
+    uuid: UUID
     name: str
     internal_name: NotRequired[str]
     internal_remarks: NotRequired[str]

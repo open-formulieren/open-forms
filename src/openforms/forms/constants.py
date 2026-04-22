@@ -66,4 +66,4 @@ class StatementCheckboxChoices(models.TextChoices):
 class FormTypeChoices(models.TextChoices):
     regular = "regular", _("Regular")
     appointment = "appointment", _("Appointment")
-    single_page = "single_page", _("Single page")
+    single_step = "single_step", _("Single step")

@@ -755,6 +755,12 @@ class FormEndpointTests(APITestCase):
         )
 
     def test_create_appointment_form_requires_zero_steps(self):
+        config = AppointmentsConfig.get_solo()
+        config.plugin = "demo"
+        config.save()
+
+        self.addCleanup(AppointmentsConfig.clear_cache)
+
         url = reverse(
             "api:v3:form-detail",
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
@@ -807,7 +813,7 @@ class FormEndpointTests(APITestCase):
             _("Form steps are not allowed in an appointment form."),
         )
 
-    def test_create_single_page_form_requires_exactly_one_step(self):
+    def test_create_single_step_form_requires_exactly_one_step(self):
         url = reverse(
             "api:v3:form-detail",
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
@@ -815,7 +821,7 @@ class FormEndpointTests(APITestCase):
         data = {
             "name": "Create form",
             "slug": "create-form",
-            "type": FormTypeChoices.single_page,
+            "type": FormTypeChoices.single_step,
             "steps": [],
         }
         response = self.client.put(url, data=data)
@@ -828,13 +834,15 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(response_data["invalidParams"][0]["name"], "nonFieldErrors")
         self.assertEqual(
             response_data["invalidParams"][0]["reason"],
-            _("Exactly one form step is required in a single page form."),
+            _("Exactly one form step is required in a single step form."),
         )
 
     def test_create_appointment_form_with_appointment_plugin(self):
         config = AppointmentsConfig.get_solo()
         config.plugin = "demo"
         config.save()
+
+        self.addCleanup(AppointmentsConfig.clear_cache)
 
         url = reverse(
             "api:v3:form-detail",
@@ -879,7 +887,7 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(response_data["invalidParams"][0]["name"], "type")
         self.assertEqual(
             response_data["invalidParams"][0]["reason"],
-            _("This type of form requires an appointment plugin to be configured"),
+            _("Appointment forms require an appointment plugin to be configured."),
         )
 
     def test_incorrect_payment_backend_options(self):

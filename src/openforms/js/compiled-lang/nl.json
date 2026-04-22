@@ -3236,12 +3236,6 @@
       "value": "Prefix"
     }
   ],
-  "Oayv3l": [
-    {
-      "type": 1,
-      "value": "formType"
-    }
-  ],
   "Od+jm6": [
     {
       "type": 0,
@@ -3862,6 +3856,12 @@
     {
       "type": 0,
       "value": "Basis"
+    }
+  ],
+  "TU0Bku": [
+    {
+      "type": 0,
+      "value": "Appointment"
     }
   ],
   "TXwGu1": [
@@ -5569,6 +5569,12 @@
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "gI+MHU": [
+    {
+      "type": 0,
+      "value": "Regular"
+    }
+  ],
   "gSSyoc": [
     {
       "type": 0,
@@ -6631,6 +6637,12 @@
     {
       "type": 0,
       "value": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier."
+    }
+  ],
+  "oqtOzt": [
+    {
+      "type": 0,
+      "value": "Single step"
     }
   ],
   "oqv4fM": [

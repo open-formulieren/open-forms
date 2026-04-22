@@ -3249,12 +3249,6 @@
       "value": "Prefix"
     }
   ],
-  "Oayv3l": [
-    {
-      "type": 1,
-      "value": "formType"
-    }
-  ],
   "Od+jm6": [
     {
       "type": 0,
@@ -3879,6 +3873,12 @@
     {
       "type": 0,
       "value": "Base"
+    }
+  ],
+  "TU0Bku": [
+    {
+      "type": 0,
+      "value": "Appointment"
     }
   ],
   "TXwGu1": [
@@ -5581,6 +5581,12 @@
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
     }
   ],
+  "gI+MHU": [
+    {
+      "type": 0,
+      "value": "Regular"
+    }
+  ],
   "gSSyoc": [
     {
       "type": 0,
@@ -6643,6 +6649,12 @@
     {
       "type": 0,
       "value": "Which merchant should be used for payments related to this form."
+    }
+  ],
+  "oqtOzt": [
+    {
+      "type": 0,
+      "value": "Single step"
     }
   ],
   "oqv4fM": [

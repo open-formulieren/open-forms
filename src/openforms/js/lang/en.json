@@ -1569,11 +1569,6 @@
     "description": "Session expiry warning (in modal)",
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
   },
-  "Oayv3l": {
-    "defaultMessage": "{formType}",
-    "description": "Form type label",
-    "originalDefault": "{formType}"
-  },
   "Od+jm6": {
     "defaultMessage": "Values:",
     "description": "Label indicating the 'values' part of the data",
@@ -1883,6 +1878,11 @@
     "defaultMessage": "Base",
     "description": "ZGW APIs registration backend options, 'base' tab label",
     "originalDefault": "Base"
+  },
+  "TU0Bku": {
+    "defaultMessage": "Appointment",
+    "description": "appointment form type option label",
+    "originalDefault": "Appointment"
   },
   "TXwGu1": {
     "defaultMessage": "Slug",
@@ -2594,6 +2594,11 @@
     "description": "literals.previousText help text",
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
   },
+  "gI+MHU": {
+    "defaultMessage": "Regular",
+    "description": "regular form type option label",
+    "originalDefault": "Regular"
+  },
   "gUl3mu": {
     "defaultMessage": "Are you sure that you want to remove this mapping?",
     "description": "Confirmation message to remove a mapping",
@@ -3128,6 +3133,11 @@
     "defaultMessage": "Which merchant should be used for payments related to this form.",
     "description": "Worldline payment options 'merchant' help text",
     "originalDefault": "Which merchant should be used for payments related to this form."
+  },
+  "oqtOzt": {
+    "defaultMessage": "Single step",
+    "description": "single page form type option label",
+    "originalDefault": "Single step"
   },
   "oqv4fM": {
     "defaultMessage": "The prefill values will be taken from an object of the selected type.",
