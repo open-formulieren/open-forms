@@ -25,8 +25,7 @@ export default {
       suspensionAllowed: true,
       askPrivacyConsent: 'global_setting',
       askStatementOfTruth: 'global_setting',
-      appointmentOptions: {},
-
+      appointmentOptions: null,
       authBackends: [],
     },
     onChange: fn(),
@@ -90,9 +89,61 @@ export default {
 
 export const Default = {};
 
+export const RegularFormExample = {
+  args: {
+    form: {
+      type: 'regular',
+      authBackends: [
+        {
+          backend: 'digid',
+          options: {
+            loa: '',
+          },
+        },
+      ],
+    },
+    selectedAuthPlugins: ['digid'],
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const authTitle = canvas.getByRole('heading', {name: 'Inloggen'});
+    expect(authTitle).toBeVisible();
+  },
+};
+
+export const AppointmentFormExample = {
+  args: {
+    form: {
+      type: 'appointment',
+    },
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const loginSection = canvas.queryByText('Inloggen');
+    expect(loginSection).toBeNull();
+  },
+};
+
+export const SinglePageFormExample = {
+  args: {
+    form: {
+      type: 'single_step',
+    },
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const loginSection = canvas.queryByText('Inloggen');
+    expect(loginSection).toBeNull();
+  },
+};
+
 export const AuthenticationPluginWithOptionsModal = {
   args: {
     form: {
+      type: 'regular',
       authBackends: [
         {
           backend: 'digid',

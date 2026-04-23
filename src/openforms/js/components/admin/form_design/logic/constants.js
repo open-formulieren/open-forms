@@ -55,7 +55,7 @@ const TYPE_TO_OPERATORS = {
   _default: ['==', '!='],
 };
 
-const ACTION_TYPES = [
+const REGULAR_FORM_ACTION_TYPES = [
   [
     'disable-next',
     defineMessage({
@@ -117,6 +117,15 @@ const ACTION_TYPES = [
     defineMessage({
       description: 'action type "synchronize variables" label',
       defaultMessage: 'Synchronize variables',
+    }),
+  ],
+];
+const SINGLE_PAGE_FORM_ACTION_TYPES = [
+  [
+    'set-registration-backend',
+    defineMessage({
+      description: 'action type "set-registration-backend" label',
+      defaultMessage: 'Set the registration backend to use for the submission',
     }),
   ],
 ];
@@ -194,7 +203,8 @@ const MODIFIABLE_PROPERTIES = {
 export {
   OPERATORS,
   TYPE_TO_OPERATORS,
-  ACTION_TYPES,
+  REGULAR_FORM_ACTION_TYPES,
+  SINGLE_PAGE_FORM_ACTION_TYPES,
   ACTIONS_WITH_OPTIONS,
   MODIFIABLE_PROPERTIES,
   STRING_TO_TYPE,

@@ -17,14 +17,18 @@ const NewStepFormDefinitionPicker = ({onReplace}) => {
   const intl = useIntl();
   const formContext = useContext(FormContext);
   const formDefinitions = formContext.formDefinitions;
+  const formType = formContext.form.type;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFormDefinition, setSelectedFormDefinition] = useState('');
   const [validationErrors, setValidationErrors] = useState([]);
+
+  const isSinglePage = formType === 'single_step';
 
   const formDefinitionChoices = formDefinitions
     .filter(
       fd =>
         fd.isReusable &&
+        (isSinglePage ? !fd.loginRequired : true) &&
         !formContext.formSteps.some(fc => fc.isReusable && fc.formDefinition === fd.url)
     )
     .map(fd => [fd.url, fd.internalName || fd.name])
