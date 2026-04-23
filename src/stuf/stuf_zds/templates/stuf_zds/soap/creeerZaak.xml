@@ -146,7 +146,7 @@
             </ZKN:heeftAlsInitiator>
         {% endif %}
         {% if co_signer %}
-            <ZKN:heeftAlsOverigBetrokkene StUF:entiteittype="ZAKOBJ" StUF:verwerkingssoort="T">
+            <ZKN:heeftAlsOverigBetrokkene StUF:entiteittype="ZAKBTROVR" StUF:verwerkingssoort="T">
                 <ZKN:gerelateerde>
                     <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
                         <BG:inp.bsn>{{ co_signer }}</BG:inp.bsn>
