@@ -1,10 +1,10 @@
-{% load openforms static %}{% if form %}{% with 'openforms-container' as div_id %}
+{% load openforms static %}{% if form %}
 {% sdk_urls as urls %}
 {# Preload the module #}
 <link href="{{ urls.sdk_esm_url }}" rel="modulepreload" />
 <div
     class="open-forms-sdk-root"
-    id="{{ div_id }}"
+    id="openforms-container"
     data-sdk-module="{{ urls.sdk_esm_url }}"
     data-form-id="{{ form.slug }}"
     data-base-url="{% api_base_url %}"
@@ -13,44 +13,6 @@
     {% if sdk_sentry_dsn %}data-sentry-dsn{% endif %}
     {% if sdk_sentry_env %}data-sentry-env{% endif %}
 ></div>
-{# Modern browsers support modules, legacy browsers ignore this and use the fallback #}
+{# Browsers since 2018 support module, the UMD fallback should not be necessary any longer #}
 <script type="module" src="{% static 'sdk-wrapper.mjs' %}"></script>
-
-{# Fallback #}
-<script src="{{ urls.sdk_umd_url }}" nomodule></script>
-<script nonce="{{ request.csp_nonce }}" nomodule>
-    const formId = '{{ form.slug|escapejs }}';
-    const baseUrl = '{% filter escapejs %}{% api_base_url %}{% endfilter %}';
-    const targetNode = document.getElementById('{{ div_id|escapejs }}');
-    {% if base_path %}
-    const basePath = '{{ base_path|escapejs }}';
-    {% else %}
-    const basePath = '{% filter escapejs %}{% url "forms:form-detail" slug=form.slug %}{% endfilter %}';
-    {% endif %}
-    const CSPNonce = '{{ request.csp_nonce|escapejs }}';
-    {% if sdk_sentry_dsn %}const sentryDSN = '{% filter escapejs %}{{ sdk_sentry_dsn }}{% endfilter %}';{% endif %}
-    {% if sdk_sentry_env %}const sentryEnv = '{% filter escapejs %}{{ sdk_sentry_env }}{% endfilter %}';{% endif %}
-    const form = new OpenForms.OpenForm(
-        targetNode,
-        {
-            baseUrl,
-            formId,
-            basePath,
-            CSPNonce,
-            {% if sdk_sentry_dsn %}sentryDSN,{% endif %}
-            {% if sdk_sentry_env %}sentryEnv,{% endif %}
-            languageSelectorTarget: '#react-portal--language-selection',
-            onLanguageChange: (newLanguageCode, initialDataReference) => {
-                // URL handling in JS requires a proper base since you can't just feed `foo` or `/foo`
-                // to the constructor. We only extract the pathname + query string again at the end.
-                const base = window.location.origin;
-                const url = new URL(basePath, base);
-                if (initialDataReference) {
-                    url.searchParams.set('initial_data_reference', initialDataReference);
-                }
-                window.location.replace(`${url.pathname}${url.search}`);
-            },
-        }
-    );
-    form.init();
-</script>{% endwith %}{% endif %}
+{% endif %}

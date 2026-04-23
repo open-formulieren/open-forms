@@ -25,11 +25,6 @@ class StableSDKUrlTests(ParametrizedTestCase, TestCase):
         ("stable_url", "resolved_url"),
         [
             param(
-                "/static/sdk/open-forms-sdk.js",
-                "/static/sdk/1.2.3/bundles/open-forms-sdk.js",
-                id="umd",
-            ),
-            param(
                 "/static/sdk/open-forms-sdk.mjs",
                 "/static/sdk/1.2.3/bundles/open-forms-sdk.mjs",
                 id="esm",
