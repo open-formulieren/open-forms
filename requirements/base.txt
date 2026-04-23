@@ -329,7 +329,7 @@ jsonschema-specifications==2025.9.1
     #   jsonschema
 kombu==5.6.2
     # via celery
-lxml==6.0.2
+lxml==6.1.0
     # via
     #   -r requirements/base.in
     #   django-camunda
@@ -531,7 +531,7 @@ python-decouple==3.8
     # via
     #   -r requirements/base.in
     #   maykin-common
-python-dotenv==1.2.1
+python-dotenv==1.2.2
     # via
     #   -r requirements/base.in
     #   pydantic-settings

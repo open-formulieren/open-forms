@@ -632,7 +632,7 @@ kombu==5.6.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   celery
-lxml==6.0.2
+lxml==6.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1001,7 +1001,7 @@ python-decouple==3.8
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-common
-python-dotenv==1.2.1
+python-dotenv==1.2.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
