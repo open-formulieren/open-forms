@@ -931,6 +931,12 @@
       "value": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
     }
   ],
+  "7KsVk/": [
+    {
+      "type": 0,
+      "value": "Single page can be enabled only when there is exactly one form step configured."
+    }
+  ],
   "7Ldfn+": [
     {
       "type": 0,
@@ -2167,12 +2173,6 @@
       "value": "Cancel rule creation"
     }
   ],
-  "G2rpx2": [
-    {
-      "type": 0,
-      "value": "Whether the step progression should be displayed in the UI or not."
-    }
-  ],
   "G5q9GH": [
     {
       "type": 0,
@@ -3335,12 +3335,6 @@
     {
       "type": 0,
       "value": "."
-    }
-  ],
-  "QXfH7G": [
-    {
-      "type": 0,
-      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
     }
   ],
   "QaPqxz": [
@@ -5919,6 +5913,12 @@
       "value": "Show form"
     }
   ],
+  "k6t6Xi": [
+    {
+      "type": 0,
+      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms."
+    }
+  ],
   "k9CT3p": [
     {
       "type": 0,
@@ -6583,6 +6583,12 @@
     {
       "type": 0,
       "value": "The description that will be used in children registration."
+    }
+  ],
+  "pdiR+8": [
+    {
+      "type": 0,
+      "value": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form."
     }
   ],
   "pdmkVe": [
