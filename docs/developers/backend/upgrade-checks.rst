@@ -21,14 +21,18 @@ Then, the check will:
 Check configuration
 -------------------
 
-The upgrade paths are specified in :mod:`openforms.upgrades.upgrade_paths`, in the
-``UPGRADE_PATHS`` constant.
+The upgrade paths are specified in :attr:`openforms.conf.base.UPGRADE_CHECK_PATHS`. It
+uses the underlying `django-upgrade-check <https://pypi.org/project/django-upgrade-check/>`_
+library.
 
 For every target version (=version to upgrade *to*), you can specify:
 
 * the supported version ranges to upgrade *from*
-* management commands that need to pass (optional)
-* custom scripts in the ``bin`` folder that need to pass (optional)
+* code checks that need to pass (optional), such as:
+
+  * management commands through :class:`upgrade_check.CommandCheck`
+  * custom scripts in the ``bin`` folder that need to pass through
+    :class:`openforms.upgrades.script_checks.BinScriptCheck`.
 
 **Custom scripts**
 
@@ -53,20 +57,16 @@ official releases.
    environment variable (and the VCS commit hash is baked into ``GIT_SHA``, accordingly)
 3. The container start script (``bin/docker_start.sh``) runs migrations as part of the
    initialization, through the ``migrate`` management command.
-4. Django runs the system checks *before* executing the migrations
-5. Our custom system check is registered with the system checks and runs as part of the
-   system checks
-6. The custom check reads from the database which version was deployed earlier and
-   compares this with the version from the container image (from the ``RELEASE``
-   environment variable). The check then verifies if upgrading from old version (from
-   the database) to the new version is possible.
-7. If upgrading is not possible, an error is emitted and the ``migrate`` command does
+4. Django runs the system checks *before* executing the migrations. django-upgrade-check
+   hooks into this mechanism. It compares the current version with the version being
+   deployed (from the baked-in version information) and runs the relevant checks.
+5. If upgrading is not possible, an error is emitted and the ``migrate`` command does
    not execute - your database is thus left untouched. Because of the error exit code,
    the container will also not start. All information to correct this situation is
    available in the container logs.
-8. If upgrading is possible, migrations are executed and add the end the version
-   registered in the database is automatically updated with the value of ``RELEASE``
-9. This cycle repeats for the next upgrade.
+6. If upgrading is possible, migrations are executed and at the end the version
+   registered in the database is automatically updated with the value of ``RELEASE``.
+7. This cycle repeats for the next upgrade.
 
 If your upgrade is blocked, you should be able to safely deploy the old version again,
 make the necessary changes to resolve the problems preventing the upgrade, and then
@@ -75,4 +75,3 @@ try again.
 Developers and people deploying ``latest`` (don't do this unless you're willing to
 debug breaking changes!) usually receive warnings instead of errors, so their usual
 flow is not broken.
-
