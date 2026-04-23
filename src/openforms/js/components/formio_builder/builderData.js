@@ -227,6 +227,7 @@ const SINGLE_PAGE_BUILDER_DATA = {
       time: true,
       phoneNumber: true,
       postcode: true,
+      file: false,
     },
   },
   custom_special: {
@@ -236,10 +237,15 @@ const SINGLE_PAGE_BUILDER_DATA = {
       iban: true,
       licenseplate: true,
       bsn: true,
+      npFamilyMembers: false,
       signature: true,
+      cosign: false,
       map: true,
       editgrid: true,
       addressNL: true,
+      partners: false,
+      children: false,
+      customerProfile: false,
     },
   },
   custom_layout: {
@@ -249,6 +255,7 @@ const SINGLE_PAGE_BUILDER_DATA = {
       content: true,
       fieldset: true,
       columns: true,
+      softRequiredErrors: false,
     },
   },
   custom_preset: {
