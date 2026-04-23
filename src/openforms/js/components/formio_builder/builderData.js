@@ -1,4 +1,4 @@
-export const DEFAULT_BUILDER_DATA = {
+const REGULAR_BUILDER_DATA = {
   basic: false,
   advanced: false,
   data: false,
@@ -201,7 +201,196 @@ export const DEFAULT_BUILDER_DATA = {
   },
 };
 
-export const APPOINTMENT_BUILDER_DATA = {
+const SINGLE_PAGE_BUILDER_DATA = {
+  basic: false,
+  advanced: false,
+  data: false,
+  layout: false,
+  premium: false,
+
+  custom: {
+    default: true,
+    title: 'Formuliervelden',
+    weight: 0,
+    components: {
+      textfield: true,
+      textarea: true,
+      checkbox: true,
+      selectboxes: true,
+      select: true,
+      radio: true,
+      number: true,
+      currency: true,
+      email: true,
+      date: true,
+      datetime: true,
+      time: true,
+      phoneNumber: true,
+      postcode: true,
+    },
+  },
+  custom_special: {
+    title: 'Special fields',
+    weight: 5,
+    components: {
+      iban: true,
+      licenseplate: true,
+      bsn: true,
+      signature: true,
+      map: true,
+      editgrid: true,
+      addressNL: true,
+    },
+  },
+  custom_layout: {
+    title: 'Opmaak',
+    weight: 5,
+    components: {
+      content: true,
+      fieldset: true,
+      columns: true,
+    },
+  },
+  custom_preset: {
+    title: 'Voorgedefinieerd',
+    weight: 10,
+    components: {
+      fullName: {
+        title: 'Volledige naam',
+        key: 'fullName',
+        icon: 'terminal',
+        schema: {
+          label: 'Volledige naam',
+          autocomplete: 'name',
+          type: 'textfield',
+          key: 'fullName',
+          input: true,
+        },
+      },
+      firstName: {
+        title: 'Voornaam',
+        key: 'firstName',
+        icon: 'terminal',
+        schema: {
+          label: 'Voornaam',
+          autocomplete: 'given-name',
+          type: 'textfield',
+          key: 'firstName',
+          input: true,
+        },
+      },
+      lastName: {
+        title: 'Achternaam',
+        key: 'lastName',
+        icon: 'terminal',
+        schema: {
+          label: 'Achternaam',
+          autocomplete: 'family-name',
+          type: 'textfield',
+          key: 'lastName',
+          input: true,
+        },
+      },
+      addressLine1: {
+        title: 'Adresregel 1',
+        key: 'addressLine1',
+        icon: 'home',
+        schema: {
+          label: 'Adresregel 1',
+          autocomplete: 'address-line1',
+          type: 'textfield',
+          key: 'addressLine1',
+          input: true,
+        },
+      },
+      addressLine2: {
+        title: 'Adresregel 2',
+        key: 'addressLine2',
+        icon: 'home',
+        schema: {
+          label: 'Adresregel 2',
+          autocomplete: 'address-line2',
+          type: 'textfield',
+          key: 'addressLine2',
+          input: true,
+        },
+      },
+      addressLine3: {
+        title: 'Adresregel 3',
+        key: 'addressLine3',
+        icon: 'home',
+        schema: {
+          label: 'Adresregel 3',
+          autocomplete: 'address-line3',
+          type: 'textfield',
+          key: 'addressLine3',
+          input: true,
+        },
+      },
+      postalcode: {
+        title: 'Postcode',
+        key: 'postalcode',
+        icon: 'home',
+        schema: {
+          label: 'Postcode',
+          autocomplete: 'postal-code',
+          type: 'postcode',
+          key: 'postalcode',
+          input: true,
+          inputMask: '9999 AA',
+          validateOn: 'blur',
+          validate: {
+            customMessage: 'Invalid Postcode',
+            // Dutch postcode has 4 numbers and 2 letters (case insensitive). Letter combinations SS, SD and SA
+            // are not used due to the Nazi-association.
+            // See https://stackoverflow.com/a/17898538/7146757 and https://nl.wikipedia.org/wiki/Postcodes_in_Nederland
+            pattern: '^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$',
+          },
+        },
+      },
+      email: {
+        title: 'E-mailadres',
+        key: 'email',
+        icon: 'at',
+        schema: {
+          label: 'E-mailadres',
+          autocomplete: 'email',
+          tableView: true,
+          key: 'email',
+          type: 'email',
+          input: true,
+        },
+      },
+      phoneNumber: {
+        title: 'Telefoonnummer',
+        key: 'phoneNumber',
+        icon: 'phone-square',
+        schema: {
+          label: 'Telefoonnummer',
+          autocomplete: 'tel',
+          tableView: true,
+          key: 'phoneNumber',
+          type: 'phoneNumber',
+          input: true,
+        },
+      },
+      url: {
+        title: 'Website',
+        key: 'url',
+        icon: 'link',
+        schema: {
+          label: 'Website',
+          autocomplete: 'url',
+          type: 'textfield',
+          key: 'url',
+          input: true,
+        },
+      },
+    },
+  },
+};
+
+const APPOINTMENT_BUILDER_DATA = {
   basic: false,
   advanced: false,
   data: false,
@@ -220,4 +409,10 @@ export const APPOINTMENT_BUILDER_DATA = {
       phoneNumber: true,
     },
   },
+};
+
+export const BUILDER_FORM_TYPE_MAPPINGS = {
+  regular: REGULAR_BUILDER_DATA,
+  appointment: APPOINTMENT_BUILDER_DATA,
+  single_step: SINGLE_PAGE_BUILDER_DATA,
 };
