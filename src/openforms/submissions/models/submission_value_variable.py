@@ -718,7 +718,10 @@ class SubmissionValueVariable(models.Model):
                 child_value: VariableValue | object = value.get(child_key, empty)
 
                 if child_value is empty:
-                    if include_unsaved and holds_submission_data(child_component):
+                    child_type = child_component["type"]
+                    if (
+                        include_unsaved and holds_submission_data(child_component)
+                    ) and not child_type == "radio":
                         child_value = get_component_empty_value(child_component)
                     else:
                         continue
