@@ -62,7 +62,7 @@
         <ZKN:zaakniveau>1</ZKN:zaakniveau>
         <ZKN:deelzakenIndicatie>N</ZKN:deelzakenIndicatie>
         <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
-        {% include "stuf_zds/soap/includes/extraElementen.xml" %}
+        {% include "stuf_zds/soap/includes/extraElementen.xml" with extra=extra %}
         <ZKN:isVan StUF:entiteittype="ZAKZKT" StUF:verwerkingssoort="T">
             <ZKN:gerelateerde StUF:verwerkingssoort="I" StUF:entiteittype="ZKT">
                 {% if zds_zaaktype_omschrijving %}
@@ -130,6 +130,8 @@
                     {% endif %}
                 </ZKN:gerelateerde>
                 <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
+                {% include "stuf_zds/soap/includes/extraElementen.xml" with extra=extra_initiator %}
+
                 {% if initiator.contactpersoonNaam or initiator.telefoonnummer or initiator.emailadres %}
                     {% include "stuf_zds/soap/includes/heeftAlsAanspreekpunt.xml" %}
                 {% endif %}

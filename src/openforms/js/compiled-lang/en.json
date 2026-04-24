@@ -2429,6 +2429,12 @@
       "value": "Plugin configuration: ZGW APIs"
     }
   ],
+  "H2IXy5": [
+    {
+      "type": 0,
+      "value": "Variables mapping (case)"
+    }
+  ],
   "H3dRU6": [
     {
       "type": 0,
@@ -3487,26 +3493,6 @@
     {
       "type": 0,
       "value": "Specify a positive, non-zero file size without decimals, e.g. 10MB."
-    }
-  ],
-  "QWOU1l": [
-    {
-      "type": 0,
-      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "extraElementen"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": "."
     }
   ],
   "QXfH7G": [
@@ -5055,12 +5041,6 @@
       "value": "Product request type"
     }
   ],
-  "csTJIN": [
-    {
-      "type": 0,
-      "value": "Variables mapping"
-    }
-  ],
   "cuivC6": [
     {
       "type": 0,
@@ -5575,6 +5555,12 @@
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
     }
   ],
+  "gO2sGp": [
+    {
+      "type": 0,
+      "value": "Variables mapping (Initiator)"
+    }
+  ],
   "gSSyoc": [
     {
       "type": 0,
@@ -5811,6 +5797,26 @@
     {
       "type": 0,
       "value": "You must select a table."
+    }
+  ],
+  "i3qXzA": [
+    {
+      "type": 0,
+      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "heeftAlsInitiator/extraElementen"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "i7HknI": [
@@ -6313,6 +6319,26 @@
     {
       "type": 0,
       "value": "Add item"
+    }
+  ],
+  "ljTD4F": [
+    {
+      "type": 0,
+      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in the top level "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "extraElementen"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": " for the case itself."
     }
   ],
   "ln72CJ": [

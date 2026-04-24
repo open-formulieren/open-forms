@@ -23,3 +23,4 @@ class RegistrationOptions(TypedDict):
         "OPENBAAR",
     ]
     variables_mapping: NotRequired[list[MappingItem]]
+    variables_mapping_initiator: NotRequired[list[MappingItem]]
