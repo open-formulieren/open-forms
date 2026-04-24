@@ -11,7 +11,7 @@ from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 
-from ..datastructures import FormioData
+from ..datastructures import FormioConfigurationWrapper, FormioData
 from ..service import format_value
 from ..typing import Component
 from ..utils import (
@@ -137,10 +137,18 @@ class ComponentNode(Node):
                 current_iteration_data
             )
             if not is_visible_in_frontend(
-                self.component, artificial_repeating_group_data
+                self.component,
+                artificial_repeating_group_data,
+                configuration_wrapper=FormioConfigurationWrapper(
+                    configuration=self.parent_node.component
+                ),
             ):
                 return False
-        elif not is_visible_in_frontend(self.component, self.step_data):
+        elif not is_visible_in_frontend(
+            self.component,
+            self.step_data,
+            configuration_wrapper=self.renderer.submission.total_configuration_wrapper,
+        ):
             return False
 
         render_configuration = RENDER_CONFIGURATION[self.mode]

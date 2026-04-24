@@ -140,7 +140,10 @@ class FormioConfigurationWrapper:
             path = ".".join(path_bits[: depth + 1])
             component = glom(self.configuration, path)
             nodes.append(component)
-        return all(is_visible_in_frontend(node, values) for node in nodes)
+        return all(
+            is_visible_in_frontend(node, values, configuration_wrapper=self)
+            for node in nodes
+        )
 
 
 class FormioData(UserDict):

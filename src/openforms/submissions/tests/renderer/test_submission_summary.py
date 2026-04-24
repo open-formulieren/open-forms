@@ -267,6 +267,15 @@ class SubmissionSummaryRendererTests(TestCase):
             form_definition__configuration={
                 "components": [
                     {
+                        "key": "rootRadioCondition",
+                        "type": "radio",
+                        "label": "Root Radio Condition",
+                        "values": [
+                            {"label": "C", "value": "c"},
+                            {"label": "D", "value": "d"},
+                        ],
+                    },
+                    {
                         "key": "container.repeatingGroup",
                         "type": "editgrid",
                         "label": "Repeating Group",
@@ -290,8 +299,18 @@ class SubmissionSummaryRendererTests(TestCase):
                                     "when": "container.repeatingGroup.radioCondition",
                                 },
                             },
+                            {
+                                "key": "conditionallyVisible2",
+                                "type": "textfield",
+                                "label": "Conditionally visible field 2",
+                                "conditional": {
+                                    "eq": "c",
+                                    "show": True,
+                                    "when": "rootRadioCondition",
+                                },
+                            },
                         ],
-                    }
+                    },
                 ]
             },
             form_definition__slug="fd-0",
@@ -304,15 +323,20 @@ class SubmissionSummaryRendererTests(TestCase):
             submission=submission,
             form_step=form_step,
             data={
+                "rootRadioCondition": "c",
                 "container": {
                     "repeatingGroup": [
                         {
                             "radioCondition": "a",
                             "conditionallyVisible": "Some data",
+                            "conditionallyVisible2": "Some more data",
                         },
-                        {"radioCondition": "b"},
+                        {
+                            "radioCondition": "b",
+                            "conditionallyVisible2": "Even more data",
+                        },
                     ]
-                }
+                },
             },
         )
 
@@ -320,13 +344,19 @@ class SubmissionSummaryRendererTests(TestCase):
         step_data = data[0]["data"]
 
         # 1 Header for the whole repeating group +
-        # (1 Header for the single group + 2 nodes for the radio/textfield) +
-        # (1 Header for the single group + 1 nodes for the radio)
-        self.assertEqual(6, len(step_data))
+        # 1 Header for the root radio +
+        # (1 Header for the single group + 3 nodes for the radio/textfields) +
+        # (1 Header for the single group + 2 nodes for the radio/textfield)
+        self.assertEqual(9, len(step_data))
 
-        conditional_textfield = step_data[3]
+        conditional_textfield1 = step_data[4]
+        self.assertEqual(conditional_textfield1["value"], "Some data")
 
-        self.assertEqual(conditional_textfield["value"], "Some data")
+        conditional_textfield2 = step_data[5]
+        self.assertEqual(conditional_textfield2["value"], "Some more data")
+
+        conditional_textfield3 = step_data[8]
+        self.assertEqual(conditional_textfield3["value"], "Even more data")
 
     @tag("gh-3778")
     def test_content_component_summary_has_empty_label(self):

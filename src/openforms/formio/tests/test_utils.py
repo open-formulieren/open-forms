@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, tag
 
 from hypothesis import example, given, strategies as st
 
@@ -6,63 +6,118 @@ from openforms.formio.tests.search_strategies import formio_key
 from openforms.tests.search_strategies import json_primitives
 from openforms.typing import JSONPrimitive
 
-from ..datastructures import FormioData
+from ..datastructures import FormioConfigurationWrapper, FormioData
 from ..typing import Component, SelectBoxesComponent
 from ..utils import get_component_empty_value, is_visible_in_frontend
+
+FORMIO_COMPONENTS: list[Component] = [
+    {
+        "type": "selectboxes",
+        "key": "selectBoxes1",
+        "label": "Select boxes",
+        "values": [
+            {"value": "a", "label": "A"},
+            {"value": "b", "label": "B"},
+        ],
+    },
+    {
+        "type": "file",
+        "key": "file1",
+        "label": "File",
+    },
+]
 
 
 class FormioUtilsTest(SimpleTestCase):
     def test_is_visible_in_frontend_with_selectboxes(self):
         data = FormioData({"selectBoxes1": {"a": True, "b": False}})
 
-        component = {
+        component: Component = {
             "key": "textField1",
             "type": "textfield",
+            "label": "Text field",
             "conditional": {"show": True, "when": "selectBoxes1", "eq": "a"},
         }
+        configuration_wrapper = FormioConfigurationWrapper(
+            {"components": [*FORMIO_COMPONENTS, component]}
+        )
 
-        result = is_visible_in_frontend(component, data)
+        result = is_visible_in_frontend(component, data, configuration_wrapper)
 
         self.assertTrue(result)
 
     def test_is_hidden_in_frontend_with_selectboxes(self):
         data = FormioData({"selectBoxes1": {"a": True, "b": False}})
 
-        component = {
+        component: Component = {
             "key": "textField1",
             "type": "textfield",
+            "label": "Text field",
             "conditional": {"show": False, "when": "selectBoxes1", "eq": "a"},
         }
+        configuration_wrapper = FormioConfigurationWrapper(
+            {"components": [*FORMIO_COMPONENTS, component]}
+        )
 
-        result = is_visible_in_frontend(component, data)
+        result = is_visible_in_frontend(component, data, configuration_wrapper)
 
         self.assertFalse(result)
 
     def test_is_hidden_if_not_selected(self):
         data = FormioData({"selectBoxes1": {"a": False, "b": False}})
 
-        component = {
+        component: Component = {
             "key": "textField1",
             "type": "textfield",
+            "label": "Text field",
             "conditional": {"show": True, "when": "selectBoxes1", "eq": "a"},
         }
+        configuration_wrapper = FormioConfigurationWrapper(
+            {"components": [*FORMIO_COMPONENTS, component]}
+        )
 
-        result = is_visible_in_frontend(component, data)
+        result = is_visible_in_frontend(component, data, configuration_wrapper)
 
         self.assertFalse(result)
 
     def test_is_visible_if_not_selected(self):
         data = FormioData({"selectBoxes1": {"a": False, "b": False}})
 
-        component = {
+        component: Component = {
             "key": "textField1",
             "type": "textfield",
+            "label": "Text field",
             "conditional": {"show": False, "when": "selectBoxes1", "eq": "a"},
         }
+        configuration_wrapper = FormioConfigurationWrapper(
+            {"components": [*FORMIO_COMPONENTS, component]}
+        )
 
-        result = is_visible_in_frontend(component, data)
+        result = is_visible_in_frontend(component, data, configuration_wrapper)
 
         self.assertTrue(result)
+
+    @tag("gh-6181")
+    def test_is_hidden_in_frontend_with_file(self):
+        data = FormioData({"file1": []})
+
+        component: Component = {
+            "type": "textfield",
+            "key": "textField1",
+            "label": "textfield",
+            "conditional": {
+                "show": False,
+                "when": "file1",
+                "eq": "",  # should be [], but formio-builder/formio legacy use strings...
+            },
+        }
+        configuration_wrapper = FormioConfigurationWrapper(
+            {"components": [*FORMIO_COMPONENTS, component]}
+        )
+
+        result = is_visible_in_frontend(component, data, configuration_wrapper)
+
+        self.assertFalse(result)
 
     @given(
         hidden=st.booleans(),
@@ -94,9 +149,12 @@ class FormioUtilsTest(SimpleTestCase):
                 "eq": eq,
             },
         }
+        configuration_wrapper = FormioConfigurationWrapper(
+            {"components": [*FORMIO_COMPONENTS, component]}
+        )
 
         try:
-            is_visible_in_frontend(component, data)
+            is_visible_in_frontend(component, data, configuration_wrapper)
         except Exception:
             self.fail("Visibility check unexpectedly crashed")
 
