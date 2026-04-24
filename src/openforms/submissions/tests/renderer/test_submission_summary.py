@@ -358,6 +358,105 @@ class SubmissionSummaryRendererTests(TestCase):
         conditional_textfield3 = step_data[8]
         self.assertEqual(conditional_textfield3["value"], "Even more data")
 
+    @tag("gh-6181")
+    def test_namespaced_editgrid_summary_with_conditions_in_iteration_with_selectboxes(
+        self,
+    ):
+        form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "rootSelectboxesCondition",
+                        "type": "selectboxes",
+                        "label": "Root Selectboxes Condition",
+                        "values": [
+                            {"label": "C", "value": "c"},
+                            {"label": "D", "value": "d"},
+                        ],
+                    },
+                    {
+                        "key": "container.repeatingGroup",
+                        "type": "editgrid",
+                        "label": "Repeating Group",
+                        "components": [
+                            {
+                                "key": "selectboxesCondition",
+                                "type": "selectboxes",
+                                "label": "Selectboxes Condition",
+                                "values": [
+                                    {"label": "A", "value": "a"},
+                                    {"label": "B", "value": "b"},
+                                ],
+                            },
+                            {
+                                "key": "conditionallyVisible",
+                                "type": "textfield",
+                                "label": "Conditionally visible field",
+                                "conditional": {
+                                    "eq": "a",
+                                    "show": True,
+                                    "when": "container.repeatingGroup.selectboxesCondition",
+                                },
+                            },
+                            {
+                                "key": "conditionallyVisible2",
+                                "type": "textfield",
+                                "label": "Conditionally visible field 2",
+                                "conditional": {
+                                    "eq": "c",
+                                    "show": True,
+                                    "when": "rootSelectboxesCondition",
+                                },
+                            },
+                        ],
+                    },
+                ]
+            },
+            form_definition__slug="fd-0",
+            form_definition__name="Form Definition 0",
+        )
+
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "rootSelectboxesCondition": {"c": True, "d": False},
+                "container": {
+                    "repeatingGroup": [
+                        {
+                            "selectboxesCondition": {"a": True, "b": False},
+                            "conditionallyVisible": "Some data",
+                            "conditionallyVisible2": "Some more data",
+                        },
+                        {
+                            "selectboxesCondition": {"a": False, "b": True},
+                            "conditionallyVisible2": "Even more data",
+                        },
+                    ]
+                },
+            },
+        )
+
+        data = submission.render_summary_page()
+        step_data = data[0]["data"]
+
+        # 1 Header for the whole repeating group +
+        # 1 Header for the root selectboxes +
+        # (1 Header for the single group + 3 nodes for the selectboxes/textfields) +
+        # (1 Header for the single group + 2 nodes for the selectboxes/textfield)
+        self.assertEqual(9, len(step_data))
+
+        conditional_textfield1 = step_data[4]
+        self.assertEqual(conditional_textfield1["value"], "Some data")
+
+        conditional_textfield2 = step_data[5]
+        self.assertEqual(conditional_textfield2["value"], "Some more data")
+
+        conditional_textfield3 = step_data[8]
+        self.assertEqual(conditional_textfield3["value"], "Even more data")
+
     @tag("gh-3778")
     def test_content_component_summary_has_empty_label(self):
         form_step = FormStepFactory.create(
