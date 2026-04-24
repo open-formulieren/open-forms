@@ -51,8 +51,6 @@ class SDKRedirectView(RedirectView):
     def get_redirect_url(self, ext: str):
         urls = get_sdk_urls()
         match ext:
-            case "js":
-                return urls["sdk_umd_url"]
             case "mjs":
                 return urls["sdk_esm_url"]
             case "css":
