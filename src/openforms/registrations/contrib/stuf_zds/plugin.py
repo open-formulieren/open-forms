@@ -177,6 +177,25 @@ def _get_extra_variables_mapping(submission: Submission, options: RegistrationOp
     }
 
 
+def _get_extra_variables_mapping_initiator(
+    submission: Submission, options: RegistrationOptions
+):
+    key_mapping = {
+        mapping["form_variable"]: mapping["stuf_name"]
+        for mapping in options.get("variables_mapping_initiator", [])
+    }
+
+    state_variables_data = submission.variables_state.get_data(
+        include_static_variables=True
+    )
+
+    submission_variables_data = {
+        stuf_name: _prepare_value(state_variables_data.get(variable_name))
+        for variable_name, stuf_name in key_mapping.items()
+    }
+    return submission_variables_data
+
+
 @register(PLUGIN_IDENTIFIER)
 class StufZDSRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("StUF-ZDS")
@@ -255,6 +274,22 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 data.pop(mapping["form_variable"], None)
 
         return {**data, **extra_variables_mapping}
+
+    def get_extra_data_initiator(
+        self, submission: Submission, options: RegistrationOptions
+    ) -> dict[str, Any]:
+        data = get_unmapped_data(submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE)
+        extra_variables_mapping_initiator = _get_extra_variables_mapping_initiator(
+            submission, options
+        )
+
+        # Remove duplicates for variables that are present in the data and are also handled
+        # by the `_get_extra_variables_mapping_initiator`.
+        for mapping in options.get("variables_mapping_initiator", []):
+            if mapping["form_variable"] in data:
+                data.pop(mapping["form_variable"], None)
+
+        return {**data, **extra_variables_mapping_initiator}
 
     def process_partners(
         self,
@@ -487,6 +522,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             self.process_vestiging(submission, zaak_data)
 
             extra_data = self.get_extra_data(submission, options)
+            extra_data_initiator = self.get_extra_data_initiator(submission, options)
 
             # mutate the zaak_data and the extra data for the family members components
             # according to the type of the registration we want to send (zaakbetrokkene
@@ -496,6 +532,9 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
 
             # The extraElement tag of StUF-ZDS expects primitive types
             extra_data = flatten_data_and_convert_to_primitives(extra_data)
+            extra_data_initiator = flatten_data_and_convert_to_primitives(
+                extra_data_initiator
+            )
 
             assert submission.registration_result is not None
             if internal_reference := submission.registration_result.get(
@@ -533,6 +572,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                     zaak_id,
                     zaak_data,
                     LangInjection(submission, extra_data),
+                    LangInjection(submission, extra_data_initiator),
                 ),
                 submission,
                 "intermediate.zaak_created",

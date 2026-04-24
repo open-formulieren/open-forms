@@ -223,6 +223,7 @@ class Client(BaseClient):
         zaak_identificatie: str,
         zaak_data: MutableMapping[str, Any],
         extra_data: ExtraData,
+        extra_data_initiator: ExtraData,
     ) -> None:
         now = timezone.now()
         context = {
@@ -242,6 +243,7 @@ class Client(BaseClient):
             "co_signer": self.zds_options.get("cosigner"),
             "zaak_identificatie": zaak_identificatie,
             "extra": extra_data,
+            "extra_initiator": extra_data_initiator,
             "global_config": GlobalConfiguration.get_solo(),
             **zaak_data,
         }
