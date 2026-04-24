@@ -81,7 +81,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
 
     variables_mapping = MappingSerializer(
         many=True,
-        label=_("Variables mapping for Object level"),
+        label=_("Variables mapping (case)"),
         help_text=_(
             "This mapping is used to map the variable keys to keys used in the XML "
             "that is sent to StUF-ZDS. Those keys and the values belonging to them in "
@@ -91,7 +91,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     )
     variables_mapping_initiator = MappingSerializer(
         many=True,
-        label=_("Variables mapping for Initiator level"),
+        label=_("Variables mapping (initiator)"),
         help_text=_(
             "This mapping is used to map the variable keys to keys used in the XML "
             "that is sent to StUF-ZDS. Those keys and the values belonging to them in "

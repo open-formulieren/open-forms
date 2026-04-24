@@ -34,7 +34,12 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
     `${name}.variablesMapping`,
     validationErrors
   ).length;
-  const numBaseErrors = relevantErrors.length - numVariablesMappingErrors;
+  const numVariablesMappingInitiatorErrors = filterErrors(
+    `${name}.variablesMappingInitiator`,
+    validationErrors
+  ).length;
+  const numBaseErrors =
+    relevantErrors.length - numVariablesMappingErrors - numVariablesMappingInitiatorErrors;
 
   return (
     <ValidationErrorsProvider errors={relevantErrors}>
@@ -46,7 +51,7 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
               defaultMessage="Base"
             />
           </Tab>
-          <Tab hasErrors={numVariablesMappingErrors > 0}>
+          <Tab hasErrors={numVariablesMappingErrors + numVariablesMappingInitiatorErrors > 0}>
             <FormattedMessage
               description="StUF-ZDS registration backend options, 'extra elements' tab label"
               defaultMessage="Extra elements"
@@ -70,7 +75,7 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
             title={
               <FormattedMessage
                 description="StUF-ZDS registration variablesMapping label"
-                defaultMessage="Variables mapping"
+                defaultMessage="Variables mapping (case)"
               />
             }
             fieldNames={['variablesMapping']}
@@ -80,14 +85,38 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
                 description="StUF-ZDS registration variablesMapping message"
                 defaultMessage={`This mapping is used to map the variable keys to keys
                 used in the XML that is sent to StUF-ZDS. Those keys and the values
-                belonging to them in the submission data are included in <code>extraElementen</code>.
+                belonging to them in the submission data are included in the
+                top level <code>extraElementen</code> for the case itself.
               `}
                 values={{
                   code: chunks => <code>{chunks}</code>,
                 }}
               />
             </div>
-            <VariablesMapping />
+            <VariablesMapping name="variablesMapping" />
+          </Fieldset>
+          <Fieldset
+            title={
+              <FormattedMessage
+                description="StUF-ZDS registration variablesMappingInitiator label"
+                defaultMessage="Variables mapping (Initiator)"
+              />
+            }
+            fieldNames={['variablesMappingInitiator']}
+          >
+            <div className="description">
+              <FormattedMessage
+                description="StUF-ZDS registration variablesMappingInitiator message"
+                defaultMessage={`This mapping is used to map the variable keys to keys
+                used in the XML that is sent to StUF-ZDS. Those keys and the values
+                belonging to them in the submission data are included in <code>heeftAlsInitiator/extraElementen</code>.
+              `}
+                values={{
+                  code: chunks => <code>{chunks}</code>,
+                }}
+              />
+            </div>
+            <VariablesMapping name="variablesMappingInitiator" />
           </Fieldset>
         </TabPanel>
       </Tabs>
