@@ -400,7 +400,8 @@ def is_visible_in_frontend(
         return conditional_show
 
     if (
-        isinstance(trigger_component_value, dict)
+        trigger_component["type"] == "selectboxes"
+        and isinstance(trigger_component_value, dict)
         and compare_value in trigger_component_value
     ):
         return (
