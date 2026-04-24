@@ -673,6 +673,71 @@ class ConditionalLogicTests(TestCase):
         )
         self.assertEqual(step.unsaved_data, {})
 
+    def test_file(self):
+        """
+        Ensure that we check whether the compare value for a file compares against
+        empty string.
+        """
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "file",
+                    "key": "file",
+                    "label": "file visible",
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield1",
+                    "label": "Textfield 1",
+                    "hidden": False,
+                    "conditional": {
+                        "show": True,
+                        "when": "file",
+                        "eq": "",
+                    },
+                    "clearOnHide": True,
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield2",
+                    "label": "Textfield 2",
+                    "hidden": False,
+                    "conditional": {
+                        "show": False,
+                        "when": "file",
+                        "eq": "",
+                    },
+                    "clearOnHide": True,
+                },
+            ],
+            form__new_renderer_enabled=True,
+        )
+        step = submission.submissionstep_set.first()
+
+        evaluate_form_logic(
+            submission,
+            step,
+            FormioData(
+                {
+                    "file": [],
+                    "textfield1": "keep me",
+                    "textfield2": "clear me",
+                }
+            ),
+        )
+
+        state = submission.variables_state
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
+        self.assertEqual(
+            data,
+            {
+                "file": [],
+                "textfield1": "keep me",
+                "textfield2": "",
+            },
+        )
+        self.assertEqual(step.unsaved_data, {})
+
     @tag("gh-2056")
     def test_file_component_hidden_by_frontend_has_correct_empty_value(self):
         submission = SubmissionFactory.from_components(
