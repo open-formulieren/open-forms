@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import partial
 
 from django.core.exceptions import PermissionDenied
 
@@ -6,6 +7,7 @@ import elasticapm
 import structlog
 from opentelemetry import trace
 from rest_framework.exceptions import ValidationError
+from structlog.typing import Context
 from zgw_consumers.concurrent import parallel
 
 from openforms.logging import audit_logger
@@ -57,8 +59,10 @@ def fetch_prefill_values_from_attribute(
     )
     @elasticapm.capture_span(span_type="app.prefill")
     def invoke_plugin(
+        structlog_ctx: Context,
         item: tuple[BasePlugin, IdentifierRoles, list[dict[str, str]]],
     ) -> tuple[list[dict[str, str]], dict[str, JSONEncodable]]:
+        structlog.contextvars.bind_contextvars(**structlog_ctx)
         plugin, identifier_role, fields = item
         log = logger.bind(
             submission_uuid=str(submission.uuid),
@@ -105,8 +109,10 @@ def fetch_prefill_values_from_attribute(
         for identifier_role, fields in field_groups.items():
             invoke_plugin_args.append((plugin, identifier_role, fields))
 
+    # ensure we propagate the threadlocal context to the worker threads
+    ctx = structlog.contextvars.get_contextvars()
     with parallel() as executor:
-        results = executor.map(invoke_plugin, invoke_plugin_args)
+        results = executor.map(partial(invoke_plugin, ctx), invoke_plugin_args)
 
     for fields, values in list(results):
         for attribute, value in values.items():
