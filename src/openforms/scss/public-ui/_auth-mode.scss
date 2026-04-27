@@ -1,4 +1,4 @@
-@import 'microscope-sass/lib/bem';
+@use '../lib/bem';
 
 .auth-mode {
   // hidden until explicitly displayed
@@ -8,7 +8,7 @@
     margin-top: 2em;
   }
 
-  @include modifier('active') {
+  @include bem.modifier('active') {
     display: flex;
     flex-direction: column;
     gap: 0;
