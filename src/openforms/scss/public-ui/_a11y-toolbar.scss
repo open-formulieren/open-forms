@@ -1,8 +1,7 @@
-@use 'microscope-sass/lib/bem';
+@use '../lib/bem';
 
-@import '~microscope-sass/lib/grid';
-@import '~microscope-sass/lib/responsive';
-@import '~microscope-sass/lib/typography';
+// TODO: vendor/replace with @use
+@import 'microscope-sass/lib/responsive';
 
 .a11y-toolbar {
   @media print {
@@ -27,6 +26,7 @@
   }
 }
 
+// TODO: move to theme-specific stylesheet
 @include mobile-only {
   .openforms-theme {
     .a11y-toolbar {

@@ -1,8 +1,7 @@
-@use 'microscope-sass/lib/bem';
 @use '@utrecht/link-css'; // emits the .utrecht-link {...} styles
 @use '@utrecht/icon-css';
 
-@import 'microscope-sass/lib/responsive';
+@use '../lib/bem';
 
 .openforms-backtotop-link {
   display: flex;
