@@ -11,7 +11,7 @@ from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 
-from ..datastructures import FormioConfigurationWrapper, FormioData
+from ..datastructures import FormioData
 from ..service import format_value, holds_submission_data
 from ..typing import Component
 from ..utils import (
@@ -122,6 +122,8 @@ class ComponentNode(Node):
         if self.mode in visible_modes:
             return True
 
+        formio_config_wrapper = self.renderer.submission.total_configuration_wrapper
+
         # explicitly hidden components never show up. Note that this property can be set
         # by logic rules or by frontend logic!
         # We only pass the step data, since frontend logic only has access to the
@@ -138,15 +140,15 @@ class ComponentNode(Node):
             if not is_visible_in_frontend(
                 self.component,
                 artificial_repeating_group_data,
-                configuration_wrapper=FormioConfigurationWrapper(
-                    configuration=self.parent_node.component
-                ),
+                # we can pass the root config wrapper because all editgrid item component
+                # keys are already exposed in the config wrapper with their prefixed paths
+                configuration_wrapper=formio_config_wrapper,
             ):
                 return False
         elif not is_visible_in_frontend(
             self.component,
             self.step_data,
-            configuration_wrapper=self.renderer.submission.total_configuration_wrapper,
+            configuration_wrapper=formio_config_wrapper,
         ):
             return False
 
