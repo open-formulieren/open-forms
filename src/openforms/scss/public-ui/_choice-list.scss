@@ -1,5 +1,7 @@
-@use 'microscope-sass/lib/bem';
-@import 'microscope-sass/lib/typography';
+@use '../lib/bem';
+
+// TODO: vendor/replace
+@import 'microscope-sass/lib/responsive';
 
 .openforms-choice-list {
   @include bem.modifier('inline') {
