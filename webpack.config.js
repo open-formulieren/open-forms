@@ -20,7 +20,7 @@ module.exports = {
   entry: {
     // Public (end-user facing)
     public: `${__dirname}/src/openforms/js/public.js`,
-    'public-styles': `${__dirname}/src/openforms/ui/static/ui/scss/screen.scss`,
+    'public-styles': `${__dirname}/src/openforms/scss/public.scss`,
     'pdf-css': `${__dirname}/src/openforms/scss/pdf.scss`,
     // Admin-user facing
     admin_overrides: `${__dirname}/src/openforms/scss/admin/admin_overrides.scss`,

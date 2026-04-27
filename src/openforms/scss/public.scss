@@ -1,0 +1,11 @@
+/**
+ * SASS for the public UI, end-user facing (i.e. users that fill out the forms).
+ *
+ * Note that the styling code here must be written so that it does not conflict with the
+ * styles bundled in the SDK. Preferably, NL DS components are used as well, rather than
+ * custom CSS.
+ */
+@use 'public-ui/index';
+
+// Legacy import, while code is being moved from src/openforms/ui.
+@import '../ui/static/ui/scss/screen';
