@@ -764,6 +764,70 @@ class TestDynamicConfigAddingOptions(TestCase):
             ],
         )
 
+    def test_empty_label_value_pairs(self):
+        submission = SubmissionFactory.create()
+
+        with self.subTest("With empty label & value"):
+            configuration = {
+                "display": "form",
+                "components": [
+                    {
+                        "key": "radio",
+                        "type": "radio",
+                        "values": [{"label": "", "value": ""}],
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "translations": {},
+                            "itemsExpression": {"var": "radioOptions"},
+                        },
+                    }
+                ],
+            }
+
+            rewrite_formio_components(
+                FormioConfigurationWrapper(configuration),
+                submission,
+                FormioData({"radioOptions": [["bar", "Foo"], ["", ""]]}),
+            )
+
+            self.assertEqual(
+                configuration["components"][0]["values"],
+                [
+                    {"label": "Foo", "value": "bar"},
+                ],
+            )
+
+        with self.subTest("With non-empty label & empty value"):
+            configuration = {
+                "display": "form",
+                "components": [
+                    {
+                        "key": "radio",
+                        "type": "radio",
+                        "values": [{"label": "", "value": ""}],
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "translations": {},
+                            "itemsExpression": {"var": "radioOptions"},
+                        },
+                    }
+                ],
+            }
+
+            rewrite_formio_components(
+                FormioConfigurationWrapper(configuration),
+                submission,
+                FormioData({"radioOptions": [["bar", "Foo"], ["", "Bar"]]}),
+            )
+
+            self.assertEqual(
+                configuration["components"][0]["values"],
+                [
+                    {"label": "Foo", "value": "bar"},
+                    {"label": "Bar", "value": ""},
+                ],
+            )
+
 
 class TestDynamicConfigAddingOptionsForRequest(SubmissionsMixin, APITestCase):
     @tag("gh-2895")
