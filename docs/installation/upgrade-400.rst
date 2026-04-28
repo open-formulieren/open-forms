@@ -132,6 +132,8 @@ custom theme stylesheet(s).
 Cookie group
 ------------
 
+.. todo:: Check if we can provide a shim for this.
+
 On the cookie-list page ("Manage cookies", via the footer), the descriptions of a cookie
 group are now rendered using the ``utrecht-paragraph`` component instead of our
 hardcoded CSS. Additionally, the accept/decline buttons/status are now rendered using
@@ -143,6 +145,27 @@ and may want to define or override:
 
 We do not provide defaults/fallbacks for these design tokens, as they are considered
 too invasive.
+
+Cookie notice
+-------------
+
+.. todo:: Check if we can provide a shim for this.
+
+The cookie notice/banner has been slightly revised. The styling that causes the banner
+to only take up part of the viewport width is now scoped to the Open Formulieren theme,
+meaning that you should include a similar rule if you have custom themes. This is an
+ongoing effort to consistently deal with different viewports (mobile vs. desktop) in the
+NL DS ecosystem.
+
+The CSS rule to include is:
+
+.. code-block:: css
+
+    @media (min-width: 992px) {
+      .cookie-notice {
+        max-inline-size: 75vw;
+      }
+    }
 
 Removed deprecations
 --------------------
