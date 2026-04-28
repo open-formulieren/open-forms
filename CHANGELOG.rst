@@ -14,6 +14,28 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.4.9 (2026-04-28)
+==================
+
+Regular bugfix release.
+
+* [:backend:`5924`] Fixed validation messages being linked to the wrong (non-applicable)
+  steps, causing confusing error mesages in the public frontend.
+* [:backend:`6171`] Fixed missing required XML-attributes in StUF-ZDS messages.
+* [:backend:`6148`] Fixed crash in JSON schema generation when there's a fieldset inside
+  an editgrid.
+* [:backend:`6139`] Fixed wrong entity type in StUF-ZDS element for the cosigner details.
+* [:backend:`6181`] Fixed simple conditionals ("frontend logic") comparison not
+  interpreting "empty" file upload fields correctly. This patch is a workaround for a
+  more complex structural fix.
+* [:backend:`6128`] Fix dynamic radio/selectboxes/select options with empty labels being
+  rendered. This patch is a workaround for a more complex structural fix.
+* Fixed missing structlog context propagation across threads, causing prefill (audit)
+  logs not to be saved in the database.
+* [:backend:`6222`] Upgraded to SDK 3.4.3, which includes a number of fixes in the new
+  renderer - see the SDK release notes for details.
+* Applied latest available security patches of the libraries that we use.
+
 3.3.16 (2026-04-21)
 ===================
 
