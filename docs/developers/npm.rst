@@ -51,9 +51,8 @@ run storybook with:
 
     npm run storybook [-- --no-open]
 
-Writing `interaction tests <https://storybook.js.org/docs/essentials/interactions>`_ is
-recommended, but please limit those to actual interactions. For more low-level tests,
-stick to writing unit tests in Jest, using
+Writing interaction tests is recommended, but please limit those to actual interactions.
+For more low-level tests, stick to writing unit tests in Jest, using
 `Testing Library <https://www.npmjs.com/package/@testing-library/react>`_.
 
 **Managing translations**
