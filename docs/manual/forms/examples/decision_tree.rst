@@ -38,7 +38,7 @@ Formulier maken
     * **Naam**: Keuzes
 
 5. Scroll naar de sectie **Velden**.
-6. Sleep een **Tekstveld** component op het witte vlak, vul de volgende
+6. Sleep een **Keuzelijst** component op het witte vlak, vul de volgende
    gegevens in en druk daarna op **Opslaan**:
 
     * **Label**: Heeft u 1 of meer honden?
