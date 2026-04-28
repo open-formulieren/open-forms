@@ -10,3 +10,6 @@
 @use 'cookie-notice';
 @use 'fa-icon';
 @use 'info-bar';
+
+// NL DS components used, but CSS-level overrides applied
+@use 'page';

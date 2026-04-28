@@ -1,7 +1,9 @@
-@import '~microscope-sass/lib/responsive';
+@import 'microscope-sass/lib/responsive';
 
 /**
  * Style overrides for the utrecht-page component.
+ *
+ * @TODO Move these to a separate theme-specific style sheet.
  */
 .openforms-theme {
   .utrecht-page {
@@ -9,6 +11,7 @@
       --utrecht-page-max-inline-size: 1200px;
     }
 
+    // TODO: deprecate and explicitly define design token?
     --utrecht-page-background-color: var(--of-view-background, #e6e6e6);
 
     margin-block-end: var(--of-utrecht-page-margin-block-end, 0);
