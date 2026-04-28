@@ -127,6 +127,7 @@ def add_options_to_config(
         [
             {"label": escaped_label, "value": escaped_key}
             for escaped_key, escaped_label in items_array
+            if escaped_label
         ],
         missing=dict,
     )
