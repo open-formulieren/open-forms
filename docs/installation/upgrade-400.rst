@@ -110,3 +110,50 @@ with the ``open-forms-sdk-wrapper.mjs`` example code:
 
     const sdkNodes = document.querySelectorAll('.open-forms-sdk-root');
     sdkNodes.forEach(node => initializeSDK(node));
+
+NL Design System related changes
+================================
+
+.. note:: Relevant for: custom theme developers.
+
+We frequently check our own markup and CSS code for opportunities to replace custom
+implementations with existing NL Design System (community) components. As an organization
+that uses NL DS, you benefit from this with more consistent appearance of the same
+logical components in different places.
+
+However, because Open Forms existed *before* NL DS was commonplace, this sometimes leads
+to changes in appearance, because what used to be hardcoded CSS is now parametrized,
+and we don't have any guarantees that the relevant design tokens are set.
+
+Below you find a summary of components that were moved from custom CSS to existing
+NL DS components that may require visual inspection/additional definitions in your
+custom theme stylesheet(s).
+
+Cookie group
+------------
+
+On the cookie-list page ("Manage cookies", via the footer), the descriptions of a cookie
+group are now rendered using the ``utrecht-paragraph`` component instead of our
+hardcoded CSS. Additionally, the accept/decline buttons/status are now rendered using
+the ``utrecht-button-group`` component. You may see changed spacings between content
+and may want to define or override:
+
+* ``--utrecht-paragraph-line-height: 1.5;`` for the spacing between text lines
+* ``--utrecht-button-group-inline-gap: 20px;``
+
+We do not provide defaults/fallbacks for these design tokens, as they are considered
+too invasive.
+
+Removed deprecations
+--------------------
+
+The following fallbacks were deprecated and have been removed.
+
+**``backtotop-link`` component**
+
+* removed fallback to ``--utrecht-button-column-gap``, specify
+  ``--of-backtotop-link-column-gap`` explicitly
+* removed fallback to ``--utrecht-button-padding-block-end``, specify
+  ``--of-backtotop-link-padding-block-end`` explicitly
+* removed fallback to ``--utrecht-button-padding-block-start``, specify
+  ``--of-backtotop-link-padding-block-start`` explicitly
