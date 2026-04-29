@@ -8,7 +8,7 @@ from openforms.products.tests.factories import ProductFactory
 from openforms.registrations.registry import register as registration_registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from ..constants import FormTypeChoices
+from ..constants import FormTypeChoices, SubmissionAllowedChoices
 from ..models import Form, FormDefinition, FormStep, FormVariable
 from ..utils import form_to_json
 
@@ -52,7 +52,7 @@ class FormFactory(factory.django.DjangoModelFactory):
         is_single_step_form = factory.Trait(
             generate_minimal_setup__form_step__form_definition__login_required=False,
             type=FormTypeChoices.single_step,
-            submission_allowed=True,
+            submission_allowed=SubmissionAllowedChoices.yes,
             suspension_allowed=False,
             show_progress_indicator=False,
             introduction_page_content="",
