@@ -27,8 +27,9 @@
 //   `.block.block--modifier {...}`
 //   `.block .block__element {...}`
 
-@use 'sass:list' as list;
-@use 'sass:string' as string;
+@use 'sass:list';
+@use 'sass:selector';
+@use 'sass:string';
 
 /// Output rules for elements within a block.
 ///
@@ -45,8 +46,10 @@
 /// @example css - Output
 ///   .my-block .my-block__some-element {display: inline-block;}
 @mixin element($element) {
+  // must be a block or block with modifier
+  $right_most_selector: list.nth(list.nth(&, -1), -1);
   // capture the block, even if there is a modifier on the block
-  $block: nth(simple-selectors(&), 1);
+  $block: nth(selector.simple-selectors($right_most_selector), 1);
   $selector: '#{&} #{$block}__#{$element}';
   @at-root #{$selector} {
     @content;
