@@ -129,6 +129,17 @@ Below you find a summary of components that were moved from custom CSS to existi
 NL DS components that may require visual inspection/additional definitions in your
 custom theme stylesheet(s).
 
+Default design token values removal
+-----------------------------------
+
+Open Forms 3.1.0 added some default design token values for backwards compatibility
+reasons. These have been removed. If you rely on them, make sure to define the tokens
+explicitly:
+
+* ``--utrecht-button-column-gap``
+* ``--of-form-navigation-row-gap``
+* ``--of-abort-button-color``
+
 Cookie group
 ------------
 
