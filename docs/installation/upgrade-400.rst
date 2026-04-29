@@ -178,6 +178,13 @@ The CSS rule to include is:
       }
     }
 
+Additionally, we now rely on ``--utrecht-document-line-height`` for the spacing of the
+text content, to restore the old behaviour, include:
+
+.. code-block:: css
+
+    line-height: 1.5;
+
 Removed deprecations
 --------------------
 
