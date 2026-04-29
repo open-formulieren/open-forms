@@ -17,5 +17,8 @@
 @use '@utrecht/page-header-css';
 @use '@utrecht/page-footer-css';
 
+// Backwards compatibility shims for renamed/moved/replaced design tokens.
+@use 'public-ui/shims';
+
 // Legacy import, while code is being moved from src/openforms/ui.
 @import '../ui/static/ui/scss/screen';

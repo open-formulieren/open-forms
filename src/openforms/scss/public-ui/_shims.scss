@@ -1,3 +1,6 @@
+// Shims for backwards compatibility, most notably for users migrating from old renderer
+// to new renderer.
+// @deprecated These can be removed in Open Forms 5.0.
 :root {
   // file uploads
   --of-upload-input-padding-block-end: var(--of-file-upload-drop-area-padding, 15px);
