@@ -149,38 +149,29 @@ def _prepare_value(value: Any):
 
 
 def _get_extra_variables_mapping(submission: Submission, options: RegistrationOptions):
-    plugin_payment_static_variables = [
-        "payment_completed",
-        "payment_amount",
-        "payment_public_order_ids",
-        "provider_payment_ids",
-    ]
-
-    key_mapping = {
-        mapping["form_variable"]: mapping["stuf_name"]
-        for mapping in options.get("variables_mapping", [])
-    }
-
-    plugin_payment_static_variables_data = {
-        key_mapping[variable.key]: _prepare_value(variable.initial_value)
-        for variable in get_static_variables(
-            submission=submission,
-            variables_registry=variables_registry,
-        )
-        if variable.key in key_mapping
-    }
-
+    # Grab the variables data from the submission state & inject the static registration
+    # variable values
     state_variables_data = submission.load_submission_value_variables_state().get_data(
         include_static_variables=True
     )
+    state_variables_data.update(
+        {
+            variable.key: variable.initial_value
+            for variable in get_static_variables(
+                submission=submission,
+                variables_registry=variables_registry,
+            )
+        }
+    )
 
-    submission_variables_data = {
-        stuf_name: _prepare_value(state_variables_data.get(variable_name))
-        for variable_name, stuf_name in key_mapping.items()
-        if variable_name not in plugin_payment_static_variables
+    # emit only what was explicitly mapped in the options
+    variables_mapping = options.get("variables_mapping", [])
+    return {
+        mapping["stuf_name"]: _prepare_value(
+            state_variables_data.get(mapping["form_variable"])
+        )
+        for mapping in variables_mapping
     }
-
-    return {**plugin_payment_static_variables_data, **submission_variables_data}
 
 
 @register(PLUGIN_IDENTIFIER)
