@@ -136,8 +136,11 @@ These SOAP-operations are used by this plugin:
 * ``creeerZaak_Lk01``
 
    * ``heeftAlsInitiator`` (the initiator can be excluded if needed)
-   * ``heeftAlsOverigBetrokkene`` (will only be set if an employee logs in on behalf of a client)
+   * ``heeftAlsOverigBetrokkene`` (set if: an employee logs in on behalf of
+     a client, the submission has been cosigned or there are family member relations)
    * ``heeft`` (the status can be excluded if needed)
+   * ``extraElementen``, all remaining unmapped submission data elements + explicitly
+     mapped (registration) variables through the configuration
 
 * ``updateZaak_Lk01`` (only used when delayed payments are enabled)
 * ``genereerDocumentIdentificatie_Di02``
