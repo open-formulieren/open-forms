@@ -2838,3 +2838,45 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "subVerblijfBuitenland": None,
             },
         )
+
+    @tag("gh-6091")
+    def test_report_pdf_title_uses_public_form_name_when_internal_name_is_set(self):
+        submission = SubmissionFactory.from_components(
+            NP_INITIATOR_FIELDS,
+            form__name="Public name",
+            form__internal_name="Private name",
+            submitted_data=NP_INITIATOR_DATA,
+            bsn="111222333",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        RegistratorInfoFactory.create(submission=submission, value="123456782")
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "medewerker_roltype": "Baliemedewerker",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        with self.subTest("full registration"):
+            result = plugin.register_submission(submission, options)
+            assert result
+            self.assertEqual(result["document"]["titel"], "Public name")
