@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from django.utils.translation import gettext_lazy as _
@@ -69,3 +70,16 @@ class ProviderPaymentIds(BaseStaticVariable):
             return None
 
         return submission.payments.get_completed_provider_payment_ids()
+
+
+@register("completed_on")
+class CompletedOn(BaseStaticVariable):
+    name = _("Submission completion timestamp")
+    data_type = FormVariableDataTypes.datetime
+
+    def get_initial_value(
+        self, submission: Submission | None = None
+    ) -> datetime | None:
+        if submission is None:
+            return None
+        return submission.completed_on
