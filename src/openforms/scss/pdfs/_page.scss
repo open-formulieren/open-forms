@@ -1,5 +1,3 @@
-@import '~microscope-sass/lib/typography';
-
 @page {
   size: A4;
   margin-bottom: 10mm;
@@ -8,7 +6,9 @@
   @bottom-center {
     content: counter(page) '/' counter(pages);
     font-size: 85%;
-    @include text;
+    color: #000000;
+    font-family: 'Fira Sans', Calibri, sans-serif;
+    margin: 0;
   }
 }
 
@@ -25,7 +25,17 @@
 }
 
 body {
-  @include body(auto);
+  color: #000000;
+  font-family: 'Fira Sans', Calibri, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.5;
+  margin: 0;
+
+  &:not(:last-child) {
+    margin-block-end: 20px;
+  }
 }
 
 a {
