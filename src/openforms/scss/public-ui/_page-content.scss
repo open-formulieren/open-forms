@@ -1,9 +1,9 @@
-@import '~microscope-sass/lib/responsive';
+@use '../lib/responsive';
 
 // Extensions of the utrecht-page-content component
 // TODO: deprecate in favour of stylesheet/viewport-specific overrides of design tokens
 .utrecht-page-content {
-  @include mobile-only {
+  @include responsive.mobile-only {
     padding-block-end: var(
       --of-utrecht-page-content-mobile-padding-block-end,
       var(--utrecht-page-content-padding-block-end)

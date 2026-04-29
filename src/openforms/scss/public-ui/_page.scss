@@ -1,4 +1,4 @@
-@import 'microscope-sass/lib/responsive';
+@use '../lib/responsive';
 
 /**
  * Style overrides for the utrecht-page component.
@@ -7,7 +7,7 @@
  */
 .openforms-theme {
   .utrecht-page {
-    @include desktop {
+    @include responsive.desktop {
       --utrecht-page-max-inline-size: 1200px;
     }
 

@@ -1,6 +1,5 @@
 @use '../lib/bem';
-
-@import 'microscope-sass/lib/responsive';
+@use '../lib/responsive';
 
 .cookie-notice {
   inline-size: 100%;
@@ -24,13 +23,13 @@
   background: var(--of-cookie-notice-bg, #fff);
   box-shadow: var(--of-cookie-notice-shadow, 0px 0px 3px 0px rgba(#000, 0.4));
 
-  @include mobile-only {
+  @include responsive.mobile-only {
     flex-direction: column;
     align-items: stretch;
     bottom: 0;
   }
 
-  @include tablet {
+  @include responsive.tablet {
     margin-bottom: 1rem;
   }
 
@@ -41,7 +40,7 @@
 
 .openforms-theme {
   .cookie-notice {
-    @include laptop {
+    @include responsive.laptop {
       max-inline-size: 75vw;
     }
   }

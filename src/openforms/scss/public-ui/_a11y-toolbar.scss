@@ -1,7 +1,5 @@
 @use '../lib/bem';
-
-// TODO: vendor/replace with @use
-@import 'microscope-sass/lib/responsive';
+@use '../lib/responsive';
 
 .a11y-toolbar {
   @media print {
@@ -27,7 +25,7 @@
 }
 
 // TODO: move to theme-specific stylesheet
-@include mobile-only {
+@include responsive.mobile-only {
   .openforms-theme {
     .a11y-toolbar {
       align-items: center;

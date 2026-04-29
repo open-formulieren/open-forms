@@ -1,0 +1,11 @@
+// Wrap around the library until we vendor the necessary mixins and drop-microscope-sass.
+// This setup avoids needing to repeat the breakpoints configuration and doesn't require
+// the global settings module to be imported.
+@forward 'microscope-sass/lib/responsive' with (
+  $breakpoint-mobile-s: 320px,
+  $breakpoint-mobile-m: 375px,
+  $breakpoint-mobile-l: 425px,
+  $breakpoint-tablet: 768px,
+  $breakpoint-laptop: 992px,
+  $breakpoint-desktop: 1200px
+);

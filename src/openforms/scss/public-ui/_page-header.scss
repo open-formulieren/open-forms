@@ -1,6 +1,5 @@
 @use '../lib/bem';
-
-@import 'microscope-sass/lib/responsive';
+@use '../lib/responsive';
 
 /**
  * Override CSS to add responsive styles for a particular viewport.
@@ -41,19 +40,19 @@
 
 // Open Forms extensions - add opt-in support for responsive spacing.
 .utrecht-page-header {
-  @include mobile-only {
+  @include responsive.mobile-only {
     @include add-responsive-styles('mobile');
   }
 
-  @include tablet {
+  @include responsive.tablet {
     @include add-responsive-styles('tablet');
   }
 
-  @include laptop {
+  @include responsive.laptop {
     @include add-responsive-styles('laptop');
   }
 
-  @include desktop {
+  @include responsive.desktop {
     @include add-responsive-styles('desktop');
   }
 
@@ -75,7 +74,7 @@
       inline-size: var(--of-header-logo-width);
       block-size: var(--of-header-logo-height);
 
-      @include mobile-only {
+      @include responsive.mobile-only {
         --_of-logo-min-inline-size: var(--of-page-header-logo-return-url-mobile-min-inline-size);
         --_of-logo-min-block-size: var(--of-page-header-logo-return-url-mobile-min-block-size);
       }

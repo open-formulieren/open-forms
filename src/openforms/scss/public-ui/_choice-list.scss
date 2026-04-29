@@ -1,7 +1,5 @@
 @use '../lib/bem';
-
-// TODO: vendor/replace
-@import 'microscope-sass/lib/responsive';
+@use '../lib/responsive';
 
 .openforms-choice-list {
   @include bem.modifier('inline') {
@@ -11,7 +9,7 @@
     gap: 1em;
     justify-content: space-between;
 
-    @include mobile-only {
+    @include responsive.mobile-only {
       display: block;
     }
 
