@@ -7,14 +7,3 @@
     align-items: center;
   }
 }
-
-// TODO: move OF theme-specific overrides to separate stylesheet
-.openforms-theme {
-  .cookie-group {
-    --utrecht-paragraph-line-height: 1.5;
-
-    &__title {
-      margin-block-end: 1rem !important; // SDK styles for :not(:last-child) override this otherwise
-    }
-  }
-}

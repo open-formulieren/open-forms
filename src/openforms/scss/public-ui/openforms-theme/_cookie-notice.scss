@@ -1,0 +1,9 @@
+@use '../../lib/responsive';
+
+@mixin theme-styles {
+  .cookie-notice {
+    @include responsive.laptop {
+      max-inline-size: 75vw;
+    }
+  }
+}

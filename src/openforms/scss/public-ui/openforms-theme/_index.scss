@@ -1,5 +1,19 @@
+@use 'a11y-toolbar';
+@use 'cookie-group';
+@use 'cookie-notice';
+@use 'page-footer';
+@use 'page-header';
+@use 'page';
+
 // CSS overrides scoped to the .openforms-theme, the default theme distributed with
 // an Open Forms installation.
 .openforms-theme {
   --utrecht-document-font-size: 1rem;
+
+  @include a11y-toolbar.theme-styles;
+  @include cookie-group.theme-styles;
+  @include cookie-notice.theme-styles;
+  @include page-footer.theme-styles;
+  @include page-header.theme-styles;
+  @include page.theme-styles;
 }

@@ -85,13 +85,3 @@
     display: block;
   }
 }
-
-// Custom styles on top of utrecht-page-header, scoped to our own theme.
-// TODO: move into separate styleshee
-.openforms-theme {
-  .utrecht-page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-}

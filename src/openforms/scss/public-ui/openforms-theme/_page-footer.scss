@@ -1,0 +1,24 @@
+@use '../../lib/bem';
+@use '../../lib/responsive';
+
+@mixin theme-styles {
+  .utrecht-page-footer {
+    @include bem.element('navigation') {
+      .utrecht-link-list {
+        --utrecht-link-text-decoration: underline;
+        --utrecht-link-hover-text-decoration: none;
+
+        font-size: 1.125rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 20px;
+
+        @include responsive.mobile-only {
+          flex-direction: column;
+          gap: 0.2rem;
+        }
+      }
+    }
+  }
+}

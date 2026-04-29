@@ -37,11 +37,3 @@
     width: 100%;
   }
 }
-
-.openforms-theme {
-  .cookie-notice {
-    @include responsive.laptop {
-      max-inline-size: 75vw;
-    }
-  }
-}

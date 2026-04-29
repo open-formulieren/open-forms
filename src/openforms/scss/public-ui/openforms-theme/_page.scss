@@ -1,11 +1,6 @@
-@use '../lib/responsive';
+@use '../../lib/responsive';
 
-/**
- * Style overrides for the utrecht-page component.
- *
- * @TODO Move these to a separate theme-specific style sheet.
- */
-.openforms-theme {
+@mixin theme-styles {
   .utrecht-page {
     @include responsive.desktop {
       --utrecht-page-max-inline-size: 1200px;
@@ -28,7 +23,6 @@
     min-block-size: 100vh;
     max-inline-size: 100vw;
 
-    // can't use the bem modules because of the nested parent selector(s)
     > .utrecht-page__content {
       flex-grow: 1;
       inline-size: 100%;
