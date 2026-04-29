@@ -394,11 +394,6 @@
     "description": "literals.beginText help text",
     "originalDefault": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
   },
-  "7KsVk/": {
-    "defaultMessage": "Single page can be enabled only when there is exactly one form step configured.",
-    "description": "Single page warning icon text",
-    "originalDefault": "Single page can be enabled only when there is exactly one form step configured."
-  },
   "7Lk/+w": {
     "defaultMessage": "Type",
     "description": "Family members options: 'Type' label",
@@ -495,6 +490,11 @@
     "defaultMessage": "Wijzig variabele {name}",
     "description": "JSON editor: variable edit panel title",
     "originalDefault": "Edit variable {name}"
+  },
+  "8sDSem": {
+    "defaultMessage": "Single step",
+    "description": "single step form type option label",
+    "originalDefault": "Single step"
   },
   "91XY1Q": {
     "defaultMessage": "Niet privacy-gevoelig",
@@ -1396,6 +1396,11 @@
     "description": "literals.changeText form label",
     "originalDefault": "Change text"
   },
+  "M8nTet": {
+    "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms.",
+    "description": "Form submissionAllowed field help text",
+    "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms."
+  },
   "M9JbDC": {
     "defaultMessage": "Annuleren",
     "description": "Confirmation modal cancel button",
@@ -1615,6 +1620,11 @@
     "defaultMessage": "Uitvoerparameters",
     "description": "Output mapping title",
     "originalDefault": "Output mapping"
+  },
+  "QCEWHo": {
+    "defaultMessage": "Single step can be enabled only when there is exactly one form step configured.",
+    "description": "Single step warning icon text",
+    "originalDefault": "Single step can be enabled only when there is exactly one form step configured."
   },
   "QDBI2H": {
     "defaultMessage": "Selecteer een bestaande formulierdefinitie",
@@ -2777,11 +2787,6 @@
     "description": "Show form button",
     "originalDefault": "Show form"
   },
-  "k6t6Xi": {
-    "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms.",
-    "description": "Form submissionAllowed field help text",
-    "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms."
-  },
   "k9CT3p": {
     "defaultMessage": "Toon op de formulierbevestigingspagina een link om terug te gaan naar de hoofdwebsite. Deze is enkel zichtbaar als er geen betaling vereist is.",
     "description": "Display main website link help text",
@@ -3022,11 +3027,6 @@
     "description": "Worldline payment options 'merchant' help text",
     "originalDefault": "Which merchant should be used for payments related to this form."
   },
-  "oqtOzt": {
-    "defaultMessage": "Single step",
-    "description": "single page form type option label",
-    "originalDefault": "Single step"
-  },
   "oqv4fM": {
     "defaultMessage": "Het objecttype van het object waar de voorinvul/productgegevens uit opgehaald worden.",
     "description": "Objects API prefill options 'Objecttype' helpText",
@@ -3076,11 +3076,6 @@
     "defaultMessage": "De omschrijving die gebruikt wordt voor het registreren van kinderen (als betrokkene).",
     "description": "ZGW APIs registration options 'childrenDescription' help text",
     "originalDefault": "The description that will be used in children registration."
-  },
-  "pdiR+8": {
-    "defaultMessage": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form.",
-    "description": "Progress indicator help text",
-    "originalDefault": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form."
   },
   "piUWzT": {
     "defaultMessage": "Registratiemethode",
@@ -3473,6 +3468,11 @@
     "defaultMessage": "Deactiveren op",
     "description": "Form deactivation field label",
     "originalDefault": "Deactivate on"
+  },
+  "x38ph4": {
+    "defaultMessage": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single step form.",
+    "description": "Progress indicator help text",
+    "originalDefault": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single step form."
   },
   "x4gaYf": {
     "defaultMessage": "Annuleren",

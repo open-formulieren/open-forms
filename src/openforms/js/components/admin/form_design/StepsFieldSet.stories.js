@@ -78,7 +78,7 @@ export const RegularFormStepsExample = {
   },
 };
 
-export const SinglePageFormStepsExample = {
+export const SingleStepFormStepsExample = {
   args: {
     form: {type: 'single_step'},
   },

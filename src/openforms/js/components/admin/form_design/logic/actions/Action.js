@@ -3,17 +3,17 @@ import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {useIntl} from 'react-intl';
 
+import {FormContext} from 'components/admin/form_design/Context';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import DataPreview from 'components/admin/form_design/logic/DataPreview';
 import ToggleCodeIcon from 'components/admin/form_design/logic/ToggleCodeIcon';
 import {
   REGULAR_FORM_ACTION_TYPES,
-  SINGLE_PAGE_FORM_ACTION_TYPES,
+  SINGLE_STEP_FORM_ACTION_TYPES,
 } from 'components/admin/form_design/logic/constants';
 import Select from 'components/admin/forms/Select';
 import {DeleteIcon, WarningIcon} from 'components/admin/icons';
 
-import {FormContext} from '../../Context';
 import {ActionComponent, detectProblems} from './Actions';
 import {ActionError, Action as ActionType} from './types';
 
@@ -45,7 +45,7 @@ const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
             <Select
               name="action.type"
               choices={
-                type === 'single_step' ? SINGLE_PAGE_FORM_ACTION_TYPES : REGULAR_FORM_ACTION_TYPES
+                type === 'single_step' ? SINGLE_STEP_FORM_ACTION_TYPES : REGULAR_FORM_ACTION_TYPES
               }
               translateChoices
               allowBlank

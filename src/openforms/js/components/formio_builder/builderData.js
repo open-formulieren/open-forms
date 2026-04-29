@@ -201,7 +201,7 @@ const REGULAR_BUILDER_DATA = {
   },
 };
 
-const SINGLE_PAGE_BUILDER_DATA = {
+const SINGLE_STEP_BUILDER_DATA = {
   basic: false,
   advanced: false,
   data: false,
@@ -421,5 +421,5 @@ const APPOINTMENT_BUILDER_DATA = {
 export const BUILDER_FORM_TYPE_MAPPINGS = {
   regular: REGULAR_BUILDER_DATA,
   appointment: APPOINTMENT_BUILDER_DATA,
-  single_step: SINGLE_PAGE_BUILDER_DATA,
+  single_step: SINGLE_STEP_BUILDER_DATA,
 };

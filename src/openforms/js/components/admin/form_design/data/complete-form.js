@@ -93,12 +93,12 @@ const handleAppointmentForm = draft => {
 /**
  * Mutate the draft state in case the form is a single page(step) form.
  */
-const handleSinglePageForm = draft => {
+const handleSingleStepForm = draft => {
   const {form} = draft;
   if (form.type !== 'single_step') return;
 
-  // single page forms have a different functionality, which is why we clear any lingering
-  // configuration if a form is turned into a single page form
+  // single step forms have a different functionality, which is why we clear any lingering
+  // configuration if a form is turned into a single step form
   draft.selectedAuthPlugins = [];
   draft.form.loginOptions = [];
   draft.form.authBackends = [];
@@ -144,7 +144,7 @@ const saveForm = async (state, csrftoken) => {
     normalizeEmptyStrField(draft, 'deactivateOn');
     handleZgwRegistrationOptions(draft);
     handleAppointmentForm(draft);
-    handleSinglePageForm(draft);
+    handleSingleStepForm(draft);
   });
 
   const formDetails = produce(cleanedState, draft => {

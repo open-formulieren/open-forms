@@ -126,7 +126,7 @@ export const AppointmentFormExample = {
   },
 };
 
-export const SinglePageFormExample = {
+export const SingleStepFormExample = {
   args: {
     form: {
       type: 'single_step',

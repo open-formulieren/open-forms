@@ -266,7 +266,7 @@ const PresentationFields = ({
   onChange,
   formType,
 }) => {
-  const isSinglePage = formType === 'single_step';
+  const isSingleStep = formType === 'single_step';
 
   const onCheckboxChange = (event, currentValue) => {
     const {
@@ -316,13 +316,13 @@ const PresentationFields = ({
           }
           helpText={
             <FormattedMessage
-              defaultMessage="Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form."
+              defaultMessage="Whether the step progression should be displayed in the UI or not. This is not relevant for the single step form."
               description="Progress indicator help text"
             />
           }
-          checked={!isSinglePage ? showProgressIndicator : false}
+          checked={!isSingleStep ? showProgressIndicator : false}
           onChange={event => onCheckboxChange(event, showProgressIndicator)}
-          disabled={isSinglePage}
+          disabled={isSingleStep}
         />
       </FormRow>
       <FormRow>
@@ -357,7 +357,7 @@ const SubmissionFields = ({
 }) => {
   const intl = useIntl();
   const isAppointment = formType === 'appointment';
-  const isSinglePage = formType === 'single_step';
+  const isSingleStep = formType === 'single_step';
 
   return (
     <Fieldset
@@ -388,16 +388,16 @@ const SubmissionFields = ({
             }
             helpText={
               <FormattedMessage
-                defaultMessage="Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms."
+                defaultMessage="Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms."
                 description="Form submissionAllowed field help text"
               />
             }
           >
             <Select
               choices={getTranslatedChoices(intl, SUMBISSION_ALLOWED_CHOICES)}
-              value={!isSinglePage ? submissionAllowed : 'yes'}
+              value={!isSingleStep ? submissionAllowed : 'yes'}
               onChange={onChange}
-              disabled={isSinglePage}
+              disabled={isSingleStep}
             />
           </Field>
         </FormRow>
@@ -562,11 +562,11 @@ const FormConfigurationFields = ({
   };
 
   const isRegular = type === 'regular';
-  const isSinglePage = type === 'single_step';
-  const singlePageWarningText = intl.formatMessage({
-    description: 'Single page warning icon text',
+  const isSingleStep = type === 'single_step';
+  const singleStepWarningText = intl.formatMessage({
+    description: 'Single step warning icon text',
     defaultMessage:
-      'Single page can be enabled only when there is exactly one form step configured.',
+      'Single step can be enabled only when there is exactly one form step configured.',
   });
 
   return (
@@ -680,7 +680,7 @@ const FormConfigurationFields = ({
                   />
                 ))}
               </RadioList>
-              {formStepsAmount > 1 ? <WarningIcon text={singlePageWarningText} /> : null}
+              {formStepsAmount > 1 ? <WarningIcon text={singleStepWarningText} /> : null}
             </>
           </Field>
         </FormRow>
@@ -795,9 +795,9 @@ const FormConfigurationFields = ({
                 and has better accessibility.`}
               />
             }
-            checked={!isSinglePage ? newRendererEnabled : true}
+            checked={!isSingleStep ? newRendererEnabled : true}
             onChange={event => onCheckboxChange(event, newRendererEnabled)}
-            disabled={isSinglePage}
+            disabled={isSingleStep}
           />
         </FormRow>
         {hasTriggerFromStep && (

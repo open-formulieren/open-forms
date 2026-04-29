@@ -1173,7 +1173,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
 
   const isRegular = state.form.type === 'regular';
   const isAppointment = state.form.type === 'appointment';
-  const isSinglePage = state.form.type === 'single_step';
+  const isSingleStep = state.form.type === 'single_step';
 
   const {submissionLimit = null} = state.form;
 
@@ -1282,7 +1282,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
                 description="Form submission options tab title"
               />
             </Tab>
-            {!isSinglePage && (
+            {!isSingleStep && (
               <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
                 <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
               </Tab>
@@ -1314,7 +1314,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
                 <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
               </Tab>
             )}
-            {!isSinglePage && (
+            {!isSingleStep && (
               <Tab hasErrors={state.tabsWithErrors.includes('advanced-configuration')}>
                 <FormattedMessage
                   defaultMessage="Advanced configuration"
@@ -1399,7 +1399,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
             />
           </TabPanel>
 
-          {!isSinglePage && (
+          {!isSingleStep && (
             <TabPanel>
               <TextLiterals onChange={onFieldChange} translations={state.form.translations} />
             </TabPanel>
@@ -1447,7 +1447,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
               />
             </TabPanel>
           )}
-          {!isSinglePage && (
+          {!isSingleStep && (
             <TabPanel>
               <FormAdvancedConfiguration
                 form={state.form}

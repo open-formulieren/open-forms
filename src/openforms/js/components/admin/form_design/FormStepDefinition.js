@@ -60,7 +60,7 @@ const FormStepDefinition = ({
     form: {type},
   } = useContext(FormContext);
 
-  const isSinglePage = type === 'single_step';
+  const isSingleStep = type === 'single_step';
 
   const setSlug = langCode => {
     // do nothing if there's already a slug set
@@ -265,7 +265,7 @@ const FormStepDefinition = ({
                   <TextInput value={slug} onChange={onFieldChange} />
                 </Field>
               </FormRow>
-              {isSinglePage ? (
+              {isSingleStep ? (
                 <FormRow>
                   <Field
                     name={`translations.${langCode}.nextText`}
@@ -364,7 +364,7 @@ const FormStepDefinition = ({
                   />
                 </Field>
               </FormRow>
-              {!isSinglePage && (
+              {!isSingleStep && (
                 <FormRow>
                   <Field
                     name="loginRequired"

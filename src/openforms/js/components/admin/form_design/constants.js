@@ -44,7 +44,7 @@ export const FORM_TYPES = [
   [
     'single_step',
     defineMessage({
-      description: 'single page form type option label',
+      description: 'single step form type option label',
       defaultMessage: 'Single step',
     }),
   ],

@@ -191,7 +191,7 @@ class SubmissionViewSet(
 
         audit_logger.info("submission_start")
 
-        # single page forms do not use prefill functionality
+        # single step forms do not use prefill functionality
         if form.type != FormTypeChoices.single_step:
             prefill_variables(submission)
 

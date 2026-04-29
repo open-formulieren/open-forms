@@ -931,12 +931,6 @@
       "value": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
     }
   ],
-  "7KsVk/": [
-    {
-      "type": 0,
-      "value": "Single page can be enabled only when there is exactly one form step configured."
-    }
-  ],
   "7Ldfn+": [
     {
       "type": 0,
@@ -1165,6 +1159,12 @@
     {
       "type": 1,
       "value": "name"
+    }
+  ],
+  "8sDSem": [
+    {
+      "type": 0,
+      "value": "Single step"
     }
   ],
   "91XY1Q": [
@@ -2893,6 +2893,12 @@
       "value": "Affixes"
     }
   ],
+  "M8nTet": [
+    {
+      "type": 0,
+      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms."
+    }
+  ],
   "M9JbDC": [
     {
       "type": 0,
@@ -3291,6 +3297,12 @@
     {
       "type": 0,
       "value": "Output mapping"
+    }
+  ],
+  "QCEWHo": [
+    {
+      "type": 0,
+      "value": "Single step can be enabled only when there is exactly one form step configured."
     }
   ],
   "QDBI2H": [
@@ -5913,12 +5925,6 @@
       "value": "Show form"
     }
   ],
-  "k6t6Xi": [
-    {
-      "type": 0,
-      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single page forms."
-    }
-  ],
   "k9CT3p": [
     {
       "type": 0,
@@ -6425,12 +6431,6 @@
       "value": "Which merchant should be used for payments related to this form."
     }
   ],
-  "oqtOzt": [
-    {
-      "type": 0,
-      "value": "Single step"
-    }
-  ],
   "oqv4fM": [
     {
       "type": 0,
@@ -6583,12 +6583,6 @@
     {
       "type": 0,
       "value": "The description that will be used in children registration."
-    }
-  ],
-  "pdiR+8": [
-    {
-      "type": 0,
-      "value": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single page form."
     }
   ],
   "pdmkVe": [
@@ -7373,6 +7367,12 @@
     {
       "type": 0,
       "value": "Deactivate on"
+    }
+  ],
+  "x38ph4": [
+    {
+      "type": 0,
+      "value": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single step form."
     }
   ],
   "x4gaYf": [

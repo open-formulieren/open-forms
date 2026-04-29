@@ -11,7 +11,7 @@ const FormStepsNav = ({steps = [], active = null, onActivateStep, onReorder, onD
     form: {type},
   } = useContext(FormContext);
 
-  const isSinglePage = type === 'single_step';
+  const isSingleStep = type === 'single_step';
 
   const onStepAdd = event => {
     onAdd(event);
@@ -20,10 +20,10 @@ const FormStepsNav = ({steps = [], active = null, onActivateStep, onReorder, onD
 
   return (
     <nav>
-      {isSinglePage && steps.length > 0 ? (
+      {isSingleStep && steps.length > 0 ? (
         <ul className="list list--accordion list--no-margin">
           <FormStepNavSingleItem
-            // single page is already disabled if more than one steps are configured
+            // single step is already disabled if more than one steps are configured
             key={steps[0].index}
             name={
               steps[0].isNew
