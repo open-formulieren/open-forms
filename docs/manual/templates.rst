@@ -13,6 +13,7 @@ teksten die aangepast kunnen worden op basis van het ingevulde formulier.
 .. contents:: Beschikbare sjablonen
     :depth: 2
     :local:
+    :backlinks: none
 
 De tekst kan in sjablonen aangepast worden met **variabelen** en
 **voorwaardelijke weergave**. De variabelen die beschikbaar zijn, zijn
@@ -808,3 +809,29 @@ De informatie is beschikbaar in de sjabloonvariabele ``variables.auth_context``.
 Zie :ref:`manual_forms_variables_auth_context` voor een voorbeeld van de structuur, en
 een overzicht van alle "onderdelen" waaruit de ``auth_context`` variabele bestaat. Je
 kan deze allemaal individueel gebruiken in de sjablonen.
+
+Beperkingen en bekende problemen
+================================
+
+Sjabloonvariabelen in hyperlinks
+--------------------------------
+
+Op een aantal plaatsen kan je in Open Formulieren tekst met opmaak invoeren die als
+sjabloon gebruikt worden, inclusief hyperlinks naar web-locaties. Deze locatie zelf
+kan ook een sjabloonvariabele zijn, bijvoorbeeld ``{{continue_url}}``. Dit patroon komt
+vaak voor in e-mailsjablonen.
+
+Er is een technische beperking in de onderliggende bibliotheek voor het beheren van de
+opgemaakte tekst die ervoor zorgt dat in bepaalde omstandigheden de URL's *gecodeerd*
+ingevoerd worden, waarbij spaties vervangen worden door de karakters ``%20``. Dit leidt
+dan weer tot een validatiefout in Open Formulieren, omdat de sjabloonsyntax hierdoor
+niet meer correct is.
+
+**Oplossing**
+
+De makkelijkste manier is om geen spaties te gebruiken, dus gebruik liever
+``{{continue_url}}`` dan ``{{ continue_url }}`` - beide zijn valide in sjablonen, maar
+de eerste gaat altijd goed in de Wysiwyg-editors.
+
+Als alternatief kan je ook de ingevoerde hyperlink weer bewerken en de ``%20`` weghalen
+of vervangen met spaties - bij een tweede keer opslaan lijkt het wel goed te gaan.
