@@ -1,4 +1,4 @@
-@use 'microscope-sass/lib/bem';
+@use '../../lib/bem';
 
 .mapping-table {
   @include bem.modifier('stretch') {

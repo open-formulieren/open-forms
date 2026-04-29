@@ -1,6 +1,4 @@
-@import 'microscope-sass/lib/bem';
-
-$logic-line-breakpoint: 1800px !default;
+@use '../../lib/bem';
 
 .logic-rule {
   display: flex;
@@ -10,17 +8,17 @@ $logic-line-breakpoint: 1800px !default;
     margin-top: 1em;
   }
 
-  @include modifier('flat') {
+  @include bem.modifier('flat') {
     border-bottom: none;
   }
 
-  @include element('actions') {
+  @include bem.element('actions') {
     padding: 0.5em;
     padding-top: calc(1em + 3px);
     margin-right: 1em;
   }
 
-  @include element('rule') {
+  @include bem.element('rule') {
     width: 100%;
     flex-grow: 2;
     flex-shrink: 1;
@@ -32,7 +30,7 @@ $logic-line-breakpoint: 1800px !default;
     }
   }
 
-  @include element('advanced') {
+  @include bem.element('advanced') {
     width: 100%;
     display: flex;
     justify-content: flex-start;
@@ -48,7 +46,7 @@ $logic-line-breakpoint: 1800px !default;
     }
   }
 
-  @include element('header') {
+  @include bem.element('header') {
     display: flex;
     justify-content: space-between;
     column-gap: 10px;
@@ -57,14 +55,14 @@ $logic-line-breakpoint: 1800px !default;
     padding: 0 1em;
   }
 
-  @include element('heading') {
+  @include bem.element('heading') {
     font-weight: 700;
     margin: 0;
     padding: 0;
     font-size: 1.1em;
     color: var(--body-fg);
 
-    @include modifier('no-padding') {
+    @include bem.modifier('no-padding') {
       padding: 0;
     }
   }

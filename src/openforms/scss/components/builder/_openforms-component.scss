@@ -1,11 +1,8 @@
-@import '~microscope-sass/lib/typography';
-
-@import '../../../ui/static/ui/scss/settings';
 @import '../../vars';
 
 .openforms-component {
   &--hidden {
-    padding: $grid-margin-1;
+    padding: 8px;
     border-radius: 10px;
     opacity: 0.5;
     background: repeating-linear-gradient(
@@ -17,11 +14,11 @@
     );
 
     legend {
-      @include h2(auto);
+      color: #333;
     }
 
     label {
-      color: $color_dark;
+      color: #333;
     }
 
     &:hover {

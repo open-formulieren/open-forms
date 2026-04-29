@@ -1,7 +1,7 @@
-@use 'microscope-sass/lib/bem';
+@use 'design-token-editor/lib/css/dte';
+@use 'design-token-editor/lib/css/root';
 
-@import 'design-token-editor/lib/css/dte';
-@import 'design-token-editor/lib/css/root';
+@use '../lib/bem';
 
 :root {
   --dte-typography-body-font-family: Roboto, Lucida Grande, Dejavu Sans, Bitstream Vera Sans,

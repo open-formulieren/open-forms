@@ -1,13 +1,16 @@
-@import '~microscope-sass/lib/typography';
+@use '../../lib/bem';
 
 .plugin-config-react {
-  float: left;
+  @include bem.element('widget') {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1em;
+    padding-block-end: 10px;
+  }
 
   .plugins-module {
-    @include margin('auto');
-
     &__module {
-      @include margin('auto', $value-laptop: 0.5em);
+      margin-block-end: 0.5em;
       font-weight: bold;
     }
   }

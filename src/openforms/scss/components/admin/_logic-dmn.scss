@@ -1,4 +1,4 @@
-@use 'microscope-sass/lib/bem';
+@use '../../lib/bem';
 
 .logic-dmn {
   @include bem.element('mapping-config') {

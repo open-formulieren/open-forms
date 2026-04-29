@@ -1,6 +1,4 @@
-@use 'microscope-sass/lib/bem';
-@import 'microscope-sass/lib/typography';
-@import '../../vars';
+@use '../../lib/bem';
 
 .openforms-error-widget {
   display: inline-block;
@@ -12,6 +10,6 @@
   }
 
   @include bem.modifier('error-text') {
-    color: $color-error;
+    color: var(--error-fg);
   }
 }

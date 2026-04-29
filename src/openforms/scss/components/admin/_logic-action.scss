@@ -1,15 +1,10 @@
-@import '~microscope-sass/lib/responsive';
-@import '../../../ui/static/ui/scss/settings';
-
-$logic-line-breakpoint: 1800px !default;
-
 .logic-action {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   padding: 1em;
 
-  $error-height: $grid-margin-4;
+  --error-height: 24px;
 
   &__actions {
     padding: 0.5em;
@@ -23,16 +18,16 @@ $logic-line-breakpoint: 1800px !default;
 
   &--has-errors {
     > .actions {
-      padding-top: $error-height;
+      padding-top: var(--error-height);
     }
 
     .dsl-editor__node:not(.dsl-editor__node--errors) {
-      padding-top: $error-height;
+      padding-top: var(--error-height);
     }
   }
 
   &__errors {
-    max-height: $error-height;
+    max-height: var(--error-height);
     margin: 0 !important;
     padding: 0 !important;
   }

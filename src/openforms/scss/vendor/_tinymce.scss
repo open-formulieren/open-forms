@@ -1,9 +1,7 @@
-@import '../vars';
-
 .tox.tox-tinymce {
   z-index: 0;
 
   @at-root .form-row .errors > & {
-    border-color: $color-error;
+    border-color: var(--error-fg);
   }
 }

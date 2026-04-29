@@ -1,27 +1,27 @@
-@import '../../../ui/static/ui/scss/settings';
+@use '../../lib/bem';
 
 .icon {
   cursor: pointer;
-  padding: $grid-margin-1;
+  padding: 8px;
 
-  &--danger {
-    @include color-danger;
+  @include bem.modifier('danger') {
+    color: var(--error-fg);
   }
 
-  &--warning {
-    @include color-warning;
+  @include bem.modifier('warning') {
+    color: #e17000;
   }
 
-  &--no-pointer {
+  @include bem.modifier('no-pointer') {
     cursor: default;
   }
 
-  &--as-lead {
+  @include bem.modifier('as-lead') {
     padding: 0;
-    padding-right: $grid-margin-1;
+    padding-right: 8px;
   }
 
-  &--compact {
+  @include bem.modifier('compact') {
     padding: 0;
   }
 }

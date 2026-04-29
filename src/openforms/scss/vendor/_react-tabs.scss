@@ -1,23 +1,22 @@
-@import 'microscope-sass/lib/bem';
-@import 'react-tabs/style/react-tabs';
+@use 'react-tabs/style/react-tabs';
 
-@import '../vars';
+@use '../lib/bem';
 
 // overrides of the default styles
 
 .react-tabs {
-  @include element('tab-list') {
+  @include bem.element('tab-list') {
     border-bottom-color: var(--react-tab-border-color);
     // otherwise django overrides this via `form .aligned ul`
     margin-left: 0;
     padding-left: 0;
   }
 
-  @include element('tab') {
+  @include bem.element('tab') {
     color: var(--body-fg);
     font-size: 106%;
 
-    @include modifier('selected') {
+    @include bem.modifier('selected') {
       border-radius: 0;
       border-color: var(--react-tab-border-color);
       background: var(--body-bg);
@@ -29,18 +28,18 @@
     }
   }
 
-  @include element('error-badge') {
+  @include bem.element('error-badge') {
     position: absolute;
     top: 0;
     right: 0;
-    color: $color-error;
+    color: var(--error-fg);
     transform: translate(40%, -40%);
   }
 
-  @include modifier('translations') {
+  @include bem.modifier('translations') {
     margin-top: 0.5em;
 
-    @include element('tab') {
+    @include bem.element('tab') {
       text-transform: uppercase;
     }
   }

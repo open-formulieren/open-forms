@@ -1,6 +1,4 @@
-@use 'microscope-sass/lib/bem';
-
-@import '../../../ui/static/ui/scss/settings';
+@use '../../lib/bem';
 
 .variables-table {
   td,
@@ -36,7 +34,7 @@
     }
 
     .checkbox-row {
-      padding: $grid-margin-1; // Same padding as the icon
+      padding: 8px; // Same padding as the icon
     }
 
     code {
