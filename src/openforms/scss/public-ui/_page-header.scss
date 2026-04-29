@@ -1,6 +1,6 @@
-@use 'microscope-sass/lib/bem';
+@use '../lib/bem';
 
-@import '~microscope-sass/lib/responsive';
+@import 'microscope-sass/lib/responsive';
 
 /**
  * Override CSS to add responsive styles for a particular viewport.
@@ -12,8 +12,13 @@
  * A CSS override is required since there doesn't appear to be a way to capture the
  * value of a design token to later use as fallback when overriding the design token
  * itself (with design token = custom css property here).
+ *
+ * @deprecated Viewport-specific overrides should not use tailored design tokens, see
+ * https://github.com/open-formulieren/open-forms/issues/5547
  */
 @mixin add-responsive-styles($viewport) {
+  @warn "Handling responsiveness at the token level is deprecated.";
+
   $prefix: --of-utrecht-page-header-#{$viewport};
 
   padding-block-end: var(
@@ -83,6 +88,7 @@
 }
 
 // Custom styles on top of utrecht-page-header, scoped to our own theme.
+// TODO: move into separate styleshee
 .openforms-theme {
   .utrecht-page-header {
     display: flex;
