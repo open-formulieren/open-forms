@@ -1,4 +1,4 @@
-@import '../../vars';
+@use '../../vars';
 
 .openforms-component {
   &--hidden {
@@ -7,10 +7,10 @@
     opacity: 0.5;
     background: repeating-linear-gradient(
       -45deg,
-      $django-hijack-yellow,
-      $django-hijack-yellow 10px,
-      $color-tooltip-background 10px,
-      $color-tooltip-background 20px
+      vars.$django-hijack-yellow,
+      vars.$django-hijack-yellow 10px,
+      vars.$color-tooltip-background 10px,
+      vars.$color-tooltip-background 20px
     );
 
     legend {

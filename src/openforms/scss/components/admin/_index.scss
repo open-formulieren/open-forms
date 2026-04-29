@@ -1,57 +1,57 @@
-@import './button';
-@import './edit-panel';
-@import './datetime';
-@import './list';
-@import './actions';
-@import './icon';
-@import './input-group';
-@import './tiles';
-@import './box-loader';
-@import './form-object-tools';
-@import './json-data-preview';
-@import './array-input';
-@import './json-widget';
-@import './plugin-config-react';
-@import './session-status';
-@import './variables-editor';
-@import './variables-table';
-@import './confirmation-page';
-@import './column-field-value';
-@import './confirmation-email-template';
-@import './variablemapping';
-@import './generic-json-variables';
-@import './fieldset';
-@import './radiolist';
+@use './button';
+@use './edit-panel';
+@use './datetime';
+@use './list';
+@use './actions';
+@use './icon';
+@use './input-group';
+@use './tiles';
+@use './box-loader';
+@use './form-object-tools';
+@use './json-data-preview';
+@use './array-input';
+@use './json-widget';
+@use './plugin-config-react';
+@use './session-status';
+@use './variables-editor';
+@use './variables-table';
+@use './confirmation-page';
+@use './column-field-value';
+@use './confirmation-email-template';
+@use './variablemapping';
+@use './generic-json-variables';
+@use './fieldset';
+@use './radiolist';
 
 // Form design UI
-@import './select';
-@import './catalogi-type-option';
+@use './select';
+@use './catalogi-type-option';
 
 // Logic editor UI
-@import './dsl-editor';
-@import './logic-rule';
-@import './logic-rule-error';
-@import './logic-trigger';
-@import './logic-action';
-@import './logic-type-selection';
-@import './servicefetchconfiguration-picker';
-@import './logic-dmn';
-@import './logic-synchronize-variables';
+@use './dsl-editor';
+@use './logic-rule';
+@use './logic-rule-error';
+@use './logic-trigger';
+@use './logic-action';
+@use './logic-type-selection';
+@use './servicefetchconfiguration-picker';
+@use './logic-dmn';
+@use './logic-synchronize-variables';
 
 // form list
-@import './form-category';
+@use './form-category';
 
 // re-implementation of django admin changelist in React
-@import './changelist';
+@use './changelist';
 
 // third party
-@import './ReactModal';
+@use './ReactModal';
 
 // Submission logs
-@import './logic-evaluated-table';
+@use './logic-evaluated-table';
 
 // Ogone form migration
-@import './ogone-migration-page';
+@use './ogone-migration-page';
 
 // Errors
-@import './error-message';
+@use './error-message';

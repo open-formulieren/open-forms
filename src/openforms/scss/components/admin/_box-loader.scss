@@ -1,4 +1,4 @@
-@import '../../vars';
+@use '../../vars';
 
 .box-loader-container {
   padding: 20px;
@@ -19,11 +19,11 @@
     position: relative;
     width: 100%;
     height: 100%;
-    background: $color-primary-light;
+    background: vars.$color-primary-light;
     transform: scale(0);
     transform-origin: center center;
     animation: box-loader 2s infinite linear;
-    border: solid 1px $color-primary;
+    border: solid 1px vars.$color-primary;
     border-radius: 2px;
 
     &:nth-of-type(7) {

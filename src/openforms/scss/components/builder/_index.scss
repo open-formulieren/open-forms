@@ -1,11 +1,11 @@
-@import 'builder';
-@import 'admin-fixes';
+@use 'builder';
+@use 'admin-fixes';
 
 // fixes of styling broken by django admin styling
-@import 'formio-component-checkbox';
+@use 'formio-component-checkbox';
 
 // Fix for dark theme
-@import 'formio-component-file';
+@use 'formio-component-file';
 
-@import 'columns';
-@import 'openforms-component';
+@use 'columns';
+@use 'openforms-component';

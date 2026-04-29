@@ -3,9 +3,8 @@
 
  Generic overrides should go in _admin_theme.scss
  */
-@use 'microscope-sass/lib/bem';
-@import '~microscope-sass/lib/responsive';
-@import '~microscope-sass/lib/util';
+@use '../lib/bem';
+@use '../lib/responsive';
 
 /**
  * DJANGO ADMIN INDEX
@@ -18,13 +17,13 @@ $djai-padding--tablet: 30px;
   // by default, the header has 40px padding on both sides. To make the border stretch
   // full width, set negative margins and positive paddings. On mobile and tablet these
   // values are 15px and 30px respectively.
-  @include responsive(
+  @include responsive.responsive(
     (margin-left, margin-right),
     -$djai-padding--mobile,
     -$djai-padding--tablet,
     -$djai-padding
   );
-  @include responsive(
+  @include responsive.responsive(
     (padding-left, padding-right),
     $djai-padding--mobile,
     $djai-padding--tablet,

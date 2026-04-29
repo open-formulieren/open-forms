@@ -1,4 +1,4 @@
-@import '../../vars';
+@use '../../vars';
 
 .tiles {
   display: flex;
@@ -16,10 +16,10 @@
   &__tile {
     --tile-size: 140px;
 
-    background: $color-primary;
-    border: solid 1px $color-primary;
+    background: vars.$color-primary;
+    border: solid 1px vars.$color-primary;
     border-radius: 4px;
-    color: $color-lightest;
+    color: vars.$color-lightest;
     box-shadow:
       0 4px 8px 0 rgb(0 0 0 / 20%),
       0 6px 20px 0 rgb(0 0 0 / 20%);

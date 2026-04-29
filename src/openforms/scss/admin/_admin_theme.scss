@@ -3,15 +3,11 @@ Generic admin styling overrides.
 
 DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
  */
-@use 'sass:list' as list;
-@use 'sass:selector' as selector;
+@use '../lib/bem';
+@use '../vars';
 
 @use './themes/dark' as dark-theme;
 @use './themes/light' as light-theme;
-
-@import 'microscope-sass/lib/bem';
-
-@import '../vars';
 
 @include light-theme.styles;
 @include dark-theme.styles;
@@ -146,8 +142,8 @@ div.breadcrumbs {
 
 .calendar caption,
 .calendarbox h2 {
-  background: $color_secondary_dark !important;
-  color: $color_dark !important;
+  background: vars.$color_secondary_dark !important;
+  color: vars.$color_dark !important;
 }
 
 .calendar td,
@@ -155,15 +151,15 @@ div.breadcrumbs {
   a {
     &:focus,
     &:hover {
-      background: $color_primary_dark !important;
+      background: vars.$color_primary_dark !important;
     }
   }
 }
 
 .module.clockbox h2 {
   /* Match the clock widget with the calendar widget */
-  background: $color_secondary_dark !important;
-  color: $color_dark !important;
+  background: vars.$color_secondary_dark !important;
+  color: vars.$color_dark !important;
   font-weight: bold !important;
 }
 
@@ -228,7 +224,7 @@ div.breadcrumbs {
 }
 .version {
   padding: 0 30px;
-  color: $color_secondary_dark;
+  color: vars.$color_secondary_dark;
   font-size: smaller;
 }
 
@@ -283,7 +279,7 @@ body.popup {
  * Styling disabled fields/inputs
  */
 .checkbox-row {
-  @include modifier('disabled') {
+  @include bem.modifier('disabled') {
     opacity: 0.5;
 
     &,

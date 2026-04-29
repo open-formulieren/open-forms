@@ -1,7 +1,5 @@
 @use '../../lib/bem';
 
-@import '../../vars';
-
 .button {
   @include bem.modifier('plain') {
     width: 100%;
