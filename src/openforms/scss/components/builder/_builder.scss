@@ -1,5 +1,7 @@
 @use '../../lib/bem';
 
+$fa-font-path: '../fonts';
+
 @import '@fortawesome/fontawesome-free/scss/fontawesome';
 @import '@fortawesome/fontawesome-free/scss/v4-shims.scss';
 @import '@fortawesome/fontawesome-free/scss/brands';
