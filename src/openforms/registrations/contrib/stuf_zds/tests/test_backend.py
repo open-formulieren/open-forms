@@ -1,3 +1,18 @@
+"""
+Test the correct behaviour of the StUF-ZDS registration plugin.
+
+.. warning:: when re-recording the VCR cassettes, make sure to spin up all necessary
+   compose services!
+
+   In the root of the repository:
+
+   .. code-block:: bash
+
+       cd docker
+       ./start_vcr_services.sh
+
+"""
+
 import dataclasses
 from datetime import UTC, date, datetime
 from decimal import Decimal
@@ -3986,7 +4001,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         prefill_variables(submission)
         self.plugin.register_submission(submission, self.options)
 
-        stuf_request = self.cassette.requests[1]
+        stuf_request = self.cassette.requests[2]
         xml_doc = etree.fromstring(stuf_request.body)
 
         self.assertSoapXMLCommon(xml_doc)
@@ -4071,7 +4086,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         prefill_variables(submission)
         self.plugin.register_submission(submission, self.options)
 
-        stuf_request = self.cassette.requests[1]
+        stuf_request = self.cassette.requests[2]
         xml_doc = etree.fromstring(stuf_request.body)
 
         self.assertSoapXMLCommon(xml_doc)
@@ -4234,7 +4249,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         prefill_variables(submission)
         self.plugin.register_submission(submission, self.options)
 
-        stuf_request = self.cassette.requests[1]
+        stuf_request = self.cassette.requests[2]
         xml_doc = etree.fromstring(stuf_request.body)
 
         self.assertSoapXMLCommon(xml_doc)
