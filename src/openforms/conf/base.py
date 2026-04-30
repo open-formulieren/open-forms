@@ -26,6 +26,7 @@ from openforms.logging.processors import (
     add_open_telemetry_spans,
     drop_user_agent_in_dev,
 )
+from openforms.upgrades.script_checks import BinScriptCheck
 
 from .utils import Filesize, get_sentry_integrations, sentry_before_send
 
@@ -1339,8 +1340,11 @@ SETUP_CONFIGURATION_STEPS = [
 # DJANGO-UPGRADE-CHECK
 #
 UPGRADE_CHECK_PATHS: UpgradePaths = {
-    "3.5.0": UpgradeCheck(
-        VersionRange(minimum="3.3.1"),
+    "4.0.0": UpgradeCheck(
+        VersionRange(minimum="3.5.0"),
+        # TODO: remove the address derivation check if we can automatically migrate with
+        # data migrations.
+        code_checks=[BinScriptCheck("report_textfield_address_derivation")],
     ),
 }
 UPGRADE_CHECK_STRICT = False
