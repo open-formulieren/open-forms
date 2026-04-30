@@ -80,11 +80,8 @@ const VariablesMapping = ({name}) => {
   const pluginVariables =
     formContext.registrationPluginsVariables.find(entry => entry.pluginIdentifier === PLUGIN_ID)
       ?.pluginVariables ?? [];
-  const userDefinedVariables = formContext.formVariables.filter(
-    variable => variable.source === 'user_defined'
-  );
 
-  const formVariables = pluginVariables.concat(userDefinedVariables);
+  const formVariables = pluginVariables.concat(formContext.formVariables);
 
   const {getFieldProps} = useFormikContext();
   const {value: mappings = []} = getFieldProps(name);
