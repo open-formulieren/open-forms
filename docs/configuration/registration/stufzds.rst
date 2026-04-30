@@ -15,6 +15,10 @@ register form submissions.
    This service contains sensitive data and requires a connection to an
    external system, offered or maintained by a service provider.
 
+.. contents:: Jump to
+   :depth: 2
+   :local:
+   :backlinks: none
 
 What does the Open Forms administator need?
 ===========================================
@@ -136,9 +140,72 @@ These SOAP-operations are used by this plugin:
 * ``creeerZaak_Lk01``
 
    * ``heeftAlsInitiator`` (the initiator can be excluded if needed)
-   * ``heeftAlsOverigBetrokkene`` (will only be set if an employee logs in on behalf of a client)
+   * ``heeftAlsOverigBetrokkene`` (set if: an employee logs in on behalf of
+     a client, the submission has been cosigned or there are family member relations)
    * ``heeft`` (the status can be excluded if needed)
+   * ``extraElementen``, all remaining unmapped submission data elements + explicitly
+     mapped (registration) variables through the configuration
 
 * ``updateZaak_Lk01`` (only used when delayed payments are enabled)
 * ``genereerDocumentIdentificatie_Di02``
 * ``voegZaakdocumentToe_Lk01`` (for both the submission document and each attachment)
+
+Vendor-specific notes
+=====================
+
+Some vendors of StUF-ZDS-compatible systems require some extra attention.
+
+.. tip:: Missing some vendors here? Let us know in a
+   `Github issue <https://github.com/open-formulieren/open-forms/issues>`_.
+
+Onegov 365 zaaksysteem
+----------------------
+
+``<ZKN:startdatum>`` support
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Onegov expects a datetime here rather than a date. However, the StUF-ZDS standard
+prescribes a date without any time information.
+
+As a workaround, you should update the form registration configuration with an
+``extraElement`` mapping. In the registration plugin configuration options, ensure that
+there's a mapping entry from the form variable "Submission completion timestamp"
+(``completed_on``) to the name ``zaak.pv_startdatum``.
+
+Payment details information
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Open Forms uses the StUF-ZDS elements ``<ZKN:betalingsIndicatie>`` and
+``<ZKN:laatsteBetaaldatum>`` to report the payment status. Onegov expects additional
+information that's not readily available in the StUF-ZDS standard, through
+``extraElementen``:
+
+* ``zaak.pv_orderid``: the registration variable "Payment public order IDs"
+  (``payment_public_order_ids``) exists, however emitting it will result in a ``.0``,
+  ``.1``, ... suffix being added to the name of the extra element, as multiple order
+  IDs may exist. This will effectively produce XML looking like:
+
+  .. code-block:: xml
+
+    <StUF:extraElement naam="zaak.pv_orderid.0">12334</StUF:extraElement>
+
+  .. warning:: It's currently unknown if Onegov can handle this or not.
+
+  .. note:: Administrators can control the template of these order IDs. Take into
+     account that Onegov has a 100-character limit on the value of this element.
+
+* ``zaak.pv_bedrag``: the registration variable "Payment amount" (``payment_amount``)
+  can be mapped to this name. It uses a period (``.``) character as decimal separator,
+  as expected by Onegov.
+
+* ``zaak.pv_betaalmethode``: this should be omitted - Open Forms uses payment providers
+  that manage this and for us the payment method is unknown anyway.
+
+* ``zaak.pv_transactieid``: the information is available in the registration variable
+  "Provider payment IDs" (``provider_payment_ids``), but it has the same limitation like
+  ``zaak.pv_orderid`` with regard to the suffixes. An element value may not exceed 100
+  characters here either.
+
+* ``zaak.pv_betaalstatus``: this cannot be mapped, but the StUF-ZDS element
+  ``<ZKN:betalingsIndicatie>`` is the right place and we manage that automatically
+  already.

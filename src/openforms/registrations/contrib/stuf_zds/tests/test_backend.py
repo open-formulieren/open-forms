@@ -1,5 +1,20 @@
+"""
+Test the correct behaviour of the StUF-ZDS registration plugin.
+
+.. warning:: when re-recording the VCR cassettes, make sure to spin up all necessary
+   compose services!
+
+   In the root of the repository:
+
+   .. code-block:: bash
+
+       cd docker
+       ./start_vcr_services.sh
+
+"""
+
 import dataclasses
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
@@ -3515,6 +3530,58 @@ class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
             },
         )
 
+    def test_extra_mapped_extra_elementen_are_picked_up(self):
+        """
+        Assert that any registration variables that are mapped in the options are emitted.
+
+        Regression test for the review in
+        https://github.com/open-formulieren/open-forms/pull/6233 where the variable was
+        added, but an internal allowlist was blocking it from being included in the XML.
+        Instead, the configuration options should be the only source of truth.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "name",
+                    "type": "textfield",
+                    "label": "Name",
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={"name": "Willie"},
+            language_code="en",
+            completed=True,
+            completed_on=datetime(2026, 4, 30, 12, 0, 0, tzinfo=UTC),
+        )
+
+        plugin = StufZDSRegistration("stuf")
+        options: RegistrationOptions = {
+            **self.options,
+            "variables_mapping": [
+                {
+                    "form_variable": "completed_on",
+                    "stuf_name": "zaak.pv_startdatum",
+                }
+            ],
+        }
+        plugin.register_submission(submission, options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+        self.assertSoapXMLCommon(xml_doc)
+
+        # Ensure that date-related values are formatted correctly
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//stuf:extraElementen/stuf:extraElement[@naam='name']": "Willie",
+                "//stuf:extraElementen/stuf:extraElement[@naam='zaak.pv_startdatum']": "2026-04-30T12:00:00+00:00",
+            },
+        )
+
 
 @freeze_time("2020-12-22")
 @temp_private_root()
@@ -3934,7 +4001,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         prefill_variables(submission)
         self.plugin.register_submission(submission, self.options)
 
-        stuf_request = self.cassette.requests[1]
+        stuf_request = self.cassette.requests[2]
         xml_doc = etree.fromstring(stuf_request.body)
 
         self.assertSoapXMLCommon(xml_doc)
@@ -4019,7 +4086,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         prefill_variables(submission)
         self.plugin.register_submission(submission, self.options)
 
-        stuf_request = self.cassette.requests[1]
+        stuf_request = self.cassette.requests[2]
         xml_doc = etree.fromstring(stuf_request.body)
 
         self.assertSoapXMLCommon(xml_doc)
@@ -4182,7 +4249,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         prefill_variables(submission)
         self.plugin.register_submission(submission, self.options)
 
-        stuf_request = self.cassette.requests[1]
+        stuf_request = self.cassette.requests[2]
         xml_doc = etree.fromstring(stuf_request.body)
 
         self.assertSoapXMLCommon(xml_doc)
