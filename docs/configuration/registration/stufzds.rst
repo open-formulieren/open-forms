@@ -193,18 +193,13 @@ information that's not readily available in the StUF-ZDS standard, through
 ``extraElementen``:
 
 * ``zaak.pv_orderid``: the registration variable "Payment public order IDs"
-  (``payment_public_order_ids``) exists, however emitting it will result in a ``.0``,
-  ``.1``, ... suffix being added to the name of the extra element, as multiple order
-  IDs may exist. This will effectively produce XML looking like:
-
-  .. code-block:: xml
-
-    <StUF:extraElement naam="zaak.pv_orderid.0">12334</StUF:extraElement>
-
-  .. warning:: It's currently unknown if Onegov can handle this or not.
+  (``payment_public_order_ids``) exists. You must check the "Comma-separate list values"
+  option for Onegov to understand this, otherwise multiple elements will be added each
+  with their own ``.$index`` suffix.
 
   .. note:: Administrators can control the template of these order IDs. Take into
-     account that Onegov has a 100-character limit on the value of this element.
+     account that Onegov has a 100-character limit on the value of this element,
+     especially if multiple order IDs exist for a submission.
 
 * ``zaak.pv_bedrag``: the registration variable "Payment amount" (``payment_amount``)
   can be mapped to this name. It uses a period (``.``) character as decimal separator,
@@ -214,9 +209,8 @@ information that's not readily available in the StUF-ZDS standard, through
   that manage this and for us the payment method is unknown anyway.
 
 * ``zaak.pv_transactieid``: the information is available in the registration variable
-  "Provider payment IDs" (``provider_payment_ids``), but it has the same limitation like
-  ``zaak.pv_orderid`` with regard to the suffixes. An element value may not exceed 100
-  characters here either.
+  "Provider payment IDs" (``provider_payment_ids``), but it has the same limitations
+  like ``zaak.pv_orderid``.
 
 * ``zaak.pv_betaalstatus``: this cannot be mapped, but the StUF-ZDS element
   ``<ZKN:betalingsIndicatie>`` is the right place and we manage that automatically
