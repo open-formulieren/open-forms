@@ -85,8 +85,11 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
                 description="StUF-ZDS registration variablesMapping message"
                 defaultMessage={`This mapping is used to map the variable keys to keys
                 used in the XML that is sent to StUF-ZDS. Those keys and the values
-                belonging to them in the submission data are included in the
-                top level <code>extraElementen</code> for the case itself.
+                belonging to them in the submission data are included in the top level
+                <code>extraElementen</code> for the case itself. When a form variable
+                contains a list of values, you can opt to include the value as a
+                comma-separated list of values instead of including a separate extra
+                element for each item in the list.
               `}
                 values={{
                   code: chunks => <code>{chunks}</code>,
@@ -109,7 +112,11 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
                 description="StUF-ZDS registration variablesMappingInitiator message"
                 defaultMessage={`This mapping is used to map the variable keys to keys
                 used in the XML that is sent to StUF-ZDS. Those keys and the values
-                belonging to them in the submission data are included in <code>heeftAlsInitiator/extraElementen</code>.
+                belonging to them in the submission data are included in
+                <code>heeftAlsInitiator/extraElementen</code>. When a form variable
+                contains a list of values, you can opt to include the value as a
+                comma-separated list of values instead of including a separate extra
+                element for each item in the list.
               `}
                 values={{
                   code: chunks => <code>{chunks}</code>,

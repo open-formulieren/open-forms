@@ -4,6 +4,10 @@ from typing import Literal, NotRequired, TypedDict
 class MappingItem(TypedDict):
     form_variable: str
     stuf_name: str
+    serialize_list_to_csv: NotRequired[bool]
+    """
+    If enabled, list values will be serialized as a comma separated string value.
+    """
 
 
 class RegistrationOptions(TypedDict):

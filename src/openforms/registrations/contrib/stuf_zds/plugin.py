@@ -511,9 +511,24 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             self.process_children(submission, zaak_data, extra_data)
 
             # The extraElement tag of StUF-ZDS expects primitive types
-            extra_data = flatten_data_and_convert_to_primitives(extra_data)
+            keys_to_csv_serialize = {
+                mapping["stuf_name"]
+                for mapping in options.get("variables_mapping", [])
+                if mapping.get("serialize_list_to_csv")
+            }
+            extra_data = flatten_data_and_convert_to_primitives(
+                extra_data,
+                keys_to_csv_serialize=keys_to_csv_serialize,
+            )
+
+            initiator_keys_to_csv_serialize = {
+                mapping["stuf_name"]
+                for mapping in options.get("variables_mapping_initiator", [])
+                if mapping.get("serialize_list_to_csv")
+            }
             extra_data_initiator = flatten_data_and_convert_to_primitives(
-                extra_data_initiator
+                extra_data_initiator,
+                keys_to_csv_serialize=initiator_keys_to_csv_serialize,
             )
 
             assert submission.registration_result is not None
@@ -607,8 +622,14 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         self, submission: Submission, options: RegistrationOptions
     ):
         # The extraElement tag of StUF-ZDS expects primitive types
+        keys_to_csv_serialize = {
+            mapping["stuf_name"]
+            for mapping in options.get("variables_mapping", [])
+            if mapping.get("serialize_list_to_csv")
+        }
         extra_data = flatten_data_and_convert_to_primitives(
-            self.get_extra_data(submission, options)
+            self.get_extra_data(submission, options),
+            keys_to_csv_serialize=keys_to_csv_serialize,
         )
 
         zaak_options: ZaakOptions = {

@@ -1,22 +1,37 @@
 import {FieldArray, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {useContext} from 'react';
+import {useContext, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
-import {TextInput} from 'components/admin/forms/Inputs';
+import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 import {DeleteIcon, FAIcon} from 'components/admin/icons';
 
 import {PLUGIN_ID} from '../constants';
 
 const VariableMappingRow = ({prefix, onRemove}) => {
+  const {formVariables = []} = useContext(FormContext);
   const intl = useIntl();
-  const {getFieldProps} = useFormikContext();
+  const {getFieldProps, setFieldValue} = useFormikContext();
 
   const stufNameProps = getFieldProps(`${prefix}.stufName`);
+  const serializeListToCsvProps = getFieldProps({
+    name: `${prefix}.serializeListToCsv`,
+    type: 'checkbox',
+  });
+
+  const selectedFormVariable = getFieldProps(`${prefix}.formVariable`).value;
+  const formVariable = formVariables.find(fv => fv.key === selectedFormVariable);
+  const isArrayFormVariable = formVariable && formVariable.dataType === 'array';
+
+  useEffect(() => {
+    if (!isArrayFormVariable && serializeListToCsvProps.checked) {
+      setFieldValue(`${prefix}.serializeListToCsv`, false);
+    }
+  }, [setFieldValue, prefix, isArrayFormVariable, serializeListToCsvProps.checked]);
 
   return (
     <tr>
@@ -47,6 +62,21 @@ const VariableMappingRow = ({prefix, onRemove}) => {
             })}
           />
         </Field>
+      </td>
+
+      <td>
+        {isArrayFormVariable ? (
+          <Checkbox
+            {...serializeListToCsvProps}
+            aria-label={intl.formatMessage({
+              description: 'StUF-ZDS extraElement serializeListToCsv label',
+              defaultMessage: 'Comma-separate list values',
+            })}
+            disabled={false}
+          />
+        ) : (
+          '-'
+        )}
       </td>
 
       <td>
@@ -110,6 +140,12 @@ const VariablesMapping = ({name}) => {
                       description="StUF-ZDS extraElement name label"
                     />
                   </th>
+                  <th>
+                    <FormattedMessage
+                      description="StUF-ZDS extraElement serializeListToCsv label"
+                      defaultMessage="Comma-separate list values"
+                    />
+                  </th>
                   <th />
                 </tr>
               </thead>
@@ -127,7 +163,11 @@ const VariablesMapping = ({name}) => {
 
             <ButtonContainer
               onClick={() => {
-                arrayHelpers.insert(mappings.length, {formVariable: '', stufName: ''});
+                arrayHelpers.insert(mappings.length, {
+                  formVariable: '',
+                  stufName: '',
+                  serializeListToCsv: false,
+                });
               }}
             >
               <FormattedMessage description="Add variable button" defaultMessage="Add variable" />
