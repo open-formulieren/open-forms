@@ -755,12 +755,10 @@ class Submission(models.Model):
         match co_sign_data:
             # v2 cosign
             case {"version": "v2"}:
-                timestamp = co_sign_data.get("cosign_date")
+                timestamp = co_sign_data["cosign_date"]
                 _co_sign_data: SubmissionCosignData = {
                     **co_sign_data,
-                    "cosign_date": (
-                        datetime.fromisoformat(timestamp) if timestamp else None
-                    ),
+                    "cosign_date": datetime.fromisoformat(timestamp),
                 }
                 return _co_sign_data
 

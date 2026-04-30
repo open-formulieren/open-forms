@@ -335,56 +335,6 @@ class V2HandlerTests(TestCase):
         self.assertEqual(data["cosign_date"], None)
         self.assertEqual(data["cosign_pseudo"], "")
 
-    def test_cosign_info_no_cosign_date(self):
-        """The cosign date might not be available on existing submissions."""
-
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "cosign",
-                    "type": "cosign",
-                    "validate": {"required": False},
-                },
-            ],
-            completed=True,
-            submitted_data={
-                "cosign": "example@localhost",
-            },
-            cosign_complete=True,
-            co_sign_data={
-                "version": "v2",
-                "plugin": "demo",
-                "attribute": AuthAttribute.bsn,
-                "value": "123456789",
-            },
-        )
-
-        ObjectsAPIRegistrationData.objects.create(submission=submission)
-        v2_options: RegistrationOptionsV2 = {
-            "objects_api_group": self.group,
-            "version": 2,
-            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-            "objecttype_version": 1,
-            "update_existing_object": False,
-            "auth_attribute_path": [],
-            "variables_mapping": [
-                {
-                    "variable_key": "cosign_date",
-                    "target_path": ["cosign_date"],
-                },
-            ],
-            "transform_to_list": [],
-            "iot_attachment": "",
-            "iot_submission_csv": "",
-            "iot_submission_report": "",
-        }
-        handler = ObjectsAPIV2Handler()
-
-        record_data = handler.get_record_data(submission=submission, options=v2_options)
-        data = record_data["data"]
-
-        self.assertEqual(data["cosign_date"], None)
-
     @tag("utrecht-243", "gh-4425")
     def test_payment_variable_without_any_payment_attempts(self):
         submission = SubmissionFactory.create(

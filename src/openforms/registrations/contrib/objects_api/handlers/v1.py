@@ -5,7 +5,7 @@ Helpers for the template based Objects API registration handler.
 from collections.abc import Sequence
 from datetime import datetime
 from decimal import Decimal
-from typing import Literal, TypedDict
+from typing import TypedDict
 
 from django.conf import settings
 
@@ -43,19 +43,19 @@ class CosignContextData(TypedDict):
     bsn: str
     kvk: str
     pseudo: str
-    date: datetime | Literal[""]
+    date: datetime
 
 
 def get_cosign_context_data(submission: Submission) -> CosignContextData | None:
     if not (cosign := submission.cosign_state).is_signed:
         return None
 
-    cosign_date = cosign.signing_details.get("cosign_date")
+    cosign_date = cosign.signing_details["cosign_date"]
     return {
         "bsn": get_cosign_value(submission, AuthAttribute.bsn),
         "kvk": get_cosign_value(submission, AuthAttribute.kvk),
         "pseudo": get_cosign_value(submission, AuthAttribute.pseudo),
-        "date": datetime.fromisoformat(cosign_date) if cosign_date else "",
+        "date": datetime.fromisoformat(cosign_date),
     }
 
 

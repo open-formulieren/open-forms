@@ -75,14 +75,9 @@ class CosignV2Data(FormAuth):
     """
 
     version: Literal["v2"]
-    cosign_date: NotRequired[str]
+    cosign_date: str
     """
     ISO-8601 formatted datetime indicating when the cosigner confirmed the submission.
-
-    The key may be absent in legacy submissions, which is why it's marked as
-    ``NotRequired``. It was added in Open Forms 2.7.0
-
-    .. todo:: DeprecationWarning -> remove NotRequired in Open Forms 4.0.
     """
 
 
