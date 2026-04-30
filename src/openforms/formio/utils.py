@@ -498,3 +498,18 @@ def iterate_data_with_components(
                 component_data_path,
                 configuration_path,
             )
+
+
+def normalize_phone_number(phone_number: str) -> str:
+    """
+    keep only digits and '+' in the phone_number
+
+    we don't use normalize_value_for_component here, because we want to preserve
+    the user input for phone number in the submission data.
+
+    This function should be used to modify data before sending it to an external API
+    on registration or pre-registration step.
+    """
+    has_plus = phone_number.lstrip().startswith("+")
+    digits_only = "".join(char for char in phone_number if char.isdigit())
+    return f"+{digits_only}" if has_plus else digits_only
