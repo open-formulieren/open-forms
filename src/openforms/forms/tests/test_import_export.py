@@ -1796,15 +1796,22 @@ class ImportExportTests(TempdirMixin, TestCase):
                     {
                         "stuf_name": "payment_completed",
                         "form_variable": "payment_completed",
+                        "serialize_list_to_csv": False,
                     },
-                    {"stuf_name": "payment_amount", "form_variable": "payment_amount"},
+                    {
+                        "stuf_name": "payment_amount",
+                        "form_variable": "payment_amount",
+                        "serialize_list_to_csv": False,
+                    },
                     {
                         "stuf_name": "payment_public_order_ids",
                         "form_variable": "payment_public_order_ids",
+                        "serialize_list_to_csv": False,
                     },
                     {
                         "stuf_name": "provider_payment_ids",
                         "form_variable": "provider_payment_ids",
+                        "serialize_list_to_csv": False,
                     },
                 ],
                 "zds_zaaktype_code": "test",

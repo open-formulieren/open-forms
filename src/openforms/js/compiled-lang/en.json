@@ -605,6 +605,12 @@
       "value": "Variant"
     }
   ],
+  "4binPe": [
+    {
+      "type": 0,
+      "value": "Comma-separate list values"
+    }
+  ],
   "4sFGgA": [
     {
       "type": 0,
@@ -4787,6 +4793,26 @@
       "value": "Reference lists table code"
     }
   ],
+  "cQXRmG": [
+    {
+      "type": 0,
+      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "heeftAlsInitiator/extraElementen"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": ". When a form variable contains a list of values, you can opt to include the value as a comma-separated list of values instead of including a separate extra element for each item in the list."
+    }
+  ],
   "cQvPLh": [
     {
       "type": 0,
@@ -5603,26 +5629,6 @@
       "value": "You must select a table."
     }
   ],
-  "i3qXzA": [
-    {
-      "type": 0,
-      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "heeftAlsInitiator/extraElementen"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": "."
-    }
-  ],
   "i7HknI": [
     {
       "type": 0,
@@ -6111,26 +6117,6 @@
     {
       "type": 0,
       "value": "Add item"
-    }
-  ],
-  "ljTD4F": [
-    {
-      "type": 0,
-      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in the top level "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "extraElementen"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": " for the case itself."
     }
   ],
   "ln72CJ": [
@@ -7719,6 +7705,26 @@
     {
       "type": 0,
       "value": "Select a property from the object type"
+    }
+  ],
+  "zzOZbd": [
+    {
+      "type": 0,
+      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in the top level "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "extraElementen"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": " for the case itself. When a form variable contains a list of values, you can opt to include the value as a comma-separated list of values instead of including a separate extra element for each item in the list."
     }
   ]
 }
