@@ -143,8 +143,6 @@ explicitly:
 Cookie group
 ------------
 
-.. todo:: Check if we can provide a shim for this.
-
 On the cookie-list page ("Manage cookies", via the footer), the descriptions of a cookie
 group are now rendered using the ``utrecht-paragraph`` component instead of our
 hardcoded CSS. Additionally, the accept/decline buttons/status are now rendered using
@@ -154,13 +152,8 @@ and may want to define or override:
 * ``--utrecht-paragraph-line-height: 1.5;`` for the spacing between text lines
 * ``--utrecht-button-group-inline-gap: 20px;``
 
-We do not provide defaults/fallbacks for these design tokens, as they are considered
-too invasive.
-
 Cookie notice
 -------------
-
-.. todo:: Check if we can provide a shim for this.
 
 The cookie notice/banner has been slightly revised. The styling that causes the banner
 to only take up part of the viewport width is now scoped to the Open Formulieren theme,
@@ -179,7 +172,7 @@ The CSS rule to include is:
     }
 
 Additionally, we now rely on ``--utrecht-document-line-height`` for the spacing of the
-text content, to restore the old behaviour, include:
+text content. To restore the old behaviour, include:
 
 .. code-block:: css
 

@@ -59,7 +59,22 @@
   --utrecht-form-control-read-only-color: var(--utrecht-form-control-disabled-color);
 }
 
-// .utrecht-icon:has(.openforms-tooltip-icon) {
-//   // (tooltip) icons - context-specific override
-//   --utrecht-icon-size: auto;
-// }
+// @deprecated To be removed in OF 5.0
+.cookie-group {
+  line-height: var(--utrecht-paragraph-line-height, 1.5);
+
+  &__form {
+    .utrecht-button-group {
+      column-gap: var(--utrecht-button-group-inline-gap, 20px);
+    }
+  }
+}
+
+// @deprecated To be removed in OF 5.0
+.cookie-notice {
+  line-height: var(--utrecht-document-line-height, 1.5);
+
+  @media (min-width: 992px) {
+    max-inline-size: 75vw;
+  }
+}
