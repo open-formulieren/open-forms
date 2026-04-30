@@ -33,7 +33,6 @@ logger = structlog.stdlib.get_logger(__name__)
 #
 # Custom signals
 #
-authentication_success = Signal()
 co_sign_authentication_success = Signal()
 """
 Signal a successful co-sign authentication.
