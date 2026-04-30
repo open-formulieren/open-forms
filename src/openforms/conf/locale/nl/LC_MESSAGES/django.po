@@ -3698,7 +3698,7 @@ msgstr ""
 
 #: openforms/config/models/config.py:640
 msgid "wait for payment to register"
-msgstr "wacht tot betalingen voltoooid zijn om inzendingen te verwerken"
+msgstr "wacht tot betalingen voltooid zijn om inzendingen te verwerken"
 
 #: openforms/config/models/config.py:642
 msgid ""
