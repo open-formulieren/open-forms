@@ -107,7 +107,6 @@ urlpatterns = [
                 path("objects-api/", include("openforms.contrib.objects_api.api.urls")),
                 path("payment/", include("openforms.payments.api.urls")),
                 path("dmn/", include("openforms.dmn.api.urls")),
-                path("translations/", include("openforms.translations.urls")),
                 path("variables/", include("openforms.variables.urls")),
                 path("public/", include("openforms.api.public_urls")),
                 path(

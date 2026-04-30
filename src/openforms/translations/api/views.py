@@ -1,7 +1,4 @@
-from pathlib import Path
-
-from django.conf import settings
-from django.http import FileResponse, JsonResponse
+from django.http import JsonResponse
 from django.utils.translation import activate, get_language, gettext_lazy as _
 
 from django_sendfile import sendfile
@@ -94,49 +91,6 @@ class SetLanguageView(SerializerContextMixin, APIView):
         response = Response(status=status.HTTP_204_NO_CONTENT)
         set_language_cookie(response, language_code)
         return response
-
-
-@extend_schema(
-    summary=_("Get FormIO translations"),
-    description=_("Retrieve the translations for the strings used by FormIO."),
-    tags=["translations"],
-    parameters=[
-        OpenApiParameter(
-            name="language",
-            location=OpenApiParameter.PATH,
-            description=_("Language code to retrieve the messages for."),
-            type=str,
-            enum=lazy_enum(get_language_codes),  # pyright: ignore[reportArgumentType]
-        ),
-    ],
-    responses={
-        ("200", "application/json"): build_object_type(
-            additionalProperties={"type": "string"}
-        ),
-        "404": ExceptionSerializer,
-        "5XX": ExceptionSerializer,
-    },
-)
-class FormioTranslationsView(APIView):
-    authentication_classes = ()
-    permission_classes = (permissions.AllowAny,)
-
-    def get(self, request, language: str):
-        _valid_codes = get_language_codes()
-        if language not in _valid_codes:
-            raise NotFound(
-                _("The language code {language} is not supported.").format(
-                    language=language
-                )
-            )
-        filepath = (
-            Path(settings.DJANGO_PROJECT_DIR)
-            / "js"
-            / "lang"
-            / "formio"
-            / f"{language}.json"
-        )
-        return FileResponse(filepath.open("rb"))
 
 
 @extend_schema(
