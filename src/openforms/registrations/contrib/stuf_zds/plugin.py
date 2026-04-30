@@ -151,7 +151,9 @@ def _prepare_value(value: Any):
             return value
 
 
-def _get_extra_variables_mapping(submission: Submission, options: RegistrationOptions):
+def _get_extra_variables_mapping(
+    option: str, submission: Submission, options: RegistrationOptions
+):
     # Grab the variables data from the submission state & inject the static registration
     # variable values
     state_variables_data = submission.variables_state.get_data(
@@ -168,32 +170,13 @@ def _get_extra_variables_mapping(submission: Submission, options: RegistrationOp
     )
 
     # emit only what was explicitly mapped in the options
-    variables_mapping = options.get("variables_mapping", [])
+    variables_mapping = options.get(option, [])
     return {
         mapping["stuf_name"]: _prepare_value(
             state_variables_data.get(mapping["form_variable"])
         )
         for mapping in variables_mapping
     }
-
-
-def _get_extra_variables_mapping_initiator(
-    submission: Submission, options: RegistrationOptions
-):
-    key_mapping = {
-        mapping["form_variable"]: mapping["stuf_name"]
-        for mapping in options.get("variables_mapping_initiator", [])
-    }
-
-    state_variables_data = submission.variables_state.get_data(
-        include_static_variables=True
-    )
-
-    submission_variables_data = {
-        stuf_name: _prepare_value(state_variables_data.get(variable_name))
-        for variable_name, stuf_name in key_mapping.items()
-    }
-    return submission_variables_data
 
 
 @register(PLUGIN_IDENTIFIER)
@@ -265,7 +248,9 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         self, submission: Submission, options: RegistrationOptions
     ) -> dict[str, Any]:
         data = get_unmapped_data(submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE)
-        extra_variables_mapping = _get_extra_variables_mapping(submission, options)
+        extra_variables_mapping = _get_extra_variables_mapping(
+            "variables_mapping", submission, options
+        )
 
         # Remove duplicates for variables that are present in the data and are also handled
         # by the `_get_extra_variables_mapping`.
@@ -274,22 +259,6 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 data.pop(mapping["form_variable"], None)
 
         return {**data, **extra_variables_mapping}
-
-    def get_extra_data_initiator(
-        self, submission: Submission, options: RegistrationOptions
-    ) -> dict[str, Any]:
-        data = get_unmapped_data(submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE)
-        extra_variables_mapping_initiator = _get_extra_variables_mapping_initiator(
-            submission, options
-        )
-
-        # Remove duplicates for variables that are present in the data and are also handled
-        # by the `_get_extra_variables_mapping_initiator`.
-        for mapping in options.get("variables_mapping_initiator", []):
-            if mapping["form_variable"] in data:
-                data.pop(mapping["form_variable"], None)
-
-        return {**data, **extra_variables_mapping_initiator}
 
     def process_partners(
         self,
@@ -522,7 +491,11 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             self.process_vestiging(submission, zaak_data)
 
             extra_data = self.get_extra_data(submission, options)
-            extra_data_initiator = self.get_extra_data_initiator(submission, options)
+            # we don't include unmapped data to 'extra_data_initiator'
+            # therefore we don't reuse self.get_extra_data here
+            extra_data_initiator = _get_extra_variables_mapping(
+                "variables_mapping_initiator", submission, options
+            )
 
             # mutate the zaak_data and the extra data for the family members components
             # according to the type of the registration we want to send (zaakbetrokkene
@@ -572,7 +545,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                     zaak_id,
                     zaak_data,
                     LangInjection(submission, extra_data),
-                    LangInjection(submission, extra_data_initiator),
+                    extra_data_initiator,
                 ),
                 submission,
                 "intermediate.zaak_created",
