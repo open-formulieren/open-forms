@@ -3919,6 +3919,66 @@ class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     value,
                 )
 
+    def test_emit_order_ids_as_csv_list_instead_of_using_suffixes(self):
+        """
+        Assert that lists of values can be emitted as comma-separated element value.
+
+        Some StUF-ZDS vendors don't support the suffixes in the extraElement names.
+        """
+        plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+
+        options: RegistrationOptions = {
+            **self.options,
+            "variables_mapping": [
+                {
+                    "form_variable": "payment_public_order_ids",
+                    "stuf_name": "payment_public_order_ids",
+                    "serialize_list_to_csv": True,
+                },
+                {
+                    "form_variable": "provider_payment_ids",
+                    "stuf_name": "provider_payment_ids",
+                    "serialize_list_to_csv": True,
+                },
+            ],
+        }
+
+        with self.subTest("main registration"):
+            plugin.register_submission(self.submission, options)
+
+            stuf_request = self.cassette.requests[0]
+            xml_doc = etree.fromstring(stuf_request.body)
+            self.assertSoapXMLCommon(xml_doc)
+            expected_items = {
+                "payment_public_order_ids": "foo,bar",
+                "provider_payment_ids": "123456,654321",
+            }
+            for name, value in expected_items.items():
+                with self.subTest(extra_element=name, value=value):
+                    self.assertXPathEqual(
+                        xml_doc,
+                        f"//stuf:extraElementen/stuf:extraElement[@naam='{name}']",
+                        value,
+                    )
+
+        with self.subTest("update payment status registration"):
+            plugin.update_payment_status(self.submission, options)
+
+            stuf_request = self.cassette.requests[-1]
+            xml_doc = etree.fromstring(stuf_request.body)
+            self.assertSoapXMLCommon(xml_doc)
+            expected_items = {
+                "payment_public_order_ids": "foo,bar",
+                "provider_payment_ids": "123456,654321",
+            }
+            for name, value in expected_items.items():
+                with self.subTest(extra_element=name, value=value):
+                    self.assertXPathEqual(
+                        xml_doc,
+                        f"//stuf:extraElementen/stuf:extraElement[@naam='{name}']",
+                        value,
+                    )
+
 
 class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
     VCR_TEST_FILES = TESTS_DIR / "files"
