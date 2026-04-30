@@ -6,8 +6,12 @@ from pathlib import Path
 
 import django
 
+from tabulate import tabulate
+
 SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
+
+type Row = tuple[str, int, str, str]
 
 
 def report_address_derivation_usage():
@@ -17,7 +21,68 @@ def report_address_derivation_usage():
     Address derivation in textfields in the new renderer is not supported. Users must
     convert their forms to use addressNL which now handles this feature.
     """
-    return True
+    from openforms.forms.models import FormDefinition
+
+    # Ignore form definitions that aren't used in any form
+    form_definitions = (
+        FormDefinition.objects.exclude(formstep__isnull=True).distinct().order_by("pk")
+    )
+
+    problems: list[Row] = []
+
+    for form_definition in form_definitions.iterator():
+        components: list[str] = []
+
+        for component in form_definition.configuration_wrapper:
+            if component["type"] != "textfield":
+                continue
+
+            match component:
+                case {
+                    "deriveCity": bool() as derive,
+                    "deriveHouseNumber": str() as house_number_ref,
+                    "derivePostcode": str() as postcode_ref,
+                } | {
+                    "deriveStreetName": bool() as derive,
+                    "deriveHouseNumber": str() as house_number_ref,
+                    "derivePostcode": str() as postcode_ref,
+                } if derive and house_number_ref and postcode_ref:
+                    components.append(f"{component['label']} ({component['key']})")
+                case _:
+                    continue
+
+        if not components:
+            continue
+
+        used_in_forms = form_definition.used_in
+        problems.append(
+            (
+                form_definition.admin_name,
+                form_definition.pk,
+                "\n".join(components),
+                "\n".join(
+                    f"{form.admin_name} (ID: {form.pk})" for form in used_in_forms
+                ),
+            )
+        )
+
+    if not problems:
+        print("No usages found.")
+        return True
+
+    print(
+        tabulate(
+            problems,
+            headers=(
+                "Form definition",
+                "ID",
+                "Components",
+                "Used in forms",
+            ),
+        )
+    )
+
+    return False
 
 
 def main(skip_setup=False) -> bool:
