@@ -72,6 +72,7 @@ const IntroductionPageFields = ({translations, onChange}) => (
  * Component to render the metadata admin form for an Open Forms form.
  */
 const FormDetailFields = ({form: {slug, translations, type}, onChange}) => {
+  const isRegular = type === 'regular';
   const isAppointment = type === 'appointment';
 
   const setFormSlug = event => {
@@ -162,7 +163,7 @@ const FormDetailFields = ({form: {slug, translations, type}, onChange}) => {
         </LanguageTabs>
       </Fieldset>
 
-      {!isAppointment && <IntroductionPageFields translations={translations} onChange={onChange} />}
+      {isRegular && <IntroductionPageFields translations={translations} onChange={onChange} />}
     </>
   );
 };

@@ -1171,7 +1171,10 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
   // dev/debug helper
   const activeTab = new URLSearchParams(window.location.search).get('tab');
 
+  const isRegular = state.form.type === 'regular';
   const isAppointment = state.form.type === 'appointment';
+  const isSingleStep = state.form.type === 'single_step';
+
   const {submissionLimit = null} = state.form;
 
   const numRulesWithProblems = state.logicRules.filter(
@@ -1222,6 +1225,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           form: {
             url: state.form.url,
             uuid: state.form.uuid,
+            type: state.form.type,
             authBackends: state.form.authBackends,
           },
           components: availableComponents,
@@ -1278,10 +1282,12 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
                 description="Form submission options tab title"
               />
             </Tab>
-            <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
-              <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
-            </Tab>
-            {!isAppointment && (
+            {!isSingleStep && (
+              <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
+                <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
+              </Tab>
+            )}
+            {isRegular && (
               <Tab hasErrors={state.tabsWithErrors.includes('product-payment')}>
                 <FormattedMessage
                   defaultMessage="Product & payment"
@@ -1308,12 +1314,14 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
                 <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
               </Tab>
             )}
-            <Tab hasErrors={state.tabsWithErrors.includes('advanced-configuration')}>
-              <FormattedMessage
-                defaultMessage="Advanced configuration"
-                description="Advanced configuration tab title"
-              />
-            </Tab>
+            {!isSingleStep && (
+              <Tab hasErrors={state.tabsWithErrors.includes('advanced-configuration')}>
+                <FormattedMessage
+                  defaultMessage="Advanced configuration"
+                  description="Advanced configuration tab title"
+                />
+              </Tab>
+            )}
           </TabList>
 
           <TabPanel>
@@ -1327,6 +1335,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
               availableThemes={state.availableThemes}
               onAuthPluginChange={onAuthPluginChange}
               hasTriggerFromStep={state.logicRules.some(rule => !!rule.triggerFromStep)}
+              formStepsAmount={state.formSteps.length}
             />
           </TabPanel>
 
@@ -1390,11 +1399,13 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
             />
           </TabPanel>
 
-          <TabPanel>
-            <TextLiterals onChange={onFieldChange} translations={state.form.translations} />
-          </TabPanel>
+          {!isSingleStep && (
+            <TabPanel>
+              <TextLiterals onChange={onFieldChange} translations={state.form.translations} />
+            </TabPanel>
+          )}
 
-          {!isAppointment && (
+          {isRegular && (
             <TabPanel>
               <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
               <PaymentFields
@@ -1436,14 +1447,15 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
               />
             </TabPanel>
           )}
-
-          <TabPanel>
-            <FormAdvancedConfiguration
-              form={state.form}
-              formSteps={state.formSteps}
-              onChange={onFieldChange}
-            />
-          </TabPanel>
+          {!isSingleStep && (
+            <TabPanel>
+              <FormAdvancedConfiguration
+                form={state.form}
+                formSteps={state.formSteps}
+                onChange={onFieldChange}
+              />
+            </TabPanel>
+          )}
         </Tabs>
       </FormContext.Provider>
 

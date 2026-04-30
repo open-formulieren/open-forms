@@ -1165,6 +1165,12 @@
       "value": "name"
     }
   ],
+  "8sDSem": [
+    {
+      "type": 0,
+      "value": "Single step"
+    }
+  ],
   "91XY1Q": [
     {
       "type": 0,
@@ -2154,12 +2160,6 @@
       "value": "Annuleren"
     }
   ],
-  "G2rpx2": [
-    {
-      "type": 0,
-      "value": "Geef de voortgang in de formulierstappen wel of niet weer."
-    }
-  ],
   "G5q9GH": [
     {
       "type": 0,
@@ -2880,6 +2880,12 @@
       "value": "Voorvoegsels"
     }
   ],
+  "M8nTet": [
+    {
+      "type": 0,
+      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms."
+    }
+  ],
   "M9JbDC": [
     {
       "type": 0,
@@ -3276,6 +3282,12 @@
       "value": "Uitvoerparameters"
     }
   ],
+  "QCEWHo": [
+    {
+      "type": 0,
+      "value": "Single step can be enabled only when there is exactly one form step configured."
+    }
+  ],
   "QDBI2H": [
     {
       "type": 0,
@@ -3318,12 +3330,6 @@
     {
       "type": 0,
       "value": "."
-    }
-  ],
-  "QXfH7G": [
-    {
-      "type": 0,
-      "value": "Geeft aan of de gebruiker het formulier kan inzenden of niet, en of een overzichtspagina getoond wordt indien niet."
     }
   ],
   "QaPqxz": [
@@ -6413,12 +6419,6 @@
       "value": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier."
     }
   ],
-  "oqtOzt": [
-    {
-      "type": 0,
-      "value": "Single step"
-    }
-  ],
   "oqv4fM": [
     {
       "type": 0,
@@ -7351,6 +7351,12 @@
     {
       "type": 0,
       "value": "Deactiveren op"
+    }
+  ],
+  "x38ph4": [
+    {
+      "type": 0,
+      "value": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single step form."
     }
   ],
   "x4gaYf": [

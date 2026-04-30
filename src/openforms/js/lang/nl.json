@@ -491,6 +491,11 @@
     "description": "JSON editor: variable edit panel title",
     "originalDefault": "Edit variable {name}"
   },
+  "8sDSem": {
+    "defaultMessage": "Single step",
+    "description": "single step form type option label",
+    "originalDefault": "Single step"
+  },
   "91XY1Q": {
     "defaultMessage": "Niet privacy-gevoelig",
     "description": "Is not sensitive icon title",
@@ -961,11 +966,6 @@
     "description": "Cancel link help",
     "originalDefault": "Cancel rule creation"
   },
-  "G2rpx2": {
-    "defaultMessage": "Geef de voortgang in de formulierstappen wel of niet weer.",
-    "description": "Progress indicator help text",
-    "originalDefault": "Whether the step progression should be displayed in the UI or not."
-  },
   "G5q9GH": {
     "defaultMessage": "Resetten naar standaardomschrijving",
     "description": "Reset logic expression icon title",
@@ -1396,6 +1396,11 @@
     "description": "literals.changeText form label",
     "originalDefault": "Change text"
   },
+  "M8nTet": {
+    "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms.",
+    "description": "Form submissionAllowed field help text",
+    "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms."
+  },
   "M9JbDC": {
     "defaultMessage": "Annuleren",
     "description": "Confirmation modal cancel button",
@@ -1616,6 +1621,11 @@
     "description": "Output mapping title",
     "originalDefault": "Output mapping"
   },
+  "QCEWHo": {
+    "defaultMessage": "Single step can be enabled only when there is exactly one form step configured.",
+    "description": "Single step warning icon text",
+    "originalDefault": "Single step can be enabled only when there is exactly one form step configured."
+  },
   "QDBI2H": {
     "defaultMessage": "Selecteer een bestaande formulierdefinitie",
     "description": "Select form definition tile",
@@ -1630,11 +1640,6 @@
     "defaultMessage": "Deze koppelingen laten je toe om variabelen mee te sturen in de XML voor StUF-ZDS. De opgegeven sleutels en waarden uit de inzendingsgegevens komen terecht in <code>extraElementen</code>.",
     "description": "StUF-ZDS registration variablesMapping message",
     "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>."
-  },
-  "QXfH7G": {
-    "defaultMessage": "Geeft aan of de gebruiker het formulier kan inzenden of niet, en of een overzichtspagina getoond wordt indien niet.",
-    "description": "Form submissionAllowed field help text",
-    "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
   },
   "QaPqxz": {
     "defaultMessage": "Nee (met overzichtspagina)",
@@ -3022,11 +3027,6 @@
     "description": "Worldline payment options 'merchant' help text",
     "originalDefault": "Which merchant should be used for payments related to this form."
   },
-  "oqtOzt": {
-    "defaultMessage": "Single step",
-    "description": "single page form type option label",
-    "originalDefault": "Single step"
-  },
   "oqv4fM": {
     "defaultMessage": "Het objecttype van het object waar de voorinvul/productgegevens uit opgehaald worden.",
     "description": "Objects API prefill options 'Objecttype' helpText",
@@ -3468,6 +3468,11 @@
     "defaultMessage": "Deactiveren op",
     "description": "Form deactivation field label",
     "originalDefault": "Deactivate on"
+  },
+  "x38ph4": {
+    "defaultMessage": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single step form.",
+    "description": "Progress indicator help text",
+    "originalDefault": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single step form."
   },
   "x4gaYf": {
     "defaultMessage": "Annuleren",

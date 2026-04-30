@@ -1161,6 +1161,12 @@
       "value": "name"
     }
   ],
+  "8sDSem": [
+    {
+      "type": 0,
+      "value": "Single step"
+    }
+  ],
   "91XY1Q": [
     {
       "type": 0,
@@ -2167,12 +2173,6 @@
       "value": "Cancel rule creation"
     }
   ],
-  "G2rpx2": [
-    {
-      "type": 0,
-      "value": "Whether the step progression should be displayed in the UI or not."
-    }
-  ],
   "G5q9GH": [
     {
       "type": 0,
@@ -2893,6 +2893,12 @@
       "value": "Affixes"
     }
   ],
+  "M8nTet": [
+    {
+      "type": 0,
+      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms."
+    }
+  ],
   "M9JbDC": [
     {
       "type": 0,
@@ -3293,6 +3299,12 @@
       "value": "Output mapping"
     }
   ],
+  "QCEWHo": [
+    {
+      "type": 0,
+      "value": "Single step can be enabled only when there is exactly one form step configured."
+    }
+  ],
   "QDBI2H": [
     {
       "type": 0,
@@ -3335,12 +3347,6 @@
     {
       "type": 0,
       "value": "."
-    }
-  ],
-  "QXfH7G": [
-    {
-      "type": 0,
-      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
     }
   ],
   "QaPqxz": [
@@ -6425,12 +6431,6 @@
       "value": "Which merchant should be used for payments related to this form."
     }
   ],
-  "oqtOzt": [
-    {
-      "type": 0,
-      "value": "Single step"
-    }
-  ],
   "oqv4fM": [
     {
       "type": 0,
@@ -7367,6 +7367,12 @@
     {
       "type": 0,
       "value": "Deactivate on"
+    }
+  ],
+  "x38ph4": [
+    {
+      "type": 0,
+      "value": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single step form."
     }
   ],
   "x4gaYf": [

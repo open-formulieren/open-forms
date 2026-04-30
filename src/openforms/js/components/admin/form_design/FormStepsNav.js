@@ -1,83 +1,17 @@
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {DeleteIcon, ErrorIcon, FAIcon} from 'components/admin/icons';
-
-const FormStepNavItem = ({
-  name,
-  active = false,
-  onActivate,
-  onReorder,
-  onDelete,
-  hasErrors = false,
-}) => {
-  const intl = useIntl();
-  const className = classNames('list__item', 'list__item--with-actions', {
-    'list__item--active': active,
-  });
-
-  const confirmDeleteMessage = intl.formatMessage(
-    {
-      description: 'Step delete confirmation',
-      defaultMessage: 'Are you sure you want to delete the step {step}?',
-    },
-    {
-      step: name,
-    }
-  );
-
-  const iconTitle = intl.formatMessage({
-    description: 'Step validation errors icon title',
-    defaultMessage: 'There are validation errors',
-  });
-
-  return (
-    <li className={className}>
-      <div className="actions actions--vertical">
-        <FAIcon
-          icon="sort-up"
-          title={intl.formatMessage({description: 'Move up icon title', defaultMessage: 'Move up'})}
-          extraClassname="fa-lg actions__action"
-          onClick={() => onReorder('up')}
-        />
-        <FAIcon
-          icon="sort-down"
-          title={intl.formatMessage({
-            description: 'Move down icon title',
-            defaultMessage: 'Move down',
-          })}
-          extraClassname="fa-lg actions__action"
-          onClick={() => onReorder('down')}
-        />
-      </div>
-      <button
-        type="button"
-        onClick={onActivate}
-        className="button button--plain list__item-text list__item-text--allow-wrap"
-      >
-        {hasErrors ? <ErrorIcon text={iconTitle} extraClassname="icon icon--danger" /> : null}
-        {name}
-      </button>
-      <div className="actions">
-        <DeleteIcon message={confirmDeleteMessage} onConfirm={onDelete} />
-      </div>
-    </li>
-  );
-};
-
-FormStepNavItem.propTypes = {
-  name: PropTypes.node.isRequired,
-  active: PropTypes.bool.isRequired,
-  onActivate: PropTypes.func.isRequired,
-  onReorder: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  hasErrors: PropTypes.bool,
-};
+import {FormContext} from './Context';
+import {FormStepNavMultipleItems, FormStepNavSingleItem} from './FormStepsNavItem';
 
 const FormStepsNav = ({steps = [], active = null, onActivateStep, onReorder, onDelete, onAdd}) => {
   const intl = useIntl();
+  const {
+    form: {type},
+  } = useContext(FormContext);
+
+  const isSingleStep = type === 'single_step';
 
   const onStepAdd = event => {
     onAdd(event);
@@ -86,36 +20,64 @@ const FormStepsNav = ({steps = [], active = null, onActivateStep, onReorder, onD
 
   return (
     <nav>
-      <ul className="list list--accordion list--no-margin">
-        {steps.map((step, index) => (
-          <FormStepNavItem
-            key={index}
+      {isSingleStep && steps.length > 0 ? (
+        <ul className="list list--accordion list--no-margin">
+          <FormStepNavSingleItem
+            // single step is already disabled if more than one steps are configured
+            key={steps[0].index}
             name={
-              step.isNew
+              steps[0].isNew
                 ? intl.formatMessage(
                     {
                       description: 'form step label in nav',
                       defaultMessage: '{name} [new]',
                     },
-                    {name: step.name}
+                    {name: steps[0]?.name}
                   )
-                : step.name
+                : steps[0]?.name
             }
-            hasErrors={step.validationErrors.length > 0}
-            active={Boolean(active && step.index === steps.indexOf(active))}
-            onActivate={() => onActivateStep(index)}
-            onReorder={onReorder.bind(null, index)}
-            onDelete={onDelete.bind(null, index)}
+            hasErrors={steps[0].validationErrors.length > 0}
+            active={Boolean(active && steps[0].index === steps.indexOf(active))}
+            onActivate={() => onActivateStep(steps[0].index)}
+            onDelete={onDelete.bind(null, steps[0].index)}
           />
-        ))}
-        <li className="list__item">
-          <button type="button" onClick={onStepAdd} className="button button--plain button--center">
-            <span className="addlink">
-              <FormattedMessage description="add step button" defaultMessage="Add step" />
-            </span>
-          </button>
-        </li>
-      </ul>
+        </ul>
+      ) : (
+        <ul className="list list--accordion list--no-margin">
+          {steps.map((step, index) => (
+            <FormStepNavMultipleItems
+              key={index}
+              name={
+                step.isNew
+                  ? intl.formatMessage(
+                      {
+                        description: 'form step label in nav',
+                        defaultMessage: '{name} [new]',
+                      },
+                      {name: step.name}
+                    )
+                  : step.name
+              }
+              hasErrors={step.validationErrors.length > 0}
+              active={Boolean(active && step.index === steps.indexOf(active))}
+              onActivate={() => onActivateStep(index)}
+              onReorder={onReorder.bind(null, index)}
+              onDelete={onDelete.bind(null, index)}
+            />
+          ))}
+          <li className="list__item">
+            <button
+              type="button"
+              onClick={onStepAdd}
+              className="button button--plain button--center"
+            >
+              <span className="addlink">
+                <FormattedMessage description="add step button" defaultMessage="Add step" />
+              </span>
+            </button>
+          </li>
+        </ul>
+      )}
     </nav>
   );
 };

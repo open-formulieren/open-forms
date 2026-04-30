@@ -22,6 +22,6 @@ class JccRestConfigAdmin(SingletonModelAdmin):
         form_url="",
         obj=None,
     ):
-        context.update({"form_mode": "appointment"})
+        context.update({"form_type": "appointment"})
 
         return super().render_change_form(request, context, add, change, form_url, obj)

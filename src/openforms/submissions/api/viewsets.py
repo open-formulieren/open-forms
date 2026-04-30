@@ -26,7 +26,7 @@ from openforms.authentication.service import (
     check_user_is_submission_initiator,
     is_authenticated_with_an_allowed_plugin,
 )
-from openforms.forms.constants import SubmissionAllowedChoices
+from openforms.forms.constants import FormTypeChoices, SubmissionAllowedChoices
 from openforms.forms.models import Form, FormStep
 from openforms.logging import audit_logger
 from openforms.prefill.service import prefill_variables
@@ -191,7 +191,10 @@ class SubmissionViewSet(
 
         audit_logger.info("submission_start")
 
-        prefill_variables(submission)
+        # single step forms do not use prefill functionality
+        if form.type != FormTypeChoices.single_step:
+            prefill_variables(submission)
+
         initialise_user_defined_variables(submission)
 
         logged_in = submission.is_authenticated
