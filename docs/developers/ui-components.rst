@@ -168,10 +168,13 @@ Modifiers can be applied to both blocks and elements, e.g.:
 
 **SCSS helpers**
 
-Most of our repositories have helpers to build the correct BEM class names:
+Most of our repositories have helpers to build the correct BEM class names or deal
+with responsiveness:
 
 * ``formio-renderer`` -> use ``@/scss/bem``
 * ``formio-builder`` -> no helper available
+* ``open-forms`` (backend) -> use ``src/openforms/scss/lib/{bem,responsive}``, usually
+  through relative imports.
 * remainder -> use ``microscope-sass/lib/bem``, but keep in mind that ``microscope-sass``
   is deprecated and being phased out.
 

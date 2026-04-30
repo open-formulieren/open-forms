@@ -1,0 +1,14 @@
+// TODO: there's at least one community NL DS component: utrecht-skip-link
+// that we should be able to re-use
+.skiplink {
+  position: absolute;
+
+  &:not(&:focus) {
+    top: -100vh;
+    left: -100vh;
+  }
+
+  @media print {
+    display: none;
+  }
+}

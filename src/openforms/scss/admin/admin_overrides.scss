@@ -1,5 +1,5 @@
-@import 'admin_theme';
-@import 'app_overrides';
-@import 'hijack';
-@import 'widgets';
-@import 'vendor-fixes';
+@use 'admin_theme';
+@use 'app_overrides';
+@use 'hijack';
+@use 'widgets';
+@use 'vendor-fixes';

@@ -1,0 +1,23 @@
+@use '../lib/bem';
+
+.openforms-backtotop-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: var(--of-backtotop-link-column-gap, 8px);
+
+  padding-block-end: var(--of-backtotop-link-padding-block-end);
+  padding-block-start: var(--of-backtotop-link-padding-block-start);
+
+  .utrecht-icon {
+    // Required as long as we hardcode font-awesome icons, will need to revisit this
+    // when we support other icon libraries
+    --utrecht-icon-size: var(--of-backtotop-link-icon-size, auto);
+    // allow hiding the icon entirely, if desired
+    display: var(--of-backtotop-link-icon-display, inline-block);
+
+    > .fa-icon {
+      --fa: var(--of-backtotop-link-fa-icon, '\f176');
+    }
+  }
+}

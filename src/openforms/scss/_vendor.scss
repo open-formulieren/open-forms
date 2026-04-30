@@ -1,19 +1,7 @@
-@import '~leaflet/dist/leaflet';
-@import '~microscope-sass/lib/responsive';
-@import '~microscope-sass/lib/typography';
+@use 'leaflet/dist/leaflet';
 
-@import './vendor/react-tabs';
-@import './vendor/tinymce';
-@import './vendor/django-two-factor-auth';
-@import './vendor/design-token-editor';
-@import './vendor/react-select';
-
-#openforms-container {
-  @include margin(
-    true,
-    $properties: (margin-left margin-right),
-    $value-mobile: -$grid-container-margin,
-    $value-tablet: -$grid-container-margin,
-    $value-laptop: -20px
-  );
-}
+@use './vendor/react-tabs';
+@use './vendor/tinymce';
+@use './vendor/django-two-factor-auth';
+@use './vendor/design-token-editor';
+@use './vendor/react-select';

@@ -1,0 +1,100 @@
+////
+/// BEM selector builder library.
+/// @group bem
+////
+
+/// @name Import BEM library.
+/// @example @use 'lib/bem';
+///
+/// Taken from microscope-sass/lib/bem, and originally written by Sergei Maertens:
+/// https://github.com/sergei-maertens/sass-bem
+///
+
+//
+// Library to build BEM (block-element-modifier) classnames, with the strict
+// interpretation.
+//
+// BEM class names in SASS can become unreadable for complex combinations, and often
+// the composed sass rules do not output specific enough selectors.
+//
+// These mixins help you in preventing output like:
+//
+//   `.block--modifier {...}`
+//   `.block__element` {...}`
+//
+// Instead, the correct output is generated:
+//
+//   `.block.block--modifier {...}`
+//   `.block .block__element {...}`
+
+@use 'sass:list';
+@use 'sass:selector';
+@use 'sass:string';
+
+/// Output rules for elements within a block.
+///
+/// Ensures the specific `.block .block__element` selector.
+///
+/// @param {string} $element - The element name within the block.
+/// @content The style rules are applied to the block element.
+/// @example scss - Usage
+///   .my-block {
+///     @element('some-element') {
+///       display: inline-block;
+///     }
+///   }
+/// @example css - Output
+///   .my-block .my-block__some-element {display: inline-block;}
+@mixin element($element) {
+  // must be a block or block with modifier
+  $right_most_selector: list.nth(list.nth(&, -1), -1);
+  // capture the block, even if there is a modifier on the block
+  $block: nth(selector.simple-selectors($right_most_selector), 1);
+  $selector: '#{&} #{$block}__#{$element}';
+  @at-root #{$selector} {
+    @content;
+  }
+}
+
+/// Apply a modifier to a block or element.
+///
+/// @param {string} $modifier - The name of the modifier to apply.
+/// @content The style rules are applied to the block or element modifier.
+/// @example scss - Usage
+///   .my-block {
+///     @element('some-element') {
+///       @modifier('focus') {
+///         background: fuchsia;
+///       }
+///     }
+///
+///     @modifier('modified') {
+///       border: solid 3px yellow;
+///     }
+///   }
+/// @example css - Output
+///   .my-block .my-block__some-element.my-block__some-element--focus {background: fuchsia;}
+///   .my-block.my-block--modified {border: solid 3px yellow;}
+@mixin modifier($modifier) {
+  $selector: null;
+
+  // we grab the _first_ selector list item - & can refer to multiple, but that's very
+  // un-bem like and unsupported here.
+  $target: list.nth(&, 1);
+  $bits: string.split(string.quote(#{$target}), ' ');
+
+  @if (length($bits) == 1) {
+    // block
+    $selector: selector-append(&, '#{&}--#{$modifier}');
+  } @else {
+    // block__element
+    $block: nth($bits, 1); // block, possibly with a modifier
+    $element: nth($bits, 2);
+    $element_with_modifier: selector-append($element, '#{$element}--#{$modifier}');
+    $selector: '#{$block} #{$element_with_modifier}';
+  }
+
+  @at-root #{$selector} {
+    @content;
+  }
+}

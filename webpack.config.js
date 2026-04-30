@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const argv = require('yargs').argv;
-const paths = require('./build/paths');
 const path = require('path');
 
 // Set isProduction based on environment or argv.
@@ -19,17 +18,19 @@ if (argv.production) {
 module.exports = {
   // Entry points locations.
   entry: {
-    [`public-styles`]: `${__dirname}/${paths.scssEntry}`,
-    [`admin_overrides`]: `${__dirname}/${paths.sourcesRoot}scss/admin/admin_overrides.scss`,
-    [`core-css`]: `${__dirname}/${paths.sourcesRoot}scss/screen.scss`,
-    [`core-js`]: `${__dirname}/${paths.sourcesRoot}js/index.js`,
-    'pdf-css': `${__dirname}/${paths.pdfScssEntry}`,
-    public: `${__dirname}/${paths.sourcesRoot}js/public.js`,
+    // Public (end-user facing)
+    public: `${__dirname}/src/openforms/js/public.js`,
+    'public-styles': `${__dirname}/src/openforms/scss/public.scss`,
+    'pdf-css': `${__dirname}/src/openforms/scss/pdf.scss`,
+    // Admin-user facing
+    admin_overrides: `${__dirname}/src/openforms/scss/admin/admin_overrides.scss`,
+    'core-css': `${__dirname}/src/openforms/scss/screen.scss`,
+    'core-js': `${__dirname}/src/openforms/js/index.js`,
   },
 
   // (Output) bundle locations.
   output: {
-    path: __dirname + '/' + paths.jsDir,
+    path: `${__dirname}/src/openforms/static/bundles/`,
     filename: '[name].js', // file
     chunkFilename: '[name].bundle.js',
     publicPath: '/static/bundles/',

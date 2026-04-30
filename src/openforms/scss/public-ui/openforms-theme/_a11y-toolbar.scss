@@ -1,0 +1,9 @@
+@use '../../lib/responsive';
+
+@mixin theme-styles {
+  .a11y-toolbar {
+    @include responsive.mobile-only {
+      align-items: center;
+    }
+  }
+}

@@ -1,7 +1,5 @@
-@use 'microscope-sass/lib/bem';
+@use '../../lib/bem';
 @use './json-editor';
-
-@import '~microscope-sass/lib/color';
 
 .json-widget {
   @include bem.element('input') {
@@ -36,7 +34,7 @@
   }
 
   @include bem.element('error') {
-    @include color-danger;
+    color: var(--error-fg);
     padding-top: 0.5em;
   }
 }

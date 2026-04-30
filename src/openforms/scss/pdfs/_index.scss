@@ -1,12 +1,12 @@
 // generic 'global' styling
-@import 'page';
-@import 'typography';
+@use 'page';
+@use 'typography';
 
 // specific content styling
-@import 'header';
-@import 'metadata';
-@import 'submission-step';
-@import 'submission-step-row';
-@import 'screen-reader';
-@import 'payment-info';
-@import 'privacy-policy';
+@use 'header';
+@use 'metadata';
+@use 'submission-step';
+@use 'submission-step-row';
+@use 'screen-reader';
+@use 'payment-info';
+@use 'privacy-policy';

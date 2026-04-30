@@ -4,14 +4,14 @@
     <div class="openforms-card">
         {% block card %}
             <header class="openforms- card__header">
-                <h1 class="title">{{ title }}</h1>
+                <h1 class="utrecht-heading-1">{{ title }}</h1>
             </header>
 
             <div class="openforms-card__body">
                 {% block card_body %}
-                    <ul class="list">
+                    <ul class="openforms-list">
                         {% for object in object_list %}
-                            <li class="list__item">
+                            <li class="openforms-list__item">
                                 <a
                                     href="{{ object.get_absolute_url }}"
                                     class="utrecht-link utrecht-link--html-a utrecht-link--openforms"

@@ -1,6 +1,9 @@
+@use '../../lib/bem';
+@use '../../vars';
+
 .session-status-wrapper {
   &--no-modal {
-    color: $color_secondary_dark;
+    color: vars.$color_secondary_dark;
     font-size: smaller;
   }
 
@@ -26,8 +29,8 @@
   }
 
   &--expired {
-    color: $color-error;
-    border-color: $color-error;
+    color: var(--error-fg);
+    border-color: var(--error-fg);
     font-weight: bold;
     text-align: center;
 

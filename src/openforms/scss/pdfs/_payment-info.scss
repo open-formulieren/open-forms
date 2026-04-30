@@ -1,8 +1,8 @@
-@import '~microscope-sass/lib/typography';
-
 .payment-info {
-  @include margin(auto);
-
-  padding-top: $grid-container-padding;
+  padding-top: 20px;
   border-top: thin solid #767676;
+
+  &:not(:last-child) {
+    margin-block-end: 20px;
+  }
 }

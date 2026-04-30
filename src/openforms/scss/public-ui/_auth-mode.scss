@@ -1,0 +1,16 @@
+@use '../lib/bem';
+
+.auth-mode {
+  // hidden until explicitly displayed
+  display: none;
+
+  &:not(:first-child) {
+    margin-top: 2em;
+  }
+
+  @include bem.modifier('active') {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+}

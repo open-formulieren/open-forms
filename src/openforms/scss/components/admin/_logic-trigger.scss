@@ -1,6 +1,5 @@
-@import '~microscope-sass/lib/bem';
-@import '~microscope-sass/lib/color';
-@import '~microscope-sass/lib/responsive';
+@use '../../lib/bem';
+@use '../../lib/responsive';
 
 $logic-line-breakpoint: 1800px !default;
 
@@ -15,7 +14,7 @@ $logic-trigger-border: solid 1px #eee;
     border-bottom: none;
   }
 
-  @include element('description') {
+  @include bem.element('description') {
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -27,7 +26,7 @@ $logic-trigger-border: solid 1px #eee;
   padding: 1em;
   border-bottom: $logic-trigger-border;
 
-  @include breakpoint($max: $logic-line-breakpoint) {
+  @include responsive.breakpoint($max: $logic-line-breakpoint) {
     flex-wrap: wrap;
   }
 
@@ -35,14 +34,9 @@ $logic-trigger-border: solid 1px #eee;
     flex-grow: 1;
   }
 
-  &__children {
-    @include margin('auto', $properties: margin-right);
-    flex-grow: 1;
-  }
-
   &__data-preview {
     min-width: 200px;
-    @include breakpoint($min: $logic-line-breakpoint) {
+    @include responsive.breakpoint($min: $logic-line-breakpoint) {
       min-width: 400px;
     }
     max-width: 800px;
@@ -54,14 +48,8 @@ $logic-trigger-border: solid 1px #eee;
     flex-grow: 1;
   }
 
-  &__json-editor--error {
-    textarea {
-      border-color: $color-danger;
-    }
-  }
-
   &__error {
-    @include color-danger;
+    color: var(--error-fg);
     padding-top: 0.5em;
   }
 }

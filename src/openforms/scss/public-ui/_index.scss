@@ -1,0 +1,19 @@
+/**
+ * Imports all the required component modules.
+ */
+
+@use 'a11y-toolbar';
+@use 'auth-mode';
+@use 'backtotop-link';
+@use 'choice-list';
+@use 'cookie-group';
+@use 'cookie-notice';
+@use 'fa-icon';
+@use 'gtm-frame';
+@use 'info-bar';
+@use 'skiplink';
+
+// NL DS components used, but CSS-level overrides applied
+@use 'page-content';
+@use 'page-footer';
+@use 'page-header';

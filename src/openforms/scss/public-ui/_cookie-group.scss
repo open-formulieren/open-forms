@@ -1,0 +1,9 @@
+@use '../lib/bem';
+
+.cookie-group {
+  @include bem.element('form') {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+}

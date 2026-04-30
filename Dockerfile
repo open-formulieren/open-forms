@@ -60,7 +60,6 @@ FROM node:20-bookworm-slim AS frontend-build
 WORKDIR /app
 
 # copy configuration/build files
-COPY ./build /app/build/
 COPY ./*.json ./*.js /app/
 
 # install WITH dev tooling
@@ -140,7 +139,6 @@ COPY --from=sdk-image /sdk /app/src/openforms/static/sdk
 
 # the following are needed to have access to module formatjs/cli during runtime (process
 # custom translations)
-COPY --from=frontend-build /app/build /app/build
 COPY --from=frontend-build /app/node_modules/.bin /app/node_modules/.bin
 # copy only @formatjs/cli + dependencies
 COPY --from=frontend-build /tmp/formatjs-node_modules.tgz /tmp/

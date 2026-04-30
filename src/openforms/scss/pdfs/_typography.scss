@@ -1,9 +1,63 @@
-@import '~microscope-sass/lib/typography';
-
 .title {
-  @include h1(auto);
+  color: #000;
+  font-family: 'Fira Sans', Calibri, sans-serif;
+  font-size: 1.9375rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 0.967;
+  margin: 0;
+
+  &:not(:last-child) {
+    margin-block-end: 0.5rem;
+  }
 }
 
 .subtitle {
-  @include h2(auto);
+  color: #000;
+  font-family: 'Fira Sans', Calibri, sans-serif;
+  font-size: 1.6875rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.129;
+  margin: 0;
+
+  &:not(:last-child) {
+    margin-block-end: 0.5rem;
+  }
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  src: url('../fonts/fira-sans-v11-latin-regular.eot');
+  src:
+    local(''),
+    url('../fonts/fira-sans-v11-latin-regular.eot?#iefix') format('eot'),
+    url('../fonts/fira-sans-v11-latin-regular.ttf') format('truetype'),
+    url('../fonts/fira-sans-v11-latin-regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  src: url('../fonts/fira-sans-v11-latin-700.eot');
+  src:
+    local(''),
+    url('../fonts/fira-sans-v11-latin-700.eot?#iefix') format('eot'),
+    url('../fonts/fira-sans-v11-latin-700.ttf') format('truetype'),
+    url('../fonts/fira-sans-v11-latin-700.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  src: url('../fonts/fira-sans-v11-latin-italic.eot');
+  src:
+    local(''),
+    url('../fonts/fira-sans-v11-latin-italic.eot?#iefix') format('eot'),
+    url('../fonts/fira-sans-v11-latin-italic.ttf') format('truetype'),
+    url('../fonts/fira-sans-v11-latin-italic.woff') format('woff');
+  font-weight: normal;
+  font-style: italic;
 }

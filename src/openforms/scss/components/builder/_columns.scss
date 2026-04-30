@@ -1,28 +1,9 @@
-@use 'sass:math';
-
-@import '~microscope-sass/lib/grid';
-
-@import '../../../ui/static/ui/scss/settings';
-
-$bootstrap-ratio-mobile: math.div(12, $grid-columns-mobile);
-$bootstrap-ratio-tablet: math.div(12, $grid-columns-tablet);
-$bootstrap-ratio-laptop: math.div(12, $grid-columns-laptop);
-$bootstrap-ratio-desktop: math.div(12, $grid-columns-desktop);
-
-@mixin bootstrap-span($property, $cols) {
-  $bs-span: math.div($cols, 12) * 100%;
-  @include responsive(
-    $property,
-    math.div($bs-span, $bootstrap-ratio-mobile),
-    math.div($bs-span, $bootstrap-ratio-tablet),
-    math.div($bs-span, $bootstrap-ratio-laptop),
-    math.div($bs-span, $bootstrap-ratio-desktop)
-  );
-}
+@use '../../lib/bem';
 
 .columns {
-  display: flex;
   width: 100%;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
 
   margin-left: -3px;
   margin-right: -3px;
@@ -52,10 +33,12 @@ $bootstrap-ratio-desktop: math.div(12, $grid-columns-desktop);
       flex-grow: 1;
     }
 
+    grid-column: span var(--_of-columns-column-span);
+
     $col-sizes: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12;
     @each $col-size in $col-sizes {
-      &--span-#{$col-size} {
-        @include bootstrap-span(width, $col-size);
+      @include bem.modifier('span-#{$col-size}') {
+        --_of-columns-column-span: #{$col-size};
       }
     }
   }

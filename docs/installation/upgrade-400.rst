@@ -110,3 +110,84 @@ with the ``open-forms-sdk-wrapper.mjs`` example code:
 
     const sdkNodes = document.querySelectorAll('.open-forms-sdk-root');
     sdkNodes.forEach(node => initializeSDK(node));
+
+NL Design System related changes
+================================
+
+.. note:: Relevant for: custom theme developers.
+
+We frequently check our own markup and CSS code for opportunities to replace custom
+implementations with existing NL Design System (community) components. As an organization
+that uses NL DS, you benefit from this with more consistent appearance of the same
+logical components in different places.
+
+However, because Open Forms existed *before* NL DS was commonplace, this sometimes leads
+to changes in appearance, because what used to be hardcoded CSS is now parametrized,
+and we don't have any guarantees that the relevant design tokens are set.
+
+Below you find a summary of components that were moved from custom CSS to existing
+NL DS components that may require visual inspection/additional definitions in your
+custom theme stylesheet(s).
+
+Default design token values removal
+-----------------------------------
+
+Open Forms 3.1.0 added some default design token values for backwards compatibility
+reasons. These have been removed. If you rely on them, make sure to define the tokens
+explicitly:
+
+* ``--utrecht-button-column-gap``
+* ``--of-form-navigation-row-gap``
+* ``--of-abort-button-color``
+
+Cookie group
+------------
+
+On the cookie-list page ("Manage cookies", via the footer), the descriptions of a cookie
+group are now rendered using the ``utrecht-paragraph`` component instead of our
+hardcoded CSS. Additionally, the accept/decline buttons/status are now rendered using
+the ``utrecht-button-group`` component. You may see changed spacings between content
+and may want to define or override:
+
+* ``--utrecht-paragraph-line-height: 1.5;`` for the spacing between text lines
+* ``--utrecht-button-group-inline-gap: 20px;``
+
+Cookie notice
+-------------
+
+The cookie notice/banner has been slightly revised. The styling that causes the banner
+to only take up part of the viewport width is now scoped to the Open Formulieren theme,
+meaning that you should include a similar rule if you have custom themes. This is an
+ongoing effort to consistently deal with different viewports (mobile vs. desktop) in the
+NL DS ecosystem.
+
+The CSS rule to include is:
+
+.. code-block:: css
+
+    @media (min-width: 992px) {
+      .cookie-notice {
+        max-inline-size: 75vw;
+      }
+    }
+
+Additionally, we now rely on ``--utrecht-document-line-height`` for the spacing of the
+text content. To restore the old behaviour, include:
+
+.. code-block:: css
+
+    line-height: 1.5;
+
+Removed deprecations
+--------------------
+
+The following fallbacks were deprecated and have been removed.
+
+**``backtotop-link`` component**
+
+* removed fallback to ``--utrecht-button-column-gap``, specify
+  ``--of-backtotop-link-column-gap`` explicitly
+* removed fallback to ``--utrecht-button-padding-block-end``, specify
+  ``--of-backtotop-link-padding-block-end`` explicitly
+* removed fallback to ``--utrecht-button-padding-block-start``, specify
+  ``--of-backtotop-link-padding-block-start`` explicitly

@@ -1,4 +1,6 @@
-@use 'microscope-sass/lib/bem';
+@use '../../lib/bem';
+
+$fa-font-path: '../fonts';
 
 @import '@fortawesome/fontawesome-free/scss/fontawesome';
 @import '@fortawesome/fontawesome-free/scss/v4-shims.scss';
@@ -127,7 +129,9 @@ div.flatpickr-calendar.open {
 .formio.builder,
 .component-preview {
   .col-form-label {
-    @include ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
     max-inline-size: 100%;
 
     // don't do this in the modal preview

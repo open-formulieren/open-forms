@@ -1,8 +1,3 @@
-// design tokens
-@import '@open-formulieren/design-tokens/dist/index.css';
-
-@import '@open-formulieren/formio-builder/css/index';
-
-@import '../ui/static/ui/scss/settings';
-@import './vendor';
-@import './components';
+@use '@open-formulieren/formio-builder/css/index';
+@use './vendor';
+@use './components';

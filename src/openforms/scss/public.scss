@@ -1,0 +1,24 @@
+/**
+ * SASS for the public UI, end-user facing (i.e. users that fill out the forms).
+ *
+ * Note that the styling code here must be written so that it does not conflict with the
+ * styles bundled in the SDK. Preferably, NL DS components are used as well, rather than
+ * custom CSS.
+ */
+// Own components, developed with NL DS principles
+@use 'public-ui/index';
+
+// NL Design system (community) components, typically *not* yet provided/included in the
+// SDK styles.
+@use '@utrecht/heading-2-css';
+@use '@utrecht/link-list-css';
+@use '@utrecht/page-css';
+@use '@utrecht/page-content-css';
+@use '@utrecht/page-header-css';
+@use '@utrecht/page-footer-css';
+
+// Backwards compatibility shims for renamed/moved/replaced design tokens.
+@use 'public-ui/shims';
+
+// Theme-specific overrides
+@use 'public-ui/openforms-theme';

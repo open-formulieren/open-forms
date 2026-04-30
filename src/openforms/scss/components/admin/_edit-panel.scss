@@ -1,6 +1,4 @@
-@use 'microscope-sass/lib/bem';
-
-@import '../../vars';
+@use '../../lib/bem';
 
 .edit-panel {
   display: flex;

@@ -1,6 +1,4 @@
-@use 'microscope-sass/lib/bem';
-
-@import '../../vars';
+@use '../../lib/bem';
 
 .button {
   @include bem.modifier('plain') {

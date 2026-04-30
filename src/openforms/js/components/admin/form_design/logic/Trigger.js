@@ -155,7 +155,7 @@ const reducer = (draft, action) => {
   }
 };
 
-const Trigger = ({name, logic, onChange, error, children}) => {
+const Trigger = ({name, logic, onChange, error}) => {
   const intl = useIntl();
   const formContext = useContext(FormContext);
   const [viewMode, setViewMode] = useState('ui');
@@ -380,8 +380,6 @@ const Trigger = ({name, logic, onChange, error, children}) => {
         {triggerDisplay}
       </div>
 
-      {children ? <div className="logic-trigger__children">{children}</div> : null}
-
       <div>
         <ToggleCodeIcon viewMode={viewMode} setViewMode={setViewMode} />
       </div>
@@ -394,7 +392,6 @@ Trigger.propTypes = {
   logic: PropTypes.object,
   onChange: PropTypes.func.isRequired,
   error: PropTypes.string,
-  children: PropTypes.node,
 };
 
 const getOperandTypesForVariableType = componentType => {

@@ -1,0 +1,21 @@
+@use '../lib/bem';
+@use '../lib/responsive';
+
+.openforms-choice-list {
+  @include bem.modifier('inline') {
+    --of-utrecht-form-field-radio-margin-block-start: 0;
+
+    display: flex;
+    gap: 1em;
+    justify-content: space-between;
+
+    @include responsive.mobile-only {
+      display: block;
+    }
+
+    @include bem.element('choice') {
+      flex-basis: 100%;
+      flex-grow: 1;
+    }
+  }
+}
