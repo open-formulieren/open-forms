@@ -40,7 +40,6 @@ include = [
     "src/openforms/forms/api/v3/",
     "src/openforms/forms/json_schema.py",
     "src/openforms/forms/logic_analysis.py",
-    "src/openforms/forms/management/commands/set_forms_new_renderer_enabled.py",
     "src/openforms/forms/tests/test_logic_analysis.py",
     # Payments
     "src/openforms/payments/",

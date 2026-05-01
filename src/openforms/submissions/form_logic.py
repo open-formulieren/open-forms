@@ -100,11 +100,7 @@ def evaluate_form_logic(
     # 4. Apply the (dirty) data to the variable state.
     # We need to get the initial data for clear on hide first, as we don't want it to
     # include the unsaved data.
-    data_for_hidden_state = (
-        _get_initial_data_for_clear_on_hide(step)
-        if submission.form.new_renderer_enabled
-        else FormioData()
-    )
+    data_for_hidden_state = _get_initial_data_for_clear_on_hide(step)
     if unsaved_data is not None:
         submission_variables_state.set_values(unsaved_data)
     data_for_evaluation = submission_variables_state.get_data(
