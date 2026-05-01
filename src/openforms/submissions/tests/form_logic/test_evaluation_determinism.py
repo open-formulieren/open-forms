@@ -74,12 +74,12 @@ class DeterministicEvaluationTests(TestCase):
             variable.value, 5
         )  # rule with order 1 overwrites result of rule with order 0
 
-    def test_evaluate_rules_when_trigger_step_reached(self):
+    def test_evaluate_rules_on_all_available_steps(self):
         """
-        Test that only the rules are evaluated that reached the trigger step.
+        Test that only the rules are evaluated that are relevant for that step.
 
-        Set up creates a form with three steps, the logic rule may only kick in from
-        step2 onwards (i.e. - evaluate for step 2 and for step 3, but not step 1).
+        Set up creates a form with three steps, logic analysis will assign the rule to
+        the third step, so it should only evaluate for step 3.
         """
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -121,8 +121,7 @@ class DeterministicEvaluationTests(TestCase):
         )
         FormLogicFactory.create(
             form=form,
-            json_logic_trigger={"==": [1, 1]},  # trigger is always true
-            trigger_from_step=step2,
+            json_logic_trigger=True,
             actions=[
                 {
                     "variable": "d",
@@ -134,6 +133,7 @@ class DeterministicEvaluationTests(TestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
 
         submission = SubmissionFactory.create(form=form)
         ss1 = SubmissionStepFactory.create(
@@ -149,7 +149,7 @@ class DeterministicEvaluationTests(TestCase):
             data = state.get_data(include_unsaved=True)
             self.assertEqual({"a": 2, "b": 4, "c": None, "d": None}, data)
 
-        with self.subTest("Evaluation not skipped on step 2"):
+        with self.subTest("Evaluation skipped on step 2"):
             ss2 = SubmissionStepFactory.create(
                 submission=submission, form_step=step2, data={"c": 2}
             )
@@ -158,7 +158,7 @@ class DeterministicEvaluationTests(TestCase):
 
             state = submission.variables_state
             data = state.get_data(include_unsaved=True)
-            self.assertEqual({"a": 2, "b": 4, "c": 2, "d": 6}, data)
+            self.assertEqual({"a": 2, "b": 4, "c": 2, "d": None}, data)
 
         with self.subTest("Evaluation not skipped on step 3"):
             ss3 = SubmissionStepFactory.create(

@@ -18,7 +18,6 @@ from ....logic_analysis import (
 )
 from ....models import Form, FormLogic, FormStep
 from ...validators import (
-    FormLogicTriggerFromStepFormValidator,
     JsonLogicTriggerValidator,
     JsonLogicValidator,
 )
@@ -125,20 +124,6 @@ class FormLogicSerializer(
         required=True,
         context_name="forms",
     )
-    trigger_from_step = NestedHyperlinkedRelatedField(
-        required=False,
-        allow_null=True,
-        queryset=FormStep.objects,
-        view_name="api:form-steps-detail",
-        lookup_field="uuid",
-        parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
-        label=_("trigger from step"),
-        help_text=_(
-            "When set, the trigger will only be checked once the specified step is reached. "
-            "This means the rule will never trigger for steps before the specified trigger step. "
-            "If unset, the trigger will always be checked."
-        ),
-    )
     actions = LogicComponentActionSerializer(
         many=True,
         label=_("Actions"),
@@ -169,7 +154,6 @@ class FormLogicSerializer(
             "json_logic_trigger",
             "description",
             "order",
-            "trigger_from_step",
             "actions",
             "is_advanced",
             "form_steps",
@@ -199,10 +183,7 @@ class FormLogicSerializer(
                 ),
             },
         }
-        validators = [
-            JsonLogicTriggerValidator("json_logic_trigger"),
-            FormLogicTriggerFromStepFormValidator(),
-        ]
+        validators = [JsonLogicTriggerValidator("json_logic_trigger")]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

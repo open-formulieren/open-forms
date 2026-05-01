@@ -10,7 +10,7 @@ from openforms.formio.service import (
     FormioData,
     process_visibility,
 )
-from openforms.forms.models import FormLogic, FormStep
+from openforms.forms.models import FormLogic
 
 from ..models import Submission, SubmissionStep
 from .actions import ActionOperation
