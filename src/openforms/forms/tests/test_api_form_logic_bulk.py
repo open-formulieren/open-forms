@@ -1989,3 +1989,14 @@ class FormLogicAPIGraphValidationTests(APITestCase):
             },
         ]
         self.assertEqual(response.json()["invalidParams"], expected_error)
+
+    @tag("gh-6213")
+    def test_create_without_steps(self):
+        """Ensure there is no crash when a form is saved without any steps."""
+        form = FormFactory.create(
+            new_logic_evaluation_enabled=True, generate_minimal_setup=False
+        )
+
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.put(url, data=[])
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
