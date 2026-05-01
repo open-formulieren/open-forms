@@ -223,7 +223,6 @@ export const FullFunctionality = {
 
     availableFormVariables: AVAILABLE_FORM_VARIABLES,
     availableFormSteps: AVAILABLE_FORM_STEPS,
-    newLogicEvaluationEnabled: false,
   },
 
   play: async ({canvasElement}) => {
@@ -392,7 +391,6 @@ export const WithLogicRuleAnalysis = {
 
     availableFormVariables: AVAILABLE_FORM_VARIABLES,
     availableFormSteps: AVAILABLE_FORM_STEPS,
-    newLogicEvaluationEnabled: true,
   },
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
