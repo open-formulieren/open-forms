@@ -549,7 +549,6 @@ const FormConfigurationFields = ({
     askPrivacyConsent,
     askStatementOfTruth,
     appointmentOptions,
-    newRendererEnabled,
     newLogicEvaluationEnabled,
   } = form;
   const intl = useIntl();
@@ -779,27 +778,6 @@ const FormConfigurationFields = ({
         collapsible
         initialCollapsed
       >
-        <FormRow>
-          <Checkbox
-            name="form.newRendererEnabled"
-            label={
-              <FormattedMessage
-                description="New renderer enabled feature flag label"
-                defaultMessage="Enable new renderer"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                description="New renderer enabled feature flag help text"
-                defaultMessage={`Enable the new renderer, which is more performant
-                and has better accessibility.`}
-              />
-            }
-            checked={!isSingleStep ? newRendererEnabled : true}
-            onChange={event => onCheckboxChange(event, newRendererEnabled)}
-            disabled={isSingleStep}
-          />
-        </FormRow>
         {hasTriggerFromStep && (
           <FormRow>
             <p>

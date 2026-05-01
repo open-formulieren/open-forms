@@ -245,7 +245,6 @@ class FormEndpointTests(APITestCase):
                     "explanationTemplate": "Wees klaar om voor koekjes te vragen",
                 },
             },
-            "newRendererEnabled": True,
             "newLogicEvaluationEnabled": True,
         }
         response = self.client.put(url, data=data)
@@ -421,8 +420,6 @@ class FormEndpointTests(APITestCase):
         self.assertEqual(
             form.explanation_template_nl, "Wees klaar om voor koekjes te vragen"
         )
-
-        self.assertTrue(form.new_renderer_enabled)
 
     def test_create_reuse_existing_definition(self):
         form_definition = FormDefinitionFactory.create(

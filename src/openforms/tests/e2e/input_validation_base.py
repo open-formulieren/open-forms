@@ -38,7 +38,6 @@ def create_form(component: Component) -> Form:
         translation_enabled=False,  # force Dutch
         ask_privacy_consent=False,
         ask_statement_of_truth=False,
-        new_renderer_enabled=True,
     )
     FormStepFactory.create(
         form=form, form_definition=form_definition, next_text="Volgende"

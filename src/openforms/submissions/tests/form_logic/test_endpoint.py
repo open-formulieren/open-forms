@@ -672,7 +672,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         Ensure that logic check only returns cleared values relevant for the current
         step.
         """
-        form = FormFactory.create(new_renderer_enabled=True)
+        form = FormFactory.create()
         step_1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -1097,7 +1097,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
 
     @tag("gh-5685")
     def test_default_value_is_used_when_component_is_hidden_with_clear_on_hide(self):
-        form = FormFactory.create(new_renderer_enabled=True)
+        form = FormFactory.create()
         step = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -1170,7 +1170,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
     def test_already_submitted_value_is_used_when_component_is_hidden_with_clear_on_hide(
         self,
     ):
-        form = FormFactory.create(new_renderer_enabled=True)
+        form = FormFactory.create()
         step = FormStepFactory.create(
             form=form,
             form_definition__configuration={

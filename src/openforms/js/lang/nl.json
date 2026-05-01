@@ -100,11 +100,6 @@
     "description": "Form 'BRP Personen processing header value' field label",
     "originalDefault": "BRP Personen processing header value"
   },
-  "137M7W": {
-    "defaultMessage": "Schakel de nieuwe renderer in die sneller is en betere toegankelijkheid biedt.",
-    "description": "New renderer enabled feature flag help text",
-    "originalDefault": "Enable the new renderer, which is more performant and has better accessibility."
-  },
   "1HfdUc": {
     "defaultMessage": "De API-groep bepaalt welke services voor de objecten- en objecttypen-API's gebruikt wordt.",
     "description": "Objects API group field help text",
@@ -2706,11 +2701,6 @@
     "defaultMessage": "Informatieobjecttype inzendings-PDF",
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" label",
     "originalDefault": "Submission report PDF informatieobjecttype"
-  },
-  "jHW6p5": {
-    "defaultMessage": "Gebruik nieuwe renderer",
-    "description": "New renderer enabled feature flag label",
-    "originalDefault": "Enable new renderer"
   },
   "jLv6k8": {
     "defaultMessage": "DMN-variabele",

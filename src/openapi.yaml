@@ -8096,10 +8096,6 @@ components:
           allOf:
           - $ref: '#/components/schemas/BRPPersonenRequestOptions'
           nullable: true
-        newRendererEnabled:
-          type: boolean
-          title: Enable new renderer
-          description: Enable the new renderer.
         newLogicEvaluationEnabled:
           type: boolean
           title: Enable new logic rule evaluation
@@ -9078,10 +9074,6 @@ components:
           description: Display the instruction from the confirmation page in the PDF.
         translations:
           $ref: '#/components/schemas/FormModelTranslations'
-        newRendererEnabled:
-          type: boolean
-          title: Enable new renderer
-          description: Enable the new renderer.
         newLogicEvaluationEnabled:
           type: boolean
           title: Enable new logic rule evaluation
@@ -10111,10 +10103,6 @@ components:
           allOf:
           - $ref: '#/components/schemas/BRPPersonenRequestOptions'
           nullable: true
-        newRendererEnabled:
-          type: boolean
-          title: Enable new renderer
-          description: Enable the new renderer.
         newLogicEvaluationEnabled:
           type: boolean
           title: Enable new logic rule evaluation

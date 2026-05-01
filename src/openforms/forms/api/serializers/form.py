@@ -306,7 +306,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "submission_statements_configuration",
             "submission_report_download_link_title",
             "brp_personen_request_options",
-            "new_renderer_enabled",
             "new_logic_evaluation_enabled",
         )
         # allowlist for anonymous users
@@ -343,7 +342,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "cosign_has_link_in_email",
             "submission_statements_configuration",
             "submission_report_download_link_title",
-            "new_renderer_enabled",
             "new_logic_evaluation_enabled",
         )
         extra_kwargs = {

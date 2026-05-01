@@ -135,7 +135,6 @@ class FormSerializer(serializers.ModelSerializer):
             "display_main_website_link",
             "include_confirmation_page_content_in_pdf",
             "translations",
-            "new_renderer_enabled",
             "new_logic_evaluation_enabled",
         )
         extra_kwargs = {
