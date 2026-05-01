@@ -214,7 +214,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
 
     @tag("gh-5862")
     def test_that_updated_data_is_used_by_subsequent_actions(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=True)
+        form = FormFactory.create()
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={

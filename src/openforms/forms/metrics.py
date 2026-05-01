@@ -16,10 +16,6 @@ def count_forms(options: metrics.CallbackOptions) -> Collection[metrics.Observat
     counts: dict[str, int] = Form.objects.aggregate(
         total=Count("id", filter=Q(_is_deleted=False)),
         live=Count("id", filter=Q(_is_deleted=False, active=True)),
-        new_logic_evaluation_enabled=Count(
-            "id",
-            filter=Q(_is_deleted=False, new_logic_evaluation_enabled=True),
-        ),
         translation_enabled=Count(
             "id", filter=Q(_is_deleted=False, translation_enabled=True)
         ),

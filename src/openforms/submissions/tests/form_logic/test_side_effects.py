@@ -126,7 +126,7 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
         Assert that subsequent steps are reset when they become not-applicable.
         """
         # set up the form with logic
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create()
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={

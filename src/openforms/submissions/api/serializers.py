@@ -390,8 +390,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         # configuration.
         logic_rules = list(instance.form_step.logic_rules.all())
         require_backend = (
-            not instance.form_step.form.new_logic_evaluation_enabled  # backend is always required if the feature flag is disabled
-            or in_form_logic_evaluation  # not relevant for the check-logic endpoint
+            in_form_logic_evaluation  # not relevant for the check-logic endpoint
             or instance.form_step.is_backend_logic_evaluation_required
             or any(rule.is_backend_logic_evaluation_required for rule in logic_rules)
         )

@@ -1124,7 +1124,7 @@ class FormLogicAPITests(APITestCase):
     def test_create_form_logic_with_trigger_from_step(self):
         user = SuperUserFactory.create(username="test", password="test")
         self.client.force_authenticate(user=user)
-        form1, form2 = FormFactory.create_batch(2, new_logic_evaluation_enabled=False)
+        form1, form2 = FormFactory.create_batch(2)
         step1 = FormStepFactory.create(
             form=form1,
             form_definition__configuration={
@@ -1364,7 +1364,6 @@ class FormLogicAPITests(APITestCase):
         self.client.force_authenticate(user=user)
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {"type": "textfield", "key": "variable1"},
@@ -1430,7 +1429,7 @@ class FormLogicAPITests(APITestCase):
         """
         user = SuperUserFactory.create()
         self.client.force_authenticate(user=user)
-        form = FormFactory.create(new_logic_evaluation_enabled=True)
+        form = FormFactory.create()
         step_1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -1758,7 +1757,7 @@ class FormLogicAPIGraphValidationTests(APITestCase):
         self.client.force_authenticate(user=user)
 
     def test_create(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=True)
+        form = FormFactory.create()
         step_1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -1875,7 +1874,6 @@ class FormLogicAPIGraphValidationTests(APITestCase):
     def test_with_cycles(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -1993,9 +1991,7 @@ class FormLogicAPIGraphValidationTests(APITestCase):
     @tag("gh-6213")
     def test_create_without_steps(self):
         """Ensure there is no crash when a form is saved without any steps."""
-        form = FormFactory.create(
-            new_logic_evaluation_enabled=True, generate_minimal_setup=False
-        )
+        form = FormFactory.create(generate_minimal_setup=False)
 
         url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
         response = self.client.put(url, data=[])

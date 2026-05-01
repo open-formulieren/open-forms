@@ -25,12 +25,6 @@ class FormCountMetricTests(MetricsAssertMixin, TestCase):
         FormFactory.create(deleted_=False, active=True, translation_enabled=True)
         FormFactory.create(deleted_=False, active=False, translation_enabled=True)
         FormFactory.create(deleted_=True, translation_enabled=True)
-        # without new renderer or new logic evaluation
-        FormFactory.create(
-            deleted_=False,
-            active=True,
-            new_logic_evaluation_enabled=False,
-        )
 
         result = count_forms(CallbackOptions())
 
@@ -42,15 +36,12 @@ class FormCountMetricTests(MetricsAssertMixin, TestCase):
         self.assertEqual(
             counts_by_type,
             {
-                # 1 appointment, 1 single step, 2 live, 2 with translations, 1 without
-                # new logic evaluation
-                "total": 1 + 1 + 2 + 2 + 1,
-                # 1 appointment, 1 single step, 2 active and not deleted, 1 active with translations,
-                # 1 without new renderer and logic evaluation
-                "live": 1 + 1 + 2 + 1 + 1,
-                "new_logic_evaluation_enabled": 6,  # doesn't matter if active or not
+                # 1 appointment, 1 single step, 2 live, 2 with translations
+                "total": 1 + 1 + 2 + 2,
+                # 1 appointment, 1 single step, 2 active and not deleted, 1 active with translations
+                "live": 1 + 1 + 2 + 1,
                 "translation_enabled": 2,  # doesn't matter if they're active or not
-                "is_regular": 5,  # don't consider deleted forms
+                "is_regular": 4,  # don't consider deleted forms
                 "is_appointment": 1,  # don't consider deleted forms
                 "is_single_step": 1,  # don't consider deleted forms
                 "trash": 1 + 1 + 1 + 1,

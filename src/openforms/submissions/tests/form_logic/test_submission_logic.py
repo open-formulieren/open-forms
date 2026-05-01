@@ -97,7 +97,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
           becomes relevant from step3 onwards
         * We include calculated variables that determine the availability of step3
         """
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create()
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -232,7 +232,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         * In step two the logic rule triggers that prevents us from continuing
         * We go back to step 1 and it should be possible to continue to step 2 from there
         """
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create()
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -1289,7 +1289,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     ):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -1386,7 +1385,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_clear_on_hide_behaviour_applied_during_evaluation(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -1474,7 +1472,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     ):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {

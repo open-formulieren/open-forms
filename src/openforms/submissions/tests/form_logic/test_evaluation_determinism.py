@@ -81,7 +81,7 @@ class DeterministicEvaluationTests(TestCase):
         Set up creates a form with three steps, the logic rule may only kick in from
         step2 onwards (i.e. - evaluate for step 2 and for step 3, but not step 1).
         """
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create()
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={

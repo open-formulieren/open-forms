@@ -66,8 +66,7 @@ class Renderer:
         """
         Produce only the direct child nodes.
         """
-        if self.submission.form.new_logic_evaluation_enabled:
-            prefetch_related_objects(self.steps, "form_step__logic_rules")
+        prefetch_related_objects(self.steps, "form_step__logic_rules")
         for step in self.steps:
             new_configuration = evaluate_form_logic(
                 submission=self.submission, step=step

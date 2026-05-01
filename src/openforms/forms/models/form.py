@@ -401,18 +401,6 @@ class Form(models.Model):
         ),
     )
 
-    # feature flags
-    new_logic_evaluation_enabled = models.BooleanField(
-        _("enable new logic rule evaluation"),
-        default=True,
-        help_text=_(
-            "Enabling this will analyze logic rules and re-order them according to "
-            "their dependency on other logic rules (happens when the form is saved). "
-            "Each rule will be automatically assigned to one or more steps on which "
-            "it will be executed."
-        ),
-    )
-
     objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
         FormManager
     ] = FormManager()

@@ -845,7 +845,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         self, m_get_solo
     ):
         step = FormStepFactory.create(
-            form__new_logic_evaluation_enabled=True,
             form_definition__configuration={
                 "components": [
                     {
@@ -884,7 +883,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
 
     def test_without_logic_rules_and_without_dynamic_configuration(self):
         step = FormStepFactory.create(
-            form__new_logic_evaluation_enabled=True,
             form_definition__configuration={
                 "components": [
                     {"type": "textfield", "key": "textfield", "label": "Textfield"}
@@ -924,7 +922,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
 
     def test_without_logic_rules_but_with_dynamic_configuration(self):
         step = FormStepFactory.create(
-            form__new_logic_evaluation_enabled=True,
             form_definition__configuration={
                 "components": [
                     {"type": "textfield", "key": "textfield", "label": "{{ foo }}"}
@@ -968,7 +965,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
     @freeze_time("2026-03-18")
     def test_with_logic_rule_that_does_not_require_backend(self):
         step = FormStepFactory.create(
-            form__new_logic_evaluation_enabled=True,
             form_definition__configuration={
                 "components": [
                     {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
@@ -1056,7 +1052,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         self,
     ):
         step = FormStepFactory.create(
-            form__new_logic_evaluation_enabled=True,
             form_definition__configuration={
                 "components": [
                     {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
@@ -1121,7 +1116,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
 
     def test_with_logic_rule_that_requires_backend(self):
         step = FormStepFactory.create(
-            form__new_logic_evaluation_enabled=True,
             form_definition__configuration={
                 "components": [
                     {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
@@ -1187,7 +1181,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
 
     @freeze_time("2026-03-18")
     def test_logic_rule_is_serialized_properly(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=True)
+        form = FormFactory.create()
         step_1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -1303,7 +1297,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
     @freeze_time("2026-03-18")
     def test_with_date_trigger_that_could_be_partially_resolved(self):
         step = FormStepFactory.create(
-            form__new_logic_evaluation_enabled=True,
             form_definition__configuration={
                 "components": [
                     {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
@@ -1350,7 +1343,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(expected, response.json()["logicRules"][0]["jsonLogicTrigger"])
 
     def test_variable_action_with_json_logic_expression_as_value(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=True)
+        form = FormFactory.create()
         step_1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
