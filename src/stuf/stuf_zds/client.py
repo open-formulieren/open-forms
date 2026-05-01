@@ -3,7 +3,7 @@ from __future__ import annotations
 import base64
 import uuid
 from collections import OrderedDict
-from collections.abc import Iterator, MutableMapping
+from collections.abc import Iterator, Mapping, MutableMapping
 from datetime import datetime
 from typing import (
     Any,
@@ -223,7 +223,7 @@ class Client(BaseClient):
         zaak_identificatie: str,
         zaak_data: MutableMapping[str, Any],
         extra_data: ExtraData,
-        extra_data_initiator: MutableMapping[str, Any] | None = None,
+        extra_data_initiator: Mapping[str, Any] | None = None,
     ) -> None:
         now = timezone.now()
         context = {

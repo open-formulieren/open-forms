@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from functools import partial
 from io import BytesIO
-from typing import Any, override
+from typing import Any, Literal, override
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -152,7 +152,10 @@ def _prepare_value(value: Any):
 
 
 def _get_extra_variables_mapping(
-    option: str, submission: Submission, options: RegistrationOptions
+    submission: Submission,
+    options: RegistrationOptions,
+    *,
+    option: Literal["variables_mapping", "variables_mapping_initiator"],
 ):
     # Grab the variables data from the submission state & inject the static registration
     # variable values
@@ -249,7 +252,9 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
     ) -> dict[str, Any]:
         data = get_unmapped_data(submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE)
         extra_variables_mapping = _get_extra_variables_mapping(
-            "variables_mapping", submission, options
+            submission,
+            options,
+            option="variables_mapping",
         )
 
         # Remove duplicates for variables that are present in the data and are also handled
@@ -494,7 +499,9 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             # we don't include unmapped data to 'extra_data_initiator'
             # therefore we don't reuse self.get_extra_data here
             extra_data_initiator = _get_extra_variables_mapping(
-                "variables_mapping_initiator", submission, options
+                submission,
+                options,
+                option="variables_mapping_initiator",
             )
 
             # mutate the zaak_data and the extra data for the family members components
