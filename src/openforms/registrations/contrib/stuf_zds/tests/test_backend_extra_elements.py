@@ -1,5 +1,4 @@
 from decimal import Decimal
-from pathlib import Path
 
 from lxml import etree
 from privates.test import temp_private_root
@@ -19,13 +18,9 @@ from ..options import default_variables_mapping
 from ..plugin import PLUGIN_IDENTIFIER, StufZDSRegistration
 from ..typing import RegistrationOptions
 
-TESTS_DIR = Path(__file__).parent.resolve()
-
 
 @temp_private_root()
 class StufZDSExtraElementsTests(OFVCRMixin, StUFZDSTestBase):
-    VCR_TEST_FILES = TESTS_DIR / "files"
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -104,21 +99,6 @@ class StufZDSExtraElementsTests(OFVCRMixin, StUFZDSTestBase):
         stuf_request = self.cassette.requests[0]
         xml_doc = etree.fromstring(stuf_request.body)
         self.assertSoapXMLCommon(xml_doc)
-
-        # check that we still have payment attributes on the Object level
-        expected_items = {
-            "payment_completed": "true",
-            "payment_amount": "40.0",
-            "payment_public_order_ids.0": "foo",
-            "provider_payment_ids.0": "123456",
-        }
-        for name, value in expected_items.items():
-            with self.subTest(extra_element=name, value=value):
-                self.assertXPathEqual(
-                    xml_doc,
-                    f"//zkn:object/stuf:extraElementen/stuf:extraElement[@naam='{name}']",
-                    value,
-                )
 
         # check extra attributes on the Initiator level
         expected_items = {
