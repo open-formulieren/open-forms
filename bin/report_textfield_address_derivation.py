@@ -21,7 +21,7 @@ def report_address_derivation_usage():
     Address derivation in textfields in the new renderer is not supported. Users must
     convert their forms to use addressNL which now handles this feature.
     """
-    from openforms.forms.models import FormDefinition
+    from openforms.forms.models import Form, FormDefinition
 
     # Ignore form definitions that aren't used in any form
     form_definitions = (
@@ -47,7 +47,17 @@ def report_address_derivation_usage():
                     "deriveHouseNumber": str() as house_number_ref,
                     "derivePostcode": str() as postcode_ref,
                 } if derive and house_number_ref and postcode_ref:
-                    components.append(f"{component['label']} ({component['key']})")
+                    identification = f"{component['label']} ({component['key']})"
+                    registration = (
+                        f" -> {reg_attr}"
+                        if (
+                            reg_attr := component.get("registration", {}).get(
+                                "attribute"
+                            )
+                        )
+                        else ""
+                    )
+                    components.append(f"{identification}{registration}")
                 case _:
                     continue
 
@@ -55,13 +65,26 @@ def report_address_derivation_usage():
             continue
 
         used_in_forms = form_definition.used_in
+
+        def _get_form_registration_backends(form: Form) -> str:
+            backends = ",".join(
+                backend
+                for backend in form.registration_backends.values_list(
+                    "backend", flat=True
+                ).distinct()
+            )
+            if not backends:
+                return ""
+            return f", registration: {backends}"
+
         problems.append(
             (
                 form_definition.admin_name,
                 form_definition.pk,
                 "\n".join(components),
                 "\n".join(
-                    f"{form.admin_name} (ID: {form.pk})" for form in used_in_forms
+                    f"{form.admin_name} (ID: {form.pk}{_get_form_registration_backends(form)})"
+                    for form in used_in_forms
                 ),
             )
         )
