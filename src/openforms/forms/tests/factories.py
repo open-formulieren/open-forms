@@ -264,13 +264,6 @@ class FormLogicFactory(factory.django.DjangoModelFactory):
         price_variable = "totalPrice"
         price_value = 5.00  # literal value or JSON logic expression
 
-    @classmethod
-    def _generate(cls, strategy, params):
-        instance = super()._generate(strategy, params)
-        if instance.trigger_from_step_id:
-            raise ValueError("Can't set trigger_from_step")
-        return instance
-
     @factory.lazy_attribute
     def actions(self):
         if self.for_submission_price:  # type: ignore

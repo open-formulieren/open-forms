@@ -75,7 +75,6 @@ class GetRulesToEvaluateTests(TestCase):
         rule_3 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "checkbox"}, True]},
-            trigger_from_step=step_2,
             actions=[
                 {
                     "action": {

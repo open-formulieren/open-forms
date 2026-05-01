@@ -624,9 +624,7 @@ class FormViewSet(viewsets.ModelViewSet):
     def logic_rules_list(self, request, *args, **kwargs):
         form = self.get_object()
 
-        logic_rules = form.formlogic_set.prefetch_related(
-            "form", "trigger_from_step__form", "form_steps"
-        )
+        logic_rules = form.formlogic_set.prefetch_related("form", "form_steps")
 
         serializer = FormLogicSerializer(
             instance=logic_rules,

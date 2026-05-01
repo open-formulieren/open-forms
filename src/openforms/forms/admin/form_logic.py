@@ -12,17 +12,16 @@ class FormLogicAdmin(OrderedModelAdmin):
         "uuid",
         "form_admin_name",
         "description",
-        "trigger_from_step",
         "is_advanced",
         "move_up_down_links",
     )
-    list_select_related = ("form", "trigger_from_step")
+    list_select_related = ("form",)
     list_filter = (
         "is_advanced",
         "form",
     )
     search_fields = ("uuid", "description", "json_logic_trigger")
-    raw_id_fields = ("form", "trigger_from_step")
+    raw_id_fields = ("form",)
 
     readonly_fields = ("form_steps",)
 

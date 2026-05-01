@@ -160,7 +160,6 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
             actions=[
                 {"form_step_uuid": str(step2.uuid), "action": {"type": "disable-next"}}
             ],
-            trigger_from_step=step2,
         )
 
         # set up a submission

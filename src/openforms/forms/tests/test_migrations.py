@@ -295,7 +295,6 @@ class ChangeDisableLogicActionMigrationTests(MigratorTestCase):
             order=1,
             json_logic_trigger={"==": [{"var": "checkbox"}, True]},
             actions=[{"action": {"type": "disable-next"}, "form_step_uuid": ""}],
-            trigger_from_step=step_2,
         )
         FormLogic.objects.create(
             form=form,
@@ -325,7 +324,6 @@ class ChangeDisableLogicActionMigrationTests(MigratorTestCase):
                 ]
             },
             actions=[{"action": {"type": "disable-next"}, "form_step_uuid": ""}],
-            trigger_from_step=step_2,
         )
         FormLogic.objects.create(
             form=form,

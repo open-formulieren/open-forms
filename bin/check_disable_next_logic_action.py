@@ -1,3 +1,4 @@
+# TODO-6164: this script can be removed completely
 #!/usr/bin/env python
 #
 # Show which rules need a manual check after adding a step to the "disable next" action,
