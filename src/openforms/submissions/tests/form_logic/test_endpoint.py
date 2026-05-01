@@ -1289,8 +1289,8 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         # Logic rule should be triggered
         self.assertEqual(step_data["canSubmit"], False)
 
-    def test_step_data_with_new_logic_evaluation_flag_enabled(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=True)
+    def test_step_data_does_not_contain_irrelevant_fields(self):
+        form = FormFactory.create()
         step = FormStepFactory.create(
             form=form,
             form_definition__configuration={

@@ -403,6 +403,7 @@ class Form(models.Model):
     )
 
     # feature flags
+    # DeprecationWarning: remove in OF 4.1
     new_logic_evaluation_enabled = models.BooleanField(
         _("enable new logic rule evaluation"),
         default=True,

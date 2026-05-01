@@ -267,10 +267,8 @@ class FormLogicFactory(factory.django.DjangoModelFactory):
     @classmethod
     def _generate(cls, strategy, params):
         instance = super()._generate(strategy, params)
-        if instance.form.new_logic_evaluation_enabled and instance.trigger_from_step_id:
-            raise ValueError(
-                "Can't set trigger_from_step when new logic evaluation is enabled."
-            )
+        if instance.trigger_from_step_id:
+            raise ValueError("Can't set trigger_from_step")
         return instance
 
     @factory.lazy_attribute

@@ -97,7 +97,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
           becomes relevant from step3 onwards
         * We include calculated variables that determine the availability of step3
         """
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create()
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -205,6 +205,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         # create a submission where only step1 is submitted
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
@@ -232,7 +233,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         * In step two the logic rule triggers that prevents us from continuing
         * We go back to step 1 and it should be possible to continue to step 2 from there
         """
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create()
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -285,6 +286,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
 
@@ -335,7 +337,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             data = response.json()
 
             # It should be possible to go to the next step, because the logic rule
-            # to block going to the next step should only trigger from step2
+            # to block going to the next step should only trigger on step2
             self.assertTrue(data["step"]["canSubmit"])
 
     def test_check_logic_with_full_datetime(self):
@@ -1289,7 +1291,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     ):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -1386,7 +1387,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_clear_on_hide_behaviour_applied_during_evaluation(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -1474,7 +1474,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     ):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {

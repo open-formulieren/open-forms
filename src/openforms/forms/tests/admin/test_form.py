@@ -538,7 +538,7 @@ class FormAdminCopyTests(TestCase):
         user = SuperUserFactory.create()
         self.client.force_login(user)
 
-        form_step = FormStepFactory.create(form__new_logic_evaluation_enabled=False)
+        form_step = FormStepFactory.create()
         FormLogicFactory.create(form=form_step.form, trigger_from_step=form_step)
 
         admin_url = reverse("admin:forms_form_change", args=(form_step.form.pk,))

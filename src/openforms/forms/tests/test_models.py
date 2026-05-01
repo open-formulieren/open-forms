@@ -294,12 +294,6 @@ class FormTestCase(TestCase):
 
         self.assertEqual(actual, expected)
 
-    def test_analyse_logic_rules_for_legacy_logic_evaluation(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
-
-        with self.assertRaises(ValueError):
-            form.apply_logic_analysis()
-
 
 class RegressionTests(HypothesisTestCase):
     @given(
