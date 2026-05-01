@@ -273,7 +273,6 @@ class FormEndpointTests(APITestCase):
                     "explanationTemplate": "Wees klaar om voor koekjes te vragen",
                 },
             },
-            "newLogicEvaluationEnabled": True,
         }
         response = self.client.put(url, data=data)
 
