@@ -402,93 +402,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         self.assertFalse(data["steps"][1]["isApplicable"])
 
-    @tag("gh-1755", "gh-5685")
-    def test_check_logic_hide_with_default_value(self):
-        """
-        Ensure that a field with clearOnHide enabled and a default value, will get the
-        empty value when it becomes hidden.
-
-        Note that this is the behaviour of the old renderer, which is why this test only
-        passes with ``new_renderer_enabled=False``. This test can be removed completely
-        once we remove the feature flag, as replacing tests have been added to
-        test_endpoint.py (see tag 'gh-5685').
-
-        Interestingly, the new behaviour where we assign the default value instead, also
-        seemed to be the what happened before the fix for #1755.
-        """
-        form = FormFactory.create(new_renderer_enabled=False)
-        form_step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "textfield",
-                        "hidden": True,
-                        "clearOnHide": True,
-                        "defaultValue": "Test data",
-                    },
-                    {
-                        "type": "checkbox",
-                        "key": "checkbox",
-                        "hidden": False,
-                    },
-                ]
-            },
-        )
-
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={
-                "==": [
-                    {"var": "checkbox"},
-                    True,
-                ]
-            },
-            actions=[
-                {
-                    "component": "textfield",
-                    "action": {
-                        "name": "Hide element",
-                        "type": "property",
-                        "property": {
-                            "type": "bool",
-                            "value": "hidden",
-                        },
-                        "state": False,
-                    },
-                }
-            ],
-        )
-        form.apply_logic_analysis()
-        submission = SubmissionFactory.create(form=form)
-        self._add_submission_to_session(submission)
-
-        logic_check_endpoint = reverse(
-            "api:submission-steps-logic-check",
-            kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
-        )
-
-        response = self.client.post(
-            logic_check_endpoint, data={"data": {"checkbox": True}}
-        )
-        data = response.json()
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertFalse(
-            data["step"]["configuration"]["components"][0]["hidden"],
-        )
-
-        response = self.client.post(
-            logic_check_endpoint,
-            data={"data": {"checkbox": False, "textfield": "Modified test data"}},
-        )
-        data = response.json()
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual({"textfield": ""}, data["step"]["data"])
-        self.assertTrue(
-            data["step"]["configuration"]["components"][0]["hidden"],
-        )
-
     @tag("gh-5151")
     def test_check_logic_hide_map_component(self):
         form = FormFactory.create()
@@ -1245,10 +1158,9 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             )
 
     @tag("gh-6045")
-    def test_clear_on_hide_clears_children_of_editgrids_new_renderer(self):
+    def test_clear_on_hide_clears_children_of_editgrids(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_renderer_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -1377,7 +1289,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     ):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_renderer_enabled=True,
             new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
@@ -1475,7 +1386,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_clear_on_hide_behaviour_applied_during_evaluation(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_renderer_enabled=True,
             new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
@@ -1564,7 +1474,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     ):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_renderer_enabled=True,
             new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [

@@ -32,7 +32,6 @@ class ConditionalLogicTests(TestCase):
                 "textfieldVisible": "keep me",
                 "textfieldHidden": "I am submitted data",
             },
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
@@ -110,7 +109,6 @@ class ConditionalLogicTests(TestCase):
                     },
                 },
             ],
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
@@ -182,7 +180,6 @@ class ConditionalLogicTests(TestCase):
                     },
                 },
             ],
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
@@ -264,7 +261,6 @@ class ConditionalLogicTests(TestCase):
                     ],
                 },
             ],
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
@@ -333,7 +329,6 @@ class ConditionalLogicTests(TestCase):
                     ],
                 }
             ],
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
@@ -400,7 +395,6 @@ class ConditionalLogicTests(TestCase):
                     ],
                 }
             ],
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
@@ -512,7 +506,6 @@ class ConditionalLogicTests(TestCase):
                     },
                 },
             ],
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
@@ -574,7 +567,6 @@ class ConditionalLogicTests(TestCase):
                     "clearOnHide": True,
                 },
             ],
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
@@ -645,7 +637,6 @@ class ConditionalLogicTests(TestCase):
                     "clearOnHide": True,
                 },
             ],
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
@@ -710,7 +701,6 @@ class ConditionalLogicTests(TestCase):
                     "clearOnHide": True,
                 },
             ],
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
@@ -758,7 +748,6 @@ class ConditionalLogicTests(TestCase):
                     "clearOnHide": True,
                 },
             ],
-            form__new_renderer_enabled=True,
         )
 
         step = submission.submissionstep_set.first()
@@ -794,7 +783,6 @@ class ConditionalLogicTests(TestCase):
                     "clearOnHide": True,
                 },
             ],
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.first()
 
@@ -865,7 +853,6 @@ class ConditionalLogicTests(TestCase):
                     ],
                 }
             ],
-            form__new_renderer_enabled=True,
         )
         step = submission.submissionstep_set.get()
 

@@ -136,7 +136,6 @@ class FormValidatedData(TypedDict):
     display_main_website_link: NotRequired[bool]
     include_confirmation_page_content_in_pdf: NotRequired[bool]
 
-    new_renderer_enabled: NotRequired[bool]
     new_logic_evaluation_enabled: NotRequired[bool]
 
     translations: NotRequired[FormTranslationsData]

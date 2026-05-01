@@ -422,8 +422,6 @@ class FormEndpointTests(APITestCase):
             form.explanation_template_nl, "Wees klaar om voor koekjes te vragen"
         )
 
-        self.assertTrue(form.new_renderer_enabled)
-
     def test_create_reuse_existing_definition(self):
         form_definition = FormDefinitionFactory.create(
             name="Form definition",
