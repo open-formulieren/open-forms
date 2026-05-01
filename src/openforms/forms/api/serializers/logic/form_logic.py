@@ -35,7 +35,11 @@ class FormLogicListSerializer(ListWithChildSerializer):
             raise serializers.ValidationError(
                 _("Appointment forms cannot have logic rules.")
             )
-        if not form.new_logic_evaluation_enabled or is_appointment:
+        if (
+            not form.new_logic_evaluation_enabled
+            or is_appointment
+            or not form.form_step_map
+        ):
             return super().validate(attrs)
 
         # This will only run when the logic rules have passed individual serializer
@@ -91,7 +95,11 @@ class FormLogicListSerializer(ListWithChildSerializer):
     def create(self, validated_data):
         rules = super().create(validated_data)
         form: Form = self.context["form"]
-        if not form.new_logic_evaluation_enabled or form.is_appointment:
+        if (
+            not form.new_logic_evaluation_enabled
+            or form.is_appointment
+            or not form.form_step_map
+        ):
             return rules
 
         # the (auto-created) through model
