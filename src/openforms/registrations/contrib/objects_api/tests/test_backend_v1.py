@@ -1245,54 +1245,6 @@ class V1HandlerTests(TestCase):
 
         self.assertEqual(record_data["data"], {})
 
-    def test_cosign_info_no_cosign_date(self):
-        """The cosign date might not be available on existing submissions."""
-
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "cosign",
-                    "type": "cosign",
-                    "validate": {"required": False},
-                },
-            ],
-            completed=True,
-            submitted_data={
-                "cosign": "example@localhost",
-            },
-            cosign_complete=True,
-            co_sign_data={
-                "version": "v2",
-                "plugin": "demo",
-                "attribute": AuthAttribute.bsn,
-                "value": "123456789",
-            },
-        )
-
-        ObjectsAPIRegistrationData.objects.create(submission=submission)
-        v1_options: RegistrationOptionsV1 = {
-            "objects_api_group": self.group,
-            "version": 1,
-            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-            "objecttype_version": 1,
-            "productaanvraag_type": "-dummy-",
-            "update_existing_object": False,
-            "auth_attribute_path": [],
-            "content_json": textwrap.dedent(
-                """
-                {
-                    "cosign_date": "{{ cosign_data.date }}"
-                }
-                """
-            ),
-        }
-        handler = ObjectsAPIV1Handler()
-
-        record_data = handler.get_record_data(submission=submission, options=v1_options)
-        data = record_data["data"]
-
-        self.assertEqual(data["cosign_date"], "")
-
     @tag("utrecht-243", "gh-4425")
     def test_payment_context_without_any_payment_attempts(self):
         submission = SubmissionFactory.create(

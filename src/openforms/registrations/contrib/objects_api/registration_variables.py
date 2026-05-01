@@ -159,8 +159,8 @@ class CosignDate(BaseStaticVariable):
     ) -> datetime | None:
         if not submission or not (cosign := submission.cosign_state).is_signed:
             return None
-        cosign_date = cosign.signing_details.get("cosign_date")
-        return datetime.fromisoformat(cosign_date) if cosign_date else None
+        cosign_date = cosign.signing_details["cosign_date"]
+        return datetime.fromisoformat(cosign_date)
 
 
 @register("cosign_bsn")

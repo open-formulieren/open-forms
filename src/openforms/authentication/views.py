@@ -48,11 +48,7 @@ from .constants import (
 from .exceptions import InvalidCoSignData
 from .forms import RegistratorSubjectInfoForm
 from .registry import register
-from .signals import (
-    authentication_logout,
-    authentication_success,
-    co_sign_authentication_success,
-)
+from .signals import authentication_logout, co_sign_authentication_success
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -417,10 +413,6 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             audit_logger.info(
                 "user_authenticated", identifier=identifier, next=location
             )
-
-            if hasattr(request, "session") and FORM_AUTH_SESSION_KEY in request.session:
-                # XXX: this signal is unused, it's scheduled for removal
-                authentication_success.send(sender=self.__class__, request=request)
 
         return response
 

@@ -1,16 +1,12 @@
-from unittest.mock import patch
-
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.backends.base import SessionBase
 from django.core.exceptions import PermissionDenied
 from django.test import override_settings, tag
 
 from freezegun import freeze_time
-from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory, APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
-from openforms.forms.tests.factories import FormStepFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -21,7 +17,6 @@ from ..constants import (
 )
 from ..registry import Registry
 from ..signals import set_auth_attribute_on_session, set_cosign_data_on_submission
-from ..views import AuthenticationReturnView
 from .mocks import Plugin, RequiresAdminPlugin, mock_register
 
 factory = APIRequestFactory()
@@ -233,89 +228,6 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         self.assertEqual(instance.auth_info.plugin, "organization_plugin")
         self.assertEqual(instance.auth_info.attribute, AuthAttribute.employee_id)
         self.assertEqual(instance.auth_info.value, "my-employee-id")
-
-    @override_settings(
-        CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
-    )
-    def test_successful_auth_sends_signal(self):
-        register = Registry()
-        register("plugin1")(Plugin)
-        plugin = register["plugin1"]
-
-        step = FormStepFactory(
-            form__slug="myform",
-            form__authentication_backend="plugin1",
-            form_definition__login_required=True,
-        )
-        form = step.form
-
-        # we need an arbitrary request
-        factory = APIRequestFactory()
-        init_request = factory.get("/foo")
-        url = plugin.get_return_url(init_request, form)
-        next_url = "http://foo.bar"
-        request = factory.get(url, {"next": next_url})
-
-        # Add session information to the request:
-        request.session = SessionBase()
-        request.session.update(
-            {
-                FORM_AUTH_SESSION_KEY: {
-                    "plugin": "plugin1",
-                    "attribute": Plugin.provides_auth[0],
-                    "value": "123",
-                }
-            }
-        )
-
-        return_view = AuthenticationReturnView.as_view(register=register)
-
-        with patch(
-            "openforms.authentication.views.authentication_success.send"
-        ) as m_send:
-            response = return_view(request, slug=form.slug, plugin_id=plugin.identifier)
-
-            self.assertEqual(response.status_code, 302)
-            m_send.assert_called_once()
-            call_args = m_send.call_args.kwargs
-            self.assertIn("sender", call_args)
-            self.assertIn("request", call_args)
-            self.assertEqual(AuthenticationReturnView, call_args["sender"])
-            self.assertTrue(isinstance(call_args["request"], Request))
-
-    @override_settings(
-        CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
-    )
-    def test_unsuccessful_auth_does_not_sends_signal(self):
-        register = Registry()
-        register("plugin1")(Plugin)
-        plugin = register["plugin1"]
-
-        step = FormStepFactory(
-            form__slug="myform",
-            form__authentication_backend="plugin1",
-            form_definition__login_required=True,
-        )
-        form = step.form
-
-        # we need an arbitrary request
-        init_request = factory.get("/foo")
-        url = plugin.get_return_url(init_request, form)
-        next_url = "http://foo.bar"
-        request = factory.get(url, {"next": next_url})
-
-        return_view = AuthenticationReturnView.as_view(register=register)
-
-        # No FORM_AUTH_SESSION_KEY in the session, since auth was unsuccessful
-        request.session = SessionBase()
-
-        with patch(
-            "openforms.authentication.views.authentication_success.send"
-        ) as m_send:
-            response = return_view(request, slug=form.slug, plugin_id=plugin.identifier)
-
-            self.assertEqual(response.status_code, 302)
-            m_send.assert_not_called()
 
     @tag("gh-1959")
     def test_setting_auth_attributes_flips_hashed_flag(self):
