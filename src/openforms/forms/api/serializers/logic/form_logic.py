@@ -36,7 +36,11 @@ class FormLogicListSerializer(ListWithChildSerializer):
             raise serializers.ValidationError(
                 _("Appointment forms cannot have logic rules.")
             )
-        if not form.new_logic_evaluation_enabled or is_appointment:
+        if (
+            not form.new_logic_evaluation_enabled
+            or is_appointment
+            or not form.form_step_map
+        ):
             return super().validate(attrs)
 
         # This will only run when the logic rules have passed individual serializer
@@ -95,6 +99,7 @@ class FormLogicListSerializer(ListWithChildSerializer):
         if (
             not form.new_logic_evaluation_enabled
             or form.type == FormTypeChoices.appointment
+            or not form.form_step_map
         ):
             return rules
 
