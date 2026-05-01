@@ -199,12 +199,11 @@ const RuleBody = ({
   const [resetRequest, setResetRequest] = useState(0);
   const triggerFromStep = useFormStep(triggerFromStepIdentifier);
   const formSteps = useFormSteps(formStepIdentifiers);
-  const {newLogicEvaluationEnabled, formSteps: allFormSteps} = useContext(FormContext);
+  const {formSteps: allFormSteps} = useContext(FormContext);
 
   // Case in which there is an error: a trigger step was specified, but this step cannot be found in the form
-  if (!triggerFromStep && triggerFromStepIdentifier && !newLogicEvaluationEnabled)
+  if (!triggerFromStep && triggerFromStepIdentifier)
     setDisplayAdvancedOptions(true);
-  displayAdvancedOptions = displayAdvancedOptions && !newLogicEvaluationEnabled;
 
   const TriggerComponent = isAdvanced ? AdvancedTrigger : Trigger;
 
@@ -283,22 +282,20 @@ const RuleBody = ({
           </>
         )}
 
-        {newLogicEvaluationEnabled && (
-          <div className="logic-rule__advanced">
-            {allFormSteps.length === formSteps.length ? (
-              <FormattedMessage
-                description="Execute on all steps label"
-                defaultMessage="This rule will be executed on all steps."
-              />
-            ) : (
-              <FormattedMessage
-                description="Execute on step(s) label"
-                defaultMessage="This rule will be executed on step(s): {steps}"
-                values={{steps: formSteps.map(step => step.stepName).join(', ')}}
-              />
-            )}
-          </div>
-        )}
+        <div className="logic-rule__advanced">
+          {allFormSteps.length === formSteps.length ? (
+            <FormattedMessage
+              description="Execute on all steps label"
+              defaultMessage="This rule will be executed on all steps."
+            />
+          ) : (
+            <FormattedMessage
+              description="Execute on step(s) label"
+              defaultMessage="This rule will be executed on step(s): {steps}"
+              values={{steps: formSteps.map(step => step.stepName).join(', ')}}
+            />
+          )}
+        </div>
 
         <div className="logic-trigger-container">
           {isAdvanced ? (
@@ -353,7 +350,7 @@ const RuleBody = ({
             expandExpression={expandExpression}
           />
 
-          {triggerFromStep && !newLogicEvaluationEnabled && (
+          {triggerFromStep && (
             <div className="logic-trigger-container__extra-condition">
               <FormattedMessage
                 description="Additional 'trigger from step' condition"
@@ -402,7 +399,6 @@ const Rule = ({
 }) => {
   const intl = useIntl();
   const [displayAdvancedOptions, setDisplayAdvancedOptions] = useState(false);
-  const {newLogicEvaluationEnabled} = useContext(FormContext);
 
   const deleteConfirmMessage = intl.formatMessage({
     description: 'Logic rule deletion confirm message',
@@ -446,39 +442,6 @@ const Rule = ({
   return (
     <div className="logic-rule">
       <div className="logic-rule__actions actions actions--vertical actions--align-top">
-        {!newLogicEvaluationEnabled && (
-          <div className="actions__action-group">
-            <FAIcon
-              icon="sort-up"
-              title={intl.formatMessage({
-                description: 'Move up icon title',
-                defaultMessage: 'Move up',
-              })}
-              extraClassname="fa-lg actions__action"
-              onClick={() => onChange({target: {name: 'order', value: order - 1}})}
-            />
-            <FAIcon
-              icon="sort-down"
-              title={intl.formatMessage({
-                description: 'Move down icon title',
-                defaultMessage: 'Move down',
-              })}
-              extraClassname="fa-lg actions__action"
-              onClick={() => onChange({target: {name: 'order', value: order + 1}})}
-            />
-          </div>
-        )}
-        {!newLogicEvaluationEnabled && (
-          <FAIcon
-            icon="gear"
-            title={intl.formatMessage({
-              description: 'Logic rule advanced options icon title',
-              defaultMessage: 'Advanced options',
-            })}
-            extraClassname="icon actions__action"
-            onClick={() => setDisplayAdvancedOptions(!displayAdvancedOptions)}
-          />
-        )}
         <DeleteIcon
           onConfirm={onDelete}
           message={deleteConfirmMessage}

@@ -549,7 +549,6 @@ const FormConfigurationFields = ({
     askPrivacyConsent,
     askStatementOfTruth,
     appointmentOptions,
-    newLogicEvaluationEnabled,
   } = form;
   const intl = useIntl();
 
@@ -788,29 +787,6 @@ const FormConfigurationFields = ({
             </p>
           </FormRow>
         )}
-        <FormRow>
-          <Checkbox
-            name="form.newLogicEvaluationEnabled"
-            label={
-              <FormattedMessage
-                description="New logic rule evaluation feature flag label"
-                defaultMessage="Enable new logic rule evaluation"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                description="New logic rule evaluation feature flag help text"
-                defaultMessage={`Enabling this will analyze logic rules and re-order them according
-                 to their dependency on other logic rules (happens when the form is saved). Each
-                 rule will be automatically assigned to one or more steps on which it will be
-                 executed.`}
-              />
-            }
-            checked={newLogicEvaluationEnabled}
-            disabled={hasTriggerFromStep}
-            onChange={event => onCheckboxChange(event, newLogicEvaluationEnabled)}
-          />
-        </FormRow>
       </Fieldset>
     </>
   );
