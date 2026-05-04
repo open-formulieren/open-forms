@@ -1277,6 +1277,7 @@ LOG_OUTGOING_REQUESTS_DB_SAVE_BODY = config(
 )
 LOG_OUTGOING_REQUESTS_CONTENT_TYPES = [
     ContentType(pattern="application/json", default_encoding="utf-8"),
+    ContentType(pattern="application/hal+json", default_encoding="utf-8"),
     ContentType(pattern="application/soap+xml", default_encoding="utf-8"),
     ContentType(pattern="application/xml", default_encoding="utf-8"),
     ContentType(pattern="text/xml", default_encoding="iso-8859-1"),
