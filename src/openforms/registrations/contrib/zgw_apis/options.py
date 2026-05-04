@@ -168,6 +168,25 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "Description (omschrijving) that will be used in the children registration."
         ),
     )
+    zaak_omschrijving = serializers.CharField(
+        label=_("Omschrijving"),
+        required=False,
+        allow_blank=True,
+        help_text=_(
+            "Description (omschrijving) of the zaak. You can use the expressions like "
+            "'{{ form_name }}' or other variables here. The resolved string is limited to 80 chars. "
+            "If empty, the form name is used."
+        ),
+    )
+    zaak_toelichting = serializers.CharField(
+        label=_("Toelichting"),
+        required=False,
+        allow_blank=True,
+        help_text=_(
+            "Explanation (toelichting) of the zaak. You can use the expressions like "
+            "'{{ form_name }}' or other variables here."
+        ),
+    )
 
     # Objects API
     objects_api_group = SlugRelatedAsChoicesField(
