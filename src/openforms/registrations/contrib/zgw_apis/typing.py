@@ -55,3 +55,5 @@ class RegistrationOptions(TypedDict):
     # keys set in ZGWApiGroupConfig.apply_defaults_to
     doc_vertrouwelijkheidaanduiding: NotRequired[VertrouwelijkheidAanduiding]
     auteur: NotRequired[str]
+    zaak_omschrijving: NotRequired[str]
+    zaak_toelichting: NotRequired[str]

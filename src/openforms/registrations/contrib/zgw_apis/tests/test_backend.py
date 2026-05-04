@@ -2883,3 +2883,109 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         document_results = submission.registration_result["intermediate"]["documents"]
         pdf_details = document_results["report"]["document"]
         self.assertEqual(pdf_details["titel"], "Public form name")
+
+    def test_create_zaak_with_templated_description_and_explanation(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={
+                "someText": "Foo",
+            },
+            form__name="BBQ permission",
+            completed=True,
+            # Pin to a known case type version
+            completed_on=datetime(2024, 11, 1, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "PDF Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "organisatie_rsin": "000000000",
+            # empty value should be ignored, use the VA from the zaaktype
+            "zaak_vertrouwelijkheidaanduiding": "",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            # empty-ish value should fall back to default
+            "auteur": "",
+            "zaak_omschrijving": "Description: {{ form_name }}",
+            "zaak_toelichting": "Extra explanation about {{ form_name }}",
+        }
+        plugin = ZGWRegistration("zgw")
+
+        result = plugin.pre_register_submission(submission, options)
+
+        assert result.data is not None
+        zaak_url = result.data["zaak"]["url"]
+        with get_zaken_client(self.zgw_group) as client:
+            zaak_data = client.get(zaak_url, headers=CRS_HEADERS).json()
+
+        self.assertEqual(zaak_data["omschrijving"], "Description: BBQ permission")
+        self.assertEqual(
+            zaak_data["toelichting"], "Extra explanation about BBQ permission"
+        )
+
+    def test_create_zaak_with_empty_description_and_explanation(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={
+                "someText": "Foo",
+            },
+            form__name="Some form",
+            completed=True,
+            # Pin to a known case type version
+            completed_on=datetime(2024, 11, 1, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "",
+            "zaaktype": "",
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+            "product_url": "",
+            "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "zaak_omschrijving": "",
+            "zaak_toelichting": "",
+        }
+        plugin = ZGWRegistration("zgw")
+
+        result = plugin.pre_register_submission(submission, options)
+
+        assert result.data is not None
+        zaak_url = result.data["zaak"]["url"]
+        with get_zaken_client(self.zgw_group) as client:
+            zaak_data = client.get(zaak_url, headers=CRS_HEADERS).json()
+
+        self.assertEqual(zaak_data["omschrijving"], "Some form")
+        self.assertEqual(zaak_data["toelichting"], "")
