@@ -31,7 +31,7 @@ Formulier maken
 
     * **Naam**: Checkbox options
     * **Datatype**: Lijst (array)
-    * **Beginwaarde**: vink *"Gebruik ruwe JSON-invoer"* aan en voer de JSON-array in:
+    * **Beginwaarde**: vink *"JSON-waarde invoeren"* aan en voer de JSON-array in:
 
       .. code-block:: json
 
