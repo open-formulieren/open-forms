@@ -147,6 +147,7 @@ class FormAdmin(
         "migrate_to_worldline",
     ]
     list_filter = (
+        "type",
         "active",
         "maintenance_mode",
         "translation_enabled",
