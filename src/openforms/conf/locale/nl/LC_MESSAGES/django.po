@@ -3514,16 +3514,16 @@ msgstr ""
 "informatie heb verzwegen."
 
 #: openforms/config/models/config.py:492 openforms/forms/models/form.py:323
-msgid "successful submission removal limit"
-msgstr "bewaartermijn voor voltooide inzendingen."
+msgid "Successful submission removal limit"
+msgstr "Bewaartermijn voor voltooide inzendingen"
 
 #: openforms/config/models/config.py:496
 msgid "Amount of days successful submissions will remain before being removed"
-msgstr "Aantal dagen dat een voltooide inzending bewaard blijft."
+msgstr "Aantal dagen dat een voltooide inzending bewaard blijft"
 
 #: openforms/config/models/config.py:500 openforms/forms/models/form.py:333
-msgid "successful submissions removal method"
-msgstr "opschoonmethode voor voltooide inzendingen"
+msgid "Successful submissions removal method"
+msgstr "Opschoonmethode voor voltooide inzendingen"
 
 #: openforms/config/models/config.py:504
 msgid "How successful submissions will be removed after the limit"
@@ -3531,16 +3531,16 @@ msgstr ""
 "Geeft aan hoe voltooide inzendingen worden opgeschoond na de bewaartermijn."
 
 #: openforms/config/models/config.py:507 openforms/forms/models/form.py:343
-msgid "incomplete submission removal limit"
-msgstr "bewaartermijn voor sessies"
+msgid "Incomplete submission removal limit"
+msgstr "Bewaartermijn voor sessies"
 
 #: openforms/config/models/config.py:511
 msgid "Amount of days incomplete submissions will remain before being removed"
 msgstr "Aantal dagen dat een sessie bewaard blijft."
 
 #: openforms/config/models/config.py:515 openforms/forms/models/form.py:353
-msgid "incomplete submissions removal method"
-msgstr "opschoonmethode voor sessies."
+msgid "Incomplete submissions removal method"
+msgstr "Opschoonmethode voor sessies"
 
 #: openforms/config/models/config.py:519
 msgid "How incomplete submissions will be removed after the limit"
@@ -3548,8 +3548,8 @@ msgstr "Geeft aan hoe sessies worden opgeschoond na de bewaartermijn."
 
 #: openforms/config/models/config.py:522 openforms/forms/models/form.py:363
 #: openforms/forms/models/form.py:373
-msgid "errored submission removal limit"
-msgstr "bewaartermijn voor niet voltooide inzendingen inzendingen"
+msgid "Errored submission removal limit"
+msgstr "Bewaartermijn voor niet voltooide inzendingen"
 
 #: openforms/config/models/config.py:526
 msgid "Amount of days errored submissions will remain before being removed"
@@ -3558,8 +3558,8 @@ msgstr ""
 "afhandeling) bewaard blijft."
 
 #: openforms/config/models/config.py:530
-msgid "errored submissions removal method"
-msgstr "opschoonmethode voor niet voltooide inzendingen"
+msgid "Errored submissions removal method"
+msgstr "Opschoonmethode voor niet voltooide inzendingen"
 
 #: openforms/config/models/config.py:534
 msgid "How errored submissions will be removed after the"
@@ -3568,8 +3568,8 @@ msgstr ""
 "worden opgeschoond na de bewaartermijn."
 
 #: openforms/config/models/config.py:537 openforms/forms/models/form.py:383
-msgid "all submissions removal limit"
-msgstr "bewaartermijn van inzendingen"
+msgid "All submissions removal limit"
+msgstr "Bewaartermijn van inzendingen"
 
 #: openforms/config/models/config.py:540
 msgid "Amount of days when all submissions will be permanently deleted"
