@@ -1087,6 +1087,11 @@
     "description": "ZGW APIs registration options modal title",
     "originalDefault": "Plugin configuration: ZGW APIs"
   },
+  "H2IXy5": {
+    "defaultMessage": "Variables mapping (case)",
+    "description": "StUF-ZDS registration variablesMapping label",
+    "originalDefault": "Variables mapping (case)"
+  },
   "H3dRU6": {
     "defaultMessage": "Vink aan om het veld op te nemen als procesvariabele",
     "description": "Manage process vars enabled checkbox help text",
@@ -1717,11 +1722,6 @@
     "defaultMessage": "'Opslaan' tekst",
     "description": "Form step save text label",
     "originalDefault": "Save text"
-  },
-  "QWOU1l": {
-    "defaultMessage": "Deze koppelingen laten je toe om variabelen mee te sturen in de XML voor StUF-ZDS. De opgegeven sleutels en waarden uit de inzendingsgegevens komen terecht in <code>extraElementen</code>.",
-    "description": "StUF-ZDS registration variablesMapping message",
-    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>."
   },
   "QXfH7G": {
     "defaultMessage": "Geeft aan of de gebruiker het formulier kan inzenden of niet, en of een overzichtspagina getoond wordt indien niet.",
@@ -2403,11 +2403,6 @@
     "description": "Legacy objects API registration options: 'productaanvraagType' label",
     "originalDefault": "Product request type"
   },
-  "csTJIN": {
-    "defaultMessage": "Variabelekoppelingen",
-    "description": "StUF-ZDS registration variablesMapping label",
-    "originalDefault": "Variables mapping"
-  },
   "cuivC6": {
     "defaultMessage": "Versie",
     "description": "ZGW APIs registration options 'objecttypeVersion' label",
@@ -2613,6 +2608,11 @@
     "description": "literals.previousText help text",
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
   },
+  "gO2sGp": {
+    "defaultMessage": "Variables mapping (Initiator)",
+    "description": "StUF-ZDS registration variablesMappingInitiator label",
+    "originalDefault": "Variables mapping (Initiator)"
+  },
   "gUl3mu": {
     "defaultMessage": "Ben je zeker dat je deze koppeling wil verwijderen?",
     "description": "Confirmation message to remove a mapping",
@@ -2747,6 +2747,11 @@
     "defaultMessage": "Interne naam",
     "description": "Form name field label",
     "originalDefault": "Internal name"
+  },
+  "i3qXzA": {
+    "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>heeftAlsInitiator/extraElementen</code>.",
+    "description": "StUF-ZDS registration variablesMappingInitiator message",
+    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>heeftAlsInitiator/extraElementen</code>."
   },
   "i7HknI": {
     "defaultMessage": "Tabnaam",
@@ -2973,6 +2978,11 @@
     "defaultMessage": "Item toevoegen",
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
+  },
+  "ljTD4F": {
+    "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in the top level <code>extraElementen</code> for the case itself.",
+    "description": "StUF-ZDS registration variablesMapping message",
+    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in the top level <code>extraElementen</code> for the case itself."
   },
   "ln72CJ": {
     "defaultMessage": "Objecttyperesource-URL in de Objecttypen-API. Wanneer dit ingesteld is, dan wordt een object van dit type aangemaakt en aan de zaak gerelateerd.",

@@ -72,32 +72,26 @@ VariableMappingRow.propTypes = {
  *
  * Inspired on the `VariableMapping` component - we can't re-use that one because we
  * don't (yet) receive dropdowns/form variable context from the backend to display
- * options in a dropdown for the StUF extraElementen targets. The component offers the
- * selection of static variables for the payments (with their default values) along with
- * the available user defined variables.
- *
+ * options in a dropdown for the StUF extraElementen targets.
  */
-const VariablesMapping = () => {
+const VariablesMapping = ({name}) => {
   const formContext = useContext(FormContext);
 
   const pluginVariables =
     formContext.registrationPluginsVariables.find(entry => entry.pluginIdentifier === PLUGIN_ID)
       ?.pluginVariables ?? [];
-  const userDefinedVariables = formContext.formVariables.filter(
-    variable => variable.source === 'user_defined'
-  );
 
-  const formVariables = pluginVariables.concat(userDefinedVariables);
+  const formVariables = pluginVariables.concat(formContext.formVariables);
 
   const {getFieldProps} = useFormikContext();
-  const {value: mappings = []} = getFieldProps('variablesMapping');
+  const {value: mappings = []} = getFieldProps(name);
 
   return (
     // use a new Form Context and let the registration variables shadow the normal form
     // variables, so that the form variable dropdown can be re-used.
     <FormContext.Provider value={{...formContext, formVariables}}>
       <FieldArray
-        name="variablesMapping"
+        name={name}
         render={arrayHelpers => (
           <div className={'mapping-table'} style={{marginBlockStart: '10px'}}>
             <table>
@@ -124,7 +118,7 @@ const VariablesMapping = () => {
                 {mappings.map((_, index) => (
                   <VariableMappingRow
                     key={index}
-                    prefix={`variablesMapping.${index}`}
+                    prefix={`${name}.${index}`}
                     onRemove={() => arrayHelpers.remove(index)}
                   />
                 ))}
@@ -145,6 +139,8 @@ const VariablesMapping = () => {
   );
 };
 
-VariablesMapping.propTypes = {};
+VariablesMapping.propTypes = {
+  name: PropTypes.string.isRequired,
+};
 
 export default VariablesMapping;

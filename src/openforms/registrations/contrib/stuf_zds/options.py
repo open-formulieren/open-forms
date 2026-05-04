@@ -81,11 +81,21 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
 
     variables_mapping = MappingSerializer(
         many=True,
-        label=_("Variables mapping"),
+        label=_("Variables mapping (case)"),
         help_text=_(
             "This mapping is used to map the variable keys to keys used in the XML "
             "that is sent to StUF-ZDS. Those keys and the values belonging to them in "
-            "the submission data are included in extraElementen."
+            "the submission data are included in Object/extraElementen."
+        ),
+        required=False,
+    )
+    variables_mapping_initiator = MappingSerializer(
+        many=True,
+        label=_("Variables mapping (initiator)"),
+        help_text=_(
+            "This mapping is used to map the variable keys to keys used in the XML "
+            "that is sent to StUF-ZDS. Those keys and the values belonging to them in "
+            "the submission data are included in heeftAlsInitiator/extraElementen."
         ),
         required=False,
     )
@@ -98,6 +108,8 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         # To avoid duplicating the title and help text for each item
         del data["properties"]["variables_mapping"]["items"]["title"]
         del data["properties"]["variables_mapping"]["items"]["description"]
+        del data["properties"]["variables_mapping_initiator"]["items"]["title"]
+        del data["properties"]["variables_mapping_initiator"]["items"]["description"]
         return data
 
     def _handle_import(self, attrs) -> None:
