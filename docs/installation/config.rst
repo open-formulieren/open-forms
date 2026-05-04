@@ -181,15 +181,6 @@ Logging, monitoring and Open Telemetry settings
 * ``SDK_SENTRY_ENVIRONMENT``: the environment label for the SDK to group events. Defaults
   to ``ENVIRONMENT``.
 
-* ``ELASTIC_APM_SERVER_URL``: Server URL of Elastic APM. Defaults to
-  ``None``. If not set, Elastic APM will be disabled by setting internal
-  setting ``ELASTIC_APM["ENABLED"]`` to ``False`` and
-  ``ELASTIC_APM["SERVER_URL"]`` to ``http://localhost:8200``. See
-  `Elastic settings`_.
-
-* ``ELASTIC_APM_SECRET_TOKEN``: Token for Elastic APM. Defaults to ``default``.
-  See `Elastic settings`_.
-
 * ``LOG_STD_OUT``: Write all log entries to ``stdout`` instead of log files.
   Defaults to ``True`` when using Docker and otherwise ``False``.
 
@@ -210,7 +201,6 @@ See :ref:`installation_observability_otel_config` for recommended environment va
 configuration.
 
 .. _`Sentry settings`: https://docs.sentry.io/
-.. _`Elastic settings`: https://www.elastic.co/guide/en/apm/agent/python/current/configuration.html
 .. _`kubernetes attributes processor`: https://opentelemetry.io/docs/platforms/kubernetes/collector/components/#kubernetes-attributes-processor
 
 Processing of submissions
