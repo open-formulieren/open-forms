@@ -403,7 +403,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 partial(
                     create_report_document,
                     client=documents_client,
-                    name=submission.form.admin_name,
+                    name=submission.form.name,
                     submission_report=submission_report,
                     options=pdf_options,
                     language=submission_report.submission.language_code,
@@ -608,7 +608,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     partial(
                         create_attachment_document,
                         client=documents_client,
-                        name=submission.form.admin_name,
+                        name=submission.form.admin_name,  # never used since titel can't be None
                         submission_attachment=attachment,
                         options=doc_options,
                         language=attachment.submission_step.submission.language_code,  # assume same as submission
