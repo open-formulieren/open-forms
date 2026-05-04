@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from log_outgoing_requests.models import OutgoingRequestsLog
 import requests_mock
 from maykin_common.vcr import VCRMixin
 from privates.test import temp_private_root
@@ -169,3 +170,29 @@ class KVKPrefillTests(KVKTestMixin, VCRMixin, TestCase):
         )
 
         self.assertEqual(values, {})
+
+    def test_outgoing_requests_log(self):
+        plugin = KVK_KVKNumberPrefill(identifier="kvk")
+
+        submission = SubmissionFactory.create(
+            auth_info__value="68750110",
+            auth_info__plugin="kvk",
+            auth_info__attribute=AuthAttribute.kvk,
+            auth_info__legal_subject_service_restriction="000037178598",
+        )
+        plugin.get_prefill_values(
+            submission,
+            [
+                Attributes.bezoekadres_straatnaam,
+                Attributes.kvkNummer,
+                Attributes.vestigingsnummer,
+                "invalidAttribute",
+            ],
+        )
+
+        request_logs = OutgoingRequestsLog.objects.all()
+        self.assertEqual(len(request_logs), 1)
+
+        request_log = request_logs[0]
+        self.assertEqual(request_log.res_content_type, "application/hal+json")
+        self.assertTrue(request_log.res_body)
