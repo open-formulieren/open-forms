@@ -5,7 +5,6 @@ from collections.abc import Iterable
 from django.core.exceptions import ValidationError as DJ_ValidationError
 from django.utils.translation import gettext_lazy as _
 
-import elasticapm
 import structlog
 from opentelemetry import trace
 from rest_framework import serializers
@@ -65,7 +64,6 @@ class Registry(BaseRegistry[BasePlugin[JSONValue]]):
             "span.action": "validate",
         },
     )
-    @elasticapm.capture_span("app.validations.validate")
     def validate(
         self, plugin_id: str, value: JSONValue, submission: Submission
     ) -> ValidationResult:

@@ -2,7 +2,6 @@ import base64
 import io
 import re
 
-import elasticapm
 import qrcode
 import structlog
 from opentelemetry import trace
@@ -50,7 +49,6 @@ def get_formatted_phone_number(phone_number: str | None) -> str | None:
         "span.action": "delete",
     },
 )
-@elasticapm.capture_span(span_type="app.appointments.delete")
 def delete_appointment_for_submission(submission: Submission, plugin=None) -> None:
     """
     Delete/cancels the appointment for a given submission.
