@@ -3,7 +3,6 @@ from copy import copy
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
-import elasticapm
 import structlog
 from drf_spectacular.plumbing import build_array_type, build_basic_type
 from drf_spectacular.types import OpenApiTypes
@@ -115,10 +114,6 @@ class ProductsListView(ListMixin, APIView):
                     "span.action": "get_products",
                 },
             ),
-            elasticapm.capture_span(
-                name="get-available-products",
-                span_type="app.appointments.get_products",
-            ),
         ):
             return plugin.get_available_products(**kwargs)
 
@@ -159,10 +154,6 @@ class LocationsListView(ListMixin, APIView):
                     "span.subtype": "appointments",
                     "span.action": "get_locations",
                 },
-            ),
-            elasticapm.capture_span(
-                name="get-available-locations",
-                span_type="app.appointments.get_locations",
             ),
         ):
             return plugin.get_locations(products)
@@ -210,9 +201,6 @@ class DatesListView(ListMixin, APIView):
                     "span.subtype": "appointments",
                     "span.action": "get_dates",
                 },
-            ),
-            elasticapm.capture_span(
-                name="get-available-dates", span_type="app.appointments.get_dates"
             ),
         ):
             dates = plugin.get_dates(products, location)
@@ -270,9 +258,6 @@ class TimesListView(ListMixin, APIView):
                     "span.subtype": "appointments",
                     "span.action": "get_times",
                 },
-            ),
-            elasticapm.capture_span(
-                name="get-available-times", span_type="app.appointments.get_times"
             ),
         ):
             times = plugin.get_times(products, location, date)
@@ -332,10 +317,6 @@ class RequiredCustomerFieldsListView(APIView):
                     "span.subtype": "appointments",
                     "span.action": "get_required_customer_fields",
                 },
-            ),
-            elasticapm.capture_span(
-                name="get-required-customer-fields",
-                span_type="app.appointments.get_required_customer_fields",
             ),
         ):
             fields, required_group_fields = plugin.get_required_customer_fields(

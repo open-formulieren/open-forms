@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-import elasticapm
 import requests
 import structlog
 from opentelemetry import trace
@@ -35,7 +34,6 @@ class BAGClient(HALClient):
         name="get-address",
         attributes={"span.type": "app", "span.subtype": "bag", "span.action": "query"},
     )
-    @elasticapm.capture_span(span_type="app.bag.query")
     def get_address(
         self, postcode: str, house_number: str, reraise_errors: bool = False
     ) -> AddressResult | None:

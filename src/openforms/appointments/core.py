@@ -7,7 +7,6 @@ way too much but can't be easily refactored without breaking existing functional
 
 from django.utils.translation import gettext_lazy as _
 
-import elasticapm
 import structlog
 from opentelemetry import trace
 
@@ -82,7 +81,6 @@ def book(appointment: Appointment, remarks: str = "") -> str:
         "span.action": "book_for_submission",
     },
 )
-@elasticapm.capture_span(span_type="app.appointments.book_for_submission")
 def book_for_submission(submission: Submission) -> str:
     """
     Given a submission instance, check if an appointment needs to be booked.

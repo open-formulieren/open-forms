@@ -83,7 +83,6 @@ certifi==2026.1.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   elastic-apm
     #   pyproj
     #   requests
     #   self-certifi
@@ -441,15 +440,6 @@ drf-polymorphic==2.1.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
 drf-spectacular==0.29.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-ecs-logging==2.3.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   elastic-apm
-elastic-apm==6.25.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1216,7 +1206,6 @@ urllib3==2.6.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   elastic-apm
     #   requests
     #   sentry-sdk
     #   types-requests
@@ -1267,7 +1256,6 @@ wrapt==1.17.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   elastic-apm
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-dbapi
     #   opentelemetry-instrumentation-redis
