@@ -267,11 +267,13 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             )
             zaaktype_url = options["zaaktype"]
 
+        zaak_description = options.get("zaak_omschrijving", submission.form.name)
+
         with get_zaken_client(zgw) as zaken_client:
             _create_zaak = partial(
                 zaken_client.create_zaak,
                 zaaktype=zaaktype_url,
-                omschrijving=Truncator(submission.form.name).chars(80),
+                omschrijving=Truncator(zaak_description).chars(80),
                 bronorganisatie=options["organisatie_rsin"],
                 vertrouwelijkheidaanduiding=options.get(
                     "zaak_vertrouwelijkheidaanduiding", ""
@@ -279,6 +281,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 product_url=options["product_url"],
                 payment_required=submission.payment_required,
                 existing_reference=submission.public_registration_reference,
+                toelichting=options.get("zaak_toelichting", ""),
                 **zaak_data,
             )
             zaak = execute_unless_result_exists(
