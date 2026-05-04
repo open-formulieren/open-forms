@@ -137,8 +137,45 @@ These SOAP-operations are used by this plugin:
 
    * ``heeftAlsInitiator`` (the initiator can be excluded if needed)
    * ``heeftAlsOverigBetrokkene`` (will only be set if an employee logs in on behalf of a client)
+
+       * ``extraElementen``, explicitely mapped variables through the configuration
+
+   * ``heeftAlsOverigBetrokkene`` (set if: an employee logs in on behalf of
+     a client, the submission has been cosigned or there are family member relations)
    * ``heeft`` (the status can be excluded if needed)
 
 * ``updateZaak_Lk01`` (only used when delayed payments are enabled)
 * ``genereerDocumentIdentificatie_Di02``
 * ``voegZaakdocumentToe_Lk01`` (for both the submission document and each attachment)
+
+
+.. note:: We provide support of ``extraElementen`` for  ``creeerZaak_Lk01`` on two levels:
+
+    * ``ZKN:object/StUF:extraElementen``
+    * ``ZKN:object/ZKN:heeftAlsInitiator/StUF:extraElementen``
+
+   Both mappings can be added on the "Extra elements" tab of the plugin configuration options,
+   and any form variable that's not mapped explicitly will be included in the object level extra elements.
+
+Vendor-specific notes
+=====================
+
+Some vendors of StUF-ZDS-compatible systems require some extra attention.
+
+.. tip:: Missing some vendors here? Let us know in a
+   `Github issue <https://github.com/open-formulieren/open-forms/issues>`_.
+
+Onegov 365 zaaksysteem
+----------------------
+
+Contact information
+^^^^^^^^^^^^^^^^^^^
+
+Open Forms uses the StUF-ZDS element ``heeftAlsAanspreekpunt`` to send contact details of the initiator.
+Onegov doesn't support it, therefore we added a workaround with ``extraElement`` mapping on the initiator level.
+
+In the registration plugin configuration options, go to the "Extra elements" tab and add mapping entries
+on the **initiator** level. The expected StUF names are:
+
+* ``pv_afwijkendtelefoon``: use the form variable that contains the phone number
+* ``pv_emailafwijkend``: use the form variable that contains the email address
