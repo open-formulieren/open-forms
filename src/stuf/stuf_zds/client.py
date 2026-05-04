@@ -3,7 +3,7 @@ from __future__ import annotations
 import base64
 import uuid
 from collections import OrderedDict
-from collections.abc import Callable, Iterator, MutableMapping
+from collections.abc import Callable, Iterator, Mapping, MutableMapping
 from datetime import datetime
 from functools import partial
 from typing import (
@@ -237,6 +237,7 @@ class Client(BaseClient):
         zaak_identificatie: str,
         zaak_data: MutableMapping[str, Any],
         extra_data: ExtraData,
+        extra_data_initiator: Mapping[str, Any] | None = None,
     ) -> None:
         now = timezone.now()
         context = {
@@ -256,6 +257,7 @@ class Client(BaseClient):
             "co_signer": self.zds_options.get("cosigner"),
             "zaak_identificatie": zaak_identificatie,
             "extra": extra_data,
+            "extra_initiator": extra_data_initiator or {},
             "global_config": GlobalConfiguration.get_solo(),
             **zaak_data,
         }
