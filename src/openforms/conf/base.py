@@ -1,6 +1,5 @@
 import json
 import os
-import warnings
 from pathlib import Path
 
 # Django-hijack (and Django-hijack-admin)
@@ -979,29 +978,6 @@ if SENTRY_DSN:
 # Sentry for the Open-Forms SDK
 SDK_SENTRY_DSN = config("SDK_SENTRY_DSN", default="")
 SDK_SENTRY_ENVIRONMENT = config("SDK_SENTRY_ENVIRONMENT", default=ENVIRONMENT)
-
-#
-# Elastic APM
-#
-ELASTIC_APM_SERVER_URL = config("ELASTIC_APM_SERVER_URL", default="") or None
-ELASTIC_APM = {
-    "SERVICE_NAME": f"Open Forms - {ENVIRONMENT}",
-    "SECRET_TOKEN": config("ELASTIC_APM_SECRET_TOKEN", default="default"),
-    "SERVER_URL": ELASTIC_APM_SERVER_URL,
-}
-if not ELASTIC_APM_SERVER_URL:
-    ELASTIC_APM["ENABLED"] = False
-    ELASTIC_APM["SERVER_URL"] = "http://localhost:8200"
-else:  # pragma: no cover - can't test this in CI :/
-    warnings.warn(
-        "Elastic APM agent integration will be deprecated in favour of Open Telemetry",
-        category=PendingDeprecationWarning,
-        stacklevel=1,
-    )
-    MIDDLEWARE = ["elasticapm.contrib.django.middleware.TracingMiddleware"] + MIDDLEWARE
-    INSTALLED_APPS = INSTALLED_APPS + [
-        "elasticapm.contrib.django",
-    ]
 
 #
 # DJANGO REST FRAMEWORK

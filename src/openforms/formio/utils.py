@@ -4,7 +4,6 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-import elasticapm
 import structlog
 from glom import Coalesce, Path, glom
 from opentelemetry import trace
@@ -41,7 +40,6 @@ def _is_column_component(component: ComponentLike) -> TypeIs[ColumnsComponent]:
         "span.action": "configuration",
     },
 )
-@elasticapm.capture_span(span_type="app.formio.configuration")
 def iter_components(
     configuration: ComponentLike,
     *,
@@ -112,7 +110,6 @@ def iterate_components_with_configuration_path(
         "span.action": "configuration",
     },
 )
-@elasticapm.capture_span(span_type="app.formio.configuration")
 def flatten_by_path(configuration: FormioConfiguration) -> dict[str, Component]:
     """
     Flatten the formio configuration.

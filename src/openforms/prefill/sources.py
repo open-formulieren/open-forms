@@ -3,7 +3,6 @@ from functools import partial
 
 from django.core.exceptions import PermissionDenied
 
-import elasticapm
 import structlog
 from opentelemetry import trace
 from rest_framework.exceptions import ValidationError
@@ -57,7 +56,6 @@ def fetch_prefill_values_from_attribute(
     @tracer.start_as_current_span(
         name="invoke-plugin", attributes={"span.type": "app", "span.subtype": "prefill"}
     )
-    @elasticapm.capture_span(span_type="app.prefill")
     def invoke_plugin(
         structlog_ctx: Context,
         item: tuple[BasePlugin, IdentifierRoles, list[dict[str, str]]],

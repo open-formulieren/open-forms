@@ -46,7 +46,6 @@ celery-once==3.0.1
     # via -r requirements/base.in
 certifi==2026.1.4
     # via
-    #   elastic-apm
     #   pyproj
     #   requests
     #   self-certifi
@@ -269,10 +268,6 @@ drf-nested-routers==0.95.0
 drf-polymorphic==2.1.1
     # via -r requirements/base.in
 drf-spectacular==0.29.0
-    # via -r requirements/base.in
-ecs-logging==2.3.0
-    # via elastic-apm
-elastic-apm==6.25.0
     # via -r requirements/base.in
 et-xmlfile==2.0.0
     # via openpyxl
@@ -681,7 +676,6 @@ uritemplate==4.2.0
     # via drf-spectacular
 urllib3==2.6.3
     # via
-    #   elastic-apm
     #   requests
     #   sentry-sdk
 uwsgi==2.0.31
@@ -706,7 +700,6 @@ webencodings==0.5.1
     #   tinyhtml5
 wrapt==1.17.3
     # via
-    #   elastic-apm
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-dbapi
     #   opentelemetry-instrumentation-redis

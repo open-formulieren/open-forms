@@ -191,3 +191,17 @@ The following fallbacks were deprecated and have been removed.
   ``--of-backtotop-link-padding-block-end`` explicitly
 * removed fallback to ``--utrecht-button-padding-block-start``, specify
   ``--of-backtotop-link-padding-block-start`` explicitly
+
+Removal of the Elastic APM agent
+================================
+
+Elastic APM has historically been the mechanism to get some performance-related
+telemetry from Open Forms into an observability platform. Since Open Forms 3.3 (released
+9 months ago), we've been adding support for Open Telemetry as replacement, which is a
+vendor-agnostic observability protocol and ecosystem.
+
+You can remove any ``ELASTIC_APM_*`` related environment variables from your deployment
+code, and if you haven't done so yet, recommend you to set up the necessary
+:ref:`observability <installation_observability_index>` tooling. See
+:ref:`installation_observability_otel_config` on how to configure Open Forms to produce
+telemetry.

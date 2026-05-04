@@ -10,7 +10,6 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-import elasticapm
 import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
@@ -381,7 +380,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "span.action": "serialization",
         },
     )
-    @elasticapm.capture_span(span_type="app.api.serialization")
     def to_representation(self, instance):
         in_form_logic_evaluation = self.context.get("in_form_logic_evaluation", False)
 
@@ -449,7 +447,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "span.action": "serialization",
         },
     )
-    @elasticapm.capture_span(span_type="app.api.serialization")
     def get_configuration(self, instance) -> dict:
         serializer = FormDefinitionSerializer(
             instance=instance.form_step.form_definition, context=self.context

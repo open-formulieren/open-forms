@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Literal, TypedDict
 
-import elasticapm
 import requests
 import structlog
 from opentelemetry import trace
@@ -67,7 +66,6 @@ class KVKProfileClient(HALClient):
     @tracer.start_as_current_span(
         name="get-profile", attributes={"span.type": "app", "span.subtype": "kvk"}
     )
-    @elasticapm.capture_span("app.kvk")
     def get_profile(self, kvk_nummer: str) -> BasisProfiel:
         """
         Retrieve the profile of a single entity by chamber of commerce number.
@@ -116,7 +114,6 @@ class KVKSearchClient(HALClient):
         name="get-search-results",
         attributes={"span.type": "app", "span.subtype": "kvk"},
     )
-    @elasticapm.capture_span("app.kvk")
     def get_search_results(self, query_params: SearchParams):
         """
         Perform a search against the KVK zoeken API.

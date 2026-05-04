@@ -2,7 +2,6 @@ from collections.abc import Iterable, Iterator
 from copy import deepcopy
 from itertools import chain
 
-import elasticapm
 from json_logic import jsonLogic
 from opentelemetry import trace
 
@@ -231,11 +230,6 @@ def iter_evaluate_rules(
                     "span.action": "logic",
                     "ruleId": rule.pk,
                 },
-            ),
-            elasticapm.capture_span(
-                "evaluate_rule",
-                span_type="app.submissions.logic",
-                labels={"ruleId": rule.pk},
             ),
         ):
             triggered = False

@@ -10,7 +10,6 @@ from django.db.models.constraints import UniqueConstraint
 from django.db.models.fields.json import KeyTransform
 from django.utils.translation import gettext_lazy as _
 
-import elasticapm
 import structlog
 from opentelemetry import trace
 
@@ -85,7 +84,6 @@ class FormVariableManager(models.Manager["FormVariable"]):
             "span.action": "models",
         },
     )
-    @elasticapm.capture_span(span_type="app.core.models")
     @transaction.atomic(savepoint=False)
     def synchronize_for(self, form_definition: FormDefinition):
         """
