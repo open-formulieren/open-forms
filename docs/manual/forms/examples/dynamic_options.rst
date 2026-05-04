@@ -43,8 +43,8 @@ Formulier maken
    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Waar ontvangt u graag post?
-   * **Data bron**: *variabele*
-   * **Items**:
+   * **Keuzeopties**: *Gebruik variabele*
+   * **Opties-expressie**:
 
    .. code-block:: json
 
@@ -53,7 +53,7 @@ Formulier maken
             {"var": "adressen"},
             [
                 {"cat": [{"var": "postcode"}, ",", {"var": "huisnummerEnToevoeging"}]},
-                {"cat": [{"var": "straatnaam"}, " ", {"var": "huisnummerEnToevoeging"}, ", ", {"var": "plaatsnaam"}]}
+                {"cat": [{"var": "straatnaam"}, " ", {"var": "huisnummerEnToevoeging"}, ", ", {"var": "stad"}]}
             ]
          ]
       }
@@ -68,8 +68,8 @@ Formulier maken
    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Waar wilt u de toeslag ontvangen?
-   * **Data bron**: *variabele*
-   * **Items**: ``{"var": "iban"}``
+   * **Keuzeopties**: *Gebruik variabele*
+   * **Opties-expressie**: ``{"var": "iban"}``
 
 #. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
