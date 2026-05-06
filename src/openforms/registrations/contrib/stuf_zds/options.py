@@ -37,6 +37,15 @@ class MappingSerializer(serializers.Serializer):
         help_text=_("The name in StUF-ZDS to which the form variable should be mapped"),
         label=_("StUF-ZDS name"),
     )
+    serialize_list_to_csv = serializers.BooleanField(
+        label=_("Comma-separate list values"),
+        required=False,
+        default=False,
+        help_text=_(
+            "If enabled, list values will be serialized to a single element value, "
+            "with multiple values joined together by comma's."
+        ),
+    )
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):

@@ -605,6 +605,12 @@
       "value": "Variant"
     }
   ],
+  "4binPe": [
+    {
+      "type": 0,
+      "value": "Comma-separate list values"
+    }
+  ],
   "4sFGgA": [
     {
       "type": 0,
@@ -2295,7 +2301,7 @@
   "H2IXy5": [
     {
       "type": 0,
-      "value": "Variables mapping (case)"
+      "value": "Variabelekoppelingen (zaak)"
     }
   ],
   "H4sILo": [
@@ -4775,6 +4781,26 @@
       "value": "Tabelcode"
     }
   ],
+  "cQXRmG": [
+    {
+      "type": 0,
+      "value": "Deze koppelingen laten je toe om variabelen mee te sturen in de XML voor StUF-ZDS. De opgegeven sleutels en waarden uit de inzendingsgegevens komen terecht in de "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "heeftAlsInitiator/extraElementen"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": ". Bij variabelen die een lijst als waarde hebben, kan je ervoor kiezen om deze als komma-gescheiden element op te nemen in plaats van een element voor elk item in de lijst."
+    }
+  ],
   "cQvPLh": [
     {
       "type": 0,
@@ -5368,7 +5394,7 @@
   "gO2sGp": [
     {
       "type": 0,
-      "value": "Variables mapping (Initiator)"
+      "value": "Variabelekoppelingen (initiator)"
     }
   ],
   "gSSyoc": [
@@ -5589,26 +5615,6 @@
     {
       "type": 0,
       "value": "Je moet een tabel selecteren."
-    }
-  ],
-  "i3qXzA": [
-    {
-      "type": 0,
-      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "heeftAlsInitiator/extraElementen"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": "."
     }
   ],
   "i7HknI": [
@@ -6099,26 +6105,6 @@
     {
       "type": 0,
       "value": "Item toevoegen"
-    }
-  ],
-  "ljTD4F": [
-    {
-      "type": 0,
-      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in the top level "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "extraElementen"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": " for the case itself."
     }
   ],
   "ln72CJ": [
@@ -7703,6 +7689,26 @@
     {
       "type": 0,
       "value": "Selecteer een attribuut uit het objecttype"
+    }
+  ],
+  "zzOZbd": [
+    {
+      "type": 0,
+      "value": "Deze koppelingen laten je toe om variabelen mee te sturen in de XML voor StUF-ZDS. De opgegeven sleutels en waarden uit de inzendingsgegevens komen terecht in de "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "extraElementen"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": " op het hoogste niveau (van de zaak zelf). Bij variabelen die een lijst als waarde hebben, kan je ervoor kiezen om deze als komma-gescheiden element op te nemen in plaats van een element voor elk item in de lijst."
     }
   ]
 }

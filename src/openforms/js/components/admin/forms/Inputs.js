@@ -116,9 +116,11 @@ const Checkbox = ({
     <div className={classNames({'field--disabled': disabled, 'w-100': fullWidth})}>
       <div className="flex-container checkbox-row">
         <input type="checkbox" name={name} id={idFor} {...extraProps} />{' '}
-        <label className={classNames('inline', {vCheckboxLabel: !noVCheckbox})} htmlFor={idFor}>
-          {label}
-        </label>
+        {label && (
+          <label className={classNames('inline', {vCheckboxLabel: !noVCheckbox})} htmlFor={idFor}>
+            {label}
+          </label>
+        )}
       </div>
       {helpText && (
         <div className="help">
@@ -131,7 +133,7 @@ const Checkbox = ({
 
 Checkbox.propTypes = {
   name: PropTypes.string.isRequired,
-  label: PropTypes.node.isRequired,
+  label: PropTypes.node, // pass label or aria-label
   helpText: PropTypes.node,
   noVCheckbox: PropTypes.bool,
   fullWidth: PropTypes.bool,

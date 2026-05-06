@@ -1,3 +1,4 @@
+import {produce} from 'immer';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
@@ -6,6 +7,18 @@ import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfig
 import {ValidationErrorContext, filterErrors} from 'components/admin/forms/ValidationErrors';
 
 import StufZDSOptionsFormFields from './StufZDSOptionsFormFields';
+
+const normalizeFormData = formData => {
+  return produce(formData, draft => {
+    // ensure that the key serializeListToCsv is set for each mapping item
+    const allVariableMappings = [...draft.variablesMapping, ...draft.variablesMappingInitiator];
+    for (const mapping of allVariableMappings) {
+      if (!('serializeListToCsv' in mapping)) {
+        mapping.serializeListToCsv = false;
+      }
+    }
+  });
+};
 
 const StufZDSOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
@@ -44,7 +57,7 @@ const StufZDSOptionsForm = ({name, label, schema, formData, onChange}) => {
           defaultMessage="Plugin configuration: StUF-ZDS"
         />
       }
-      initialFormData={initialFormData}
+      initialFormData={normalizeFormData(initialFormData)}
       onSubmit={values => onChange({formData: values})}
     >
       <StufZDSOptionsFormFields name={name} schema={schema} />
@@ -65,12 +78,14 @@ StufZDSOptionsForm.propTypes = {
       PropTypes.shape({
         formVariable: PropTypes.string,
         stufName: PropTypes.string,
+        serializeListToCsv: PropTypes.bool,
       })
     ),
     variablesMappingInitiator: PropTypes.arrayOf(
       PropTypes.shape({
         formVariable: PropTypes.string,
         stufName: PropTypes.string,
+        serializeListToCsv: PropTypes.bool,
       })
     ),
     zdsDocumenttypeOmschrijvingInzending: PropTypes.string,

@@ -256,6 +256,11 @@
     "isTranslated": true,
     "originalDefault": "Variant"
   },
+  "4binPe": {
+    "defaultMessage": "Comma-separate list values",
+    "description": "StUF-ZDS extraElement serializeListToCsv label",
+    "originalDefault": "Comma-separate list values"
+  },
   "4sFGgA": {
     "defaultMessage": "De expressies hieronder komen uit de geselecteerde beslisdefinitie. Het is mogelijk dat sommige inputs zichtbaar zijn die al ingevuld worden door een eerdere definitie. Dit komt door de complexiteit van de expressie.",
     "description": "DMN input expressions warning about extraction accuracy",
@@ -1037,7 +1042,7 @@
     "originalDefault": "Plugin configuration: ZGW APIs"
   },
   "H2IXy5": {
-    "defaultMessage": "Variables mapping (case)",
+    "defaultMessage": "Variabelekoppelingen (zaak)",
     "description": "StUF-ZDS registration variablesMapping label",
     "originalDefault": "Variables mapping (case)"
   },
@@ -2280,6 +2285,11 @@
     "description": "Objects API variable registration configuration API error",
     "originalDefault": "Something went wrong when fetching the available target paths"
   },
+  "cQXRmG": {
+    "defaultMessage": "Deze koppelingen laten je toe om variabelen mee te sturen in de XML voor StUF-ZDS. De opgegeven sleutels en waarden uit de inzendingsgegevens komen terecht in de <code>heeftAlsInitiator/extraElementen</code>. Bij variabelen die een lijst als waarde hebben, kan je ervoor kiezen om deze als komma-gescheiden element op te nemen in plaats van een element voor elk item in de lijst.",
+    "description": "StUF-ZDS registration variablesMappingInitiator message",
+    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>heeftAlsInitiator/extraElementen</code>. When a form variable contains a list of values, you can opt to include the value as a comma-separated list of values instead of including a separate extra element for each item in the list."
+  },
   "cUVVbl": {
     "defaultMessage": "is groter dan of gelijk aan",
     "description": "\">=\" operator description",
@@ -2512,7 +2522,7 @@
     "originalDefault": "Regular"
   },
   "gO2sGp": {
-    "defaultMessage": "Variables mapping (Initiator)",
+    "defaultMessage": "Variabelekoppelingen (initiator)",
     "description": "StUF-ZDS registration variablesMappingInitiator label",
     "originalDefault": "Variables mapping (Initiator)"
   },
@@ -2635,11 +2645,6 @@
     "defaultMessage": "Interne naam",
     "description": "Form name field label",
     "originalDefault": "Internal name"
-  },
-  "i3qXzA": {
-    "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>heeftAlsInitiator/extraElementen</code>.",
-    "description": "StUF-ZDS registration variablesMappingInitiator message",
-    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>heeftAlsInitiator/extraElementen</code>."
   },
   "i7HknI": {
     "defaultMessage": "Tabnaam",
@@ -2856,11 +2861,6 @@
     "defaultMessage": "Item toevoegen",
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
-  },
-  "ljTD4F": {
-    "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in the top level <code>extraElementen</code> for the case itself.",
-    "description": "StUF-ZDS registration variablesMapping message",
-    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in the top level <code>extraElementen</code> for the case itself."
   },
   "ln72CJ": {
     "defaultMessage": "Objecttyperesource-URL in de Objecttypen-API. Wanneer dit ingesteld is, dan wordt een object van dit type aangemaakt en aan de zaak gerelateerd.",
@@ -3636,5 +3636,10 @@
     "defaultMessage": "Selecteer een attribuut uit het objecttype",
     "description": "Prefill / Objects API: accessible label for object type property selection",
     "originalDefault": "Select a property from the object type"
+  },
+  "zzOZbd": {
+    "defaultMessage": "Deze koppelingen laten je toe om variabelen mee te sturen in de XML voor StUF-ZDS. De opgegeven sleutels en waarden uit de inzendingsgegevens komen terecht in de <code>extraElementen</code> op het hoogste niveau (van de zaak zelf). Bij variabelen die een lijst als waarde hebben, kan je ervoor kiezen om deze als komma-gescheiden element op te nemen in plaats van een element voor elk item in de lijst.",
+    "description": "StUF-ZDS registration variablesMapping message",
+    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in the top level <code>extraElementen</code> for the case itself. When a form variable contains a list of values, you can opt to include the value as a comma-separated list of values instead of including a separate extra element for each item in the list."
   }
 }
