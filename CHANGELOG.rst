@@ -14,8 +14,8 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
-3.5.1 "Kjeld" (2026-05-06)
-==========================
+3.5.1 (2026-05-06)
+==================
 
 Regular bugfix release.
 
