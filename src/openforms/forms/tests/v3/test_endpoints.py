@@ -12,18 +12,31 @@ from djangorestframework_camel_case.util import underscoreize
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APITestCase, APITransactionTestCase
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.models import User
 from openforms.accounts.tests.factories import UserFactory
 from openforms.appointments.models import AppointmentsConfig
 from openforms.config.tests.factories import ThemeFactory
+from openforms.contrib.customer_interactions.tests.factories import (
+    CustomerInteractionsAPIGroupConfigFactory,
+)
 from openforms.data_removal.constants import RemovalMethods
 from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
 )
+from openforms.prefill.contrib.customer_interactions.constants import (
+    PLUGIN_IDENTIFIER as COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+)
 from openforms.products.tests.factories import ProductFactory
 from openforms.typing import JSONObject
 from openforms.utils.tests.feature_flags import enable_feature_flag
+from openforms.variables.constants import (
+    FormVariableDataTypes,
+    FormVariableSources,
+    ServiceFetchMethods,
+)
+from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ...constants import (
     FormTypeChoices,
@@ -52,6 +65,7 @@ class FormEndpointTests(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
 
     def test_create_minimal_form(self):
+        form_definition_uuid = uuid4()
         url = reverse(
             "api:v3:form-detail",
             kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
@@ -63,7 +77,7 @@ class FormEndpointTests(APITestCase):
                 {
                     "slug": "step-1",
                     "formDefinition": {
-                        "uuid": str(uuid4()),
+                        "uuid": form_definition_uuid,
                         "configuration": {
                             "components": [
                                 {
@@ -180,6 +194,20 @@ class FormEndpointTests(APITestCase):
                         },
                     },
                 }
+            ],
+            "variables": [
+                {
+                    "name": "extra_var",
+                    "key": "extra_var",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.string,
+                },
+                {
+                    "name": "extra_var_2",
+                    "key": "extra_var_2",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.string,
+                },
             ],
             "maintenanceMode": True,
             "active": True,
@@ -303,6 +331,34 @@ class FormEndpointTests(APITestCase):
                 ],
             },
         )
+
+        # variables
+        variables = form.formvariable_set.order_by("source", "key")
+        self.assertEqual(variables.count(), 4)
+
+        ## Component variables
+        self.assertEqual(variables[0].name, "component1")
+        self.assertEqual(variables[0].key, "component1")
+        self.assertEqual(variables[0].form_definition, form_definition)
+        self.assertEqual(variables[0].data_type, FormVariableDataTypes.string)
+        self.assertEqual(variables[0].source, FormVariableSources.component)
+        self.assertEqual(variables[1].name, "component2")
+        self.assertEqual(variables[1].key, "component2")
+        self.assertEqual(variables[1].form_definition, form_definition)
+        self.assertEqual(variables[1].data_type, FormVariableDataTypes.string)
+        self.assertEqual(variables[1].source, FormVariableSources.component)
+
+        ## User defined variables
+        self.assertEqual(variables[2].name, "extra_var")
+        self.assertEqual(variables[2].key, "extra_var")
+        self.assertIsNone(variables[2].form_definition)
+        self.assertEqual(variables[2].data_type, FormVariableDataTypes.string)
+        self.assertEqual(variables[2].source, FormVariableSources.user_defined)
+        self.assertEqual(variables[3].name, "extra_var_2")
+        self.assertEqual(variables[3].key, "extra_var_2")
+        self.assertIsNone(variables[3].form_definition)
+        self.assertEqual(variables[3].data_type, FormVariableDataTypes.string)
+        self.assertEqual(variables[3].source, FormVariableSources.user_defined)
 
         # registration backends
         registration_backend = FormRegistrationBackend.objects.get()
@@ -1765,6 +1821,1397 @@ class FormEndpointTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(Form.objects.count(), 0)
+
+
+class FormEndpointVariableTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+
+        cls.admin_user = UserFactory.create(
+            is_staff=True, user_permissions=("forms.change_form",)
+        )
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.client.force_authenticate(user=self.admin_user)
+
+    def test_user_defined_variables(self):
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "extra_var",
+                    "key": "extra_var",
+                    "source": FormVariableSources.user_defined,
+                    "formDefinition": None,
+                    "dataType": FormVariableDataTypes.string,
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+        variables = form.formvariable_set.order_by("name")
+
+        # component variable, generated for the form step (based on the form defintion)
+        self.assertEqual(variables[0].name, "component1")
+        self.assertEqual(variables[0].key, "component1")
+        self.assertEqual(variables[0].source, FormVariableSources.component)
+        self.assertEqual(variables[0].form_definition.uuid, form_definition_uuid)
+        self.assertEqual(variables[0].data_type, FormVariableDataTypes.string)
+
+        # user defined variable, from the request body
+        self.assertEqual(variables[1].name, "extra_var")
+        self.assertEqual(variables[1].key, "extra_var")
+        self.assertEqual(variables[1].source, FormVariableSources.user_defined)
+        self.assertIsNone(variables[1].form_definition)
+        self.assertEqual(variables[1].data_type, FormVariableDataTypes.string)
+
+    def test_user_defined_profile_form_variable(self):
+        customer_interactions_api = CustomerInteractionsAPIGroupConfigFactory.create()
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "customerProfile",
+                                    "key": "profile",
+                                    "name": "Profile",
+                                    "digitalAddressTypes": ["email"],
+                                    "shouldUpdateCustomerData": True,
+                                }
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "profile-prefill",
+                    "key": "profilePrefill",
+                    "formDefinition": None,
+                    "source": FormVariableSources.user_defined,
+                    "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                    "prefillAttribute": "",
+                    "prefillIdentifierRole": "main",
+                    "prefillOptions": {
+                        "customerInteractionsApiGroup": customer_interactions_api.identifier,
+                        "profileFormVariable": "profile",
+                    },
+                    "dataType": FormVariableDataTypes.string,
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+        variables = form.formvariable_set.order_by("name")
+
+        # component variable, generated for the form step (based on the form defintion)
+        self.assertEqual(variables[0].name, "profile")
+        self.assertEqual(variables[0].key, "profile")
+        self.assertEqual(variables[0].source, FormVariableSources.component)
+        self.assertEqual(variables[0].form_definition.uuid, form_definition_uuid)
+        self.assertEqual(variables[0].data_type, FormVariableDataTypes.array)
+
+        # user defined variable, from the request body
+        self.assertEqual(variables[1].name, "profile-prefill")
+        self.assertEqual(variables[1].key, "profilePrefill")
+        self.assertEqual(variables[1].source, FormVariableSources.user_defined)
+        self.assertIsNone(variables[1].form_definition)
+        self.assertEqual(variables[1].data_type, FormVariableDataTypes.string)
+
+    def test_service_configuration(self):
+        form_definition_uuid = uuid4()
+        service = ServiceFactory.create()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+
+        with self.subTest("Create form"):
+            data = {
+                "name": "Create form",
+                "slug": "create-form",
+                "steps": [
+                    {
+                        "slug": "step-1",
+                        "formDefinition": {
+                            "uuid": form_definition_uuid,
+                            "configuration": {
+                                "components": [
+                                    {
+                                        "type": "textfield",
+                                        "key": "component1",
+                                        "hidden": False,
+                                        "clearOnHide": True,
+                                    },
+                                ],
+                            },
+                            "translations": {
+                                "en": {
+                                    "name": "Form configuration 1",
+                                    "internalName": "Form configuration 1",
+                                },
+                                "nl": {
+                                    "name": "Form configuratie 1",
+                                    "internalName": "Form configuratie 1",
+                                },
+                            },
+                        },
+                    },
+                ],
+                "variables": [
+                    {
+                        "name": "extra_var",
+                        "key": "extra_var",
+                        "source": FormVariableSources.user_defined,
+                        "formDefinition": None,
+                        "dataType": FormVariableDataTypes.string,
+                        "serviceFetchConfiguration": {
+                            "name": "Service fetch configuration 1",
+                            "service": service.uuid,
+                            "path": "/foobar",
+                            "method": ServiceFetchMethods.get,
+                            "headers": {
+                                "Foo": "Bar",
+                            },
+                            "queryParams": {
+                                "Bar": ["Foo"],
+                            },
+                            "body": None,
+                            "dataMappingType": "",
+                            "mappingExpression": None,
+                            "cacheTimeout": None,
+                        },
+                    },
+                ],
+            }
+            response = self.client.put(url, data=data)
+
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertEqual(Form.objects.count(), 1)
+            form = Form.objects.get()
+            variables = form.formvariable_set.order_by("source", "name")
+            assert len(variables) == 2
+
+            service_fetch_configuration = variables[1].service_fetch_configuration
+            assert service_fetch_configuration
+            self.assertEqual(
+                service_fetch_configuration.name, "Service fetch configuration 1"
+            )
+            self.assertEqual(service_fetch_configuration.service, service)
+            self.assertEqual(service_fetch_configuration.path, "/foobar")
+            self.assertEqual(
+                service_fetch_configuration.method, ServiceFetchMethods.get
+            )
+            self.assertEqual(service_fetch_configuration.headers, {"_foo": "Bar"})
+            self.assertEqual(
+                service_fetch_configuration.query_params, {"_bar": ["Foo"]}
+            )
+            self.assertIsNone(service_fetch_configuration.body)
+            self.assertEqual(service_fetch_configuration.data_mapping_type, "")
+            self.assertIsNone(service_fetch_configuration.mapping_expression)
+            self.assertIsNone(service_fetch_configuration.cache_timeout)
+
+        with self.subTest("Update form"):
+            data = {
+                "name": "Update form",
+                "slug": "update-form",
+                "steps": [
+                    {
+                        "slug": "step-1",
+                        "formDefinition": {
+                            "uuid": form_definition_uuid,
+                            "configuration": {
+                                "components": [
+                                    {
+                                        "type": "textfield",
+                                        "key": "component1",
+                                        "hidden": False,
+                                        "clearOnHide": True,
+                                    },
+                                ],
+                            },
+                            "translations": {
+                                "en": {
+                                    "name": "Form configuration 1",
+                                    "internalName": "Form configuration 1",
+                                },
+                                "nl": {
+                                    "name": "Form configuratie 1",
+                                    "internalName": "Form configuratie 1",
+                                },
+                            },
+                        },
+                    },
+                ],
+                "variables": [
+                    {
+                        "name": "extra_var",
+                        "key": "extra_var",
+                        "source": FormVariableSources.user_defined,
+                        "formDefinition": None,
+                        "dataType": FormVariableDataTypes.string,
+                        "serviceFetchConfiguration": {
+                            "name": "Service fetch configuration 1",
+                            "service": service.uuid,
+                            "path": "/foobar",
+                            "method": ServiceFetchMethods.get,
+                            "headers": {
+                                "Foo": "Bar",
+                            },
+                            "queryParams": {
+                                "Bar": ["Foo"],
+                            },
+                            "body": None,
+                            "dataMappingType": "",
+                            "mappingExpression": None,
+                            "cacheTimeout": None,
+                        },
+                    },
+                ],
+            }
+            response = self.client.put(url, data=data)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(Form.objects.count(), 1)
+            form = Form.objects.get()
+            variables = form.formvariable_set.order_by("source", "name")
+            assert len(variables) == 2
+
+            service_fetch_configuration = variables[1].service_fetch_configuration
+            assert service_fetch_configuration
+            self.assertEqual(
+                service_fetch_configuration.name, "Service fetch configuration 1"
+            )
+            self.assertEqual(service_fetch_configuration.service, service)
+            self.assertEqual(service_fetch_configuration.path, "/foobar")
+            self.assertEqual(
+                service_fetch_configuration.method, ServiceFetchMethods.get
+            )
+            self.assertEqual(service_fetch_configuration.headers, {"_foo": "Bar"})
+            self.assertEqual(
+                service_fetch_configuration.query_params, {"_bar": ["Foo"]}
+            )
+            self.assertIsNone(service_fetch_configuration.body)
+            self.assertEqual(service_fetch_configuration.data_mapping_type, "")
+            self.assertIsNone(service_fetch_configuration.mapping_expression)
+            self.assertIsNone(service_fetch_configuration.cache_timeout)
+
+    def test_reuse_service_fetch_configuration(self):
+        service = ServiceFactory.create()
+        initial_service_fetch_configuration = ServiceFetchConfigurationFactory.create(
+            name="Service fetch configuration foo", service=service
+        )
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+
+        with self.subTest("Create form"):
+            data = {
+                "name": "Create form",
+                "slug": "create-form",
+                "steps": [
+                    {
+                        "slug": "step-1",
+                        "formDefinition": {
+                            "uuid": form_definition_uuid,
+                            "configuration": {
+                                "components": [
+                                    {
+                                        "type": "textfield",
+                                        "key": "component1",
+                                        "hidden": False,
+                                        "clearOnHide": True,
+                                    },
+                                ],
+                            },
+                            "translations": {
+                                "en": {
+                                    "name": "Form configuration 1",
+                                    "internalName": "Form configuration 1",
+                                },
+                                "nl": {
+                                    "name": "Form configuratie 1",
+                                    "internalName": "Form configuratie 1",
+                                },
+                            },
+                        },
+                    },
+                ],
+                "variables": [
+                    {
+                        "name": "extra_var",
+                        "key": "extra_var",
+                        "source": FormVariableSources.user_defined,
+                        "formDefinition": None,
+                        "dataType": FormVariableDataTypes.string,
+                        "serviceFetchConfiguration": {
+                            "id": initial_service_fetch_configuration.pk,
+                            "name": "Service fetch configuration 1",
+                            "service": service.uuid,
+                            "path": "/foobar",
+                            "method": ServiceFetchMethods.get,
+                            "headers": {
+                                "Foo": "Bar",
+                            },
+                            "queryParams": {
+                                "Bar": ["Foo"],
+                            },
+                            "body": None,
+                            "dataMappingType": "",
+                            "mappingExpression": None,
+                            "cacheTimeout": None,
+                        },
+                    },
+                ],
+            }
+            response = self.client.put(url, data=data)
+
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertEqual(Form.objects.count(), 1)
+            form = Form.objects.get()
+            variables = form.formvariable_set.order_by("source", "name")
+            assert len(variables) == 2
+
+            service_fetch_configuration = variables[1].service_fetch_configuration
+            assert service_fetch_configuration
+            self.assertEqual(
+                initial_service_fetch_configuration, service_fetch_configuration
+            )
+            self.assertEqual(
+                service_fetch_configuration.name, "Service fetch configuration 1"
+            )
+
+        with self.subTest("Update form"):
+            data = {
+                "name": "Update form",
+                "slug": "update-form",
+                "steps": [
+                    {
+                        "slug": "step-1",
+                        "formDefinition": {
+                            "uuid": form_definition_uuid,
+                            "configuration": {
+                                "components": [
+                                    {
+                                        "type": "textfield",
+                                        "key": "component1",
+                                        "hidden": False,
+                                        "clearOnHide": True,
+                                    },
+                                ],
+                            },
+                            "translations": {
+                                "en": {
+                                    "name": "Form configuration 1",
+                                    "internalName": "Form configuration 1",
+                                },
+                                "nl": {
+                                    "name": "Form configuratie 1",
+                                    "internalName": "Form configuratie 1",
+                                },
+                            },
+                        },
+                    },
+                ],
+                "variables": [
+                    {
+                        "name": "extra_var",
+                        "key": "extra_var",
+                        "source": FormVariableSources.user_defined,
+                        "formDefinition": None,
+                        "dataType": FormVariableDataTypes.string,
+                        "serviceFetchConfiguration": {
+                            "id": initial_service_fetch_configuration.pk,
+                            "name": "Service fetch configuration 2",
+                            "service": service.uuid,
+                            "path": "/foobar",
+                            "method": ServiceFetchMethods.get,
+                            "headers": {
+                                "Foo": "Bar",
+                            },
+                            "queryParams": {
+                                "Bar": ["Foo"],
+                            },
+                            "body": None,
+                            "dataMappingType": "",
+                            "mappingExpression": None,
+                            "cacheTimeout": None,
+                        },
+                    },
+                ],
+            }
+            response = self.client.put(url, data=data)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(Form.objects.count(), 1)
+            form = Form.objects.get()
+            variables = form.formvariable_set.order_by("source", "name")
+            assert len(variables) == 2
+
+            service_fetch_configuration = variables[1].service_fetch_configuration
+            assert service_fetch_configuration
+            self.assertEqual(
+                initial_service_fetch_configuration, service_fetch_configuration
+            )
+            self.assertEqual(
+                service_fetch_configuration.name, "Service fetch configuration 2"
+            )
+
+    def test_update_recreates_variables(self):
+        form = FormFactory.create()
+        form_step_1_definition_uuid = UUID("7284fcde-0cde-4cb4-b2e5-1e472fceccfb")
+        FormStepFactory.create(
+            form=form,
+            form_definition__uuid=form_step_1_definition_uuid,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    },
+                    {
+                        "type": "number",
+                        "key": "age",
+                    },
+                ]
+            },
+        )
+        form_step_2_definition_uuid = UUID("3ab6da26-7407-4a39-a77c-8fd846ab6d8d")
+        FormStepFactory.create(
+            form=form,
+            form_definition__uuid=form_step_2_definition_uuid,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "nLargeBoxes",
+                    },
+                    {
+                        "type": "number",
+                        "key": "nGiganticBoxes",
+                    },
+                ]
+            },
+        )
+
+        form_step_3_definition_uuid = UUID("0d4a67fb-1aa3-4568-a5b3-a374842c048d")
+
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": form.uuid},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_step_1_definition_uuid,
+                        "isReusable": False,
+                        "loginRequired": False,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "number",
+                                    "key": "age",
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "email",
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+                {
+                    "slug": "step-2",
+                    "formDefinition": {
+                        "uuid": form_step_2_definition_uuid,
+                        "isReusable": False,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "city",
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 2",
+                                "internalName": "Form configuration 2",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 2",
+                                "internalName": "Form configuratie 2",
+                            },
+                        },
+                    },
+                },
+                {
+                    "slug": "step-3",
+                    "formDefinition": {
+                        "uuid": form_step_3_definition_uuid,
+                        "isReusable": False,
+                        "loginRequired": True,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "streetname",
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 3",
+                                "internalName": "Form configuration 3",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 3",
+                                "internalName": "Form configuratie 3",
+                            },
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "extra_var",
+                    "key": "extra_var",
+                    "source": FormVariableSources.user_defined,
+                    "formDefinition": None,
+                    "dataType": FormVariableDataTypes.string,
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+        variables = form.formvariable_set.order_by("source", "name")
+
+        self.assertEqual(variables.count(), 5)
+
+        # component variables, generated for the form step (based on the form defintion)
+        self.assertEqual(variables[0].name, "age")
+        self.assertEqual(variables[0].key, "age")
+        self.assertEqual(variables[0].source, FormVariableSources.component)
+        self.assertEqual(variables[0].form_definition.uuid, form_step_1_definition_uuid)
+        self.assertEqual(variables[0].data_type, FormVariableDataTypes.float)
+        self.assertEqual(variables[1].name, "city")
+        self.assertEqual(variables[1].key, "city")
+        self.assertEqual(variables[1].source, FormVariableSources.component)
+        self.assertEqual(variables[1].form_definition.uuid, form_step_2_definition_uuid)
+        self.assertEqual(variables[1].data_type, FormVariableDataTypes.string)
+        self.assertEqual(variables[2].name, "email")
+        self.assertEqual(variables[2].key, "email")
+        self.assertEqual(variables[2].source, FormVariableSources.component)
+        self.assertEqual(variables[2].form_definition.uuid, form_step_1_definition_uuid)
+        self.assertEqual(variables[2].data_type, FormVariableDataTypes.string)
+        self.assertEqual(variables[3].name, "streetname")
+        self.assertEqual(variables[3].key, "streetname")
+        self.assertEqual(variables[3].source, FormVariableSources.component)
+        self.assertEqual(variables[3].form_definition.uuid, form_step_3_definition_uuid)
+        self.assertEqual(variables[3].data_type, FormVariableDataTypes.string)
+
+        # user defined variable, from the request body
+        self.assertEqual(variables[4].name, "extra_var")
+        self.assertEqual(variables[4].key, "extra_var")
+        self.assertEqual(variables[4].source, FormVariableSources.user_defined)
+        self.assertIsNone(variables[4].form_definition)
+        self.assertEqual(variables[4].data_type, FormVariableDataTypes.string)
+
+    def test_component_variables_ignored(self):
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+
+        with self.subTest("Create form"):
+            data = {
+                "name": "Create form",
+                "slug": "create-form",
+                "steps": [
+                    {
+                        "slug": "step-1",
+                        "formDefinition": {
+                            "uuid": form_definition_uuid,
+                            "configuration": {
+                                "components": [
+                                    {
+                                        "type": "textfield",
+                                        "key": "component1",
+                                        "hidden": False,
+                                        "clearOnHide": True,
+                                    },
+                                ],
+                            },
+                            "translations": {
+                                "en": {
+                                    "name": "Form configuration 1",
+                                    "internalName": "Form configuration 1",
+                                },
+                                "nl": {
+                                    "name": "Form configuratie 1",
+                                    "internalName": "Form configuratie 1",
+                                },
+                            },
+                        },
+                    },
+                ],
+                "variables": [
+                    {
+                        "name": "extra_var",
+                        "key": "extra_var",
+                        "source": FormVariableSources.user_defined,
+                        "formDefinition": None,
+                        "dataType": FormVariableDataTypes.string,
+                    },
+                    {
+                        "name": "ignored",
+                        "key": "textfield",
+                        "source": FormVariableSources.component,
+                        "formDefinition": form_definition_uuid,
+                        "dataType": FormVariableDataTypes.string,
+                    },
+                ],
+            }
+            response = self.client.put(url, data=data)
+
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertEqual(Form.objects.count(), 1)
+            form = Form.objects.get()
+            variables = form.formvariable_set.order_by("name")
+            self.assertEqual(variables.count(), 2)
+
+            # component variable, generated for the form step (based on the form defintion)
+            self.assertEqual(variables[0].name, "component1")
+            self.assertEqual(variables[0].key, "component1")
+
+            # user defined variable, from the request body
+            self.assertEqual(variables[1].key, "extra_var")
+            self.assertEqual(variables[1].source, FormVariableSources.user_defined)
+
+        with self.subTest("Update form"):
+            data = {
+                "name": "Create form",
+                "slug": "create-form",
+                "steps": [
+                    {
+                        "slug": "step-1",
+                        "formDefinition": {
+                            "uuid": form_definition_uuid,
+                            "configuration": {
+                                "components": [
+                                    {
+                                        "type": "textfield",
+                                        "key": "component1",
+                                        "hidden": False,
+                                        "clearOnHide": True,
+                                    },
+                                ],
+                            },
+                            "translations": {
+                                "en": {
+                                    "name": "Form configuration 1",
+                                    "internalName": "Form configuration 1",
+                                },
+                                "nl": {
+                                    "name": "Form configuratie 1",
+                                    "internalName": "Form configuratie 1",
+                                },
+                            },
+                        },
+                    },
+                ],
+                "variables": [
+                    {
+                        "name": "extra_var",
+                        "key": "extra_var",
+                        "source": FormVariableSources.user_defined,
+                        "formDefinition": None,
+                        "dataType": FormVariableDataTypes.string,
+                    },
+                    {
+                        "name": "ignored",
+                        "key": "textfield",
+                        "source": FormVariableSources.component,
+                        "formDefinition": form_definition_uuid,
+                        "dataType": FormVariableDataTypes.string,
+                    },
+                ],
+            }
+            response = self.client.put(url, data=data)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(Form.objects.count(), 1)
+            form = Form.objects.get()
+            variables = form.formvariable_set.order_by("name")
+            self.assertEqual(variables.count(), 2)
+
+            # component variable, generated for the form step (based on the form defintion)
+            self.assertEqual(variables[0].name, "component1")
+            self.assertEqual(variables[0].key, "component1")
+
+            # user defined variable, from the request body
+            self.assertEqual(variables[1].key, "extra_var")
+            self.assertEqual(variables[1].source, FormVariableSources.user_defined)
+
+    def test_static_variable_collision(self):
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "extra_var",
+                    "key": "extra_var",
+                    "source": FormVariableSources.user_defined,
+                    "formDefinition": None,
+                    "dataType": FormVariableDataTypes.string,
+                },
+                {
+                    "name": "Static variable collision",
+                    "key": "form_name",
+                    "source": FormVariableSources.user_defined,
+                    "formDefinition": form_definition_uuid,
+                    "dataType": FormVariableDataTypes.string,
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Form.objects.count(), 0)
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        error_message = response_data["invalidParams"][0]
+        self.assertEqual(error_message["code"], "unique")
+        self.assertEqual(error_message["name"], "variables.1")
+        self.assertTrue("static variable keys" in error_message["reason"])
+
+    def test_component_variable_collision(self):
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "component1",
+                                    "hidden": False,
+                                    "clearOnHide": True,
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "extra_var",
+                    "key": "extra_var",
+                    "source": FormVariableSources.user_defined,
+                    "formDefinition": None,
+                    "dataType": FormVariableDataTypes.string,
+                },
+                {
+                    "name": "Component variable collision",
+                    "key": "component1",
+                    "source": FormVariableSources.user_defined,
+                    "formDefinition": form_definition_uuid,
+                    "dataType": FormVariableDataTypes.string,
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Form.objects.count(), 0)
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        error_message = response_data["invalidParams"][0]
+        self.assertEqual(error_message["code"], "unique")
+        self.assertEqual(error_message["name"], "variables.1")
+        self.assertTrue("component variable keys" in error_message["reason"])
+
+    def test_user_defined_all_prefill_fields(self):
+        customer_interactions_api = CustomerInteractionsAPIGroupConfigFactory.create()
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "customerProfile",
+                                    "key": "profile",
+                                    "name": "Profile",
+                                    "digitalAddressTypes": ["email"],
+                                    "shouldUpdateCustomerData": True,
+                                }
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "profile-prefill",
+                    "key": "profilePrefill",
+                    "formDefinition": None,
+                    "source": FormVariableSources.user_defined,
+                    "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                    "prefillAttribute": "demo",
+                    "prefillIdentifierRole": "main",
+                    "dataType": FormVariableDataTypes.string,
+                    "prefillOptions": {
+                        "customerInteractionsApiGroup": customer_interactions_api.identifier,
+                        "profileFormVariable": "profile",
+                    },
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Form.objects.count(), 0)
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        error_message = response_data["invalidParams"][0]
+        self.assertEqual(error_message["code"], "invalid")
+        self.assertEqual(error_message["name"], "variables.0")
+        self.assertEqual(
+            error_message["reason"],
+            _(
+                "Prefill plugin, attribute and options can not be specified at the same time."
+            ),
+        )
+
+    def test_user_defined_missing_prefill_fields(self):
+        customer_interactions_api = CustomerInteractionsAPIGroupConfigFactory.create()
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+
+        with self.subTest("Missing required prefillOptions or prefillAttribute fields"):
+            data = {
+                "name": "Create form",
+                "slug": "create-form",
+                "steps": [
+                    {
+                        "slug": "step-1",
+                        "formDefinition": {
+                            "uuid": form_definition_uuid,
+                            "configuration": {
+                                "components": [
+                                    {
+                                        "type": "customerProfile",
+                                        "key": "profile",
+                                        "name": "Profile",
+                                        "digitalAddressTypes": ["email"],
+                                        "shouldUpdateCustomerData": True,
+                                    }
+                                ],
+                            },
+                            "translations": {
+                                "en": {
+                                    "name": "Form configuration 1",
+                                    "internalName": "Form configuration 1",
+                                },
+                                "nl": {
+                                    "name": "Form configuratie 1",
+                                    "internalName": "Form configuratie 1",
+                                },
+                            },
+                        },
+                    },
+                ],
+                # Note the missing prefillAttribute or prefillOptions fields.
+                "variables": [
+                    {
+                        "name": "profile-prefill",
+                        "key": "profilePrefill",
+                        "formDefinition": None,
+                        "source": FormVariableSources.user_defined,
+                        "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                        "prefillIdentifierRole": "main",
+                        "dataType": FormVariableDataTypes.string,
+                    },
+                ],
+            }
+            response = self.client.put(url, data=data)
+            response_data = response.json()
+
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(Form.objects.count(), 0)
+            self.assertEqual(len(response_data["invalidParams"]), 1)
+            error_message = response_data["invalidParams"][0]
+            self.assertEqual(error_message["code"], "invalid")
+            self.assertEqual(error_message["name"], "variables.0")
+            self.assertEqual(
+                error_message["reason"],
+                _(
+                    "Prefill plugin must be specified with either prefill attribute or prefill options."
+                ),
+            )
+
+        with self.subTest("Missing required prefillPlugin field"):
+            data = {
+                "name": "Create form",
+                "slug": "create-form",
+                "steps": [
+                    {
+                        "slug": "step-1",
+                        "formDefinition": {
+                            "uuid": form_definition_uuid,
+                            "configuration": {
+                                "components": [
+                                    {
+                                        "type": "customerProfile",
+                                        "key": "profile",
+                                        "name": "Profile",
+                                        "digitalAddressTypes": ["email"],
+                                        "shouldUpdateCustomerData": True,
+                                    }
+                                ],
+                            },
+                            "translations": {
+                                "en": {
+                                    "name": "Form configuration 1",
+                                    "internalName": "Form configuration 1",
+                                },
+                                "nl": {
+                                    "name": "Form configuratie 1",
+                                    "internalName": "Form configuratie 1",
+                                },
+                            },
+                        },
+                    },
+                ],
+                # Note the missing prefillPlugin field.
+                "variables": [
+                    {
+                        "name": "profile-prefill",
+                        "key": "profilePrefill",
+                        "formDefinition": None,
+                        "source": FormVariableSources.user_defined,
+                        "prefillAttribute": "",
+                        "prefillIdentifierRole": "main",
+                        "prefillOptions": {
+                            "customerInteractionsApiGroup": customer_interactions_api.identifier,
+                            "profileFormVariable": "profile",
+                        },
+                        "dataType": FormVariableDataTypes.string,
+                    },
+                ],
+            }
+            response = self.client.put(url, data=data)
+            response_data = response.json()
+
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(Form.objects.count(), 0)
+            self.assertEqual(len(response_data["invalidParams"]), 1)
+            error_message = response_data["invalidParams"][0]
+            self.assertEqual(error_message["code"], "invalid")
+            self.assertEqual(error_message["name"], "variables.0")
+            self.assertEqual(
+                error_message["reason"],
+                _(
+                    "Prefill plugin must be specified with either prefill attribute or prefill options."
+                ),
+            )
+
+    def test_user_defined_profile_form_variable_incorrect_component_type(self):
+        customer_interactions_api = CustomerInteractionsAPIGroupConfigFactory.create()
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "customerProfile",
+                                    "key": "profile",
+                                    "name": "Profile",
+                                    "digitalAddressTypes": ["email"],
+                                    "shouldUpdateCustomerData": True,
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "textfield",
+                                    "name": "Text field",
+                                },
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "profile-prefill",
+                    "key": "profilePrefill",
+                    "formDefinition": None,
+                    "source": FormVariableSources.user_defined,
+                    "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                    "prefillAttribute": "",
+                    "prefillIdentifierRole": "main",
+                    "prefillOptions": {
+                        "customerInteractionsApiGroup": customer_interactions_api.identifier,
+                        "profileFormVariable": "textfield",
+                    },
+                    "dataType": FormVariableDataTypes.string,
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Form.objects.count(), 0)
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        error_message = response_data["invalidParams"][0]
+        self.assertEqual(error_message["code"], "invalid")
+        self.assertEqual(error_message["name"], "variables.0")
+        self.assertEqual(
+            error_message["reason"],
+            _(
+                "Only variables of 'profile' components are allowed as "
+                "profile form variable."
+            ),
+        )
+
+    def test_multiple_profile_variables_same_component(self):
+        customer_interactions_api = CustomerInteractionsAPIGroupConfigFactory.create()
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Update form",
+            "slug": "update-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "isReusable": False,
+                        "loginRequired": False,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "customerProfile",
+                                    "key": "profile",
+                                    "name": "Profile",
+                                    "digitalAddressTypes": ["email"],
+                                    "shouldUpdateCustomerData": True,
+                                }
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "profile-prefill",
+                    "key": "profilePrefill",
+                    "formDefinition": None,
+                    "source": FormVariableSources.user_defined,
+                    "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                    "prefillAttribute": "",
+                    "prefillIdentifierRole": "main",
+                    "prefillOptions": {
+                        "customerInteractionsApiGroup": customer_interactions_api.identifier,
+                        "profileFormVariable": "profile",
+                    },
+                    "dataType": FormVariableDataTypes.string,
+                },
+                {
+                    "name": "profile-prefill",
+                    "key": "profilePrefill2",
+                    "formDefinition": None,
+                    "source": FormVariableSources.user_defined,
+                    "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                    "prefillAttribute": "",
+                    "prefillIdentifierRole": "main",
+                    "prefillOptions": {
+                        "customerInteractionsApiGroup": customer_interactions_api.identifier,
+                        "profileFormVariable": "profile",
+                    },
+                    "dataType": FormVariableDataTypes.string,
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Form.objects.count(), 0)
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        error_message = response_data["invalidParams"][0]
+        self.assertEqual(error_message["code"], "unique")
+        self.assertEqual(error_message["name"], "variables.1")
+        self.assertEqual(
+            error_message["reason"],
+            _(
+                "This profile form variable is already used in another "
+                "communication preferences prefill plugin."
+            ),
+        )
+
+    def test_profile_form_variable_unknown_key(self):
+        customer_interactions_api = CustomerInteractionsAPIGroupConfigFactory.create()
+        form_definition_uuid = uuid4()
+        url = reverse(
+            "api:v3:form-detail",
+            kwargs={"uuid": "559812e7-9bff-4142-ab41-0cc8cf4e5e32"},
+        )
+        data = {
+            "name": "Create form",
+            "slug": "create-form",
+            "steps": [
+                {
+                    "slug": "step-1",
+                    "formDefinition": {
+                        "uuid": form_definition_uuid,
+                        "configuration": {
+                            "components": [
+                                {
+                                    "type": "customerProfile",
+                                    "key": "profile",
+                                    "name": "Profile",
+                                    "digitalAddressTypes": ["email"],
+                                    "shouldUpdateCustomerData": True,
+                                }
+                            ],
+                        },
+                        "translations": {
+                            "en": {
+                                "name": "Form configuration 1",
+                                "internalName": "Form configuration 1",
+                            },
+                            "nl": {
+                                "name": "Form configuratie 1",
+                                "internalName": "Form configuratie 1",
+                            },
+                        },
+                    },
+                },
+            ],
+            "variables": [
+                {
+                    "name": "profile-prefill",
+                    "key": "profilePrefill",
+                    "formDefinition": None,
+                    "source": FormVariableSources.user_defined,
+                    "prefillPlugin": COMMUNICATION_PREFERENCES_PLUGIN_IDENTIFIER,
+                    "prefillAttribute": "",
+                    "prefillIdentifierRole": "main",
+                    "prefillOptions": {
+                        "customerInteractionsApiGroup": customer_interactions_api.identifier,
+                        "profileFormVariable": "foobar",
+                    },
+                    "dataType": FormVariableDataTypes.string,
+                },
+            ],
+        }
+        response = self.client.put(url, data=data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Form.objects.count(), 0)
+        self.assertEqual(len(response_data["invalidParams"]), 1)
+        error_message = response_data["invalidParams"][0]
+        self.assertEqual(error_message["code"], "invalid")
+        self.assertEqual(error_message["name"], "variables.0")
+        self.assertEqual(
+            error_message["reason"],
+            "Unknown component key 'foobar' specified for profile form variable",
+        )
 
 
 class FormEndpointAccessTests(APITestCase):
