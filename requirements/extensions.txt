@@ -122,7 +122,7 @@ click-repl==0.3.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-cryptography==46.0.7
+cryptography==48.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -149,7 +149,7 @@ diff-match-patch==20241021
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-import-export
-django==5.2.13
+django==5.2.14
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -535,7 +535,7 @@ kombu==5.6.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-lxml==6.0.2
+lxml==6.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -852,7 +852,7 @@ pyjwt==2.12.1
     #   -r requirements/base.txt
     #   msal
     #   zgw-consumers
-pyopenssl==26.0.0
+pyopenssl==26.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -879,7 +879,7 @@ python-decouple==3.8
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   maykin-common
-python-dotenv==1.2.1
+python-dotenv==1.2.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

@@ -140,7 +140,7 @@ coverage==7.13.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==46.0.7
+cryptography==48.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -175,7 +175,7 @@ diff-match-patch==20241021
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-import-export
-django==5.2.13
+django==5.2.14
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -618,7 +618,7 @@ kombu==5.6.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   celery
-lxml==6.0.2
+lxml==6.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -950,7 +950,7 @@ pyjwt==2.12.1
     #   -r requirements/ci.txt
     #   msal
     #   zgw-consumers
-pyopenssl==26.0.0
+pyopenssl==26.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -982,7 +982,7 @@ python-decouple==3.8
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-common
-python-dotenv==1.2.1
+python-dotenv==1.2.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

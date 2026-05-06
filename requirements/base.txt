@@ -72,7 +72,7 @@ click-plugins==1.1.1.2
     # via celery
 click-repl==0.3.0
     # via celery
-cryptography==46.0.7
+cryptography==48.0.0
     # via
     #   django-digid-eherkenning
     #   django-simple-certmanager
@@ -89,7 +89,7 @@ defusedxml==0.7.1
     # via -r requirements/base.in
 diff-match-patch==20241021
     # via django-import-export
-django==5.2.13
+django==5.2.14
     # via
     #   -r requirements/base.in
     #   django-admin-index
@@ -329,7 +329,7 @@ jsonschema-specifications==2025.9.1
     #   jsonschema
 kombu==5.6.2
     # via celery
-lxml==6.0.2
+lxml==6.1.0
     # via
     #   -r requirements/base.in
     #   django-camunda
@@ -515,7 +515,7 @@ pyjwt==2.12.1
     # via
     #   msal
     #   zgw-consumers
-pyopenssl==26.0.0
+pyopenssl==26.2.0
     # via webauthn
 pyphen==0.17.2
     # via weasyprint
@@ -531,7 +531,7 @@ python-decouple==3.8
     # via
     #   -r requirements/base.in
     #   maykin-common
-python-dotenv==1.2.1
+python-dotenv==1.2.2
     # via
     #   -r requirements/base.in
     #   pydantic-settings
