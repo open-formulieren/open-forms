@@ -8,10 +8,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator, RegexVa
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.utils.html import format_html
-from django.utils.translation import gettext as _
+from django.utils.translation import get_language, gettext as _
 
 import structlog
-from glom import glom
+from glom import Path, glom
 from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
 
@@ -574,10 +574,20 @@ class AddressValueSerializer(serializers.Serializer):
             self.component, "openForms.components.city.validate.pattern", default=""
         ):
             if not re.fullmatch(city_regex, value):
-                raise serializers.ValidationError(
-                    _("City does not match the specified pattern."),
-                    code="invalid",
+                language_code = get_language().split("-")[0]
+                error_message = glom(
+                    self.component,
+                    Path(
+                        "openForms",
+                        "components",
+                        "city",
+                        "translatedErrors",
+                        language_code,
+                        "pattern",
+                    ),
+                    default=_("City does not match the specified pattern."),
                 )
+                raise serializers.ValidationError(error_message, code="invalid")
         return value
 
     def validate_postcode(self, value: str) -> str:
@@ -586,10 +596,20 @@ class AddressValueSerializer(serializers.Serializer):
             self.component, "openForms.components.postcode.validate.pattern", default=""
         ):
             if not re.fullmatch(postcode_regex, value):
-                raise serializers.ValidationError(
-                    _("Postcode does not match the specified pattern."),
-                    code="invalid",
+                language_code = get_language().split("-")[0]
+                error_message = glom(
+                    self.component,
+                    Path(
+                        "openForms",
+                        "components",
+                        "postcode",
+                        "translatedErrors",
+                        language_code,
+                        "pattern",
+                    ),
+                    default=_("Postcode does not match the specified pattern."),
                 )
+                raise serializers.ValidationError(error_message, code="invalid")
         return value.upper().replace(" ", "")
 
     def validate(self, attrs):

@@ -287,7 +287,11 @@ class AddressNLValidationTests(SimpleTestCase):
                 "components": {
                     "postcode": {
                         "validate": {"pattern": "1017 [A-Za-z]{2}"},
-                        "translatedErrors": {},
+                        "translatedErrors": {
+                            "en": {
+                                "pattern": "Custom postcode error",
+                            }
+                        },
                     }
                 }
             },
@@ -307,7 +311,9 @@ class AddressNLValidationTests(SimpleTestCase):
         is_valid, errors = validate_formio_data(component, data)
 
         self.assertFalse(is_valid)
-        self.assertEqual(errors["addressNl"]["postcode"][0].code, "invalid")
+        error_detail = errors["addressNl"]["postcode"][0]
+        self.assertEqual(error_detail.code, "invalid")
+        self.assertEqual(str(error_detail), "Custom postcode error")
 
     def test_addressNL_custom_city_validation_fail(self):
         component: AddressNLComponent = {
@@ -319,7 +325,11 @@ class AddressNLValidationTests(SimpleTestCase):
                 "components": {
                     "city": {
                         "validate": {"pattern": "Amsterdam"},
-                        "translatedErrors": {},
+                        "translatedErrors": {
+                            "en": {
+                                "pattern": "Custom city error",
+                            }
+                        },
                     }
                 }
             },
@@ -339,7 +349,9 @@ class AddressNLValidationTests(SimpleTestCase):
         is_valid, errors = validate_formio_data(component, data)
 
         self.assertFalse(is_valid)
-        self.assertEqual(errors["addressNl"]["city"][0].code, "invalid")
+        error_detail = errors["addressNl"]["city"][0]
+        self.assertEqual(error_detail.code, "invalid")
+        self.assertEqual(str(error_detail), "Custom city error")
 
     def test_addressNL_custom_postcode_and_city_validation_success(self):
         component: AddressNLComponent = {
