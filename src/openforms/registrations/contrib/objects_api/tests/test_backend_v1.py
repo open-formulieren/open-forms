@@ -500,6 +500,8 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         # set up some file upload components.
         submission = SubmissionFactory.from_components(
             [],
+            form__name="Public form name",
+            form__internal_name="Internal form name",
             submitted_data={},
             language_code="en",
             completed=True,
@@ -563,6 +565,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
             )
             self.assertEqual(pdf_document["vertrouwelijkheidaanduiding"], "openbaar")
+            self.assertEqual(pdf_document["titel"], "Public form name")
 
         with self.subTest("Document creation (attachment 1)"):
             self.assertEqual(attachment_document_1["bronorganisatie"], "000000000")
