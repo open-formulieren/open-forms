@@ -3436,8 +3436,6 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "zaaktype": "",
             "informatieobjecttype": "",
             "organisatie_rsin": "000000000",
-            # empty value should be ignored, use the VA from the zaaktype
-            "zaak_vertrouwelijkheidaanduiding": "",
             "objects_api_group": None,
             "product_url": "",
             "partners_roltype": "",
