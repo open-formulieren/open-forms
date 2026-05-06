@@ -14,6 +14,42 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.1 (2026-05-06)
+==================
+
+Regular bugfix release.
+
+* [:backend:`6171`] Fixed missing required XML-attributes in StUF-ZDS messages.
+* [:backend:`6148`] Fixed crash in JSON schema generation when there's a fieldset inside
+  an editgrid.
+* [:backend:`6139`] Fixed wrong entity type in StUF-ZDS element for the cosigner details.
+* [:backend:`6181`, :backend:`5134`] Fixed simple conditionals ("frontend logic")
+  comparison not interpreting "empty" file upload fields correctly. This patch is a
+  workaround for a more complex structural fix.
+* [:backend:`6128`] Fix dynamic radio/selectboxes/select options with empty labels being
+  rendered. This patch is a workaround for a more complex structural fix.
+* Fixed missing structlog context propagation across threads, causing prefill (audit)
+  logs not to be saved in the database.
+* Upgraded to SDK 3.5.2, which includes a number of fixes in the new renderer - see the
+  SDK release notes for details.
+* [:backend:`6199`] Fixed crash in outgoing requests when outgoing request logging is
+  enabled for responses that are GZIP-compressed and/or use chunked transfer encoding.
+* Added some workarounds for StUF-ZDS when using Onegov zaaksysteem:
+
+  - [:backend:`6230`] Expose the submission ``completed_on`` timestamp as registration
+    variable.
+  - [:backend:`5951`] Support adding ``extraElementen`` mappings at the initatior level.
+  - [:backend:`6242`] Added option to comma-separate serialize ``extraElement`` values
+    for array-type data.
+
+* [:backend:`6213`] Fixed a crash when saving a form that only has metadata without any
+  steps.
+* [:backend:`6057`] Fixed missing configuration that caused ``application/hal+json``
+  responses not to be saved to the outgoing request logs.
+* [:backend:`6091`] Fixed Objects API and ZGW APIs registration backends using the
+  form's internal name for related documents like the confirmation PDF.
+* Applied latest available security patches of the libraries that we use.
+
 3.4.9 (2026-04-28)
 ==================
 
