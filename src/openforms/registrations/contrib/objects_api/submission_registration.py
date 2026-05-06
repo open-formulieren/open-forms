@@ -140,7 +140,7 @@ def register_submission_pdf(
     submission_report = SubmissionReport.objects.get(submission=submission)
     report_document = create_report_document(
         client=documents_client,
-        name=submission.form.admin_name,
+        name=submission.form.name,
         submission_report=submission_report,
         options={
             "informatieobjecttype": document_type,
@@ -171,7 +171,7 @@ def register_submission_csv(
 
     submission_csv_document = create_csv_document(
         client=documents_client,
-        name=f"{submission.form.admin_name} (csv)",
+        name=f"{submission.form.name} (csv)",
         csv_data=submission_csv,
         options={
             "informatieobjecttype": document_type,
@@ -220,7 +220,7 @@ def register_submission_attachment(
 
     attachment_document = create_attachment_document(
         client=documents_client,
-        name=submission.form.admin_name,
+        name=submission.form.name,
         submission_attachment=attachment,
         options=document_options,
         language=attachment.submission_step.submission.language_code,  # assume same as submission
