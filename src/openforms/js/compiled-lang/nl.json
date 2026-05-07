@@ -1948,12 +1948,6 @@
       "value": "Dit veld is verplicht."
     }
   ],
-  "DqG0YS": [
-    {
-      "type": 0,
-      "value": "Inschakelen vanaf stap:"
-    }
-  ],
   "DxGKNm": [
     {
       "type": 0,
@@ -2478,20 +2472,6 @@
       "value": "Je staat op het punt om het aantal gemaakte inzendingen terug op nul te zetten. Dit kan niet ongedaan gemaakt worden. Ben je zeker dat je door wil gaan?"
     }
   ],
-  "HuAm1K": [
-    {
-      "type": 0,
-      "value": "en de stap \""
-    },
-    {
-      "type": 1,
-      "value": "step"
-    },
-    {
-      "type": 0,
-      "value": "\" is bereikt"
-    }
-  ],
   "I0bgsg": [
     {
       "type": 0,
@@ -2782,12 +2762,6 @@
       "value": " instellingen bijwerken?"
     }
   ],
-  "KYTAJZ": [
-    {
-      "type": 0,
-      "value": "(actief binnen elke stap)"
-    }
-  ],
   "Kdgpxf": [
     {
       "type": 0,
@@ -2936,12 +2910,6 @@
     {
       "type": 0,
       "value": "Plugin-instellingen: e-mail"
-    }
-  ],
-  "LiXrER": [
-    {
-      "type": 0,
-      "value": "De gekozen trigger-stap bestaat niet (meer) in het formulier. Gelieve deze te wijzigen."
     }
   ],
   "LkrFow": [
@@ -3106,12 +3074,6 @@
     {
       "type": 0,
       "value": "Zaaktype-API-resource URL in de Catalogi-API."
-    }
-  ],
-  "NqShTs": [
-    {
-      "type": 0,
-      "value": "Experimentele functionaliteit"
     }
   ],
   "NrF5vy": [
@@ -3770,12 +3732,6 @@
     {
       "type": 0,
       "value": "Zorg ervoor dat het pad niet met een schuine streep ('/') begint."
-    }
-  ],
-  "TPy506": [
-    {
-      "type": 0,
-      "value": "Gebruik nieuwe logica-evaluatie"
     }
   ],
   "TQv+8T": [
@@ -4663,12 +4619,6 @@
       "value": "De DMN-instellingen zijn niet geldig."
     }
   ],
-  "aoNZfg": [
-    {
-      "type": 0,
-      "value": "Voordat je de nieuwe logica-evaluatie kunt inschakelen, moet je de configuratie ‘Inschakelen vanaf stap’ uit je logicaregels verwijderen."
-    }
-  ],
   "aqYeqv": [
     {
       "type": 0,
@@ -5203,12 +5153,6 @@
     {
       "type": 0,
       "value": "Bijlagen"
-    }
-  ],
-  "eLDxD5": [
-    {
-      "type": 0,
-      "value": "Geavanceerde opties"
     }
   ],
   "eLIclD": [
@@ -6265,12 +6209,6 @@
     {
       "type": 0,
       "value": "Partner 1"
-    }
-  ],
-  "lyU7fP": [
-    {
-      "type": 0,
-      "value": "Als je dit inschakelt, dan wordt de formulierlogica geanalyseerd en automatisch gesorteerd op basis van hun onderlinge afhankelijkheden (dit gebeurt wanneer je het formulier opslaat). Elke regel wordt automatisch toegewezen aan een of meer stappen waarop deze zal worden uitgevoerd. Daarnaast zullen ook andere snelheidsverbeteringen toegepast worden waar mogelijk."
     }
   ],
   "m/NVtu": [
