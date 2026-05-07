@@ -82,7 +82,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,  # either htis field or informatieobjecttype (legacy) must be provided
         label=_("Document type description"),
         help_text=_(
-            "The document type will be retrived in the specified catalogue. The version "
+            "The document type will be retrieved in the specified catalogue. The version "
             "will automatically be selected based on the submission completion "
             "timestamp. When you specify this field, you MUST also specify the case "
             "type via its identification. Only document types related to the case type "
