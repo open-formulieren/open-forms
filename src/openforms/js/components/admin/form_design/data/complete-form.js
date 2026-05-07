@@ -245,8 +245,6 @@ const saveLogic = async (state, csrftoken) => {
   let newState = produce(state, draft => {
     for (const rule of draft.logicRules) {
       rule.form = formUrl;
-      // fix the trigger from step reference
-      rule.triggerFromStep = getStepReference(stepsByGeneratedId, rule.triggerFromStep);
       // fix the actions that do something with the step(s)
       for (const action of rule.actions) {
         action.formStep = getStepReference(stepsByGeneratedId, action.formStep);
