@@ -3549,7 +3549,7 @@ msgstr "Geeft aan hoe sessies worden opgeschoond na de bewaartermijn."
 #: openforms/config/models/config.py:522 openforms/forms/models/form.py:363
 #: openforms/forms/models/form.py:373
 msgid "errored submission removal limit"
-msgstr "bewaartermijn voor niet voltooide inzendingen inzendingen"
+msgstr "bewaartermijn voor niet voltooide inzendingen"
 
 #: openforms/config/models/config.py:526
 msgid "Amount of days errored submissions will remain before being removed"
