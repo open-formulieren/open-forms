@@ -526,7 +526,6 @@ const FormConfigurationFields = ({
   onAuthPluginChange,
   availableCategories,
   formStepsAmount,
-  hasTriggerFromStep = false,
 }) => {
   const {
     uuid,
@@ -766,28 +765,6 @@ const FormConfigurationFields = ({
         askStatementOfTruth={askStatementOfTruth}
         onChange={onChange}
       />
-
-      <Fieldset
-        title={
-          <FormattedMessage
-            description="Form feature flags fieldset title"
-            defaultMessage="Experimental features"
-          />
-        }
-        collapsible
-        initialCollapsed
-      >
-        {hasTriggerFromStep && (
-          <FormRow>
-            <p>
-              <FormattedMessage
-                description="New logic disabled reason explanation"
-                defaultMessage="Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules."
-              />
-            </p>
-          </FormRow>
-        )}
-      </Fieldset>
     </>
   );
 };
@@ -827,7 +804,6 @@ FormConfigurationFields.propTypes = {
   selectedAuthPlugins: PropTypes.array.isRequired,
   onAuthPluginChange: PropTypes.func.isRequired,
   formStepsAmount: PropTypes.number.isRequired,
-  hasTriggerFromStep: PropTypes.bool,
 };
 
 export default FormConfigurationFields;

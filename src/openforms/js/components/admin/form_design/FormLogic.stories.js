@@ -224,15 +224,6 @@ export const FullFunctionality = {
     availableFormVariables: AVAILABLE_FORM_VARIABLES,
     availableFormSteps: AVAILABLE_FORM_STEPS,
   },
-
-  play: async ({canvasElement}) => {
-    const canvas = within(canvasElement);
-
-    const icons = await canvas.findAllByTitle('Geavanceerde opties');
-    expect(icons[0]).toBeVisible();
-    await userEvent.click(icons[0]);
-    expect(canvas.getByText('Inschakelen vanaf stap:')).toBeVisible();
-  },
 };
 
 export const DeletingOneOfMultipleActionsInSameTrigger = {
