@@ -94,7 +94,6 @@ drf-spectacular
 # WSGI servers & monitoring - production oriented
 uwsgi
 sentry-sdk[django]  # error monitoring
-elastic-apm  # Elastic APM integration
 flower # task monitoring
 
 # Common Ground integration

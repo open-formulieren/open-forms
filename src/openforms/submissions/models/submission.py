@@ -16,7 +16,6 @@ from django.utils.safestring import SafeString
 from django.utils.timezone import localtime
 from django.utils.translation import get_language, gettext, gettext_lazy as _
 
-import elasticapm
 import structlog
 from django_jsonform.models.fields import ArrayField
 from furl import furl
@@ -580,7 +579,6 @@ class Submission(models.Model):
             "span.action": "loading",
         },
     )
-    @elasticapm.capture_span(span_type="app.data.loading")
     def load_submission_value_variables_state(
         self, refresh: bool = False
     ) -> SubmissionValueVariablesState:
@@ -601,7 +599,6 @@ class Submission(models.Model):
             "span.action": "loading",
         },
     )
-    @elasticapm.capture_span(span_type="app.data.loading")
     def load_execution_state(self, refresh: bool = False) -> SubmissionState:
         """
         Retrieve the current execution state of steps from the database.

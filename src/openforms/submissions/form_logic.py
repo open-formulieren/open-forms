@@ -3,7 +3,6 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
-import elasticapm
 from opentelemetry import trace
 
 from openforms.formio.service import (
@@ -32,7 +31,6 @@ tracer = trace.get_tracer("openforms.submissions.form_logic")
         "span.action": "logic",
     },
 )
-@elasticapm.capture_span(span_type="app.submissions.logic")
 def evaluate_form_logic(
     submission: Submission,
     step: SubmissionStep,
@@ -143,9 +141,6 @@ def evaluate_form_logic(
                 "span.subtype": "submissions",
                 "span.action": "logic",
             },
-        ),
-        elasticapm.capture_span(
-            name="collect_logic_operations", span_type="app.submissions.logic"
         ),
     ):
         for operation in iter_evaluate_rules(
