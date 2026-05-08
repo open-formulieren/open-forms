@@ -129,6 +129,12 @@
       "value": "Set the text of the 'Save row' button."
     }
   ],
+  "/xFb1n": [
+    {
+      "type": 0,
+      "value": "The 'domein' attribute for the Catalogus resource in the Catalogi API."
+    }
+  ],
   "/yDnA3": [
     {
       "type": 0,
@@ -273,6 +279,12 @@
       "value": "Regular Expression Pattern"
     }
   ],
+  "1andg+": [
+    {
+      "type": 0,
+      "value": "The 'rsin' attribute for the Catalogus resource in the Catalogi API."
+    }
+  ],
   "1fD+K4": [
     {
       "type": 0,
@@ -345,6 +357,12 @@
     {
       "type": 0,
       "value": "Is deleted"
+    }
+  ],
+  "2KY/BC": [
+    {
+      "type": 0,
+      "value": "Specify the document type to use for the file uploads when sending them to the Documents API. The direct URL references are replaced with references to the catalogue and document type description."
     }
   ],
   "2Lg8Vc": [
@@ -525,6 +543,12 @@
     {
       "type": 0,
       "value": "CSS class"
+    }
+  ],
+  "3leP68": [
+    {
+      "type": 0,
+      "value": "Document type"
     }
   ],
   "3z1hhJ": [
@@ -1781,6 +1805,12 @@
       "value": "Other options"
     }
   ],
+  "DE7U4q": [
+    {
+      "type": 0,
+      "value": "The RSIN must consist of 9 numbers."
+    }
+  ],
   "DEAqyQ": [
     {
       "type": 0,
@@ -2553,6 +2583,12 @@
     {
       "type": 0,
       "value": "Are you sure you want to delete this item?"
+    }
+  ],
+  "J1zTQz": [
+    {
+      "type": 0,
+      "value": "Document type description"
     }
   ],
   "J5EZDj": [
@@ -4693,6 +4729,12 @@
       "value": "backendName"
     }
   ],
+  "bh2ky5": [
+    {
+      "type": 0,
+      "value": "Catalogus domain"
+    }
+  ],
   "bjIQDR": [
     {
       "type": 0,
@@ -4739,6 +4781,12 @@
     {
       "type": 0,
       "value": "Build a JsonLogic expression using raw JSON."
+    }
+  ],
+  "c770ER": [
+    {
+      "type": 0,
+      "value": "Catalogus RSIN"
     }
   ],
   "cAC5kL": [
@@ -4893,6 +4941,12 @@
       ],
       "type": 8,
       "value": "duplicatedKeys"
+    }
+  ],
+  "ce0Nz4": [
+    {
+      "type": 0,
+      "value": "You must specify a document type description when a catalogue is configured."
     }
   ],
   "ce1N0I": [
@@ -5529,6 +5583,12 @@
     {
       "type": 0,
       "value": "Minimal levels of assurance"
+    }
+  ],
+  "hAc9vQ": [
+    {
+      "type": 0,
+      "value": "Legacy"
     }
   ],
   "hBxKbW": [
@@ -6455,6 +6515,12 @@
       "value": "Which merchant should be used for payments related to this form."
     }
   ],
+  "oiB6Kg": [
+    {
+      "type": 0,
+      "value": "The direct URL configuration is scheduled for removal. If both the URL and the fields above are configured, the new configuration is used."
+    }
+  ],
   "oqv4fM": [
     {
       "type": 0,
@@ -7097,6 +7163,12 @@
       "value": "Derive address"
     }
   ],
+  "tzAOAm": [
+    {
+      "type": 0,
+      "value": "You must specify both domain and RSIN."
+    }
+  ],
   "u+IP17": [
     {
       "type": 0,
@@ -7143,6 +7215,12 @@
     {
       "type": 0,
       "value": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
+  "uOtaSP": [
+    {
+      "type": 0,
+      "value": "The document type will be retrieved in the specified catalogue. The version will automatically be selected based on the submission completion timestamp. When used with ZGW APIs, ensure that the document type belongs to the specified case type!"
     }
   ],
   "uUf7cu": [
@@ -7381,6 +7459,12 @@
       "value": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK."
     }
   ],
+  "wqhr+0": [
+    {
+      "type": 0,
+      "value": "Specify either none or all three of the fields below to configure the document type to use."
+    }
+  ],
   "wrdDVu": [
     {
       "type": 0,
@@ -7445,6 +7529,12 @@
     {
       "type": 0,
       "value": "Translation enabled"
+    }
+  ],
+  "xUt2+r": [
+    {
+      "type": 0,
+      "value": "You must specify both domain and RSIN."
     }
   ],
   "xcp+LU": [

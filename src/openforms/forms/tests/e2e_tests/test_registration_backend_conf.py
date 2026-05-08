@@ -2,6 +2,7 @@ from django.urls import resolve, reverse
 
 from asgiref.sync import sync_to_async
 from furl import furl
+from typing_extensions import deprecated
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
@@ -19,6 +20,9 @@ from ..factories import FormFactory
 from .helpers import close_modal, open_component_options_modal, phase
 
 
+@deprecated(
+    "Dropdown document type selection in file registration tab is being phased out."
+)
 class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
     async def test_configuring_zgw_api_group(self):
         """
@@ -118,6 +122,7 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
 
                 await open_component_options_modal(page, label="File upload test")
                 await modal.get_by_role("tab", name="Registration").click()
+                await modal.get_by_role("button", name="Legacy").click()
                 await close_modal(page, "Save")
 
             with phase("Update the ZGW API group configured"):
@@ -136,6 +141,7 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
 
                 await open_component_options_modal(page, label="File upload test")
                 await modal.get_by_role("tab", name="Registration").click()
+                await modal.get_by_role("button", name="Legacy").click()
                 await close_modal(page, "Save")
 
         self.assertEqual(len(requests_to_endpoint), 2)
@@ -248,6 +254,7 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
 
                 await open_component_options_modal(page, label="File upload test")
                 await modal.get_by_role("tab", name="Registration").click()
+                await modal.get_by_role("button", name="Legacy").click()
                 await close_modal(page, "Save")
 
             with phase("Update the Objects API group configured"):
@@ -269,6 +276,7 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
 
                 await open_component_options_modal(page, label="File upload test")
                 await modal.get_by_role("tab", name="Registration").click()
+                await modal.get_by_role("button", name="Legacy").click()
                 await close_modal(page, "Save")
 
         self.assertEqual(len(requests_to_endpoint), 2)
