@@ -627,7 +627,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     )
                     _catalogue = document_type_configuration.get("catalogue", {})
                     if (
-                        document_type_description
+                        _document_type_description
                         and (_catalogue_domain := _catalogue.get("domain"))
                         and (_catalogue_rsin := _catalogue.get("rsin"))
                     ):
