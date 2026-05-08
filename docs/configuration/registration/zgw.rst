@@ -112,7 +112,7 @@ Configuration
    * **Objects API - Objecttype**: Fill in the default URL of the ProductAanvraag OBJECTTYPE in the Objecttypes API. *For example* ``https://example.com/api/v1/objecttypes``
    * **Objects API - Objecttype version**: Fill in the default version of the OBJECTTYPE in the Objecttypes API. *For example:* ``1``
 
-#. You can map a form variable with a Zaak property (eigenschap) by clicking the related button (*Map variables to case properties*). 
+#. You can map a form variable with a Zaak property (eigenschap) by clicking the related button (*Map variables to case properties*).
    A modal will open where you have to choose the variable along with providing a valid property name. Both fields must be provided in order to create a mapping.
 
 #. Click **Opslaan**
@@ -133,6 +133,12 @@ In each form, the global defaults can be overwritten and additional properties c
      when creating a role for an employee filling in a form for a citizen or company.
      For example: ``some description``.
 
+The following configuration options can can use the Django template syntax:
+
+- case description
+- case explanation
+
+For more information on how to use this syntax and which variables/expressions are available, see the section :ref:`zgw_api_registratie`.
 
 Technical
 =========

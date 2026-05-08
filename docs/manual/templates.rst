@@ -810,6 +810,52 @@ Zie :ref:`manual_forms_variables_auth_context` voor een voorbeeld van de structu
 een overzicht van alle "onderdelen" waaruit de ``auth_context`` variabele bestaat. Je
 kan deze allemaal individueel gebruiken in de sjablonen.
 
+.. _zgw_api_registratie:
+
+ZGW API registratie
+===================
+
+De ZGW API-registratiebackend maakt een zaak aan in de geconfigureerde Zaken API met de gegevens van een
+inzending. Een verkort voorbeeld van de JSON die naar de Zaken API wordt gestuurd:
+
+.. code:: json
+
+    {
+      "zaaktype": "http://catalogi-example.nl/catalogi/api/v1/zaaktypen/123",
+      "bronorganisatie": "000000000",
+      "verantwoordelijkeOrganisatie": "000000000",
+      "registratiedatum": "2026-05-08",
+      "startdatum": "2026-05-08",
+      "omschrijving": "Evenement vergunning",
+      "toelichting": "Organisatie van een buurtfeest met muziek",
+      // overige velden
+    }
+
+Je kunt de volgende kenmerken in sjablonen instellen:
+
+- ``omschrijving``
+- ``toelichting``
+
+.. note ::
+
+  Net als bij de Objecten API registratie moeten de variabelen worden gebruikt met het voorvoegsel ``variables.``.
+  Gebruik bijvoorbeeld in plaats van ``{{ voornaam }}`` de notatie ``{{ variables.voornaam }}``.
+  Dit zal in de toekomst voor alle sjablonen gelden.
+
+Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor het
+sjabloon. Als een variabele niet beschikbaar maar wel aanwezig is in het
+sjabloon, dan wordt deze niet getoond.
+
+======================================= ===========================================================================
+Variabele                               Beschrijving
+======================================= ===========================================================================
+``{{ form_name }}``                     De naam van het formulier.
+``{{ productaanvraag_type }}``          Het productaanvraag type.
+``{{ submission.public_reference }}``   De publieke referentie van de inzending.
+``{{ submission.kenmerk }}``            Het interne ID van de inzending (UUID).
+``{{ submission.language_code }}``      De taal waarin de gebruiker het formulier invulde, bijvoorbeeld 'nl' of 'en'.
+======================================= ===========================================================================
+
 Beperkingen en bekende problemen
 ================================
 
