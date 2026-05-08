@@ -249,6 +249,11 @@
     "description": "JSON editor: 'configure' header label",
     "originalDefault": "Configure"
   },
+  "4P5kwG": {
+    "defaultMessage": "Case explanation",
+    "description": "ZGW APIs registration options 'zaakToelichting' label",
+    "originalDefault": "Case explanation"
+  },
   "4PqTET": {
     "defaultMessage": "Variant",
     "description": "Worldline payment options 'variant' label",
@@ -539,6 +544,11 @@
     "description": "Generic admin error message",
     "originalDefault": "Sorry! Something unexpected went wrong.<br></br>Contact your technical administrator to investigate, or perhaps more information is available in the <link>outgoing request logs</link>."
   },
+  "9mm55I": {
+    "defaultMessage": "Description of the case. You can use the expressions like '{{ form_name }}' or other variables here. The resolved string is limited to 80 chars. If empty, the form name is used.",
+    "description": "ZGW APIs registration options 'zaakOmschrijving' help text",
+    "originalDefault": "Description of the case. You can use the expressions like '{{ form_name }}' or other variables here. The resolved string is limited to 80 chars. If empty, the form name is used."
+  },
   "9y3/ek": {
     "defaultMessage": "Confirm",
     "description": "JSON editor: confirm edited variable definition",
@@ -663,6 +673,11 @@
     "defaultMessage": "Data extraction",
     "description": "Service fetch configuration modal data extraction fieldset title",
     "originalDefault": "Data extraction"
+  },
+  "C0DzKH": {
+    "defaultMessage": "Case description",
+    "description": "ZGW APIs registration options 'zaakOmschrijving' label",
+    "originalDefault": "Case description"
   },
   "C2FSDV": {
     "defaultMessage": "Documents produced in the form submission are registered with this document type, unless more fine grained configuration is available. Only document types available on the selected case type are shown.",
@@ -2828,6 +2843,11 @@
     "defaultMessage": "The path of the folder where folders containing Open-Forms related documents will be created. You can use the expressions <code>'{{' year '}}'</code>, <code>'{{' month '}}'</code> and <code>'{{' day '}}'</code>. The path must start with <code>/</code>.",
     "description": "MS Graph registration options 'folderPath' help text",
     "originalDefault": "The path of the folder where folders containing Open-Forms related documents will be created. You can use the expressions <code>'{{' year '}}'</code>, <code>'{{' month '}}'</code> and <code>'{{' day '}}'</code>. The path must start with <code>/</code>."
+  },
+  "lTJ2Hi": {
+    "defaultMessage": "Explanation of the case. You can use the expressions like '{{ form_name }}' or other variables here.",
+    "description": "ZGW APIs registration options 'zaakToelichting' help text",
+    "originalDefault": "Explanation of the case. You can use the expressions like '{{ form_name }}' or other variables here."
   },
   "lZw4g0": {
     "defaultMessage": "Which template variant should be used for payments related to this form. This can be found under the \"Variant name\" field in the \"Branding\" section.",

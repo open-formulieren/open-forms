@@ -599,6 +599,12 @@
       "value": " bestanden om te uploaden."
     }
   ],
+  "4P5kwG": [
+    {
+      "type": 0,
+      "value": "Toelichting"
+    }
+  ],
   "4PqTET": [
     {
       "type": 0,
@@ -1273,6 +1279,12 @@
       "value": "Aftrekken"
     }
   ],
+  "9mm55I": [
+    {
+      "type": 0,
+      "value": "Omschrijving van de zaak. Je kunt hier expressies zoals {{ form_name }} of andere variabelen gebruiken. De uiteindelijke tekst is beperkt tot 80 tekens. Als dit veld leeg is, wordt de naam van het formulier gebruikt."
+    }
+  ],
   "9oJuUL": [
     {
       "type": 0,
@@ -1525,6 +1537,12 @@
     {
       "type": 0,
       "value": "Gegevensverwerking"
+    }
+  ],
+  "C0DzKH": [
+    {
+      "type": 0,
+      "value": "Omschrijving"
     }
   ],
   "C2FSDV": [
@@ -6087,6 +6105,12 @@
     {
       "type": 0,
       "value": "Authenticatiemethode"
+    }
+  ],
+  "lTJ2Hi": [
+    {
+      "type": 0,
+      "value": "Toelichting bij de zaak. Je kunt hier expressies gebruiken zoals {{ form_name }} of andere variabelen."
     }
   ],
   "lVEpR9": [
