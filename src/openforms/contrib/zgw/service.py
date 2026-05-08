@@ -4,6 +4,15 @@ from typing import Literal, NotRequired, TypedDict
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
 
 from .clients.documenten import DocumentenClient
+from .resolvers import DocumentTypeResolver
+
+__all__ = [
+    "DocumentOptions",
+    "DocumentTypeResolver",
+    "create_report_document",
+    "create_csv_document",
+    "create_attachment_document",
+]
 
 type SupportedLanguage = Literal["nl", "en"]
 
