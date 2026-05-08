@@ -14,6 +14,31 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.2 (2026-05-xx)
+==================
+
+Regular bugfix release.
+
+.. note::
+
+    Because the legacy logic evaluation will be removed in Open Forms 4.0, we have added some
+    additional tooling to convert all forms to the new logic evaluation.
+
+    For each form, the logic rules will be reordered and any 'trigger from step' setting will be
+    removed. Note that this action cannot be easily reverted, so for large forms it is recommended to
+    create a copy of the form first, and enable the new logic evaluation feature flag manually
+    before running this command.
+
+    Any forms which contain rules with cycles will not be converted, and need to be resolved manually.
+    If such forms exist, the output of this command will contain a list of relevant form details.
+
+    In an app container, execute:
+
+    .. code-block:: bash
+
+        python /app/src/manage.py enable_new_logic_evaluation_for_all_forms
+
+
 3.5.1 (2026-05-06)
 ==================
 
@@ -130,7 +155,7 @@ removing the old renderer and Textfield address autofill support.
 
 **Legacy logic evaluation**
 
-The old logic evaluation will be removed in Open Forms 4.0. We will prioritize bugfixes in the new 
+The old logic evaluation will be removed in Open Forms 4.0. We will prioritize bugfixes in the new
 logic evaluation to make sure this migration will be as smooth as possible.
 
 **File Registration tab**
@@ -151,7 +176,7 @@ We plan to change the default for "Use generated zaaknummer" to unchecked in an 
 
 **StUF-ZDS registration**
 
-The usage of the branch number retrieved from the form's submission data will be replaced in 
+The usage of the branch number retrieved from the form's submission data will be replaced in
 Open Forms 4.0 by favouring the branch number obtained through the eHerkenning login.
 
 **DigiD/eHerkenning OIDC Strict mode**
