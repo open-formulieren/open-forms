@@ -464,3 +464,37 @@ export const DisabledProperty = {
     expect(propertyOptions[2]).toHaveValue('hidden');
   },
 };
+
+export const DisabledPropertyWithNonExistingComponent = {
+  render,
+  name: 'Disabled property with non-existing component',
+
+  args: {
+    prefixText: 'Action',
+
+    action: {
+      component: 'non-existing',
+      variable: '',
+      formStepUuid: '8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+      action: {
+        type: 'property',
+        property: {
+          type: 'bool',
+          value: 'disabled',
+        },
+      },
+    },
+    availableComponents: {
+      textfield: {
+        key: 'textfield',
+        type: 'textfield',
+        label: 'Textfield',
+      },
+    },
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    const componentDropdown = canvas.getByRole('combobox', {name: 'Selecteer component'});
+    expect(componentDropdown).toBeVisible();
+  },
+};
