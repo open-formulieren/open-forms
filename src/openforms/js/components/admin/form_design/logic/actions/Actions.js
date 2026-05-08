@@ -32,7 +32,7 @@ const ActionProperty = ({action, errors, onChange}) => {
   const {components} = useContext(FormContext);
   const intl = useIntl();
   const isLayout = action.component
-    ? holdsSubmissionDataTypes.includes(components[action.component].type)
+    ? holdsSubmissionDataTypes.includes(components[action.component]?.type)
     : false;
   const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES)
     .filter(([, info]) => !isLayout || info.useInLayout)
