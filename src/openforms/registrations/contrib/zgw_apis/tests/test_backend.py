@@ -2883,3 +2883,75 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         document_results = submission.registration_result["intermediate"]["documents"]
         pdf_details = document_results["report"]["document"]
         self.assertEqual(pdf_details["titel"], "Public form name")
+
+    def test_can_upload_attachments_with_indirect_document_type_reference(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "file",
+                    "key": "file",
+                    "label": "File",
+                    "registration": {
+                        "documentType": {
+                            "catalogue": {
+                                "domain": "TEST",
+                                "rsin": "000000000",
+                            },
+                            "description": "Attachment Informatieobjecttype",
+                        },
+                        "informatieobjecttype": "https://example.com/ignore-me",
+                    },
+                }
+            ],
+            form__name="Public form name",
+            form__internal_name="Internal form name",
+            form__registration_backend="zgw-create-zaak",
+            bsn="111222333",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            content_type="image/png",
+            form_key="file",
+            _component_configuration_path="components.0",
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "PDF Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "organisatie_rsin": "000000000",
+            # empty value should be ignored, use the VA from the zaaktype
+            "zaak_vertrouwelijkheidaanduiding": "",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            # empty-ish value should fall back to default
+            "auteur": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        plugin.register_submission(submission, options)
+
+        submission.refresh_from_db()
+        assert submission.registration_result
+
+        document_results = submission.registration_result["intermediate"]["documents"]
+        resolved_document_type = document_results[str(attachment.pk)]["document"][
+            "informatieobjecttype"
+        ]
+        # UUID copied from Open Zaak admin based on fixture data
+        self.assertTrue(
+            resolved_document_type.endswith("/7755ab0f-9e37-4834-8bbf-158f9f2da38e")
+        )
