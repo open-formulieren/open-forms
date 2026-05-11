@@ -11,3 +11,5 @@ export {PartnersDescription, ChildrenDescription} from './FamilyMembersDescripti
 export {default as ObjectType} from './ObjectType';
 export {default as ObjectTypeVersion} from './ObjectTypeVersion';
 export {default as ProductSelect} from './ProductSelect';
+export {default as CaseDescription} from './CaseDescription';
+export {default as CaseExplanation} from './CaseExplanation';

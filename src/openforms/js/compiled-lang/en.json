@@ -599,6 +599,12 @@
       "value": " files to upload."
     }
   ],
+  "4P5kwG": [
+    {
+      "type": 0,
+      "value": "Case explanation"
+    }
+  ],
   "4PqTET": [
     {
       "type": 0,
@@ -1269,6 +1275,12 @@
       "value": "Subtract"
     }
   ],
+  "9mm55I": [
+    {
+      "type": 0,
+      "value": "Description of the case. You can use the expressions like {{ form_name }} or other variables here. The resolved string is limited to 80 chars. If empty, the form name is used."
+    }
+  ],
   "9oJuUL": [
     {
       "type": 0,
@@ -1555,6 +1567,12 @@
     {
       "type": 0,
       "value": "Data extraction"
+    }
+  ],
+  "C0DzKH": [
+    {
+      "type": 0,
+      "value": "Case description"
     }
   ],
   "C2FSDV": [
@@ -6099,6 +6117,12 @@
     {
       "type": 0,
       "value": "Authentication method"
+    }
+  ],
+  "lTJ2Hi": [
+    {
+      "type": 0,
+      "value": "Explanation of the case. You can use the expressions like {{ form_name }} or other variables here."
     }
   ],
   "lVEpR9": [

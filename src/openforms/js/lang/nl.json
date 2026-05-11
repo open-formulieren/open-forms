@@ -250,6 +250,11 @@
     "description": "JSON editor: 'configure' header label",
     "originalDefault": "Configure"
   },
+  "4P5kwG": {
+    "defaultMessage": "Toelichting",
+    "description": "ZGW APIs registration options 'zaakToelichting' label",
+    "originalDefault": "Case explanation"
+  },
   "4PqTET": {
     "defaultMessage": "Variant",
     "description": "Worldline payment options 'variant' label",
@@ -546,6 +551,11 @@
     "description": "Generic admin error message",
     "originalDefault": "Sorry! Something unexpected went wrong.<br></br>Contact your technical administrator to investigate, or perhaps more information is available in the <link>outgoing request logs</link>."
   },
+  "9mm55I": {
+    "defaultMessage": "Omschrijving van de zaak. Je kunt hier expressies zoals '{{' form_name '}}' of andere variabelen gebruiken. De uiteindelijke tekst is beperkt tot 80 tekens. Als dit veld leeg is, wordt de naam van het formulier gebruikt.",
+    "description": "ZGW APIs registration options 'zaakOmschrijving' help text",
+    "originalDefault": "Description of the case. You can use the expressions like '{{ form_name }}' or other variables here. The resolved string is limited to 80 chars. If empty, the form name is used."
+  },
   "9y3/ek": {
     "defaultMessage": "Bevestigen",
     "description": "JSON editor: confirm edited variable definition",
@@ -671,6 +681,11 @@
     "defaultMessage": "Gegevensverwerking",
     "description": "Service fetch configuration modal data extraction fieldset title",
     "originalDefault": "Data extraction"
+  },
+  "C0DzKH": {
+    "defaultMessage": "Omschrijving",
+    "description": "ZGW APIs registration options 'zaakOmschrijving' label",
+    "originalDefault": "Case description"
   },
   "C2FSDV": {
     "defaultMessage": "Documenten die voortkomen uit de formulierinzending worden met dit documenttype geregistreerd, tenzij er meer specifieke instellinen zijn. Je ziet enkel documenttypen die bij het geselecteerde zaaktype horen.",
@@ -2851,6 +2866,11 @@
     "defaultMessage": "Het pad naar de map waar mappen voor documenten van Open Formulieren aangemaakt worden. Je kan de expressies <code>'{{' year '}}'</code>, <code>'{{' month '}}'</code> en <code>'{{' day '}}'</code> gebruiken. Het pad moet beginnen met <code>/</code>.",
     "description": "MS Graph registration options 'folderPath' help text",
     "originalDefault": "The path of the folder where folders containing Open-Forms related documents will be created. You can use the expressions <code>'{{' year '}}'</code>, <code>'{{' month '}}'</code> and <code>'{{' day '}}'</code>. The path must start with <code>/</code>."
+  },
+  "lTJ2Hi": {
+    "defaultMessage": "Toelichting bij de zaak. Je kunt hier expressies gebruiken zoals '{{' form_name '}}' of andere variabelen.",
+    "description": "ZGW APIs registration options 'zaakToelichting' help text",
+    "originalDefault": "Explanation of the case. You can use the expressions like '{{ form_name }}' or other variables here."
   },
   "lZw4g0": {
     "defaultMessage": "Naam van het sjabloon dat gebruikt zou moeten worden gedurende het betaalproces. Dit kan (in Wordline) gevonden worden onder het \"Variant name\" veld in het onderdeel \"Branding\".",

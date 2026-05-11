@@ -32,6 +32,7 @@ from openforms.emails.service import get_last_confirmation_email
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.public_references import generate_unique_submission_reference
+from openforms.template import openforms_backend, render_from_string
 from openforms.typing import VariableValue
 from openforms.utils.date import datetime_in_amsterdam
 from openforms.utils.pdf import convert_html_to_pdf
@@ -164,6 +165,37 @@ def _resolve_document_type(
     return version["url"]
 
 
+class SubmissionContext(TypedDict):
+    public_reference: str
+    kenmerk: str
+    language_code: str
+
+
+class ZaakTemplateContext(TypedDict):
+    _submission: Submission
+    form_name: str
+    productaanvraag_type: str
+    variables: dict[str, VariableValue]
+    submission: SubmissionContext
+
+
+def _get_template_context(submission: Submission) -> ZaakTemplateContext:
+    """
+    get context for templated configuration options
+    """
+    return {
+        "_submission": submission,
+        "form_name": submission.form.name,
+        "productaanvraag_type": "ProductAanvraag",
+        "variables": _get_variables_for_context(submission),
+        "submission": {
+            "public_reference": submission.public_registration_reference,
+            "kenmerk": str(submission.uuid),
+            "language_code": submission.language_code,
+        },
+    }
+
+
 @register("zgw-create-zaak")
 class ZGWRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("ZGW API's")
@@ -267,11 +299,22 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             )
             zaaktype_url = options["zaaktype"]
 
+        # resolve templated variables
+        context = _get_template_context(submission)
+        zaak_omschrijving = render_from_string(
+            options.get("zaak_omschrijving", ""), context, backend=openforms_backend
+        )
+        zaak_toelichting = render_from_string(
+            options.get("zaak_toelichting", ""), context, backend=openforms_backend
+        )
+
         with get_zaken_client(zgw) as zaken_client:
             _create_zaak = partial(
                 zaken_client.create_zaak,
                 zaaktype=zaaktype_url,
-                omschrijving=Truncator(submission.form.name).chars(80),
+                omschrijving=Truncator(zaak_omschrijving or submission.form.name).chars(
+                    80
+                ),
                 bronorganisatie=options["organisatie_rsin"],
                 vertrouwelijkheidaanduiding=options.get(
                     "zaak_vertrouwelijkheidaanduiding", ""
@@ -279,6 +322,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 product_url=options["product_url"],
                 payment_required=submission.payment_required,
                 existing_reference=submission.public_registration_reference,
+                toelichting=zaak_toelichting,
                 **zaak_data,
             )
             zaak = execute_unless_result_exists(
@@ -757,16 +801,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             "geometry": FieldConf(RegistrationAttribute.locatie_coordinaat),
         }
 
-        context = {
-            "_submission": submission,
-            "productaanvraag_type": "ProductAanvraag",
-            "variables": _get_variables_for_context(submission),
-            "submission": {
-                "public_reference": submission.public_registration_reference,
-                "kenmerk": str(submission.uuid),
-                "language_code": submission.language_code,
-            },
-        }
+        context = _get_template_context(submission)
 
         data = render_to_json(options["content_json"], context)
         assert isinstance(data, dict)
