@@ -18,59 +18,39 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from ..clients import get_brp_client
 from ..constants import DEFAULT_HC_BRP_PERSONEN_GEBRUIKER_HEADER, BRPVersions
 from ..models import BRPPersonenRequestOptions, HaalCentraalConfig
-from .utils import load_json_mock
 
 
-class HaalCentraalFindPersonTests:
-    """
-    Mixin defining the actual tests to run for a particular client version.
+class HaalCentraalFindPersonV2Test(OFVCRMixin, TestCase):
+    """This test case requires the HaalCentraal BRP API to be running.
+    See the relevant Docker compose in the ``docker/`` folder.
 
-    All client versions must support this set of functionality.
-
-    You must implement the classmethod ``setUp`` to create the relevant service,
-    for which you can then mock the API calls.
+    Note: please ensure that all patches to the test data have been applied. See the
+    README.md file of the relevant container.
     """
 
-    # specify in subclasses
-    version: BRPVersions
-
-    # possibly override for different versions, but at least v1 and v2 support both of these
+    # possibly override for different versions, but at least v2 supports both of these
     attributes_to_query = (
         "naam.voornamen",
         "naam.geslachtsnaam",
     )
 
     def setUp(self):
-        super().setUp()  # type: ignore
-
-        # For the BRP v2 tests we use VCR as we have a representative Docker image.
-        # For the BRP v1.3 tests we continue to use the requests_mock library, as finding
-        # a representative Docker image is rather challenging. Additionally, v1.3 might
-        # be dropped in the near future, see GitHub issue #6087.
-        using_vcr_testing = self.version == BRPVersions.v20
-
-        # When testing with VCR we need a different api_root,
-        # then when testing with requests_mock
-        api_root = (
-            "http://localhost:5010/haalcentraal/api/brp/"
-            if using_vcr_testing
-            else "https://personen/api/"
-        )
+        super().setUp()
 
         # set up patcher for the configuration
         config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
-                api_root=api_root,
+                api_root="http://localhost:5010/haalcentraal/api/brp/",
                 auth_type=AuthTypes.no_auth,
             ),
-            brp_personen_version=self.version,
+            brp_personen_version=BRPVersions.v20,
         )
         config_patcher = patch(
             "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
             return_value=config,
         )
         config_patcher.start()
-        self.addCleanup(config_patcher.stop)  # type: ignore
+        self.addCleanup(config_patcher.stop)
 
         global_config = GlobalConfiguration()
         global_config_patcher = patch(
@@ -78,26 +58,23 @@ class HaalCentraalFindPersonTests:
             return_value=global_config,
         )
         global_config_patcher.start()
-        self.addCleanup(global_config_patcher.stop)  # type: ignore
+        self.addCleanup(global_config_patcher.stop)
 
-        # For the tests that don't use VCR, we use the requests_mock library
-        if not using_vcr_testing:
-            # prepare a requests mock instance to wire up the mocks
-            self.requests_mock = requests_mock.Mocker()
-            self.requests_mock.start()
-            self.addCleanup(self.requests_mock.stop)  # type: ignore
-
-    def test_find_person_succesfully(self, bsn):
+    def test_find_person_succesfully(self):
         with get_brp_client() as client:
-            raw_data = client.find_persons([bsn], attributes=self.attributes_to_query)
+            raw_data = client.find_persons(
+                ["999990676"], attributes=self.attributes_to_query
+            )
 
         assert raw_data
-        values = {attr: glom(raw_data[bsn], attr) for attr in self.attributes_to_query}
+        values = {
+            attr: glom(raw_data["999990676"], attr) for attr in self.attributes_to_query
+        }
         expected = {
             "naam.voornamen": "Cornelia Francisca",
             "naam.geslachtsnaam": "Wiegman",
         }
-        self.assertEqual(values, expected)  # type: ignore
+        self.assertEqual(values, expected)
 
     def test_person_not_found(self):
         with get_brp_client() as client:
@@ -105,82 +82,203 @@ class HaalCentraalFindPersonTests:
                 bsns=["111222333"], attributes=self.attributes_to_query
             )
 
-        self.assertIsNone(raw_data)  # type: ignore
+        self.assertIsNone(raw_data)
 
-    def test_get_children(self):
+    def test_get_children_person_not_found_results(self):
         with get_brp_client() as client:
             children = client.get_family_members(
-                bsn="999990792", include_children=True, include_partner=False
+                bsn="111222333", include_children=True, include_partner=False
             )
 
-        self.assertEqual(len(children), 1)  # type: ignore
-        child = children[0]
-        self.assertEqual(child.bsn, "999990408")  # type: ignore
-        self.assertEqual(child.first_names, "Paolo")  # type: ignore
-        self.assertEqual(child.affixes, "de")  # type: ignore
-        self.assertEqual(child.last_name, "Jager")  # type: ignore
+        self.assertEqual(children, [])
 
-    def test_get_children_no_bsn(self):
+    def test_get_children_exclude_deceased(self):
         with get_brp_client() as client:
             children = client.get_family_members(
-                bsn="999990718", include_children=True, include_partner=False
+                bsn="999970124",
+                include_children=True,
+                include_partner=False,
+                include_deceased=False,
             )
 
-        self.assertEqual(len(children), 0)  # type: ignore
+        self.assertEqual(len(children), 3)
 
-    def test_get_partners(self):
+        child_1 = children[0]
+        self.assertEqual(child_1.bsn, "999970409")
+        self.assertEqual(child_1.first_names, "Pero")
+        self.assertEqual(child_1.affixes, "van")
+        self.assertEqual(child_1.last_name, "Paassen")
+
+        child_2 = children[1]
+        self.assertEqual(child_2.bsn, "999970161")
+        self.assertEqual(child_2.first_names, "Peet")
+        self.assertEqual(child_2.affixes, "van")
+        self.assertEqual(child_2.last_name, "Paassen")
+
+        child_3 = children[2]
+        self.assertEqual(child_3.bsn, "999970185")
+        self.assertEqual(child_3.first_names, "Pep")
+        self.assertEqual(child_3.affixes, "van")
+        self.assertEqual(child_3.last_name, "Paassen")
+
+    def test_get_children_include_deceased(self):
+        with get_brp_client() as client:
+            children = client.get_family_members(
+                bsn="999970124",
+                include_children=True,
+                include_partner=False,
+                include_deceased=True,
+            )
+
+        self.assertEqual(len(children), 4)
+
+        child_1 = children[0]
+        self.assertEqual(child_1.bsn, "999970409")
+        self.assertEqual(child_1.first_names, "Pero")
+        self.assertEqual(child_1.affixes, "van")
+        self.assertEqual(child_1.last_name, "Paassen")
+
+        child_2 = children[1]
+        self.assertEqual(child_2.bsn, "999970161")
+        self.assertEqual(child_2.first_names, "Peet")
+        self.assertEqual(child_2.affixes, "van")
+        self.assertEqual(child_2.last_name, "Paassen")
+
+        child_3 = children[2]
+        self.assertEqual(child_3.bsn, "999970173")
+        self.assertEqual(child_3.first_names, "Pelle")
+        self.assertEqual(child_3.affixes, "van")
+        self.assertEqual(child_3.last_name, "Paassen")
+
+        child_4 = children[3]
+        self.assertEqual(child_4.bsn, "999970185")
+        self.assertEqual(child_4.first_names, "Pep")
+        self.assertEqual(child_4.affixes, "van")
+        self.assertEqual(child_4.last_name, "Paassen")
+
+    def test_get_partners_exclude_deceased(self):
+        # This scenario is not supported by the current frontend. Right now, only
+        # children can actively be excluded. This test was added for completeness, as the
+        # BRP client `get_family_members` does support excluding partners.
+
         with get_brp_client() as client:
             partners = client.get_family_members(
-                bsn="999990676", include_children=False, include_partner=True
+                bsn="999999709",
+                include_children=False,
+                include_partner=True,
+                include_deceased=False,
             )
 
-        self.assertEqual(len(partners), 1)  # type: ignore
+        self.assertEqual(len(partners), 0)
+
+    def test_get_partners_include_deceased(self):
+        # This scenario is not supported by the current frontend. Right now, only
+        # children can actively be excluded. This test was added for completeness, as the
+        # BRP client `get_family_members` does support excluding partners.
+
+        with get_brp_client() as client:
+            partners = client.get_family_members(
+                bsn="999999709",
+                include_children=False,
+                include_partner=True,
+                include_deceased=True,
+            )
+
+        self.assertEqual(len(partners), 1)
         partner = partners[0]
-        self.assertEqual(partner.bsn, "999990421")  # type: ignore
-        self.assertEqual(partner.first_names, "Adrianus Hendrikus")  # type: ignore
-        self.assertEqual(partner.affixes, "")  # type: ignore
-        self.assertEqual(partner.last_name, "Holthuizen")  # type: ignore
+        self.assertEqual(partner.bsn, "999999692")
+        self.assertEqual(partner.first_names, "Brand")
+        self.assertEqual(partner.affixes, "")
+        self.assertEqual(partner.last_name, "Berendsen")
 
-    def test_partner_without_bsn(self):
-        with get_brp_client() as client:
-            partners = client.get_family_members(
-                bsn="999990718", include_children=False, include_partner=True
-            )
+    def test_get_family_members_exclude_deceased(self):
+        # This scenario is not supported by the current frontend. Right now, only
+        # children can actively be excluded. This test was added for completeness, as the
+        # BRP client `get_family_members` does support excluding partners.
 
-        self.assertEqual(len(partners), 0)  # type: ignore
-
-    def test_get_family_members(self):
         with get_brp_client() as client:
             family_members = client.get_family_members(
-                bsn="999990858", include_children=True, include_partner=True
+                bsn="999970124",
+                include_children=True,
+                include_partner=True,
+                include_deceased=False,
             )
 
-        self.assertEqual(len(family_members), 3)  # type: ignore
+        self.assertEqual(len(family_members), 4)
 
         child_1 = family_members[0]
+        self.assertEqual(child_1.bsn, "999970409")
+        self.assertEqual(child_1.first_names, "Pero")
+        self.assertEqual(child_1.affixes, "van")
+        self.assertEqual(child_1.last_name, "Paassen")
+
         child_2 = family_members[1]
+        self.assertEqual(child_2.bsn, "999970161")
+        self.assertEqual(child_2.first_names, "Peet")
+        self.assertEqual(child_2.affixes, "van")
+        self.assertEqual(child_2.last_name, "Paassen")
 
-        self.assertEqual(child_1.bsn, "999992879")  # type: ignore
-        self.assertEqual(child_1.first_names, "Lonneke")  # type: ignore
-        self.assertEqual(child_1.affixes, "")  # type: ignore
-        self.assertEqual(child_1.last_name, "Smit")  # type: ignore
+        child_3 = family_members[2]
+        self.assertEqual(child_3.bsn, "999970185")
+        self.assertEqual(child_3.first_names, "Pep")
+        self.assertEqual(child_3.affixes, "van")
+        self.assertEqual(child_3.last_name, "Paassen")
 
-        self.assertEqual(child_2.bsn, "999993525")  # type: ignore
-        self.assertEqual(child_2.first_names, "Koos")  # type: ignore
-        self.assertEqual(child_2.affixes, "")  # type: ignore
-        self.assertEqual(child_2.last_name, "Smit")  # type: ignore
+        partner = family_members[3]
+        self.assertEqual(partner.bsn, "999970136")
+        self.assertEqual(partner.first_names, "Pia")
+        self.assertEqual(partner.affixes, "")
+        self.assertEqual(partner.last_name, "Pauw")
 
-        partner = family_members[2]
+    def test_get_family_members_include_deceased(self):
+        # This scenario is not supported by the current frontend. Right now, only
+        # children can actively be excluded. This test was added for completeness, as the
+        # BRP client `get_family_members` does support excluding partners.
 
-        self.assertEqual(partner.bsn, "999990949")  # type: ignore
-        self.assertEqual(partner.first_names, "Marianne")  # type: ignore
-        self.assertEqual(partner.affixes, "de")  # type: ignore
-        self.assertEqual(partner.last_name, "Jong")  # type: ignore
+        with get_brp_client() as client:
+            family_members = client.get_family_members(
+                bsn="999970124",
+                include_children=True,
+                include_partner=True,
+                include_deceased=True,
+            )
+
+        self.assertEqual(len(family_members), 5)
+
+        child_1 = family_members[0]
+        self.assertEqual(child_1.bsn, "999970409")
+        self.assertEqual(child_1.first_names, "Pero")
+        self.assertEqual(child_1.affixes, "van")
+        self.assertEqual(child_1.last_name, "Paassen")
+
+        child_2 = family_members[1]
+        self.assertEqual(child_2.bsn, "999970161")
+        self.assertEqual(child_2.first_names, "Peet")
+        self.assertEqual(child_2.affixes, "van")
+        self.assertEqual(child_2.last_name, "Paassen")
+
+        child_3 = family_members[2]
+        self.assertEqual(child_3.bsn, "999970173")
+        self.assertEqual(child_3.first_names, "Pelle")
+        self.assertEqual(child_3.affixes, "van")
+        self.assertEqual(child_3.last_name, "Paassen")
+
+        child_4 = family_members[3]
+        self.assertEqual(child_4.bsn, "999970185")
+        self.assertEqual(child_4.first_names, "Pep")
+        self.assertEqual(child_4.affixes, "van")
+        self.assertEqual(child_4.last_name, "Paassen")
+
+        partner = family_members[4]
+        self.assertEqual(partner.bsn, "999970136")
+        self.assertEqual(partner.first_names, "Pia")
+        self.assertEqual(partner.affixes, "")
+        self.assertEqual(partner.last_name, "Pauw")
 
     def test_default_client_context(self):
         client = get_brp_client()
 
-        self.assertIsNone(client.pre_request_context)  # type: ignore
+        self.assertIsNone(client.pre_request_context)
 
     @tag("gh-4713")
     def test_pre_request_hooks_called(self):
@@ -212,443 +310,7 @@ class HaalCentraalFindPersonTests:
 
         self.assertEqual(mock.call_count, 1)  # 1 API calls expected
         context = mock.call_args.kwargs["context"]
-        self.assertEqual(context, {"submission": submission_bsn})  # type: ignore
-
-
-class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, TestCase):
-    version = BRPVersions.v13
-
-    def test_find_person_succesfully(self, bsn=None):
-        self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/999990676",
-            status_code=200,
-            json=load_json_mock("ingeschrevenpersonen.v1.json"),
-        )
-        super().test_find_person_succesfully("999990676")
-
-    def test_person_not_found(self):
-        self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/111222333", status_code=404
-        )
-        super().test_person_not_found()
-
-    def test_find_person_server_error(self):
-        self.requests_mock.register_uri(
-            requests_mock.ANY,
-            requests_mock.ANY,
-            status_code=500,
-        )
-
-        with get_brp_client() as client:
-            raw_data = client.find_persons(
-                bsns=["999990676"], attributes=self.attributes_to_query
-            )
-
-        self.assertIsNone(raw_data)  # type: ignore
-
-    def test_get_children(self):
-        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetKinderen
-        self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/999990792/kinderen",
-            json={
-                "_links": {
-                    "self": {
-                        "href": "https://personen/api/ingeschrevenpersonen/999990792/kinderen",
-                        "templated": False,
-                        "title": "",
-                    }
-                },
-                "_embedded": {
-                    "kinderen": [
-                        {
-                            "burgerservicenummer": "999990408",
-                            "leeftijd": 12,
-                            "naam": {
-                                "geslachtsnaam": "Jager",
-                                "voorletters": "P.",
-                                "voornamen": "Paolo",
-                                "voorvoegsel": "de",
-                                # "adellijkeTitelPredikaat": {...},
-                                # "inOnderzoek": {...},
-                            },
-                            "geheimhoudingPersoonsgegevens": True,
-                            # "inOnderzoek": {...},
-                            # "geboorte": {...},
-                            # "_links": {...},
-                        }
-                    ],
-                },
-            },
-        )
-        super().test_get_children()
-
-    def test_get_children_no_bsn(self):
-        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetKinderen
-        self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/999990718/kinderen",
-            json={
-                "_links": {
-                    "self": {
-                        "href": "https://personen/api/ingeschrevenpersonen/999990718/kinderen",
-                        "templated": False,
-                        "title": "",
-                    }
-                },
-                "_embedded": {
-                    "kinderen": [
-                        {
-                            "leeftijd": 12,
-                            "naam": {
-                                "geslachtsnaam": "Kroket",
-                                "voorletters": "F.",
-                                "voornamen": "Frieda",
-                                "voorvoegsel": "",
-                            },
-                            "geheimhoudingPersoonsgegevens": True,
-                        }
-                    ],
-                },
-            },
-        )
-        super().test_get_children_no_bsn()
-
-    def test_get_partners(self):
-        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetPartners
-        self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/999990676/partners",
-            json={
-                "_links": {
-                    "self": {
-                        "href": "https://personen/api/ingeschrevenpersonen/999990676/partners",
-                        "templated": False,
-                        "title": "",
-                    }
-                },
-                "_embedded": {
-                    "partners": [
-                        {
-                            "burgerservicenummer": "999990421",
-                            "naam": {
-                                "geslachtsnaam": "Holthuizen",
-                                "voorletters": "A.H.",
-                                "voornamen": "Adrianus Hendrikus",
-                                "voorvoegsel": "",
-                            },
-                        }
-                    ],
-                },
-            },
-        )
-        super().test_get_partners()
-
-    def test_partner_without_bsn(self):
-        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetPartners
-        self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/999990718/partners",
-            json={
-                "_links": {
-                    "self": {
-                        "href": "https://personen/api/ingeschrevenpersonen/999990718/partners",
-                        "templated": False,
-                        "title": "",
-                    }
-                },
-                "_embedded": {
-                    "partners": [
-                        {
-                            "naam": {
-                                "geslachtsnaam": "Tuinstra",
-                                "voorletters": "A.",
-                                "voornamen": "August",
-                                "voorvoegsel": "",
-                            },
-                        }
-                    ],
-                },
-            },
-        )
-        super().test_partner_without_bsn()
-
-    def test_get_family_members(self):
-        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetPartners
-        self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/999990858/partners",
-            json={
-                "_links": {
-                    "self": {
-                        "href": "https://personen/api/ingeschrevenpersonen/999990858/partners",
-                        "templated": False,
-                        "title": "",
-                    }
-                },
-                "_embedded": {
-                    "partners": [
-                        {
-                            "burgerservicenummer": "999990949",
-                            "naam": {
-                                "geslachtsnaam": "Jong",
-                                "voorletters": "M.",
-                                "voornamen": "Marianne",
-                                "voorvoegsel": "de",
-                            },
-                        }
-                    ],
-                },
-            },
-        )
-        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetKinderen
-        self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/999990858/kinderen",
-            json={
-                "_links": {
-                    "self": {
-                        "href": "https://personen/api/ingeschrevenpersonen/999990858/kinderen",
-                        "templated": False,
-                        "title": "",
-                    }
-                },
-                "_embedded": {
-                    "kinderen": [
-                        {
-                            "burgerservicenummer": "999992879",
-                            "leeftijd": 12,
-                            "naam": {
-                                "geslachtsnaam": "Smit",
-                                "voorletters": "L.",
-                                "voornamen": "Lonneke",
-                                "voorvoegsel": "",
-                            },
-                            "geheimhoudingPersoonsgegevens": True,
-                        },
-                        {
-                            "burgerservicenummer": "999993525",
-                            "leeftijd": 12,
-                            "naam": {
-                                "geslachtsnaam": "Smit",
-                                "voorletters": "K.",
-                                "voornamen": "Koos",
-                                "voorvoegsel": "",
-                            },
-                            "geheimhoudingPersoonsgegevens": True,
-                        },
-                    ],
-                },
-            },
-        )
-        super().test_get_family_members()
-
-    def test_pre_request_hooks_called(self):
-        self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/999990676",
-            status_code=200,
-            json=load_json_mock("ingeschrevenpersonen.v1.json"),
-        )
-        super().test_pre_request_hooks_called()
-
-
-class HaalCentraalFindPersonV2Test(OFVCRMixin, HaalCentraalFindPersonTests, TestCase):
-    """This test case requires the HaalCentraal BRP API to be running.
-    See the relevant Docker compose in the ``docker/`` folder.
-
-    Note: please ensure that all patches to the test data have been applied. See the
-    README.md file of the relevant container.
-    """
-
-    version = BRPVersions.v20
-
-    def test_find_person_succesfully(self, bsn=None):
-        super().test_find_person_succesfully("999990676")
-
-    def test_get_children_person_not_found_results(self):
-        with get_brp_client() as client:
-            children = client.get_family_members(
-                bsn="111222333", include_children=True, include_partner=False
-            )
-
-        self.assertEqual(children, [])
-
-    def test_get_children_exclude_deceased(self):
-        with get_brp_client() as client:
-            children = client.get_family_members(
-                bsn="999970124",
-                include_children=True,
-                include_partner=False,
-                include_deceased=False,
-            )
-
-        self.assertEqual(len(children), 3)  # type: ignore
-
-        child_1 = children[0]
-        self.assertEqual(child_1.bsn, "999970409")  # type: ignore
-        self.assertEqual(child_1.first_names, "Pero")  # type: ignore
-        self.assertEqual(child_1.affixes, "van")  # type: ignore
-        self.assertEqual(child_1.last_name, "Paassen")  # type: ignore
-
-        child_2 = children[1]
-        self.assertEqual(child_2.bsn, "999970161")  # type: ignore
-        self.assertEqual(child_2.first_names, "Peet")  # type: ignore
-        self.assertEqual(child_2.affixes, "van")  # type: ignore
-        self.assertEqual(child_2.last_name, "Paassen")  # type: ignore
-
-        child_3 = children[2]
-        self.assertEqual(child_3.bsn, "999970185")  # type: ignore
-        self.assertEqual(child_3.first_names, "Pep")  # type: ignore
-        self.assertEqual(child_3.affixes, "van")  # type: ignore
-        self.assertEqual(child_3.last_name, "Paassen")  # type: ignore
-
-    def test_get_children_include_deceased(self):
-        with get_brp_client() as client:
-            children = client.get_family_members(
-                bsn="999970124",
-                include_children=True,
-                include_partner=False,
-                include_deceased=True,
-            )
-
-        self.assertEqual(len(children), 4)  # type: ignore
-
-        child_1 = children[0]
-        self.assertEqual(child_1.bsn, "999970409")  # type: ignore
-        self.assertEqual(child_1.first_names, "Pero")  # type: ignore
-        self.assertEqual(child_1.affixes, "van")  # type: ignore
-        self.assertEqual(child_1.last_name, "Paassen")  # type: ignore
-
-        child_2 = children[1]
-        self.assertEqual(child_2.bsn, "999970161")  # type: ignore
-        self.assertEqual(child_2.first_names, "Peet")  # type: ignore
-        self.assertEqual(child_2.affixes, "van")  # type: ignore
-        self.assertEqual(child_2.last_name, "Paassen")  # type: ignore
-
-        child_3 = children[2]
-        self.assertEqual(child_3.bsn, "999970173")  # type: ignore
-        self.assertEqual(child_3.first_names, "Pelle")  # type: ignore
-        self.assertEqual(child_3.affixes, "van")  # type: ignore
-        self.assertEqual(child_3.last_name, "Paassen")  # type: ignore
-
-        child_4 = children[3]
-        self.assertEqual(child_4.bsn, "999970185")  # type: ignore
-        self.assertEqual(child_4.first_names, "Pep")  # type: ignore
-        self.assertEqual(child_4.affixes, "van")  # type: ignore
-        self.assertEqual(child_4.last_name, "Paassen")  # type: ignore
-
-    def test_get_partners_exclude_deceased(self):
-        # This scenario is not supported by the current frontend. Right now, only
-        # children can actively be excluded. This test was added for completeness, as the
-        # BRP client `get_family_members` does support excluding partners.
-
-        with get_brp_client() as client:
-            partners = client.get_family_members(
-                bsn="999999709",
-                include_children=False,
-                include_partner=True,
-                include_deceased=False,
-            )
-
-        self.assertEqual(len(partners), 0)  # type: ignore
-
-    def test_get_partners_include_deceased(self):
-        # This scenario is not supported by the current frontend. Right now, only
-        # children can actively be excluded. This test was added for completeness, as the
-        # BRP client `get_family_members` does support excluding partners.
-
-        with get_brp_client() as client:
-            partners = client.get_family_members(
-                bsn="999999709",
-                include_children=False,
-                include_partner=True,
-                include_deceased=True,
-            )
-
-        self.assertEqual(len(partners), 1)  # type: ignore
-        partner = partners[0]
-        self.assertEqual(partner.bsn, "999999692")  # type: ignore
-        self.assertEqual(partner.first_names, "Brand")  # type: ignore
-        self.assertEqual(partner.affixes, "")  # type: ignore
-        self.assertEqual(partner.last_name, "Berendsen")  # type: ignore
-
-    def test_get_family_members_exclude_deceased(self):
-        # This scenario is not supported by the current frontend. Right now, only
-        # children can actively be excluded. This test was added for completeness, as the
-        # BRP client `get_family_members` does support excluding partners.
-
-        with get_brp_client() as client:
-            family_members = client.get_family_members(
-                bsn="999970124",
-                include_children=True,
-                include_partner=True,
-                include_deceased=False,
-            )
-
-        self.assertEqual(len(family_members), 4)  # type: ignore
-
-        child_1 = family_members[0]
-        self.assertEqual(child_1.bsn, "999970409")  # type: ignore
-        self.assertEqual(child_1.first_names, "Pero")  # type: ignore
-        self.assertEqual(child_1.affixes, "van")  # type: ignore
-        self.assertEqual(child_1.last_name, "Paassen")  # type: ignore
-
-        child_2 = family_members[1]
-        self.assertEqual(child_2.bsn, "999970161")  # type: ignore
-        self.assertEqual(child_2.first_names, "Peet")  # type: ignore
-        self.assertEqual(child_2.affixes, "van")  # type: ignore
-        self.assertEqual(child_2.last_name, "Paassen")  # type: ignore
-
-        child_3 = family_members[2]
-        self.assertEqual(child_3.bsn, "999970185")  # type: ignore
-        self.assertEqual(child_3.first_names, "Pep")  # type: ignore
-        self.assertEqual(child_3.affixes, "van")  # type: ignore
-        self.assertEqual(child_3.last_name, "Paassen")  # type: ignore
-
-        partner = family_members[3]
-        self.assertEqual(partner.bsn, "999970136")  # type: ignore
-        self.assertEqual(partner.first_names, "Pia")  # type: ignore
-        self.assertEqual(partner.affixes, "")  # type: ignore
-        self.assertEqual(partner.last_name, "Pauw")  # type: ignore
-
-    def test_get_family_members_include_deceased(self):
-        # This scenario is not supported by the current frontend. Right now, only
-        # children can actively be excluded. This test was added for completeness, as the
-        # BRP client `get_family_members` does support excluding partners.
-
-        with get_brp_client() as client:
-            family_members = client.get_family_members(
-                bsn="999970124",
-                include_children=True,
-                include_partner=True,
-                include_deceased=True,
-            )
-
-        self.assertEqual(len(family_members), 5)  # type: ignore
-
-        child_1 = family_members[0]
-        self.assertEqual(child_1.bsn, "999970409")  # type: ignore
-        self.assertEqual(child_1.first_names, "Pero")  # type: ignore
-        self.assertEqual(child_1.affixes, "van")  # type: ignore
-        self.assertEqual(child_1.last_name, "Paassen")  # type: ignore
-
-        child_2 = family_members[1]
-        self.assertEqual(child_2.bsn, "999970161")  # type: ignore
-        self.assertEqual(child_2.first_names, "Peet")  # type: ignore
-        self.assertEqual(child_2.affixes, "van")  # type: ignore
-        self.assertEqual(child_2.last_name, "Paassen")  # type: ignore
-
-        child_3 = family_members[2]
-        self.assertEqual(child_3.bsn, "999970173")  # type: ignore
-        self.assertEqual(child_3.first_names, "Pelle")  # type: ignore
-        self.assertEqual(child_3.affixes, "van")  # type: ignore
-        self.assertEqual(child_3.last_name, "Paassen")  # type: ignore
-
-        child_4 = family_members[3]
-        self.assertEqual(child_4.bsn, "999970185")  # type: ignore
-        self.assertEqual(child_4.first_names, "Pep")  # type: ignore
-        self.assertEqual(child_4.affixes, "van")  # type: ignore
-        self.assertEqual(child_4.last_name, "Paassen")  # type: ignore
-
-        partner = family_members[4]
-        self.assertEqual(partner.bsn, "999970136")  # type: ignore
-        self.assertEqual(partner.first_names, "Pia")  # type: ignore
-        self.assertEqual(partner.affixes, "")  # type: ignore
-        self.assertEqual(partner.last_name, "Pauw")  # type: ignore
+        self.assertEqual(context, {"submission": submission_bsn})
 
 
 class ClientFactoryInvalidVersionTests(SimpleTestCase):

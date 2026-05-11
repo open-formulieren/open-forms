@@ -1,7 +1,7 @@
 """
 Haal Centraal BRP Personen bevragen API client implementations.
 
-Open Forms supports v1 and v2 of the APIs.
+Open Forms supports v2 of the APIs.
 
 Documentation for v2: https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/getting-started
 """
@@ -13,7 +13,6 @@ import requests
 import structlog
 
 from openforms.contrib.client import LoggingClient
-from openforms.contrib.hal_client import HALMixin
 from openforms.pre_requests.clients import PreRequestMixin
 from openforms.typing import JSONObject
 
@@ -24,7 +23,7 @@ from ..constants import (
     HC_PARTNERS_ATTRIBUTES,
     BRPVersions,
 )
-from ..data import Children, NaturalPersonDetails, Partners
+from ..data import NaturalPersonDetails
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -62,103 +61,6 @@ class BRPClient(PreRequestMixin, ABC, LoggingClient):
 
     @abstractmethod
     def make_config_test_request(self) -> None: ...
-
-
-class V1Client(HALMixin, BRPClient):
-    """
-    BRP Personen Bevragen 1.3 compatible client.
-
-    Hosted API Documentation: https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc
-    """
-
-    def find_persons(
-        self, bsns: Sequence[str], **kwargs
-    ) -> Mapping[str, JSONObject] | None:
-        # v1 does not support multiple BSNs so we grab the first one if multiple are provided
-        if len(bsns) > 1:
-            logger.warning(
-                "multiple_bsns_provided",
-                plugin_id="haal_centraal",
-                version=CLIENT_CLS_FOR_VERSION[BRPVersions.v13],
-            )
-
-        try:
-            response = self.get(f"ingeschrevenpersonen/{bsns[0]}")
-            response.raise_for_status()
-        except requests.RequestException as exc:
-            logger.exception("brp_request_failure", exc_info=exc)
-            return None
-
-        data = response.json()
-        assert isinstance(data, dict)
-
-        return {data["burgerservicenummer"]: data}
-
-    def _get_children(self, bsn: str) -> Children:
-        response = self.get(f"ingeschrevenpersonen/{bsn}/kinderen")
-        response.raise_for_status()
-        response_data = response.json()["_embedded"]
-
-        children: Children = [
-            NaturalPersonDetails(
-                bsn=child.get("burgerservicenummer") or "",
-                first_names=child.get("naam", {}).get("voornamen") or "",
-                initials=child.get("naam", {}).get("voorletters") or "",
-                affixes=child.get("naam", {}).get("voorvoegsel") or "",
-                last_name=child.get("naam", {}).get("geslachtsnaam"),
-                date_of_birth=child.get("geboorte", {}).get("datum", {}).get("datum")
-                or "",
-                date_of_birth_precision=DATE_OF_BIRTH_TYPE_MAPPINGS.get(
-                    child.get("geboorte", {}).get("datum", {}).get("type")
-                ),
-            )
-            for child in response_data["kinderen"]
-            if "burgerservicenummer" in child
-        ]
-
-        return children
-
-    def _get_partners(self, bsn: str) -> Partners:
-        response = self.get(f"ingeschrevenpersonen/{bsn}/partners")
-        response.raise_for_status()
-        response_data = response.json()["_embedded"]
-
-        partners: Partners = [
-            NaturalPersonDetails(
-                bsn=partner.get("burgerservicenummer") or "",
-                first_names=partner.get("naam", {}).get("voornamen") or "",
-                initials=partner.get("naam", {}).get("voorletters") or "",
-                affixes=partner.get("naam", {}).get("voorvoegsel") or "",
-                last_name=partner.get("naam", {}).get("geslachtsnaam") or "",
-                date_of_birth=partner.get("geboorte", {}).get("datum", {}).get("datum")
-                or "",
-                date_of_birth_precision=DATE_OF_BIRTH_TYPE_MAPPINGS.get(
-                    partner.get("geboorte", {}).get("datum", {}).get("type")
-                ),
-            )
-            for partner in response_data["partners"]
-            if "burgerservicenummer" in partner
-        ]
-
-        return partners
-
-    def get_family_members(
-        self, bsn: str, include_children: bool, include_partner: bool, **kwargs
-    ) -> list[NaturalPersonDetails]:
-        family_members = []
-        if include_children:
-            family_members += self._get_children(bsn)
-
-        if include_partner:
-            family_members += self._get_partners(bsn)
-
-        return family_members
-
-    def make_config_test_request(self):
-        # expected to 404
-        response = self.get("test")
-        if response.status_code != 404:
-            response.raise_for_status()
 
 
 class V2Client(BRPClient):
@@ -282,6 +184,5 @@ class V2Client(BRPClient):
 
 
 CLIENT_CLS_FOR_VERSION: dict[BRPVersions, type[BRPClient]] = {
-    BRPVersions.v13: V1Client,
     BRPVersions.v20: V2Client,
 }
