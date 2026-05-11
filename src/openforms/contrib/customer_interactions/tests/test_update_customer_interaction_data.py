@@ -52,6 +52,7 @@ class UpdateCustomerInteractionDataTests(
         )
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -151,6 +152,7 @@ class UpdateCustomerInteractionDataTests(
         )
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -162,6 +164,7 @@ class UpdateCustomerInteractionDataTests(
             party = client.find_party_for_bsn("108915864")
 
         # check that party is linked to the user
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -256,6 +259,7 @@ class UpdateCustomerInteractionDataTests(
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -266,6 +270,7 @@ class UpdateCustomerInteractionDataTests(
         with get_customer_interactions_client(self.config) as client:
             party = client.find_party_for_bsn("123456782")
 
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -364,6 +369,7 @@ class UpdateCustomerInteractionDataTests(
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -374,6 +380,7 @@ class UpdateCustomerInteractionDataTests(
         with get_customer_interactions_client(self.config) as client:
             party = client.find_party_for_bsn("123456782")
 
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -449,6 +456,7 @@ class UpdateCustomerInteractionDataTests(
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -459,6 +467,7 @@ class UpdateCustomerInteractionDataTests(
         with get_customer_interactions_client(self.config) as client:
             party = client.find_party_for_bsn("123456782")
 
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -553,6 +562,7 @@ class UpdateCustomerInteractionDataTests(
         )
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -564,6 +574,7 @@ class UpdateCustomerInteractionDataTests(
             party = client.find_party_for_kvk("11122233")
 
         # check that party is linked to the organization
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -658,6 +669,7 @@ class UpdateCustomerInteractionDataTests(
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -668,6 +680,7 @@ class UpdateCustomerInteractionDataTests(
         with get_customer_interactions_client(self.config) as client:
             party = client.find_party_for_kvk("12345678")
 
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -785,6 +798,7 @@ class UpdateCustomerInteractionDataTests(
         )
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
