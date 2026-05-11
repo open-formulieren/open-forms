@@ -45,7 +45,7 @@
     "originalDefault": "Mark the form step as applicable"
   },
   "/MWRm7": {
-    "defaultMessage": "There are no file upload components in the form.",
+    "defaultMessage": "Het formulier bevat geen bestandsuploadvelden.",
     "description": "Copy document types config: no file components text",
     "originalDefault": "There are no file upload components in the form."
   },
@@ -241,12 +241,12 @@
     "originalDefault": "Ask statement of truth"
   },
   "3eiHJv": {
-    "defaultMessage": "Catalogue RSIN",
+    "defaultMessage": "Catalogus-RSIN",
     "description": "Copy document types config to file components: catalogue RSIN heading",
     "originalDefault": "Catalogue RSIN"
   },
   "3jd+Cd": {
-    "defaultMessage": "Catalogue domain",
+    "defaultMessage": "Catalogusdomein",
     "description": "Copy document types config to file components: catalogue domain heading",
     "originalDefault": "Catalogue domain"
   },
@@ -758,7 +758,7 @@
     "originalDefault": "Use a variable for the price"
   },
   "CpZufh": {
-    "defaultMessage": "Check/uncheck all",
+    "defaultMessage": "Vink alles aan/uit",
     "description": "Accessible label for check/uncheck all file components",
     "originalDefault": "Check/uncheck all"
   },
@@ -957,7 +957,7 @@
     "originalDefault": "The co-sign component requires at least one authentication plugin to be enabled."
   },
   "FJaFwb": {
-    "defaultMessage": "Copy",
+    "defaultMessage": "Kopieer",
     "description": "Copy document types config: copy button label",
     "originalDefault": "Copy"
   },
@@ -1317,7 +1317,7 @@
     "originalDefault": "Static"
   },
   "KTmwYn": {
-    "defaultMessage": "Update {label} configuration?",
+    "defaultMessage": "{label} instellingen bijwerken?",
     "description": "Accessible label for check/uncheck single file component",
     "originalDefault": "Update {label} configuration?"
   },
@@ -1533,7 +1533,7 @@
     "originalDefault": "Document type"
   },
   "NwBpaW": {
-    "defaultMessage": "Document type description",
+    "defaultMessage": "Documenttype-omschrijving",
     "description": "Copy document types config to file components: doc type description heading",
     "originalDefault": "Document type description"
   },
@@ -1642,7 +1642,7 @@
     "originalDefault": "Include confirmation page content in PDF"
   },
   "PbVsAV": {
-    "defaultMessage": "File component document types",
+    "defaultMessage": "Bijlage-documenttypen",
     "description": "ZGw APIs registration: file components document types fieldset title",
     "originalDefault": "File component document types"
   },
@@ -1652,7 +1652,7 @@
     "originalDefault": "Add rule"
   },
   "PhKHkq": {
-    "defaultMessage": "You can copy the catalogue and document type description from the plugin options to the selected file upload fields of the form. Note that this will overwrite existing field-level configuration!",
+    "defaultMessage": "Je kan de catalogusreferentie en documenttypeomschrijving kopiëren van de plugin-instellingen naar de geselecteerde upload-velden van het formulier. Merk op dat je hiermee bestaande instellingen overschrijft!",
     "description": "Copy document types config: feature description",
     "originalDefault": "You can copy the catalogue and document type description from the plugin options to the selected file upload fields of the form. Note that this will overwrite existing field-level configuration!"
   },
@@ -2100,7 +2100,7 @@
     "originalDefault": "Save"
   },
   "YReu09": {
-    "defaultMessage": "Field label",
+    "defaultMessage": "Veldlabel",
     "description": "Copy document types config to file components: component label heading",
     "originalDefault": "Field label"
   },
@@ -3118,7 +3118,7 @@
     "originalDefault": "No advanced configuration is available for this form."
   },
   "p0n2wK": {
-    "defaultMessage": "The file component changes will be applied immediately. Are you sure you want to continue?",
+    "defaultMessage": "De bestandsuploadveldinstellingen worden meteen bijgewerkt. Ben je zeker dat je door wil gaan?",
     "description": "Copy document type configuration to selected file components confirmation modal content",
     "originalDefault": "The file component changes will be applied immediately. Are you sure you want to continue?"
   },

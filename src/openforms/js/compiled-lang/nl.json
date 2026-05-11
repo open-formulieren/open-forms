@@ -90,7 +90,7 @@
   "/MWRm7": [
     {
       "type": 0,
-      "value": "There are no file upload components in the form."
+      "value": "Het formulier bevat geen bestandsuploadvelden."
     }
   ],
   "/XbK4W": [
@@ -548,7 +548,7 @@
   "3eiHJv": [
     {
       "type": 0,
-      "value": "Catalogue RSIN"
+      "value": "Catalogus-RSIN"
     }
   ],
   "3h215E": [
@@ -560,7 +560,7 @@
   "3jd+Cd": [
     {
       "type": 0,
-      "value": "Catalogue domain"
+      "value": "Catalogusdomein"
     }
   ],
   "3leP68": [
@@ -1748,7 +1748,7 @@
   "CpZufh": [
     {
       "type": 0,
-      "value": "Check/uncheck all"
+      "value": "Vink alles aan/uit"
     }
   ],
   "CtjZFq": [
@@ -2157,7 +2157,7 @@
   "FJaFwb": [
     {
       "type": 0,
-      "value": "Copy"
+      "value": "Kopieer"
     }
   ],
   "FNT8nq": [
@@ -2774,16 +2774,12 @@
   ],
   "KTmwYn": [
     {
-      "type": 0,
-      "value": "Update "
-    },
-    {
       "type": 1,
       "value": "label"
     },
     {
       "type": 0,
-      "value": " configuration?"
+      "value": " instellingen bijwerken?"
     }
   ],
   "KYTAJZ": [
@@ -3139,7 +3135,7 @@
   "NwBpaW": [
     {
       "type": 0,
-      "value": "Document type description"
+      "value": "Documenttype-omschrijving"
     }
   ],
   "NyyJMK": [
@@ -3333,7 +3329,7 @@
   "PbVsAV": [
     {
       "type": 0,
-      "value": "File component document types"
+      "value": "Bijlage-documenttypen"
     }
   ],
   "PdaMqg": [
@@ -3345,7 +3341,7 @@
   "PhKHkq": [
     {
       "type": 0,
-      "value": "You can copy the catalogue and document type description from the plugin options to the selected file upload fields of the form. Note that this will overwrite existing field-level configuration!"
+      "value": "Je kan de catalogusreferentie en documenttypeomschrijving kopiëren van de plugin-instellingen naar de geselecteerde upload-velden van het formulier. Merk op dat je hiermee bestaande instellingen overschrijft!"
     }
   ],
   "PhN977": [
@@ -4351,7 +4347,7 @@
   "YReu09": [
     {
       "type": 0,
-      "value": "Field label"
+      "value": "Veldlabel"
     }
   ],
   "YSuwK2": [
@@ -6622,7 +6618,7 @@
   "p0n2wK": [
     {
       "type": 0,
-      "value": "The file component changes will be applied immediately. Are you sure you want to continue?"
+      "value": "De bestandsuploadveldinstellingen worden meteen bijgewerkt. Ben je zeker dat je door wil gaan?"
     }
   ],
   "p5Iv+R": [
