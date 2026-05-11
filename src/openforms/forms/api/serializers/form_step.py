@@ -119,11 +119,9 @@ class FormStepSerializer(
             "configuration",
             "form_definition",
             "name",
-            "internal_name",
             "url",
             "is_applicable",
             "login_required",
-            "is_reusable",
             "literals",
         )
 

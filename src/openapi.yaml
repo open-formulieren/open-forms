@@ -1507,6 +1507,8 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
+        - `internalName`
+        - `isReusable`
         - `translations`
       summary: List form steps
       parameters:
@@ -1547,6 +1549,8 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
+        - `internalName`
+        - `isReusable`
         - `translations`
       summary: Create a form step
       parameters:
@@ -1598,6 +1602,8 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
+        - `internalName`
+        - `isReusable`
         - `translations`
       summary: Retrieve form step details
       parameters:
@@ -1642,6 +1648,8 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
+        - `internalName`
+        - `isReusable`
         - `translations`
       summary: Update all details of a form step
       parameters:
@@ -1698,6 +1706,8 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
+        - `internalName`
+        - `isReusable`
         - `translations`
       summary: Update some details of a form step
       parameters:
@@ -1753,6 +1763,8 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
+        - `internalName`
+        - `isReusable`
         - `translations`
       summary: Delete a form step
       parameters:
