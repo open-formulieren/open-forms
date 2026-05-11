@@ -9,6 +9,16 @@ Open Forms 4.0 is a major version release that contains breaking changes.
    :local:
    :backlinks: none
 
+Removal of the unused HaalCentraal version 1.3
+==============================================
+
+HaalCentraal BRP Personen bevragen 1.3 was never in production so this is not available
+any more in Open Forms. The only supported version is v2 by default. All the related tests
+are now using VCR cassettes and are based on the docker container provided by BRP
+``https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/getting-started#probeer-en-test-de-api-lokaal``.
+
+See the README file in ``docker/haal_centraal_brp`` directory for extra information.
+
 Removal of legacy OpenID Connect callback endpoints
 ====================================================
 
