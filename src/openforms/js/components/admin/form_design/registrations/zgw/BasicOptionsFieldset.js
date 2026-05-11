@@ -4,7 +4,7 @@ import {FormattedMessage} from 'react-intl';
 
 import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
-import {CatalogueSelectOptions} from 'components/admin/forms/zgw';
+import {CatalogueSelectOptions, CopyDocumentTypesConfig} from 'components/admin/forms/zgw';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {CaseTypeSelect, CatalogueSelect, DocumentTypeSelect, ZGWAPIGroup} from './fields';
@@ -54,41 +54,57 @@ const BasicOptionsFieldset = ({
   const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
 
   return (
-    <Fieldset>
-      <ZGWAPIGroup
-        apiGroupChoices={apiGroupChoices}
-        onChangeCheck={async () => {
-          if (!hasAnyFieldConfigured) return true;
-          return openConfirmationModal();
-        }}
-      />
+    <>
+      <Fieldset>
+        <ZGWAPIGroup
+          apiGroupChoices={apiGroupChoices}
+          onChangeCheck={async () => {
+            if (!hasAnyFieldConfigured) return true;
+            return openConfirmationModal();
+          }}
+        />
 
-      <ErrorBoundary
-        errorMessage={
-          <FormattedMessage
-            description="ZGW APIs registrations options: generic error"
-            defaultMessage={`Something went wrong while retrieving the available
+        <ErrorBoundary
+          errorMessage={
+            <FormattedMessage
+              description="ZGW APIs registrations options: generic error"
+              defaultMessage={`Something went wrong while retrieving the available
             catalogues or case/document types defined in the selected catalogue. Please
             check that the services in the selected API group are configured correctly.`}
-          />
-        }
-      >
-        <MaybeThrowError error={cataloguesError} />
-        <CatalogueSelect loading={loadingCatalogues} optionGroups={catalogueOptionGroups} />
-        <CaseTypeSelect catalogueUrl={catalogueUrl} />
-        <DocumentTypeSelect catalogueUrl={catalogueUrl} />
-      </ErrorBoundary>
-      <ConfirmationModal
-        {...confirmationModalProps}
-        message={
-          <FormattedMessage
-            description="ZGW APIs registration options: warning message when changing the api group"
-            defaultMessage="Changing the api group will clear the existing configuration.
+            />
+          }
+        >
+          <MaybeThrowError error={cataloguesError} />
+          <CatalogueSelect loading={loadingCatalogues} optionGroups={catalogueOptionGroups} />
+          <CaseTypeSelect catalogueUrl={catalogueUrl} />
+          <DocumentTypeSelect catalogueUrl={catalogueUrl} />
+        </ErrorBoundary>
+        <ConfirmationModal
+          {...confirmationModalProps}
+          message={
+            <FormattedMessage
+              description="ZGW APIs registration options: warning message when changing the api group"
+              defaultMessage="Changing the api group will clear the existing configuration.
               Are you sure you want to continue?"
+            />
+          }
+        />
+      </Fieldset>
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="ZGw APIs registration: file components document types fieldset title"
+            defaultMessage="File component document types"
           />
         }
-      />
-    </Fieldset>
+        collapsible
+      >
+        <CopyDocumentTypesConfig
+          catalogueField="catalogue"
+          descriptionField="documentTypeDescription"
+        />
+      </Fieldset>
+    </>
   );
 };
 

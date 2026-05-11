@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {useContext, useEffect} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {components} from 'react-select';
 import {useAsync, usePrevious} from 'react-use';
@@ -13,6 +13,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 import {
   CatalogueSelect,
+  CopyDocumentTypesConfig,
   getCatalogueOption,
   groupAndSortCatalogueOptions,
 } from 'components/admin/forms/zgw';
@@ -250,6 +251,7 @@ export const DocumentTypesFieldet = () => {
         }
         {...documentTypeProps}
       />
+      <CopyDocumentTypesConfig catalogueField="catalogue" descriptionField="iotAttachment" />
     </Fieldset>
   );
 };

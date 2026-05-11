@@ -3,6 +3,7 @@ import {expect, fn, userEvent, waitFor, within} from 'storybook/test';
 
 import {
   FeatureFlagsDecorator,
+  FormDecorator,
   FormModalContentDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
@@ -30,7 +31,12 @@ const render = ({apiGroups, formData}) => (
 
 export default {
   title: 'Form design/Registration/Objects API',
-  decorators: [ValidationErrorsDecorator, FeatureFlagsDecorator, FormModalContentDecorator],
+  decorators: [
+    ValidationErrorsDecorator,
+    FormDecorator,
+    FeatureFlagsDecorator,
+    FormModalContentDecorator,
+  ],
   render,
   args: {
     apiGroups: [
@@ -38,6 +44,24 @@ export default {
       ['group-2', 'Objects API group 2'],
     ],
     formData: {},
+    availableComponents: {
+      textField1: {
+        type: 'textfield',
+        key: 'textField1',
+        label: 'textfield1',
+      },
+      textField2: {
+        type: 'textfield',
+        key: 'textField2',
+        label: 'textfield2',
+      },
+      file: {
+        type: 'file',
+        key: 'file',
+        label: 'attachments',
+      },
+    },
+    updateComponents: fn(),
   },
   parameters: {
     msw: {

@@ -87,6 +87,12 @@
       "value": "markeer de formulierstap als van toepassing"
     }
   ],
+  "/MWRm7": [
+    {
+      "type": 0,
+      "value": "There are no file upload components in the form."
+    }
+  ],
   "/XbK4W": [
     {
       "type": 0,
@@ -539,10 +545,22 @@
       "value": "Vraag verklaring invullen naar waarheid"
     }
   ],
+  "3eiHJv": [
+    {
+      "type": 0,
+      "value": "Catalogue RSIN"
+    }
+  ],
   "3h215E": [
     {
       "type": 0,
       "value": "Weergavestijl"
+    }
+  ],
+  "3jd+Cd": [
+    {
+      "type": 0,
+      "value": "Catalogue domain"
     }
   ],
   "3leP68": [
@@ -1727,6 +1745,12 @@
       "value": "Gebruik een variabele"
     }
   ],
+  "CpZufh": [
+    {
+      "type": 0,
+      "value": "Check/uncheck all"
+    }
+  ],
   "CtjZFq": [
     {
       "type": 0,
@@ -2128,6 +2152,12 @@
     {
       "type": 0,
       "value": "Er moet minstens één authenticatiemethode ingeschakeld zijn voor de mede-ondertekencomponent."
+    }
+  ],
+  "FJaFwb": [
+    {
+      "type": 0,
+      "value": "Copy"
     }
   ],
   "FNT8nq": [
@@ -2742,6 +2772,20 @@
       "value": "Er ging helaas iets fout!"
     }
   ],
+  "KTmwYn": [
+    {
+      "type": 0,
+      "value": "Update "
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": " configuration?"
+    }
+  ],
   "KYTAJZ": [
     {
       "type": 0,
@@ -3092,6 +3136,12 @@
       "value": "Een korte instructie onder het handtekenvlak."
     }
   ],
+  "NwBpaW": [
+    {
+      "type": 0,
+      "value": "Document type description"
+    }
+  ],
   "NyyJMK": [
     {
       "type": 0,
@@ -3280,10 +3330,22 @@
       "value": "Voeg de inhoud toe aan de PDF"
     }
   ],
+  "PbVsAV": [
+    {
+      "type": 0,
+      "value": "File component document types"
+    }
+  ],
   "PdaMqg": [
     {
       "type": 0,
       "value": "Regel toevoegen"
+    }
+  ],
+  "PhKHkq": [
+    {
+      "type": 0,
+      "value": "You can copy the catalogue and document type description from the plugin options to the selected file upload fields of the form. Note that this will overwrite existing field-level configuration!"
     }
   ],
   "PhN977": [
@@ -4284,6 +4346,12 @@
     {
       "type": 0,
       "value": "Opslaan"
+    }
+  ],
+  "YReu09": [
+    {
+      "type": 0,
+      "value": "Field label"
     }
   ],
   "YSuwK2": [
@@ -6549,6 +6617,12 @@
     {
       "type": 0,
       "value": "Omhoog"
+    }
+  ],
+  "p0n2wK": [
+    {
+      "type": 0,
+      "value": "The file component changes will be applied immediately. Are you sure you want to continue?"
     }
   ],
   "p5Iv+R": [

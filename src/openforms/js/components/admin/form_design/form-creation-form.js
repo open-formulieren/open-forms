@@ -5,7 +5,7 @@ import set from 'lodash/set';
 import sortBy from 'lodash/sortBy';
 import zip from 'lodash/zip';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React, {useCallback, useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 import useAsync from 'react-use/esm/useAsync';
@@ -779,6 +779,19 @@ function reducer(draft, action) {
     }
 
     /**
+     * Component level actions
+     */
+    case 'UPDATE_COMPONENT_BY_CALLBACK': {
+      const {componentKeys, callback} = action.payload;
+      for (const key of componentKeys) {
+        const component = findComponent(draft.formSteps, c => c.key === key);
+        if (!component) continue;
+        callback(component);
+      }
+      break;
+    }
+
+    /**
      * Submit & validation error handling
      */
     case 'SUBMIT_STARTED': {
@@ -974,6 +987,19 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
   }, [loading]);
 
   const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
+
+  const updateComponents = useCallback(
+    (componentKeys, callback) => {
+      dispatch({
+        type: 'UPDATE_COMPONENT_BY_CALLBACK',
+        payload: {
+          componentKeys,
+          callback,
+        },
+      });
+    },
+    [dispatch]
+  );
 
   /**
    * Functions for handling events
@@ -1244,6 +1270,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           registrationBackends: state.form.registrationBackends,
           selectedAuthPlugins: state.selectedAuthPlugins,
           newLogicEvaluationEnabled: state.form.newLogicEvaluationEnabled,
+          updateComponents: updateComponents,
         }}
       >
         <FormWarnings form={state.form} />
