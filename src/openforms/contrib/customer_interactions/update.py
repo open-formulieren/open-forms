@@ -48,7 +48,7 @@ def update_customer_interaction_data(
     There are several flows how the information is updated depending on if the user and
     their digital addresses are known in the Customer Interactions API
 
-    1. User is not authenticated (implemented):
+    1. User is not authenticated:
 
       * create ``contactMoment``, ``betrokkene`` and ``onderwerpObject``
       * create ``digitaalAdres`` records linked to the created ``betrokkene``
@@ -66,6 +66,7 @@ def update_customer_interaction_data(
       * find ``partij`` for the user
       * create ``contactMoment``, ``betrokkene`` and ``onderwerpObject`` and link ``betrokkene``
         to the found ``partij``
+      * create ``digitaalAdres`` records linked to the created ``betrokkene`` if the used address is not default
 
     4. User is authenticated, known in the API and submits new addresses:
 
@@ -118,7 +119,7 @@ def update_customer_interaction_data(
             auth_attribute: AuthAttribute = submission.auth_info.attribute
 
             # link authenticated user to the party
-            party, created = client.get_or_create_party(auth_attribute, auth_value)
+            party, _ = client.get_or_create_party(auth_attribute, auth_value)
             party_uuid = party["uuid"]
         else:
             party_uuid = ""
@@ -158,14 +159,28 @@ def update_customer_interaction_data(
             )
 
             if address_value in prefill_channel_options:
-                # we update it only if it's marked as "isNewPreferred"
+                # flow 5. we update it only if it's marked as "isNewPreferred"
                 if is_address_new_preferred and address_value != prefill_preferred:
                     updated_address = client.update_digital_address_for_party(
                         address=address_value, party_uuid=party_uuid, is_preferred=True
                     )
                     updated_addresses.append(updated_address)
 
+                # flow 3. we create a new address and link it to betrokkene
+                elif (
+                    not is_address_new_preferred and address_value != prefill_preferred
+                ):
+                    created_address = client.create_digital_address(
+                        address=address_value,
+                        address_type=channels_to_address_types[address_channel],
+                        betrokkene_uuid=customer_contact["betrokkene"]["uuid"],
+                        is_preferred=False,
+                    )
+                    created_addresses.append(created_address)
+
             else:
+                # flows 1,2 4: we create a new address and link it to betrokkene
+                # flows 2,4: we link a new address to partij if it's marked as "isNewPreferred"
                 created_address = client.create_digital_address(
                     address=address_value,
                     address_type=channels_to_address_types[address_channel],
