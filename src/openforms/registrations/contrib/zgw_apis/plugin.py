@@ -1,5 +1,4 @@
 import warnings
-from collections.abc import Mapping
 from datetime import datetime
 from functools import partial, wraps
 from io import BytesIO
@@ -166,7 +165,21 @@ def _resolve_document_type(
     return version["url"]
 
 
-def _get_template_context(submission: Submission) -> Mapping[str, object]:
+class SubmissionContext(TypedDict):
+    public_reference: str
+    kenmerk: str
+    language_code: str
+
+
+class ZaakTemplateContext(TypedDict):
+    _submission: Submission
+    form_name: str
+    productaanvraag_type: str
+    variables: dict[str, VariableValue]
+    submission: SubmissionContext
+
+
+def _get_template_context(submission: Submission) -> ZaakTemplateContext:
     """
     get context for templated configuration options
     """
