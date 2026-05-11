@@ -97,7 +97,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         # weasyprint deps, see https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#debian-11
         libpango-1.0-0 \
         libpangoft2-1.0-0 \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && pip uninstall --yes --root-user-action ignore pip
 
 WORKDIR /app
 COPY ./bin/docker_start.sh /start.sh
