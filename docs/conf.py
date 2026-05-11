@@ -132,6 +132,7 @@ linkcheck_ignore = [
     r"https://opentelemetry\.io/docs/.*",  # times out frequently, even with 30s timeouts
     r"https://(www\.)?npmjs\.com.*",  # IP/UA blocking...
     r"https://storybook\.js\.org.*",  # frequently times out despite being available
+    r"https://content-security-policy\.com.*",  # frequently times out despite being available
 ]
 
 linkcheck_anchors_ignore_for_url = [
