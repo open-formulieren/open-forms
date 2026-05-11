@@ -1,4 +1,4 @@
-from collections.abc import Collection, Iterable, Mapping
+from collections.abc import Collection, Iterable
 from typing import Any
 
 from django.urls import reverse
@@ -13,7 +13,6 @@ from openforms.contrib.haal_centraal.checks import (
 )
 from openforms.contrib.haal_centraal.clients import NoServiceConfigured, get_brp_client
 from openforms.contrib.haal_centraal.clients.brp import BRPClient
-from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.submissions.models import Submission
 from openforms.typing import StrOrPromise
@@ -22,32 +21,15 @@ from ...base import BasePlugin
 from ...constants import IdentifierRoles
 from ...exceptions import PrefillSkipped
 from ...registry import register
-from .constants import AttributesV1, AttributesV2
+from .constants import AttributesV2
 
 logger = structlog.stdlib.get_logger(__name__)
 
 PLUGIN_IDENTIFIER = "haalcentraal"
 
-VERSION_TO_ATTRIBUTES_MAP: Mapping[
-    BRPVersions, type[AttributesV1] | type[AttributesV2]
-] = {
-    BRPVersions.v13: AttributesV1,
-    BRPVersions.v20: AttributesV2,
-}
-
-type HCAttributes = Collection[AttributesV1] | Collection[AttributesV2]
-
 
 def get_attributes_cls():
-    config = HaalCentraalConfig.get_solo()
-
-    match config:
-        case HaalCentraalConfig(brp_personen_version=version) if (
-            version in VERSION_TO_ATTRIBUTES_MAP
-        ):
-            return VERSION_TO_ATTRIBUTES_MAP[version]
-        case _:
-            return AttributesV1
+    return AttributesV2
 
 
 @register(PLUGIN_IDENTIFIER)
@@ -76,6 +58,8 @@ class HaalCentraalPrefill(BasePlugin):
             try:
                 values[attr] = glom(bsn_data, attr)
             except GlomError as exc:
+                # some attributes are not required in HC v2 so they may be missing from
+                # the response
                 logger.warning(
                     "missing_attribute_in_response", attribute=attr, exc_info=exc
                 )
@@ -158,6 +142,8 @@ class HaalCentraalPrefill(BasePlugin):
                 client,
                 identifier,
                 (
+                    # these fields are not required in HC v2 so they won't be always
+                    # available
                     str(Attributes.naam_voornamen),
                     str(Attributes.naam_voorvoegsel),
                     str(Attributes.naam_geslachtsnaam),

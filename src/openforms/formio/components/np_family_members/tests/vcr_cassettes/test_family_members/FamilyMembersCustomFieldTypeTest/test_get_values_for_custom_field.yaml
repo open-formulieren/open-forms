@@ -1,0 +1,92 @@
+interactions:
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990676"],
+      "fields": ["kinderen.burgerservicenummer", "kinderen.naam.voornamen", "kinderen.naam.voorletters",
+      "kinderen.naam.voorvoegsel", "kinderen.naam.geslachtsnaam", "kinderen.geboorte.datum"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.33.0
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: "{\"type\":\"RaadpleegMetBurgerservicenummer\",\"personen\":[{\"kinderen\":[{\"burgerservicenummer\":\"999991760\",\"naam\":{\"voornamen\":\"Ang\xE9lie
+        Francisca\",\"geslachtsnaam\":\"Holthuizen\",\"voorletters\":\"A.F.\"},\"geboorte\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"1931-06-12\",\"langFormaat\":\"12
+        juni 1931\"}}},{\"naam\":{\"voornamen\":\"Eveline Johanna\",\"geslachtsnaam\":\"Holthuizen\",\"voorletters\":\"E.J.\"},\"geboorte\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"1931-06-12\",\"langFormaat\":\"12
+        juni 1931\"}}},{\"naam\":{\"voornamen\":\"Franciscus Engelbertus\",\"geslachtsnaam\":\"Holthuizen\",\"voorletters\":\"F.E.\"},\"geboorte\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"1930-03-15\",\"langFormaat\":\"15
+        maart 1930\"}}},{\"burgerservicenummer\":\"999993392\",\"naam\":{\"voornamen\":\"Margaretha\",\"geslachtsnaam\":\"Holthuizen\",\"voorletters\":\"M.\"},\"geboorte\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"1928-10-12\",\"langFormaat\":\"12
+        oktober 1928\"}}},{\"burgerservicenummer\":\"999991978\",\"naam\":{\"voornamen\":\"Adrianus\",\"geslachtsnaam\":\"Holthuizen\",\"voorletters\":\"A.\"},\"geboorte\":{\"datum\":{\"type\":\"Datum\",\"datum\":\"1927-02-03\",\"langFormaat\":\"3
+        februari 1927\"}}}]}]}"
+    headers:
+      Content-Length:
+      - '1068'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 11 May 2026 07:09:20 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999991760",
+      "999993392", "999991978"], "fields": ["burgerservicenummer", "burgerservicenummer",
+      "overlijden"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '179'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.33.0
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"burgerservicenummer":"999991760"},{"burgerservicenummer":"999991978"},{"burgerservicenummer":"999993392"}]}'
+    headers:
+      Content-Length:
+      - '163'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 11 May 2026 07:09:20 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 200
+      message: OK
+version: 1

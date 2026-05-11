@@ -50,6 +50,7 @@ assignees: sergei-maertens
 
   - Formio components
 
+    - [ ] `openforms.formio.components.np_family_members.tests.test_family_members`
     - [ ] `openforms.formio.dynamic_config.tests.test_reference_lists_config`
     - [ ] `openforms.formio.formatters.tests.test_default_formatters.MapFormatterTests`
 
@@ -68,7 +69,9 @@ assignees: sergei-maertens
     - [ ] `openforms.tests.test_registrator_prefill` (uses org OIDC)
     - [ ] `openforms.prefill.contrib.customer_interactions`
     - [ ] `openforms.prefill.contrib.family_members`
+    - [ ] `openforms.prefill.contrib.haalcentraal_brp`
     - [ ] `openforms.prefill.contrib.objects_api`
+    - [ ] `openforms.prefill.tests.test_prefill_variables`
 
   - Registrations:
 

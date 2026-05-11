@@ -1,0 +1,44 @@
+interactions:
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["000009923"],
+      "fields": ["burgerservicenummer", "naam.voornamen"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '134'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.33.0
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/wrong-path/personen
+  response:
+    body:
+      string: '{"type":"https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4","title":"Opgevraagde
+        resource bestaat niet.","status":404,"instance":"/haalcentraal/api/brp/wrong-path/personen"}'
+    headers:
+      Content-Length:
+      - '183'
+      Content-Type:
+      - application/problem+json
+      Date:
+      - Mon, 11 May 2026 06:43:04 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 404
+      message: Not Found
+version: 1

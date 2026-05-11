@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -13,11 +12,13 @@ from zgw_consumers.test.factories import ServiceFactory
 from openforms.authentication.service import AuthAttribute
 from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration
+from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.formio.service import get_dynamic_configuration
 from openforms.logging.tests.utils import disable_timelinelog
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.template import render_from_string
+from openforms.utils.tests.vcr import OFVCRMixin
 from stuf.constants import EndpointType
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
@@ -29,12 +30,26 @@ TEST_FILES = Path(__file__).parent.resolve() / "responses"
 
 
 @disable_timelinelog()
-class FamilyMembersCustomFieldTypeTest(TestCase):
-    @patch(
-        "openforms.formio.components.custom.get_np_family_members_haal_centraal",
-        return_value=[("222333444", "Billy Doe"), ("333444555", "Jane Doe")],
-    )
-    def test_get_values_for_custom_field(self, mock_get_np_children):
+class FamilyMembersCustomFieldTypeTest(OFVCRMixin, TestCase):
+    def setUp(self):
+        super().setUp()
+
+        # set up patcher for the configuration
+        config = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="http://localhost:5010/haalcentraal/api/brp/",
+                auth_type=AuthTypes.no_auth,
+            ),
+            brp_personen_version=BRPVersions.v20,
+        )
+        config_patcher = patch(
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+            return_value=config,
+        )
+        config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
+    def test_get_values_for_custom_field(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -47,7 +62,7 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                 },
             ],
             auth_info__attribute=AuthAttribute.bsn,
-            auth_info__value="111222333",
+            auth_info__value="999990676",
         )
         formio_wrapper = submission.submissionstep_set.get().form_step.form_definition.configuration_wrapper
 
@@ -67,41 +82,29 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
         self.assertFalse(rewritten_component["fieldSet"])
         self.assertFalse(rewritten_component["inline"])
         self.assertEqual("checkbox", rewritten_component["inputType"])
-        self.assertEqual(2, len(rewritten_component["values"]))
+        self.assertEqual(3, len(rewritten_component["values"]))
         self.assertEqual(
             rewritten_component["values"][0],
-            {"value": "222333444", "label": "Billy Doe"},
+            {"label": "Angélie Francisca Holthuizen", "value": "999991760"},
         )
         self.assertEqual(
             rewritten_component["values"][1],
-            {"value": "333444555", "label": "Jane Doe"},
+            {"label": "Margaretha Holthuizen", "value": "999993392"},
+        )
+        self.assertEqual(
+            rewritten_component["values"][2],
+            {"label": "Adrianus Holthuizen", "value": "999991978"},
         )
 
-    @patch("openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo")
-    def test_get_children_haal_centraal(self, mock_brp_config_get_solo):
-        mock_brp_config_get_solo.return_value = HaalCentraalConfig(
-            brp_personen_service=ServiceFactory.build(
-                api_root="https://personen/api/",
-                auth_type=AuthTypes.no_auth,
-            )
+    def test_get_children_haal_centraal(self):
+        kids_choices = get_np_family_members_haal_centraal(
+            bsn="999990676", include_children=True, include_partners=False
         )
-        with (TEST_FILES / "op_2_children.json").open("r") as infile:
-            json_response = json.load(infile)
 
-        with requests_mock.Mocker() as m:
-            m.get(
-                "https://personen/api/ingeschrevenpersonen/111222333/kinderen",
-                status_code=200,
-                json=json_response,
-            )
-
-            kids_choices = get_np_family_members_haal_centraal(
-                bsn="111222333", include_children=True, include_partners=False
-            )
-
-            self.assertEqual(2, len(kids_choices))
-            self.assertEqual(("456789123", "Bolly van Doe"), kids_choices[0])
-            self.assertEqual(("789123456", "Billy van Doe"), kids_choices[1])
+        self.assertEqual(3, len(kids_choices))
+        self.assertEqual(("999991760", "Angélie Francisca Holthuizen"), kids_choices[0])
+        self.assertEqual(("999993392", "Margaretha Holthuizen"), kids_choices[1])
+        self.assertEqual(("999991978", "Adrianus Holthuizen"), kids_choices[2])
 
     @patch("stuf.stuf_bg.client.StufBGConfig.get_solo")
     def test_get_children_stuf_bg(self, mock_stufbg_config_get_solo):
