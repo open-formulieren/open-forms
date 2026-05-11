@@ -172,3 +172,27 @@ Op basis van sjablonen
 
 Zie de rubriek in de :ref:`sjabloondocumentatie <objecten_api_registratie>`.
 
+Gedeelde functionaliteit
+========================
+
+Bijlagen uploaden
+-----------------
+
+Bestanden die toegevoegd zijn door de gebruiker in "Bestandsupload"-velden worden
+geüpload naar de Documenten API (mits :ref:`ingesteld <configuration_registration_objects>`).
+De resulterende resource-URLs zijn vervolgens beschikbaar om op te nemen in het Object
+wat aangemaakt wordt.
+
+In de plugin-instellingen kan je een catalogus selecteren en vervolgens kies je het
+standaard-documenttype wat voor dergelijke bijlagen gebruikt dient te worden. Per
+"Bestandsupload"-veld kan je hiervan afwijken, indien nodig, via de "Registratie"-tab,
+waar je de catalogus-identificatie en omschrijving van het documenttype kan opgeven.
+Omdat dit omslachtig kan zijn als je veel uploadvelden hebt, kan je ook de
+plugin-instellingen in bulk kopiëren naar (een deel van) de uploadvelden. Dit vind je
+in de plugin-instellingen onder het kopje "Documenttypen".
+
+.. versionadded:: 3.5.2
+
+    Sinds Open Formulieren 3.5.2 kan je de bijlage-uploads instellen met een
+    catalogusreferentie en documenttypeomschrijving in plaats van een URL naar een
+    informatieobjecttype.
