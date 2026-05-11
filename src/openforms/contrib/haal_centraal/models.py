@@ -39,7 +39,7 @@ class HaalCentraalConfig(SingletonModel):
         _("BRP Personen Bevragen API version"),
         max_length=30,
         choices=BRPVersions.choices,
-        default=BRPVersions.v13,  # TODO: should be change the default to v2?
+        default=BRPVersions.v20,
         help_text=_("The API version provided by the selected service."),
     )
     default_brp_personen_purpose_limitation_header_value = models.CharField(
