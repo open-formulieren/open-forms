@@ -80,24 +80,24 @@
                 "haalcentraalconfig"
             ],
             [
-                "add_jccconfig",
-                "jcc",
-                "jccconfig"
+                "add_jccrestconfig",
+                "jcc_rest",
+                "jccrestconfig"
             ],
             [
-                "change_jccconfig",
-                "jcc",
-                "jccconfig"
+                "change_jccrestconfig",
+                "jcc_rest",
+                "jccrestconfig"
             ],
             [
-                "delete_jccconfig",
-                "jcc",
-                "jccconfig"
+                "delete_jccrestconfig",
+                "jcc_rest",
+                "jccrestconfig"
             ],
             [
-                "view_jccconfig",
-                "jcc",
-                "jccconfig"
+                "view_jccrestconfig",
+                "jcc_rest",
+                "jccrestconfig"
             ],
             [
                 "add_kvkconfig",
@@ -1059,24 +1059,24 @@
                 "haalcentraalconfig"
             ],
             [
-                "add_jccconfig",
-                "jcc",
-                "jccconfig"
+                "add_jccrestconfig",
+                "jcc_rest",
+                "jccrestconfig"
             ],
             [
-                "change_jccconfig",
-                "jcc",
-                "jccconfig"
+                "change_jccrestconfig",
+                "jcc_rest",
+                "jccrestconfig"
             ],
             [
-                "delete_jccconfig",
-                "jcc",
-                "jccconfig"
+                "delete_jccrestconfig",
+                "jcc_rest",
+                "jccrestconfig"
             ],
             [
-                "view_jccconfig",
-                "jcc",
-                "jccconfig"
+                "view_jccrestconfig",
+                "jcc_rest",
+                "jccrestconfig"
             ],
             [
                 "add_kvkconfig",
