@@ -1,10 +1,15 @@
+import json
 from io import BytesIO
-from typing import Literal, NotRequired, TypedDict
+from typing import Literal
+
+from django.core.serializers.json import DjangoJSONEncoder
 
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
+from openforms.typing import JSONObject, VariableValue
 
 from .clients.documenten import DocumentenClient
 from .resolvers import DocumentTypeResolver
+from .typing import DocumentOptions
 
 __all__ = [
     "DocumentOptions",
@@ -15,15 +20,6 @@ __all__ = [
 ]
 
 type SupportedLanguage = Literal["nl", "en"]
-
-
-class DocumentOptions(TypedDict):
-    informatieobjecttype: str
-    organisatie_rsin: str
-    auteur: NotRequired[str]
-    doc_vertrouwelijkheidaanduiding: NotRequired[str]
-    ontvangstdatum: NotRequired[str]
-    titel: NotRequired[str]
 
 
 def create_report_document(
@@ -104,3 +100,27 @@ def create_attachment_document(
                 "doc_vertrouwelijkheidaanduiding", ""
             ),
         )
+
+
+def create_json_document(
+    client: DocumentenClient,
+    name: str,
+    document_data: dict[str, dict[str, VariableValue] | JSONObject],
+    options: DocumentOptions,
+    language: SupportedLanguage,
+) -> dict:
+    content = BytesIO(json.dumps(document_data, cls=DjangoJSONEncoder).encode("utf-8"))
+    return client.create_document(
+        informatieobjecttype=options["informatieobjecttype"],
+        bronorganisatie=options["organisatie_rsin"],
+        title=options.get("titel") or name,
+        author=options.get("auteur") or "Aanvrager",
+        language=language,
+        format="application/json",
+        content=content,
+        status="definitief",
+        filename=f"openforms-{name}.json",
+        description="Ingezonden formulier",
+        received_date=options.get("ontvangstdatum"),
+        vertrouwelijkheidaanduiding=options.get("doc_vertrouwelijkheidaanduiding", ""),
+    )

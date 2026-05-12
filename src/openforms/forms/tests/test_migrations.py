@@ -571,3 +571,171 @@ class AddFormTypeFieldReverseMigrationTests(MigratorTestCase):
         self.assertTrue(forms[0].is_appointment)
         self.assertFalse(forms[1].is_appointment)
         self.assertFalse(forms[2].is_appointment)
+
+
+class ZGWDefaultSummaryDocumentsMigrationTests(MigratorTestCase):
+    migrate_from = (
+        "forms",
+        "0129_remove_form_new_renderer_enabled",
+    )
+    migrate_to = (
+        "forms",
+        "0130_set_default_summary_documents",
+    )
+
+    def prepare(self):
+        apps = self.old_state.apps
+        Form = apps.get_model("forms", "Form")
+        FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+
+        form = Form.objects.create(name="Form")
+        FormRegistrationBackend.objects.create(
+            form=form,
+            name="ZGW zaak registration",
+            key="zgw-create-zaak",
+            backend="zgw-create-zaak",
+            options={
+                "zgw_api_group": 1,
+                "catalogue": {
+                    "domain": "TEST",
+                    "rsin": "000000000",
+                },
+                "case_type_identification": "ZT-001",
+                "document_type_description": "PDF Informatieobjecttype",
+                "zaaktype": "",
+                "informatieobjecttype": "",
+                "organisatie_rsin": "000000000",
+                # empty value should be ignored, use the VA from the zaaktype
+                "zaak_vertrouwelijkheidaanduiding": "",
+                "objects_api_group": None,
+                "product_url": "",
+                "partners_roltype": "",
+                "partners_description": "",
+                "children_roltype": "",
+                "children_description": "",
+                # empty-ish value should fall back to default
+                "auteur": "",
+            },
+        )
+
+    def test_migration_sets_default_summary_documents(self):
+        """
+        Ensure that the data migration succeeds and the previous default is used
+        (to create a PDF summary) when the configured ZGW API gets called.
+        """
+        FormRegistrationBackend = self.new_state.apps.get_model(
+            "forms", "FormRegistrationBackend"
+        )
+
+        backend = FormRegistrationBackend.objects.get()
+
+        self.assertEqual(
+            backend.options,
+            {
+                "zgw_api_group": 1,
+                "catalogue": {
+                    "domain": "TEST",
+                    "rsin": "000000000",
+                },
+                "case_type_identification": "ZT-001",
+                "document_type_description": "PDF Informatieobjecttype",
+                "zaaktype": "",
+                "informatieobjecttype": "",
+                "organisatie_rsin": "000000000",
+                # empty value should be ignored, use the VA from the zaaktype
+                "zaak_vertrouwelijkheidaanduiding": "",
+                "objects_api_group": None,
+                "product_url": "",
+                "partners_roltype": "",
+                "partners_description": "",
+                "children_roltype": "",
+                "children_description": "",
+                # empty-ish value should fall back to default
+                "auteur": "",
+                "summary_documents": ["pdf"],
+            },
+        )
+
+
+class ZGWRemoveSummaryDocumentsMigrationTests(MigratorTestCase):
+    migrate_to = (
+        "forms",
+        "0129_remove_form_new_renderer_enabled",
+    )
+    migrate_from = (
+        "forms",
+        "0130_set_default_summary_documents",
+    )
+
+    def prepare(self):
+        apps = self.old_state.apps
+        Form = apps.get_model("forms", "Form")
+        FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+
+        form = Form.objects.create(name="Form")
+        FormRegistrationBackend.objects.create(
+            form=form,
+            name="ZGW zaak registration",
+            key="zgw-create-zaak",
+            backend="zgw-create-zaak",
+            options={
+                "zgw_api_group": 1,
+                "catalogue": {
+                    "domain": "TEST",
+                    "rsin": "000000000",
+                },
+                "case_type_identification": "ZT-001",
+                "document_type_description": "PDF Informatieobjecttype",
+                "zaaktype": "",
+                "informatieobjecttype": "",
+                "organisatie_rsin": "000000000",
+                # empty value should be ignored, use the VA from the zaaktype
+                "zaak_vertrouwelijkheidaanduiding": "",
+                "objects_api_group": None,
+                "product_url": "",
+                "partners_roltype": "",
+                "partners_description": "",
+                "children_roltype": "",
+                "children_description": "",
+                # empty-ish value should fall back to default
+                "auteur": "",
+                "summary_documents": ["pdf"],
+            },
+        )
+
+    def test_migration_removes_default_summary_documents(self):
+        """
+        Ensure that the data migration succeeds and the previous value is removed
+        (to create a PDF summary) when the configured ZGW API gets called.
+        """
+        FormRegistrationBackend = self.new_state.apps.get_model(
+            "forms", "FormRegistrationBackend"
+        )
+
+        backend = FormRegistrationBackend.objects.get()
+
+        self.assertEqual(
+            backend.options,
+            {
+                "zgw_api_group": 1,
+                "catalogue": {
+                    "domain": "TEST",
+                    "rsin": "000000000",
+                },
+                "case_type_identification": "ZT-001",
+                "document_type_description": "PDF Informatieobjecttype",
+                "zaaktype": "",
+                "informatieobjecttype": "",
+                "organisatie_rsin": "000000000",
+                # empty value should be ignored, use the VA from the zaaktype
+                "zaak_vertrouwelijkheidaanduiding": "",
+                "objects_api_group": None,
+                "product_url": "",
+                "partners_roltype": "",
+                "partners_description": "",
+                "children_roltype": "",
+                "children_description": "",
+                # empty-ish value should fall back to default
+                "auteur": "",
+            },
+        )
