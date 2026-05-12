@@ -21,7 +21,13 @@ import {
 
 const NAME = 'form.registrationBackends.0.options';
 
-const render = ({apiGroups, objectsApiGroupChoices, confidentialityLevelChoices, formData}) => (
+const render = ({
+  apiGroups,
+  objectsApiGroupChoices,
+  confidentialityLevelChoices,
+  summaryDocumentChoices,
+  formData,
+}) => (
   <Formik
     initialValues={{
       // defaults
@@ -55,6 +61,7 @@ const render = ({apiGroups, objectsApiGroupChoices, confidentialityLevelChoices,
         apiGroupChoices={apiGroups}
         objectsApiGroupChoices={objectsApiGroupChoices}
         confidentialityLevelChoices={confidentialityLevelChoices}
+        summaryDocumentChoices={summaryDocumentChoices}
       />
     </Form>
   </Formik>
@@ -79,6 +86,10 @@ export default {
     confidentialityLevelChoices: [
       ['openbaar', 'Openbaar'],
       ['geheim', 'Geheim'],
+    ],
+    summaryDocumentChoices: [
+      ['pdf', 'PDF document'],
+      ['json', 'JSON document'],
     ],
     formData: {},
     availableComponents: {
@@ -177,6 +188,7 @@ export const SelectCaseTypeAndDocumentType = {
       zgwApiGroup: 1,
       zaaktype: '',
       propertyMappings: [],
+      summaryDocuments: [],
     },
   },
 

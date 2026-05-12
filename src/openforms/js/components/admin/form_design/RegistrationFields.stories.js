@@ -55,6 +55,10 @@ export default {
               enum: ['objects-group'],
               enumNames: ['Objects API Group'],
             },
+            summaryDocuments: {
+              enum: ['pdf', 'json'],
+              enumNames: ['PDF document', 'JSON document'],
+            },
           },
         },
       },
@@ -621,6 +625,7 @@ export const ConfiguredBackends = {
           objecttypeVersion: '',
           contentJson: '',
           propertyMappings: [],
+          summaryDocuments: [],
         },
       },
       {

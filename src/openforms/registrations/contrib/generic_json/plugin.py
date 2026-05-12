@@ -11,7 +11,11 @@ from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
-from openforms.formio.service import FormioConfigurationWrapper, FormioData
+from openforms.formio.service import (
+    FormioConfigurationWrapper,
+    FormioData,
+    as_component_plugin,
+)
 from openforms.formio.typing import (
     Component,
     EditGridComponent,
@@ -397,11 +401,10 @@ def process_component(
 
             for partner in partners:
                 assert isinstance(partner, dict)
-
-                # these are not relevant (at least for now)
-                partner.pop("dateOfBirthPrecision", None)
-                partner.pop("__addedManually", None)
-
+                component_plugin = as_component_plugin(component)
+                assert component_plugin.internal_properties is not None
+                for internal_property in component_plugin.internal_properties:
+                    partner.pop(internal_property, None)
         case {"type": "children"}:
             children = values[key]
             assert isinstance(children, list)
@@ -412,11 +415,10 @@ def process_component(
                 if child.get("selected") not in (None, True):
                     continue
 
-                # not relevant properties
-                child.pop("dateOfBirthPrecision", None)
-                child.pop("__id", None)
-                child.pop("__addedManually", None)
-                child.pop("selected", None)
+                component_plugin = as_component_plugin(component)
+                assert component_plugin.internal_properties is not None
+                for internal_property in component_plugin.internal_properties:
+                    child.pop(internal_property, None)
 
                 updated.append(child)
 

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Collection
 from typing import TYPE_CHECKING, Literal, NotRequired, TypedDict
+
+from .constants import SummaryDocumentChoices
 
 if TYPE_CHECKING:
     from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
@@ -57,3 +60,4 @@ class RegistrationOptions(TypedDict):
     auteur: NotRequired[str]
     zaak_omschrijving: NotRequired[str]
     zaak_toelichting: NotRequired[str]
+    summary_documents: Collection[SummaryDocumentChoices]

@@ -1,9 +1,12 @@
 import warnings
+from collections import defaultdict
 from datetime import datetime
 from functools import partial, wraps
 from io import BytesIO
 from typing import Any, TypedDict
 
+from django.db.models import F, TextField, Value
+from django.db.models.functions import Coalesce, NullIf
 from django.urls import reverse
 from django.utils.text import Truncator
 from django.utils.translation import gettext, gettext_lazy as _
@@ -27,16 +30,23 @@ from openforms.contrib.zgw.service import (
     DocumentOptions,
     DocumentTypeResolver,
     create_attachment_document,
+    create_json_document,
     create_report_document,
 )
 from openforms.emails.service import get_last_confirmation_email
+from openforms.formio.datastructures import FormioConfigurationWrapper, FormioData
+from openforms.formio.service import as_component_plugin
+from openforms.formio.typing.base import Component
+from openforms.forms.json_schema import NestedDict, generate_json_schema
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.submissions.models.submission_files import SubmissionFileAttachment
 from openforms.submissions.public_references import generate_unique_submission_reference
 from openforms.template import openforms_backend, render_from_string
-from openforms.typing import VariableValue
+from openforms.typing import JSONObject, VariableValue
 from openforms.utils.date import datetime_in_amsterdam
 from openforms.utils.pdf import convert_html_to_pdf
+from openforms.variables.constants import FormVariableSources
 
 from ...base import BasePlugin, PreRegistrationResult
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
@@ -46,12 +56,15 @@ from ...registry import register
 from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .client import get_catalogi_client, get_documents_client, get_zaken_client
+from .constants import SummaryDocumentChoices
 from .models import ZGWApiGroupConfig
 from .options import ZaakOptionsSerializer
 from .typing import CatalogueOption, RegistrationOptions
 from .utils import process_according_to_eigenschap_format
 
 logger = structlog.stdlib.get_logger(__name__)
+
+PLUGIN_IDENTIFIER = "zgw-create-zaak"
 
 
 class VariablesProperties(TypedDict):
@@ -197,7 +210,7 @@ def transform_addressnl_to_verblijfsadres(value):
     }
 
 
-@register("zgw-create-zaak")
+@register(PLUGIN_IDENTIFIER)
 class ZGWRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("ZGW API's")
     configuration_options = ZaakOptionsSerializer
@@ -344,7 +357,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
     @wrap_api_errors
     def register_submission(
         self, submission: Submission, options: RegistrationOptions
-    ) -> dict | None:
+    ) -> dict:
         """
         Add the PDF document with the submission data (confirmation report) to the zaak created during pre-registration.
         """
@@ -454,8 +467,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
             result["informatieobjecttype_url"] = informatieobjecttype_url
 
-            # Upload the summary PDF
-            pdf_options: DocumentOptions = {
+            summary_document_options: DocumentOptions = {
                 "informatieobjecttype": informatieobjecttype_url,
                 "organisatie_rsin": options["organisatie_rsin"],
                 "auteur": options["auteur"],
@@ -463,29 +475,30 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     "doc_vertrouwelijkheidaanduiding"
                 ],
             }
-            summary_pdf_document = execute_unless_result_exists(
-                partial(
-                    create_report_document,
-                    client=documents_client,
-                    name=submission.form.name,
-                    submission_report=submission_report,
-                    options=pdf_options,
-                    language=submission_report.submission.language_code,
-                ),
-                submission,
-                "intermediate.documents.report.document",
-            )
-
-            # Relate summary PDF
-            execute_unless_result_exists(
-                partial(
-                    zaken_client.relate_document,
-                    zaak=zaak,
-                    document=summary_pdf_document,
-                ),
-                submission,
-                "intermediate.documents.report.relation",
-            )
+            summary_documents = options.get("summary_documents", []) or []
+            if SummaryDocumentChoices.pdf in summary_documents:
+                summary_pdf_document = execute_unless_result_exists(
+                    partial(
+                        create_report_document,
+                        client=documents_client,
+                        name=f"{submission.form.name} (PDF)",
+                        submission_report=submission_report,
+                        options=summary_document_options,
+                        language=submission_report.submission.language_code,
+                    ),
+                    submission,
+                    "intermediate.documents.report.document",
+                )
+                # Relate summary PDF
+                execute_unless_result_exists(
+                    partial(
+                        zaken_client.relate_document,
+                        zaak=zaak,
+                        document=summary_pdf_document,
+                    ),
+                    submission,
+                    "intermediate.documents.report.relation",
+                )
 
             initiator_rol = execute_unless_result_exists(
                 partial(
@@ -718,9 +731,63 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     f"intermediate.documents.{attachment.id}.relation",  # type: ignore
                 )
 
+            if SummaryDocumentChoices.json in summary_documents:
+                state = submission.variables_state
+                all_values = state.get_data(include_static_variables=True)
+                variables = state.variables
+                values_schema = generate_json_schema(
+                    submission.form,
+                    list(variables.keys()),
+                    backend_id=PLUGIN_IDENTIFIER,
+                    backend_options=options,  # pyright: ignore[reportArgumentType]
+                    submission=submission,
+                )
+                submission_uploads = get_submission_uploads(submission)
+
+                post_process(
+                    list(variables.keys()),
+                    all_values,
+                    NestedDict(values_schema),
+                    submission,
+                    submission_uploads,
+                )
+
+                document_data = {
+                    "values": all_values.data,
+                    "values_schema": values_schema,
+                }
+                summary_json_document = execute_unless_result_exists(
+                    partial(
+                        create_json_document,
+                        client=documents_client,
+                        document_data=document_data,
+                        name=f"{submission.form.name} (JSON)",
+                        options=summary_document_options,
+                        language=submission_report.submission.language_code,
+                    ),
+                    submission,
+                    "intermediate.documents.json.document",
+                )
+                result["intermediate"]["documents"]["json"]["values_schema"] = (
+                    document_data["values_schema"]
+                )
+                result["intermediate"]["documents"]["json"]["values"] = document_data[
+                    "values"
+                ]
+
+                # Relate summary JSON
+                execute_unless_result_exists(
+                    partial(
+                        zaken_client.relate_document,
+                        zaak=zaak,
+                        document=summary_json_document,
+                    ),
+                    submission,
+                    "intermediate.documents.json.relation",
+                )
+
             result.update(
                 {
-                    "document": summary_pdf_document,
                     "status": status,
                     "initiator_rol": initiator_rol,
                 }
@@ -962,3 +1029,200 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             )
 
         return result
+
+    @staticmethod
+    def allows_json_schema_generation(options: RegistrationOptions) -> bool:
+        return True
+
+    def process_variable_schema(
+        self,
+        component: Component,
+        schema: JSONObject,
+        options: RegistrationOptions,
+        configuration_wrapper: FormioConfigurationWrapper,
+    ) -> None:
+        match component:
+            case {"type": "partners"}:
+                assert isinstance(schema["items"], dict)
+                _properties = schema["items"]["properties"]
+                assert isinstance(_properties, dict)
+
+                _properties["firstNames"] = {"type": "string"}
+            case {"type": "children"}:
+                assert isinstance(schema["items"], dict)
+                _properties = schema["items"]["properties"]
+                assert isinstance(_properties, dict)
+
+                _properties["affixes"] = {"type": "string"}
+                _properties["initials"] = {"type": "string"}
+                _properties["lastName"] = {"type": "string"}
+            case {"type": "file"}:
+                assert isinstance(schema["items"], dict)
+                schema["items"] = {"type": "string", "format": "uri"}
+            case {"type": "editgrid"}:
+                assert isinstance(schema["items"], dict)
+                _properties = schema["items"]["properties"]
+                assert isinstance(_properties, dict)
+
+                for child_key, child_schema in _properties.items():
+                    child_component = configuration_wrapper[child_key]
+                    assert isinstance(child_schema, dict)
+                    self.process_variable_schema(
+                        child_component,
+                        child_schema,
+                        options,
+                        configuration_wrapper,
+                    )
+            case _:
+                pass
+
+
+def post_process(
+    variables: list[str],
+    values: FormioData,
+    schema: NestedDict,
+    submission: Submission,
+    attachments: dict[str, list[str]],
+) -> None:
+    state = submission.variables_state
+    configuration_wrapper = submission.total_configuration_wrapper
+
+    for key in variables:
+        variable = state.variables.get(key)
+        if (
+            variable is None
+            or variable.form_variable is None
+            or variable.form_variable.source == FormVariableSources.user_defined
+        ):
+            # None for static variables, and processing user defined variables is
+            # not relevant here
+            continue
+
+        component = configuration_wrapper[key]
+        assert component is not None
+
+        process_component(component, values, schema, configuration_wrapper, attachments)
+
+
+def process_component(
+    component: Component,
+    values: FormioData,
+    schema: NestedDict,
+    configuration_wrapper: FormioConfigurationWrapper,
+    attachments: dict[str, list[str]],
+    key_prefix: str = "",
+) -> None:
+    key = component["key"]
+    schema_key = f"properties.{key.replace('.', '.properties.')}"
+
+    match component:
+        case {"type": "partners"}:
+            partners = values[key]
+            assert isinstance(partners, list)
+
+            for partner in partners:
+                assert isinstance(partner, dict)
+                component_plugin = as_component_plugin(component)
+                assert component_plugin.internal_properties is not None
+                for internal_property in component_plugin.internal_properties:
+                    partner.pop(internal_property, None)
+
+        case {"type": "children"}:
+            children = values[key]
+            assert isinstance(children, list)
+
+            updated = []
+            for child in children:
+                assert isinstance(child, dict)
+                if child.get("selected") not in (None, True):
+                    continue
+
+                component_plugin = as_component_plugin(component)
+                assert component_plugin.internal_properties is not None
+                for internal_property in component_plugin.internal_properties:
+                    child.pop(internal_property, None)
+
+                updated.append(child)
+
+            values[key] = updated
+
+        case {"type": "file"}:
+            values[key] = attachments.get(key, [])
+
+        case {"type": "editgrid"}:
+            # Note: the schema actually only needs to be processed once for each child
+            # component, but will be processed for each submitted repeating group entry
+            # for implementation simplicity.
+            edit_grid_schema = NestedDict(schema[schema_key]["items"])  # type: ignore
+
+            component = component
+            assert "components" in component
+
+            assert isinstance(values[key], (list,))
+            for index, edit_grid_values in enumerate(values[key]):
+                edit_grid_values = FormioData(edit_grid_values)
+
+                for child_component in component["components"]:
+                    child_key = child_component["key"]
+
+                    process_component(
+                        component=configuration_wrapper[child_key],
+                        values=edit_grid_values,
+                        schema=edit_grid_schema,
+                        attachments=attachments,
+                        configuration_wrapper=configuration_wrapper,
+                        key_prefix=(
+                            f"{key_prefix}.{key}.{index}"
+                            if key_prefix
+                            else f"{key}.{index}"
+                        ),
+                    )
+
+                # Need to manually set it to the list, as ``FormioData`` creates a copy
+                # so mutations are not applied to ``values``
+                values[key][index] = edit_grid_values.data
+
+
+def get_submission_uploads(submission: Submission) -> dict[str, list[str]]:
+    component_path_mapping: dict[str, list[str]] = defaultdict(list)
+
+    # fmt: off
+    attachments = (
+        SubmissionFileAttachment.objects
+        .annotate(
+            data_path=Coalesce(
+                NullIf(
+                    F("_component_data_path"),
+                    Value(""),
+                ),
+                # fall back to variable/component key if no explicit data path is set
+                F("submission_variable__key"),
+                output_field=TextField(),
+            ),
+
+        )
+        .filter(
+            submission_step__submission=submission,
+            submission_variable__isnull=False
+        )
+    )
+    # fmt: on
+
+    registration_result = submission.registration_result
+    assert isinstance(registration_result, dict)
+    for attachment in attachments:
+        key: str = attachment.data_path
+        component = attachment.component
+        assert component, "Component could not be resolved"
+        documents_relation = (
+            registration_result.get("intermediate", {})
+            .get("documents", {})
+            .get(str(attachment.pk), {})
+            .get("document")
+        )
+
+        if not documents_relation:
+            continue
+
+        component_path_mapping[key].append(documents_relation["url"])
+    return component_path_mapping

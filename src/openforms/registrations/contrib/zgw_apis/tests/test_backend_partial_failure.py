@@ -20,6 +20,7 @@ from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....exceptions import RegistrationFailed
 from ....tasks import register_submission
+from ..constants import SummaryDocumentChoices
 from .factories import ZGWApiGroupConfigFactory
 
 
@@ -97,6 +98,7 @@ class PartialRegistrationFailureTests(OFVCRMixin, TestCase):
                 "informatieobjecttype": "",
                 "organisatie_rsin": "000000000",
                 "vertrouwelijkheidaanduiding": "",
+                "summary_documents": [SummaryDocumentChoices.pdf],
             },
             completed_not_preregistered=True,
             bsn="111222333",

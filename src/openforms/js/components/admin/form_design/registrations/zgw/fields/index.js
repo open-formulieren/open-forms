@@ -13,3 +13,4 @@ export {default as ObjectTypeVersion} from './ObjectTypeVersion';
 export {default as ProductSelect} from './ProductSelect';
 export {default as CaseDescription} from './CaseDescription';
 export {default as CaseExplanation} from './CaseExplanation';
+export {default as SummaryDocuments} from './SummaryDocuments';

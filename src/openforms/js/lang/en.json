@@ -149,6 +149,11 @@
     "description": "Service fetch configuration selection modal title",
     "originalDefault": "Service fetch configuration"
   },
+  "27Ibq3": {
+    "defaultMessage": "Which summary documents to include during registration.",
+    "description": "ZGW APIs registration options 'summaryDocuments' help text",
+    "originalDefault": "Which summary documents to include during registration."
+  },
   "294MCM": {
     "defaultMessage": "Is deleted",
     "description": "Form deleted field label",
@@ -518,6 +523,11 @@
     "defaultMessage": "Please select the logic type:",
     "description": "Logic type selection label",
     "originalDefault": "Please select the logic type:"
+  },
+  "9EaH83": {
+    "defaultMessage": "Summary documents",
+    "description": "ZGW APIs registration options 'summaryDocuments' label",
+    "originalDefault": "Summary documents"
   },
   "9LdZVP": {
     "defaultMessage": "Attribute",

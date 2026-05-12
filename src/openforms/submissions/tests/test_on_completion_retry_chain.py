@@ -8,6 +8,7 @@ from django.utils import timezone
 from privates.test import temp_private_root
 
 from openforms.appointments.tests.factories import AppointmentInfoFactory
+from openforms.registrations.contrib.zgw_apis.constants import SummaryDocumentChoices
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
@@ -296,6 +297,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
                 "partners_roltype": "",
                 "children_description": "",
                 "children_roltype": "",
+                "summary_documents": {SummaryDocumentChoices.pdf},
             },
         )
         self.assertNotEqual(submission.last_register_date, original_register_date)

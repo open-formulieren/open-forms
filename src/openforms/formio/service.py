@@ -26,7 +26,7 @@ from .dynamic_config import (
     rewrite_formio_components,
     rewrite_formio_components_for_request,
 )
-from .registry import ComponentRegistry, register
+from .registry import BasePlugin, ComponentRegistry, register
 from .serializers import build_serializer as _build_serializer
 from .typing import Component
 from .utils import (
@@ -163,6 +163,13 @@ def build_serializer(
     return _build_serializer(components, register=_register or register, **kwargs)
 
 
+def as_component_plugin(
+    component: Component, _register: ComponentRegistry | None = None
+) -> BasePlugin:
+    registry = _register or register
+    return registry[component["type"]]
+
+
 def as_json_schema(
     component: Component, _register: ComponentRegistry | None = None
 ) -> JSONObject | list[JSONObject] | None:
@@ -184,9 +191,7 @@ def as_json_schema(
     :returns: None for content and softRequiredErrors components, list of JSON objects
       for columns and fieldsets, and a JSON object otherwise.
     """
-    registry = _register or register
-
-    component_plugin = registry[component["type"]]
+    component_plugin = as_component_plugin(component, _register=_register)
     schema = component_plugin.as_json_schema(component)
     if isinstance(schema, dict) and (description := component.get("description")):
         schema["description"] = description

@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, ClassVar, assert_never
 
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models, transaction
 from django.utils import timezone
 from django.utils.formats import localize
@@ -195,6 +196,7 @@ class Submission(models.Model):
         help_text=_(
             "Contains data returned by the registration backend while registering the submission data."
         ),
+        encoder=DjangoJSONEncoder,
     )
     registration_status = models.CharField(
         _("registration backend status"),

@@ -19,6 +19,7 @@ from openforms.registrations.contrib.objects_api.constants import (
 from openforms.registrations.contrib.objects_api.typing import (
     RegistrationOptionsV2 as ObjectsRegistrationOptionsV2,
 )
+from openforms.registrations.contrib.zgw_apis.constants import SummaryDocumentChoices
 from openforms.registrations.contrib.zgw_apis.options import ZaakOptionsSerializer
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
@@ -411,6 +412,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             "children_roltype": "",
             "children_description": "",
             "objects_api_group": None,
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         zgw_backend_1 = FormRegistrationBackendFactory.create(
             form=form,
@@ -439,6 +441,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             "children_roltype": "",
             "children_description": "",
             "objects_api_group": None,
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         zgw_backend_2 = FormRegistrationBackendFactory.create(
             form=form,
@@ -723,6 +726,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             "children_roltype": "",
             "children_description": "",
             "objects_api_group": None,
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         zgw_backend_1 = FormRegistrationBackendFactory.create(
             form=form,
@@ -751,6 +755,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             "children_roltype": "",
             "children_description": "",
             "objects_api_group": None,
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         zgw_backend_2 = FormRegistrationBackendFactory.create(
             form=form,
@@ -1184,6 +1189,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             "children_roltype": "",
             "children_description": "",
             "objects_api_group": None,
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         FormRegistrationBackendFactory.create(
             form=form,
@@ -1213,6 +1219,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             "children_roltype": "",
             "children_description": "",
             "objects_api_group": None,
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         FormRegistrationBackendFactory.create(
             form=form,
@@ -1265,6 +1272,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             "children_roltype": "",
             "children_description": "",
             "objects_api_group": None,
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         FormRegistrationBackendFactory.create(
             form=form,
@@ -1294,6 +1302,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             "children_roltype": "",
             "children_description": "",
             "objects_api_group": None,
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         FormRegistrationBackendFactory.create(
             form=form,
@@ -1347,6 +1356,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             "children_roltype": "",
             "children_description": "",
             "objects_api_group": None,
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         FormRegistrationBackendFactory.create(
             form=form,
@@ -1405,6 +1415,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             "children_roltype": "",
             "children_description": "",
             "objects_api_group": None,
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         FormRegistrationBackendFactory.create(
             form=form,
@@ -1458,6 +1469,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             "children_roltype": "",
             "children_description": "",
             "objects_api_group": None,
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         FormRegistrationBackendFactory.create(
             form=form,

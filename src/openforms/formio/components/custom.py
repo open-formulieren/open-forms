@@ -827,6 +827,8 @@ class Partners(BasePlugin[Component]):
     data_subtype = FormVariableDataTypes.partners
     empty_value = []
 
+    internal_properties = {"dateOfBirthPrecision", "__addedManually"}
+
     def build_serializer_field(self, component: Component) -> PartnerListField:
         return PartnerListField(component=component)
 
@@ -986,6 +988,13 @@ class Children(BasePlugin[ChildrenComponent]):
     data_type = FormVariableDataTypes.array
     data_subtype = FormVariableDataTypes.children
     empty_value = []
+
+    internal_properties = {
+        "dateOfBirthPrecision",
+        "__id",
+        "selected",
+        "__addedManually",
+    }
 
     def build_serializer_field(self, component: ChildrenComponent) -> ChildListField:
         return ChildListField(component=component)

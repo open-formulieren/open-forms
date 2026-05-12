@@ -121,6 +121,8 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
     :meth:`get_empty_value`.
     """
 
+    internal_properties: set[str] | None = None
+
     @property
     def is_enabled(self) -> Literal[True]:
         return True

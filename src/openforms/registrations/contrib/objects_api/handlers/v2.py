@@ -10,7 +10,7 @@ from typing import assert_never, cast  # noqa: TID251
 from glom import Assign, Path, glom
 
 from openforms.api.utils import underscore_to_camel
-from openforms.formio.service import FormioData
+from openforms.formio.service import FormioData, as_component_plugin
 from openforms.formio.typing import Component, EditGridComponent
 from openforms.formio.typing.vanilla import FileComponent
 from openforms.submissions.models import SubmissionValueVariable
@@ -164,19 +164,12 @@ def process_mapped_variable(
             for partner in value:
                 assert isinstance(partner, dict)
 
-                # these are not relevant for the object (at least for now)
-                partner.pop("dateOfBirthPrecision", None)
-                partner.pop("__addedManually", None)
+                component_plugin = as_component_plugin(component)
+                assert component_plugin.internal_properties is not None
+                for internal_property in component_plugin.internal_properties:
+                    partner.pop(internal_property, None)
         case {"type": "children"}:
             assert isinstance(value, list)
-
-            # these are not relevant for the object
-            need_removal = (
-                "dateOfBirthPrecision",
-                "__id",
-                "selected",
-                "__addedManually",
-            )
 
             updated = []
             for child in value:
@@ -184,8 +177,10 @@ def process_mapped_variable(
                 if child.get("selected") not in (None, True):
                     continue
 
-                for attribute in need_removal:
-                    child.pop(attribute, None)
+                component_plugin = as_component_plugin(component)
+                assert component_plugin.internal_properties is not None
+                for internal_property in component_plugin.internal_properties:
+                    child.pop(internal_property, None)
 
                 updated.append(child)
 
