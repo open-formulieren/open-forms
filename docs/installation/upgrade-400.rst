@@ -9,6 +9,17 @@ Open Forms 4.0 is a major version release that contains breaking changes.
    :local:
    :backlinks: none
 
+Removal of the unused HaalCentraal version 1.3
+==============================================
+
+.. note:: Relevant for: form designers/administrators.
+
+HaalCentraal BRP Personen bevragen 1.3 was never in production so this is not available
+any more in Open Forms. The only supported version is v2 by default.
+  
+In case v1.3 was used, the prefill configuration of components may require updating (fix
+plugin + attribute), as this cannot be done automatically.
+
 Removal of legacy OpenID Connect callback endpoints
 ====================================================
 

@@ -3,7 +3,6 @@ from unittest.mock import patch
 from django.contrib.auth.models import Group
 from django.test import override_settings
 
-import requests_mock
 from django_webtest import WebTest
 from mozilla_django_oidc_db.tests.mixins import OIDCMixin
 from rest_framework import status
@@ -16,10 +15,10 @@ from openforms.authentication.contrib.org_oidc.plugin import PLUGIN_IDENTIFIER
 from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
+from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
-from openforms.contrib.haal_centraal.tests.utils import load_json_mock
 from openforms.forms.tests.factories import FormFactory
-from openforms.prefill.contrib.haalcentraal_brp.constants import AttributesV1
+from openforms.prefill.contrib.haalcentraal_brp.constants import AttributesV2
 from openforms.submissions.models import Submission
 from openforms.utils.tests.concurrent import mock_parallel_executor
 from openforms.utils.tests.keycloak import keycloak_login
@@ -35,7 +34,7 @@ CONFIGURATION = {
             "label": "Voornamen",
             "prefill": {
                 "plugin": "haalcentraal",
-                "attribute": AttributesV1.naam_voornamen,
+                "attribute": AttributesV2.naam_voornamen,
             },
             "multiple": False,
         },
@@ -60,17 +59,26 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(
     csrf_checks = False
     extra_environ = {"HTTP_HOST": "example.com"}
 
-    @patch(
-        "openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo",
-        return_value=HaalCentraalConfig(
+    def setUp(self):
+        super().setUp()
+
+        # set up patcher for the configuration
+        config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
-                api_root="https://personen/api/",
+                api_root="http://localhost:5010/haalcentraal/api/brp/",
                 auth_type=AuthTypes.no_auth,
-            )
-        ),
-    )
+            ),
+            brp_personen_version=BRPVersions.v20,
+        )
+        config_patcher = patch(
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+            return_value=config,
+        )
+        config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
     @mock_parallel_executor()
-    def test_flow(self, mock_haalcentraal_solo):
+    def test_flow(self):
         OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_org=True,
@@ -145,21 +153,14 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(
                 "api:form-detail", kwargs={"uuid_or_slug": form.uuid}
             )
 
-            with requests_mock.Mocker(real_http=False) as m:
-                m.get(
-                    "https://personen/api/ingeschrevenpersonen/999990676",
-                    status_code=200,
-                    json=load_json_mock("ingeschrevenpersonen.v1.json"),
-                )
-
-                response = self.app.post_json(
-                    reverse_plus("api:submission-list"),
-                    {
-                        "form": form_api_url,
-                        "formUrl": url_helper.frontend_start,
-                    },
-                    status=201,
-                )
+            response = self.app.post_json(
+                reverse_plus("api:submission-list"),
+                {
+                    "form": form_api_url,
+                    "formUrl": url_helper.frontend_start,
+                },
+                status=201,
+            )
 
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
             submission = Submission.objects.get()

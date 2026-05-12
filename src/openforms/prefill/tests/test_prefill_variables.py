@@ -4,13 +4,13 @@ from unittest.mock import patch
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase, TransactionTestCase, tag
 
-import requests_mock
 from rest_framework import serializers
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
+from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.formio.service import (
     FormioConfigurationWrapper,
@@ -29,6 +29,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..contrib.demo.plugin import DemoPrefill
@@ -622,18 +623,26 @@ class PrefillVariablesFromOptionsTests(TestCase):
         self.assertEqual(variables_state.get_data(), {})
 
 
-class PrefillVariablesTransactionTests(TransactionTestCase):
-    @requests_mock.Mocker()
-    @patch("openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo")
-    def test_no_success_message_on_failure(self, m, m_solo):
-        service = ServiceFactory.build(
-            api_root="https://personen/api/", auth_type=AuthTypes.no_auth
+class PrefillVariablesTransactionTests(OFVCRMixin, TransactionTestCase):
+    def setUp(self):
+        super().setUp()
+
+        # set up patcher for the configuration
+        config = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="http://localhost:5010/haalcentraal/api/brp/wrong-path",
+                auth_type=AuthTypes.no_auth,
+            ),
+            brp_personen_version=BRPVersions.v20,
         )
-        m.get(
-            "https://personen/api/ingeschrevenpersonen/999990676",
-            status_code=404,
+        config_patcher = patch(
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+            return_value=config,
         )
-        m_solo.return_value = HaalCentraalConfig(brp_personen_service=service)
+        config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
+    def test_no_success_message_on_failure(self):
         form_step = FormStepFactory.create(
             form_definition__configuration={
                 "components": [
@@ -643,7 +652,7 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
                         "inputMask": "9999 AA",
                         "prefill": {
                             "plugin": "haalcentraal",
-                            "attribute": "test-field",
+                            "attribute": "naam.voornamen",
                         },
                         "defaultValue": "",
                     }
@@ -653,7 +662,7 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
         submission_step = SubmissionStepFactory.create(
             submission__form=form_step.form,
             form_step=form_step,
-            submission__auth_info__value="999990676",
+            submission__auth_info__value="000009923",
             submission__auth_info__attribute=AuthAttribute.bsn,
         )
 

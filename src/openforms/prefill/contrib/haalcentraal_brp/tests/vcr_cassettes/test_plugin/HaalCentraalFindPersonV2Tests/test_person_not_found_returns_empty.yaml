@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990676"],
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["000009923"],
       "fields": ["burgerservicenummer", "naam.voornamen", "naam.geslachtsnaam"]}'
     headers:
       Accept:
@@ -27,15 +27,14 @@ interactions:
     uri: http://localhost:5010/haalcentraal/api/brp/personen
   response:
     body:
-      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"burgerservicenummer":"999990676","naam":{"voornamen":"Cornelia
-        Francisca","geslachtsnaam":"Wiegman"}}]}'
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[]}'
     headers:
       Content-Length:
-      - '159'
+      - '56'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 11 May 2026 06:20:54 GMT
+      - Mon, 11 May 2026 06:23:00 GMT
       Server:
       - Kestrel
     status:

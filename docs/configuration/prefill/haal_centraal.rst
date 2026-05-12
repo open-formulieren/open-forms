@@ -114,5 +114,4 @@ Technical
 API               Supported versions
 ================  ===================
 BRP bevragen API  2.0
-BRP bevragen API  1.3
 ================  ===================

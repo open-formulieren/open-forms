@@ -1,7 +1,8 @@
 interactions:
 - request:
     body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990676"],
-      "fields": ["burgerservicenummer", "naam.voornamen", "naam.geslachtsnaam"]}'
+      "fields": ["burgerservicenummer", "naam.voornamen", "naam.voorvoegsel", "naam.geslachtsnaam",
+      "naam.voorletters"]}'
     headers:
       Accept:
       - '*/*'
@@ -10,7 +11,7 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '156'
+      - '196'
       Content-Type:
       - application/json; charset=utf-8
       User-Agent:
@@ -28,14 +29,14 @@ interactions:
   response:
     body:
       string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"burgerservicenummer":"999990676","naam":{"voornamen":"Cornelia
-        Francisca","geslachtsnaam":"Wiegman"}}]}'
+        Francisca","geslachtsnaam":"Wiegman","voorletters":"C.F."}}]}'
     headers:
       Content-Length:
-      - '159'
+      - '180'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 11 May 2026 06:20:54 GMT
+      - Mon, 11 May 2026 06:22:59 GMT
       Server:
       - Kestrel
     status:

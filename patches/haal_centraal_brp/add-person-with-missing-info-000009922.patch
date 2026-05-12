@@ -1,0 +1,122 @@
+diff --git a/test-data.json b/test-data.json
+index 102de1d..40652c4 100644
+--- a/test-data.json
++++ b/test-data.json
+@@ -905,6 +905,117 @@
+       }
+     ]
+   },
++  {
++    "aNummer": "6456353698",
++    "burgerservicenummer": "000009922",
++    "datumEersteInschrijvingGBA": "19980502",
++    "geslacht": {
++      "code": "M",
++      "omschrijving": "man (missing information)"
++    },
++    "naam": {
++      "aanduidingNaamgebruik": {
++        "code": "E",
++        "omschrijving": "eigen geslachtsnaam"
++      }
++    },
++    "nationaliteiten": [
++      {
++        "datumIngangGeldigheid": "19751116",
++        "nationaliteit": {
++          "code": "0001",
++          "omschrijving": "Nederlandse"
++        },
++        "redenOpname": {
++          "code": "001",
++          "omschrijving": "Wet op het Nederlanderschap 1892, art.1, lid 1a"
++        }
++      }
++    ],
++    "geboorte": {
++      "land": {
++        "code": "6030",
++        "omschrijving": "Nederland"
++      },
++      "plaats": {
++        "code": "0772",
++        "omschrijving": "Eindhoven"
++      },
++      "datum": "19751116"
++    },
++    "verblijfplaats": {
++      "functieAdres": {
++        "code": "W",
++        "omschrijving": "woonadres"
++      },
++      "adresseerbaarObjectIdentificatie": "1810010010001001",
++      "nummeraanduidingIdentificatie": "1810200010001001",
++      "datumIngangGeldigheid": "20111024",
++      "datumAanvangAdreshouding": "19980502",
++      "naamOpenbareRuimte": "Van Wijngaerdenstraat",
++      "straat": "Van Wijngaerdenstraat",
++      "huisnummer": "1",
++      "postcode": "2596TW",
++      "woonplaats": "Toetsoog"
++    },
++    "immigratie": {},
++    "gemeenteVanInschrijving": {
++      "code": "1810",
++      "omschrijving": "Toetsoog"
++    },
++    "datumInschrijvingInGemeente": "19980502",
++    "gezag": [],
++    "kinderen": [],
++    "ouders": [
++      {
++        "geslacht": {
++          "code": "V",
++          "omschrijving": "vrouw"
++        },
++        "ouderAanduiding": "1",
++        "datumIngangFamilierechtelijkeBetrekking": "19751116",
++        "naam": {
++          "voornamen": "Lidia",
++          "geslachtsnaam": "Bakhuis"
++        },
++        "geboorte": {
++          "land": {
++            "code": "6030",
++            "omschrijving": "Nederland"
++          },
++          "plaats": {
++            "code": "1810",
++            "omschrijving": "Toetsoog"
++          },
++          "datum": "19370112"
++        }
++      },
++      {
++        "geslacht": {
++          "code": "V",
++          "omschrijving": "vrouw"
++        },
++        "ouderAanduiding": "2",
++        "datumIngangFamilierechtelijkeBetrekking": "19751116",
++        "naam": {
++          "voornamen": "Bas",
++          "geslachtsnaam": "Veerboot"
++        },
++        "geboorte": {
++          "land": {
++            "code": "6030",
++            "omschrijving": "Nederland"
++          },
++          "plaats": {
++            "code": "1810",
++            "omschrijving": "Toetsoog"
++          },
++          "datum": "19370114"
++        }
++      }
++    ],
++    "partners": []
++  },
+   {
+     "aNummer": "9819254089",
+     "burgerservicenummer": "000009933",

@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.test import SimpleTestCase
+from django.test import TestCase
 from django.utils.translation import gettext as _
 
 import requests_mock
@@ -16,13 +16,7 @@ from openforms.prefill.registry import register
 plugin = register["haalcentraal"]
 
 
-class ConfigCheckTests:
-    # specify in subclasses
-    version: BRPVersions
-
-    # set in setUp
-    config: HaalCentraalConfig
-
+class ConfigCheckV2Tests(TestCase):
     def setUp(self):
         super().setUp()  # type: ignore
 
@@ -32,7 +26,7 @@ class ConfigCheckTests:
                 api_root="https://personen/api/",
                 auth_type=AuthTypes.no_auth,
             ),
-            brp_personen_version=self.version,
+            brp_personen_version=BRPVersions.v20,
         )
         config_patcher = patch(
             "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
@@ -54,6 +48,8 @@ class ConfigCheckTests:
         self.addCleanup(self.requests_mock.stop)  # type: ignore
 
     def test_undefined_service_raises_exception(self):
+        self.config.brp_personen_service = None
+
         with self.assertRaisesMessage(
             InvalidPluginConfiguration, _("Service not selected")
         ):
@@ -70,41 +66,13 @@ class ConfigCheckTests:
             plugin.check_config()
 
     def test_404_client_error_returns_None(self):
+        self.requests_mock.post("https://personen/api/personen", status_code=400)
         result = plugin.check_config()
+
         self.assertIsNone(result)
 
     def test_generic_client_error_raises_exception(self):
+        self.requests_mock.post("https://personen/api/personen", status_code=405)
+
         with self.assertRaises(InvalidPluginConfiguration):
             plugin.check_config()
-
-
-class ConfigCheckV1Tests(ConfigCheckTests, SimpleTestCase):
-    version = BRPVersions.v13
-
-    def test_undefined_service_raises_exception(self):
-        self.config.brp_personen_service = None
-        super().test_undefined_service_raises_exception()
-
-    def test_404_client_error_returns_None(self):
-        self.requests_mock.get("https://personen/api/test", status_code=404)
-        super().test_404_client_error_returns_None()
-
-    def test_generic_client_error_raises_exception(self):
-        self.requests_mock.get("https://personen/api/test", status_code=405)
-        super().test_generic_client_error_raises_exception()
-
-
-class ConfigCheckV2Tests(ConfigCheckTests, SimpleTestCase):
-    version = BRPVersions.v20
-
-    def test_undefined_service_raises_exception(self):
-        self.config.brp_personen_service = None
-        super().test_undefined_service_raises_exception()
-
-    def test_404_client_error_returns_None(self):
-        self.requests_mock.post("https://personen/api/personen", status_code=400)
-        super().test_404_client_error_returns_None()
-
-    def test_generic_client_error_raises_exception(self):
-        self.requests_mock.post("https://personen/api/personen", status_code=405)
-        super().test_generic_client_error_raises_exception()

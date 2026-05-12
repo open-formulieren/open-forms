@@ -1,8 +1,8 @@
 interactions:
 - request:
-    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990718"],
-      "fields": ["partners.burgerservicenummer", "partners.naam.voornamen", "partners.naam.voorletters",
-      "partners.naam.voorvoegsel", "partners.naam.geslachtsnaam", "partners.geboorte.datum"]}'
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["000009922"],
+      "fields": ["burgerservicenummer", "naam.voornamen", "naam.voorvoegsel", "naam.geslachtsnaam",
+      "naam.voorletters"]}'
     headers:
       Accept:
       - '*/*'
@@ -11,11 +11,11 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '268'
+      - '196'
       Content-Type:
       - application/json; charset=utf-8
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       x-doelbinding:
       - ''
       x-gebruiker:
@@ -28,15 +28,14 @@ interactions:
     uri: http://localhost:5010/haalcentraal/api/brp/personen
   response:
     body:
-      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"partners":[{"naam":{"voornamen":"August","geslachtsnaam":"Tuinstra","voorletters":"A."},"geboorte":{"datum":{"type":"Datum","datum":"1943-10-15","langFormaat":"15
-        oktober 1943"}}}]}]}'
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"burgerservicenummer":"000009922","naam":{}}]}'
     headers:
       Content-Length:
-      - '239'
+      - '101'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 18 Mar 2026 11:31:45 GMT
+      - Mon, 11 May 2026 06:22:59 GMT
       Server:
       - Kestrel
     status:
