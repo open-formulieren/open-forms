@@ -4,6 +4,7 @@ from __future__ import annotations
 import sys
 from collections.abc import Iterator
 from pathlib import Path
+from traceback import format_exc
 
 import django
 from django.db import transaction
@@ -66,6 +67,11 @@ def report_invalid_forms() -> bool:
                 variables = {var for cycle in exc.cycles for var in cycle.variables}
                 cycles_detected = True
                 yield (form.pk, form.admin_name, form.active, ", ".join(variables))
+            except Exception:
+                print(
+                    f"Unexpected error in form {form.admin_name} ({form.pk}): "
+                    f"{format_exc()}"
+                )
 
     try:
         print(
