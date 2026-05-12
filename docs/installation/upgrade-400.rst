@@ -9,6 +9,14 @@ Open Forms 4.0 is a major version release that contains breaking changes.
    :local:
    :backlinks: none
 
+Removal of JCC SOAP appointment plugin
+======================================
+
+The JCC plugin for appointments in Open Forms has stopped working as of Jan. 1st 2026 due
+to JCC shutting down their SOAP service.
+
+This has been replaced (since Open Forms v3.5) with their RESTful API service.
+
 Removal of the unused HaalCentraal version 1.3
 ==============================================
 
