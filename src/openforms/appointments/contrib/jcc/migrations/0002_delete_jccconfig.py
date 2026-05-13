@@ -3,6 +3,8 @@
 from django.db import migrations
 
 
+# DeprecationWarning: remove in OF 4.1 (Only JCC_REST is available since Jan 2026)
+# See if it's safe to remove the rest of this module and the app from the settings
 class Migration(migrations.Migration):
     dependencies = [
         ("jcc", "0001_initial_to_openforms_v230"),

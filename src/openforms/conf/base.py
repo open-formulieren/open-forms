@@ -210,6 +210,7 @@ INSTALLED_APPS = [
     "openforms.analytics_tools",
     "openforms.appointments.apps.AppointmentsAppConfig",
     "openforms.appointments.contrib.demo",
+    # DeprecationWarning: remove in OF 4.1 (Only JCC_REST is available since Jan 2026)
     "openforms.appointments.contrib.jcc",
     "openforms.appointments.contrib.jcc_rest",
     "openforms.appointments.contrib.qmatic",
