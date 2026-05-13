@@ -36,7 +36,7 @@ OTEL_SDK_DISABLED=True src/manage.py dumpdata \
     stuf_bg.StufBGConfig \
     stuf_zds.StufZDSConfig \
     appointments.AppointmentsConfig \
-    jcc.JccConfig \
+    jcc_rest.JccRestConfig \
     qmatic.QmaticConfig \
     mozilla_django_oidc_db \
     digid_eherkenning_oidc_generics \

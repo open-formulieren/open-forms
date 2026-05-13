@@ -8,7 +8,6 @@
   "forms.FormVariable",
   "forms.FormVersion",
   "emails.ConfirmationEmailTemplate",
-  "jcc.JccConfig",
   "jcc_rest.JccRestConfig",
   "kadaster.KadasterApiConfig",
   "customer_interactions.CustomerInteractionsAPIGroupConfig",
