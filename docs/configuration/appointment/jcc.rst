@@ -9,11 +9,11 @@ JCC
 
    * **Label**: JCC (REST)
    * **Api root url**: ORC (Overige)
-   * **Api root url**: URL to the JCC-Afspraken WARP API, for example: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/
+   * **Api root url**: URL to the JCC-Afspraken WARP API, for example: ``https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/``
    * **Authorization type**: OAuth2 client credentials flow
    * **Client id**: The client ID provided by the contract
    * **Secret**: The secret provided by the contract
-   * **OAuth2 token url**: https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token
+   * **OAuth2 token url**: ``https://cloud-acceptatie.jccsoftware.nl/JCC/JCC_Leveranciers_Acceptatie/G-Plan/api/api/warp/v1/connect/token``
    * **OAuth2 scope**: warp-api
 
 5. Click **Save**
