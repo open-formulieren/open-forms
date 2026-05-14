@@ -1,5 +1,4 @@
 import json
-import os
 from datetime import timedelta
 from unittest.mock import patch
 from uuid import UUID
@@ -692,24 +691,26 @@ class DeleteReportTests(TestCase):
     def test_file_deletion(self):
         submission_report = SubmissionReportFactory.create()
 
-        file_path = submission_report.content.path
+        storage = submission_report.content.storage
+        name = submission_report.content.name
 
-        self.assertTrue(os.path.exists(file_path))
+        self.assertTrue(storage.exists(name))
 
         submission_report.delete()
 
-        self.assertFalse(os.path.exists(file_path))
+        self.assertFalse(storage.exists(name))
 
     def test_file_deleted_on_submission_deletion(self):
         submission_report = SubmissionReportFactory.create()
 
-        file_path = submission_report.content.path
+        storage = submission_report.content.storage
+        name = submission_report.content.name
 
-        self.assertTrue(os.path.exists(file_path))
+        self.assertTrue(storage.exists(name))
 
         submission_report.submission.delete()
 
-        self.assertFalse(os.path.exists(file_path))
+        self.assertFalse(storage.exists(name))
 
 
 SIGNATURE = (

@@ -1,5 +1,4 @@
-import os
-import tempfile
+import itertools
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from unittest.mock import patch
@@ -10,6 +9,7 @@ from django.test import override_settings, tag
 from django.utils.translation import gettext as _
 
 import clamd
+from privates.storages import private_media_storage
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -33,8 +33,9 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             "api:submission-detail", kwargs={"uuid": cls.submission.uuid}
         )
 
-    def tearDown(self):
-        self._clear_session()
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(self._clear_session)
 
     def test_upload_view_requires_active_submission(self):
         url = reverse("api:formio:temporary-file-upload")
@@ -76,7 +77,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         # check if we can retrieve the file from returned url
         response = self.client.get(body["url"])
-        self.assertEqual(b"".join(response.streaming_content), b"my content")
+        self.assertEqual(response.content, b"my content")
         self.assertIn("Content-Disposition", response)
         self.assertIn("attachment", response["Content-Disposition"])
         self.assertIn("my-file.txt", response["Content-Disposition"])
@@ -273,18 +274,16 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             "my-file.bin", clamd.EICAR, content_type="application/octet-stream"
         )
 
-        tmpdir = tempfile.mkdtemp()
-        with override_settings(PRIVATE_MEDIA_ROOT=tmpdir, SENDFILE_ROOT=tmpdir):
-            with patch.object(
-                clamd.ClamdNetworkSocket,
-                "instream",
-                return_value={"stream": ("FOUND", "Win.Test.EICAR_HDB-1")},
-            ):
-                response_virus = self.client.post(
-                    url,
-                    {"file": file_with_virus, "submission": self.submission_url},
-                    format="multipart",
-                )
+        with patch.object(
+            clamd.ClamdNetworkSocket,
+            "instream",
+            return_value={"stream": ("FOUND", "Win.Test.EICAR_HDB-1")},
+        ):
+            response_virus = self.client.post(
+                url,
+                {"file": file_with_virus, "submission": self.submission_url},
+                format="multipart",
+            )
 
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response_virus.status_code)
         self.assertEqual(
@@ -292,9 +291,10 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             "File did not pass the virus scan. It was found to contain 'Win.Test.EICAR_HDB-1'.",
         )
 
-        tmpdir_contents = os.listdir(tmpdir)
-
-        self.assertEqual(0, len(tmpdir_contents))
+        storage_contents = [
+            *itertools.chain.from_iterable(private_media_storage.listdir(""))
+        ]
+        self.assertEqual(0, len(storage_contents))
 
     @patch("openforms.formio.api.validators.GlobalConfiguration.get_solo")
     def test_file_does_not_contains_virus(self, m_config):
@@ -307,31 +307,32 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             "my-file.bin", b"I am a nice file", content_type="application/octet-stream"
         )
 
-        tmpdir = tempfile.mkdtemp()
-        with override_settings(PRIVATE_MEDIA_ROOT=tmpdir, SENDFILE_ROOT=tmpdir):
-            with patch(
+        with (
+            patch(
                 "openforms.submissions.models.submission_files.fmt_upload_to",
                 return_value="my-file.bin",
-            ):
-                with patch.object(
-                    clamd.ClamdNetworkSocket,
-                    "instream",
-                    return_value={"stream": ("OK", None)},
-                ):
-                    response_no_virus = self.client.post(
-                        url,
-                        {
-                            "file": file_without_virus,
-                            "submission": self.submission_url,
-                        },
-                        format="multipart",
-                    )
+            ),
+            patch.object(
+                clamd.ClamdNetworkSocket,
+                "instream",
+                return_value={"stream": ("OK", None)},
+            ),
+        ):
+            response_no_virus = self.client.post(
+                url,
+                {
+                    "file": file_without_virus,
+                    "submission": self.submission_url,
+                },
+                format="multipart",
+            )
 
         self.assertEqual(status.HTTP_200_OK, response_no_virus.status_code)
 
-        tmpdir_contents = os.listdir(tmpdir)
-
-        self.assertEqual(["my-file.bin"], tmpdir_contents)
+        storage_contents = [
+            *itertools.chain.from_iterable(private_media_storage.listdir(""))
+        ]
+        self.assertEqual(["my-file.bin"], storage_contents)
 
     @patch("openforms.formio.api.validators.GlobalConfiguration.get_solo")
     def test_file_scan_returns_error(self, m_config):
@@ -344,18 +345,16 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             "my-file.bin", b"I am a nice file", content_type="application/octet-stream"
         )
 
-        tmpdir = tempfile.mkdtemp()
-        with override_settings(PRIVATE_MEDIA_ROOT=tmpdir, SENDFILE_ROOT=tmpdir):
-            with patch.object(
-                clamd.ClamdNetworkSocket,
-                "instream",
-                return_value={"stream": ("ERROR", "I am an error")},
-            ):
-                response_virus = self.client.post(
-                    url,
-                    {"file": file_with_virus, "submission": self.submission_url},
-                    format="multipart",
-                )
+        with patch.object(
+            clamd.ClamdNetworkSocket,
+            "instream",
+            return_value={"stream": ("ERROR", "I am an error")},
+        ):
+            response_virus = self.client.post(
+                url,
+                {"file": file_with_virus, "submission": self.submission_url},
+                format="multipart",
+            )
 
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response_virus.status_code)
         self.assertEqual(
@@ -363,9 +362,11 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             "The virus scan on this file returned an error.",
         )
 
-        tmpdir_contents = os.listdir(tmpdir)
+        storage_contents = [
+            *itertools.chain.from_iterable(private_media_storage.listdir(""))
+        ]
 
-        self.assertEqual(0, len(tmpdir_contents))
+        self.assertEqual(0, len(storage_contents))
 
     @patch("openforms.formio.api.validators.GlobalConfiguration.get_solo")
     def test_file_scan_returns_unexpected_status(self, m_config):
@@ -378,18 +379,16 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             "my-file.bin", b"I am a nice file", content_type="application/octet-stream"
         )
 
-        tmpdir = tempfile.mkdtemp()
-        with override_settings(PRIVATE_MEDIA_ROOT=tmpdir, SENDFILE_ROOT=tmpdir):
-            with patch.object(
-                clamd.ClamdNetworkSocket,
-                "instream",
-                return_value={"stream": ("UNEXPECTED", "I am message")},
-            ):
-                response_virus = self.client.post(
-                    url,
-                    {"file": file_with_virus, "submission": self.submission_url},
-                    format="multipart",
-                )
+        with patch.object(
+            clamd.ClamdNetworkSocket,
+            "instream",
+            return_value={"stream": ("UNEXPECTED", "I am message")},
+        ):
+            response_virus = self.client.post(
+                url,
+                {"file": file_with_virus, "submission": self.submission_url},
+                format="multipart",
+            )
 
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response_virus.status_code)
         self.assertEqual(
@@ -397,9 +396,11 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             "The virus scan returned an unexpected status.",
         )
 
-        tmpdir_contents = os.listdir(tmpdir)
+        storage_contents = [
+            *itertools.chain.from_iterable(private_media_storage.listdir(""))
+        ]
 
-        self.assertEqual(0, len(tmpdir_contents))
+        self.assertEqual(0, len(storage_contents))
 
     @patch("openforms.formio.api.validators.GlobalConfiguration.get_solo")
     def test_cannot_connect_to_clamdav(self, m_config):
@@ -412,18 +413,16 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             "my-file.bin", b"I am a nice file", content_type="application/octet-stream"
         )
 
-        tmpdir = tempfile.mkdtemp()
-        with override_settings(PRIVATE_MEDIA_ROOT=tmpdir, SENDFILE_ROOT=tmpdir):
-            with patch.object(
-                clamd.ClamdNetworkSocket,
-                "instream",
-                side_effect=clamd.ConnectionError("Cannot connect!"),
-            ):
-                response_virus = self.client.post(
-                    url,
-                    {"file": file_with_virus, "submission": self.submission_url},
-                    format="multipart",
-                )
+        with patch.object(
+            clamd.ClamdNetworkSocket,
+            "instream",
+            side_effect=clamd.ConnectionError("Cannot connect!"),
+        ):
+            response_virus = self.client.post(
+                url,
+                {"file": file_with_virus, "submission": self.submission_url},
+                format="multipart",
+            )
 
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response_virus.status_code)
         self.assertEqual(
@@ -431,9 +430,11 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             "The virus scan could not be performed at this time. Please retry later.",
         )
 
-        tmpdir_contents = os.listdir(tmpdir)
+        storage_contents = [
+            *itertools.chain.from_iterable(private_media_storage.listdir(""))
+        ]
 
-        self.assertEqual(0, len(tmpdir_contents))
+        self.assertEqual(0, len(storage_contents))
 
     def test_filename_with_spaces(self):
         self._add_submission_to_session(self.submission)

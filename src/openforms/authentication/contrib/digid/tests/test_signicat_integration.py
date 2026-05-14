@@ -39,7 +39,7 @@ SIGNICAT_BROKER_BASE = furl("https://maykin.pre.ie01.signicat.pro/broker")
     "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
     lambda *_, **__: "ONELOGIN_123456",
 )
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 @override_settings(COOKIE_CONSENT_ENABLED=False)
 class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
     """Test using Signicat broker.
