@@ -1,16 +1,17 @@
-from django.conf import settings
 from django.http import HttpResponse
 from django.test import override_settings
 from django.urls import reverse
 
+from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from .factories import TranslationsMetaDataFactory
 
 
-@override_settings(SENDFILE_BACKEND="django_sendfile.backends.nginx")
+@temp_private_root()
 class CustomizedCompiledTranslationsTests(APITestCase):
+    @override_settings(SENDFILE_BACKEND="django_sendfile.backends.nginx")
     def test_view_returns_compiled_file_json_data(self):
         TranslationsMetaDataFactory.create(language_code="en", with_compiled_asset=True)
 
@@ -23,10 +24,11 @@ class CustomizedCompiledTranslationsTests(APITestCase):
 
         # make sure nginx serves the file directly via the private media directory
         self.assertTrue(
-            response.headers["X-Accel-Redirect"].startswith(settings.PRIVATE_MEDIA_URL)
+            response.headers["X-Accel-Redirect"].startswith("/private-media/")
         )
         self.assertIn("compiled_test_en", response.headers["X-Accel-Redirect"])
 
+    @override_settings(SENDFILE_BACKEND="django_sendfile.backends.nginx")
     def test_returns_empty_object_when_no_compiled_asset_found(self):
         endpoint = reverse(
             "api:i18n:customized-translations", kwargs={"language_code": "nl"}

@@ -43,7 +43,7 @@ SELECT_EHERKENNING_SIM = (
     "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
     lambda *_, **__: "ONELOGIN_123456",
 )
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 @override_settings(COOKIE_CONSENT_ENABLED=False)
 class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
     """Test using Signicat broker.

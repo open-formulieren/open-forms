@@ -73,7 +73,7 @@ class DownloadExportedFormsView(ExportImportPermissionMixin, View):
             user=request.user.username,
             export_id=forms_export.pk,
         )
-        return FileResponse(open(forms_export.export_content.path, "rb"))
+        return FileResponse(forms_export.export_content.open("rb"))
 
 
 class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView):

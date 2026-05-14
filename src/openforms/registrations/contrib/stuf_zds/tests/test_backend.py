@@ -3775,7 +3775,7 @@ class StufZDSPluginPaymentTests(StUFZDSTestBase):
         )
 
 
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
     VCR_TEST_FILES = TESTS_DIR / "files"
 

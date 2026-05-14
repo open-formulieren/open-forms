@@ -1,4 +1,3 @@
-import os
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
@@ -193,7 +192,7 @@ class SubmissionTests(TestCase):
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step__submission=submission
         )
-        os.remove(attachment.content.path)
+        attachment.content.storage.delete(attachment.content.name)
         with self.subTest("test setup validation"):
             self.assertFalse(attachment.content.storage.exists(attachment.content.path))
 
@@ -202,7 +201,7 @@ class SubmissionTests(TestCase):
 
         with (
             patch(
-                "django.core.files.storage.FileSystemStorage.delete", side_effect=exc
+                "django.core.files.storage.InMemoryStorage.delete", side_effect=exc
             ) as mock_delete,
             self.captureOnCommitCallbacks(execute=True),
         ):

@@ -378,21 +378,24 @@ STORAGES = {
             f"{config('STATICFILES_STORAGE_CLASS', default='StaticFilesStorage')}"
         ),
     },
+    "privates": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {
+            "location": BASE_DIR / "private_media",
+            "base_url": "/private-media/",
+        },
+    },
 }
 
 MEDIA_ROOT = BASE_DIR / "media"
 
 MEDIA_URL = "/media/"
 
-PRIVATE_MEDIA_ROOT = BASE_DIR / "private_media"
-
-PRIVATE_MEDIA_URL = "/private-media/"
-
 FILE_UPLOAD_PERMISSIONS = 0o644
 
 SENDFILE_BACKEND = config("SENDFILE_BACKEND", default="django_sendfile.backends.nginx")
-SENDFILE_ROOT = PRIVATE_MEDIA_ROOT
-SENDFILE_URL = PRIVATE_MEDIA_URL
+SENDFILE_ROOT = STORAGES["privates"]["OPTIONS"]["location"]
+SENDFILE_URL = STORAGES["privates"]["OPTIONS"]["base_url"]
 
 #
 # Sending EMAIL

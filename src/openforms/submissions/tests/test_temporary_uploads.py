@@ -1,4 +1,3 @@
-import os
 import uuid
 from datetime import timedelta
 
@@ -119,8 +118,8 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
     def test_delete_view(self):
         upload = TemporaryFileUploadFactory.create()
-        path = upload.content.path
-        self.assertTrue(os.path.exists(path))
+        name = upload.content.name
+        self.assertTrue(upload.content.storage.exists(name))
         self._add_submission_to_session(upload.submission)
 
         url = reverse("api:submissions:temporary-file", kwargs={"uuid": upload.uuid})
@@ -135,7 +134,7 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # expect the file and instance to be deleted
-        self.assertFalse(os.path.exists(path))
+        self.assertFalse(upload.content.storage.exists(name))
 
         with self.assertRaisesRegex(FileNotFoundError, r"No such file or directory:"):
             upload.content.read()
@@ -150,14 +149,14 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
     def test_delete_instance_method(self):
         upload = TemporaryFileUploadFactory.create()
-        path = upload.content.path
-        self.assertTrue(os.path.exists(path))
+        name = upload.content.path
+        self.assertTrue(upload.content.storage.exists(name))
 
         with self.captureOnCommitCallbacks(execute=True):
             upload.delete()
 
         # expect the file and instance to be deleted
-        self.assertFalse(os.path.exists(path))
+        self.assertFalse(upload.content.storage.exists(name))
 
         with self.assertRaisesMessage(
             ValueError, "The 'content' attribute has no file associated with it."
@@ -169,15 +168,14 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
     def test_delete_queryset_method(self):
         uploads = TemporaryFileUploadFactory.create_batch(3)
-        paths = [u.content.path for u in uploads]
-        for path in paths:
-            self.assertTrue(os.path.exists(path))
+        for upload in uploads:
+            self.assertTrue(upload.content.storage.exists(upload.content.name))
 
         with self.captureOnCommitCallbacks(execute=True):
             TemporaryFileUpload.objects.all().delete()
 
-        for path in paths:
-            self.assertFalse(os.path.exists(path))
+        for upload in uploads:
+            self.assertFalse(upload.content.storage.exists(upload.content.name))
 
     def test_delete_temporary_file_attachement_deletes_the_saved_one_as_well(self):
         upload = TemporaryFileUploadFactory.create()

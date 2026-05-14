@@ -6,6 +6,7 @@ from zeep.wsse.signature import Signature
 from zeep.wsse.username import UsernameToken
 
 from .constants import EndpointSecurity, SOAPVersion
+from .utils import ensure_file_exists_on_disk
 
 
 class _Signature(Signature):
@@ -117,10 +118,14 @@ class SoapService(models.Model):
     def get_wsse(
         self,
     ) -> Signature | UsernameToken | tuple[UsernameToken, Signature] | None:
-        sig = lambda: _Signature(  # noqa: E731
-            self.client_certificate.private_key.path,
-            self.client_certificate.public_certificate.path,
+        private_key_path = ensure_file_exists_on_disk(
+            self.client_certificate.private_key
         )
+        public_cert_path = ensure_file_exists_on_disk(
+            self.client_certificate.public_certificate
+        )
+
+        sig = lambda: _Signature(private_key_path, public_cert_path)  # noqa: E731
 
         basic = lambda: UsernameToken(self.user, self.password)  # noqa: E731
 

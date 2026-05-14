@@ -1,6 +1,8 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from privates.test import temp_private_root
+
 from openforms.submissions.tests.factories import SubmissionFactory
 from suwinet.tests.factories import SuwinetConfigFactory
 from suwinet.tests.test_client import SuwinetTestCase
@@ -11,6 +13,7 @@ from ..plugin import IdentifierRoles, SuwinetPrefill
 DATA_DIR = Path(__file__).parent / "data"
 
 
+@temp_private_root(reset_storage=False)
 class SuwinetPrefillTests(SuwinetTestCase):
     VCR_TEST_FILES = DATA_DIR
 

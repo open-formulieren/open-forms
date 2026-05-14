@@ -102,7 +102,7 @@ def _get_encrypted_attribute(kvk: str):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
     def test_redirect_to_eherkenning_login(self):
         form = FormFactory.create(
@@ -201,7 +201,7 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 @requests_mock.Mocker()
 class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
     @classmethod
@@ -368,7 +368,7 @@ class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 @requests_mock.Mocker()
 class CoSignLoginAuthenticationTests(
     SubmissionsMixin, EHerkenningConfigMixin, TestCase
