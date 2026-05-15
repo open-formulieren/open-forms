@@ -63,7 +63,7 @@ def report_disable_next_logic_action_manual_check(show_all=False):
     rules_that_need_check = []
     rules_with_disable_action = []
     for form in tqdm(
-        queryset.iterator(),
+        queryset.iterator(chunk_size=10),
         desc="Forms processed",
         total=queryset.count(),
         dynamic_ncols=True,
