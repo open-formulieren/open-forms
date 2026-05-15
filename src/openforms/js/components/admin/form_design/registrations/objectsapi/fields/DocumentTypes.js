@@ -9,14 +9,12 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {
-  DocumentTypeSelect as GenericDocumentTypeSelect,
-  useGetDocumentTypes,
-} from 'components/admin/forms/zgw';
-import {
   CatalogueSelect,
   CopyDocumentTypesConfig,
+  DocumentTypeSelect as GenericDocumentTypeSelect,
   getCatalogueOption,
   groupAndSortCatalogueOptions,
+  useGetDocumentTypes,
 } from 'components/admin/forms/zgw';
 import {WarningIcon} from 'components/admin/icons';
 import {get} from 'utils/fetch';
