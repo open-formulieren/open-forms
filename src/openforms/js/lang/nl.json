@@ -49,6 +49,11 @@
     "description": "action type \"step-applicable\" label",
     "originalDefault": "Mark the form step as applicable"
   },
+  "/MWRm7": {
+    "defaultMessage": "Het formulier bevat geen bestandsuploadvelden.",
+    "description": "Copy document types config: no file components text",
+    "originalDefault": "There are no file upload components in the form."
+  },
   "/fAEsY": {
     "defaultMessage": "Informatieobjecttype CSV-document met inzendingsgegevens",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
@@ -260,6 +265,16 @@
     "defaultMessage": "Vraag verklaring invullen naar waarheid",
     "description": "Form askStatementOfTruth field label",
     "originalDefault": "Ask statement of truth"
+  },
+  "3eiHJv": {
+    "defaultMessage": "Catalogus-RSIN",
+    "description": "Copy document types config to file components: catalogue RSIN heading",
+    "originalDefault": "Catalogue RSIN"
+  },
+  "3jd+Cd": {
+    "defaultMessage": "Cataloguedomein",
+    "description": "Copy document types config to file components: catalogue domain heading",
+    "originalDefault": "Catalogue domain"
   },
   "3z1hhJ": {
     "defaultMessage": "Toon/verberg JSON Schema",
@@ -768,6 +783,11 @@
     "description": "variable pricing mode label",
     "originalDefault": "Use a variable for the price"
   },
+  "CpZufh": {
+    "defaultMessage": "Vink alles aan/uit",
+    "description": "Accessible label for check/uncheck all file components",
+    "originalDefault": "Check/uncheck all"
+  },
   "CtjZFq": {
     "defaultMessage": "Inzenden toegestaan",
     "description": "Form submissionAllowed field label",
@@ -966,6 +986,11 @@
     "defaultMessage": "Er moet minstens één authenticatiemethode ingeschakeld zijn voor de mede-ondertekencomponent.",
     "description": "MissingAuthCosignWarning message",
     "originalDefault": "The co-sign component requires at least one authentication plugin to be enabled."
+  },
+  "FJaFwb": {
+    "defaultMessage": "Kopieer",
+    "description": "Copy document types config: copy button label",
+    "originalDefault": "Copy"
   },
   "FNT8nq": {
     "defaultMessage": "Variabele die adres(sen) bevat",
@@ -1347,6 +1372,11 @@
     "description": "'Static' source label for fixed metadata variables table",
     "originalDefault": "Static"
   },
+  "KTmwYn": {
+    "defaultMessage": "{label} instellingen bijwerken?",
+    "description": "Accessible label for check/uncheck single file component",
+    "originalDefault": "Update {label} configuration?"
+  },
   "KYTAJZ": {
     "defaultMessage": "(actief binnen elke stap)",
     "description": "'Trigger from step' information for when unset",
@@ -1563,6 +1593,11 @@
     "description": "ZGW APIs registration options 'document type' label",
     "originalDefault": "Document type"
   },
+  "NwBpaW": {
+    "defaultMessage": "Documenttype-omschrijving",
+    "description": "Copy document types config to file components: doc type description heading",
+    "originalDefault": "Document type description"
+  },
   "NyyJMK": {
     "defaultMessage": "De API-groep die bepaalt welke ZGW services gebruikt moeten worden.",
     "description": "ZGW APIs group field help text",
@@ -1677,10 +1712,20 @@
     "description": "Camunda 'process definition' label",
     "originalDefault": "Process"
   },
+  "PbVsAV": {
+    "defaultMessage": "Bijlage-documenttypen",
+    "description": "ZGw APIs registration: file components document types fieldset title",
+    "originalDefault": "File component document types"
+  },
   "PdaMqg": {
     "defaultMessage": "Regel toevoegen",
     "description": "Add form logic rule button",
     "originalDefault": "Add rule"
+  },
+  "PhKHkq": {
+    "defaultMessage": "Je kan de catalogusreferentie en documenttypeomschrijving kopiëren van de plugin-instellingen naar de geselecteerde upload-velden van het formulier. Merk op dat je hiermee bestaande instellingen overschrijft!",
+    "description": "Copy document types config: feature description",
+    "originalDefault": "You can copy the catalogue and document type description from the plugin options to the selected file upload fields of the form. Note that this will overwrite existing field-level configuration!"
   },
   "PhN977": {
     "defaultMessage": "Plugin-instellingen: StUF-ZDS",
@@ -2130,6 +2175,11 @@
     "defaultMessage": "Opslaan",
     "description": "Admin save submit button",
     "originalDefault": "Save"
+  },
+  "YReu09": {
+    "defaultMessage": "Veldlabel",
+    "description": "Copy document types config to file components: component label heading",
+    "originalDefault": "Field label"
   },
   "YbnFnL": {
     "defaultMessage": "Er is een fout bij de component \"{label}\" (met sleutel \"{key}\"{location}) in het veld \"{field}\": {error}",
@@ -3178,6 +3228,11 @@
     "defaultMessage": "Er zijn geen relevante geavanceerde instellingen.",
     "description": "Form advanced configuration fallback message",
     "originalDefault": "No advanced configuration is available for this form."
+  },
+  "p0n2wK": {
+    "defaultMessage": "De bestandsuploadveldinstellingen worden meteen bijgewerkt. Ben je zeker dat je door wil gaan?",
+    "description": "Copy document type configuration to selected file components confirmation modal content",
+    "originalDefault": "The file component changes will be applied immediately. Are you sure you want to continue?"
   },
   "p18yml": {
     "defaultMessage": "Complexe procesvariabelen",

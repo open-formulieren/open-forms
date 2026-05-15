@@ -15,6 +15,7 @@ from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
+from openforms.contrib.objects_api.clients import get_documents_client
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.forms.tests.factories import FormVariableFactory
@@ -35,7 +36,11 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from ....constants import RegistrationAttribute
 from ..config import ObjectsAPIOptionsSerializer
 from ..constants import PLUGIN_IDENTIFIER
-from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
+from ..models import (
+    ObjectsAPIConfig,
+    ObjectsAPIRegistrationData,
+    ObjectsAPISubmissionAttachment,
+)
 from ..plugin import ObjectsAPIRegistration
 from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2
@@ -1477,4 +1482,82 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "textfield": "",
                 "nestedTextfield": "",
             },
+        )
+
+    def test_can_upload_attachments_with_indirect_document_type_reference(self):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="TEST",
+            catalogue_rsin="000000000",
+            organisatie_rsin="000000000",
+        )
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "file",
+                    "key": "file",
+                    "label": "File",
+                    "registration": {
+                        "documentType": {
+                            "catalogue": {
+                                "domain": "TEST",
+                                "rsin": "000000000",
+                            },
+                            "description": "Attachment Informatieobjecttype",
+                        },
+                        "informatieobjecttype": "https://example.com/ignore-me",
+                    },
+                }
+            ],
+            submitted_data={},
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
+        )
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            content_type="image/png",
+            form_key="file",
+            _component_configuration_path="components.0",
+        )
+        options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "variables_mapping": [
+                {
+                    "variable_key": "environment",
+                    "target_path": ["environment"],
+                },
+            ],
+            "transform_to_list": [],
+            "iot_attachment": "PDF Informatieobjecttype",
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            # a default is required to register file component attachments, aparently
+            "upload_submission_csv": False,
+        }
+
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        plugin.register_submission(submission, options)
+
+        submission.refresh_from_db()
+        assert submission.registration_result
+
+        with get_documents_client(objects_api_group) as documents_client:
+            attachment_document = documents_client.get(
+                ObjectsAPISubmissionAttachment.objects.get(
+                    submission_file_attachment=attachment
+                ).document_url
+            ).json()
+
+        self.assertEqual(
+            attachment_document["informatieobjecttype"],
+            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
         )

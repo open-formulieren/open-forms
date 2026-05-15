@@ -81,12 +81,22 @@ export default {
     formData: {},
     availableComponents: {
       textField1: {
+        type: 'textfield',
+        key: 'textField1',
         label: 'textfield1',
       },
       textField2: {
+        type: 'textfield',
+        key: 'textField2',
         label: 'textfield2',
       },
+      file: {
+        type: 'file',
+        key: 'file',
+        label: 'attachments',
+      },
     },
+    updateComponents: fn(),
   },
   parameters: {
     msw: {

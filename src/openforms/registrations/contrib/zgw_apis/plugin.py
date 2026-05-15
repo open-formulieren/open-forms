@@ -133,6 +133,7 @@ def _resolve_case_type(
     return version["url"]
 
 
+# TODO: cache lookups
 def _resolve_document_type(
     catalogi_client: CatalogiClient,
     catalogue: CatalogueOption,
@@ -567,9 +568,36 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
             # TODO: threading? asyncio?
             for attachment in submission.attachments:
+                # default/legacy behaviour, but override it with specific catalogue +
+                # description configuration when available
+                iot = attachment.informatieobjecttype or informatieobjecttype_url
                 # collect attributes of the attachment and add them to the configuration
                 # attribute names conform to the Documenten API specification
-                iot = attachment.informatieobjecttype or informatieobjecttype_url
+                file_component = attachment.component
+                if file_component is not None:
+                    document_type_configuration = file_component.get(
+                        "registration", {}
+                    ).get("documentType", {})
+                    _document_type_description = document_type_configuration.get(
+                        "description", ""
+                    )
+                    _catalogue = document_type_configuration.get("catalogue", {})
+                    if (
+                        _document_type_description
+                        and (_catalogue_domain := _catalogue.get("domain"))
+                        and (_catalogue_rsin := _catalogue.get("rsin"))
+                    ):
+                        iot = _resolve_document_type(
+                            catalogi_client,
+                            catalogue={
+                                "domain": _catalogue_domain,
+                                "rsin": _catalogue_rsin,
+                            },
+                            zaaktype_url=zaak["zaaktype"],
+                            description=_document_type_description,
+                            submission_completed=submission.completed_on,
+                        )
+
                 bronorganisatie = (
                     attachment.bronorganisatie or options["organisatie_rsin"]
                 )

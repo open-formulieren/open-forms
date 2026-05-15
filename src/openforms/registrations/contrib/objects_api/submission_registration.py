@@ -214,9 +214,39 @@ def register_submission_attachment(
         document_options["titel"] = title
     if rsin := attachment.bronorganisatie:
         document_options["organisatie_rsin"] = rsin
-    # TODO convert this to catalogue + description mechanism too! See #4267
-    if document_type := attachment.informatieobjecttype:
-        document_options["informatieobjecttype"] = document_type
+
+    # Override the component-specific document type if it's configured
+    if file_component := attachment.component:
+        # default to the legacy URLs, but override with modern configuration if available
+        if document_type := attachment.informatieobjecttype:
+            document_options["informatieobjecttype"] = document_type
+
+        document_type_configuration = file_component.get("registration", {}).get(
+            "documentType", {}
+        )
+        _document_type_description = document_type_configuration.get("description", "")
+        _catalogue = document_type_configuration.get("catalogue", {})
+        if (
+            _document_type_description
+            and (_catalogue_domain := _catalogue.get("domain"))
+            and (_catalogue_rsin := _catalogue.get("rsin"))
+        ):
+            _options: RegistrationOptions = options.copy()
+            _options.update(
+                {
+                    "catalogue": {
+                        "domain": _catalogue_domain,
+                        "rsin": _catalogue_rsin,
+                    },
+                    "iot_attachment": _document_type_description,
+                }
+            )
+            document_options["informatieobjecttype"] = _resolve_documenttype(
+                "attachment",
+                _options,
+                submission,
+                catalogi_client,
+            )
 
     attachment_document = create_attachment_document(
         client=documents_client,
