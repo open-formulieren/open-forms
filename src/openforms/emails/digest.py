@@ -360,7 +360,7 @@ def collect_invalid_certificates() -> list[InvalidCertificate]:
     for cert in configured_certificates:
         error_message = ""
         is_valid_pair = cert.is_valid_key_pair()
-        time_until_expiry = cert.expiry_date - today
+        time_until_expiry = cert.not_valid_after - today
         is_expired = time_until_expiry <= timedelta(days=0)
         no_longer_valid_in_two_weeks = time_until_expiry <= timedelta(days=14)
 
@@ -389,7 +389,7 @@ def collect_invalid_certificates() -> list[InvalidCertificate]:
                     label=str(cert),
                     error_message=str(error_message),
                     is_valid_pair=is_valid_pair or is_valid_pair is None,
-                    expiry_date=cert.expiry_date,
+                    expiry_date=cert.not_valid_after,
                 )
             )
 

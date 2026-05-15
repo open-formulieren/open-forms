@@ -284,7 +284,7 @@ django-csp-reports==1.10.0
     #   -r requirements/ci.txt
 django-debug-toolbar==6.2.0
     # via -r requirements/dev.in
-django-digid-eherkenning==0.24.0
+django-digid-eherkenning==0.25.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -353,7 +353,7 @@ django-phonenumber-field==8.4.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-two-factor-auth
-django-privates==3.1.1
+django-privates==4.0.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -385,7 +385,7 @@ django-setup-configuration==0.11.0
     #   -r requirements/ci.txt
 django-silk==5.4.3
     # via -r requirements/dev.in
-django-simple-certmanager==2.5.0
+django-simple-certmanager==4.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
