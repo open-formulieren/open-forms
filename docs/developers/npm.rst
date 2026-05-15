@@ -8,14 +8,16 @@ NPM is the Node package manager, where Node is used in the frontend toolchains.
 
 Note that we have "two frontends":
 
-1. The frontend toolchain for Open Forms (= the backend)
-2. The toolchain for the Open Forms SDK (= the frontend)
+1. The frontend toolchain for Open Forms (= the backend), including helper libraries
+   like the ``formio-builder``.
+2. The toolchain for the Open Forms SDK (= the frontend), including helper libraries
+   like the ``formio-renderer``.
 
 Common tooling
 ==============
 
 The common tooling applies to Open Forms, the SDK and the supporting libraries like
-the formio-builder and types repository.
+the formio-builder, formio-renderer and types repository.
 
 **NVM**
 
@@ -37,7 +39,7 @@ locally you can format the code using the ``format`` script.
 It is recommended to configure your editor or a pre-commit hook to run the prettier
 formatting when a ``.prettierrc.json`` config file is available.
 
-Currently, Prettier is configured to format ``.js`` and ``.scss`` files.
+Currently, Prettier is configured to format ``.js``, ``.ts(x)`` and ``.scss`` files.
 
 **Storybook**
 
@@ -51,10 +53,13 @@ run storybook with:
 
     npm run storybook [-- --no-open]
 
-Writing `interaction tests <https://storybook.js.org/docs/essentials/interactions>`_ is
+Writing `interaction tests <https://storybook.js.org/docs/writing-tests/interaction-testing>`_ is
 recommended, but please limit those to actual interactions. For more low-level tests,
-stick to writing unit tests in Jest, using
-`Testing Library <https://www.npmjs.com/package/@testing-library/react>`_.
+stick to writing unit tests in `Vitest browser mode <https://vitest.dev/guide/browser/>`_.
+Stories are run in Chromatic, and each snapshot costs money.
+
+Some older codebases that don't use ViteJS-based tooling yet, require tests to be
+written in Jest using `Testing Library <https://www.npmjs.com/package/@testing-library/react>`_.
 
 **Managing translations**
 
@@ -70,6 +75,16 @@ Cheat sheet:
 * Backend: ``./bin/makemessages_js.sh`` and ``./bin/compilemessages_js.sh``
 * Libraries: ``./bin/makemessages.sh`` and ``npm run compilemessages``
 
+**Linting**
+
+We lint the codebase with ESLint_. Usually you can run this locally through:
+
+.. code-block:: bash
+
+    npm run lint
+
+For the ViteJS-based toolchains, the linting is usually run as part of the build process.
+
 **.editorconfig**
 
 Indent sizes and other code formatting rules are specified in the ``.editorconfig`` file,
@@ -80,3 +95,4 @@ to be activated though.
 .. _yarn: https://yarnpkg.com/
 .. _Prettier: https://prettier.io/
 .. _SDK Storybook: https://open-formulieren.github.io/open-forms-sdk/
+.. _ESLint: https://eslint.org/
