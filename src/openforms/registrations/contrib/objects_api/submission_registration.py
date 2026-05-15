@@ -16,7 +16,6 @@ from django.db.models.functions import Coalesce, NullIf
 import structlog
 
 from openforms.contrib.objects_api.clients import (
-    CatalogiClient,
     DocumentenClient,
     get_catalogi_client,
     get_documents_client,
@@ -26,6 +25,7 @@ from openforms.contrib.objects_api.rendering import render_to_json
 from openforms.contrib.objects_api.typing import Record
 from openforms.contrib.zgw.service import (
     DocumentOptions,
+    DocumentTypeResolver,
     create_attachment_document,
     create_csv_document,
     create_report_document,
@@ -67,10 +67,10 @@ logger = structlog.stdlib.get_logger(__name__)
 
 
 def _resolve_documenttype(
+    resolver: DocumentTypeResolver,
     field: Literal["submission_report", "submission_csv", "attachment"],
     options: RegistrationOptions,
     submission: Submission,
-    catalogi_client: CatalogiClient,
 ) -> str:
     """
     Given the registration options, resolve the documenttype URL to use.
@@ -106,33 +106,22 @@ def _resolve_documenttype(
     assert submission.completed_on is not None
 
     version_valid_on = datetime_in_amsterdam(submission.completed_on).date()
-    catalogus = catalogi_client.find_catalogus(**catalogue)
-    if catalogus is None:
-        raise RuntimeError(f"Could not resolve catalogue {catalogue}")
-
-    versions = catalogi_client.find_informatieobjecttypen(
-        catalogus=catalogus["url"],
+    version = resolver.resolve(
+        catalogue=catalogue,
         description=description,
-        valid_on=version_valid_on,
+        on_date=version_valid_on,
     )
-    if versions is None:
-        raise RuntimeError(
-            f"Could not find a document type with description '{description}' that is "
-            f"valid on {version_valid_on.isoformat()}."
-        )
-
-    version = versions[0]
     return version["url"]
 
 
 def register_submission_pdf(
+    resolver: DocumentTypeResolver,
     submission: Submission,
     options: RegistrationOptions,
     documents_client: DocumentenClient,
-    catalogi_client: CatalogiClient,
 ) -> str:
     document_type = _resolve_documenttype(
-        "submission_report", options, submission, catalogi_client
+        resolver, "submission_report", options, submission
     )
     if not document_type:
         return ""
@@ -152,16 +141,16 @@ def register_submission_pdf(
 
 
 def register_submission_csv(
+    resolver: DocumentTypeResolver,
     submission: Submission,
     options: RegistrationOptions,
     documents_client: DocumentenClient,
-    catalogi_client: CatalogiClient,
 ) -> str:
     if not options.get("upload_submission_csv", False):
         return ""
 
     document_type = _resolve_documenttype(
-        "submission_csv", options, submission, catalogi_client
+        resolver, "submission_csv", options, submission
     )
     if not document_type:
         return ""
@@ -184,14 +173,14 @@ def register_submission_csv(
 
 
 def register_submission_attachment(
+    resolver: DocumentTypeResolver,
     submission: Submission,
     attachment: SubmissionFileAttachment,
     options: RegistrationOptions,
     documents_client: DocumentenClient,
-    catalogi_client: CatalogiClient,
 ) -> str:
     default_document_type = _resolve_documenttype(
-        "attachment", options, submission, catalogi_client
+        resolver, "attachment", options, submission
     )
     assert default_document_type, "Registration should have been skipped"
 
@@ -214,9 +203,39 @@ def register_submission_attachment(
         document_options["titel"] = title
     if rsin := attachment.bronorganisatie:
         document_options["organisatie_rsin"] = rsin
-    # TODO convert this to catalogue + description mechanism too! See #4267
-    if document_type := attachment.informatieobjecttype:
-        document_options["informatieobjecttype"] = document_type
+
+    # Override the component-specific document type if it's configured
+    if file_component := attachment.component:
+        # default to the legacy URLs, but override with modern configuration if available
+        if document_type := attachment.informatieobjecttype:
+            document_options["informatieobjecttype"] = document_type
+
+        document_type_configuration = file_component.get("registration", {}).get(
+            "documentType", {}
+        )
+        _document_type_description = document_type_configuration.get("description", "")
+        _catalogue = document_type_configuration.get("catalogue", {})
+        if (
+            _document_type_description
+            and (_catalogue_domain := _catalogue.get("domain"))
+            and (_catalogue_rsin := _catalogue.get("rsin"))
+        ):
+            _options: RegistrationOptions = options.copy()
+            _options.update(
+                {
+                    "catalogue": {
+                        "domain": _catalogue_domain,
+                        "rsin": _catalogue_rsin,
+                    },
+                    "iot_attachment": _document_type_description,
+                }
+            )
+            document_options["informatieobjecttype"] = _resolve_documenttype(
+                resolver,
+                "attachment",
+                _options,
+                submission,
+            )
 
     attachment_document = create_attachment_document(
         client=documents_client,
@@ -289,20 +308,21 @@ class ObjectsAPIRegistrationHandler[
             get_catalogi_client(api_group) as catalogi_client,
             save_and_raise(registration_data, submission_attachments),
         ):
+            doc_type_resolver = DocumentTypeResolver(catalogi_client)
             if not registration_data.pdf_url:
                 registration_data.pdf_url = register_submission_pdf(
+                    doc_type_resolver,
                     submission,
                     options,
                     documents_client,
-                    catalogi_client,
                 )
 
             if not registration_data.csv_url:
                 registration_data.csv_url = register_submission_csv(
+                    doc_type_resolver,
                     submission,
                     options,
                     documents_client,
-                    catalogi_client,
                 )
 
             if _is_attachment_document_type_configured:
@@ -316,11 +336,11 @@ class ObjectsAPIRegistrationHandler[
                 for attachment in submission.attachments:
                     if attachment not in existing:
                         document_url = register_submission_attachment(
+                            doc_type_resolver,
                             submission,
                             attachment,
                             options,
                             documents_client,
-                            catalogi_client,
                         )
                         submission_attachments.append(
                             ObjectsAPISubmissionAttachment(

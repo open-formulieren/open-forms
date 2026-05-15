@@ -1,75 +1,33 @@
-import classNames from 'classnames';
-import {useField, useFormikContext} from 'formik';
+import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import React from 'react';
+import {useMemo} from 'react';
 import {FormattedMessage} from 'react-intl';
-import {components} from 'react-select';
-import useAsync from 'react-use/esm/useAsync';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import ReactSelect from 'components/admin/forms/ReactSelect';
-import {get} from 'utils/fetch';
+import {
+  DocumentTypeSelect as GenericDocumentTypeSelect,
+  useGetDocumentTypes,
+} from 'components/admin/forms/zgw';
 
 const DOCUMENT_TYPES_ENDPOINT = '/api/v2/registration/plugins/zgw-api/document-types';
 
-const getAvailableDocumentTypes = async (apiGroupID, catalogueUrl, caseTypeIdentification) => {
-  const response = await get(DOCUMENT_TYPES_ENDPOINT, {
-    zgw_api_group: apiGroupID,
-    catalogue_url: catalogueUrl,
-    case_type_identification: caseTypeIdentification,
-  });
-  if (!response.ok) {
-    throw new Error('Loading available object types failed');
-  }
-  const documentTypes = response.data.sort((a, b) => a.description.localeCompare(b.description));
-  return documentTypes.map(({description, isPublished}) => ({
-    value: description,
-    label: description,
-    isPublished: isPublished,
-  }));
-};
-
 // Components
 
-const DocumentTypeSelectOption = props => {
-  const {isPublished, label} = props.data;
-  return (
-    <components.Option {...props}>
-      <span
-        className={classNames('catalogi-type-option', {
-          'catalogi-type-option--draft': !isPublished,
-        })}
-      >
-        <FormattedMessage
-          description="Document type option label"
-          defaultMessage={`{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}`}
-          values={{
-            label,
-            isPublished,
-            draft: chunks => <span className="catalogi-type-option__draft-suffix">{chunks}</span>,
-          }}
-        />
-      </span>
-    </components.Option>
-  );
-};
-
 const DocumentTypeSelect = ({catalogueUrl = ''}) => {
-  const [, , fieldHelpers] = useField('documentTypeDescription');
   const {
     values: {zgwApiGroup = null, caseTypeIdentification = ''},
   } = useFormikContext();
-  const {setValue} = fieldHelpers;
 
-  const {
-    loading,
-    value: documentTypes = [],
-    error,
-  } = useAsync(async () => {
-    if (!zgwApiGroup || !catalogueUrl || !caseTypeIdentification) return [];
-    return await getAvailableDocumentTypes(zgwApiGroup, catalogueUrl, caseTypeIdentification);
-  }, [zgwApiGroup, catalogueUrl, caseTypeIdentification]);
+  const query = useMemo(
+    () => ({
+      zgw_api_group: zgwApiGroup,
+      catalogue_url: catalogueUrl,
+      case_type_identification: caseTypeIdentification,
+    }),
+    [zgwApiGroup, catalogueUrl, caseTypeIdentification]
+  );
+  const {loading, documentTypes, error} = useGetDocumentTypes(DOCUMENT_TYPES_ENDPOINT, query);
   if (error) throw error;
 
   return (
@@ -94,18 +52,13 @@ const DocumentTypeSelect = ({catalogueUrl = ''}) => {
         }
         noManageChildProps
       >
-        <ReactSelect
+        <GenericDocumentTypeSelect
           name="documentTypeDescription"
-          options={documentTypes}
-          isLoading={loading}
+          documentTypes={documentTypes}
           isDisabled={!zgwApiGroup || !caseTypeIdentification}
           // TODO: make required once legacy config is dropped
-          required={false}
-          isClearable
-          components={{Option: DocumentTypeSelectOption}}
-          onChange={selectedOption => {
-            setValue(selectedOption ? selectedOption.value : undefined);
-          }}
+          isRequired={false}
+          isLoading={loading}
         />
       </Field>
     </FormRow>

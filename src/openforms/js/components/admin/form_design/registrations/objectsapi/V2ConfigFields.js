@@ -13,7 +13,7 @@ import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
   AuthAttributePath,
-  DocumentTypesFieldet,
+  DocumentTypesFieldset,
   LegacyDocumentTypesFieldet,
   OrganisationRSIN,
   UpdateExistingObject,
@@ -136,7 +136,7 @@ const V2ConfigFields = ({apiGroupChoices}) => {
           />
         }
       >
-        <DocumentTypesFieldet />
+        <DocumentTypesFieldset />
       </ErrorBoundary>
 
       <LegacyDocumentTypesFieldet />

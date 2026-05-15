@@ -1,20 +1,20 @@
-import classNames from 'classnames';
 import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {useContext, useEffect} from 'react';
+import {useContext, useEffect, useMemo} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
-import {components} from 'react-select';
 import {useAsync, usePrevious} from 'react-use';
 
 import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
-import ReactSelect from 'components/admin/forms/ReactSelect';
 import {
   CatalogueSelect,
+  CopyDocumentTypesConfig,
+  DocumentTypeSelect as GenericDocumentTypeSelect,
   getCatalogueOption,
   groupAndSortCatalogueOptions,
+  useGetDocumentTypes,
 } from 'components/admin/forms/zgw';
 import {WarningIcon} from 'components/admin/icons';
 import {get} from 'utils/fetch';
@@ -32,51 +32,11 @@ const getCatalogues = async apiGroupID => {
   return groupAndSortCatalogueOptions(response.data);
 };
 
-const getDocumentTypes = async (apiGroupID, catalogueUrl) => {
-  const response = await get(IOT_ENDPOINT, {
-    objects_api_group: apiGroupID,
-    catalogue_url: catalogueUrl,
-  });
-  if (!response.ok) {
-    throw new Error('Loading available document types failed');
-  }
-  const documentTypes = response.data.sort((a, b) => a.description.localeCompare(b.description));
-  return documentTypes.map(({description, isPublished}) => ({
-    value: description,
-    label: description,
-    isPublished: isPublished,
-  }));
-};
-
 // Components
 
-const DocumentTypeSelectOption = props => {
-  const {isPublished, label} = props.data;
-  return (
-    <components.Option {...props}>
-      <span
-        className={classNames('catalogi-type-option', {
-          'catalogi-type-option--draft': !isPublished,
-        })}
-      >
-        <FormattedMessage
-          description="Document type option label"
-          defaultMessage={`{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}`}
-          values={{
-            label,
-            isPublished,
-            draft: chunks => <span className="catalogi-type-option__draft-suffix">{chunks}</span>,
-          }}
-        />
-      </span>
-    </components.Option>
-  );
-};
-
-const DocumentType = ({name, label, loading, options, isDisabled, helpText}) => {
+const DocumentType = ({name, label, loading, documentTypes, isDisabled, helpText}) => {
   const intl = useIntl();
-  const [{value}, , fieldHelpers] = useField(name);
-  const {setValue} = fieldHelpers;
+  const [{value}] = useField(name);
 
   const {ZGW_APIS_INCLUDE_DRAFTS = false} = useContext(FeatureFlagsContext);
 
@@ -84,23 +44,17 @@ const DocumentType = ({name, label, loading, options, isDisabled, helpText}) => 
     !isDisabled &&
     value &&
     !loading &&
-    options.find(option => option.value === value) === undefined;
+    documentTypes.find(option => option.value === value) === undefined;
 
   return (
     <FormRow>
       <Field name={name} label={label} helpText={helpText} disabled={isDisabled} noManageChildProps>
         <>
-          <ReactSelect
+          <GenericDocumentTypeSelect
             name={name}
-            options={options}
-            isLoading={loading}
+            documentTypes={documentTypes}
             isDisabled={isDisabled}
-            onChange={selectedOption => {
-              // unset form key entirely if the selection is cleared
-              setValue(selectedOption ? selectedOption.value : undefined);
-            }}
-            isClearable
-            components={{Option: DocumentTypeSelectOption}}
+            isLoading={loading}
           />
           {showWarning && (
             <WarningIcon
@@ -127,7 +81,7 @@ DocumentType.propTypes = {
   label: PropTypes.node.isRequired,
   loading: PropTypes.bool.isRequired,
   isDisabled: PropTypes.bool.isRequired,
-  options: PropTypes.arrayOf(
+  documentTypes: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.string.isRequired,
       label: PropTypes.node.isRequired,
@@ -136,7 +90,7 @@ DocumentType.propTypes = {
   helpText: PropTypes.node,
 };
 
-export const DocumentTypesFieldet = () => {
+export const DocumentTypesFieldset = () => {
   const {values, setValues} = useFormikContext();
   const {objectsApiGroup = null, catalogue = undefined} = values;
 
@@ -173,21 +127,17 @@ export const DocumentTypesFieldet = () => {
     }));
   }, [previousCatalogueUrl, catalogueUrl]);
 
-  const {
-    loading,
-    value: documentTypeOptions = [],
-    error,
-  } = useAsync(async () => {
-    if (!objectsApiGroup) return [];
-    if (!catalogueUrl) return [];
-    return await getDocumentTypes(objectsApiGroup, catalogueUrl);
-  }, [objectsApiGroup, catalogueUrl]);
+  const query = useMemo(
+    () => ({objects_api_group: objectsApiGroup, catalogue_url: catalogueUrl}),
+    [objectsApiGroup, catalogueUrl]
+  );
+  const {loading, documentTypes, error} = useGetDocumentTypes(IOT_ENDPOINT, query);
   if (error) throw error;
 
   const documentTypeProps = {
     isDisabled: !objectsApiGroup || !catalogueUrl,
     loading: loading,
-    options: documentTypeOptions,
+    documentTypes: documentTypes,
   };
 
   return (
@@ -250,6 +200,7 @@ export const DocumentTypesFieldet = () => {
         }
         {...documentTypeProps}
       />
+      <CopyDocumentTypesConfig catalogueField="catalogue" descriptionField="iotAttachment" />
     </Fieldset>
   );
 };

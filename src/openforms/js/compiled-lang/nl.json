@@ -87,6 +87,12 @@
       "value": "markeer de formulierstap als van toepassing"
     }
   ],
+  "/MWRm7": [
+    {
+      "type": 0,
+      "value": "Het formulier bevat geen bestandsuploadvelden."
+    }
+  ],
   "/XbK4W": [
     {
       "type": 0,
@@ -127,6 +133,12 @@
     {
       "type": 0,
       "value": "Geef de knoptekst om een groep te bewaren op."
+    }
+  ],
+  "/xFb1n": [
+    {
+      "type": 0,
+      "value": "Het 'domein'-attribuut van de Catalogus-entiteit in de Catalogi API."
     }
   ],
   "/yDnA3": [
@@ -273,6 +285,12 @@
       "value": "Reguliere expressie"
     }
   ],
+  "1andg+": [
+    {
+      "type": 0,
+      "value": "Het 'rsin'-attribuut van de catalogus-entiteit in de Catalogi API."
+    }
+  ],
   "1fD+K4": [
     {
       "type": 0,
@@ -345,6 +363,12 @@
     {
       "type": 0,
       "value": "Verwijderd"
+    }
+  ],
+  "2KY/BC": [
+    {
+      "type": 0,
+      "value": "Selecteer het documenttype voor de geüploade bestanden wanneer ze in de Documenten API opgeslagen worden. De directe URL-referenties zullen vervangen worden met refernties naar de catalogus en omschrijving van het informatieobjecttype."
     }
   ],
   "2Lg8Vc": [
@@ -521,10 +545,28 @@
       "value": "Vraag verklaring invullen naar waarheid"
     }
   ],
+  "3eiHJv": [
+    {
+      "type": 0,
+      "value": "Catalogus-RSIN"
+    }
+  ],
   "3h215E": [
     {
       "type": 0,
       "value": "Weergavestijl"
+    }
+  ],
+  "3jd+Cd": [
+    {
+      "type": 0,
+      "value": "Catalogusdomein"
+    }
+  ],
+  "3leP68": [
+    {
+      "type": 0,
+      "value": "Documenttype"
     }
   ],
   "3z1hhJ": [
@@ -1703,6 +1745,12 @@
       "value": "Gebruik een variabele"
     }
   ],
+  "CpZufh": [
+    {
+      "type": 0,
+      "value": "Vink alles aan/uit"
+    }
+  ],
   "CtjZFq": [
     {
       "type": 0,
@@ -1766,6 +1814,12 @@
     {
       "type": 0,
       "value": "Overige instellingen"
+    }
+  ],
+  "DE7U4q": [
+    {
+      "type": 0,
+      "value": "Het RSIN moet uit 9 getallen bestaan."
     }
   ],
   "DEAqyQ": [
@@ -2098,6 +2152,12 @@
     {
       "type": 0,
       "value": "Er moet minstens één authenticatiemethode ingeschakeld zijn voor de mede-ondertekencomponent."
+    }
+  ],
+  "FJaFwb": [
+    {
+      "type": 0,
+      "value": "Kopieer"
     }
   ],
   "FNT8nq": [
@@ -2542,6 +2602,12 @@
       "value": "Weet u zeker dat u dit item wilt verwijderen?"
     }
   ],
+  "J1zTQz": [
+    {
+      "type": 0,
+      "value": "Informatieobjecttype-omschrijving"
+    }
+  ],
   "J5EZDj": [
     {
       "type": 0,
@@ -2704,6 +2770,16 @@
     {
       "type": 0,
       "value": "Er ging helaas iets fout!"
+    }
+  ],
+  "KTmwYn": [
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": " instellingen bijwerken?"
     }
   ],
   "KYTAJZ": [
@@ -3056,6 +3132,12 @@
       "value": "Een korte instructie onder het handtekenvlak."
     }
   ],
+  "NwBpaW": [
+    {
+      "type": 0,
+      "value": "Documenttype-omschrijving"
+    }
+  ],
   "NyyJMK": [
     {
       "type": 0,
@@ -3244,10 +3326,22 @@
       "value": "Voeg de inhoud toe aan de PDF"
     }
   ],
+  "PbVsAV": [
+    {
+      "type": 0,
+      "value": "Bijlage-documenttypen"
+    }
+  ],
   "PdaMqg": [
     {
       "type": 0,
       "value": "Regel toevoegen"
+    }
+  ],
+  "PhKHkq": [
+    {
+      "type": 0,
+      "value": "Je kan de catalogusreferentie en documenttypeomschrijving kopiëren van de plugin-instellingen naar de geselecteerde upload-velden van het formulier. Merk op dat je hiermee bestaande instellingen overschrijft!"
     }
   ],
   "PhN977": [
@@ -4250,6 +4344,12 @@
       "value": "Opslaan"
     }
   ],
+  "YReu09": [
+    {
+      "type": 0,
+      "value": "Veldlabel"
+    }
+  ],
   "YSuwK2": [
     {
       "type": 0,
@@ -4681,6 +4781,12 @@
       "value": "'"
     }
   ],
+  "bh2ky5": [
+    {
+      "type": 0,
+      "value": "Catalogusdomein"
+    }
+  ],
   "bjIQDR": [
     {
       "type": 0,
@@ -4727,6 +4833,12 @@
     {
       "type": 0,
       "value": "Geef een JSON-logic expressie op in JSON."
+    }
+  ],
+  "c770ER": [
+    {
+      "type": 0,
+      "value": "Catalogus-RSIN"
     }
   ],
   "cAC5kL": [
@@ -4881,6 +4993,12 @@
       ],
       "type": 8,
       "value": "duplicatedKeys"
+    }
+  ],
+  "ce0Nz4": [
+    {
+      "type": 0,
+      "value": "Je moet een omschrijving opgeven wanneer je een catalogus instelt."
     }
   ],
   "ce1N0I": [
@@ -5517,6 +5635,12 @@
     {
       "type": 0,
       "value": "Minimale betrouwbaarheidsniveaus"
+    }
+  ],
+  "hAc9vQ": [
+    {
+      "type": 0,
+      "value": "Veroudered"
     }
   ],
   "hBxKbW": [
@@ -6443,6 +6567,12 @@
       "value": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier."
     }
   ],
+  "oiB6Kg": [
+    {
+      "type": 0,
+      "value": "De instelling met een URL naar een informatieobjecttype(versie) zal verwijderd worden. Indien je een URL én de bovenstaande velden ingesteld hebt, dan worden de nieuwe instellingen gebruikt."
+    }
+  ],
   "oqv4fM": [
     {
       "type": 0,
@@ -6483,6 +6613,12 @@
     {
       "type": 0,
       "value": "Omhoog"
+    }
+  ],
+  "p0n2wK": [
+    {
+      "type": 0,
+      "value": "De bestandsuploadveldinstellingen worden meteen bijgewerkt. Ben je zeker dat je door wil gaan?"
     }
   ],
   "p5Iv+R": [
@@ -7081,6 +7217,12 @@
       "value": "Adres afleiden"
     }
   ],
+  "tzAOAm": [
+    {
+      "type": 0,
+      "value": "Je moet het domein en RSIN beide instellen."
+    }
+  ],
   "u+IP17": [
     {
       "type": 0,
@@ -7127,6 +7269,12 @@
     {
       "type": 0,
       "value": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "uOtaSP": [
+    {
+      "type": 0,
+      "value": "Het documenttype wordt opgehaald binnen de ingestelde catalogus. De juiste versie van het documenttype wordt automatisch bepaald aan de hand van de inzendingsdatum. Wanneer je via de ZGW-API's registreert, let er dan op dat het documenttype bij het ingestelde zaaktype hoort!"
     }
   ],
   "uUf7cu": [
@@ -7365,6 +7513,12 @@
       "value": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Dit wordt toegepast op de zaakdocumenten die aangemaakt worden."
     }
   ],
+  "wqhr+0": [
+    {
+      "type": 0,
+      "value": "Vul alle drie de onderstaande velden velden in om een documenttype in te stellen, of laat ze allemaal leeg om niets in te stellen."
+    }
+  ],
   "wrdDVu": [
     {
       "type": 0,
@@ -7429,6 +7583,12 @@
     {
       "type": 0,
       "value": "Vertalingen ingeschakeld"
+    }
+  ],
+  "xUt2+r": [
+    {
+      "type": 0,
+      "value": "Je moet het domein en RSIN beide instellen."
     }
   ],
   "xcp+LU": [

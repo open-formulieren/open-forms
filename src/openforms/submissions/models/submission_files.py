@@ -11,12 +11,14 @@ from typing import TYPE_CHECKING, ClassVar
 from django.core.files.base import File
 from django.db import models
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 import structlog
 from glom import glom
 from privates.fields import PrivateMediaFileField
 
+from openforms.formio.typing import FileComponent
 from openforms.typing import JSONValue
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 
@@ -234,18 +236,30 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
                 sha256.update(chunk)
         return sha256.hexdigest()
 
+    @cached_property
+    def component(self) -> FileComponent | None:
+        """
+        Resolve the formio component definition that produced this attachment.
+
+        .. todo:: Clean up upload processing so that ``None`` can never happen. See
+            https://github.com/open-formulieren/open-forms/issues/2713
+
+        :return: Component dict or ``None`` if it could not be resolved.
+        """
+        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
+        component = wrapper.flattened_by_path.get(self._component_configuration_path)
+        return component
+
     def _get_formio_config_property(
         self, lookup: str, default: JSONValue = ""
     ) -> str | None:
         """
         Derive a property from the attached formio configuration.
         """
-        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
-        component = wrapper.flattened_by_path.get(self._component_configuration_path)
-        if not component:
+        if not self.component:
             return None
 
-        if value := glom(component, lookup, default=default):
+        if value := glom(self.component, lookup, default=default):
             assert isinstance(value, str)
             return value
 

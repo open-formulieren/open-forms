@@ -25,6 +25,7 @@ from openforms.contrib.zgw.clients.catalogi import (
 )
 from openforms.contrib.zgw.service import (
     DocumentOptions,
+    DocumentTypeResolver,
     create_attachment_document,
     create_report_document,
 )
@@ -135,33 +136,18 @@ def _resolve_case_type(
 
 
 def _resolve_document_type(
-    catalogi_client: CatalogiClient,
+    resolver: DocumentTypeResolver,
     catalogue: CatalogueOption,
     zaaktype_url: str,
     description: str,
     submission_completed: datetime,
-):
-    version_valid_on = datetime_in_amsterdam(submission_completed).date()
-
-    catalogus = catalogi_client.find_catalogus(**catalogue)
-    if catalogus is None:
-        raise RuntimeError(f"Could not resolve catalogue {catalogue}")
-    versions = catalogi_client.find_informatieobjecttypen(
-        catalogus=catalogus["url"],
+) -> str:
+    version = resolver.resolve(
+        catalogue=catalogue,
         description=description,
-        valid_on=version_valid_on,
+        on_date=datetime_in_amsterdam(submission_completed).date(),
         within_casetype=zaaktype_url,
     )
-    if versions is None:
-        raise RuntimeError(
-            "Could not find a document type with description "
-            f"'{description}' in the case type that is valid on "
-            f"{version_valid_on.isoformat()}."
-        )
-
-    # the client enforces there's a single version returned when a valid_on date is
-    # passed.
-    version = versions[0]
     return version["url"]
 
 
@@ -412,12 +398,14 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             get_zaken_client(zgw) as zaken_client,
             get_catalogi_client(zgw) as catalogi_client,
         ):
+            doc_type_resolver = DocumentTypeResolver(catalogi_client)
+
             # resolve (default) document type to use
             if document_type_description := options["document_type_description"]:
                 catalogue = options.get("catalogue")
                 assert catalogue is not None  # enforced by validation
                 informatieobjecttype_url = _resolve_document_type(
-                    catalogi_client,
+                    doc_type_resolver,
                     catalogue=catalogue,
                     zaaktype_url=zaak["zaaktype"],
                     description=document_type_description,
@@ -611,9 +599,36 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
             # TODO: threading? asyncio?
             for attachment in submission.attachments:
+                # default/legacy behaviour, but override it with specific catalogue +
+                # description configuration when available
+                iot = attachment.informatieobjecttype or informatieobjecttype_url
                 # collect attributes of the attachment and add them to the configuration
                 # attribute names conform to the Documenten API specification
-                iot = attachment.informatieobjecttype or informatieobjecttype_url
+                file_component = attachment.component
+                if file_component is not None:
+                    document_type_configuration = file_component.get(
+                        "registration", {}
+                    ).get("documentType", {})
+                    _document_type_description = document_type_configuration.get(
+                        "description", ""
+                    )
+                    _catalogue = document_type_configuration.get("catalogue", {})
+                    if (
+                        _document_type_description
+                        and (_catalogue_domain := _catalogue.get("domain"))
+                        and (_catalogue_rsin := _catalogue.get("rsin"))
+                    ):
+                        iot = _resolve_document_type(
+                            doc_type_resolver,
+                            catalogue={
+                                "domain": _catalogue_domain,
+                                "rsin": _catalogue_rsin,
+                            },
+                            zaaktype_url=zaak["zaaktype"],
+                            description=_document_type_description,
+                            submission_completed=submission.completed_on,
+                        )
+
                 bronorganisatie = (
                     attachment.bronorganisatie or options["organisatie_rsin"]
                 )

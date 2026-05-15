@@ -29,3 +29,32 @@ op.
 
 .. note:: Indien je onvoldoende rechten hebt, vraag dan een functioneel beheerder om
    deze instelling aan te passen.
+
+Documenten
+==========
+
+Aan de zaak worden standaard een aantal documenten toegevoegd als zaakdocumenten:
+
+* De bevestigings-PDF met de inzendingsgegevens.
+* De bevestigingsmail die verstuurd is naar de inzender.
+* Alle bestanden die door de gebruiker toegevoegd zijn in "Bestandsupload"-velden.
+
+Gebruikersbijlagen
+------------------
+
+Bestanden die toegevoegd zijn door de gebruiker in "Bestandsupload"-velden worden
+geüpload naar de Documenten API en aan de zaak gerelateerd.
+
+In de plugin-instellingen kan je een catalogus selecteren en vervolgens kies je het
+standaard-documenttype wat voor dergelijke bijlagen gebruikt dient te worden. Per
+"Bestandsupload"-veld kan je hiervan afwijken, indien nodig, via de "Registratie"-tab,
+waar je de catalogus-identificatie en omschrijving van het documenttype kan opgeven.
+Omdat dit omslachtig kan zijn als je veel uploadvelden hebt, kan je ook de
+plugin-instellingen in bulk kopiëren naar (een deel van) de uploadvelden. Dit vind je
+in de plugin-instellingen onder het kopje "Bijlage-documenttypen".
+
+.. versionadded:: 3.5.2
+
+    Sinds Open Formulieren 3.5.2 kan je de bijlage-uploads instellen met een
+    catalogusreferentie en documenttypeomschrijving in plaats van een URL naar een
+    informatieobjecttype.
