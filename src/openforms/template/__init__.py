@@ -104,6 +104,11 @@ def _iter_variables_from_node(node: Node) -> Iterator[str]:
             # iterating over the complete node list
             for condition, _ in node.conditions_nodelists:
                 # Example: {% if someVar %} -> someVar
+                # condition is None for {% else %} branches (see django.template.defaulttags
+                # and specifically the do_if function)
+                if condition is None:
+                    continue
+
                 if (
                     isinstance(condition, TemplateLiteral)
                     and isinstance(condition.value, FilterExpression)
