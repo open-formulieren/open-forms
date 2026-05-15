@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 import requests_mock
 from django_yubin.models import Message
 from freezegun import freeze_time
+from privates.test import temp_private_root
 from rest_framework import serializers
 from simple_certmanager.test.factories import CertificateFactory
 from zgw_consumers.constants import AuthTypes
@@ -1250,6 +1251,7 @@ class FamilyMembersBrokenHCConfigurationTests(OFVCRMixin, TestCase):
 
 
 @override_settings(LANGUAGE_CODE="en")
+@temp_private_root()
 class InvalidCertificatesTests(TestCase):
     def test_expiring_certificates_not_used_by_a_service_are_not_collected(self):
         # the certificate (test.certificate) expires on Mar 26 10:15:40 2027 GMT

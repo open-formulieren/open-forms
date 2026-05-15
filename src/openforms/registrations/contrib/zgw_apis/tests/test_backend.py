@@ -232,6 +232,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         RegistratorInfoFactory.create(submission=submission, value="123456782")
         options: RegistrationOptions = {
@@ -353,6 +354,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             form__payment_backend="demo",
             language_code="en",
             completed=True,
+            with_report=True,
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -547,6 +549,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             },
             kvk="12345678",
             completed=True,
+            with_report=True,
         )
         catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
@@ -630,6 +633,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             kvk="12345678",
             branch_number="000038509490",
             completed=True,
+            with_report=True,
         )
         catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
@@ -735,6 +739,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             },
             kvk="12345678",
             completed=True,
+            with_report=True,
         )
 
         catalogi_root = self.zgw_group.ztc_service.api_root
@@ -806,6 +811,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case type version
             completed_on=datetime(2024, 9, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         RegistratorInfoFactory.create(submission=submission, value="employee-123")
         options: RegistrationOptions = {
@@ -897,6 +903,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2025, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -940,6 +947,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case type version
             completed_on=datetime(2024, 11, 1, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -1002,6 +1010,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case type version
             completed_on=datetime(2024, 9, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         options: RegistrationOptions = {
             "zgw_api_group": zgw_group,
@@ -1051,6 +1060,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
         options: RegistrationOptions = {
@@ -1169,6 +1179,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case type version (2024-10-31)
             completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+            with_report=True,
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -1259,6 +1270,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case type version (2024-10-31)
             completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+            with_report=True,
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -1319,6 +1331,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         assert submission.payment_required
         options: RegistrationOptions = {
@@ -1407,6 +1420,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         submission_step = SubmissionStep.objects.get()
         options: RegistrationOptions = {
@@ -1577,6 +1591,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -1768,6 +1783,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
             confirmation_email_sent=True,
         )
         options: RegistrationOptions = {
@@ -1843,6 +1859,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
             confirmation_email_sent=True,
         )
         options: RegistrationOptions = {
@@ -1902,6 +1919,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
             confirmation_email_sent=False,
         )
         options: RegistrationOptions = {
@@ -1947,6 +1965,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
             confirmation_email_sent=True,
         )
         options: RegistrationOptions = {
@@ -2008,6 +2027,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             auth_info__value="000009921",
             auth_info__attribute=AuthAttribute.bsn,
             completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+            with_report=True,
         )
         FormVariableFactory.create(
             key="partners_immutable",
@@ -2130,6 +2150,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                     },
                 ]
             },
+            with_report=True,
         )
 
         options: RegistrationOptions = {
@@ -2231,6 +2252,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             auth_info__value="999970094",
             auth_info__attribute=AuthAttribute.bsn,
             completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+            with_report=True,
         )
         FormVariableFactory.create(
             key="children_immutable",
@@ -2376,6 +2398,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             auth_info__value="999970094",
             auth_info__attribute=AuthAttribute.bsn,
             completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+            with_report=True,
         )
         FormVariableFactory.create(
             key="children_immutable",
@@ -2523,6 +2546,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                     },
                 ]
             },
+            with_report=True,
         )
         FormVariableFactory.create(
             key="children_immutable",
@@ -2645,6 +2669,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                     },
                 ]
             },
+            with_report=True,
         )
         FormVariableFactory.create(
             key="children_immutable",
@@ -2772,6 +2797,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                     },
                 ]
             },
+            with_report=True,
         )
 
         catalogi_root = self.zgw_group.ztc_service.api_root
@@ -2849,6 +2875,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -2900,6 +2927,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case type version
             completed_on=datetime(2024, 11, 1, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -2955,6 +2983,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case type version
             completed_on=datetime(2024, 11, 1, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -3016,6 +3045,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Pin to a known case & document type version
             completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],

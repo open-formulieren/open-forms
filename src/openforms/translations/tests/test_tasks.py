@@ -5,6 +5,7 @@ from django.core.files.base import ContentFile
 from django.test import TestCase, override_settings
 
 from freezegun import freeze_time
+from privates.test import temp_private_root
 
 from ..constants import StatusChoices
 from ..tasks import process_custom_translation_assets
@@ -12,6 +13,7 @@ from .factories import TranslationsMetaDataFactory
 
 
 @override_settings(LANGUAGE_CODE="en")
+@temp_private_root()
 class ProcessingCustomTranslationAssetTests(TestCase):
     @freeze_time("2026-01-27T18:00:00+01:00")
     def test_input_messages_file_successfully_processed(self):

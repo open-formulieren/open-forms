@@ -5,6 +5,7 @@ from django.core.files import File
 from django.test import TestCase, tag
 from django.utils.translation import gettext_lazy as _
 
+from privates.test import temp_private_root
 from rest_framework.settings import api_settings
 
 from openforms.config.models import GlobalConfiguration
@@ -33,6 +34,7 @@ DEFAULT_FILE_COMPONENT: FileComponent = {
 }
 
 
+@temp_private_root()
 class FileValidationMaxFilesAndRequiredTests(TestCase):
     """Tests related to ``validate.required`` and ``maxNumberOfFiles``."""
 
@@ -231,6 +233,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
         self.assertTrue(is_valid)
 
 
+@temp_private_root()
 class FileValidationTests(TestCase):
     def test_different_data(self):
         """Test consistency between ``url/size`` and ``data.url/data.size``."""
@@ -357,6 +360,7 @@ class FileValidationTests(TestCase):
         self.assertTrue(is_valid)
 
 
+@temp_private_root()
 class FileValidationMimeTypeTests(TestCase):
     @tag("GHSA-h85r-xv4w-cg8g")
     def test_attach_upload_validates_file_content_types_malicious_content(self):

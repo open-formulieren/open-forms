@@ -7,6 +7,7 @@ from django.test import TestCase, tag
 from django.utils import timezone
 
 from freezegun import freeze_time
+from privates.test import temp_private_root
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -47,6 +48,7 @@ from ..typing import RegistrationOptionsV2
 
 
 @freeze_time("2024-03-19T13:40:34.222258+00:00")
+@temp_private_root()
 class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
     """This test case requires the Objects & Objecttypes API and Open Zaak to be running.
 
@@ -93,6 +95,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "coordinates": [4.893164274470299, 52.36673378967122],
                 },
             },
+            with_report=True,
         )
 
         v2_options: RegistrationOptionsV2 = {

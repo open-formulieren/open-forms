@@ -3,6 +3,8 @@ from unittest.mock import patch
 from django.core import mail
 from django.test import TestCase, override_settings
 
+from privates.test import temp_private_root
+
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.registrations.contrib.email.models import EmailConfig
 
@@ -12,6 +14,7 @@ from .factories import SubmissionFactory
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@temp_private_root()
 class OnCosignTests(TestCase):
     def test_submission_on_cosign(self):
         submission = SubmissionFactory.from_components(

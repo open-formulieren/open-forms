@@ -532,6 +532,7 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             public_registration_reference="OF-ABCDE",
             metadata__tasks_ids=["some-id"],
             metadata__trigger_event=PostSubmissionEvents.on_completion,
+            with_report=True,
         )
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
