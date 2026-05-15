@@ -1,99 +1,100 @@
 import json
-import tempfile
-from pathlib import Path
 
 from django.core.files.base import ContentFile
-from django.test import TestCase, override_settings
+from django.test import TestCase
+
+from privates.test import temp_private_root
 
 from ..subprocesses import compile_messages_file
 from .factories import TranslationsMetaDataFactory
 
 
+@temp_private_root()
 class CompileCustomTranslationFileTests(TestCase):
+    # Note that we can't really test for cleanup of temp files, because we don't know
+    # the location of the tempdir that will be created by `compile_messages_file`
+
     def test_uploaded_messages_are_successfully_compiled(self):
-        tmpdir = tempfile.mkdtemp()
-        with override_settings(PRIVATE_MEDIA_ROOT=tmpdir, SENDFILE_ROOT=tmpdir):
-            translation_metadata = TranslationsMetaDataFactory.create()
+        translation_metadata = TranslationsMetaDataFactory.create()
 
-            result, compiled_json = compile_messages_file(
-                translation_metadata.messages_file.path
-            )
+        result, compiled_json = compile_messages_file(
+            translation_metadata.messages_file
+        )
 
-            assert compiled_json is not None
+        assert compiled_json is not None
 
-            self.assertTrue(result)
-            self.assertEqual(
-                json.loads(compiled_json),
-                {
-                    "abc123": [
-                        {
-                            "offset": 0,
-                            "options": {
-                                "one": {"value": [{"type": 0, "value": "1 item"}]},
-                                "other": {
-                                    "value": [
-                                        {"type": 1, "value": "count"},
-                                        {"type": 0, "value": " items"},
-                                    ]
-                                },
-                            },
-                            "pluralType": "cardinal",
-                            "type": 6,
-                            "value": "count",
-                        }
-                    ],
-                    "skjd8uh": [
-                        {
-                            "type": 0,
-                            "value": "A modified translated text",
-                        }
-                    ],
-                },
-            )
-
-    def test_invalid_uploaded_messages_fail_and_return_errors(self):
-        tmpdir = tempfile.mkdtemp()
-        with override_settings(PRIVATE_MEDIA_ROOT=tmpdir, SENDFILE_ROOT=tmpdir):
-            messages = {
-                "skjd8uh": [{"type": 0, "value": "A modified translated text"}],
+        self.assertTrue(result)
+        self.assertEqual(
+            json.loads(compiled_json),
+            {
                 "abc123": [
                     {
-                        "type": 6,
+                        "offset": 0,
                         "options": {
-                            "one": [{"type": 0, "value": "1 item"}],
-                            "other": [{"type": 0, "value": "{count} items"}],
+                            "one": {"value": [{"type": 0, "value": "1 item"}]},
+                            "other": {
+                                "value": [
+                                    {"type": 1, "value": "count"},
+                                    {"type": 0, "value": " items"},
+                                ]
+                            },
                         },
+                        "pluralType": "cardinal",
+                        "type": 6,
+                        "value": "count",
                     }
                 ],
-            }
-            json_bytes = json.dumps(messages, ensure_ascii=False).encode("utf-8")
+                "skjd8uh": [
+                    {
+                        "type": 0,
+                        "value": "A modified translated text",
+                    }
+                ],
+            },
+        )
 
-            translation_metadata = TranslationsMetaDataFactory.create(
-                messages_file=ContentFile(json_bytes, name="messages_test_en.json")
-            )
+    def test_invalid_uploaded_messages_fail_and_return_errors(self):
+        messages = {
+            "skjd8uh": [{"type": 0, "value": "A modified translated text"}],
+            "abc123": [
+                {
+                    "type": 6,
+                    "options": {
+                        "one": [{"type": 0, "value": "1 item"}],
+                        "other": [{"type": 0, "value": "{count} items"}],
+                    },
+                }
+            ],
+        }
+        json_bytes = json.dumps(messages, ensure_ascii=False).encode("utf-8")
 
-            result, error_msg = compile_messages_file(
-                translation_metadata.messages_file.path
-            )
+        translation_metadata = TranslationsMetaDataFactory.create(
+            messages_file=ContentFile(json_bytes, name="messages_test_en.json")
+        )
 
-            self.assertFalse(result)
-            self.assertIsInstance(error_msg, str)
+        result, error_msg = compile_messages_file(translation_metadata.messages_file)
 
-    def test_temp_output_file_is_removed_after_subprocess_finished(self):
-        tmpdir = tempfile.mkdtemp()
-        with override_settings(PRIVATE_MEDIA_ROOT=tmpdir, SENDFILE_ROOT=tmpdir):
-            translation_metadata = TranslationsMetaDataFactory.create()
-            tmp_path = Path(translation_metadata.messages_file.path)
+        self.assertFalse(result)
+        self.assertIsInstance(error_msg, str)
 
-            self.assertTrue(tmp_path.exists())
 
-            result, compiled_json = compile_messages_file(
-                translation_metadata.messages_file.path
-            )
-            remaining_files = list(Path(tmpdir).rglob("*"))
-            remaining_files = [f for f in remaining_files if f.is_file()]
+class RealFileSystemStorageTranslationCompilationTests(TestCase):
+    """
+    Run tests that rely on the real filesystem storage being used.
+    """
 
-            self.assertTrue(result)
-            # only the initial messages file should be present in the directory, the temp
-            # output file (compiled asset) should have been removed by now
-            self.assertEqual(remaining_files, [tmp_path])
+    def test_uploaded_messages_are_successfully_compiled(self):
+        translation_metadata = TranslationsMetaDataFactory.create()
+
+        def delete_files():
+            translation_metadata.messages_file.delete(save=False)
+
+        self.addCleanup(delete_files)
+
+        result, compiled_json = compile_messages_file(
+            translation_metadata.messages_file
+        )
+
+        assert compiled_json is not None
+
+        self.assertTrue(result)
