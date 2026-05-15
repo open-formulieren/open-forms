@@ -1,5 +1,7 @@
 from typing import Literal, NotRequired, TypedDict
 
+from openforms.registrations.contrib.zgw_apis.typing import CatalogueOption
+
 from .base import Component, OptionDict
 from .dates import DatePickerConfig
 
@@ -13,6 +15,19 @@ class FileConfig(TypedDict):
     type: NotRequired[list[str]]
 
 
+class FileComponentRegistrationDocType(TypedDict):
+    catalogue: CatalogueOption
+    description: str
+
+
+class FileComponentRegistration(TypedDict):
+    bronorganisatie: NotRequired[str]
+    docVertrouwelijkheidaanduiding: NotRequired[str]
+    titel: NotRequired[str]
+    documentType: NotRequired[FileComponentRegistrationDocType]
+    informatieobjecttype: NotRequired[str]  # DeprecationWarning #4939
+
+
 class FileComponent(Component):
     storage: Literal["url"]
     url: str
@@ -20,6 +35,7 @@ class FileComponent(Component):
     filePattern: str
     file: FileConfig
     maxNumberOfFiles: NotRequired[int]
+    registration: NotRequired[FileComponentRegistration]
 
 
 class FileData(TypedDict):
