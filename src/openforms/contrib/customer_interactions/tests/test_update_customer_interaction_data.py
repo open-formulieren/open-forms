@@ -330,11 +330,11 @@ class UpdateCustomerInteractionDataTests(
         # both addresses are known in the Open Klant
         profile_data: list[DigitalAddress] = [
             {
-                "address": "someemail@example.org",
+                "address": "someemail@example.org",  # not default
                 "type": "email",
             },
             {
-                "address": "0687654321",
+                "address": "0612345678",  # default
                 "type": "phoneNumber",
             },
         ]
@@ -401,8 +401,19 @@ class UpdateCustomerInteractionDataTests(
             {"url": party["url"], "uuid": partij_uuid},
         )
 
-        # no new address is added
-        self.assertEqual(digital_addresses["created"], [])
+        # not default address is created for betrokkene
+        self.assertEqual(len(digital_addresses["created"]), 1)
+        expected_address: ExpectedDigitalAddress = {
+            "adres": "someemail@example.org",
+            "soortDigitaalAdres": "email",
+            "isStandaardAdres": False,
+            "verstrektDoorPartij": None,
+            "verstrektDoorBetrokkene": {
+                "url": betrokkene["url"],
+                "uuid": betrokkene["uuid"],
+            },
+        }
+        self.assertAddressPresent(digital_addresses["created"], expected_address)
         self.assertEqual(digital_addresses["updated"], [])
 
     def test_auth_with_bsn_user_known_in_openklant_known_addresses_with_different_preference(
