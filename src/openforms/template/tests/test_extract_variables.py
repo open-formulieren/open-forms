@@ -68,3 +68,39 @@ class ExtractVariablesTests(SimpleTestCase):
                 "reallyLastVarIPromise",
             },
         )
+
+    def test_var_in_if_else_blocks(self):
+        source = """
+            <p>This is a request for the form "{{ form_name }}" to co-sign.</p>\r\n
+            <p>
+                {% if some_var %}
+                    {{contact1_voornamen}}
+                    {% if contact1_voorvoegsel %}
+                        {{contact1_voorvoegsel}}
+                    {% endif %}
+                    {{contact1_achternaam}},
+                {% else %}
+                    {{voornaam}}
+                    {% if tussenvoegsel %}
+                        {{tussenvoegsel}}
+                    {% endif %}
+                    {{achternaam}},
+                {% endif %}
+                has completed the form.
+            </p>
+            """
+        variable_names = set(extract_variables_used(source))
+
+        self.assertEqual(
+            variable_names,
+            {
+                "form_name",
+                "some_var",
+                "contact1_voornamen",
+                "contact1_voorvoegsel",
+                "contact1_achternaam",
+                "voornaam",
+                "tussenvoegsel",
+                "achternaam",
+            },
+        )
