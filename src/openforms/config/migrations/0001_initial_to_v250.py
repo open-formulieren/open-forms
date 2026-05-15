@@ -90,7 +90,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("contenttypes", "0002_remove_content_type_name"),
-        ("digid_eherkenning", "0006_digidconfiguration_metadata_file_source_and_more"),
+        ("digid_eherkenning", "0001_initial_to_v019"),
         ("payments_ogone", "0002_auto_20210902_2120"),
         ("cookie_consent", "0002_auto__add_logitem"),
     ]
