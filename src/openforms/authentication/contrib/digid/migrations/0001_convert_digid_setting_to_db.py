@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("digid_eherkenning", "0001_initial"),
+        ("digid_eherkenning", "0001_initial_to_v019"),
     ]
 
     # Data migration removed - this was part of the 2.1 release cycle. Our upgrade checks
