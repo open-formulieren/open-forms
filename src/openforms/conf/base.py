@@ -25,6 +25,7 @@ from openforms.logging.processors import (
     add_open_telemetry_spans,
     drop_user_agent_in_dev,
 )
+from openforms.upgrades.script_checks import BinScriptCheck
 
 from .utils import Filesize, get_sentry_integrations, sentry_before_send
 
@@ -1324,6 +1325,7 @@ UPGRADE_CHECK_PATHS: UpgradePaths = {
         # 3.5.3 will provide the necessary migration tooling, update when it's released
         VersionRange(minimum="3.5.2"),
         code_checks=[
+            BinScriptCheck("report_invalid_form_logic"),
             CommandCheck("check_legacy_catalogi_api_urls"),
         ],
     ),
