@@ -605,6 +605,7 @@ class FormStepBackendLogicEvaluationRequiredTests(SimpleTestCase):
                         "type": "textfield",
                         "key": "textfield",
                         "label": "{{ foo }}",
+                        "description": "Without label",
                     }
                 ]
             }
