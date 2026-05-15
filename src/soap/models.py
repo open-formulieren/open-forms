@@ -1,3 +1,5 @@
+from functools import partial
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -91,18 +93,23 @@ class SoapService(models.Model):
         if not certificate:
             return None
 
+        get_pub_cert_path = partial(
+            ensure_file_exists_on_disk, certificate.public_certificate
+        )
+
         if certificate.public_certificate and certificate.private_key:
-            return (certificate.public_certificate.path, certificate.private_key.path)
+            privkey_path = ensure_file_exists_on_disk(certificate.private_key)
+            return (get_pub_cert_path(), privkey_path)
 
         if certificate.public_certificate:
-            return certificate.public_certificate.path
+            return get_pub_cert_path()
 
         return None
 
     def get_verify(self) -> bool | str:
         certificate = self.server_certificate
         if certificate:
-            return certificate.public_certificate.path
+            return ensure_file_exists_on_disk(certificate.public_certificate)
         return True
 
     def get_auth(self) -> tuple[str, str] | None:
@@ -118,14 +125,10 @@ class SoapService(models.Model):
     def get_wsse(
         self,
     ) -> Signature | UsernameToken | tuple[UsernameToken, Signature] | None:
-        private_key_path = ensure_file_exists_on_disk(
-            self.client_certificate.private_key
+        sig = lambda: _Signature(  # noqa: E731
+            ensure_file_exists_on_disk(self.client_certificate.private_key),
+            ensure_file_exists_on_disk(self.client_certificate.public_certificate),
         )
-        public_cert_path = ensure_file_exists_on_disk(
-            self.client_certificate.public_certificate
-        )
-
-        sig = lambda: _Signature(private_key_path, public_cert_path)  # noqa: E731
 
         basic = lambda: UsernameToken(self.user, self.password)  # noqa: E731
 

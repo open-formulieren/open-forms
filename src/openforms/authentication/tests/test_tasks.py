@@ -4,6 +4,7 @@ from unittest.mock import patch
 from django.test import TestCase
 
 from digid_eherkenning.models import DigidConfiguration
+from privates.test import temp_private_root
 
 from ..tasks import update_saml_metadata
 
@@ -14,6 +15,7 @@ DIGID_TEST_METADATA_FILE_SLO_POST = (
 EHERKENNING_TEST_METADATA_FILE = BASE_DIR / "files" / "eherkenning" / "metadata"
 
 
+@temp_private_root()
 class UpdateSamlTaskTests(TestCase):
     @patch(
         "onelogin.saml2.idp_metadata_parser.OneLogin_Saml2_IdPMetadataParser.get_metadata"

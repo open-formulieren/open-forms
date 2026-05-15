@@ -317,6 +317,7 @@ class SubmissionReportGenerationTests(TestCase):
                 },
             ],
             public_registration_reference="OF-12345",
+            with_report=True,
         )
 
         html = submission.report.generate_submission_report_pdf()

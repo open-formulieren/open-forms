@@ -6,6 +6,8 @@ from uuid import UUID
 from django.test import TestCase, override_settings, tag
 from django.utils import timezone
 
+from privates.test import temp_private_root
+
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import get_documents_client
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
@@ -32,6 +34,7 @@ from ..typing import RegistrationOptionsV1
 FIXED_SUBMISSION_UUID = UUID(hex="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
 
+@temp_private_root()
 class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
     maxDiff = None
 
@@ -137,6 +140,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
             language_code="en",
             uuid=FIXED_SUBMISSION_UUID,
+            with_report=True,
         )
         submission_step = submission.steps[0]
         assert submission_step.form_step
@@ -237,6 +241,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 },
             ],
             submitted_data={"voornaam": "Foo"},
+            with_report=True,
         )
         objects_form_options = {
             "version": 1,
@@ -291,6 +296,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 },
             ],
             submitted_data={"voornaam": "Foo"},
+            with_report=True,
         )
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -371,6 +377,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             submitted_data={"voornaam": "Foo"},
             language_code="en",
             uuid=FIXED_SUBMISSION_UUID,
+            with_report=True,
         )
         submission_step = submission.steps[0]
         assert submission_step.form_step
@@ -431,6 +438,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             submitted_data={"voornaam": "Foo"},
             language_code="en",
             uuid=FIXED_SUBMISSION_UUID,
+            with_report=True,
         )
         submission_step = submission.steps[0]
         assert submission_step.form_step
@@ -506,6 +514,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             submitted_data={},
             language_code="en",
             completed=True,
+            with_report=True,
         )
         submission_step = submission.steps[0]
         # Set up two attachments to upload to the documents API
@@ -613,6 +622,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             ],
             language_code="en",
             completed=True,
+            with_report=True,
         )
         submission_step = submission.steps[0]
         file_attachment_1 = SubmissionFileAttachmentFactory.create(
@@ -716,6 +726,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
             language_code="en",
             completed=True,
+            with_report=True,
         )
         submission_step = submission.steps[0]
         SubmissionFileAttachmentFactory.create(
@@ -800,6 +811,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
             language_code="en",
             completed=True,
+            with_report=True,
         )
         submission_step = submission.steps[0]
         SubmissionFileAttachmentFactory.create(
@@ -860,6 +872,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             ],
             submitted_data={"voornaam": "<script>alert();</script>"},
             language_code="en",
+            with_report=True,
         )
 
         submission_step = submission.steps[0]
@@ -909,6 +922,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             language_code="en",
             form__payment_backend="demo",
             form__product__price=10,
+            with_report=True,
         )
         SubmissionPaymentFactory.for_submission(
             submission=submission,
@@ -1048,6 +1062,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
             submitted_data={"textfield": "test"},
             initial_data_reference="some ref",
+            with_report=True,
         )
 
         try:
@@ -1089,6 +1104,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
             language_code="en",
             uuid=FIXED_SUBMISSION_UUID,
+            with_report=True,
         )
 
         objects_form_options: RegistrationOptionsV1 = {

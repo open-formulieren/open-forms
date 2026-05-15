@@ -22,6 +22,7 @@ from .factories import FAKE_BASE_URL, SUWINET_BASE_URL, SuwinetConfigFactory
 DATA_DIR = Path(__file__).parent / "data"
 
 
+@temp_private_root()
 class SuwinetConfigTests(TestCase):
     def test_client_requires_a_service(self):
         config = SuwinetConfigFactory.build(service=None)
@@ -73,7 +74,7 @@ class SuwinetConfigTests(TestCase):
         self.assertEqual(list(client), ["KadasterDossierGSD"])
 
 
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 class SuwinetTestCase(OFVCRMixin, TestCase):
     VCR_TEST_FILES = DATA_DIR
 

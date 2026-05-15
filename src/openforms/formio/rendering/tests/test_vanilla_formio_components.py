@@ -7,6 +7,8 @@ of the box configuration in Open Forms through the registry.
 
 from django.test import TestCase, override_settings
 
+from privates.test import temp_private_root
+
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import (
@@ -20,6 +22,7 @@ from ...typing import EditGridComponent
 from ..nodes import ComponentNode
 
 
+@temp_private_root()
 @override_settings(LANGUAGE_CODE="en")
 class FormNodeTests(TestCase):
     @classmethod

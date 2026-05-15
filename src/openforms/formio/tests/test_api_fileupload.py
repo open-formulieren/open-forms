@@ -17,6 +17,7 @@ from rest_framework.test import APITestCase, APITransactionTestCase
 
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
+from openforms.submissions.models import TemporaryFileUpload
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
@@ -28,6 +29,8 @@ TEST_FILES = Path(__file__).parent.resolve() / "files"
 class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.submission_url = reverse(
             "api:submission-detail", kwargs={"uuid": cls.submission.uuid}
@@ -501,6 +504,12 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
     @tag("gh-3858")
     def test_concurrent_file_uploads(self):
+        def _cleanup_storage_files():
+            for upload in TemporaryFileUpload.objects.all():
+                upload.content.delete(save=False)
+
+        self.addCleanup(_cleanup_storage_files)
+
         submission = SubmissionFactory.from_components(
             [
                 {

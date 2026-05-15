@@ -3,6 +3,8 @@ from typing import Any
 
 from django.utils.translation import gettext as _
 
+from privates.test import temp_private_root
+
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -35,6 +37,7 @@ def _get_printable_data(submission: Submission) -> list[tuple[str, Any]]:
     return printable_data
 
 
+@temp_private_root()
 class KitchensinkFormatterTestCase(BaseFormatterTestCase):
     def test_kitchensink_formio(self):
         self.run_kitchensink_test("kitchensink_data", "kitchensink_printable_text")

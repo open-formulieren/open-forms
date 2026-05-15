@@ -8,6 +8,7 @@ from django.test import TestCase
 
 import requests_mock
 from ape_pie import InvalidURLError
+from privates.test import temp_private_root
 from requests.exceptions import RequestException
 from simple_certmanager.test.factories import CertificateFactory
 from zeep.exceptions import XMLSyntaxError
@@ -25,6 +26,7 @@ WSDL = DATA_DIR / "sample.wsdl"
 WSDL_URI = str(WSDL)
 
 
+@temp_private_root(reset_storage=False)
 class ClientTransportTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = DATA_DIR
 
@@ -52,6 +54,16 @@ class ClientTransportTests(OFVCRMixin, TestCase):
             with_private_key=True,
         )
 
+    def _reset_file_pointers(self):
+        super().setUp()
+
+        self.client_cert_only.public_certificate.seek(0)
+        self.client_cert_and_privkey.public_certificate.seek(0)
+        self.client_cert_and_privkey.private_key.seek(0)
+        self.server_cert.public_certificate.seek(0)
+        self.server_cert_and_privkey.public_certificate.seek(0)
+        self.server_cert_and_privkey.private_key.seek(0)
+
     def test_no_server_cert_specified(self):
         service = SoapServiceFactory.build(url=WSDL_URI)
 
@@ -68,8 +80,11 @@ class ClientTransportTests(OFVCRMixin, TestCase):
 
         client = build_client(service)
 
+        self._reset_file_pointers()
+        cert_path = client.transport.session.verify
         self.assertEqual(
-            client.transport.session.verify, self.server_cert.public_certificate.path
+            Path(cert_path).read_bytes(),
+            self.server_cert.public_certificate.read(),
         )
 
     def test_no_client_cert_specified(self):
@@ -86,8 +101,11 @@ class ClientTransportTests(OFVCRMixin, TestCase):
 
         client = build_client(service)
 
+        self._reset_file_pointers()
+        cert_path = client.transport.session.cert
         self.assertEqual(
-            client.transport.session.cert, self.client_cert_only.public_certificate.path
+            Path(cert_path).read_bytes(),
+            self.client_cert_only.public_certificate.read(),
         )
 
     def test_client_cert_public_cert_and_privkey_specified(self):
@@ -97,11 +115,16 @@ class ClientTransportTests(OFVCRMixin, TestCase):
 
         client = build_client(service)
 
+        self._reset_file_pointers()
+        cert_path, key_path = client.transport.session.cert
         self.assertEqual(
-            client.transport.session.cert,
             (
-                self.client_cert_and_privkey.public_certificate.path,
-                self.client_cert_and_privkey.private_key.path,
+                Path(cert_path).read_bytes(),
+                Path(key_path).read_bytes(),
+            ),
+            (
+                self.client_cert_and_privkey.public_certificate.read(),
+                self.client_cert_and_privkey.private_key.read(),
             ),
         )
 
