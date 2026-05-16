@@ -113,6 +113,20 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+      - name: Check that private-media tests are properly isolated
+        run: |
+          num_private_media_files=$(find private_media -type f | wc -l)
+          if [[ "$num_private_media_files" == "0" ]]; then
+            exit 0
+          else
+            echo "# Writes to private_media detected!" >> $GITHUB_STEP_SUMMARY
+            echo "$num_private_media_files were written into the private media storage, while tests should not leave any files." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Files:" >> $GITHUB_STEP_SUMMARY
+            find private_media -type f >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
   tests-reverse:
     name: Run the Django test suite in reverse
     runs-on: ubuntu-latest
