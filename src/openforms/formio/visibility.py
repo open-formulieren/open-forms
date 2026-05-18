@@ -1,37 +1,44 @@
 from typing import Protocol
 
+from formio_types import AnyComponent, Columns, CosignV1, SoftRequiredErrors
+from formio_types._base import Conditional
 from openforms.typing import JSONObject, JSONValue
 
 from .datastructures import FormioConfiguration, FormioConfigurationWrapper, FormioData
 from .registry import register
-from .typing import Column, Component, ConditionalCompareValue
+from .typing import Column, Component
 from .utils import get_component_empty_value as _get_component_empty_value
 
 
 class GetEvaluationData(Protocol):
     def __call__(self, data: FormioData) -> FormioData:
         """Get evaluation data context."""
+        ...
 
 
-def get_conditional(
-    component: Component,
-) -> tuple[bool, str, ConditionalCompareValue] | None:
+def get_conditional(component: AnyComponent) -> Conditional | None:
     """
     Get the conditional logic for this component. Will return ``None`` if the
     conditional is not configured or complete.
     """
-    conditional = component.get("conditional")
-    if not conditional:
+    match component:
+        # these don't support conditionals at all
+        case Columns() | SoftRequiredErrors() | CosignV1():
+            return None
+        case _:
+            conditional: Conditional | None = component.conditional
+
+    if conditional is None:
         return None
 
-    show = conditional.get("show")
-    when = conditional.get("when")
-    eq = conditional.get("eq")
-
+    # test that the conditional is properly configured
+    show = conditional.show
+    when = conditional.when
+    eq = conditional.eq
     if any([show in ["", None], when in ["", None], eq is None]):
         return None
 
-    return show, when, eq
+    return conditional
 
 
 def is_hidden(
@@ -54,21 +61,34 @@ def is_hidden(
       precedence.
     :return: Whether the component is hidden.
     """
-    conditional = get_conditional(component)
+    from .service import _convert_legacy_component
+
+    _component = _convert_legacy_component(component)
+    conditional = get_conditional(_component)
 
     if conditional is None:
         if ignore_hidden_property:
             return False
-        else:
-            return component.get("hidden", False)
+        match _component:
+            case SoftRequiredErrors():
+                return False
+            case _:
+                return _component.hidden
 
-    show, trigger_component_key, compare_value = conditional
+    assert conditional.when is not None
+    assert isinstance(conditional.show, bool)
+
+    show = conditional.show
+    trigger_component_key = conditional.when
+    compare_value = conditional.eq
 
     trigger_component_value = data.get(trigger_component_key, None)
-    trigger_component = configuration[trigger_component_key]
+    trigger_component = _convert_legacy_component(configuration[trigger_component_key])
 
     triggered = register.test_conditional(
-        trigger_component, trigger_component_value, compare_value
+        trigger_component,
+        trigger_component_value,
+        compare_value,
     )
 
     # Note that we return whether the component is hidden, not shown, so we invert the

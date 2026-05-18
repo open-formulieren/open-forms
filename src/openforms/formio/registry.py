@@ -160,7 +160,7 @@ class BasePlugin(Generic[ComponentT, NewComponentT], AbstractBasePlugin, abc.ABC
 
     @staticmethod
     def test_conditional(
-        component: ComponentT, value: VariableValue, compare_value: VariableValue
+        component: NewComponentT, value: VariableValue, compare_value: VariableValue
     ) -> bool | None:
         """
         Perform a component-specific comparison whether a conditional is triggered.
@@ -207,7 +207,10 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         return formatter(component, value)
 
     def test_conditional(
-        self, component: Component, value: VariableValue, compare_value: VariableValue
+        self,
+        component: AnyComponent,
+        value: VariableValue,
+        compare_value: VariableValue,
     ) -> bool:
         """
         Perform a component-specific comparison whether a conditional is triggered.
@@ -218,10 +221,11 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
           in the component configuration.
         :return: Whether the conditional was triggered.
         """
-        if (component_type := component["type"]) not in self:
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
             component_type = "default"
 
-        plugin = self[component_type]
+        plugin: BasePlugin[Component, AnyComponent] = self[component_type]
 
         # First, see if the component has a custom test conditional
         if (
@@ -231,7 +235,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
         # If it does not have one, default to a membership test if the component is
         # configured as multiple, or a direct comparison otherwise
-        if component.get("multiple", False):
+        if getattr(component, "multiple", False):
             assert isinstance(value, list)
             return compare_value in value
         else:

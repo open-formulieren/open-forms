@@ -553,9 +553,7 @@ class FilePlugin(BasePlugin[FileComponent, File]):
         return base
 
     @staticmethod
-    def test_conditional(
-        component: FileComponent, value: FileValue, compare_value: str
-    ) -> bool:
+    def test_conditional(component: File, value: FileValue, compare_value: str) -> bool:
         # See 6181 where we opted for a bandaid fix to handle the wrong compare value
         # type.
         return compare_value == "" and value == []
@@ -774,7 +772,7 @@ class SelectBoxesPlugin(BasePlugin[SelectBoxesComponent, Selectboxes]):
 
     @staticmethod
     def test_conditional(
-        component: SelectBoxesComponent,
+        component: Selectboxes,
         value: VariableValue,
         compare_value: VariableValue,
     ) -> bool:
