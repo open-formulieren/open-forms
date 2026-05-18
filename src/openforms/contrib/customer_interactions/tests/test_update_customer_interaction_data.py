@@ -52,6 +52,7 @@ class UpdateCustomerInteractionDataTests(
         )
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -151,6 +152,7 @@ class UpdateCustomerInteractionDataTests(
         )
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -162,6 +164,7 @@ class UpdateCustomerInteractionDataTests(
             party = client.find_party_for_bsn("108915864")
 
         # check that party is linked to the user
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -256,6 +259,7 @@ class UpdateCustomerInteractionDataTests(
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -266,6 +270,7 @@ class UpdateCustomerInteractionDataTests(
         with get_customer_interactions_client(self.config) as client:
             party = client.find_party_for_bsn("123456782")
 
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -325,11 +330,11 @@ class UpdateCustomerInteractionDataTests(
         # both addresses are known in the Open Klant
         profile_data: list[DigitalAddress] = [
             {
-                "address": "someemail@example.org",
+                "address": "someemail@example.org",  # not default
                 "type": "email",
             },
             {
-                "address": "0687654321",
+                "address": "0612345678",  # default
                 "type": "phoneNumber",
             },
         ]
@@ -364,6 +369,7 @@ class UpdateCustomerInteractionDataTests(
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -374,6 +380,7 @@ class UpdateCustomerInteractionDataTests(
         with get_customer_interactions_client(self.config) as client:
             party = client.find_party_for_bsn("123456782")
 
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -394,8 +401,19 @@ class UpdateCustomerInteractionDataTests(
             {"url": party["url"], "uuid": partij_uuid},
         )
 
-        # no new address is added
-        self.assertEqual(digital_addresses["created"], [])
+        # not default address is created for betrokkene
+        self.assertEqual(len(digital_addresses["created"]), 1)
+        expected_address: ExpectedDigitalAddress = {
+            "adres": "someemail@example.org",
+            "soortDigitaalAdres": "email",
+            "isStandaardAdres": False,
+            "verstrektDoorPartij": None,
+            "verstrektDoorBetrokkene": {
+                "url": betrokkene["url"],
+                "uuid": betrokkene["uuid"],
+            },
+        }
+        self.assertAddressPresent(digital_addresses["created"], expected_address)
         self.assertEqual(digital_addresses["updated"], [])
 
     def test_auth_with_bsn_user_known_in_openklant_known_addresses_with_different_preference(
@@ -449,6 +467,7 @@ class UpdateCustomerInteractionDataTests(
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -459,6 +478,7 @@ class UpdateCustomerInteractionDataTests(
         with get_customer_interactions_client(self.config) as client:
             party = client.find_party_for_bsn("123456782")
 
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -553,6 +573,7 @@ class UpdateCustomerInteractionDataTests(
         )
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -564,6 +585,7 @@ class UpdateCustomerInteractionDataTests(
             party = client.find_party_for_kvk("11122233")
 
         # check that party is linked to the organization
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -658,6 +680,7 @@ class UpdateCustomerInteractionDataTests(
         prefill_variables(submission=submission)
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
@@ -668,6 +691,7 @@ class UpdateCustomerInteractionDataTests(
         with get_customer_interactions_client(self.config) as client:
             party = client.find_party_for_kvk("12345678")
 
+        assert party is not None
         self.assertEqual(party["uuid"], partij_uuid)
         self.assertEqual(klantcontact["kanaal"], "Webformulier")
         self.assertEqual(klantcontact["onderwerp"], "With profile")
@@ -785,6 +809,7 @@ class UpdateCustomerInteractionDataTests(
         )
 
         result = update_customer_interaction_data(submission, "profile")
+        assert result is not None
 
         klantcontact = result["klantcontact"]
         betrokkene = result["betrokkene"]
