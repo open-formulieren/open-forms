@@ -1233,6 +1233,12 @@
       "value": "Please select the logic type:"
     }
   ],
+  "9EaH83": [
+    {
+      "type": 0,
+      "value": "Summary documents"
+    }
+  ],
   "9LdZVP": [
     {
       "type": 0,
@@ -6099,6 +6105,12 @@
     {
       "type": 0,
       "value": "disabled"
+    }
+  ],
+  "kUDrTZ": [
+    {
+      "type": 0,
+      "value": "Wether to include summary documents in the request or not."
     }
   ],
   "kWAxhF": [

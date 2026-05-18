@@ -1237,6 +1237,12 @@
       "value": "Kies het soort logica:"
     }
   ],
+  "9EaH83": [
+    {
+      "type": 0,
+      "value": "Samenvattingsdocumenten"
+    }
+  ],
   "9LdZVP": [
     {
       "type": 0,
@@ -6083,6 +6089,12 @@
     {
       "type": 0,
       "value": "uitgeschakeld"
+    }
+  ],
+  "kUDrTZ": [
+    {
+      "type": 0,
+      "value": "Documenten die toegevoegd worden aan de requests."
     }
   ],
   "kWAxhF": [

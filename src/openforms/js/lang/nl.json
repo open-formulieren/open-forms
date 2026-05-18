@@ -526,6 +526,11 @@
     "description": "Logic type selection label",
     "originalDefault": "Please select the logic type:"
   },
+  "9EaH83": {
+    "defaultMessage": "Samenvattingsdocumenten",
+    "description": "ZGW APIs registration options 'summaryDocuments' label",
+    "originalDefault": "Summary documents"
+  },
   "9LdZVP": {
     "defaultMessage": "Attribuut",
     "description": "Variable prefill attribute label",
@@ -2871,6 +2876,11 @@
     "defaultMessage": "uitgeschakeld",
     "description": "component property \"disabled\" label",
     "originalDefault": "disabled"
+  },
+  "kUDrTZ": {
+    "defaultMessage": "Documenten die toegevoegd worden aan de requests.",
+    "description": "ZGW APIs registration options 'summaryDocuments' help text",
+    "originalDefault": "Wether to include summary documents in the request or not."
   },
   "kWAxhF": {
     "defaultMessage": "Onderwerp van de registratiemail om een verandering in betaalstatus te signaleren.",

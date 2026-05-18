@@ -27,14 +27,18 @@ from openforms.contrib.zgw.service import (
     DocumentOptions,
     DocumentTypeResolver,
     create_attachment_document,
+    create_json_document,
     create_report_document,
 )
 from openforms.emails.service import get_last_confirmation_email
+from openforms.formio.datastructures import FormioConfigurationWrapper
+from openforms.formio.typing.base import Component
+from openforms.forms.json_schema import generate_json_schema
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.public_references import generate_unique_submission_reference
 from openforms.template import openforms_backend, render_from_string
-from openforms.typing import VariableValue
+from openforms.typing import JSONObject, VariableValue
 from openforms.utils.date import datetime_in_amsterdam
 from openforms.utils.pdf import convert_html_to_pdf
 
@@ -46,6 +50,7 @@ from ...registry import register
 from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .client import get_catalogi_client, get_documents_client, get_zaken_client
+from .constants import SummaryDocumentChoices
 from .models import ZGWApiGroupConfig
 from .options import ZaakOptionsSerializer
 from .typing import CatalogueOption, RegistrationOptions
@@ -182,7 +187,10 @@ def _get_template_context(submission: Submission) -> ZaakTemplateContext:
     }
 
 
-@register("zgw-create-zaak")
+PLUGIN_IDENTIFIER = "zgw-create-zaak"
+
+
+@register(PLUGIN_IDENTIFIER)
 class ZGWRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("ZGW API's")
     configuration_options = ZaakOptionsSerializer
@@ -324,7 +332,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
     @wrap_api_errors
     def register_submission(
         self, submission: Submission, options: RegistrationOptions
-    ) -> dict | None:
+    ) -> dict:
         """
         Add the PDF document with the submission data (confirmation report) to the zaak created during pre-registration.
         """
@@ -422,8 +430,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
             result["informatieobjecttype_url"] = informatieobjecttype_url
 
-            # Upload the summary PDF
-            pdf_options: DocumentOptions = {
+            summary_document_options: DocumentOptions = {
                 "informatieobjecttype": informatieobjecttype_url,
                 "organisatie_rsin": options["organisatie_rsin"],
                 "auteur": options["auteur"],
@@ -431,29 +438,77 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     "doc_vertrouwelijkheidaanduiding"
                 ],
             }
-            summary_pdf_document = execute_unless_result_exists(
-                partial(
-                    create_report_document,
-                    client=documents_client,
-                    name=submission.form.name,
-                    submission_report=submission_report,
-                    options=pdf_options,
-                    language=submission_report.submission.language_code,
-                ),
-                submission,
-                "intermediate.documents.report.document",
-            )
+            summary_documents = options.get("summary_documents", []) or []
+            if SummaryDocumentChoices.pdf in summary_documents:
+                summary_pdf_document = execute_unless_result_exists(
+                    partial(
+                        create_report_document,
+                        client=documents_client,
+                        name=submission.form.name,
+                        submission_report=submission_report,
+                        options=summary_document_options,
+                        language=submission_report.submission.language_code,
+                    ),
+                    submission,
+                    "intermediate.documents.report.document",
+                )
+                # Relate summary PDF
+                execute_unless_result_exists(
+                    partial(
+                        zaken_client.relate_document,
+                        zaak=zaak,
+                        document=summary_pdf_document,
+                    ),
+                    submission,
+                    "intermediate.documents.report.relation",
+                )
 
-            # Relate summary PDF
-            execute_unless_result_exists(
-                partial(
-                    zaken_client.relate_document,
-                    zaak=zaak,
-                    document=summary_pdf_document,
-                ),
-                submission,
-                "intermediate.documents.report.relation",
-            )
+            if SummaryDocumentChoices.json in summary_documents:
+                state = submission.variables_state
+                all_values = state.get_data(include_static_variables=True)
+                variables = [key for key in all_values]
+                values = {key: all_values[key] for key in variables}
+                values_schema = generate_json_schema(
+                    submission.form,
+                    variables,
+                    backend_id=PLUGIN_IDENTIFIER,
+                    backend_options=options,  # pyright: ignore[reportArgumentType]
+                    submission=submission,
+                )
+
+                document_data = {
+                    "values": values,
+                    "values_schema": values_schema,
+                }
+                summary_json_document = execute_unless_result_exists(
+                    partial(
+                        create_json_document,
+                        client=documents_client,
+                        document_data=document_data,
+                        name=submission.form.name,
+                        options=summary_document_options,
+                        language=submission_report.submission.language_code,
+                    ),
+                    submission,
+                    "intermediate.documents.json.document",
+                )
+                result["intermediate"]["documents"]["json"]["schema"] = document_data[
+                    "values_schema"
+                ]
+                result["intermediate"]["documents"]["json"]["values"] = document_data[
+                    "values"
+                ]
+
+                # Relate summary JSON
+                execute_unless_result_exists(
+                    partial(
+                        zaken_client.relate_document,
+                        zaak=zaak,
+                        document=summary_json_document,
+                    ),
+                    submission,
+                    "intermediate.documents.json.relation",
+                )
 
             initiator_rol = execute_unless_result_exists(
                 partial(
@@ -688,7 +743,6 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
             result.update(
                 {
-                    "document": summary_pdf_document,
                     "status": status,
                     "initiator_rol": initiator_rol,
                 }
@@ -930,3 +984,16 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             )
 
         return result
+
+    @staticmethod
+    def allows_json_schema_generation(options: RegistrationOptions) -> bool:
+        return True
+
+    def process_variable_schema(
+        self,
+        component: Component,
+        schema: JSONObject,
+        options: RegistrationOptions,
+        configuration_wrapper: FormioConfigurationWrapper,
+    ) -> None:
+        pass

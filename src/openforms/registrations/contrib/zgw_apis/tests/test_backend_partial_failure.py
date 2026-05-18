@@ -10,6 +10,7 @@ from vcr.request import Request as VCRRequest
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.contrib.zgw.clients.zaken import ZakenClient
+from openforms.registrations.contrib.zgw_apis.constants import SummaryDocumentChoices
 from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import (
@@ -97,6 +98,7 @@ class PartialRegistrationFailureTests(OFVCRMixin, TestCase):
                 "informatieobjecttype": "",
                 "organisatie_rsin": "000000000",
                 "vertrouwelijkheidaanduiding": "",
+                "summary_documents": [SummaryDocumentChoices.pdf],
             },
             completed_not_preregistered=True,
             bsn="111222333",
