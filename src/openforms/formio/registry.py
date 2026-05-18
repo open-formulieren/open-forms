@@ -31,6 +31,8 @@ from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.request import Request
 
+from formio_types import TYPE_TO_TAG, AnyComponent
+from openforms.formio.formatters.formio import DefaultFormatter
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
 from openforms.typing import JSONObject, JSONValue, VariableValue
@@ -42,19 +44,20 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 ComponentT = TypeVar("ComponentT", bound=Component, contravariant=True)
+NewComponentT = TypeVar("NewComponentT", bound=AnyComponent)
 
 
 class ComponentPreRegistrationResult(TypedDict):
     data: NotRequired[JSONValue]
 
 
-class FormatterProtocol(Protocol[ComponentT]):
+class FormatterProtocol[ComponentT: AnyComponent](Protocol):
     def __init__(self, as_html: bool): ...
 
     def __call__(self, component: ComponentT, value: Any) -> str: ...
 
 
-class NormalizerProtocol(Protocol[ComponentT]):
+class NormalizerProtocol[ComponentT: AnyComponent](Protocol):
     def __call__(self, component: ComponentT, value: Any) -> Any: ...
 
 
@@ -68,19 +71,19 @@ class PreRegistrationHookProtocol(Protocol[ComponentT]):
     ) -> ComponentPreRegistrationResult: ...
 
 
-class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP046
+class BasePlugin(Generic[ComponentT, NewComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP046
     """
     Base class for Formio component plugins.
     """
 
-    formatter: type[FormatterProtocol[ComponentT]]
+    formatter: type[FormatterProtocol[NewComponentT]]
     """
     Specify the callable to use for formatting.
 
     Formatter (class) implementation, used by
     :meth:`openforms.formio.registry.ComponentRegistry.format`.
     """
-    normalizer: NormalizerProtocol[ComponentT] | None = None
+    normalizer: NormalizerProtocol[NewComponentT] | None = None
     """
     Specify the normalizer callable to use for value normalization.
     """
@@ -113,11 +116,13 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
         pass  # noop by default, specific component types can extend the base behaviour
 
     @abc.abstractmethod
-    def build_serializer_field(self, component: ComponentT) -> serializers.Field:
+    def build_serializer_field(self, component: NewComponentT) -> serializers.Field:
         """Translate a component configuration into a serializer."""
 
     @staticmethod
-    def as_json_schema(component: ComponentT) -> JSONObject | list[JSONObject] | None:
+    def as_json_schema(
+        component: NewComponentT,
+    ) -> JSONObject | list[JSONObject] | None:
         """
         Return JSON schema for this formio component plugin. This routine should be
         implemented in the child class
@@ -155,7 +160,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
 
     @staticmethod
     def test_conditional(
-        component: ComponentT, value: VariableValue, compare_value: VariableValue
+        component: NewComponentT, value: VariableValue, compare_value: VariableValue
     ) -> bool | None:
         """
         Perform a component-specific comparison whether a conditional is triggered.
@@ -173,18 +178,19 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
 class ComponentRegistry(BaseRegistry[BasePlugin]):
     module = "formio_components"
 
-    def normalize(self, component: Component, value: Any) -> Any:
+    def normalize(self, component: AnyComponent, value: Any) -> Any:
         """
         Given a value from any source, normalize it according to the component rules.
         """
-        if (component_type := component["type"]) not in self:
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
             return value
         normalizer = self[component_type].normalizer
         if normalizer is None:
             return value
         return normalizer(component, value)
 
-    def format(self, component: Component, value: Any, as_html=False) -> str:
+    def format(self, component: AnyComponent, value: Any, as_html=False) -> str:
         """
         Format a given value in the appropriate way for the specified component.
 
@@ -192,15 +198,19 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         for the given component type, as it makes the best sense for that component
         type.
         """
-        if (component_type := component["type"]) not in self:
-            component_type = "default"
-
-        component_plugin = self[component_type]
-        formatter = component_plugin.formatter(as_html=as_html)
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
+            formatter = DefaultFormatter(as_html=as_html)
+        else:
+            component_plugin = self[component_type]
+            formatter = component_plugin.formatter(as_html=as_html)
         return formatter(component, value)
 
     def test_conditional(
-        self, component: Component, value: VariableValue, compare_value: VariableValue
+        self,
+        component: AnyComponent,
+        value: VariableValue,
+        compare_value: VariableValue,
     ) -> bool:
         """
         Perform a component-specific comparison whether a conditional is triggered.
@@ -211,10 +221,11 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
           in the component configuration.
         :return: Whether the conditional was triggered.
         """
-        if (component_type := component["type"]) not in self:
+        component_type = TYPE_TO_TAG[type(component)]
+        if component_type not in self:
             component_type = "default"
 
-        plugin = self[component_type]
+        plugin: BasePlugin[Component, AnyComponent] = self[component_type]
 
         # First, see if the component has a custom test conditional
         if (
@@ -224,7 +235,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
         # If it does not have one, default to a membership test if the component is
         # configured as multiple, or a direct comparison otherwise
-        if component.get("multiple", False):
+        if getattr(component, "multiple", False):
             assert isinstance(value, list)
             return compare_value in value
         else:
@@ -333,7 +344,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         if generic_translations:
             del component["openForms"]["translations"]  # type: ignore
 
-    def build_serializer_field(self, component: Component) -> serializers.Field:
+    def build_serializer_field(self, component: AnyComponent) -> serializers.Field:
         """
         Translate a given component into a single serializer field, suitable for
         input validation.
@@ -341,9 +352,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         # if the component known in registry -> use the component plugin, otherwise
         # fall back to the special 'default' plugin which implements the current
         # behaviour of accepting any JSON value.
-        if (component_type := component["type"]) not in self:
-            component_type = "default"
-
+        component_type = TYPE_TO_TAG[type(component)]
         component_plugin = self[component_type]
         return component_plugin.build_serializer_field(component)
 
@@ -369,9 +378,14 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
         return hook(component, submission)
 
-    def holds_submission_data(self, component: Component) -> bool:
+    def holds_submission_data(self, component: Component | AnyComponent) -> bool:
         """Return whether data can be submitted for a particular component."""
-        if (component_type := component["type"]) not in self:
+        component_type = (
+            component["type"]
+            if isinstance(component, dict)
+            else TYPE_TO_TAG[type(component)]
+        )
+        if component_type not in self:
             return True
 
         return self[component_type].holds_submission_data

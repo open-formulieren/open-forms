@@ -14,8 +14,12 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
+import msgspec
+import structlog
 from opentelemetry import trace
 
+from formio_types import TYPE_TO_TAG, AnyComponent
+from formio_types.datetime import FormioDateTime
 from openforms.typing import JSONObject
 
 from .datastructures import DuplicateKeyError, FormioConfigurationWrapper, FormioData
@@ -39,6 +43,8 @@ from .visibility import process_visibility
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
+
+logger = structlog.stdlib.get_logger()
 
 __all__ = [
     "DuplicateKeyError",
@@ -64,11 +70,39 @@ __all__ = [
 tracer = trace.get_tracer("openforms.formio.service")
 
 
+def _fixup_component_properties(type_: type, obj: Any):
+    if type_ is FormioDateTime:
+        return FormioDateTime.fromstr(obj)
+    return obj
+
+
+def _convert_legacy_component(component: Component) -> AnyComponent:
+    try:
+        _component: AnyComponent = msgspec.convert(
+            component,
+            type=AnyComponent,
+            dec_hook=_fixup_component_properties,
+        )
+    except msgspec.ValidationError as exc:
+        logger.exception(
+            "component_conversion_failure",
+            type=component.get("type", "unknown"),
+            key=component.get("key", "unknown"),
+            exc_info=exc,
+        )
+        raise
+    return _component
+
+
 def format_value(component: Component, value: Any, *, as_html: bool = False):
     """
     Format a submitted value in a way that is most appropriate for the component type.
     """
-    return register.format(component, value, as_html=as_html)
+    try:
+        _component = _convert_legacy_component(component)
+    except msgspec.ValidationError:
+        return value
+    return register.format(_component, value, as_html=as_html)
 
 
 def normalize_value_for_component(component: Component, value: Any) -> Any:
@@ -76,7 +110,11 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
     Given a value (actual or default value) and the component, apply the component-
     specific normalization.
     """
-    return register.normalize(component, value)
+    try:
+        _component = _convert_legacy_component(component)
+    except msgspec.ValidationError:
+        return value
+    return register.normalize(_component, value)
 
 
 def holds_submission_data(component: Component) -> bool:
@@ -133,12 +171,17 @@ def build_serializer(
     This recursively builds up the serializer fields for each (nested) component and
     puts them into a serializer instance ready for validation.
     """
-    return _build_serializer(components, register=_register or register, **kwargs)
+    _components: Sequence[AnyComponent] = msgspec.convert(
+        components,
+        type=Sequence[AnyComponent],
+        dec_hook=_fixup_component_properties,
+    )
+    return _build_serializer(_components, register=_register or register, **kwargs)
 
 
 def as_json_schema(
-    component: Component, _register: ComponentRegistry | None = None
-) -> JSONObject | list[JSONObject] | None:
+    component: Component | AnyComponent, _register: ComponentRegistry | None = None
+) -> JSONObject | Sequence[JSONObject] | None:
     """
     Return a JSON schema of a component.
 
@@ -158,9 +201,16 @@ def as_json_schema(
       for columns and fieldsets, and a JSON object otherwise.
     """
     registry = _register or register
+    if isinstance(component, dict):
+        _component = _convert_legacy_component(component)
+    else:
+        _component = component
 
-    component_plugin = registry[component["type"]]
-    schema = component_plugin.as_json_schema(component)
-    if isinstance(schema, dict) and (description := component.get("description")):
+    component_type = TYPE_TO_TAG[type(_component)]
+    component_plugin = registry[component_type]
+    schema = component_plugin.as_json_schema(_component)
+    if isinstance(schema, dict) and (
+        description := getattr(_component, "description", "")
+    ):
         schema["description"] = description
     return schema

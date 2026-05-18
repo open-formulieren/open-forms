@@ -99,6 +99,7 @@ class TextFieldValidationTests(SimpleTestCase):
             "label": "House number",
             "multiple": True,
             "validate": {"pattern": r"\d+"},
+            "defaultValue": [],
         }
         data: JSONValue = {"numbers": ["42", "notnumber"]}
 
@@ -113,17 +114,15 @@ class TextFieldValidationTests(SimpleTestCase):
 
     @tag("gh-4068")
     def test_multiple_with_form_builder_empty_defaults(self):
-        # Our own form builder does funky stuff here by setting the defaultValue to
-        # a list with `null` item.
-        # XXX null is really not a correct value, but we need to rework the rest of our
-        # builder (in the backend) for this first.
+        # Our own form builder did funky stuff here by setting the defaultValue to
+        # a list with `null` item. This is simulated in the submitted value.
         component: TextFieldComponent = {
             "type": "textfield",
             "key": "manyTextfield",
             "label": "Optional Text fields",
             "validate": {"required": False},
             "multiple": True,
-            "defaultValue": [None],  # FIXME: should really be [""] or []
+            "defaultValue": [""],
         }
 
         is_valid, _ = validate_formio_data(component, {"manyTextfield": [None]})

@@ -74,16 +74,19 @@ class GenerateJsonSchemaTests(TestCase):
                         "type": "editgrid",
                         "key": "editgrid",
                         "label": "Editgrid",
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "type": "coSign",
                                 "key": "coSign",
                                 "label": "Cosign",
+                                "authPlugin": "bsn",
                             },
                             {
                                 "type": "softRequiredErrors",
                                 "key": "softRequiredErrors",
                                 "label": "Errors",
+                                "html": "<p>BOO</p>",
                             },
                         ],
                     },
