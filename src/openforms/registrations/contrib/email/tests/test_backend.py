@@ -10,6 +10,7 @@ from django.utils.translation import gettext as _
 
 import tablib
 from furl import furl
+from privates.test import temp_private_root
 
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
@@ -74,6 +75,7 @@ def _get_sent_email(index: int = 0) -> tuple[mail.EmailMultiAlternatives, str, s
     return message, str(text_body), html_body
 
 
+@temp_private_root()
 @override_settings(
     DEFAULT_FROM_EMAIL="info@open-forms.nl",
     BASE_URL="https://example.com",
@@ -522,6 +524,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__payment_backend="demo",
             registration_success=True,
             public_registration_reference="XYZ",
+            with_report=True,
         )
         payment = SubmissionPaymentFactory.for_submission(
             submission=submission, status=PaymentStatus.completed
@@ -853,6 +856,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             ],
             submitted_data={"someField": "value0", "someList": ["value1", "value2"]},
             completed=True,
+            with_report=True,
         )
         submission_step = (
             submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]

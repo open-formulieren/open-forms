@@ -104,7 +104,7 @@ def _get_encrypted_attribute(pseudo_id: str):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 class AuthenticationStep2Tests(EIDASConfigMixin, TestCase):
     def test_redirect_to_eIDAS_login(self):
         form = FormFactory.create(
@@ -204,7 +204,7 @@ class AuthenticationStep2Tests(EIDASConfigMixin, TestCase):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 @requests_mock.Mocker()
 class AuthenticationStep5Tests(EIDASConfigMixin, TestCase):
     @mock_saml2_return_flow(mock_saml_art_verification=True)
@@ -292,7 +292,7 @@ class AuthenticationStep5Tests(EIDASConfigMixin, TestCase):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 @requests_mock.Mocker()
 class CoSignLoginAuthenticationTests(SubmissionsMixin, EIDASConfigMixin, TestCase):
     @patch(

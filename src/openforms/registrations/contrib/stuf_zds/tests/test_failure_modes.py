@@ -22,7 +22,7 @@ from ....tasks import register_submission
 
 @tag("gh-1183")
 @freeze_time("2020-12-22")
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 class PartialRegistrationFailureTests(StUFZDSTestBase):
     """
     Test that partial results are stored and don't cause excessive registration calls.
@@ -71,6 +71,7 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
                 "voornaam": "Foo",
                 "achternaam": "Bar",
             },
+            with_report=True,
         )
         FormRegistrationBackendFactory.create(
             form=cls.submission.form,

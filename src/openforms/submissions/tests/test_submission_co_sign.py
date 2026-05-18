@@ -4,6 +4,7 @@ from django.test import override_settings
 from django.urls import resolve
 
 from furl import furl
+from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -82,6 +83,7 @@ class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
         )
 
 
+@temp_private_root()
 class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
     def test_submission_must_be_in_session(self):
         submission = SubmissionFactory.from_components(
@@ -156,6 +158,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
                 "cosign": "test@example.com",
             },
             registration_success=True,
+            with_report=True,
         )
 
         session = self.client.session

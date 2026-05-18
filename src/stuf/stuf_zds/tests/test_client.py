@@ -1,9 +1,11 @@
+from pathlib import Path
 from unittest.mock import patch
 
 from django.template.loader import render_to_string
 from django.test import SimpleTestCase, TestCase, tag
 
 import requests_mock
+from privates.test import temp_private_root
 from simple_certmanager.constants import CertificateTypes
 from simple_certmanager.test.factories import CertificateFactory
 
@@ -18,6 +20,7 @@ from ..models import StufZDSConfig
 
 
 @requests_mock.Mocker()
+@temp_private_root(reset_storage=False)
 class StufZdsClientTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -68,16 +71,21 @@ class StufZdsClientTest(TestCase):
 
         request_with_tls = m.last_request
 
+        self.server_certificate.public_certificate.seek(0)
+        self.client_certificate.public_certificate.seek(0)
+        self.client_certificate.private_key.seek(0)
+
+        server_cert = self.server_certificate.public_certificate.read()
+        client_cert = self.client_certificate.public_certificate.read()
+        client_key = self.client_certificate.private_key.read()
+
         self.assertEqual(
-            self.server_certificate.public_certificate.path, request_with_tls.verify
+            Path(request_with_tls.verify).read_bytes(),
+            server_cert,
         )
-        self.assertEqual(
-            (
-                self.client_certificate.public_certificate.path,
-                self.client_certificate.private_key.path,
-            ),
-            request_with_tls.cert,
-        )
+        mtls_cert, mtls_key = request_with_tls.cert
+        self.assertEqual(Path(mtls_cert).read_bytes(), client_cert)
+        self.assertEqual(Path(mtls_key).read_bytes(), client_key)
 
     def test_mutual_tls_no_private_key(self, m):
         stuf_service = StufServiceFactory.create(
@@ -99,13 +107,17 @@ class StufZdsClientTest(TestCase):
         history = m.request_history
         request_with_tls = history[-1]
 
+        self.server_certificate.public_certificate.seek(0)
+        self.client_certificate_only.public_certificate.seek(0)
+
+        server_cert = self.server_certificate.public_certificate.read()
+        client_cert = self.client_certificate_only.public_certificate.read()
+
         self.assertEqual(
-            self.server_certificate.public_certificate.path, request_with_tls.verify
+            Path(request_with_tls.verify).read_bytes(),
+            server_cert,
         )
-        self.assertEqual(
-            self.client_certificate_only.public_certificate.path,
-            request_with_tls.cert,
-        )
+        self.assertEqual(Path(request_with_tls.cert).read_bytes(), client_cert)
 
     def test_no_mutual_tls(self, m):
         stuf_service = StufServiceFactory.create()

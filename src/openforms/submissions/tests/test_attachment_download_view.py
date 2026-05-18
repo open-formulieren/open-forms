@@ -15,7 +15,6 @@ from openforms.utils.tests.auth_assert import AuthAssertMixin
 from .factories import SubmissionFileAttachmentFactory
 
 
-@override_settings(SENDFILE_BACKEND="django_sendfile.backends.nginx")
 @temp_private_root()
 class SubmissionAttachmentDownloadTest(WebTest):
     @classmethod
@@ -97,6 +96,7 @@ class SubmissionAttachmentDownloadTest(WebTest):
 
         self.assertEqual(response.status_code, 403)
 
+    @override_settings(SENDFILE_BACKEND="django_sendfile.backends.nginx")
     def test_nginx_sendfile_response(self):
         submission_file_attachment = SubmissionFileAttachmentFactory.create(
             submission_step__submission__completed=True,

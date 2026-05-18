@@ -168,7 +168,7 @@ django-csp==4.0
     # via -r requirements/base.in
 django-csp-reports==1.10.0
     # via -r requirements/base.in
-django-digid-eherkenning==0.24.0
+django-digid-eherkenning==0.25.1
     # via -r requirements/base.in
 django-filter==25.2
     # via -r requirements/base.in
@@ -206,7 +206,7 @@ django-otp==1.7.0
     #   maykin-2fa
 django-phonenumber-field==8.4.0
     # via django-two-factor-auth
-django-privates==3.1.1
+django-privates==4.0.2
     # via
     #   -r requirements/base.in
     #   django-simple-certmanager
@@ -222,7 +222,7 @@ django-setup-configuration==0.11.0
     # via
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-simple-certmanager==2.5.0
+django-simple-certmanager==4.0.0
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning

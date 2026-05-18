@@ -259,7 +259,7 @@ django-csp-reports==1.10.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-digid-eherkenning==0.24.0
+django-digid-eherkenning==0.25.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -326,7 +326,7 @@ django-phonenumber-field==8.4.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-two-factor-auth
-django-privates==3.1.1
+django-privates==4.0.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -354,7 +354,7 @@ django-setup-configuration==0.11.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-simple-certmanager==2.5.0
+django-simple-certmanager==4.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

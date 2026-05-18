@@ -1,5 +1,4 @@
 import zipfile
-from pathlib import Path
 from unittest.mock import patch
 
 from django.core import mail
@@ -45,7 +44,10 @@ class ExportFormsTaskTests(TestCase):
         self.assertEqual(user, forms_export.user)
 
         # Test that the zip file contains the right forms
-        with zipfile.ZipFile(forms_export.export_content.path, "r") as file:
+        with (
+            forms_export.export_content.open("rb") as content,
+            zipfile.ZipFile(content, "r") as file,
+        ):
             names_list = file.namelist()
 
         self.assertEqual(2, len(names_list))
@@ -67,10 +69,12 @@ class ExportFormsTaskTests(TestCase):
         self.assertIn("test@email.nl", sent_mail.to)
 
 
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 class ImportFormsTaskTests(TestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         form1, form2 = FormFactory.create_batch(2)
         user = SuperUserFactory.create(email="test@email.nl")
 
@@ -93,13 +97,13 @@ class ImportFormsTaskTests(TestCase):
 
     def test_import_forms(self):
         imported_file_path = self._copy_file_to_imports_tempdir()
+        assert private_media_storage.exists(imported_file_path)
         process_forms_import(str(imported_file_path), self.user.id)
 
         self.assertEqual(4, Form.objects.count())
 
-        # Check that no files are left over
-        dir_path = Path(private_media_storage.path(imported_file_path)).parent
-        self.assertEqual(0, len(list(dir_path.iterdir())))
+        # Check that the import file is cleaned up
+        self.assertFalse(private_media_storage.exists(imported_file_path))
 
     @patch(
         "openforms.forms.admin.tasks.import_form",

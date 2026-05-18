@@ -33,7 +33,7 @@ class BeforeRecordRequestWrapper:
 
 
 @tag("gh-1183")
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 class PartialRegistrationFailureTests(OFVCRMixin, TestCase):
     """
     Test that partial results are stored and don't cause excessive registration calls.
@@ -102,6 +102,7 @@ class PartialRegistrationFailureTests(OFVCRMixin, TestCase):
             bsn="111222333",
             # Pin to a known case & document type version
             completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
 
     def _get_vcr_kwargs(self, **kwargs):

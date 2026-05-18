@@ -1082,6 +1082,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@temp_private_root()
 class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
     "Registration backend can be set with a form action"
 

@@ -8,6 +8,7 @@ from django.test import TestCase, tag
 
 import requests_mock
 from freezegun import freeze_time
+from privates.test import temp_private_root
 from requests import RequestException
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
@@ -28,6 +29,7 @@ from ..plugin import GenericJSONRegistration
 from ..typing import GenericJSONOptions
 
 
+@temp_private_root()
 class GenericJSONBackendTests(OFVCRMixin, TestCase):
     maxDiff = None
 
