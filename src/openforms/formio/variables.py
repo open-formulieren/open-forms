@@ -120,11 +120,10 @@ def extract_variables_from_template_properties(component: Component) -> set[str]
     for _property_name, property_value in iter_template_properties(component):
         match property_value:
             case str():
-                variables = extract_variables_used(property_value)
+                variables.update(extract_variables_used(property_value))
             case [str(), *_]:
                 # Value could be a list of expressions because of
                 # `multiple: True`.
-                variables = set()
                 for v in property_value:
                     variables.update(extract_variables_used(v))
             case _:
