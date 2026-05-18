@@ -14,6 +14,52 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.3 (2026-xx-xx)
+==================
+
+**Migration tooling**
+
+.. note::
+
+    Open Forms 4.0 will contain a breaking change regarding "clear on hide".
+
+    Currently during a logic check, a component which becomes hidden with "clear on hide" enabled,
+    will have its value set to the empty (or default) value of that component. Subsequent logic rules
+    that perform a comparison of the variable to the empty/default value in the trigger expression, might
+    still execute.
+
+    For these components, the new behavior will be to remove the value from the data entirely
+    during logic evaluation. This means that any subsequent logic rules that compare the variable
+    to the empty/default value of the component, can no longer trigger.
+
+    We have included a script that checks logic rules for which this might be the case. It reports
+    logic rules for which the JSON logic trigger includes a variable comparison to the empty/default
+    value of the corresponding component, but only if that component has "clear on hide" enabled and
+    its visibility is affected by another logic rule or conditional logic.
+
+    Note that if you want a rule to execute whether a component is hidden or not, it is possible to
+    add a default value to the variable expression that will be used when the value is not present
+    in the data. For example:
+
+    .. code:: json
+
+       {
+         "==": [
+           {
+             "var": ["textfield", ""]
+           },
+           ""
+         ]
+       }
+
+    In an app container, execute:
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/report_logic_with_deprecated_clear_on_hide_behavior.py
+
+
 3.5.2 (2026-05-19)
 ==================
 
@@ -215,7 +261,7 @@ removing the old renderer and Textfield address autofill support.
 
 **Legacy logic evaluation**
 
-The old logic evaluation will be removed in Open Forms 4.0. We will prioritize bugfixes in the new 
+The old logic evaluation will be removed in Open Forms 4.0. We will prioritize bugfixes in the new
 logic evaluation to make sure this migration will be as smooth as possible.
 
 **File Registration tab**
@@ -236,7 +282,7 @@ We plan to change the default for "Use generated zaaknummer" to unchecked in an 
 
 **StUF-ZDS registration**
 
-The usage of the branch number retrieved from the form's submission data will be replaced in 
+The usage of the branch number retrieved from the form's submission data will be replaced in
 Open Forms 4.0 by favouring the branch number obtained through the eHerkenning login.
 
 **DigiD/eHerkenning OIDC Strict mode**

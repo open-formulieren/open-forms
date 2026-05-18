@@ -1,4 +1,12 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
+
+from unittest_parametrize import ParametrizedTestCase, parametrize
+
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormStepFactory,
+)
 
 from ..script_checks import BinScriptCheck
 
@@ -15,3 +23,168 @@ class DjangoScriptTests(SimpleTestCase):
                 script_check = BinScriptCheck(script)
 
                 self.assertEqual(script_check.execute(), expected_outcome)
+
+
+class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, TestCase):
+    script = BinScriptCheck("report_logic_with_deprecated_clear_on_hide_behavior")
+
+    def test_no_logic(self):
+        FormFactory.create(generate_minimal_setup=True)
+
+        self.assertTrue(self.script.execute())
+
+    def test_with_empty_value_in_trigger_and_component_visibility_not_affected(self):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "textfield"}]
+            }
+        )
+        FormLogicFactory.create(
+            form=form, json_logic_trigger={"var": {"==": [{"var": "textfield"}, ""]}}
+        )
+
+        self.assertTrue(self.script.execute())
+
+    @parametrize(
+        "logic_trigger",
+        [
+            {"==": [{"var": "textfield"}, ""]},
+            {"===": [{"var": "textfield"}, None]},
+            {"!=": [{"var": "textfield"}, None]},
+            {"!==": [None, {"var": "textfield"}]},
+            {"in": [{"var": "textfield"}, [""]]},
+            {"in": [{"var": "textfield"}, ["foo", None]]},
+            {
+                "or": [
+                    {"==": [{"var": "textfield"}, "foo"]},
+                    {"==": [{"var": "textfield"}, ""]},
+                ]
+            },
+        ],
+    )
+    def test_with_empty_value_in_trigger_and_component_visibility_affected_by_other_rule(
+        self, logic_trigger
+    ):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "components": [{"type": "textfield", "key": "textfield"}],
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "textfield",
+                }
+            ],
+        )
+
+        FormLogicFactory.create(form=form, json_logic_trigger=logic_trigger)
+
+        self.assertFalse(self.script.execute())
+
+    def test_no_empty_value_in_trigger_but_component_visibility_affected_by_other_rule(
+        self,
+    ):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "components": [{"type": "textfield", "key": "textfield"}],
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "textfield",
+                }
+            ],
+        )
+
+        FormLogicFactory.create(
+            form=form, json_logic_trigger={"==": [{"var": "textfield"}, "value"]}
+        )
+
+        self.assertTrue(self.script.execute())
+
+    def test_with_empty_value_in_trigger_and_component_visibility_affected_by_conditional(
+        self,
+    ):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "checkbox", "key": "checkbox"},
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "conditional": {"when": "checkbox", "eq": True, "show": False},
+                        "components": [{"type": "textfield", "key": "textfield"}],
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form, json_logic_trigger={"==": [{"var": "textfield"}, ""]}
+        )
+
+        self.assertFalse(self.script.execute())
+
+    def test_with_selectboxes_inside_editgrid(self):
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "editgrid",
+                        "components": [
+                            {
+                                "type": "selectboxes",
+                                "key": "selectboxes",
+                                "values": [
+                                    {"value": "a", "label": "A"},
+                                    {"value": "b", "label": "B"},
+                                ],
+                            }
+                        ],
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "editgrid.0.selectboxes"}, False]},
+        )
+
+        self.assertTrue(self.script.execute())
