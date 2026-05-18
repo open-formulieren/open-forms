@@ -5,7 +5,6 @@ from collections import defaultdict
 from collections.abc import Collection, Iterator, Mapping
 from typing import TYPE_CHECKING
 
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -41,6 +40,7 @@ class FormLogic(OrderedModel):
         blank=True,
         related_name="logic_rules",
     )
+    # DeprecationWarning: remove in OF 4.1
     trigger_from_step = models.ForeignKey(
         "FormStep",
         on_delete=models.SET_NULL,
@@ -77,21 +77,6 @@ class FormLogic(OrderedModel):
     class Meta(OrderedModel.Meta):
         verbose_name = _("form logic")
         verbose_name_plural = _("form logic rules")
-
-    def clean(self):
-        super().clean()
-
-        if (
-            self.trigger_from_step
-            and self.form
-            and self.trigger_from_step.form != self.form
-        ):
-            raise ValidationError(
-                _(
-                    "You must specify a step that belongs to the same form as the logic rule itself."
-                ),
-                code="invalid",
-            )
 
     @property
     def action_operations(self) -> Iterator[ActionOperation]:

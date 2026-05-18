@@ -25,6 +25,7 @@ from openforms.logging.processors import (
     add_open_telemetry_spans,
     drop_user_agent_in_dev,
 )
+from openforms.upgrades.script_checks import BinScriptCheck
 
 from .utils import Filesize, get_sentry_integrations, sentry_before_send
 
@@ -1319,6 +1320,9 @@ SETUP_CONFIGURATION_STEPS = [
 UPGRADE_CHECK_PATHS: UpgradePaths = {
     "3.5.0": UpgradeCheck(
         VersionRange(minimum="3.3.1"),
+    ),
+    "4.0.0": UpgradeCheck(
+        VersionRange(minimum="3.5.1"), (BinScriptCheck("report_invalid_form_logic"),)
     ),
 }
 UPGRADE_CHECK_STRICT = False

@@ -185,10 +185,7 @@ const RuleBody = ({
   isAdvanced,
   jsonLogicTrigger,
   actions,
-  displayAdvancedOptions,
-  setDisplayAdvancedOptions,
   description,
-  triggerFromStepIdentifier,
   formStepIdentifiers,
   onChange,
   errors,
@@ -197,14 +194,8 @@ const RuleBody = ({
   const intl = useIntl();
   const [expandExpression, setExpandExpression] = useState(isCreate);
   const [resetRequest, setResetRequest] = useState(0);
-  const triggerFromStep = useFormStep(triggerFromStepIdentifier);
   const formSteps = useFormSteps(formStepIdentifiers);
-  const {newLogicEvaluationEnabled, formSteps: allFormSteps} = useContext(FormContext);
-
-  // Case in which there is an error: a trigger step was specified, but this step cannot be found in the form
-  if (!triggerFromStep && triggerFromStepIdentifier && !newLogicEvaluationEnabled)
-    setDisplayAdvancedOptions(true);
-  displayAdvancedOptions = displayAdvancedOptions && !newLogicEvaluationEnabled;
+  const {formSteps: allFormSteps} = useContext(FormContext);
 
   const TriggerComponent = isAdvanced ? AdvancedTrigger : Trigger;
 
@@ -236,69 +227,20 @@ const RuleBody = ({
           </h3>
         </div>
 
-        {displayAdvancedOptions && (
-          <>
-            <div className="logic-rule__advanced">
-              <div className="dsl-editor">
-                <DSLEditorNode errors={null}>
-                  <FormattedMessage
-                    description="'Trigger from step' label"
-                    defaultMessage="Enable from step: "
-                  />
-                </DSLEditorNode>
-
-                <DSLEditorNode errors={null}>
-                  <StepSelection
-                    name="triggerFromStep"
-                    value={triggerFromStep?.step?.uuid || triggerFromStepIdentifier || ''}
-                    onChange={onChange}
-                  />
-                  {!triggerFromStepIdentifier && (
-                    <>
-                      &nbsp;
-                      <FormattedMessage
-                        description="'Trigger from step' information for when unset"
-                        defaultMessage="(checked for every step)"
-                      />
-                    </>
-                  )}
-                </DSLEditorNode>
-              </div>
-            </div>
-            {triggerFromStepIdentifier && !triggerFromStep && (
-              <MessageList
-                messages={[
-                  {
-                    message: (
-                      <FormattedMessage
-                        description="Warning missing trigger step"
-                        defaultMessage="The selected trigger step could not be found in this form! Please change it!"
-                      />
-                    ),
-                    level: 'warning',
-                  },
-                ]}
-              />
-            )}
-          </>
-        )}
-
-        {newLogicEvaluationEnabled && (
-          <div className="logic-rule__advanced">
-            {allFormSteps.length === formSteps.length ? (
-              <FormattedMessage
-                description="Execute on all steps label"
-                defaultMessage="This rule will be executed on all steps."
-              />
-            ) : (
-              <FormattedMessage
-                description="Execute on step(s) label"
-                defaultMessage="This rule will be executed on step(s): {steps}"
-                values={{steps: formSteps.map(step => step.stepName).join(', ')}}
-              />
-            )}
-          </div>
-        )}
+        <div className="logic-rule__advanced">
+          {allFormSteps.length === formSteps.length ? (
+            <FormattedMessage
+              description="Execute on all steps label"
+              defaultMessage="This rule will be executed on all steps."
+            />
+          ) : (
+            <FormattedMessage
+              description="Execute on step(s) label"
+              defaultMessage="This rule will be executed on step(s): {steps}"
+              values={{steps: formSteps.map(step => step.stepName).join(', ')}}
+            />
+          )}
+        </div>
 
         <div className="logic-trigger-container">
           {isAdvanced ? (
@@ -352,16 +294,6 @@ const RuleBody = ({
             error={errors.jsonLogicTrigger}
             expandExpression={expandExpression}
           />
-
-          {triggerFromStep && !newLogicEvaluationEnabled && (
-            <div className="logic-trigger-container__extra-condition">
-              <FormattedMessage
-                description="Additional 'trigger from step' condition"
-                defaultMessage={'and the step "{step}" has been reached'}
-                values={{step: triggerFromStep.stepName}}
-              />
-            </div>
-          )}
         </div>
 
         <ActionSet name="actions" actions={actions} onChange={onChange} errors={errors.actions} />
@@ -375,10 +307,7 @@ RuleBody.propTypes = {
   isAdvanced: PropTypes.bool.isRequired,
   jsonLogicTrigger: jsonPropTypeValidator,
   actions: PropTypes.arrayOf(PropTypes.object),
-  displayAdvancedOptions: PropTypes.bool,
-  setDisplayAdvancedOptions: PropTypes.func.isRequired,
   description: PropTypes.string,
-  triggerFromStepIdentifier: PropTypes.string,
   formStepIdentifiers: PropTypes.arrayOf(PropTypes.string),
   onChange: PropTypes.func.isRequired,
   errors: PropTypes.object,
@@ -392,7 +321,6 @@ const Rule = ({
   _mayGenerateDescription,
   order,
   jsonLogicTrigger,
-  triggerFromStep: triggerFromStepIdentifier,
   actions,
   isAdvanced,
   formSteps: formStepIdentifiers,
@@ -401,8 +329,6 @@ const Rule = ({
   errors = {},
 }) => {
   const intl = useIntl();
-  const [displayAdvancedOptions, setDisplayAdvancedOptions] = useState(false);
-  const {newLogicEvaluationEnabled} = useContext(FormContext);
 
   const deleteConfirmMessage = intl.formatMessage({
     description: 'Logic rule deletion confirm message',
@@ -433,7 +359,6 @@ const Rule = ({
         <code>
           {JSON.stringify({
             jsonLogicTrigger,
-            triggerFromStepIdentifier,
             order,
             actions,
             isAdvanced,
@@ -446,39 +371,6 @@ const Rule = ({
   return (
     <div className="logic-rule">
       <div className="logic-rule__actions actions actions--vertical actions--align-top">
-        {!newLogicEvaluationEnabled && (
-          <div className="actions__action-group">
-            <FAIcon
-              icon="sort-up"
-              title={intl.formatMessage({
-                description: 'Move up icon title',
-                defaultMessage: 'Move up',
-              })}
-              extraClassname="fa-lg actions__action"
-              onClick={() => onChange({target: {name: 'order', value: order - 1}})}
-            />
-            <FAIcon
-              icon="sort-down"
-              title={intl.formatMessage({
-                description: 'Move down icon title',
-                defaultMessage: 'Move down',
-              })}
-              extraClassname="fa-lg actions__action"
-              onClick={() => onChange({target: {name: 'order', value: order + 1}})}
-            />
-          </div>
-        )}
-        {!newLogicEvaluationEnabled && (
-          <FAIcon
-            icon="gear"
-            title={intl.formatMessage({
-              description: 'Logic rule advanced options icon title',
-              defaultMessage: 'Advanced options',
-            })}
-            extraClassname="icon actions__action"
-            onClick={() => setDisplayAdvancedOptions(!displayAdvancedOptions)}
-          />
-        )}
         <DeleteIcon
           onConfirm={onDelete}
           message={deleteConfirmMessage}
@@ -499,9 +391,6 @@ const Rule = ({
           isAdvanced={isAdvanced}
           jsonLogicTrigger={jsonLogicTrigger}
           actions={actions}
-          triggerFromStepIdentifier={triggerFromStepIdentifier}
-          displayAdvancedOptions={displayAdvancedOptions}
-          setDisplayAdvancedOptions={setDisplayAdvancedOptions}
           description={description}
           formStepIdentifiers={formStepIdentifiers}
           onChange={onChange}
@@ -520,7 +409,6 @@ Rule.propTypes = {
   _mayGenerateDescription: PropTypes.bool.isRequired,
   order: PropTypes.number.isRequired,
   jsonLogicTrigger: jsonPropTypeValidator,
-  triggerFromStep: PropTypes.string,
   actions: PropTypes.arrayOf(PropTypes.object),
   isAdvanced: PropTypes.bool.isRequired,
   formSteps: PropTypes.arrayOf(PropTypes.string),

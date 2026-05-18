@@ -403,6 +403,7 @@ class Form(models.Model):
     )
 
     # feature flags
+    # DeprecationWarning: remove in OF 4.1
     new_logic_evaluation_enabled = models.BooleanField(
         _("enable new logic rule evaluation"),
         default=True,
@@ -617,15 +618,10 @@ class Form(models.Model):
             form_step.save()
 
         # logic rules
-        for logic in self.formlogic_set.all().select_related("trigger_from_step"):
+        for logic in self.formlogic_set.all():
             logic.pk = None
             logic.uuid = _uuid.uuid4()
             logic.form = copy
-
-            if logic.trigger_from_step:
-                logic.trigger_from_step = logic.form.formstep_set.get(
-                    order=logic.trigger_from_step.order
-                )
 
             # make sure we have the new uuids of the copied form steps
             for action in logic.actions:

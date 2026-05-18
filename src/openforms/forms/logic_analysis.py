@@ -213,7 +213,7 @@ def analyze_rules(
     """
     Determine which form steps are relevant for each logic rule in the form.
 
-    :param form: The form to analyze. It must have the new logic evaluation enabled.
+    :param form: The form to analyze.
     :param rules: Input rules for the form to analyze. If not provided, the current
       set of rules on the form will be used. The instances can be unsaved, in-memory
       instances.
@@ -223,9 +223,6 @@ def analyze_rules(
       re-ordered according to their dependencies. The collection of steps specifies on
       which steps the rule must be executed.
     """
-    if not form.new_logic_evaluation_enabled:
-        raise ValueError("Form to analyze must have the new logic evaluation enabled.")
-
     if rules is None:
         rules = list(form.formlogic_set.order_by("order"))
 

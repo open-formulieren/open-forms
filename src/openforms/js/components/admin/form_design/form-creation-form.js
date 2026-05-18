@@ -122,7 +122,6 @@ const initialFormState = {
       brpPersonenProcessingHeaderValue: '',
     },
     authBackends: [],
-    newLogicEvaluationEnabled: true,
   },
   newForm: true,
   formSteps: [],
@@ -185,7 +184,6 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   variables: 'variables',
   appointmentOptions: 'form',
   brpPersonenRequestOptions: 'advanced-configuration',
-  newLogicEvaluationEnabled: 'form',
 };
 
 const TRANSLATION_FIELD_TO_TAB_NAMES = {
@@ -1269,7 +1267,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           translationEnabled: state.form.translationEnabled,
           registrationBackends: state.form.registrationBackends,
           selectedAuthPlugins: state.selectedAuthPlugins,
-          newLogicEvaluationEnabled: state.form.newLogicEvaluationEnabled,
           updateComponents: updateComponents,
         }}
       >
@@ -1359,7 +1356,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
               availableCategories={state.availableCategories}
               availableThemes={state.availableThemes}
               onAuthPluginChange={onAuthPluginChange}
-              hasTriggerFromStep={state.logicRules.some(rule => !!rule.triggerFromStep)}
               formStepsAmount={state.formSteps.length}
             />
           </TabPanel>

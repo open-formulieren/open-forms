@@ -1961,12 +1961,6 @@
       "value": "This field is required."
     }
   ],
-  "DqG0YS": [
-    {
-      "type": 0,
-      "value": "Enable from step:"
-    }
-  ],
   "DxGKNm": [
     {
       "type": 0,
@@ -2491,20 +2485,6 @@
       "value": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?"
     }
   ],
-  "HuAm1K": [
-    {
-      "type": 0,
-      "value": "and the step \""
-    },
-    {
-      "type": 1,
-      "value": "step"
-    },
-    {
-      "type": 0,
-      "value": "\" has been reached"
-    }
-  ],
   "I0bgsg": [
     {
       "type": 0,
@@ -2799,12 +2779,6 @@
       "value": " configuration?"
     }
   ],
-  "KYTAJZ": [
-    {
-      "type": 0,
-      "value": "(checked for every step)"
-    }
-  ],
   "Kdgpxf": [
     {
       "type": 0,
@@ -2953,12 +2927,6 @@
     {
       "type": 0,
       "value": "Plugin configuration: Email"
-    }
-  ],
-  "LiXrER": [
-    {
-      "type": 0,
-      "value": "The selected trigger step could not be found in this form! Please change it!"
     }
   ],
   "LkrFow": [
@@ -3123,12 +3091,6 @@
     {
       "type": 0,
       "value": "Case type API resource URL in the Catalogi API."
-    }
-  ],
-  "NqShTs": [
-    {
-      "type": 0,
-      "value": "Experimental features"
     }
   ],
   "NrF5vy": [
@@ -3791,12 +3753,6 @@
     {
       "type": 0,
       "value": "the path should not have a leading slash"
-    }
-  ],
-  "TPy506": [
-    {
-      "type": 0,
-      "value": "Enable new logic rule evaluation"
     }
   ],
   "TQv+8T": [
@@ -4683,12 +4639,6 @@
       "value": "There are errors in the DMN configuration."
     }
   ],
-  "aoNZfg": [
-    {
-      "type": 0,
-      "value": "Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules."
-    }
-  ],
   "aqYeqv": [
     {
       "type": 0,
@@ -5219,12 +5169,6 @@
     {
       "type": 0,
       "value": "Attachments"
-    }
-  ],
-  "eLDxD5": [
-    {
-      "type": 0,
-      "value": "Advanced options"
     }
   ],
   "eLIclD": [
@@ -6281,12 +6225,6 @@
     {
       "type": 0,
       "value": "Partner 1"
-    }
-  ],
-  "lyU7fP": [
-    {
-      "type": 0,
-      "value": "Enabling this will analyze logic rules and re-order them according to their dependency on other logic rules (happens when the form is saved). Each rule will be automatically assigned to one or more steps on which it will be executed."
     }
   ],
   "m/NVtu": [

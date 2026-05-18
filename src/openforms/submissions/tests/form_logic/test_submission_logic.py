@@ -97,7 +97,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
           becomes relevant from step3 onwards
         * We include calculated variables that determine the availability of step3
         """
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create()
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -109,13 +109,23 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        # we don't progress through these and set up user-defined variables, so it doesn't matter
-        # that there are no components.
+        # we don't progress through these and set up user-defined variables, so it
+        # doesn't matter that there are no components.
         step2 = FormStepFactory.create(
             form=form, form_definition__configuration={"components": []}
         )
-        step3 = FormStepFactory.create(
-            form=form, form_definition__configuration={"components": []}
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "number",
+                        "label": "Number",
+                        "defaultValue": 0,
+                    }
+                ]
+            },
         )
         # set up a number of variables to mutate with logic
         FormVariableFactory.create(
@@ -126,19 +136,12 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         )
         FormVariableFactory.create(
             form=form,
-            key="var2",
-            user_defined=True,
-            data_type=FormVariableDataTypes.float,
-            initial_value=0,
-        )
-        FormVariableFactory.create(
-            form=form,
             key="var3",
             user_defined=True,
             data_type=FormVariableDataTypes.float,
         )
         # set up logic rules:
-        # 1. set the variable var1 to the value 10, always
+        # 1. set the variable var1 to the value 10, step 1
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "text1"}, "trigger-rule"]},
@@ -149,19 +152,18 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
-        # 2. set the variable var2 to the value 5, only from step3
+        # 2. set number to the value 5, step 3
         FormLogicFactory.create(
             form=form,
-            trigger_from_step=step3,
             json_logic_trigger={"==": [{"var": "text1"}, "trigger-rule"]},
             actions=[
                 {
-                    "variable": "var2",
+                    "variable": "number",
                     "action": {"type": "variable", "value": 5},
                 }
             ],
         )
-        # 3. set the variable var3 to the sum of var1 and var2, always.
+        # 3. set the variable var3 to the sum of var1 and number, step 1 and 3.
         # In this test, the resulting value is 10 (10 + 0) because step3 has not been reached.
         FormLogicFactory.create(
             form=form,
@@ -171,13 +173,13 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     "variable": "var3",
                     "action": {
                         "type": "variable",
-                        "value": {"+": [{"var": "var1"}, {"var": "var2"}]},
+                        "value": {"+": [{"var": "var1"}, {"var": "number"}]},
                     },
                 }
             ],
         )
         # 4. Disable step 2 if var1 is not equal to 10 - this should not happen because
-        # we always set it
+        # var1 is set in the first logic rule, so it must have been executed already.
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={"!=": [{"var": "var1"}, 10]},
@@ -191,8 +193,8 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
-        # if the rule gets executed that sets var2 to 5, then the total is 15 (which
-        # should not happen). We can verify this by blocking submission.
+        # 5. if the rule gets executed that sets number to 5, then the total is 15
+        # (which should not happen). We can verify this by blocking submission.
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={"!=": [{"var": "var3"}, 15]},
@@ -205,6 +207,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         # create a submission where only step1 is submitted
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
@@ -225,14 +228,13 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     @tag("gh-4579")
     def test_properly_determine_current_step(self):
         """
-        Assert that the submission logic check properly determines the current step for
-        rules that define `triggerFromStep`
+        Assert that the submission logic check properly determines the current step.
 
         * We fill out step 1 and continue to step 2
         * In step two the logic rule triggers that prevents us from continuing
         * We go back to step 1 and it should be possible to continue to step 2 from there
         """
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
+        form = FormFactory.create()
         step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -276,7 +278,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         # 2. if `verdergaan` is `nee`, block going to step3
         FormLogicFactory.create(
             form=form,
-            trigger_from_step=step2,
             json_logic_trigger={"==": [{"var": "verdergaan"}, "nee"]},
             actions=[
                 {
@@ -285,6 +286,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
 
@@ -335,7 +337,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             data = response.json()
 
             # It should be possible to go to the next step, because the logic rule
-            # to block going to the next step should only trigger from step2
+            # to block going to the next step should only trigger on step2
             self.assertTrue(data["step"]["canSubmit"])
 
     def test_check_logic_with_full_datetime(self):
@@ -1289,7 +1291,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     ):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -1386,7 +1387,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_clear_on_hide_behaviour_applied_during_evaluation(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
@@ -1474,7 +1474,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     ):
         form = FormFactory.create(
             generate_minimal_setup=True,
-            new_logic_evaluation_enabled=True,
             formstep__form_definition__configuration={
                 "components": [
                     {
