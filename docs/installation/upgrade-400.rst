@@ -24,7 +24,7 @@ Removal of the unused HaalCentraal version 1.3
 
 HaalCentraal BRP Personen bevragen 1.3 was never in production so this is not available
 any more in Open Forms. The only supported version is v2 by default.
-  
+
 In case v1.3 was used, the prefill configuration of components may require updating (fix
 plugin + attribute), as this cannot be done automatically.
 
@@ -224,3 +224,13 @@ code, and if you haven't done so yet, recommend you to set up the necessary
 :ref:`observability <installation_observability_index>` tooling. See
 :ref:`installation_observability_otel_config` on how to configure Open Forms to produce
 telemetry.
+
+Change default to use OF-generated public reference
+===================================================
+
+.. note:: Relevant for: form designers/administrators.
+
+The default way to generate public references for the ZGW APIs registration plugin has changed.
+Previously, Open Forms always used case numbers as the submission public references.
+Since Open Forms 3.5, both options have been available, but the default remained the ZGW API-generated
+case numbers. The default is now switched to Open Forms-generated public references.

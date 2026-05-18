@@ -15,16 +15,15 @@ geregistreerd bij de zaak, en eventuele bijlagen/uploads worden als documenten
 Zaaknummers
 ===========
 
-ZGW API's kunnen zelf zaaknummers genereren, en het standaardgedrag van Open Formulieren
-is dat het deze nummers gebruikt voor de
-:ref:`publieke referentie <manual_submissions_public_reference>` van de aanvraag.
+Het standaardgedrag van Open Formulieren is dat het een :ref:`publieke referentie <manual_submissions_public_reference>`
+genereert en deze vervolgens als zaaknummer gebruikt bij het aanmaken van een zaak in de Zaken API.
 
-Je kan ook Open Formulieren het zaaknummer laten genereren - de zaak wordt dan
-aangemaakt met de referentie uit Open Formulieren. Navigeer hiervoor naar:
+ZGW API's kunnen zelf zaaknummers genereren, en deze nummers worden gebruikt voor de publieke
+referentie van de aanvraag. Navigeer hiervoor naar:
 **Admin** > **Configuratie** > **Configuratie overzicht** > **Registratieplugins**. Vind
 hierbinnen het label "ZGW API's" en klik op **API-groepen beheren**. Selecteer in lijst
 van API-groepen de gewenste groep en klik de naam aan om het bewerkscherm te openen.
-Vink vervolgens de optie **Gebruik gegenereerd zaaknummer** uit en sla de wijzigingen
+Vink vervolgens de optie **Gebruik gegenereerd zaaknummer** aan en sla de wijzigingen
 op.
 
 .. note:: Indien je onvoldoende rechten hebt, vraag dan een functioneel beheerder om
