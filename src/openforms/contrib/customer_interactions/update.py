@@ -157,19 +157,22 @@ def update_customer_interaction_data(
                 if prefill_communication_channel
                 else None
             )
+            is_preferred_address: bool = bool(address_value == prefill_preferred)
+
+            # if address is already a default - we don't create/update digital addresses
+            if is_preferred_address:
+                continue
 
             if address_value in prefill_channel_options:
                 # flow 5. we update it only if it's marked as "isNewPreferred"
-                if is_address_new_preferred and address_value != prefill_preferred:
+                if is_address_new_preferred:
                     updated_address = client.update_digital_address_for_party(
                         address=address_value, party_uuid=party_uuid, is_preferred=True
                     )
                     updated_addresses.append(updated_address)
 
                 # flow 3. we create a new address and link it to betrokkene
-                elif (
-                    not is_address_new_preferred and address_value != prefill_preferred
-                ):
+                else:
                     created_address = client.create_digital_address(
                         address=address_value,
                         address_type=channels_to_address_types[address_channel],
