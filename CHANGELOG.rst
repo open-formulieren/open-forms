@@ -14,6 +14,59 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.2 (2026-05-19)
+==================
+
+Regular bugfix release.
+
+The releases in the 3.5.x series will gradually introduce migration tooling to prepare
+for the 4.0 upgrade.
+
+**Bugfixes**
+
+* [:backend:`4699`] Fixed ``addressNL`` not using custom error messages for the
+  city/postcode during validation.
+* Fixed a crash in logic rules when it contains a property action that refers to a
+  non-existing component.
+* Fixed check script that verifies the form logic.
+* [:backend:`6289`] Fixed crash when extracting variables used in template expressions
+  in ``else`` blocks in form definitions.
+* [:backend:`6286`] Fixed template variables not being extracted from the component
+  properties.
+* Bumped urllib3 to its latest version with security fixes.
+
+**Migration tooling**
+
+* [:backend:`6164`] Added a CLI tool to bulk convert forms to the new logic evaluation
+  system.
+
+.. note::
+
+    Because the legacy logic evaluation will be removed in Open Forms 4.0, we have added
+    some additional tooling to convert all forms to the new logic evaluation.
+
+    For each form, the logic rules will be reordered and any 'trigger from step' setting
+    will be removed. Note that this action cannot be easily reverted, so for large forms
+    it is recommended to create a copy of the form first, and enable the new logic
+    evaluation feature flag manually before running this command.
+
+    Any forms which contain rules with cycles will not be converted, and need to be
+    resolved manually. If such forms exist, the output of this command will contain a
+    list of relevant form details.
+
+    In an app container, execute:
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/src/manage.py enable_new_logic_evaluation_for_all_forms
+
+* [:backend:`6269`] Fixed the ``file`` component registration configuration being
+  limited to direct ``informatieobjecttype`` URL references. Now you can instead specify
+  the catalogue domain and RSIN and the description of the document type to use instead.
+
+  Additional migration tooling for this is in development.
+
 3.5.1 (2026-05-06)
 ==================
 
