@@ -59,10 +59,49 @@ def move_objects_group_config_to_backends(apps, _):
         backend.save()
 
 
+def move_zgw_group_config_to_backends(apps, _):
+    ZGWApiGroupConfig = apps.get_model("zgw_apis", "ZGWApiGroupConfig")
+    FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+
+    # there is a DB constraint that validates both domain and RSIN are set at the
+    # same time, or none are set
+    api_groups_by_id = ZGWApiGroupConfig.objects.exclude(catalogue_domain="").in_bulk(
+        field_name="id"
+    )
+    if not api_groups_by_id:
+        return
+
+    backends = FormRegistrationBackend.objects.filter(backend="zgw-create-zaak")
+    # we can't use the registration option serializers here because they resolve to real
+    # models :(
+
+    for backend in backends:
+        # shouldn't happen, but they're plain JSONFields that can have anything
+        if not backend.options:
+            continue
+        # don't touch backends that already have an explicit catalogue - those options
+        # aren't affected by the group level defaults anyway
+        if isinstance(backend.options.get("catalogue"), dict):
+            continue
+        pk = backend.options.get("zgw_api_group", None)
+        if not pk:
+            continue
+        if (api_group := api_groups_by_id.get(pk)) is None:
+            continue
+
+        # ok, there is stuff to copy over, let's do it (safely!)
+        backend.options["catalogue"] = {
+            "domain": api_group.catalogue_domain,
+            "rsin": api_group.catalogue_rsin,
+        }
+        backend.save()
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ("forms", "0129_remove_form_new_renderer_enabled"),
         ("objects_api", "0006_alter_objectsapigroupconfig_catalogue_domain"),
+        ("zgw_apis", "0003_alter_zgwapigroupconfig_use_generated_zaaknummer"),
     ]
 
     operations = [
@@ -70,5 +109,10 @@ class Migration(migrations.Migration):
             move_objects_group_config_to_backends,
             # 4.0 is a major release, we can't reverse these kind of data migrations
             migrations.RunPython.noop,
-        )
+        ),
+        migrations.RunPython(
+            move_zgw_group_config_to_backends,
+            # 4.0 is a major release, we can't reverse these kind of data migrations
+            migrations.RunPython.noop,
+        ),
     ]
