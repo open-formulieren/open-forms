@@ -359,15 +359,9 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
     catalogue_option = attrs.get("catalogue")
 
     domain, rsin = (
-        (
-            catalogue_option["domain"],
-            catalogue_option["rsin"],
-        )
+        (catalogue_option["domain"], catalogue_option["rsin"])
         if catalogue_option is not None
-        else (
-            api_group.catalogue_domain,
-            api_group.catalogue_rsin,
-        )
+        else ("", "")
     )
 
     # validate the catalogue itself - the queryset in the field guarantees that

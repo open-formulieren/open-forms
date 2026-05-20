@@ -1490,8 +1490,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
     def test_can_upload_attachments_with_indirect_document_type_reference(self):
         objects_api_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True,
-            catalogue_domain="TEST",
-            catalogue_rsin="000000000",
             organisatie_rsin="000000000",
         )
         submission = SubmissionFactory.from_components(
@@ -1538,6 +1536,10 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
             "iot_attachment": "PDF Informatieobjecttype",
             "iot_submission_report": "",
             "iot_submission_csv": "",

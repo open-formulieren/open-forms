@@ -79,20 +79,13 @@ objects_api:
     objecttypes_service_identifier: objecttypen-test
     documenten_service_identifier: documenten-test
     catalogi_service_identifier: catalogi-test
-    catalogue_domain: TEST
-    catalogue_rsin: "000000000"
     organisatie_rsin: "000000000"
-    document_type_submission_report: PDF Informatieobjecttype
-    document_type_submission_csv: CSV Informatieobjecttype
-    document_type_attachment: Attachment Informatieobjecttype
   - name: Config 2
     identifier: config-2
     objects_service_identifier: objecten-test
     objecttypes_service_identifier: objecttypen-test
     documenten_service_identifier: documenten-test
     catalogi_service_identifier: catalogi-test
-    catalogue_domain: OTHER
-    catalogue_rsin: "000000000"
     organisatie_rsin: "000000000"
 
 zgw_api_config_enable: True
@@ -103,8 +96,6 @@ zgw_api:
     zaken_service_identifier: zaken-test
     documenten_service_identifier: documenten-test
     catalogi_service_identifier: catalogi-test
-    catalogue_domain: TEST
-    catalogue_rsin: "000000000"
     organisatie_rsin: "000000000"
     zaak_vertrouwelijkheidaanduiding: zaakvertrouwelijk
     doc_vertrouwelijkheidaanduiding: openbaar
