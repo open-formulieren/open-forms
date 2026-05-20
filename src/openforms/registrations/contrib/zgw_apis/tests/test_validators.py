@@ -49,6 +49,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
     def test_bad_case_type_document_type_api_roots(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "zaaktype": "https://other-host.local/api/v1/zt/123",
             "informatieobjecttype": "https://other-host.local/api/v1/iot/456",
             "objects_api_group": None,
@@ -64,6 +68,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
     def test_existing_provided_variable_in_specific_zaaktype(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "zaaktype": (
                 "http://localhost:8003/catalogi/api/v1/"
                 "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
@@ -116,6 +124,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
     def test_provided_variable_does_not_exist_in_specific_zaaktype(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "zaaktype": (
                 "http://localhost:8003/catalogi/api/v1/"
                 "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
@@ -147,6 +159,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
     def test_validate_zaaktype_within_configured_ztc_service(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "zaaktype": (
                 "http://localhost:8003/catalogi/api/v1/"
                 "zaaktypen/ca5ffa84-3806-4663-a226-f2d163b79643"  # bad UUID
@@ -169,6 +185,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
     def test_validate_informatieobjecttype_within_configured_ztc_service(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "zaaktype": (
                 "http://localhost:8003/catalogi/api/v1/"
                 "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
@@ -192,6 +212,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
     def test_valid_omschrijving(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "zaaktype": (
                 "http://localhost:8003/catalogi/api/v1/"
                 "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
@@ -215,6 +239,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
     def test_invalid_roltype_omschrijving(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "zaaktype": (
                 "http://localhost:8003/catalogi/api/v1/"
                 "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
@@ -407,6 +435,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
     def test_catalogue_reference_badly_formatted_data(self):
         base = {
             "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "zaaktype": (
                 "http://localhost:8003/catalogi/api/v1/"
                 "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
@@ -462,6 +494,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
     def test_catalogue_reference_with_api_calls(self):
         base = {
             "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "zaaktype": (
                 "http://localhost:8003/catalogi/api/v1/"
                 "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
@@ -562,6 +598,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
     def test_catalogue_required_when_case_type_identification_provided(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "case_type_identification": "ZT-001",
             "informatieobjecttype": (
                 "http://localhost:8003/catalogi/api/v1/"

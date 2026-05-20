@@ -39,8 +39,6 @@ class ZGWApiConfigurationStep(BaseConfigurationStep[ZGWApiGroupConfigModel]):
                 "zrc_service": get_service(config.zaken_service_identifier),
                 "drc_service": get_service(config.documenten_service_identifier),
                 "ztc_service": get_service(config.catalogi_service_identifier),
-                "catalogue_domain": config.catalogue_domain,  # type: ignore
-                "catalogue_rsin": config.catalogue_rsin,  # type: ignore
                 "organisatie_rsin": config.organisatie_rsin,  # type: ignore
                 "zaak_vertrouwelijkheidaanduiding": config.zaak_vertrouwelijkheidaanduiding,  # type: ignore
                 "doc_vertrouwelijkheidaanduiding": config.doc_vertrouwelijkheidaanduiding,  # type: ignore

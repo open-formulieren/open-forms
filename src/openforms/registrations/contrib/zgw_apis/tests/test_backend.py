@@ -369,6 +369,10 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
         catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "case_type_identification": "",
             "document_type_description": "",
             "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
@@ -560,6 +564,10 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
         catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "case_type_identification": "",
             "document_type_description": "",
             "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
@@ -649,6 +657,10 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
         catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "case_type_identification": "",
             "document_type_description": "",
             "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
@@ -761,6 +773,10 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
         catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "",
+                "rsin": "",
+            },
             "case_type_identification": "",
             "document_type_description": "",
             "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
@@ -1007,8 +1023,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
     def test_allow_registration_with_unpublished_case_types(self):
         zgw_group = ZGWApiGroupConfigFactory.create(
             for_test_docker_compose=True,
-            catalogue_domain="DRAFT",
-            catalogue_rsin="000000000",
             organisatie_rsin="000000000",
         )
         submission = SubmissionFactory.from_components(
@@ -1030,6 +1044,10 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
         )
         options: RegistrationOptions = {
             "zgw_api_group": zgw_group,
+            "catalogue": {
+                "domain": "DRAFT",
+                "rsin": "000000000",
+            },
             "case_type_identification": "DRAFT-01",
             "document_type_description": "",
             "zaaktype": "",

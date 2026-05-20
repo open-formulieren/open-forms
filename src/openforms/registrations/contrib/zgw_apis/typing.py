@@ -32,7 +32,7 @@ type VertrouwelijkheidAanduiding = Literal[
 
 class RegistrationOptions(TypedDict):
     zgw_api_group: ZGWApiGroupConfig
-    catalogue: NotRequired[CatalogueOption]
+    catalogue: CatalogueOption
     case_type_identification: str
     document_type_description: str
     product_url: str  # URL reference to a product in the case type

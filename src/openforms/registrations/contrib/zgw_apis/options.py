@@ -60,7 +60,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     # the component configuration to the registration options!
     catalogue = CatalogueSerializer(
         label=_("catalogue"),
-        required=False,
+        required=True,
         help_text=_(
             "The catalogue in the catalogi API from the selected API group. This "
             "overrides the catalogue specified in the API group, if it's set. Case "
@@ -243,18 +243,6 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
     )
 
-    def get_fields(self):
-        fields = super().get_fields()
-        if getattr(self, "swagger_fake_view", False) or not self.context.get(
-            "is_import", False
-        ):
-            return fields
-
-        # If in an import context, we don't want to error on missing groups.
-        # Instead, we will try to set one if possible in the `validate` method.
-        fields["zgw_api_group"].required = False
-        return fields
-
     def _handle_import(self, attrs) -> None:
         # we're not importing, nothing to do
         if not self.context.get("is_import", False):
@@ -309,25 +297,6 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         validate_business_logic = self.context.get("validate_business_logic", True)
         if not validate_business_logic:
             return attrs
-
-        if self.context.get("is_import", False) and attrs.get("zgw_api_group") is None:
-            existing_group = (
-                ZGWApiGroupConfig.objects.order_by("pk")
-                .exclude(
-                    Q(zrc_service=None) | Q(drc_service=None) | Q(ztc_service=None)
-                )
-                .first()
-            )
-            if existing_group is None:
-                raise serializers.ValidationError(
-                    {
-                        "zgw_api_group": _(
-                            "You must create a valid ZGW API Group config (with the necessary services) before importing."
-                        )
-                    }
-                )
-            else:
-                attrs["zgw_api_group"] = existing_group
 
         _validate_against_catalogi_api(attrs)
 
@@ -436,9 +405,8 @@ def _validate_catalogue_case_and_doc_type(
 ) -> _CatalogueAndTypeValidationResult:
     _errors = {}
 
-    api_group = attrs["zgw_api_group"]
     catalogus = None
-    catalogue_option = attrs.get("catalogue")
+    catalogue_option = attrs["catalogue"]
 
     case_type_identification = attrs["case_type_identification"]
     document_type_description = attrs["document_type_description"]
@@ -447,17 +415,7 @@ def _validate_catalogue_case_and_doc_type(
     case_type_url = attrs["zaaktype"]
     document_type_url = attrs["informatieobjecttype"]
 
-    domain, rsin = (
-        (
-            catalogue_option["domain"],
-            catalogue_option["rsin"],
-        )
-        if catalogue_option is not None
-        else (
-            api_group.catalogue_domain,
-            api_group.catalogue_rsin,
-        )
-    )
+    domain, rsin = catalogue_option["domain"], catalogue_option["rsin"]
 
     err_invalid_case_type = ErrorDetail(
         _("The provided zaaktype does not exist in the specified Catalogi API."),  # type: ignore
@@ -471,8 +429,8 @@ def _validate_catalogue_case_and_doc_type(
         code="not-found",
     )
 
-    # DB check constraint + serializer validation guarantee that both `domain` and
-    # `rsin` or none of them are empty at the same time
+    # serializer validation guarantees that both `domain` and `rsin` or none of them
+    # are empty at the same time
     if case_type_identification and (not domain):
         raise serializers.ValidationError(
             {

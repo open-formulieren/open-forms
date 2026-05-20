@@ -6,8 +6,6 @@ zgw_api:
     zaken_service_identifier: zaken-test
     documenten_service_identifier: documenten-test
     catalogi_service_identifier: catalogi-test
-    catalogue_domain: TEST
-    catalogue_rsin: "000000000"
     organisatie_rsin: "000000000"
     zaak_vertrouwelijkheidaanduiding: zaakvertrouwelijk
     doc_vertrouwelijkheidaanduiding: openbaar
@@ -26,7 +24,5 @@ zgw_api:
     zaken_service_identifier: zaken-test
     documenten_service_identifier: documenten-test
     catalogi_service_identifier: catalogi-test
-    catalogue_domain: OTHER
-    catalogue_rsin: "000000000"
     organisatie_rsin: "000000000"
     auteur: Jane Doe

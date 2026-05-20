@@ -26,8 +26,6 @@ class SingleZGWApiGroupConfigModel(ConfigurationModel):
             ZGWApiGroupConfig: [
                 "name",
                 "identifier",
-                "catalogue_domain",
-                "catalogue_rsin",
                 "organisatie_rsin",
                 "auteur",
                 "zaak_vertrouwelijkheidaanduiding",
@@ -37,8 +35,6 @@ class SingleZGWApiGroupConfigModel(ConfigurationModel):
         extra_kwargs = {
             "identifier": {"examples": ["open-zaak-acceptance"]},
             "name": {"examples": ["Open Zaak acceptance environment"]},
-            "catalogue_domain": {"examples": ["ABCD"]},
-            "catalogue_rsin": {"examples": ["111222333"]},
             "organisatie_rsin": {"examples": ["123456782"]},
         }
 
