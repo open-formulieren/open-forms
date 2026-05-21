@@ -28,7 +28,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 21 May 2026 12:57:35 GMT
+      - Thu, 21 May 2026 13:07:44 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -45,7 +45,8 @@ interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"fieldsetShown": false, "repeatingGroupItems":
-      [{"editgridTextfield": "foo", "nestedTextfield": ""}]}, "startAt": "2024-03-19"}}'
+      [{"editgridTextfield": "foo", "container": {"nestedTextfield": ""}}]}, "startAt":
+      "2024-03-19"}}'
     headers:
       Accept:
       - '*/*'
@@ -56,7 +57,7 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '262'
+      - '277'
       Content-Type:
       - application/json
       User-Agent:
@@ -65,7 +66,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/be43c61b-fa4c-4998-97da-bc897c5a9e15","uuid":"be43c61b-fa4c-4998-97da-bc897c5a9e15","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"fieldsetShown":false,"repeatingGroupItems":[{"editgridTextfield":"foo","nestedTextfield":""}]},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2026-05-21","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/9e805388-6605-4ec8-9ff8-2b5c8b328ab0","uuid":"9e805388-6605-4ec8-9ff8-2b5c8b328ab0","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"fieldsetShown":false,"repeatingGroupItems":[{"editgridTextfield":"foo","container":{"nestedTextfield":""}}]},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2026-05-21","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -74,15 +75,15 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '487'
+      - '501'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 21 May 2026 12:57:36 GMT
+      - Thu, 21 May 2026 13:07:45 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/be43c61b-fa4c-4998-97da-bc897c5a9e15
+      - http://localhost:8002/api/v2/objects/9e805388-6605-4ec8-9ff8-2b5c8b328ab0
       Referrer-Policy:
       - same-origin
       Server:

@@ -1,6 +1,5 @@
 from datetime import UTC, datetime
 from decimal import Decimal
-from unittest import expectedFailure
 from unittest.mock import patch
 from uuid import UUID, uuid4
 
@@ -1567,7 +1566,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         )
 
     @tag("dh-864")
-    @expectedFailure
     def test_conditional_fieldset_inside_repeating_group(self):
         objects_api_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True,
@@ -1602,7 +1600,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                             "components": [
                                 {
                                     "type": "textfield",
-                                    "key": "nestedTextfield",
+                                    "key": "container.nestedTextfield",
                                     "label": "Nested text field",
                                 },
                             ],
@@ -1659,20 +1657,21 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         assert result is not None
 
         record_data = result["record"]["data"]
-        # fails because we also emit the *unsaved* variables because of commit
-        # 46c64bc7f7 (issue #6007) which was reported to be missing the variables for
-        # hidden fields, and a follow up enhancement was created in
-        # https://github.com/open-formulieren/open-forms/issues/6012 to make this a
-        # backend option.
         self.assertEqual(
             record_data,
             {
                 "fieldsetShown": False,
                 "repeatingGroupItems": [
-                    # this is what DH *expects*, but they *get* also the key
-                    # nestedTextfield from the hidden text field.
                     {
                         "editgridTextfield": "foo",
+                        # the component key structure is used in the output of the mapped
+                        # item of the edit grid.
+                        # Note that DH would expect this parent key and child not to be
+                        # present at all, however because of #6007 we can't do that,
+                        # unless #6012 gets implemented.
+                        "container": {
+                            "nestedTextfield": "",
+                        },
                     },
                 ],
             },
