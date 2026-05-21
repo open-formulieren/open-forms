@@ -94,14 +94,20 @@ The communication preferences prefill configuration is also used to update commu
 Customer Interactions API. To enable it you need to check "Open Forms should update customer data after submission"
 in the "Profile" component configuration.
 
-When the form is submitted Open Forms records following data in the Customer Interactions API:
+When the form is submitted, Open Forms records the following data in the Customer Interactions API:
 
-* klantcontact
-* betrokkene
-* onderwerpobject, where a public reference of the submission is stored
-* digitaleadressen, where new communication preferences are stored if user has chosen "Sla mijn gegevens op
-  voor de volgende keer." while filling the form.
-* partij, if user is authenticated in the form, but unknown in the Customer Interactions API.
+* ``klantcontact``
+* ``betrokkene``
+* ``onderwerpobject``, where a public reference of the submission is stored
+* ``digitaleadressen``:
+
+    The new and updated digital addresses for this interaction. The digital addresses are either linked to:
+
+    * ``betrokkene`` if the user is not authenticated or the selected address already exists for this ``partij``
+    * ``partij`` if the user is authenticated and they use the new address and choose "Sla mijn gegevens op
+      voor de volgende keer." while filling the form.
+
+* ``partij``, if user is authenticated in the form, but unknown in the Customer Interactions API.
 
 Technical
 =========

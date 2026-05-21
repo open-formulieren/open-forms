@@ -15,4 +15,4 @@ class CommunicationPreferencesOptions(TypedDict):
 class CommunicationChannel(TypedDict):
     type: SupportedChannels
     options: Sequence[str]
-    preferred: str | None
+    preferred: str | None  # The preferred address in this channel
