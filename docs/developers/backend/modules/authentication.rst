@@ -95,7 +95,7 @@ details.
 Requesting attributes using the condiscon system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`Condiscon <https://docs.yivi.app/condiscon/>`_ is a Yivi-specific way of defining the
+`Condiscon <https://docs.yivi.app/session-requests/>`_ is a Yivi-specific way of defining the
 authentication attributes to request from users. With condiscon you define a multi-layer
 conditional data structure, which provides users more control over which attributes they
 do and don't provide.
@@ -116,7 +116,7 @@ scope standard.
 
    - For the Yivi authentication to be successful, at least *one* attribute needs to be
      disclosed.
-   - The order of `optional disjunction <https://docs.yivi.app/condiscon/#other-features>`_
+   - The order of `optional disjunction <https://docs.yivi.app/session-requests/#optional-disjunctions>`_
      matters. Make sure that the "empty" option is the last item in the disjunction list.
 
      Example of a valid optional disjunction:

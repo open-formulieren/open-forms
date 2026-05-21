@@ -225,3 +225,12 @@ div.flatpickr-calendar.open {
     display: block;
   }
 }
+
+// workaround for unsupported feature due to backporting a new feature release of
+// formio builder. The customer profile component does not yet support the 'confirmation
+// email recipient' option in the backend code, so we visually hide it in the UI :-)
+.tab-pane:has(input[name='shouldUpdateCustomerData']) {
+  .offb-component.form-group:has(input[name='confirmationRecipient']) {
+    display: none;
+  }
+}
