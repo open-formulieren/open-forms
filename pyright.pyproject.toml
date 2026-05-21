@@ -106,6 +106,10 @@ include = [
     # Validations app
     "src/openforms/validations/api/serializers.py",
     "src/geo_visualization",
+    # (temporary) migration tool
+    "src/openforms/forms/management/commands/migrate_catalogi_api_urls.py",
+    "src/openforms/tests/test_zgw_urls_migrator.py",
+    "src/openforms/zgw_urls_migrator.py",
 ]
 exclude = [
     "**/__pycache__",
