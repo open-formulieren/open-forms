@@ -16,7 +16,7 @@ from log_outgoing_requests.datastructures import ContentType
 from log_outgoing_requests.structlog import ExtractRequestAndResponseDetails
 from maykin_common.config import config
 from maykin_common.health_checks import default_health_check_apps
-from upgrade_check import UpgradeCheck, VersionRange
+from upgrade_check import CommandCheck, UpgradeCheck, VersionRange
 from upgrade_check.constraints import UpgradePaths
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
@@ -1320,8 +1320,12 @@ SETUP_CONFIGURATION_STEPS = [
 # DJANGO-UPGRADE-CHECK
 #
 UPGRADE_CHECK_PATHS: UpgradePaths = {
-    "3.5.0": UpgradeCheck(
-        VersionRange(minimum="3.3.1"),
+    "4.0.0": UpgradeCheck(
+        # 3.5.3 will provide the necessary migration tooling, update when it's released
+        VersionRange(minimum="3.5.2"),
+        code_checks=[
+            CommandCheck("check_legacy_catalogi_api_urls"),
+        ],
     ),
 }
 UPGRADE_CHECK_STRICT = False
