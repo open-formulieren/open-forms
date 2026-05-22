@@ -191,14 +191,15 @@ class StufZDSPluginTests(StUFZDSTestBase):
     test the plugin function
     """
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-        self.service = StufServiceFactory.create()
+        cls.service = StufServiceFactory.create()
         config = StufZDSConfig.get_solo()
-        config.service = self.service
+        config.service = cls.service
         config.save()
-        self.addCleanup(StufZDSConfig.clear_cache)
+        cls.addClassCleanup(StufZDSConfig.clear_cache)
 
     @patch("celery.app.task.Task.request")
     def test_plugin(self, m, mock_task):
@@ -265,6 +266,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             language_code="en",
             cosigned=True,
             co_sign_data__value="123456782",
+            with_report=True,
         )
 
         attachment = SubmissionFileAttachmentFactory.create(
@@ -543,6 +545,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             form__name="my-form",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
+            with_report=True,
         )
 
         attachment = SubmissionFileAttachmentFactory.create(
@@ -783,6 +786,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
             },
+            with_report=True,
         )
 
         attachment = SubmissionFileAttachmentFactory.create(
@@ -905,6 +909,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "postcode": "2022XY",
                 "straatnaam": "foo bar",
             },
+            with_report=True,
         )
 
         attachment = SubmissionFileAttachmentFactory.create(
@@ -1043,6 +1048,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             form__name="my-form",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
+            with_report=True,
         )
 
         attachment = SubmissionFileAttachmentFactory.create(
@@ -1229,6 +1235,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             form__name="my-form",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
+            with_report=True,
         )
 
         attachment = SubmissionFileAttachmentFactory.create(
@@ -1419,6 +1426,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             form__name="my-form",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
+            with_report=True,
         )
 
         attachment = SubmissionFileAttachmentFactory.create(
@@ -1580,6 +1588,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             form__name="my-form",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
+            with_report=True,
         )
 
         SubmissionFileAttachmentFactory.create(
@@ -1720,6 +1729,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             form__name="my-form",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
+            with_report=True,
         )
         RegistratorInfoFactory.create(submission=submission, value="123456782")
         config = StufZDSConfig.get_solo()
@@ -1829,6 +1839,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "medewerker_nummer": "007",
             },
+            with_report=True,
         )
 
         attachment = SubmissionFileAttachmentFactory.create(
@@ -1936,6 +1947,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "voornaam": "Foo",
                 "achternaam": "Bar",
             },
+            with_report=True,
         )
         self.assertTrue(submission.payment_required)
 
@@ -2056,6 +2068,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             pre_registration_completed=False,
             registration_result={"temporary_internal_reference": "OF-1234"},
             components_list=[{"key": "dummy"}],
+            with_report=True,
         )
 
         m.post(
@@ -2168,6 +2181,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 },
                 "extra": "BuzzBazz",
             },
+            with_report=True,
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -2315,6 +2329,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     "coordinates": [4.893164274470299, 52.36673378967122],
                 },
             },
+            with_report=True,
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -2398,6 +2413,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     ],
                 },
             },
+            with_report=True,
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -2482,6 +2498,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     ],
                 },
             },
+            with_report=True,
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -2595,6 +2612,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 },
                 "extra": "BuzzBazz",
             },
+            with_report=True,
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -2780,6 +2798,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 },
                 "extra": "BuzzBazz",
             },
+            with_report=True,
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -3049,6 +3068,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
             language_code="en",
             completed=True,
+            with_report=True,
         )
 
         SubmissionValueVariableFactory.create(
@@ -3155,6 +3175,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
             language_code="en",
             completed=True,
+            with_report=True,
         )
         # can't pass this as part of `SubmissionFactory.from_components`
         submission.price = Decimal("40.00")
@@ -3239,6 +3260,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={"extra_number": 2023},
             language_code="en",
+            with_report=True,
         )
 
         m.post(
@@ -3295,6 +3317,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
 
+@temp_private_root()
 class XMLSanitizerVCRTests(OFVCRMixin, StUFAssertionsMixin, HypothesisTestCase):
     VCR_TEST_FILES = TESTS_DIR / "files"
 
@@ -3347,6 +3370,7 @@ class XMLSanitizerVCRTests(OFVCRMixin, StUFAssertionsMixin, HypothesisTestCase):
                 "achternaam": text,
             },
             language_code="en",
+            with_report=True,
         )
 
         plugin = StufZDSRegistration("stuf")
@@ -3358,6 +3382,7 @@ class XMLSanitizerVCRTests(OFVCRMixin, StUFAssertionsMixin, HypothesisTestCase):
         self.assertSoapXMLCommon(xml_doc)
 
 
+@temp_private_root()
 class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
     VCR_TEST_FILES = TESTS_DIR / "files"
 
@@ -3410,6 +3435,7 @@ class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
                 "datetime": "2025-11-18T14:21:00+01:00",
             },
             language_code="en",
+            with_report=True,
         )
 
         plugin = StufZDSRegistration("stuf")
@@ -3465,6 +3491,7 @@ class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
                 "extra": "Extra tekst",
             },
             language_code="en",
+            with_report=True,
         )
 
         plugin = StufZDSRegistration("stuf")
@@ -3511,6 +3538,7 @@ class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
                 "achternaam": "bad" + chr(1) + "value",
             },
             language_code="en",
+            with_report=True,
         )
 
         plugin = StufZDSRegistration("stuf")
@@ -3555,6 +3583,7 @@ class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
             language_code="en",
             completed=True,
             completed_on=datetime(2026, 4, 30, 12, 0, 0, tzinfo=UTC),
+            with_report=True,
         )
 
         plugin = StufZDSRegistration("stuf")
@@ -3775,7 +3804,7 @@ class StufZDSPluginPaymentTests(StUFZDSTestBase):
         )
 
 
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
     VCR_TEST_FILES = TESTS_DIR / "files"
 
@@ -3814,6 +3843,7 @@ class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
             language_code="en",
             public_registration_reference="abc123",
             registration_result={"zaak": "1234"},
+            with_report=True,
         )
         # can't pass this as part of `SubmissionFactory.from_components`
         cls.submission.price = Decimal("40.00")
@@ -3980,6 +4010,7 @@ class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     )
 
 
+@temp_private_root(reset_storage=False)
 class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
     VCR_TEST_FILES = TESTS_DIR / "files"
 
@@ -4044,6 +4075,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             language_code="en",
             public_registration_reference="abc123",
             registration_result={"zaak": "1234"},
+            with_report=True,
         )
         FormVariableFactory.create(
             key="partners_immutable",
@@ -4129,6 +4161,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             language_code="en",
             public_registration_reference="abc890",
             registration_result={"zaak": "890"},
+            with_report=True,
         )
         FormVariableFactory.create(
             key="partners_immutable",
@@ -4189,6 +4222,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             language_code="en",
             public_registration_reference="abc999",
             registration_result={"zaak": "9990"},
+            with_report=True,
         )
         FormVariableFactory.create(
             key="partners_immutable",
@@ -4236,6 +4270,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             language_code="en",
             public_registration_reference="abc999",
             registration_result={"zaak": "9990"},
+            with_report=True,
         )
         FormVariableFactory.create(
             key="partners_immutable",
@@ -4281,6 +4316,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             language_code="en",
             public_registration_reference="abc890",
             registration_result={"zaak": "890"},
+            with_report=True,
         )
         FormVariableFactory.create(
             key="irrelevant_variable",
@@ -4361,6 +4397,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                 ]
             },
             completed=True,
+            with_report=True,
         )
 
         SubmissionValueVariableFactory.create(
@@ -4424,6 +4461,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             submitted_data={"textfield": "foo"},
             language_code="nl",
             completed=True,
+            with_report=True,
         )
 
         SubmissionValueVariableFactory.create(
@@ -4466,6 +4504,7 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         )
 
 
+@temp_private_root(reset_storage=False)
 class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
     VCR_TEST_FILES = TESTS_DIR / "files"
 
@@ -4540,6 +4579,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             language_code="en",
             public_registration_reference="abc123",
             registration_result={"zaak": "1234"},
+            with_report=True,
         )
         FormVariableFactory.create(
             key="children_immutable",
@@ -4640,6 +4680,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             language_code="en",
             public_registration_reference="abc123",
             registration_result={"zaak": "1234"},
+            with_report=True,
         )
         FormVariableFactory.create(
             key="children_immutable",
@@ -4776,6 +4817,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     },
                 ]
             },
+            with_report=True,
         )
         FormVariableFactory.create(
             key="children_immutable",
@@ -4888,6 +4930,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     },
                 ]
             },
+            with_report=True,
         )
         FormVariableFactory.create(
             key="children_immutable",
@@ -4976,6 +5019,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             language_code="en",
             public_registration_reference="abc123",
             registration_result={"zaak": "1234"},
+            with_report=True,
         )
         FormVariableFactory.create(
             key="children_immutable",
@@ -5772,6 +5816,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             public_registration_reference="abc123",
             registration_result={"zaak": "1234"},
             submitted_data={"textfield": "foo"},
+            with_report=True,
         )
 
         SubmissionValueVariableFactory.create(
@@ -5820,6 +5865,7 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
         )
 
 
+@temp_private_root(reset_storage=False)
 class StufZDSConfirmationEmailVCRTests(OFVCRMixin, StUFZDSTestBase):
     VCR_TEST_FILES = TESTS_DIR / "files"
 
@@ -5854,6 +5900,7 @@ class StufZDSConfirmationEmailVCRTests(OFVCRMixin, StUFZDSTestBase):
             public_registration_reference="abc123",
             registration_result={"zaak": "bar"},
             confirmation_email_sent=True,
+            with_report=True,
         )
 
     @patch(

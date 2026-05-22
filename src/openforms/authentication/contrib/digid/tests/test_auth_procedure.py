@@ -82,7 +82,7 @@ class DigiDConfigMixin:
         self.addCleanup(clear_caches)
 
 
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
 class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
     def test_redirect_to_digid(self):
@@ -277,7 +277,7 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
         self.assertEqual(auth_context_class_ref.text, DigiDAssuranceLevels.middle.value)
 
 
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 @requests_mock.Mocker()
 class AuthenticationStep5Tests(DigiDConfigMixin, TestCase):
@@ -477,7 +477,7 @@ class AuthenticationStep5Tests(DigiDConfigMixin, TestCase):
         )
 
 
-@temp_private_root()
+@temp_private_root(reset_storage=False)
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 @requests_mock.Mocker()
 class CoSignLoginAuthenticationTests(SubmissionsMixin, DigiDConfigMixin, TestCase):

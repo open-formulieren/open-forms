@@ -81,6 +81,7 @@ class StufZDSExtraElementsTests(OFVCRMixin, StUFZDSTestBase):
             language_code="en",
             public_registration_reference="OF-1234",
             registration_result={"zaak": "1234"},
+            with_report=True,
         )
         # can't pass this as part of `SubmissionFactory.from_components`
         submission.price = Decimal("40.00")

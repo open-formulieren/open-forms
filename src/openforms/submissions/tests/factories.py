@@ -220,7 +220,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
         remember to generate from privates.test import temp_private_root
         """
-        kwargs.setdefault("with_report", True)
+        kwargs.setdefault("with_report", False)
 
         bsn = kwargs.pop("bsn", None)
         kvk = kwargs.pop("kvk", None)

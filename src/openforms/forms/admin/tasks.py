@@ -34,7 +34,7 @@ def process_forms_export(forms_uuids: list, user_id: int) -> None:
     user = User.objects.get(id=user_id)
 
     # This deletes the temp dir once the context manager is exited
-    with tempfile.TemporaryDirectory(dir=settings.PRIVATE_MEDIA_ROOT) as temp_dir:
+    with tempfile.TemporaryDirectory(dir=private_media_storage.location) as temp_dir:
         output_files = []
         for form in forms:
             output_files.append(

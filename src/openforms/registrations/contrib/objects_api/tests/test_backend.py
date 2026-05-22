@@ -8,6 +8,7 @@ from uuid import UUID
 
 from django.test import TestCase
 
+from privates.test import temp_private_root
 from requests import RequestException
 from vcr.request import Request as VCRRequest
 
@@ -46,6 +47,7 @@ class BeforeRecordRequestWrapper:
         return request
 
 
+@temp_private_root()
 class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
     _vcr_before_record_request: BeforeRecordRequestWrapper = (
         BeforeRecordRequestWrapper()
@@ -115,6 +117,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # the version of the document types are valid on this timestamp
             completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
 
         with self.assertRaises(RegistrationFailed):
@@ -479,6 +482,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # Use a stable timestamp to get stable request params
             completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
+            with_report=True,
         )
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],

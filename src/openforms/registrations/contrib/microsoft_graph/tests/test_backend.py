@@ -18,7 +18,6 @@ from openforms.submissions.public_references import set_submission_reference
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
-    SubmissionReportFactory,
     SubmissionStepFactory,
 )
 from openforms.utils.tests.cache import clear_caches
@@ -387,16 +386,17 @@ class MSGraphRegistrationOptionsTests(TestCase):
             self.assertEqual(call.args[1], path)
 
 
+@temp_private_root()
 class MSGraphRegistrationBackendFailureTests(TestCase):
     def test_no_service_configured_raises_registration_error(self):
         submission = SubmissionFactory.create(
             form__registration_backend="microsoft-graph",
+            with_report=True,
         )
         SubmissionStepFactory.create(
             submission=submission,
             data={"foo": "bar", "some_list": ["value1", "value2"]},
         )
-        SubmissionReportFactory.create(submission=submission)
 
         options: MicrosoftGraphOptions = {
             "folder_path": "/open-forms/",

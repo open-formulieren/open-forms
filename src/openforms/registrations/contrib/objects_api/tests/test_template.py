@@ -6,6 +6,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase, override_settings, tag
 
 from freezegun import freeze_time
+from privates.test import temp_private_root
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.formio.constants import DataSrcOptions
@@ -21,6 +22,7 @@ from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..typing import RegistrationOptionsV1
 
 
+@temp_private_root()
 class JSONTemplatingTests(OFVCRMixin, TestCase):
     maxDiff = None
 
@@ -359,6 +361,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             plugin.register_submission(submission, options)
 
 
+@temp_private_root()
 class JSONTemplatingRegressionTests(OFVCRMixin, SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):

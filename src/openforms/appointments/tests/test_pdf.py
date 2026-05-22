@@ -3,6 +3,8 @@ from unittest.mock import patch
 from django.test import RequestFactory, TestCase, override_settings, tag
 from django.utils.html import escape
 
+from privates.test import temp_private_root
+
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.submissions.dev_views import SubmissionPDFTestView
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -11,6 +13,7 @@ from ..contrib.demo.plugin import DemoAppointment
 from .factories import AppointmentFactory, AppointmentProductFactory
 
 
+@temp_private_root()
 class PDFGenerationTests(TestCase):
     @classmethod
     def setUpTestData(cls):

@@ -59,7 +59,7 @@ def process_custom_translation_assets(translations_metadata_pk: str) -> None:
 
     # the file is a valid JSON file, begin the subprocess
     log.info("custom_translations_file_compiling_started")
-    success, result = compile_messages_file(instance.messages_file.path)
+    success, result = compile_messages_file(instance.messages_file)
 
     if success:
         log.info("custom_translations_file_compiling_succeeded")

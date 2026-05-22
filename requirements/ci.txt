@@ -259,7 +259,7 @@ django-csp-reports==1.10.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-digid-eherkenning==0.24.0
+django-digid-eherkenning==0.25.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -326,11 +326,12 @@ django-phonenumber-field==8.4.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-two-factor-auth
-django-privates==3.1.1
+django-privates==4.0.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-simple-certmanager
+    #   zgw-consumers
 django-redis==6.0.0
     # via
     #   -c requirements/base.txt
@@ -354,7 +355,7 @@ django-setup-configuration==0.11.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-simple-certmanager==2.5.0
+django-simple-certmanager==4.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -947,7 +948,6 @@ pyyaml==6.0.3
     #   pydantic-settings
     #   sphinxcontrib-mermaid
     #   vcrpy
-    #   zgw-consumers
 qrcode==8.2
     # via
     #   -c requirements/base.txt
@@ -992,9 +992,7 @@ requests-file==3.0.1
     #   -r requirements/base.txt
     #   zeep
 requests-mock==1.12.1
-    # via
-    #   -r requirements/test-tools.in
-    #   zgw-consumers
+    # via -r requirements/test-tools.in
 requests-oauthlib==2.0.0
     # via
     #   -c requirements/base.txt
@@ -1273,7 +1271,7 @@ zeep==4.3.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers==1.2.0
+zgw-consumers==2.0.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

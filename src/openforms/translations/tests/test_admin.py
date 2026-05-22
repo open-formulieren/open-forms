@@ -6,6 +6,7 @@ from django.urls import reverse
 from django_webtest import TransactionWebTest, WebTest
 from furl import furl
 from maykin_2fa.test import disable_admin_mfa
+from privates.test import temp_private_root
 
 from openforms.accounts.tests.factories import (
     StaffUserFactory,
@@ -53,6 +54,7 @@ class AdminLanguageDecouplingTests(WebTest):
 
 
 @disable_admin_mfa()
+@temp_private_root()
 class AdminTranslationMetaDataTests(WebTest):
     def test_changelist_page_access(self):
         user = UserFactory.create(is_staff=False, is_superuser=False)
@@ -213,6 +215,7 @@ class AdminTranslationMetaDataTests(WebTest):
 
 
 @disable_admin_mfa()
+@temp_private_root()
 class AdminTranslationMetaDataTransactionTests(TransactionWebTest):
     def test_saving_model(self):
         super_user = SuperUserFactory.create()
@@ -250,11 +253,11 @@ class AdminTranslationMetaDataTransactionTests(TransactionWebTest):
         obj = TranslationsMetaData.objects.get()
 
         with (
-            open(obj.messages_file.path) as messages_file_path,
-            open(obj.compiled_asset.path) as compiled_asset_path,
+            obj.messages_file.open("rb") as messages_file,
+            obj.compiled_asset.open("rb") as compiled_asset,
         ):
-            messages_file_data = json.load(messages_file_path)
-            compiled_asset_data = json.load(compiled_asset_path)
+            messages_file_data = json.load(messages_file)
+            compiled_asset_data = json.load(compiled_asset)
 
         self.assertEqual(messages_file_data, expected_messages_file_data)
         self.assertEqual(compiled_asset_data, expected_compiled_asset_data)

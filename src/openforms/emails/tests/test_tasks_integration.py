@@ -11,6 +11,7 @@ import requests_mock
 from django_yubin.models import Message
 from freezegun import freeze_time
 from furl import furl
+from privates.test import temp_private_root
 from requests import RequestException
 from simple_certmanager.test.factories import CertificateFactory
 from zgw_consumers.constants import AuthTypes
@@ -153,6 +154,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
         return_value=BRKConfig(service=INVALID_BRK_SERVICE),
     )
     @freeze_time("2023-01-03T01:00:00+01:00")
+    @temp_private_root()
     @override_settings(BASE_URL="http://testserver")
     @requests_mock.Mocker()
     def test_email_sent_when_there_are_failures(self, brk_config, m):
