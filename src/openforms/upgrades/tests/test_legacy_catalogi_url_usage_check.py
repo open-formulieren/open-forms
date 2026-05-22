@@ -379,6 +379,99 @@ class LegacyCatalogiUsageCheckTests(TestCase):
 
         self.assertFalse(result)
 
+    def test_not_ok_for_partially_or_unmigrated_objects_api_registration_backends_2(
+        self,
+    ):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            catalogue_domain="",
+            catalogue_rsin="",
+            iot_submission_report="",
+            iot_submission_csv="",
+            iot_attachment="",
+            informatieobjecttype_submission_report="",
+            informatieobjecttype_submission_csv="",
+            informatieobjecttype_attachment="",
+        )
+        objects_options: ObjectsRegistrationOptionsV2 = {
+            "informatieobjecttype_submission_report": "",
+            "informatieobjecttype_submission_csv": (
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                "b2d83b94-9b9b-4e80-a82f-73ff993c62f3"
+            ),
+            "informatieobjecttype_attachment": (
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                "531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+            # note the absence of a catalogue here. The 3.5 migration tool will result
+            # in it being set on the backend options.
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "version": 2,
+            "objects_api_group": objects_api_group,
+            "objecttype": uuid4(),
+            "objecttype_version": 3,
+            "upload_submission_csv": True,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "organisatie_rsin": "000000000",
+            "transform_to_list": [],
+            "variables_mapping": [],
+        }
+        FormRegistrationBackendFactory.create(
+            backend=OBJECTS_PLUGIN_IDENTIFIER,
+            options=ObjectsAPIOptionsSerializer(instance=objects_options).data,
+        )
+
+        result = check.execute()
+
+        self.assertFalse(result)
+
+    def test_not_ok_for_partially_or_unmigrated_objects_api_registration_backends_3(
+        self,
+    ):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            catalogue_domain="",
+            catalogue_rsin="",
+            iot_submission_report="",
+            iot_submission_csv="",
+            iot_attachment="",
+            informatieobjecttype_submission_report="",
+            informatieobjecttype_submission_csv="",
+            informatieobjecttype_attachment="",
+        )
+        objects_options: ObjectsRegistrationOptionsV2 = {
+            "informatieobjecttype_submission_report": "",
+            "informatieobjecttype_submission_csv": "",
+            "informatieobjecttype_attachment": (
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                "531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+            # note the absence of a catalogue here. The 3.5 migration tool will result
+            # in it being set on the backend options.
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "version": 2,
+            "objects_api_group": objects_api_group,
+            "objecttype": uuid4(),
+            "objecttype_version": 3,
+            "upload_submission_csv": True,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "organisatie_rsin": "000000000",
+            "transform_to_list": [],
+            "variables_mapping": [],
+        }
+        FormRegistrationBackendFactory.create(
+            backend=OBJECTS_PLUGIN_IDENTIFIER,
+            options=ObjectsAPIOptionsSerializer(instance=objects_options).data,
+        )
+
+        result = check.execute()
+
+        self.assertFalse(result)
+
     def test_ok_for_migrated_registration_backends(self):
         api_group = ZGWApiGroupConfigFactory.create(
             catalogue_domain="", catalogue_rsin=""
@@ -426,6 +519,42 @@ class LegacyCatalogiUsageCheckTests(TestCase):
                 "rsin": "000000000",
             },
             "case_type_identification": "ZT-001",
+            "document_type_description": "",
+            "product_url": "",
+            "zaaktype": (
+                "http://localhost:8003/catalogi/api/v1/zaaktypen/"
+                "1f41885e-23fc-4462-bbc8-80be4ae484dc"
+            ),
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                "531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "objects_api_group": None,
+        }
+        FormRegistrationBackendFactory.create(
+            backend="zgw-create-zaak",
+            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+        )
+
+        result = check.execute()
+
+        self.assertFalse(result)
+
+    def test_not_ok_for_partially_or_unmigrated_zgw_registration_backends_2(self):
+        api_group = ZGWApiGroupConfigFactory.create(
+            catalogue_domain="", catalogue_rsin=""
+        )
+        zgw_options_1: ZGWRegistrationOptions = {
+            "zgw_api_group": api_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "",
             "document_type_description": "",
             "product_url": "",
             "zaaktype": (
