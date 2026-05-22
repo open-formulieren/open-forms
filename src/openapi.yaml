@@ -7030,9 +7030,17 @@ components:
       - ztc
       - drc
       - brc
+      - rc
+      - kic
+      - oc
+      - ic
+      - pc
+      - ptc
+      - vrc
+      - tc
+      - bc
       - cmc
       - kc
-      - vrc
       - orc
       type: string
       description: |-
@@ -7042,9 +7050,17 @@ components:
         * `ztc` - ZTC (Zaaktypen)
         * `drc` - DRC (Informatieobjecten)
         * `brc` - BRC (Besluiten)
-        * `cmc` - Contactmomenten API
-        * `kc` - Klanten API
+        * `rc` - Referentielijsten API
+        * `kic` - Klantinteracties API
+        * `oc` - Organisatie API
+        * `ic` - Identiteit API
+        * `pc` - Producten API
+        * `ptc` - Producttypen API
         * `vrc` - Verzoeken API
+        * `tc` - Taken API
+        * `bc` - Berichten API
+        * `cmc` - Contactmomenten API - (Deprecated)
+        * `kc` - Klanten API - (Deprecated)
         * `orc` - ORC (Overige)
     AppearanceEnum:
       enum:
