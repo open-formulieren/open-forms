@@ -210,9 +210,6 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         "betrokkeneIdentificatie.verblijfsadres.aoaHuisnummer": RegistrationAttribute.initiator_huisnummer,
         "betrokkeneIdentificatie.verblijfsadres.aoaHuisletter": RegistrationAttribute.initiator_huisletter,
         "betrokkeneIdentificatie.verblijfsadres.aoaHuisnummertoevoeging": RegistrationAttribute.initiator_huisnummer_toevoeging,
-        # Contactpersoon (NOT SUPPORTED BY ZGW APIs)
-        # "betrokkeneIdentificatie.telefoonnummer": RegistrationAttribute.initiator_telefoonnummer,
-        # "betrokkeneIdentificatie.emailadres": RegistrationAttribute.initiator_emailadres,
         # Vestiging
         "betrokkeneIdentificatie.vestigingsNummer": RegistrationAttribute.initiator_vestigingsnummer,
         "betrokkeneIdentificatie.handelsnaam": FieldConf(
@@ -234,6 +231,10 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         # Family members
         "partners": RegistrationAttribute.partners,
         "children": RegistrationAttribute.children,
+        # Contactpersoon
+        "contactpersoonRol.naam": RegistrationAttribute.initiator_contactpersoonNaam,
+        "contactpersoonRol.telefoonnummer": RegistrationAttribute.initiator_telefoonnummer,
+        "contactpersoonRol.emailadres": RegistrationAttribute.initiator_emailadres,
     }
 
     zaak_mapping = {

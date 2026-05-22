@@ -127,6 +127,9 @@ class ZakenClient(LoggingMixin, NLXClient):
             "betrokkeneIdentificatie": betrokkene.get("betrokkeneIdentificatie", {}),
         }
 
+        if contactperoon_rol := betrokkene.get("contactpersoonRol"):
+            data["contactpersoonRol"] = contactperoon_rol
+
         response = self.post("rollen", json=data)
         response.raise_for_status()
 
