@@ -118,6 +118,7 @@ COPY \
     ./bin/check_disable_next_logic_action.py \
     ./bin/report_completed_submissions_access.py \
     ./bin/report_invalid_form_logic.py \
+    ./bin/report_logic_with_deprecated_clear_on_hide_behavior.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
