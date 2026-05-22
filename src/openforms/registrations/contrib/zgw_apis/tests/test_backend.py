@@ -3107,3 +3107,83 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
         self.assertTrue(
             resolved_document_type.endswith("/7755ab0f-9e37-4834-8bbf-158f9f2da38e")
         )
+
+    def test_create_zaak_with_contactpersoon_rol_attrs(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "naam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_contactpersoonNaam,
+                    },
+                },
+                {
+                    "key": "telefoonnummer",
+                    "type": "phoneNumber",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_telefoonnummer,
+                    },
+                },
+                {
+                    "key": "email",
+                    "type": "email",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_emailadres,
+                    },
+                },
+                *NP_INITIATOR_FIELDS,
+            ],
+            submitted_data={
+                "naam": "Jan Willemse",
+                "telefoonnummer": "0612345678",
+                "email": "willemse@example.com",
+                **NP_INITIATOR_DATA,
+            },
+            bsn="111222333",
+            language_code="en",
+            completed=True,
+            with_report=True,
+        )
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "document_type_description": "",
+            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+        }
+
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        result = plugin.register_submission(submission, options)
+        assert result
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+
+        rol_data = client.get(result["initiator_rol"]["url"]).json()
+
+        self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
+        self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
+        self.assertEqual(rol_data["betrokkene"], "")
+        self.assertEqual(rol_data["betrokkeneType"], "natuurlijk_persoon")
+        self.assertEqual(
+            rol_data["contactpersoonRol"],
+            {
+                "naam": "Jan Willemse",
+                "emailadres": "willemse@example.com",
+                "telefoonnummer": "0612345678",
+                "functie": "",
+            },
+        )
