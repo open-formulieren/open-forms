@@ -30,6 +30,7 @@ class DynamicConfigTests(TestCase):
                 {
                     "type": "map",
                     "key": "map",
+                    "label": "map",
                     "defaultZoom": 3,
                     "initialCenter": {
                         "lat": 43.23,
@@ -49,6 +50,7 @@ class DynamicConfigTests(TestCase):
         expected = {
             "type": "map",
             "key": "map",
+            "label": "map",
             "defaultZoom": 3,
             "initialCenter": {
                 "lat": 43.23,
@@ -71,6 +73,7 @@ class DynamicConfigTests(TestCase):
                 {
                     "type": "map",
                     "key": "map",
+                    "label": "map",
                     "defaultZoom": 3,
                     "initialCenter": {
                         "lat": 43.23,
@@ -90,6 +93,7 @@ class DynamicConfigTests(TestCase):
         expected = {
             "type": "map",
             "key": "map",
+            "label": "map",
             "defaultZoom": 8,
             "initialCenter": {
                 "lat": 55.123,
@@ -105,6 +109,7 @@ class DynamicConfigTests(TestCase):
                 {
                     "type": "map",
                     "key": "map",
+                    "label": "map",
                     "defaultZoom": 3,
                     "initialCenter": {
                         "lat": 43.23,
@@ -125,6 +130,7 @@ class DynamicConfigTests(TestCase):
         expected = {
             "type": "map",
             "key": "map",
+            "label": "map",
             "defaultZoom": 3,
             "initialCenter": {
                 "lat": 43.23,
@@ -141,6 +147,7 @@ class DynamicConfigTests(TestCase):
                 {
                     "type": "map",
                     "key": "map",
+                    "label": "map",
                     "defaultZoom": 3,
                     "initialCenter": {
                         "lat": 43.23,
@@ -161,6 +168,7 @@ class DynamicConfigTests(TestCase):
         expected = {
             "type": "map",
             "key": "map",
+            "label": "map",
             "defaultZoom": 3,
             "initialCenter": {
                 "lat": 43.23,
@@ -177,6 +185,7 @@ class DynamicConfigTests(TestCase):
                 {
                     "type": "map",
                     "key": "map",
+                    "label": "map",
                     "defaultZoom": 3,
                     "initialCenter": {
                         "lat": 43.23,
@@ -197,6 +206,7 @@ class DynamicConfigTests(TestCase):
         expected = {
             "type": "map",
             "key": "map",
+            "label": "map",
             "defaultZoom": 3,
             "initialCenter": {
                 "lat": 43.23,
@@ -214,6 +224,7 @@ class DynamicConfigTests(TestCase):
                 {
                     "type": "map",
                     "key": "map",
+                    "label": "map",
                     "defaultZoom": 3,
                     "initialCenter": {
                         "lat": 43.23,
@@ -234,6 +245,7 @@ class DynamicConfigTests(TestCase):
         expected = {
             "type": "map",
             "key": "map",
+            "label": "map",
             "defaultZoom": 3,
             "initialCenter": {
                 "lat": 43.23,
@@ -260,6 +272,7 @@ class DynamicConfigTests(TestCase):
                 {
                     "type": "map",
                     "key": "map",
+                    "label": "map",
                     "defaultZoom": 3,
                     "initialCenter": {
                         "lat": 43.23,
@@ -280,6 +293,7 @@ class DynamicConfigTests(TestCase):
         expected = {
             "type": "map",
             "key": "map",
+            "label": "map",
             "defaultZoom": 8,
             "initialCenter": {
                 "lat": 55.123,
@@ -300,6 +314,7 @@ class DynamicConfigTests(TestCase):
                 {
                     "type": "map",
                     "key": "map",
+                    "label": "map",
                     "defaultZoom": 3,
                     "initialCenter": {
                         "lat": 43.23,
@@ -309,7 +324,7 @@ class DynamicConfigTests(TestCase):
                         {
                             "type": "wms",
                             "uuid": "1266c027-9a18-4ecb-8a9e-6acddf7e74f3",
-                            "name": "My first overlay",
+                            "label": "My first overlay",
                             "layers": ["layer1", "layer2"],
                         }
                     ],
@@ -329,6 +344,7 @@ class DynamicConfigTests(TestCase):
         expected = {
             "type": "map",
             "key": "map",
+            "label": "map",
             "defaultZoom": 3,
             "initialCenter": {
                 "lat": 43.23,
@@ -338,7 +354,7 @@ class DynamicConfigTests(TestCase):
                 {
                     "type": "wms",
                     "uuid": "1266c027-9a18-4ecb-8a9e-6acddf7e74f3",
-                    "name": "My first overlay",
+                    "label": "My first overlay",
                     "layers": ["layer1", "layer2"],
                     "url": "https://example.wms.com",
                 }
@@ -352,6 +368,7 @@ class DynamicConfigTests(TestCase):
                 {
                     "type": "map",
                     "key": "map",
+                    "label": "map",
                     "defaultZoom": 3,
                     "initialCenter": {
                         "lat": 43.23,
@@ -362,7 +379,7 @@ class DynamicConfigTests(TestCase):
                             "type": "wms",
                             # Some unknown uuid
                             "uuid": "44c9ee90-96a3-4ac2-bb55-f2f42b547b15",
-                            "name": "My first overlay",
+                            "label": "My first overlay",
                             "layers": ["layer1", "layer2"],
                         }
                     ],
@@ -381,6 +398,7 @@ class DynamicConfigTests(TestCase):
         expected = {
             "type": "map",
             "key": "map",
+            "label": "map",
             "defaultZoom": 3,
             "initialCenter": {
                 "lat": 43.23,

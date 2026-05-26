@@ -585,6 +585,7 @@ class SubmissionReportGenerationTests(TestCase):
                     "key": "repeatingGroup",
                     "type": "editgrid",
                     "label": "Repeating Group",
+                    "groupLabel": "Item",
                     "components": [
                         {
                             "type": "textfield",

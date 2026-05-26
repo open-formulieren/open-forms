@@ -20,12 +20,16 @@ class ServiceTestCase(TestCase):
                 {
                     "id": "e1a2cv9",
                     "key": "my_file",
+                    "label": "my_file",
                     "type": "file",
                     "url": "bad",
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
                 {
                     "id": "e2a2cv9",
                     "key": "my_content",
+                    "label": "my_content",
                     "type": "content",
                     "html": '<img style="width: 90%; border: 5000px solid red;">',
                 },

@@ -405,6 +405,7 @@ class FormDefinitionsAPITests(APITestCase):
                         {
                             "someCamelCase": "field",
                             "key": "somekey",
+                            "label": "somekey",
                             "type": "textfield",
                         }
                     ],
@@ -429,6 +430,7 @@ class FormDefinitionsAPITests(APITestCase):
                 "components": [
                     {
                         "key": "somekey",
+                        "label": "somekey",
                         "type": "textfield",
                         "widget": {"time_24hr": True},
                     }
@@ -632,6 +634,7 @@ class FormDefinitionsAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                         "description": "Simple {{ missingVariable }} print",
                         "placeholder": 'Placeholder with date filter {{ now|date:"d-m-Y" }}',
                     },
@@ -665,6 +668,7 @@ class FormDefinitionsAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                         "description": "Broken {{ var {{ brokenNestedVar }} }}",
                     },
                     {

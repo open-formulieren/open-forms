@@ -155,7 +155,6 @@ class DynamicDateConfigurationTests(TestCase):
                 "minDate": {
                     "mode": "relativeToVariable",
                     "variable": "now",
-                    "operator": "",
                     "delta": {
                         "days": None,
                         "months": None,
@@ -181,7 +180,6 @@ class DynamicDateConfigurationTests(TestCase):
                 "minDate": {
                     "mode": "relativeToVariable",
                     "variable": "now",
-                    "operator": "",
                     "delta": {
                         "days": None,
                         "months": None,
@@ -305,6 +303,7 @@ class DynamicDateConfigurationTests(TestCase):
         component = {
             "type": "date",
             "key": "aDate",
+            "label": "aDate",
             "openForms": {
                 "maxDate": {
                     "mode": "relativeToVariable",

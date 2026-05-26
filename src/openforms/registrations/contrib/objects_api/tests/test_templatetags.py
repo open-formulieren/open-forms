@@ -24,6 +24,7 @@ class JsonSummaryTests(TestCase):
                     {
                         "key": "voornaam",
                         "type": "textfield",
+                        "label": "voornaam",
                         "registration": {
                             "attribute": RegistrationAttribute.initiator_voornamen,
                         },
@@ -31,6 +32,7 @@ class JsonSummaryTests(TestCase):
                     {
                         "key": "achternaam",
                         "type": "textfield",
+                        "label": "achternaam",
                         "registration": {
                             "attribute": RegistrationAttribute.initiator_geslachtsnaam,
                         },
@@ -38,6 +40,7 @@ class JsonSummaryTests(TestCase):
                     {
                         "key": "tussenvoegsel",
                         "type": "textfield",
+                        "label": "tussenvoegsel",
                         "registration": {
                             "attribute": RegistrationAttribute.initiator_tussenvoegsel,
                         },
@@ -65,7 +68,13 @@ class JsonSummaryTests(TestCase):
     @override_settings(ESCAPE_REGISTRATION_OUTPUT=False)
     def test_render_json_summary_doesnt_escape_html_when_disabled(self):
         submission = SubmissionFactory.from_components(
-            components_list=[{"key": "voornaam", "type": "textfield"}],
+            components_list=[
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "label": "voornaam",
+                }
+            ],
             submitted_data={
                 "voornaam": '<script>alert();</script>""',
             },
@@ -90,7 +99,9 @@ class JsonSummaryTests(TestCase):
     @override_settings(ESCAPE_REGISTRATION_OUTPUT=True)
     def test_render_json_summary_escapes_html_when_enabled(self):
         submission = SubmissionFactory.from_components(
-            components_list=[{"key": "voornaam", "type": "textfield"}],
+            components_list=[
+                {"key": "voornaam", "type": "textfield", "label": "voornaam"}
+            ],
             submitted_data={"voornaam": "<script>alert();</script>"},
             form_definition_kwargs={"slug": "formstep-slug"},
             completed=True,
@@ -135,29 +146,38 @@ class JsonSummaryTests(TestCase):
                     {
                         "key": "date",
                         "type": "date",
+                        "label": "date",
                     },
                     {
                         "key": "dateMultiple",
                         "type": "date",
+                        "label": "dateMultiple",
                         "multiple": True,
+                        "defaultValue": [],
                     },
                     {
                         "key": "datetime",
                         "type": "datetime",
+                        "label": "datetime",
                     },
                     {
                         "key": "datetimeMultiple",
                         "type": "datetime",
+                        "label": "datetimeMultiple",
                         "multiple": True,
+                        "defaultValue": [],
                     },
                     {
                         "key": "time",
                         "type": "time",
+                        "label": "time",
                     },
                     {
                         "key": "timeMultiple",
                         "type": "time",
+                        "label": "timeMultiple",
                         "multiple": True,
+                        "defaultValue": [],
                     },
                 ],
             },

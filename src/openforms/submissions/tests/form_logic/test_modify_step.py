@@ -22,6 +22,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step1_textfield1",
+                        "label": "step1_textfield1",
                     }
                 ]
             },
@@ -33,6 +34,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step2_textfield1",
+                        "label": "step2_textfield1",
                     }
                 ]
             },
@@ -83,6 +85,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "number",
                         "key": "age",
+                        "label": "age",
                     }
                 ]
             },
@@ -94,6 +97,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "driverId",
+                        "label": "driverId",
                     }
                 ]
             },
@@ -148,6 +152,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "number",
                         "key": "age",
+                        "label": "age",
                     }
                 ]
             },
@@ -159,6 +164,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "driverId",
+                        "label": "driverId",
                     }
                 ]
             },
@@ -217,6 +223,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "date",
                         "key": "dateOfBirth",
+                        "label": "dateOfBirth",
                     }
                 ]
             },
@@ -261,6 +268,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "date",
                         "key": "dateOfBirth",
+                        "label": "dateOfBirth",
                     }
                 ]
             },
@@ -307,6 +315,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "selectboxes",
                         "key": "currentPets",
+                        "label": "currentPets",
                         "values": [
                             {"label": "Cat", "value": "cat"},
                             {"label": "Dog", "value": "dog"},
@@ -357,6 +366,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "selectboxes",
                         "key": "current.pets",
+                        "label": "current.pets",
                         "values": [
                             {"label": "Cat", "value": "cat"},
                             {"label": "Dog", "value": "dog"},
@@ -403,7 +413,13 @@ class StepModificationTests(TestCase):
         step = FormStepFactory.create(
             form=form,
             form_definition__configuration={
-                "components": [{"key": "normal.component", "type": "textfield"}]
+                "components": [
+                    {
+                        "key": "normal.component",
+                        "label": "normal.component",
+                        "type": "textfield",
+                    }
+                ]
             },
         )
         FormLogicFactory.create(
@@ -448,6 +464,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                     },
                 ]
             },
@@ -475,6 +492,7 @@ class StepModificationTests(TestCase):
                     {
                         "type": "datetime",
                         "key": "startOfConstructionWorks",
+                        "label": "startOfConstructionWorks",
                     }
                 ]
             },

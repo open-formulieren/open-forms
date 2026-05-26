@@ -96,9 +96,13 @@ class TestDynamicConfigAddingOptions(TestCase):
         configuration = {
             "components": [
                 {
+                    "label": "repeatingGroup",
                     "key": "repeatingGroup",
                     "type": "editgrid",
-                    "components": [{"type": "textfield", "key": "name"}],
+                    "groupLabel": "Item",
+                    "components": [
+                        {"type": "textfield", "key": "name", "label": "name"}
+                    ],
                 },
                 {
                     "label": "Select Boxes",
@@ -181,9 +185,13 @@ class TestDynamicConfigAddingOptions(TestCase):
         configuration = {
             "components": [
                 {
+                    "label": "repeatingGroup",
                     "key": "repeatingGroup",
                     "type": "editgrid",
-                    "components": [{"type": "textfield", "key": "name"}],
+                    "groupLabel": "Item",
+                    "components": [
+                        {"type": "textfield", "key": "name", "label": "name"}
+                    ],
                 },
                 {
                     "label": "Select Boxes",
@@ -255,9 +263,11 @@ class TestDynamicConfigAddingOptions(TestCase):
         configuration = {
             "components": [
                 {
+                    "label": "textField",
                     "key": "textField",
                     "type": "textfield",
                     "multiple": True,
+                    "defaultValue": [],
                 },
                 {
                     "label": "Select Boxes",
@@ -334,9 +344,11 @@ class TestDynamicConfigAddingOptions(TestCase):
         configuration = {
             "components": [
                 {
+                    "label": "textField",
                     "key": "textField",
                     "type": "textfield",
                     "multiple": True,
+                    "defaultValue": [],
                 },
                 {
                     "label": "Select Boxes",
@@ -402,9 +414,13 @@ class TestDynamicConfigAddingOptions(TestCase):
         configuration = {
             "components": [
                 {
+                    "label": "repeatingGroup",
                     "key": "repeatingGroup",
                     "type": "editgrid",
-                    "components": [{"type": "textfield", "key": "name"}],
+                    "groupLabel": "Item",
+                    "components": [
+                        {"type": "textfield", "key": "name", "label": "name"}
+                    ],
                 },
                 {
                     "label": "Select Boxes",
@@ -497,9 +513,11 @@ class TestDynamicConfigAddingOptions(TestCase):
         configuration = {
             "components": [
                 {
+                    "label": "textField",
                     "key": "textField",
                     "type": "textfield",
                     "multiple": True,
+                    "defaultValue": [],
                 },
                 {
                     "label": "Radio",
@@ -538,6 +556,7 @@ class TestDynamicConfigAddingOptions(TestCase):
         configuration = {
             "components": [
                 {
+                    "label": "textField",
                     "key": "textField",
                     "type": "textfield",
                     "multiple": False,  # Not an array!
@@ -584,9 +603,11 @@ class TestDynamicConfigAddingOptions(TestCase):
         configuration = {
             "components": [
                 {
+                    "label": "textField",
                     "key": "textField",
                     "type": "textfield",
                     "multiple": True,
+                    "defaultValue": [],
                 },
                 {
                     "label": "Radio",
@@ -619,9 +640,13 @@ class TestDynamicConfigAddingOptions(TestCase):
         configuration = {
             "components": [
                 {
+                    "label": "repeatingGroup",
                     "key": "repeatingGroup",
                     "type": "editgrid",
-                    "components": [{"type": "textfield", "key": "name"}],
+                    "groupLabel": "Item",
+                    "components": [
+                        {"type": "textfield", "key": "name", "label": "name"}
+                    ],
                 },
                 {
                     "label": "Radio",
@@ -714,8 +739,10 @@ class TestDynamicConfigAddingOptions(TestCase):
         configuration = {
             "components": [
                 {
+                    "label": "repeatingGroup",
                     "key": "repeatingGroup",
                     "type": "editgrid",
+                    "groupLabel": "Item",
                     "components": [
                         {"type": "textfield", "key": "name"},
                         {"type": "textfield", "key": "bsn"},

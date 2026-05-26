@@ -28,12 +28,18 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "nGreenApples",
+                        "label": "nGreenApples",
                     },
                     {
                         "type": "number",
                         "key": "nRedApples",
+                        "label": "nRedApples",
                     },
-                    {"type": "number", "key": "totApples"},
+                    {
+                        "type": "number",
+                        "key": "totApples",
+                        "label": "totApples",
+                    },
                 ]
             },
         )
@@ -103,14 +109,28 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "nGreenApples",
+                        "label": "nGreenApples",
                     },
                     {
                         "type": "number",
                         "key": "nRedApples",
+                        "label": "nRedApples",
                     },
-                    {"type": "number", "key": "totApples"},
-                    {"type": "number", "key": "nPeaches"},
-                    {"type": "number", "key": "totFruit"},
+                    {
+                        "type": "number",
+                        "key": "totApples",
+                        "label": "totApples",
+                    },
+                    {
+                        "type": "number",
+                        "key": "nPeaches",
+                        "label": "nPeaches",
+                    },
+                    {
+                        "type": "number",
+                        "key": "totFruit",
+                        "label": "totFruit",
+                    },
                 ]
             },
         )
@@ -222,14 +242,28 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "nGreenApples",
+                        "label": "nGreenApples",
                     },
                     {
                         "type": "number",
                         "key": "nRedApples",
+                        "label": "nRedApples",
                     },
-                    {"type": "number", "key": "totApples"},
-                    {"type": "number", "key": "nPeaches"},
-                    {"type": "number", "key": "totFruit"},
+                    {
+                        "type": "number",
+                        "key": "totApples",
+                        "label": "totApples",
+                    },
+                    {
+                        "type": "number",
+                        "key": "nPeaches",
+                        "label": "nPeaches",
+                    },
+                    {
+                        "type": "number",
+                        "key": "totFruit",
+                        "label": "totFruit",
+                    },
                 ]
             },
         )
@@ -319,10 +353,12 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "nGreenApples",
+                        "label": "nGreenApples",
                     },
                     {
                         "type": "number",
                         "key": "nRedApples",
+                        "label": "nRedApples",
                     },
                 ]
             },
@@ -331,8 +367,8 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
             form=form,
             form_definition__configuration={
                 "components": [
-                    {"type": "number", "key": "nPeaches"},
-                    {"type": "number", "key": "totFruit"},
+                    {"type": "number", "key": "nPeaches", "label": "nPeaches"},
+                    {"type": "number", "key": "totFruit", "label": "totFruit"},
                 ]
             },
         )
@@ -417,10 +453,12 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "nGreenApples",
+                        "label": "nGreenApples",
                     },
                     {
                         "type": "number",
                         "key": "nRedApples",
+                        "label": "nRedApples",
                     },
                 ]
             },

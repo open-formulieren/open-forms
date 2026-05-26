@@ -154,6 +154,7 @@ class SubmissionSummaryRendererTests(TestCase):
                         "key": "repeatingGroup",
                         "type": "editgrid",
                         "label": "Repeating Group",
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "key": "someText",
@@ -210,6 +211,7 @@ class SubmissionSummaryRendererTests(TestCase):
                         "key": "repeatingGroup",
                         "type": "editgrid",
                         "label": "Repeating Group",
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "key": "radioCondition",
@@ -279,6 +281,7 @@ class SubmissionSummaryRendererTests(TestCase):
                         "key": "container.repeatingGroup",
                         "type": "editgrid",
                         "label": "Repeating Group",
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "key": "radioCondition",
@@ -378,6 +381,7 @@ class SubmissionSummaryRendererTests(TestCase):
                         "key": "container.repeatingGroup",
                         "type": "editgrid",
                         "label": "Repeating Group",
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "key": "selectboxesCondition",
@@ -467,6 +471,7 @@ class SubmissionSummaryRendererTests(TestCase):
                         "type": "content",
                         "label": "Content",
                         "html": "<p>Some data</p>",
+                        "showInSummary": True,
                     }
                 ]
             },

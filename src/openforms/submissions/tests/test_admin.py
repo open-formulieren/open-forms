@@ -309,6 +309,7 @@ class TestSubmissionAdmin(WebTest):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     }
                 ]
             },

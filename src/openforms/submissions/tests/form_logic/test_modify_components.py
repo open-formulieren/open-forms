@@ -24,6 +24,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step1_textfield1",
+                        "label": "step1_textfield1",
                     }
                 ]
             },
@@ -35,6 +36,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step2_textfield1",
+                        "label": "step2_textfield1",
                         "hidden": False,
                     }
                 ]
@@ -83,6 +85,7 @@ class ComponentModificationTests(TestCase):
                 {
                     "type": "textfield",
                     "key": "step2_textfield1",
+                    "label": "step2_textfield1",
                     "hidden": True,
                 }
             ]
@@ -99,12 +102,14 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "component1",
+                        "label": "component1",
                         "hidden": False,
                         "clearOnHide": True,
                     },
                     {
                         "type": "textfield",
                         "key": "component2",
+                        "label": "component2",
                         "hidden": False,
                         "clearOnHide": True,
                     },
@@ -157,12 +162,14 @@ class ComponentModificationTests(TestCase):
                 {
                     "type": "textfield",
                     "key": "component1",
+                    "label": "component1",
                     "hidden": False,
                     "clearOnHide": True,
                 },
                 {
                     "type": "textfield",
                     "key": "component2",
+                    "label": "component2",
                     "hidden": True,
                     "clearOnHide": True,
                 },
@@ -180,6 +187,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                     }
                 ]
             },
@@ -191,6 +199,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "surname",
+                        "label": "surname",
                         "validate": {"required": False},
                     }
                 ]
@@ -239,6 +248,7 @@ class ComponentModificationTests(TestCase):
                 {
                     "type": "textfield",
                     "key": "surname",
+                    "label": "surname",
                     "validate": {"required": True},
                 }
             ]
@@ -254,6 +264,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "fooBarBaz",
+                        "label": "fooBarBaz",
                     }
                 ]
             },
@@ -265,6 +276,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "test",
+                        "label": "test",
                         "hidden": True,
                     }
                 ]
@@ -313,6 +325,7 @@ class ComponentModificationTests(TestCase):
                 {
                     "type": "textfield",
                     "key": "test",
+                    "label": "test",
                     "hidden": False,
                 }
             ]
@@ -328,6 +341,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "email",
                         "key": "userEmail",
+                        "label": "userEmail",
                     }
                 ]
             },
@@ -339,6 +353,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "test",
+                        "label": "test",
                         "hidden": True,
                     }
                 ]
@@ -387,6 +402,7 @@ class ComponentModificationTests(TestCase):
                 {
                     "type": "textfield",
                     "key": "test",
+                    "label": "test",
                     "hidden": False,
                 }
             ]
@@ -402,6 +418,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "fooBarBaz",
+                        "label": "fooBarBaz",
                     }
                 ]
             },
@@ -413,6 +430,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "test",
+                        "label": "test",
                         "hidden": True,
                     }
                 ]
@@ -461,6 +479,7 @@ class ComponentModificationTests(TestCase):
                 {
                     "type": "textfield",
                     "key": "test",
+                    "label": "test",
                     "hidden": True,
                 }
             ]
@@ -476,6 +495,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "email",
                         "key": "userEmail",
+                        "label": "userEmail",
                     }
                 ]
             },
@@ -487,6 +507,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "test",
+                        "label": "test",
                         "hidden": True,
                     }
                 ]
@@ -535,6 +556,7 @@ class ComponentModificationTests(TestCase):
                 {
                     "type": "textfield",
                     "key": "test",
+                    "label": "test",
                     "hidden": True,
                 }
             ]
@@ -550,6 +572,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step1_textfield1",
+                        "label": "step1_textfield1",
                     }
                 ]
             },
@@ -561,6 +584,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step2_textfield1",
+                        "label": "step2_textfield1",
                         "hidden": False,
                     }
                 ]
@@ -600,6 +624,7 @@ class ComponentModificationTests(TestCase):
                 {
                     "type": "textfield",
                     "key": "step2_textfield1",
+                    "label": "step2_textfield1",
                     "hidden": False,
                 }
             ]
@@ -623,6 +648,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                     }
                 ]
             },
@@ -634,6 +660,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "surname",
+                        "label": "surname",
                         "validate": {"required": False},
                     }
                 ]
@@ -684,6 +711,7 @@ class ComponentModificationTests(TestCase):
                     "type": "textfield",
                     "key": "surname",
                     "validate": {"required": False},
+                    "label": "surname",
                 }
             ]
         }
@@ -704,12 +732,14 @@ class ComponentModificationTests(TestCase):
                         "components": [
                             {
                                 "key": "CatBirthDate",
+                                "label": "CatBirthDate",
                                 "type": "date",
                                 "format": "dd-MM-yyyy",
                                 "hidden": False,
                             },
                             {
                                 "key": "addAnotherCat",
+                                "label": "addAnotherCat",
                                 "type": "radio",
                                 "hidden": False,
                                 "values": [
@@ -728,6 +758,7 @@ class ComponentModificationTests(TestCase):
                         "components": [
                             {
                                 "key": "CatBirthDate2",
+                                "label": "CatBirthDate2",
                                 "type": "date",
                                 "format": "dd-MM-yyyy",
                                 "hidden": False,
@@ -774,6 +805,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step1_textfield",
+                        "label": "step1_textfield",
                     }
                 ]
             },
@@ -785,6 +817,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "step2_textfield",
+                        "label": "step2_textfield",
                         "hidden": False,
                     }
                 ]
@@ -829,6 +862,7 @@ class ComponentModificationTests(TestCase):
                 {
                     "type": "textfield",
                     "key": "step1_textfield",
+                    "label": "step1_textfield",
                 }
             ]
         }
@@ -842,6 +876,7 @@ class ComponentModificationTests(TestCase):
                 "components": [
                     {
                         "key": "radio",
+                        "label": "radio",
                         "type": "radio",
                         "values": [
                             {"label": "yes", "value": "yes"},
@@ -851,6 +886,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "textField",
+                        "label": "textField",
                         "hidden": True,
                         "conditional": {"eq": "yes", "show": True, "when": "radio"},
                         "clearOnHide": True,
@@ -888,11 +924,13 @@ class ComponentModificationTests(TestCase):
                 "components": [
                     {
                         "key": "date",
+                        "label": "date",
                         "type": "date",
                     },
                     {
                         "type": "textfield",
                         "key": "textField",
+                        "label": "textField",
                         "conditional": {
                             "eq": "2025-01-01",
                             "show": True,
@@ -935,6 +973,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "textFieldA",
+                        "label": "textFieldA",
                         "hidden": True,
                         "conditional": {
                             "eq": "",
@@ -946,6 +985,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "textFieldB",
+                        "label": "textFieldB",
                         "hidden": True,
                         "conditional": {
                             "eq": "yes",
@@ -976,11 +1016,13 @@ class ComponentModificationTests(TestCase):
                 "components": [
                     {
                         "key": "nested.component",
+                        "label": "nested.component",
                         "type": "textfield",
                         "clearOnHide": True,
                     },
                     {
                         "key": "radio",
+                        "label": "radio",
                         "type": "radio",
                         "values": [
                             {"label": "A", "value": "a"},
@@ -1041,6 +1083,7 @@ class ComponentModificationTests(TestCase):
                 "components": [
                     {
                         "key": "selectboxes",
+                        "label": "selectboxes",
                         "type": "selectboxes",
                         "hidden": True,
                         "values": [
@@ -1077,6 +1120,7 @@ class ComponentModificationTests(TestCase):
                     {
                         "type": "postcode",
                         "key": "nicePostcode",
+                        "label": "nicePostcode",
                         "validate": {
                             "custom": "",
                             "unique": False,
@@ -1128,6 +1172,7 @@ class ComponentModificationTests(TestCase):
                 {
                     "type": "postcode",
                     "key": "nicePostcode",
+                    "label": "nicePostcode",
                     "validate": {
                         "custom": "",
                         "unique": False,
@@ -1166,6 +1211,7 @@ class ComponentModificationTests(TestCase):
                     },
                     {
                         "key": "container",
+                        "label": "container",
                         "type": "fieldset",
                         "hidden": False,
                         "components": [
@@ -1179,11 +1225,13 @@ class ComponentModificationTests(TestCase):
                                 "type": "coSign",
                                 "key": "coSign",
                                 "label": "Cosign",
+                                "authPlugin": "digid",
                             },
                             {
                                 "type": "softRequiredErrors",
                                 "key": "softRequiredErrors",
                                 "label": "Errors",
+                                "html": "<p>Errors</p>",
                             },
                         ],
                     },
@@ -1242,8 +1290,10 @@ class ComponentModificationTests(TestCase):
                     },
                     {
                         "key": "editgridHiddenByDefault",
+                        "label": "editgridHiddenByDefault",
                         "type": "editgrid",
                         "hidden": True,
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "type": "textfield",
@@ -1261,8 +1311,10 @@ class ComponentModificationTests(TestCase):
                     },
                     {
                         "key": "editgridShownByDefault",
+                        "label": "editgridShownByDefault",
                         "type": "editgrid",
                         "hidden": False,
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "type": "number",

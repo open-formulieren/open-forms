@@ -136,6 +136,7 @@ class LicenseplateFieldValidationTests(SimpleTestCase):
             "validate": {
                 "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$",
             },
+            "defaultValue": [],
         }
 
         data: JSONValue = {"foo": ["1-AAA-222", "33-A-AF6"]}

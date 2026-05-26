@@ -34,6 +34,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "select",
                         "key": "pet",
+                        "label": "pet",
                         "data": {
                             "values": [
                                 {"label": "Cat", "value": "cat"},
@@ -51,6 +52,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "step2",
+                        "label": "step2",
                     }
                 ]
             },
@@ -62,6 +64,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "step3",
+                        "label": "step3",
                     }
                 ]
             },
@@ -157,6 +160,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "radio",
                         "key": "radio",
+                        "label": "radio",
                         "values": [
                             {"label": "A", "value": "a"},
                             {"label": "B", "value": "b"},
@@ -339,6 +343,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "someComponent",
+                        "label": "someComponent",
                     }
                 ]
             },
@@ -544,6 +549,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     "label": "Editgrid",
                     "clearOnHide": True,
                     "hidden": False,
+                    "groupLabel": "item",
                     "components": [
                         {
                             "type": "textfield",
@@ -559,6 +565,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     "label": "Editgrid inverted",
                     "clearOnHide": True,
                     "hidden": True,
+                    "groupLabel": "item",
                     "components": [
                         {
                             "type": "textfield",
@@ -685,6 +692,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "textfieldStep1",
+                        "label": "Text field step 1",
                         "hidden": True,
                         "clearOnHide": True,
                     },
@@ -698,6 +706,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "textfieldStep2",
+                        "label": "Text field step 2",
                         "hidden": True,
                         "clearOnHide": True,
                     }
@@ -1020,6 +1029,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                         "key": "date_multiple",
                         "label": "Date multiple",
                         "multiple": True,
+                        "defaultValue": [],
                     },
                     {
                         "type": "date",
@@ -1191,6 +1201,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                         "type": "editgrid",
                         "key": "editgrid",
                         "label": "Editgrid",
+                        "groupLabel": "item",
                         "clearOnHide": True,
                         "components": [
                             {

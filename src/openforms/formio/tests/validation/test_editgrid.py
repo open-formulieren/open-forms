@@ -25,6 +25,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "parent",
             "label": "Repeating group",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",
@@ -81,6 +82,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "parent",
             "label": "Repeating group",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",
@@ -141,6 +143,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "toplevel",
             "label": "Repeating group",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",
@@ -182,6 +185,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "optionalRepeatingGroup",
             "label": "Optional repeating group",
+            "groupLabel": "item",
             "validate": {"required": False},
             "components": [
                 {
@@ -205,6 +209,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "requiredRepeatingGroup",
             "label": "Required repeating group",
+            "groupLabel": "item",
             "validate": {"required": True},
             "components": [
                 {
@@ -219,6 +224,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "fieldset",
             "key": "fieldset",
             "label": "Hidden fieldset",
+            "groupLabel": "item",
             "hidden": True,
             "components": [editgrid],
         }
@@ -314,6 +320,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "editgrid",
             "label": "Edit grid with nested conditional",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",
@@ -359,6 +366,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "editgrid",
             "key": "editgrid",
             "label": "Edit grid with nested conditional",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",
@@ -377,6 +385,7 @@ class EditGridValidationTests(SimpleTestCase):
             "type": "fieldset",
             "key": "fieldset",
             "label": "Container",
+            "groupLabel": "item",
             "components": [
                 {
                     "type": "textfield",

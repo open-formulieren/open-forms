@@ -143,7 +143,8 @@ class CosignState:
 
         # if the component itself is marked as required, we know for sure cosigning is
         # required
-        required = cosign_component.get("validate", {}).get("required", False)
+        validate = cosign_component.get("validate") or {}
+        required = validate.get("required", False)
         if required:
             return True
 

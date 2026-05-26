@@ -2,7 +2,7 @@ from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from datetime import timedelta
 from uuid import UUID, uuid4
 
-from django.db.models.base import connections
+from django.db import connections
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import get_text_list
@@ -83,6 +83,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -171,12 +172,14 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
                                 {
                                     "type": "textfield",
                                     "key": "component2",
+                                    "label": "component2",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -318,12 +321,14 @@ class FormEndpointTests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "component1",
+                        "label": "component1",
                         "hidden": False,
                         "clear_on_hide": True,
                     },
                     {
                         "type": "textfield",
                         "key": "component2",
+                        "label": "component2",
                         "hidden": False,
                         "clear_on_hide": True,
                     },
@@ -503,12 +508,14 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
                                 {
                                     "type": "textfield",
                                     "key": "component2",
+                                    "label": "component2",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -552,12 +559,14 @@ class FormEndpointTests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "component1",
+                        "label": "component1",
                         "hidden": False,
                         "clear_on_hide": True,
                     },
                     {
                         "type": "textfield",
                         "key": "component2",
+                        "label": "component2",
                         "hidden": False,
                         "clear_on_hide": True,
                     },
@@ -588,6 +597,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -657,6 +667,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -703,6 +714,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -833,6 +845,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -966,6 +979,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1023,6 +1037,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1077,6 +1092,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1131,6 +1147,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1159,12 +1176,14 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component2",
+                                    "label": "component2",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
                                 {
                                     "type": "textfield",
                                     "key": "component3",
+                                    "label": "component3",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1209,6 +1228,7 @@ class FormEndpointTests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "component1",
+                        "label": "component1",
                         "hidden": False,
                         "clear_on_hide": True,
                     },
@@ -1227,12 +1247,14 @@ class FormEndpointTests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "component2",
+                        "label": "component2",
                         "hidden": False,
                         "clear_on_hide": True,
                     },
                     {
                         "type": "textfield",
                         "key": "component3",
+                        "label": "component3",
                         "hidden": False,
                         "clear_on_hide": True,
                     },
@@ -1245,7 +1267,9 @@ class FormEndpointTests(APITestCase):
         existing_form_definition_uuid = uuid4()
         unrelated_form_step = FormStepFactory.create(
             form_definition__configuration={
-                "components": [{"key": "textfield", "type": "textfield"}]
+                "components": [
+                    {"key": "textfield", "type": "textfield", "label": "textfield"}
+                ]
             },
             form_definition__is_reusable=True,
             form_definition__uuid=existing_form_definition_uuid,
@@ -1271,12 +1295,14 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
                                 {
                                     "type": "textfield",
                                     "key": "component2",
+                                    "label": "component2",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1314,12 +1340,14 @@ class FormEndpointTests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "component1",
+                        "label": "component1",
                         "hidden": False,
                         "clear_on_hide": True,
                     },
                     {
                         "type": "textfield",
                         "key": "component2",
+                        "label": "component2",
                         "hidden": False,
                         "clear_on_hide": True,
                     },
@@ -1353,12 +1381,14 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
                                 {
                                     "type": "textfield",
                                     "key": "component2",
+                                    "label": "component2",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1388,12 +1418,14 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
                                 {
                                     "type": "textfield",
                                     "key": "component2",
+                                    "label": "component2",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1451,6 +1483,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1480,12 +1513,14 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
                                 {
                                     "type": "textfield",
                                     "key": "component2",
+                                    "label": "component2",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1553,18 +1588,21 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
                                 {
                                     "type": "textfield",
                                     "key": "component2",
+                                    "label": "component2",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1622,14 +1660,18 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "key": "repeatingGroup",
                                     "type": "editgrid",
+                                    "label": "repeatingGroup",
+                                    "groupLabel": "Item",
                                     "components": [
                                         {
                                             "type": "file",
                                             "key": "fileInRepeatingGroup1",
+                                            "label": "fileInRepeatingGroup1",
                                         },
                                         {
                                             "type": "file",
                                             "key": "fileInRepeatingGroup1",
+                                            "label": "fileInRepeatingGroup1",
                                         },
                                     ],
                                 },
@@ -1688,6 +1730,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1756,6 +1799,7 @@ class FormEndpointTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1855,6 +1899,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -1924,7 +1969,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "customerProfile",
                                     "key": "profile",
-                                    "name": "Profile",
+                                    "label": "Profile",
                                     "digitalAddressTypes": ["email"],
                                     "shouldUpdateCustomerData": True,
                                 }
@@ -1968,7 +2013,7 @@ class FormEndpointVariableTests(APITestCase):
         variables = form.formvariable_set.order_by("name")
 
         # component variable, generated for the form step (based on the form defintion)
-        self.assertEqual(variables[0].name, "profile")
+        self.assertEqual(variables[0].name, "Profile")
         self.assertEqual(variables[0].key, "profile")
         self.assertEqual(variables[0].source, FormVariableSources.component)
         self.assertEqual(variables[0].form_definition.uuid, form_definition_uuid)
@@ -2003,6 +2048,7 @@ class FormEndpointVariableTests(APITestCase):
                                     {
                                         "type": "textfield",
                                         "key": "component1",
+                                        "label": "component1",
                                         "hidden": False,
                                         "clearOnHide": True,
                                     },
@@ -2088,6 +2134,7 @@ class FormEndpointVariableTests(APITestCase):
                                     {
                                         "type": "textfield",
                                         "key": "component1",
+                                        "label": "component1",
                                         "hidden": False,
                                         "clearOnHide": True,
                                     },
@@ -2184,6 +2231,7 @@ class FormEndpointVariableTests(APITestCase):
                                     {
                                         "type": "textfield",
                                         "key": "component1",
+                                        "label": "component1",
                                         "hidden": False,
                                         "clearOnHide": True,
                                     },
@@ -2260,6 +2308,7 @@ class FormEndpointVariableTests(APITestCase):
                                     {
                                         "type": "textfield",
                                         "key": "component1",
+                                        "label": "component1",
                                         "hidden": False,
                                         "clearOnHide": True,
                                     },
@@ -2333,10 +2382,12 @@ class FormEndpointVariableTests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                     },
                     {
                         "type": "number",
                         "key": "age",
+                        "label": "age",
                     },
                 ]
             },
@@ -2350,10 +2401,12 @@ class FormEndpointVariableTests(APITestCase):
                     {
                         "type": "number",
                         "key": "nLargeBoxes",
+                        "label": "nLargeBoxes",
                     },
                     {
                         "type": "number",
                         "key": "nGiganticBoxes",
+                        "label": "nGiganticBoxes",
                     },
                 ]
             },
@@ -2380,10 +2433,12 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "number",
                                     "key": "age",
+                                    "label": "age",
                                 },
                                 {
                                     "type": "textfield",
                                     "key": "email",
+                                    "label": "email",
                                 },
                             ],
                         },
@@ -2410,6 +2465,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "city",
+                                    "label": "city",
                                 },
                             ],
                         },
@@ -2436,6 +2492,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "streetname",
+                                    "label": "streetname",
                                 },
                             ],
                         },
@@ -2521,6 +2578,7 @@ class FormEndpointVariableTests(APITestCase):
                                     {
                                         "type": "textfield",
                                         "key": "component1",
+                                        "label": "component1",
                                         "hidden": False,
                                         "clearOnHide": True,
                                     },
@@ -2586,6 +2644,7 @@ class FormEndpointVariableTests(APITestCase):
                                     {
                                         "type": "textfield",
                                         "key": "component1",
+                                        "label": "component1",
                                         "hidden": False,
                                         "clearOnHide": True,
                                     },
@@ -2656,6 +2715,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -2721,6 +2781,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "textfield",
                                     "key": "component1",
+                                    "label": "component1",
                                     "hidden": False,
                                     "clearOnHide": True,
                                 },
@@ -2787,7 +2848,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "customerProfile",
                                     "key": "profile",
-                                    "name": "Profile",
+                                    "label": "Profile",
                                     "digitalAddressTypes": ["email"],
                                     "shouldUpdateCustomerData": True,
                                 }
@@ -2861,7 +2922,7 @@ class FormEndpointVariableTests(APITestCase):
                                     {
                                         "type": "customerProfile",
                                         "key": "profile",
-                                        "name": "Profile",
+                                        "label": "Profile",
                                         "digitalAddressTypes": ["email"],
                                         "shouldUpdateCustomerData": True,
                                     }
@@ -2923,7 +2984,7 @@ class FormEndpointVariableTests(APITestCase):
                                     {
                                         "type": "customerProfile",
                                         "key": "profile",
-                                        "name": "Profile",
+                                        "label": "Profile",
                                         "digitalAddressTypes": ["email"],
                                         "shouldUpdateCustomerData": True,
                                     }
@@ -2995,7 +3056,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "customerProfile",
                                     "key": "profile",
-                                    "name": "Profile",
+                                    "label": "Profile",
                                     "digitalAddressTypes": ["email"],
                                     "shouldUpdateCustomerData": True,
                                 },
@@ -3075,7 +3136,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "customerProfile",
                                     "key": "profile",
-                                    "name": "Profile",
+                                    "label": "Profile",
                                     "digitalAddressTypes": ["email"],
                                     "shouldUpdateCustomerData": True,
                                 }
@@ -3162,7 +3223,7 @@ class FormEndpointVariableTests(APITestCase):
                                 {
                                     "type": "customerProfile",
                                     "key": "profile",
-                                    "name": "Profile",
+                                    "label": "Profile",
                                     "digitalAddressTypes": ["email"],
                                     "shouldUpdateCustomerData": True,
                                 }
@@ -3317,6 +3378,7 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
                                         {
                                             "type": "textfield",
                                             "key": "component1",
+                                            "label": "component1",
                                             "hidden": False,
                                             "clearOnHide": True,
                                         },
@@ -3355,6 +3417,7 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
                                         {
                                             "type": "textfield",
                                             "key": "component2",
+                                            "label": "component2",
                                             "hidden": False,
                                             "clearOnHide": True,
                                         },
@@ -3456,6 +3519,7 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
                                         {
                                             "type": "textfield",
                                             "key": "component1",
+                                            "label": "component1",
                                             "hidden": False,
                                             "clearOnHide": True,
                                         },
@@ -3494,6 +3558,7 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
                                         {
                                             "type": "textfield",
                                             "key": "component2",
+                                            "label": "component2",
                                             "hidden": False,
                                             "clearOnHide": True,
                                         },

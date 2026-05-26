@@ -29,10 +29,11 @@ class FileComponentTests(TestCase):
         component = {
             "type": "file",
             "key": "fileTest",
+            "label": "fileTest",
             "url": "",
             "useConfigFiletypes": True,
             "filePattern": "*",
-            "file": {},
+            "file": {"type": []},
         }
 
         wrapper = _get_dynamic_config(component)
@@ -53,10 +54,11 @@ class FileComponentTests(TestCase):
         component = {
             "type": "file",
             "key": "fileTest",
+            "label": "fileTest",
             "url": "",
             "useConfigFiletypes": True,
             "filePattern": "*",
-            "file": {},
+            "file": {"type": []},
         }
 
         wrapper = _get_dynamic_config(component)
