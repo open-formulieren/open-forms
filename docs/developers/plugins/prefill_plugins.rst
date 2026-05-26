@@ -40,6 +40,46 @@ There are two relevant public methods:
     the actual implementation of the prefill functionality. This is invoked inside the
     request-response cycle of certain API endpoints.
 
+Context-aware prefill attributes
+--------------------------------
+
+Some prefill plugins have attributes that depend on form-level configuration
+(e.g. which authentication flow is selected). Instead of returning a static list
+from ``get_available_attributes``, these plugins can declare a custom API
+endpoint that the form builder calls at design time.
+
+Override :meth:`~openforms.prefill.base.BasePlugin.get_custom_attributes_url` to
+return an absolute API path:
+
+.. code-block:: python
+
+    @register("my-plugin")
+    class MyPrefill(BasePlugin):
+        requires_auth_plugin = ("my-auth",)
+
+        @classmethod
+        def get_custom_attributes_url(cls) -> str:
+            return "/api/v2/my-plugin/available-claims"
+
+        @staticmethod
+        def get_available_attributes():
+            # Static fallback (used by non-JS callers and tests)
+            return (("claim_a", "Claim A"), ("claim_b", "Claim B"))
+
+The endpoint must return a JSON array of ``{"id": "...", "label": "..."}``
+objects.
+
+When ``customAttributesUrl`` is set (exposed in the prefill plugin list API
+response), the form builder will ``GET`` this URL instead of the default
+``/api/v2/prefill/plugins/<id>/attributes`` endpoint. The options from the
+matching authentication backend are forwarded as query parameters, so the
+endpoint can scope the attribute list to the selected authentication flow.
+
+For example, if the form has an authentication backend with
+``options: {"clientId": "abc-123"}``, the form builder will request::
+
+    GET /api/v2/my-plugin/available-claims?clientId=abc-123
+
 Public Python API
 =================
 

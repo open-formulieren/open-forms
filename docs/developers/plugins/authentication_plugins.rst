@@ -29,3 +29,45 @@ base :class:`openforms.contrib.auth_oidc.plugin.OIDCAuthentication`.
 
 .. autoclass:: openforms.contrib.auth_oidc.plugin.OIDCAuthentication
    :members:
+
+Custom auth context for third-party plugins
+===========================================
+
+The built-in authentication plugins (DigiD, eHerkenning, Yivi, etc.) each have a
+dedicated ``TypedDict`` in :mod:`openforms.authentication.types` that describes
+the shape of their auth context. These types are collected in the ``AnyAuthContext``
+union.
+
+Third-party plugins that manage their own auth context do not need to add a
+plugin-specific type to this union. Instead, set ``manage_auth_context = True``
+on the plugin class and implement
+:meth:`~openforms.authentication.base.BasePlugin.auth_info_to_auth_context`
+to return a dict matching :class:`~openforms.authentication.types.PluginAuthContext`:
+
+.. code-block:: python
+
+    from openforms.authentication.base import BasePlugin
+    from openforms.authentication.types import PluginAuthContext
+
+    class MyPlugin(BasePlugin):
+        manage_auth_context = True
+
+        def auth_info_to_auth_context(self, auth_info) -> PluginAuthContext:
+            return {
+                "source": "my-provider",
+                "levelOfAssurance": auth_info.loa,
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": "bsn",
+                        "identifier": auth_info.value,
+                    }
+                },
+            }
+
+``PluginAuthContext`` uses ``str`` for ``source`` and ``levelOfAssurance`` and
+``dict`` for ``authorizee``, so the plugin is free to structure the authorizee
+payload however it needs.
+
+**Reference**
+
+.. autoclass:: openforms.authentication.types.PluginAuthContext
