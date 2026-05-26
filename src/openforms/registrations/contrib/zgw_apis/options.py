@@ -243,6 +243,12 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
     )
 
+    def get_fields(self):
+        fields = super().get_fields()
+        if self.context.get("in_migrator"):
+            fields["catalogue"].required = False
+        return fields
+
     def _handle_import(self, attrs) -> None:
         # we're not importing, nothing to do
         if not self.context.get("is_import", False):
@@ -406,7 +412,9 @@ def _validate_catalogue_case_and_doc_type(
     _errors = {}
 
     catalogus = None
-    catalogue_option = attrs["catalogue"]
+    # TODO: in 4.0 release, this can be direct key access, but between 3.5 - 4.0 the
+    # migrator won't have this property
+    catalogue_option = attrs.get("catalogue") or {"domain": "", "rsin": ""}
 
     case_type_identification = attrs["case_type_identification"]
     document_type_description = attrs["document_type_description"]
