@@ -96,6 +96,8 @@ class ConditionalLogicTests(TestCase):
                         "eq": "hide",
                     },
                     "clearOnHide": True,
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
                 {
                     "type": "textfield",
@@ -302,6 +304,7 @@ class ConditionalLogicTests(TestCase):
                     "type": "editgrid",
                     "key": "editgrid",
                     "label": "Edit grid",
+                    "groupLabel": "item",
                     "components": [
                         {
                             "type": "textfield",
@@ -368,6 +371,7 @@ class ConditionalLogicTests(TestCase):
                     "type": "editgrid",
                     "key": "editgrid",
                     "label": "Edit grid",
+                    "groupLabel": "item",
                     "components": [
                         {
                             "type": "textfield",
@@ -378,6 +382,7 @@ class ConditionalLogicTests(TestCase):
                             "type": "editgrid",
                             "key": "editgrid2",
                             "label": "editgrid2",
+                            "groupLabel": "nested item",
                             "components": [
                                 {
                                     "type": "textfield",
@@ -553,6 +558,7 @@ class ConditionalLogicTests(TestCase):
                     "label": "Textfield visible",
                     "multiple": True,
                     "hidden": False,
+                    "defaultValue": [],
                 },
                 {
                     "type": "textfield",
@@ -675,6 +681,8 @@ class ConditionalLogicTests(TestCase):
                     "type": "file",
                     "key": "file",
                     "label": "file visible",
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
                 {
                     "type": "textfield",
@@ -735,6 +743,7 @@ class ConditionalLogicTests(TestCase):
                 {
                     "key": "radio",
                     "type": "radio",
+                    "label": "radio",
                     "values": [
                         {"label": "yes", "value": "yes"},
                         {"label": "no", "value": "no"},
@@ -743,9 +752,12 @@ class ConditionalLogicTests(TestCase):
                 {
                     "type": "file",
                     "key": "file",
+                    "label": "file",
                     "hidden": False,
                     "conditional": {"eq": "yes", "show": True, "when": "radio"},
                     "clearOnHide": True,
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
             ],
         )
@@ -822,6 +834,7 @@ class ConditionalLogicTests(TestCase):
                     "type": "editgrid",
                     "key": "editgrid",
                     "label": "Edit grid",
+                    "groupLabel": "item",
                     "components": [
                         {
                             "type": "fieldset",

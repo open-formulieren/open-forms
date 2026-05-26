@@ -34,26 +34,31 @@ class ExportTests(TestCase):
                 {
                     "type": "textfield",
                     "key": "input1",
+                    "label": "input1",
                     "hidden": False,
                 },
                 {
                     "type": "textfield",
                     "key": "input2",
+                    "label": "input2",
                     "hidden": True,
                     "clearOnHide": False,
                 },
                 {
                     "type": "fieldset",
                     "key": "fieldset1",
+                    "label": "fieldset1",
                     "components": [
                         {
                             "type": "textfield",
                             "key": "input3",
+                            "label": "input3",
                             "hidden": False,
                         },
                         {
                             "type": "textfield",
                             "key": "input4",
+                            "label": "input4",
                             "hidden": True,
                             "clearOnHide": False,
                         },
@@ -62,6 +67,7 @@ class ExportTests(TestCase):
                 {
                     "type": "columns",
                     "key": "columns1",
+                    "label": "columns1",
                     "hidden": True,
                     "columns": [
                         {
@@ -70,6 +76,7 @@ class ExportTests(TestCase):
                                 {
                                     "type": "textfield",
                                     "key": "input5",
+                                    "label": "input5",
                                     "hidden": False,
                                     "clearOnHide": False,
                                 },
@@ -81,6 +88,7 @@ class ExportTests(TestCase):
                                 {
                                     "type": "textfield",
                                     "key": "input6",
+                                    "label": "input6",
                                     "hidden": True,
                                     "clearOnHide": False,
                                 },
@@ -91,6 +99,7 @@ class ExportTests(TestCase):
                 {
                     "type": "content",
                     "key": "content",
+                    "label": "content",
                     "html": "<p>Some wysigyg content</p>",
                 },
             ],
@@ -189,6 +198,7 @@ class ExportTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "input1",
+                        "label": "input1",
                     }
                 ]
             },
@@ -200,6 +210,7 @@ class ExportTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "input2",
+                        "label": "input2",
                     }
                 ]
             },
@@ -281,6 +292,7 @@ class ExportTests(TestCase):
                         "type": "editgrid",
                         "key": "repeatingGroup",
                         "label": "Repeating group",
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "type": "textfield",
@@ -328,6 +340,8 @@ class ExportTests(TestCase):
                         "key": "attachments",
                         "label": "Attachments",
                         "multiple": True,
+                        "file": {"type": []},
+                        "filePattern": "",
                     }
                 ]
             },

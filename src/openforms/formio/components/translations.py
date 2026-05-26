@@ -7,10 +7,10 @@ def translate_options(
     enabled: bool,
 ) -> None:
     for option in options:
-        if "openForms" not in option:
+        if (open_forms := option.get("openForms")) is None:
             continue
 
-        if not (translations := option["openForms"].get("translations")):
+        if not (translations := open_forms.get("translations")):
             continue
 
         if enabled and (_translations := translations.get(language_code)):
@@ -21,4 +21,5 @@ def translate_options(
                 option["description"] = translated_description
 
         # always clean up
+        assert "openForms" in option
         del option["openForms"]["translations"]

@@ -109,7 +109,14 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
                     {
                         "type": "fieldset",
                         "key": "fieldset",
-                        "components": [{"type": "textfield", "key": "textfield"}],
+                        "label": "fieldset",
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "textfield",
+                                "label": "textfield",
+                            }
+                        ],
                     }
                 ]
             },

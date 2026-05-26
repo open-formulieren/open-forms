@@ -23,13 +23,45 @@ class TestSubmissionExportAdmin(WebTest):
         form_definition = FormDefinitionFactory(
             configuration={
                 "components": [
-                    {"type": "textfield", "key": "adres"},
-                    {"type": "textfield", "key": "voornaam"},
-                    {"type": "textfield", "key": "familienaam"},
-                    {"type": "date", "key": "geboortedatum"},
-                    {"type": "signature", "key": "signature"},
-                    {"type": "textfield", "key": "multi_str", "multiple": True},
-                    {"type": "file", "key": "my_file"},
+                    {
+                        "type": "textfield",
+                        "key": "adres",
+                        "label": "adres",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "voornaam",
+                        "label": "voornaam",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "familienaam",
+                        "label": "familienaam",
+                    },
+                    {
+                        "type": "date",
+                        "key": "geboortedatum",
+                        "label": "geboortedatum",
+                    },
+                    {
+                        "type": "signature",
+                        "key": "signature",
+                        "label": "signature",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "multi_str",
+                        "label": "multi_str",
+                        "multiple": True,
+                        "defaultValue": [],
+                    },
+                    {
+                        "type": "file",
+                        "key": "my_file",
+                        "label": "my_file",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    },
                 ]
             }
         )

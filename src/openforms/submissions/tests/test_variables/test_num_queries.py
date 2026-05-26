@@ -27,8 +27,8 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             form=form,
             form_definition__configuration={
                 "components": [
-                    {"key": "var1", "type": "textfield"},
-                    {"key": "var2", "type": "textfield"},
+                    {"key": "var1", "label": "var1", "type": "textfield"},
+                    {"key": "var2", "label": "var2", "type": "textfield"},
                 ]
             },
         )
@@ -36,8 +36,8 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             form=form,
             form_definition__configuration={
                 "components": [
-                    {"key": "var3", "type": "textfield"},
-                    {"key": "var4", "type": "textfield"},
+                    {"key": "var3", "label": "var3", "type": "textfield"},
+                    {"key": "var4", "label": "var4", "type": "textfield"},
                 ]
             },
         )
@@ -70,8 +70,8 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             form=form,
             form_definition__configuration={
                 "components": [
-                    {"key": "var1", "type": "textfield"},
-                    {"key": "var2", "type": "textfield"},
+                    {"key": "var1", "label": "var1", "type": "textfield"},
+                    {"key": "var2", "label": "var2", "type": "textfield"},
                 ]
             },
         )
@@ -79,8 +79,8 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             form=form,
             form_definition__configuration={
                 "components": [
-                    {"key": "var3", "type": "textfield"},
-                    {"key": "var4", "type": "textfield"},
+                    {"key": "var3", "label": "var3", "type": "textfield"},
+                    {"key": "var4", "label": "var4", "type": "textfield"},
                 ]
             },
         )

@@ -33,6 +33,7 @@ class FormNodeTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "input1",
+                        "label": "input1",
                     }
                 ]
             },
@@ -45,6 +46,7 @@ class FormNodeTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "input2",
+                        "label": "input2",
                     }
                 ]
             },

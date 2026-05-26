@@ -21,10 +21,12 @@ class TestReshapeSubmissionDataForJsonSummary(TestCase):
                     {
                         "key": "input1",
                         "type": "textfield",
+                        "label": "input1",
                     },
                     {
                         "key": "input2",
                         "type": "textfield",
+                        "label": "input2",
                     },
                 ]
             },
@@ -37,10 +39,12 @@ class TestReshapeSubmissionDataForJsonSummary(TestCase):
                     {
                         "key": "input3",
                         "type": "textfield",
+                        "label": "input3",
                     },
                     {
                         "key": "input4",
                         "type": "textfield",
+                        "label": "input4",
                     },
                 ]
             },
@@ -89,26 +93,32 @@ class TestReshapeSubmissionDataForJsonSummary(TestCase):
                 "components": [
                     {
                         "key": "fieldset1",
+                        "label": "fieldset1",
                         "type": "fieldset",
                         "components": [
                             {
                                 "key": "input1",
+                                "label": "input1",
                                 "type": "textfield",
                             },
                             {
                                 "key": "input2",
+                                "label": "input2",
                                 "type": "textfield",
                             },
                             {
                                 "key": "fieldset2",
+                                "label": "fieldset2",
                                 "type": "fieldset",
                                 "components": [
                                     {
                                         "key": "input3",
+                                        "label": "input3",
                                         "type": "textfield",
                                     },
                                     {
                                         "key": "input4",
+                                        "label": "input4",
                                         "type": "textfield",
                                     },
                                 ],
@@ -117,6 +127,7 @@ class TestReshapeSubmissionDataForJsonSummary(TestCase):
                     },
                     {
                         "key": "input5",
+                        "label": "input5",
                         "type": "textfield",
                     },
                 ]
@@ -164,6 +175,7 @@ class TestReshapeSubmissionDataForJsonSummary(TestCase):
                 "components": [
                     {
                         "key": "column1",
+                        "label": "column1",
                         "type": "columns",
                         "columns": [
                             {
@@ -171,6 +183,7 @@ class TestReshapeSubmissionDataForJsonSummary(TestCase):
                                 "components": [
                                     {
                                         "key": "input1",
+                                        "label": "input1",
                                         "type": "textfield",
                                     }
                                 ],
@@ -180,16 +193,19 @@ class TestReshapeSubmissionDataForJsonSummary(TestCase):
                                 "components": [
                                     {
                                         "key": "fieldset1",
+                                        "label": "fieldset1",
                                         "type": "fieldset",
                                         "components": [
                                             {
                                                 "key": "input2",
+                                                "label": "input2",
                                                 "type": "textfield",
                                             },
                                         ],
                                     },
                                     {
                                         "key": "input3",
+                                        "label": "input3",
                                         "type": "textfield",
                                     },
                                 ],
@@ -240,10 +256,13 @@ class TestReshapeSubmissionDataForJsonSummary(TestCase):
                     {
                         "type": "editgrid",
                         "key": "editgrid1",
+                        "label": "editgrid1",
+                        "groupLabel": "item",
                         "components": [
                             {
                                 "type": "textfield",
                                 "key": "input1",
+                                "label": "input1",
                             }
                         ],
                     },

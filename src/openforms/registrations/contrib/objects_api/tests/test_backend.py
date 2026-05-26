@@ -474,6 +474,9 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                 {
                     "key": "attachment",
                     "type": "file",
+                    "label": "attachment",
+                    "file": {"type": []},
+                    "filePattern": "",
                 }
             ],
             submitted_data={

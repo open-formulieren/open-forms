@@ -33,6 +33,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "age",
+                        "label": "age",
                     }
                 ]
             },
@@ -44,6 +45,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "driverId",
+                        "label": "driverId",
                     }
                 ]
             },
@@ -105,6 +107,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     }
                 ]
             },
@@ -242,6 +245,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     }
                 ]
             },
@@ -253,6 +257,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "text2",
+                        "label": "text2",
                     }
                 ]
             },
@@ -349,6 +354,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "date",
                         "key": "dateOfBirth",
+                        "label": "dateOfBirth",
                     }
                 ]
             },
@@ -360,6 +366,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "driverId",
+                        "label": "driverId",
                     }
                 ]
             },
@@ -452,6 +459,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "date",
                         "key": "dateOfBirth",
+                        "label": "dateOfBirth",
                     }
                 ]
             },
@@ -463,6 +471,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "driving",
+                        "label": "driving",
                     }
                 ]
             },
@@ -515,16 +524,19 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "checkbox",
                         "key": "hide",
+                        "label": "hide",
                         "defaultValue": True,
                     },
                     {
                         "type": "textfield",
                         "key": "when-unchecked",
+                        "label": "when-unchecked",
                         "hidden": False,
                     },
                     {
                         "type": "textfield",
                         "key": "when-checked",
+                        "label": "when-checked",
                         "hidden": False,
                     },
                 ]
@@ -605,6 +617,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 configuration["components"][1],
                 {
                     "key": "when-unchecked",
+                    "label": "when-unchecked",
                     "type": "textfield",
                     "hidden": True,
                 },
@@ -613,6 +626,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 configuration["components"][2],
                 {
                     "key": "when-checked",
+                    "label": "when-checked",
                     "type": "textfield",
                     "hidden": False,
                 },
@@ -627,6 +641,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 configuration["components"][1],
                 {
                     "key": "when-unchecked",
+                    "label": "when-unchecked",
                     "type": "textfield",
                     "hidden": False,
                 },
@@ -635,6 +650,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 configuration["components"][2],
                 {
                     "key": "when-checked",
+                    "label": "when-checked",
                     "type": "textfield",
                     "hidden": True,
                 },
@@ -649,6 +665,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 configuration["components"][1],
                 {
                     "key": "when-unchecked",
+                    "label": "when-unchecked",
                     "type": "textfield",
                     "hidden": True,
                 },
@@ -657,6 +674,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 configuration["components"][2],
                 {
                     "key": "when-checked",
+                    "label": "when-checked",
                     "type": "textfield",
                     "hidden": False,
                 },
@@ -671,6 +689,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 "components": [
                     {
                         "key": "radio",
+                        "label": "radio",
                         "type": "radio",
                         "values": [
                             {"label": "yes", "value": "yes"},
@@ -680,6 +699,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "testHidden",
+                        "label": "testHidden",
                         "hidden": True,
                         "clearOnHide": True,
                         "defaultValue": "",
@@ -715,6 +735,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 "components": [
                     {
                         "key": "radio",
+                        "label": "radio",
                         "type": "radio",
                         "values": [
                             {"label": "show", "value": "show"},
@@ -723,16 +744,19 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     },
                     {
                         "key": "fieldset",
+                        "label": "fieldset",
                         "type": "fieldset",
                         "hidden": True,
                         "components": [
                             {
                                 "key": "textfield1",
+                                "label": "textfield1",
                                 "type": "textfield",
                                 "clearOnHide": True,
                             },
                             {
                                 "key": "textfield2",
+                                "label": "textfield2",
                                 "type": "textfield",
                                 "clearOnHide": False,
                             },
@@ -812,6 +836,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 "components": [
                     {
                         "key": "radio",
+                        "label": "radio",
                         "type": "radio",
                         "values": [
                             {"label": "show", "value": "show"},
@@ -820,11 +845,13 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     },
                     {
                         "key": "fieldset",
+                        "label": "fieldset",
                         "type": "fieldset",
                         "hidden": True,
                         "components": [
                             {
                                 "key": "textfield",
+                                "label": "textfield",
                                 "type": "textfield",
                                 "clearOnHide": True,
                             },
@@ -832,7 +859,9 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     },
                     {
                         "key": "calculatedResult",
+                        "label": "calculatedResult",
                         "type": "fieldset",
+                        "components": [],
                     },
                 ]
             },
@@ -1015,6 +1044,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "date",
                         "key": "date",
+                        "label": "date",
                     },
                 ]
             },
@@ -1063,15 +1093,18 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "checkbox",
                         "key": "checkbox",
+                        "label": "checkbox",
                     },
                     {
                         "type": "fieldset",
                         "key": "fieldset",
+                        "label": "fieldset",
                         "hidden": False,
                         "components": [
                             {
                                 "type": "textfield",
                                 "key": "textfieldClientSide",
+                                "label": "textfieldClientSide",
                                 "hidden": True,
                                 "conditional": {
                                     "show": True,
@@ -1082,6 +1115,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                             {
                                 "type": "textfield",
                                 "key": "textfieldServerSide",
+                                "label": "textfieldServerSide",
                                 "hidden": True,
                             },
                         ],
@@ -1175,6 +1209,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                         "type": "editgrid",
                         "key": "editgrid",
                         "label": "Edit grid",
+                        "groupLabel": "item",
                         "clearOnHide": False,
                         "components": [
                             {
@@ -1551,6 +1586,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     {
                         "type": "radio",
                         "key": "radio",
+                        "label": "radio",
                         "values": [
                             {"value": "a", "label": "A"},
                             {"value": "b", "label": "B"},
@@ -1559,6 +1595,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     {
                         "type": "textfield",
                         "key": "show-when-a",
+                        "label": "show-when-a",
                         "hidden": True,
                     },
                 ]
@@ -1622,6 +1659,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     {
                         "type": "radio",
                         "key": "radio",
+                        "label": "radio",
                         "values": [
                             {"value": "a", "label": "A"},
                             {"value": "b", "label": "B"},
@@ -1630,6 +1668,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     {
                         "type": "textfield",
                         "key": "show-when-a",
+                        "label": "show-when-a",
                         "hidden": True,
                     },
                 ]
@@ -1690,6 +1729,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     {
                         "type": "radio",
                         "key": "radio",
+                        "label": "radio",
                         "values": [
                             {"value": "a", "label": "A"},
                             {"value": "b", "label": "B"},
@@ -1698,20 +1738,24 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     {
                         "type": "checkbox",
                         "key": "checkbox",
+                        "label": "checkbox",
                     },
                     {
                         "type": "textfield",
                         "key": "hide-when-a-but-show-when-checkbox-checked",
+                        "label": "hide-when-a-but-show-when-checkbox-checked",
                         "hidden": False,
                     },
                     {
                         "type": "fieldset",
                         "key": "fieldset",
+                        "label": "fieldset",
                         "hidden": False,
                         "components": [
                             {
                                 "type": "textfield",
                                 "key": "nestedTextfield",
+                                "label": "nestedTextfield",
                                 "hidden": False,
                             }
                         ],
@@ -1719,6 +1763,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     {
                         "type": "textfield",
                         "key": "observer",
+                        "label": "observer",
                         "validate": {"required": False},
                     },
                 ]
@@ -1833,6 +1878,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     {
                         "type": "radio",
                         "key": "radio",
+                        "label": "radio",
                         "values": [
                             {"value": "a", "label": "A"},
                             {"value": "b", "label": "B"},
@@ -1841,20 +1887,24 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     {
                         "type": "checkbox",
                         "key": "checkbox",
+                        "label": "checkbox",
                     },
                     {
                         "type": "textfield",
                         "key": "hide-when-a-but-show-when-checkbox-checked",
+                        "label": "hide-when-a-but-show-when-checkbox-checked",
                         "hidden": True,
                     },
                     {
                         "type": "fieldset",
                         "key": "fieldset",
+                        "label": "fieldset",
                         "hidden": True,
                         "components": [
                             {
                                 "type": "textfield",
                                 "key": "nestedTextfield",
+                                "label": "nestedTextfield",
                                 "hidden": False,
                             }
                         ],
@@ -1862,6 +1912,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     {
                         "type": "textfield",
                         "key": "observer",
+                        "label": "observer",
                         "validate": {"required": False},
                     },
                 ]
@@ -1994,11 +2045,13 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                         "defaultValue": "some-default",
                     },
                     {
                         "type": "textfield",
                         "key": "optional",
+                        "label": "optional",
                         "hidden": False,
                     },
                 ]
@@ -2039,6 +2092,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
             configuration["components"][1],
             {
                 "key": "optional",
+                "label": "optional",
                 "type": "textfield",
                 "hidden": True,
             },
@@ -2052,6 +2106,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "number1",
+                        "label": "number1",
                     },
                 ]
             },
@@ -2101,10 +2156,12 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "number1",
+                        "label": "number1",
                     },
                     {
                         "type": "number",
                         "key": "number2",
+                        "label": "number2",
                     },
                 ]
             },

@@ -1317,6 +1317,7 @@ class FormNodeTests(TestCase):
                     {
                         "type": "fieldset",
                         "key": "fieldSet1",
+                        "label": "Fieldset",
                         "conditional": {
                             "show": True,
                             "when": "selectBoxes1",
@@ -1326,12 +1327,14 @@ class FormNodeTests(TestCase):
                             {
                                 "key": "textField1",
                                 "type": "textfield",
+                                "label": "textField1",
                             }
                         ],
                     },
                     {
                         "key": "selectBoxes1",
                         "type": "selectboxes",
+                        "label": "selectBoxes1",
                         "values": [
                             {"value": "a", "label": "A"},
                             {"value": "b", "label": "B"},

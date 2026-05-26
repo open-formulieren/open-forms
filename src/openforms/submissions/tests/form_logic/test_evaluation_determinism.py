@@ -89,10 +89,12 @@ class DeterministicEvaluationTests(TestCase):
                     {
                         "type": "number",
                         "key": "a",
+                        "label": "a",
                     },
                     {
                         "type": "number",
                         "key": "b",
+                        "label": "b",
                     },
                 ]
             },
@@ -104,6 +106,7 @@ class DeterministicEvaluationTests(TestCase):
                     {
                         "type": "number",
                         "key": "c",
+                        "label": "c",
                     }
                 ]
             },
@@ -115,6 +118,7 @@ class DeterministicEvaluationTests(TestCase):
                     {
                         "type": "number",
                         "key": "d",
+                        "label": "d",
                     }
                 ]
             },

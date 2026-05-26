@@ -82,6 +82,8 @@ TEST_CONFIGURATION = {
         {
             "type": "editgrid",
             "key": "editgrid",
+            "label": "Repeating group",
+            "groupLabel": "Item",
             "components": [
                 {
                     "type": "content",

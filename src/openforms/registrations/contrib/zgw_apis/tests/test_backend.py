@@ -46,6 +46,7 @@ NP_INITIATOR_FIELDS = [
     {
         "key": "achternaam",
         "type": "textfield",
+        "label": "achternaam",
         "registration": {
             "attribute": RegistrationAttribute.initiator_geslachtsnaam,
         },
@@ -53,6 +54,7 @@ NP_INITIATOR_FIELDS = [
     {
         "key": "postcode",
         "type": "textfield",
+        "label": "postcode",
         "registration": {
             "attribute": RegistrationAttribute.initiator_postcode,
         },
@@ -60,11 +62,13 @@ NP_INITIATOR_FIELDS = [
     {
         "key": "woonplaats",
         "type": "textfield",
+        "label": "woonplaats",
         "registration": {"attribute": RegistrationAttribute.initiator_woonplaats},
     },
     {
         "key": "straat",
         "type": "textfield",
+        "label": "straat",
         "registration": {
             "attribute": RegistrationAttribute.initiator_straat,
         },
@@ -72,6 +76,7 @@ NP_INITIATOR_FIELDS = [
     {
         "key": "huisnummer",
         "type": "number",
+        "label": "huisnummer",
         "registration": {
             "attribute": RegistrationAttribute.initiator_huisnummer,
         },
@@ -696,6 +701,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             [
                 {
                     "key": "handelsnaam",
+                    "label": "handelsnaam",
                     "type": "textfield",
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_handelsnaam,
@@ -703,6 +709,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 },
                 {
                     "key": "postcode",
+                    "label": "postcode",
                     "type": "textfield",
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_postcode,
@@ -710,6 +717,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 },
                 {
                     "key": "woonplaats",
+                    "label": "woonplaats",
                     "type": "textfield",
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_woonplaats
@@ -717,6 +725,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 },
                 {
                     "key": "straat",
+                    "label": "straat",
                     "type": "textfield",
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_straat,
@@ -724,6 +733,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 },
                 {
                     "key": "huisnummer",
+                    "label": "huisnummer",
                     "type": "number",
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_huisnummer,
@@ -1566,6 +1576,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                     "key": "editgrid",
                     "type": "editgrid",
                     "label": "Editgrid",
+                    "groupLabel": "item",
                     "components": [
                         {
                             "type": "time",

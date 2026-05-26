@@ -126,7 +126,6 @@ class DynamicDatetimeConfigurationTests(TestCase):
                 "minDate": {
                     "mode": "relativeToVariable",
                     "variable": "now",
-                    "operator": "",
                     "delta": {
                         "days": None,
                         "months": None,
@@ -152,7 +151,6 @@ class DynamicDatetimeConfigurationTests(TestCase):
                 "minDate": {
                     "mode": "relativeToVariable",
                     "variable": "now",
-                    "operator": "",
                     "delta": {
                         "days": None,
                         "months": None,

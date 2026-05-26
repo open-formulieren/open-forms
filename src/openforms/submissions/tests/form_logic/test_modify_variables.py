@@ -29,10 +29,12 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "number",
                         "key": "nLargeBoxes",
+                        "label": "nLargeBoxes",
                     },
                     {
                         "type": "number",
                         "key": "nGiganticBoxes",
+                        "label": "nGiganticBoxes",
                     },
                 ]
             },
@@ -103,9 +105,11 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "editgrid",
                         "key": "cars",
+                        "label": "cars",
+                        "groupLabel": "item",
                         "components": [
-                            {"type": "textfield", "key": "colour"},
-                            {"type": "number", "key": "price"},
+                            {"type": "textfield", "key": "colour", "label": "colour"},
+                            {"type": "number", "key": "price", "label": "price"},
                         ],
                     },
                 ]
@@ -208,6 +212,7 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "date",
                         "key": "datum",
+                        "label": "datum",
                     },
                 ]
             },
@@ -281,14 +286,17 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "number",
                         "key": "age",
+                        "label": "age",
                     },
                     {
                         "type": "number",
                         "key": "income",
+                        "label": "income",
                     },
                     {
                         "type": "checkbox",
                         "key": "canApply",
+                        "label": "canApply",
                     },
                 ]
             },
@@ -379,29 +387,35 @@ class VariableModificationTests(TestCase):
                     {
                         "key": "container1",
                         "type": "fieldset",
+                        "label": "fieldset",
                         "components": [
                             {
                                 "type": "number",
+                                "label": "number",
                                 "key": "age",
                             }
                         ],
                     },
                     {
                         "type": "columns",
+                        "label": "columns",
                         "key": "container2",
                         "columns": [
                             {
+                                "size": 12,
                                 "components": [
                                     {
                                         "type": "number",
+                                        "label": "number",
                                         "key": "income",
                                     }
-                                ]
+                                ],
                             }
                         ],
                     },
                     {
                         "type": "checkbox",
+                        "label": "checkbox",
                         "key": "yo.im.nested.canApply",
                     },
                 ]
@@ -492,10 +506,12 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "number",
                         "key": "age",
+                        "label": "age",
                     },
                     {
                         "type": "number",
                         "key": "income",
+                        "label": "income",
                     },
                 ]
             },
@@ -618,6 +634,7 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "children",
                         "key": "children",
+                        "label": "children",
                         "enableSelection": False,
                     },
                 ]
@@ -630,10 +647,16 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "editgrid",
                         "key": "editgrid",
+                        "label": "editgrid",
+                        "groupLabel": "item",
                         "components": [
-                            {"type": "bsn", "key": "bsn"},
-                            {"type": "textfield", "key": "childName"},
-                            {"type": "textfield", "key": "affixes"},
+                            {"type": "bsn", "key": "bsn", "label": "bsn"},
+                            {
+                                "type": "textfield",
+                                "key": "childName",
+                                "label": "childName",
+                            },
+                            {"type": "textfield", "key": "affixes", "label": "affixes"},
                         ],
                     }
                 ]
@@ -755,6 +778,7 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "children",
                         "key": "children",
+                        "label": "children",
                         "enableSelection": True,
                     },
                 ]
@@ -767,9 +791,15 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "editgrid",
                         "key": "editgrid",
+                        "label": "editgrid",
+                        "groupLabel": "item",
                         "components": [
-                            {"type": "bsn", "key": "bsn"},
-                            {"type": "textfield", "key": "childName"},
+                            {"type": "bsn", "key": "bsn", "label": "bsn"},
+                            {
+                                "type": "textfield",
+                                "key": "childName",
+                                "label": "childName",
+                            },
                         ],
                     }
                 ]
@@ -886,6 +916,7 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "children",
                         "key": "children",
+                        "label": "children",
                         "enableSelection": True,
                     },
                 ]
@@ -898,9 +929,19 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "editgrid",
                         "key": "editgrid",
+                        "label": "editgrid",
+                        "groupLabel": "item",
                         "components": [
-                            {"type": "bsn", "key": "bsn"},
-                            {"type": "textfield", "key": "childName"},
+                            {
+                                "type": "bsn",
+                                "key": "bsn",
+                                "label": "bsn",
+                            },
+                            {
+                                "type": "textfield",
+                                "key": "childName",
+                                "label": "childName",
+                            },
                         ],
                     }
                 ]
@@ -1029,6 +1070,7 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "children",
                         "key": "children",
+                        "label": "children",
                         "enableSelection": True,
                     },
                 ]
@@ -1041,9 +1083,19 @@ class VariableModificationTests(TestCase):
                     {
                         "type": "editgrid",
                         "key": "editgrid",
+                        "label": "editgrid",
+                        "groupLabel": "item",
                         "components": [
-                            {"type": "bsn", "key": "bsn"},
-                            {"type": "textfield", "key": "childName"},
+                            {
+                                "type": "bsn",
+                                "key": "bsn",
+                                "label": "bsn",
+                            },
+                            {
+                                "type": "textfield",
+                                "key": "childName",
+                                "label": "childName",
+                            },
                         ],
                     }
                 ]

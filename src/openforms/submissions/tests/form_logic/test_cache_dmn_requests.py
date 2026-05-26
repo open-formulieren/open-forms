@@ -17,9 +17,9 @@ class TestCacheDMNRequests(SubmissionsMixin, APITestCase):
     def test_requests_not_made_multiple_times(self, m):
         submission = SubmissionFactory.from_components(
             [
-                {"type": "textfield", "key": "fieldA"},
-                {"type": "textfield", "key": "fieldB"},
-                {"type": "textfield", "key": "fieldC"},
+                {"type": "textfield", "key": "fieldA", "label": "fieldA"},
+                {"type": "textfield", "key": "fieldB", "label": "fieldB"},
+                {"type": "textfield", "key": "fieldC", "label": "fieldC"},
             ]
         )
 
@@ -122,9 +122,22 @@ class TestCacheDMNRequests(SubmissionsMixin, APITestCase):
     def test_requests_not_made_multiple_times_with_non_serialiseable_vars(self, m):
         submission = SubmissionFactory.from_components(
             [
-                {"type": "date", "key": "fieldA", "multiple": True},
-                {"type": "datetime", "key": "fieldB"},
-                {"type": "textfield", "key": "fieldC"},
+                {
+                    "type": "date",
+                    "key": "fieldA",
+                    "multiple": True,
+                    "defaultValue": [],
+                },
+                {
+                    "type": "datetime",
+                    "key": "fieldB",
+                    "label": "fieldB",
+                },
+                {
+                    "type": "textfield",
+                    "key": "fieldC",
+                    "label": "fieldC",
+                },
             ]
         )
 

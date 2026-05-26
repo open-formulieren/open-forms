@@ -611,6 +611,8 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                         # `omschrijving` "Attachment Informatieobjecttype other catalog":
                         "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
                     },
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
                 {
                     "key": "field2",
@@ -618,6 +620,8 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "registration": {
                         "informatieobjecttype": "",
                     },
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
             ],
             language_code="en",
@@ -695,6 +699,8 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 {
                     "key": "fileUpload",
                     "type": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "registration": {
                         # `omschrijving` "Attachment Informatieobjecttype other catalog":
                         "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
@@ -777,7 +783,10 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "components": [
                         {
                             "key": "fileUpload",
+                            "label": "fileUpload",
                             "type": "file",
+                            "file": {"type": []},
+                            "filePattern": "",
                             "registration": {
                                 # `omschrijving` "Attachment Informatieobjecttype other catalog":
                                 "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
@@ -1161,6 +1170,8 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "type": "file",
                     "key": "file",
                     "label": "File",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "registration": {
                         "documentType": {
                             "catalogue": {

@@ -168,6 +168,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "age",
+                        "label": "age",
                     }
                 ]
             },
@@ -179,6 +180,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "driverId",
+                        "label": "driverId",
                     }
                 ]
             },
@@ -234,6 +236,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "age",
+                        "label": "Age",
                     }
                 ]
             },
@@ -246,6 +249,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "number",
                         "key": "age",
+                        "label": "Age",
                     }
                 ]
             },
@@ -258,6 +262,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "radio",
                         "key": "questionInput",
+                        "label": "Question input",
                         "values": [
                             {"label": "Yes", "value": "yes"},
                             {
@@ -271,6 +276,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                         "type": "textfield",
                         "hidden": True,
                         "key": "driverId",
+                        "label": "Driver ID",
                         "validate": {
                             "required": True,
                         },
@@ -286,6 +292,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "driverId",
+                        "label": "Driver ID",
                     }
                 ]
             },
@@ -298,6 +305,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "driverId",
+                        "label": "Driver ID",
                     }
                 ]
             },
@@ -532,6 +540,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "textfield",
                         "key": "testComponent",
+                        "label": "testComponent",
                     },
                 ]
             },
@@ -592,6 +601,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {
                         "key": "someCondition",
                         "type": "radio",
+                        "label": "someCondition",
                         "values": [
                             {"label": "A", "value": "a"},
                             {"label": "B", "value": "b"},
@@ -738,12 +748,14 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {
                         "key": "someCondition",
                         "type": "radio",
+                        "label": "someCondition",
                         "openForms": {
                             "dataSrc": DataSrcOptions.variable,
                             "itemsExpression": [
                                 ["a", "A"],
                             ],
                         },
+                        "values": [],
                     },
                 ]
             },

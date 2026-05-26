@@ -102,8 +102,20 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "label": "some_list",
                     "defaultValue": [],
                 },
-                {"key": "file1", "type": "file", "label": "file1"},
-                {"key": "file2", "type": "file", "label": "file2"},
+                {
+                    "key": "file1",
+                    "type": "file",
+                    "label": "file1",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
+                {
+                    "key": "file2",
+                    "type": "file",
+                    "label": "file2",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
             ],
             submitted_data={
                 "foo": "bar",
@@ -505,7 +517,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             completed_on=timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0)),
             components_list=[
                 {"key": "voornaam", "type": "textfield"},
-                {"key": "someFile", "type": "file"},
+                {
+                    "key": "someFile",
+                    "type": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
             ],
             submitted_data={
                 "voornaam": "Foo",
@@ -930,6 +947,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                         {
                             "columns": [
                                 {
+                                    "size": 6,
                                     "components": [
                                         {
                                             "key": "dev1Naam",
@@ -940,6 +958,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                                     ],
                                 },
                                 {
+                                    "size": 6,
                                     "components": [
                                         {
                                             "key": "dev1taken",
@@ -989,6 +1008,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                         {
                             "columns": [
                                 {
+                                    "size": 6,
                                     "components": [
                                         {
                                             "key": "dev2Naam",
@@ -999,6 +1019,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                                     ],
                                 },
                                 {
+                                    "size": 6,
                                     "components": [
                                         {
                                             "key": "dev2taken",
@@ -1076,8 +1097,20 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "defaultValue": [],
                     "label": "some_list",
                 },
-                {"key": "file1", "type": "file", "label": "file1"},
-                {"key": "file2", "type": "file", "label": "file2"},
+                {
+                    "key": "file1",
+                    "type": "file",
+                    "label": "file1",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
+                {
+                    "key": "file2",
+                    "type": "file",
+                    "label": "file2",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
             ],
             submitted_data={
                 "foo": "bar",
@@ -1226,18 +1259,41 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submission=submission,
             form_step__form_definition__configuration={
                 "components": [
-                    {"key": "normalAttachment", "type": "file"},
+                    {
+                        "key": "normalAttachment",
+                        "type": "file",
+                        "label": "file",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    },
                     {
                         "key": "repeatingGroup",
                         "type": "editgrid",
+                        "label": "repeatingGroup",
+                        "groupLabel": "item",
                         "components": [
-                            {"key": "attachmentInRepeatingGroup", "type": "file"}
+                            {
+                                "key": "attachmentInRepeatingGroup",
+                                "label": "attachmentInRepeatingGroup",
+                                "type": "file",
+                                "file": {"type": []},
+                                "filePattern": "",
+                            }
                         ],
                     },
                     {
                         "key": "fieldset",
                         "type": "fieldset",
-                        "components": [{"key": "attachmentInFieldset", "type": "file"}],
+                        "label": "fieldset",
+                        "components": [
+                            {
+                                "key": "attachmentInFieldset",
+                                "label": "attachmentInFieldset",
+                                "type": "file",
+                                "file": {"type": []},
+                                "filePattern": "",
+                            }
+                        ],
                     },
                 ]
             },
