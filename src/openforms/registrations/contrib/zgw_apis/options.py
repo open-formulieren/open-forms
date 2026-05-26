@@ -173,7 +173,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
         allow_blank=True,
         help_text=_(
-            "Description (omschrijving) of the zaak. You can use the expressions like "
+            "Description (omschrijving) of the case. You can use the expressions like "
             "'{{ form_name }}' or other variables here. The resolved string is limited to 80 chars. "
             "If empty, the form name is used."
         ),
@@ -186,7 +186,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
         allow_blank=True,
         help_text=_(
-            "Explanation (toelichting) of the zaak. You can use the expressions like "
+            "Explanation (toelichting) of the case. You can use the expressions like "
             "'{{ form_name }}' or other variables here."
         ),
         validators=[

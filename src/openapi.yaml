@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Open Forms API
-  version: 3.5.0
+  version: 4.0.0-alpha.0
   description: |2
 
     Open Forms provides an API to manage multi-page or multi-step forms.
@@ -7936,7 +7936,7 @@ components:
           - $ref: '#/components/schemas/FormTypeEnum'
           title: Form type
           description: |-
-            The type of the form. The choices are regular, appointment or a single page form. Depending on the choice a different form design is required/rendered.
+            The type of the form. The choices are regular, appointment or a single step form. Depending on the choice a different form design is required/rendered.
 
             * `regular` - Regular
             * `appointment` - Appointment
@@ -8968,7 +8968,7 @@ components:
           - $ref: '#/components/schemas/FormTypeEnum'
           title: Form type
           description: |-
-            The type of the form. The choices are regular, appointment or a single page form. Depending on the choice a different form design is required/rendered.
+            The type of the form. The choices are regular, appointment or a single step form. Depending on the choice a different form design is required/rendered.
 
             * `regular` - Regular
             * `appointment` - Appointment
@@ -10004,7 +10004,7 @@ components:
           - $ref: '#/components/schemas/FormTypeEnum'
           title: Form type
           description: |-
-            The type of the form. The choices are regular, appointment or a single page form. Depending on the choice a different form design is required/rendered.
+            The type of the form. The choices are regular, appointment or a single step form. Depending on the choice a different form design is required/rendered.
 
             * `regular` - Regular
             * `appointment` - Appointment

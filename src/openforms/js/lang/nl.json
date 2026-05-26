@@ -277,7 +277,7 @@
     "originalDefault": "Variant"
   },
   "4binPe": {
-    "defaultMessage": "Comma-separate list values",
+    "defaultMessage": "Door komma's gescheiden waarden",
     "description": "StUF-ZDS extraElement serializeListToCsv label",
     "originalDefault": "Comma-separate list values"
   },
@@ -512,7 +512,7 @@
     "originalDefault": "Edit variable {name}"
   },
   "8sDSem": {
-    "defaultMessage": "Single step",
+    "defaultMessage": "Enkele stap",
     "description": "single step form type option label",
     "originalDefault": "Single step"
   },
@@ -1427,7 +1427,7 @@
     "originalDefault": "Change text"
   },
   "M8nTet": {
-    "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms.",
+    "defaultMessage": "Geeft aan of de gebruiker het formulier kan verzenden en of de overzichtspagina getoond wordt als het formulier niet verzonden kan worden. Inzenden is altijd toegestaan voor de `enkele stap` formulieren.",
     "description": "Form submissionAllowed field help text",
     "originalDefault": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms."
   },
@@ -1662,7 +1662,7 @@
     "originalDefault": "Output mapping"
   },
   "QCEWHo": {
-    "defaultMessage": "Single step can be enabled only when there is exactly one form step configured.",
+    "defaultMessage": "Enkele stap kan pas ingeschakeld worden als er precies één formulier stap geconfigureerd is.",
     "description": "Single step warning icon text",
     "originalDefault": "Single step can be enabled only when there is exactly one form step configured."
   },
@@ -1847,7 +1847,7 @@
     "originalDefault": "Base"
   },
   "TU0Bku": {
-    "defaultMessage": "Appointment",
+    "defaultMessage": "Afspraak",
     "description": "appointment form type option label",
     "originalDefault": "Appointment"
   },
@@ -1977,6 +1977,7 @@
   "WmcA8i": {
     "defaultMessage": "Type",
     "description": "Form type field label",
+    "isTranslated": true,
     "originalDefault": "Type"
   },
   "WnKF/i": {
@@ -2542,7 +2543,7 @@
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
   },
   "gI+MHU": {
-    "defaultMessage": "Regular",
+    "defaultMessage": "Standaard",
     "description": "regular form type option label",
     "originalDefault": "Regular"
   },
@@ -3500,7 +3501,7 @@
     "originalDefault": "Deactivate on"
   },
   "x38ph4": {
-    "defaultMessage": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single step form.",
+    "defaultMessage": "Indien aangevinkt dan worden de stappen van het formulier aan de gebruiker getoond. Dit is niet relevant voor `enkele stap` formulieren.",
     "description": "Progress indicator help text",
     "originalDefault": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single step form."
   },
@@ -3653,7 +3654,7 @@
     "originalDefault": "Submission settings"
   },
   "zsTGAG": {
-    "defaultMessage": "Type of the form, used to determine how the form is presented and behaves.",
+    "defaultMessage": "Type van het formulier. Dit bepaald hoe het formulier wordt gepresenteerd en hoe het zich gedraagt.",
     "description": "Form type field help text",
     "originalDefault": "Type of the form, used to determine how the form is presented and behaves."
   },

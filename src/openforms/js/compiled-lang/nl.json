@@ -656,7 +656,7 @@
   "4binPe": [
     {
       "type": 0,
-      "value": "Comma-separate list values"
+      "value": "Door komma's gescheiden waarden"
     }
   ],
   "4sFGgA": [
@@ -1216,7 +1216,7 @@
   "8sDSem": [
     {
       "type": 0,
-      "value": "Single step"
+      "value": "Enkele stap"
     }
   ],
   "91XY1Q": [
@@ -2951,7 +2951,7 @@
   "M8nTet": [
     {
       "type": 0,
-      "value": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms."
+      "value": "Geeft aan of de gebruiker het formulier kan verzenden en of de overzichtspagina getoond wordt als het formulier niet verzonden kan worden. Inzenden is altijd toegestaan voor de `enkele stap` formulieren."
     }
   ],
   "M9JbDC": [
@@ -3365,7 +3365,7 @@
   "QCEWHo": [
     {
       "type": 0,
-      "value": "Single step can be enabled only when there is exactly one form step configured."
+      "value": "Enkele stap kan pas ingeschakeld worden als er precies één formulier stap geconfigureerd is."
     }
   ],
   "QDBI2H": [
@@ -3755,7 +3755,7 @@
   "TU0Bku": [
     {
       "type": 0,
-      "value": "Appointment"
+      "value": "Afspraak"
     }
   ],
   "TXwGu1": [
@@ -5468,7 +5468,7 @@
   "gI+MHU": [
     {
       "type": 0,
-      "value": "Regular"
+      "value": "Standaard"
     }
   ],
   "gO2sGp": [
@@ -7472,7 +7472,7 @@
   "x38ph4": [
     {
       "type": 0,
-      "value": "Whether the step progression should be displayed in the UI or not. This is not relevant for the single step form."
+      "value": "Indien aangevinkt dan worden de stappen van het formulier aan de gebruiker getoond. Dit is niet relevant voor `enkele stap` formulieren."
     }
   ],
   "x4gaYf": [
@@ -7798,7 +7798,7 @@
   "zsTGAG": [
     {
       "type": 0,
-      "value": "Type of the form, used to determine how the form is presented and behaves."
+      "value": "Type van het formulier. Dit bepaald hoe het formulier wordt gepresenteerd en hoe het zich gedraagt."
     }
   ],
   "zu8ntq": [
