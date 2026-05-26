@@ -31,10 +31,8 @@ from ..factories import (
 from .helpers import (
     click_modal_button,
     close_modal,
-    enter_json_in_editor,
     open_component_options_modal,
     phase,
-    skip_on_webtest,
 )
 
 
@@ -862,77 +860,6 @@ class FormDesignerRegressionTests(E2ETestCase):
 
         await assertState()
 
-    @skip_on_webtest
-    async def test_logic_rule_trigger_from_step_show_saved_value_in_select(self):
-        """
-        Regression test for https://github.com/open-formulieren/open-forms/issues/2636
-        """
-
-        @sync_to_async
-        def setUpTestData():
-            # set up a form
-            form = FormFactory.create(
-                name="Playwright test",
-                name_nl="Playwright test",
-                generate_minimal_setup=True,
-                formstep__form_definition__name_nl="Playwright test",
-                new_logic_evaluation_enabled=False,
-            )
-            return form
-
-        await create_superuser()
-        form = await setUpTestData()
-
-        @sync_to_async
-        def get_formstep_uuid():
-            return str(form.formstep_set.first().uuid)
-
-        formstep_uuid = await get_formstep_uuid()
-
-        admin_url = str(
-            furl(self.live_server_url)
-            / reverse("admin:forms_form_change", args=(form.pk,))
-        )
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-            await page.get_by_role("tab", name="Logic").click()
-
-            with phase("Add logic rule with triggerFromStep"):
-                await page.get_by_text("Add rule").click()
-                await page.get_by_role("button", name="Advanced").click()
-                await page.get_by_title("Advanced options").click()
-                await page.locator("[name='triggerFromStep']").select_option(
-                    label="Playwright test"
-                )
-                editor = page.locator(".monaco-editor")
-                await enter_json_in_editor(page, editor, {"==": [1, 1]})
-
-            with phase("Save logic rule and check state"):
-                await page.get_by_text("Save and continue editing").click()
-                await page.get_by_role("tab", name="Logic").click()
-                await page.get_by_title("Advanced options").click()
-
-                # Verify that the select still holds the correct value
-                await expect(page.locator("[name='triggerFromStep']")).to_have_value(
-                    formstep_uuid
-                )
-
-        @sync_to_async
-        def assertState():
-            form_logic = form.formlogic_set
-
-            self.assertEqual(form_logic.count(), 1)
-
-            created_form_logic = form_logic.first()
-
-            self.assertEqual(
-                created_form_logic.trigger_from_step, form.formstep_set.first()
-            )
-
-        await assertState()
-
     @tag("gh-2769")
     async def test_max_min_date_validation(self):
         @sync_to_async
@@ -1229,61 +1156,6 @@ class FormDesignerRegressionTests(E2ETestCase):
 
             error_node = page.locator("css=.error")
             await expect(error_node).not_to_be_visible()
-
-    @tag("gh-3422")
-    async def test_removing_step_doesnt_break_form(self):
-        @sync_to_async
-        def setUpTestData():
-            # set up a form
-            form = FormFactory.create(
-                name="Form with 2 steps",
-                new_logic_evaluation_enabled=False,
-            )
-            FormStepFactory.create(
-                form=form,
-                form_definition__configuration={
-                    "components": [{"type": "textfield", "key": "textA"}]
-                },
-            )
-            form_step2 = FormStepFactory.create(
-                form=form,
-                form_definition__configuration={
-                    "components": [{"type": "textfield", "key": "textB"}]
-                },
-            )
-            FormLogicFactory.create(form=form, trigger_from_step=form_step2)
-            return form
-
-        await create_superuser()
-        form = await setUpTestData()
-        admin_url = str(
-            furl(self.live_server_url)
-            / reverse("admin:forms_form_change", args=(form.pk,))
-        )
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-
-            await page.get_by_role("tab", name="Steps and fields").click()
-
-            # Delete the second step
-            sidebar = page.locator("css=.edit-panel__nav").get_by_role("list")
-            bin_icon = sidebar.get_by_role("listitem").nth(1).get_by_title("Delete")
-            await bin_icon.click()
-            await page.get_by_role("button", name="Confirm").click()
-
-            await page.get_by_role("tab", name="Logic").click()
-
-            # Check that you can delete the logic rule
-            bin_icon = page.get_by_title("Delete").first
-            await expect(bin_icon).to_be_visible()
-
-            # Check that a warning is present
-            warning = page.get_by_role("listitem").get_by_text(
-                "The selected trigger step could not be found in this form! Please change it!"
-            )
-            await expect(warning).to_be_visible()
 
     @tag("gh-3921")
     async def test_all_components_are_visible_in_component_select_dropdown(self):

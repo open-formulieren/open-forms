@@ -294,12 +294,6 @@ class FormTestCase(TestCase):
 
         self.assertEqual(actual, expected)
 
-    def test_analyse_logic_rules_for_legacy_logic_evaluation(self):
-        form = FormFactory.create(new_logic_evaluation_enabled=False)
-
-        with self.assertRaises(ValueError):
-            form.apply_logic_analysis()
-
 
 class RegressionTests(HypothesisTestCase):
     @given(
@@ -629,32 +623,6 @@ class FormStepBackendLogicEvaluationRequiredTests(SimpleTestCase):
 
 
 class FormLogicTests(TestCase):
-    def test_block_form_logic_trigger_step_other_form(self):
-        form1, form2 = FormFactory.create_batch(2)
-        step = FormStepFactory.create(form=form1)
-        other_step = FormStepFactory.create(form=form2)
-
-        with self.subTest("Invalid configuration"):
-            logic = FormLogicFactory.build(form=form1)
-            logic.trigger_from_step = other_step
-            with self.assertRaises(ValidationError):
-                logic.clean()
-
-        with self.subTest("Valid configuration"):
-            logic = FormLogicFactory.build(form=form1)
-            logic.trigger_from_step = step
-            try:
-                logic.clean()
-            except ValidationError:
-                self.fail("Should be allowed")
-
-        with self.subTest("No trigger from step configured"):
-            logic = FormLogicFactory.build(form=form1)
-            try:
-                logic.clean()
-            except ValidationError:
-                self.fail("Should be allowed")
-
     def test_input_and_output_variable_keys(self):
         form = FormFactory.create(
             generate_minimal_setup=True,

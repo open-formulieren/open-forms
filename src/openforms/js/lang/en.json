@@ -854,11 +854,6 @@
     "description": "Required error message",
     "originalDefault": "This field is required."
   },
-  "DqG0YS": {
-    "defaultMessage": "Enable from step:",
-    "description": "'Trigger from step' label",
-    "originalDefault": "Enable from step:"
-  },
   "DxGKNm": {
     "defaultMessage": "Logic",
     "description": "Logic fieldset title",
@@ -1139,11 +1134,6 @@
     "description": "Reset the submissions counter confirmation message",
     "originalDefault": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?"
   },
-  "HuAm1K": {
-    "defaultMessage": "and the step \"{step}\" has been reached",
-    "description": "Additional 'trigger from step' condition",
-    "originalDefault": "and the step \"{step}\" has been reached"
-  },
   "I0bgsg": {
     "defaultMessage": "Successful Submissions Removal Method field label",
     "description": "Successful Submissions Removal Method",
@@ -1309,11 +1299,6 @@
     "description": "Accessible label for check/uncheck single file component",
     "originalDefault": "Update {label} configuration?"
   },
-  "KYTAJZ": {
-    "defaultMessage": "(checked for every step)",
-    "description": "'Trigger from step' information for when unset",
-    "originalDefault": "(checked for every step)"
-  },
   "KjDolH": {
     "defaultMessage": "Manually defined",
     "description": "JSON editor: \"manual\" variable source label",
@@ -1403,11 +1388,6 @@
     "defaultMessage": "Plugin configuration: Email",
     "description": "Email registration options modal title",
     "originalDefault": "Plugin configuration: Email"
-  },
-  "LiXrER": {
-    "defaultMessage": "The selected trigger step could not be found in this form! Please change it!",
-    "description": "Warning missing trigger step",
-    "originalDefault": "The selected trigger step could not be found in this form! Please change it!"
   },
   "LkrFow": {
     "defaultMessage": "Something went wrong while retrieving the available catalogues or case/document types defined in the selected catalogue. Please check that the services in the selected API group are configured correctly.",
@@ -1508,11 +1488,6 @@
     "defaultMessage": "Case type API resource URL in the Catalogi API.",
     "description": "ZGW APIs registration options 'CaseType' help text",
     "originalDefault": "Case type API resource URL in the Catalogi API."
-  },
-  "NqShTs": {
-    "defaultMessage": "Experimental features",
-    "description": "Form feature flags fieldset title",
-    "originalDefault": "Experimental features"
   },
   "NrF5vy": {
     "defaultMessage": "Document type",
@@ -1838,11 +1813,6 @@
     "defaultMessage": "the path should not have a leading slash",
     "description": "Service fetch configuration modal form Path field help text",
     "originalDefault": "the path should not have a leading slash"
-  },
-  "TPy506": {
-    "defaultMessage": "Enable new logic rule evaluation",
-    "description": "New logic rule evaluation feature flag label",
-    "originalDefault": "Enable new logic rule evaluation"
   },
   "TQv+8T": {
     "defaultMessage": "Action property selection",
@@ -2229,11 +2199,6 @@
     "description": "DMN evaluation configuration errors message",
     "originalDefault": "There are errors in the DMN configuration."
   },
-  "aoNZfg": {
-    "defaultMessage": "Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules.",
-    "description": "New logic disabled reason explanation",
-    "originalDefault": "Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules."
-  },
   "auZOcD": {
     "defaultMessage": "Mapping expression",
     "description": "Service fetch configuration modal form mapping expression field label",
@@ -2438,11 +2403,6 @@
     "defaultMessage": "Attachments",
     "description": "Email registration: attachments fieldset title",
     "originalDefault": "Attachments"
-  },
-  "eLDxD5": {
-    "defaultMessage": "Advanced options",
-    "description": "Logic rule advanced options icon title",
-    "originalDefault": "Advanced options"
   },
   "eLIclD": {
     "defaultMessage": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters.",
@@ -2913,11 +2873,6 @@
     "defaultMessage": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case.",
     "description": "ZGW APIs registration options 'objecttype' help text",
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
-  },
-  "lyU7fP": {
-    "defaultMessage": "Enabling this will analyze logic rules and re-order them according to their dependency on other logic rules (happens when the form is saved). Each rule will be automatically assigned to one or more steps on which it will be executed.",
-    "description": "New logic rule evaluation feature flag help text",
-    "originalDefault": "Enabling this will analyze logic rules and re-order them according to their dependency on other logic rules (happens when the form is saved). Each rule will be automatically assigned to one or more steps on which it will be executed."
   },
   "m/NVtu": {
     "defaultMessage": "Transform to list",

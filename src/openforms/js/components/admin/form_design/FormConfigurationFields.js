@@ -526,7 +526,6 @@ const FormConfigurationFields = ({
   onAuthPluginChange,
   availableCategories,
   formStepsAmount,
-  hasTriggerFromStep = false,
 }) => {
   const {
     uuid,
@@ -549,7 +548,6 @@ const FormConfigurationFields = ({
     askPrivacyConsent,
     askStatementOfTruth,
     appointmentOptions,
-    newLogicEvaluationEnabled,
   } = form;
   const intl = useIntl();
 
@@ -767,51 +765,6 @@ const FormConfigurationFields = ({
         askStatementOfTruth={askStatementOfTruth}
         onChange={onChange}
       />
-
-      <Fieldset
-        title={
-          <FormattedMessage
-            description="Form feature flags fieldset title"
-            defaultMessage="Experimental features"
-          />
-        }
-        collapsible
-        initialCollapsed
-      >
-        {hasTriggerFromStep && (
-          <FormRow>
-            <p>
-              <FormattedMessage
-                description="New logic disabled reason explanation"
-                defaultMessage="Before you can enable the new logic evaluation, remove the 'trigger from step' configuration from your logic rules."
-              />
-            </p>
-          </FormRow>
-        )}
-        <FormRow>
-          <Checkbox
-            name="form.newLogicEvaluationEnabled"
-            label={
-              <FormattedMessage
-                description="New logic rule evaluation feature flag label"
-                defaultMessage="Enable new logic rule evaluation"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                description="New logic rule evaluation feature flag help text"
-                defaultMessage={`Enabling this will analyze logic rules and re-order them according
-                 to their dependency on other logic rules (happens when the form is saved). Each
-                 rule will be automatically assigned to one or more steps on which it will be
-                 executed.`}
-              />
-            }
-            checked={newLogicEvaluationEnabled}
-            disabled={hasTriggerFromStep}
-            onChange={event => onCheckboxChange(event, newLogicEvaluationEnabled)}
-          />
-        </FormRow>
-      </Fieldset>
     </>
   );
 };
@@ -851,7 +804,6 @@ FormConfigurationFields.propTypes = {
   selectedAuthPlugins: PropTypes.array.isRequired,
   onAuthPluginChange: PropTypes.func.isRequired,
   formStepsAmount: PropTypes.number.isRequired,
-  hasTriggerFromStep: PropTypes.bool,
 };
 
 export default FormConfigurationFields;

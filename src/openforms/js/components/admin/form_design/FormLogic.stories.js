@@ -223,16 +223,6 @@ export const FullFunctionality = {
 
     availableFormVariables: AVAILABLE_FORM_VARIABLES,
     availableFormSteps: AVAILABLE_FORM_STEPS,
-    newLogicEvaluationEnabled: false,
-  },
-
-  play: async ({canvasElement}) => {
-    const canvas = within(canvasElement);
-
-    const icons = await canvas.findAllByTitle('Geavanceerde opties');
-    expect(icons[0]).toBeVisible();
-    await userEvent.click(icons[0]);
-    expect(canvas.getByText('Inschakelen vanaf stap:')).toBeVisible();
   },
 };
 
@@ -392,7 +382,6 @@ export const WithLogicRuleAnalysis = {
 
     availableFormVariables: AVAILABLE_FORM_VARIABLES,
     availableFormSteps: AVAILABLE_FORM_STEPS,
-    newLogicEvaluationEnabled: true,
   },
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);

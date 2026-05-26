@@ -234,3 +234,31 @@ The default way to generate public references for the ZGW APIs registration plug
 Previously, Open Forms always used case numbers as the submission public references.
 Since Open Forms 3.5, both options have been available, but the default remained the ZGW API-generated
 case numbers. The default is now switched to Open Forms-generated public references.
+
+Logic engine rework
+===================
+
+.. note:: Relevant for: devops, form designers
+
+The support for legacy logic evaluation has been removed, which means all forms will use the new logic evaluation.
+Since Open Forms will now automatically assign all logic rules to the relevant form steps, it is also no longer
+possible to specify a "trigger from step" for a logic rule.
+
+TODO: this should probably a separate page describing the logic engine in more detail
+For more information about the new logic evaluation, please refer to the
+:ref:`detailed release notes of 3.5.0 <installation_upgrade_350>`.
+
+.. warning::
+
+    Before upgrading, all existing forms should be converted to the new logic evaluation. This can be done on a
+    per-form basis, or in bulk using the following management command. Any forms which contain cycles in their
+    logic rules need to be resolved manually. The output of the management command will include relevant form
+    details if this is the case.
+
+    .. code-block:: bash
+
+        python /app/src/manage.py enable_new_logic_evaluation_for_all_forms
+
+Clearing of values
+------------------
+TODO

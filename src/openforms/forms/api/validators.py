@@ -170,43 +170,6 @@ class FormIOComponentsValidator:
             validator(component)
 
 
-class FormLogicTriggerFromStepFormValidator:
-    requires_context = True
-
-    def __call__(self, attrs: dict, serializer: serializers.Serializer):
-        trigger_from_step = get_from_serializer_data_or_instance(
-            "trigger_from_step", attrs, serializer
-        )
-        form = get_from_serializer_data_or_instance("form", attrs, serializer)
-        if not form or not trigger_from_step:
-            return
-
-        if form.new_logic_evaluation_enabled:
-            raise serializers.ValidationError(
-                {
-                    "trigger_from_step": serializers.ErrorDetail(
-                        _(
-                            "'Trigger from step' is not supported when the new logic "
-                            "evaluation is enabled."
-                        ),
-                        code="invalid",
-                    )
-                }
-            )
-
-        if trigger_from_step.form != form:
-            raise serializers.ValidationError(
-                {
-                    "trigger_from_step": serializers.ErrorDetail(
-                        _(
-                            "You must specify a step that belongs to the same form as the logic rule itself."
-                        ),
-                        code="invalid",
-                    )
-                }
-            )
-
-
 class FormStepIsApplicableIfFirstValidator:
     def __call__(self, attrs: dict):
         if not attrs.get("is_applicable", True) and attrs.get("order") == 0:
