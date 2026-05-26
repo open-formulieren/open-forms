@@ -29,6 +29,15 @@ class PrefillPluginSerializer(PluginBaseSerializer):
             ),
         ),
     )
+    custom_attributes_url = serializers.CharField(
+        source="get_custom_attributes_url",
+        label=_("Custom attributes URL"),
+        help_text=_(
+            "When set, the form builder fetches available prefill attributes "
+            "from this URL instead of the default attributes endpoint."
+        ),
+        allow_null=True,
+    )
     configuration_context = serializers.JSONField(
         label=_("Extra configuration context"),
         help_text=_(

@@ -141,6 +141,19 @@ class YiviContext(TypedDict):
     authorizee: YiviAuthorizee
 
 
+class PluginAuthContext(TypedDict):
+    """Generic auth context for third-party plugins that set manage_auth_context = True.
+
+    Plugins that manage their own auth context return a dict matching this shape
+    from their ``auth_info_to_auth_context`` method.  Adding this to AnyAuthContext
+    means new wallet/disclosure plugins no longer need to patch this module.
+    """
+
+    source: str
+    levelOfAssurance: str
+    authorizee: dict
+
+
 class EIDASNaturalPersonSubject(TypedDict):
     identifierType: Literal["bsn", "opaque"]
     identifier: str
@@ -210,4 +223,5 @@ type AnyAuthContext = (
     | EIDASCompanyContext
     | EmployeeContext
     | YiviContext
+    | PluginAuthContext
 )

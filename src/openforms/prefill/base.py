@@ -186,5 +186,18 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
         return submission.auth_info.plugin in cls.requires_auth_plugin
 
     @classmethod
+    def get_custom_attributes_url(cls) -> str | None:
+        """Return an absolute API path for fetching context-aware attributes.
+
+        When not ``None``, the form builder will ``GET`` this URL instead of the
+        default ``/api/v2/prefill/plugins/<id>/attributes`` endpoint.  The
+        response must be a JSON array of ``{id, label}`` objects.
+
+        Override this in plugins whose available attributes depend on form-level
+        configuration (e.g. the selected authentication flow).
+        """
+        return None
+
+    @classmethod
     def configuration_context(cls) -> JSONObject | None:
         return None

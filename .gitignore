@@ -31,6 +31,7 @@ __pycache__
 local.py
 /env/
 /venv/
+.venv/
 /media/
 /private_media/
 /static/
@@ -62,3 +63,4 @@ src/token_exchange
 # docker volumes
 setup_configuration/*
 !setup_configuration/.gitkeep
+docker-compose.override.yml

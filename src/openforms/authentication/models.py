@@ -27,6 +27,7 @@ from .types import (
     EIDASCompanyContext,
     EIDASContext,
     EmployeeContext,
+    PluginAuthContext,
     YiviContext,
 )
 
@@ -291,6 +292,7 @@ class AuthInfo(BaseAuthInfo):
         | EIDASCompanyContext
         | EmployeeContext
         | YiviContext
+        | PluginAuthContext
     ):
         if self.attribute_hashed:
             logger.debug("detected_hashed_authentication_attributes", auth_info=self.pk)
