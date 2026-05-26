@@ -99,7 +99,7 @@ def move_zgw_group_config_to_backends(apps, _):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("forms", "0129_remove_form_new_renderer_enabled"),
+        ("forms", "0130_alter_formsexport_export_content"),
         ("objects_api", "0006_alter_objectsapigroupconfig_catalogue_domain"),
         ("zgw_apis", "0003_alter_zgwapigroupconfig_use_generated_zaaknummer"),
     ]
