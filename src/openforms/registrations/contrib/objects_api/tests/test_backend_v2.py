@@ -1564,3 +1564,115 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             attachment_document["informatieobjecttype"],
             "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
         )
+
+    @tag("dh-864")
+    def test_conditional_fieldset_inside_repeating_group(self):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            organisatie_rsin="000000000",
+        )
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "checkbox",
+                    "key": "showNestedFieldset",
+                    "label": "Show nested fieldset",
+                },
+                {
+                    "type": "editgrid",
+                    "key": "repeatingGroup",
+                    "label": "Repeating group",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "editgridTextfield",
+                            "label": "Edit grid text field",
+                        },
+                        {
+                            "type": "fieldset",
+                            "key": "editgridFieldset",
+                            "label": "Edit grid fieldset",
+                            "conditional": {
+                                "show": True,
+                                "when": "showNestedFieldset",
+                                "eq": True,
+                            },
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "container.nestedTextfield",
+                                    "label": "Nested text field",
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+            submitted_data={
+                # leads to no submission data for the fields inside the fieldset,
+                # because they aren't visible
+                "showNestedFieldset": False,
+                "repeatingGroup": [
+                    {
+                        "editgridTextfield": "foo",
+                    }
+                ],
+            },
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
+        )
+        options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "variables_mapping": [
+                {
+                    "variable_key": "showNestedFieldset",
+                    "target_path": ["fieldsetShown"],
+                },
+                {
+                    "variable_key": "repeatingGroup",
+                    "target_path": ["repeatingGroupItems"],
+                },
+            ],
+            "transform_to_list": [],
+            "iot_attachment": "",
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "upload_submission_csv": False,
+        }
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        record_data = result["record"]["data"]
+        self.assertEqual(
+            record_data,
+            {
+                "fieldsetShown": False,
+                "repeatingGroupItems": [
+                    {
+                        "editgridTextfield": "foo",
+                        # the component key structure is used in the output of the mapped
+                        # item of the edit grid.
+                        # Note that DH would expect this parent key and child not to be
+                        # present at all, however because of #6007 we can't do that,
+                        # unless #6012 gets implemented.
+                        "container": {
+                            "nestedTextfield": "",
+                        },
+                    },
+                ],
+            },
+        )
