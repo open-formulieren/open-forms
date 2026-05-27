@@ -132,6 +132,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         }
         self.assertEqual(response.json(), expected)
 
+    @tag("gh-6320")
     def test_dynamic_form_definition(self):
         register = ComponentRegistry()
         register("selectboxes")(SelectBoxes)
@@ -160,7 +161,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "defaultConfiguration": {
                 "components": [
                     {
-                        "label": "Some field",
+                        "label": "Rewritten label",
                         "key": "someField",
                         "type": "textfield",
                     },
@@ -458,6 +459,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(textfield["key"], "bar")
         self.assertEqual(textfield["label"], "Kneipe")
 
+    @tag("gh-6320")
     def test_component_properties_are_translated(self):
         submission = SubmissionFactory.create(
             language_code="en",
@@ -554,39 +556,47 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             },
         )
 
-        configuration = self.client.get(endpoint).json()["configuration"]
+        response_data = self.client.get(endpoint).json()
 
-        wrapped_configuration = FormioConfigurationWrapper(configuration)
-        expected = {
-            "repeatingGroup1": {
-                "label": "Repeating group 1",
-                "tooltip": "First tip",
-                "groupLabel": "Item",
-            },
-            "text1": {
-                "label": "Text 1",
-            },
-        }
+        for _configuration in ("configuration", "defaultConfiguration"):
+            with self.subTest(configuration=_configuration):
+                configuration = response_data[_configuration]
+                wrapped_configuration = FormioConfigurationWrapper(configuration)
+                expected = {
+                    "repeatingGroup1": {
+                        "label": "Repeating group 1",
+                        "tooltip": "First tip",
+                        "groupLabel": "Item",
+                    },
+                    "text1": {
+                        "label": "Text 1",
+                    },
+                }
 
-        for key, translations in expected.items():
-            for prop, text in translations.items():
-                with self.subTest(component=key, property=prop, expected=text):
-                    component = wrapped_configuration[key]
+                for key, translations in expected.items():
+                    for prop, text in translations.items():
+                        with self.subTest(component=key, property=prop, expected=text):
+                            component = wrapped_configuration[key]
 
-                    self.assertEqual(component[prop], text)
+                            self.assertEqual(component[prop], text)
 
-        self.assertEqual(wrapped_configuration["radio1"]["values"][0]["label"], "One")
-        self.assertEqual(
-            wrapped_configuration["radio1"]["tooltip"],
-            "Radio Giraffe's tip of the week",
-        )
-        self.assertEqual(
-            wrapped_configuration["select1"]["data"]["values"][0]["label"], "1st Choice"
-        )
+                self.assertEqual(
+                    wrapped_configuration["radio1"]["values"][0]["label"], "One"
+                )
+                self.assertEqual(
+                    wrapped_configuration["radio1"]["tooltip"],
+                    "Radio Giraffe's tip of the week",
+                )
+                self.assertEqual(
+                    wrapped_configuration["select1"]["data"]["values"][0]["label"],
+                    "1st Choice",
+                )
 
-        # assert translation doesn't invent attributes.
-        self.assertNotIn("label", wrapped_configuration["radio1"]["values"][1])
-        self.assertNotIn("label", wrapped_configuration["select1"]["data"]["values"][1])
+                # assert translation doesn't invent attributes.
+                self.assertNotIn("label", wrapped_configuration["radio1"]["values"][1])
+                self.assertNotIn(
+                    "label", wrapped_configuration["select1"]["data"]["values"][1]
+                )
 
     def test_dynamic_date_component_config_based_on_variables(self):
         form = FormFactory.create(
