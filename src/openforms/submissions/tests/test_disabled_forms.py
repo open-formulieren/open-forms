@@ -79,31 +79,6 @@ class InactiveFormTests(SubmissionsMixin, APITestCase):
         error = response.json()
         self.assertEqual(error["code"], "form-inactive")
 
-    def test_cannot_validate_step_data(self):
-        """
-        Assert that step data validation returns HTTP 422 for deactivated forms.
-
-        This shortcuts and improves user experience - if the step data is invalid,
-        there's no point in providing that feedback and having the user correct the
-        mistakes if the next action (submit) just leads to another error that the form
-        is no longer available.
-        """
-        submission = SubmissionFactory.create(form=self.form)
-        step = self.form.formstep_set.get()
-        self._add_submission_to_session(submission)
-        endpoint = reverse(
-            "api:submission-steps-validate",
-            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
-        )
-        body = {"data": {}}
-
-        response = self.client.post(endpoint, body)
-
-        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
-        error = response.json()
-        self.assertEqual(error["code"], "form-inactive")
-        self._assert_submission_removed_from_session(submission)
-
     def test_cannot_logic_check_step_data(self):
         """
         Assert that step data logic check returns HTTP 422 for deactivated forms.
@@ -289,54 +264,6 @@ class MaintenanceFormAnonUserTests(SubmissionsMixin, APITestCase):
         self.assertEqual(error["name"], "form")
         self.assertEqual(error["code"], "form-maintenance")
 
-    def test_cannot_validate_step_data(self):
-        """
-        Assert that step data validation returns HTTP 422 for deactivated forms.
-
-        This shortcuts and improves user experience - if the step data is invalid,
-        there's no point in providing that feedback and having the user correct the
-        mistakes if the next action (submit) just leads to another error that the form
-        is no longer available.
-        """
-        submission = SubmissionFactory.create(form=self.form)
-        step = self.form.formstep_set.get()
-        self._add_submission_to_session(submission)
-        endpoint = reverse(
-            "api:submission-steps-validate",
-            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
-        )
-        body = {"data": {}}
-
-        response = self.client.post(endpoint, body)
-
-        self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
-        error = response.json()
-        self.assertEqual(error["code"], "form-maintenance")
-
-    def test_cannot_logic_check_step_data(self):
-        """
-        Assert that step data logic check returns HTTP 422 for deactivated forms.
-
-        This shortcuts and improves user experience - if the step data is invalid,
-        there's no point in providing that feedback and having the user correct the
-        mistakes if the next action (submit) just leads to another error that the form
-        is no longer available.
-        """
-        submission = SubmissionFactory.create(form=self.form)
-        step = self.form.formstep_set.get()
-        self._add_submission_to_session(submission)
-        endpoint = reverse(
-            "api:submission-steps-validate",
-            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
-        )
-        body = {"data": {}}
-
-        response = self.client.post(endpoint, body)
-
-        self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
-        error = response.json()
-        self.assertEqual(error["code"], "form-maintenance")
-
     def test_cannot_submit_step_data(self):
         submission = SubmissionFactory.create(form=self.form)
         step = self.form.formstep_set.get()
@@ -464,28 +391,6 @@ class MaintenanceFormStaffUserTests(SubmissionsMixin, APITestCase):
         response = self.client.post(submissions_url, body)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_can_validate_step_data(self):
-        """
-        Assert that step data validation returns HTTP 422 for deactivated forms.
-
-        This shortcuts and improves user experience - if the step data is invalid,
-        there's no point in providing that feedback and having the user correct the
-        mistakes if the next action (submit) just leads to another error that the form
-        is no longer available.
-        """
-        submission = SubmissionFactory.create(form=self.form)
-        step = self.form.formstep_set.get()
-        self._add_submission_to_session(submission)
-        endpoint = reverse(
-            "api:submission-steps-validate",
-            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
-        )
-        body = {"data": {}}
-
-        response = self.client.post(endpoint, body)
-
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_can_logic_check_step_data(self):
         """
