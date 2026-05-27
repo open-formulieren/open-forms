@@ -612,7 +612,14 @@ class SubmissionStepViewSet(
         in the future. I.e. - a step that is marked as not available will still be submitted
         at the time being.
         """
-        instance, serializer = self._validate_step_input(request)
+        # validate the step input data
+        instance = self.get_object()
+        create = instance.pk is None
+        if create:
+            instance.uuid = SubmissionStep._meta.get_field("uuid").default()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         create = instance.pk is None
         serializer.save()
 
@@ -668,40 +675,6 @@ class SubmissionStepViewSet(
 
         status_code = status.HTTP_200_OK if not create else status.HTTP_201_CREATED
         return Response(serializer.data, status=status_code)
-
-    @extend_schema(
-        summary=_("Store submission step data"),
-        request=SubmissionStepSerializer,
-        responses={
-            204: None,
-            400: ValidationErrorSerializer,
-            403: ExceptionSerializer,
-            FormDeactivated.status_code: ExceptionSerializer,
-            FormMaintenance.status_code: ExceptionSerializer,
-        },
-    )
-    @action(detail=True, methods=["post"])
-    def validate(self, request, *args, **kwargs):
-        """
-        Validate the submission step data before persisting.
-
-        This endpoint runs the same validation logic as the PUT endpoint to store the
-        data. For invalid data, you will get an HTTP 400 response with error details.
-        """
-        self._validate_step_input(request)
-        # if no validation errors were raised, signal an OK to the client
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def _validate_step_input(
-        self, request
-    ) -> tuple[SubmissionStep, SubmissionStepSerializer]:
-        instance = self.get_object()
-        create = instance.pk is None
-        if create:
-            instance.uuid = SubmissionStep._meta.get_field("uuid").default()
-        serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return instance, serializer
 
     @extend_schema(
         summary=_("Apply/check form logic"),
