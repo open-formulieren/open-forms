@@ -28,6 +28,7 @@ from openforms.formio.api.fields import FormioDataField
 from openforms.formio.service import (
     FormioData,
     build_serializer,
+    get_dynamic_configuration,
     rewrite_formio_components_for_request,
 )
 from openforms.formio.utils import iter_components
@@ -400,6 +401,21 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             wrapper = deepcopy(instance.form_step.form_definition.configuration_wrapper)
             rewrite_formio_components_for_request(
                 wrapper, request=self.context["request"]
+            )
+            variables_state = instance.submission.variables_state
+            wrapper = get_dynamic_configuration(
+                wrapper,
+                submission=instance.submission,
+                # dynamic formio component configuration may depend on filled out data,
+                # but those cases should land us in the 'require backend' mode for the
+                # logic check and then this whole code branch is irrelevant. However,
+                # static variables can be used as input as well for some dynamic
+                # evaluation, most notably the future/past modes of date/datetime
+                # fields, so we pass a minimal view of the submission data.
+                data=variables_state.get_data(
+                    include_static_variables=True,
+                    include_unsaved=False,
+                ),
             )
             default_configuration = wrapper.configuration
 

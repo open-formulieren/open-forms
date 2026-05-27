@@ -1071,8 +1071,17 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "slug": step.slug,
             "defaultConfiguration": {
                 "components": [
-                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
-                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                    {
+                        "type": "date",
+                        "key": "dateOfBirth",
+                        "label": "Date of birth",
+                        "placeholder": "dd-mm-jjjj",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    },
                 ]
             },
             "configuration": {
