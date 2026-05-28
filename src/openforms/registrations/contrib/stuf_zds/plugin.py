@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-import warnings
 from collections.abc import MutableMapping
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -424,26 +423,14 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
     def process_vestiging(
         self, submission: Submission, zaak_data: MutableMapping[str, Any]
     ) -> None:
-        vestigings_nummer_key = next(
-            (
-                key
-                for key, value in self.zaak_mapping.items()
-                if value == RegistrationAttribute.initiator_vestigingsnummer
-            ),
-            None,
-        )
-
-        # prioritize the zaak_mapping as currently is
-        if not vestigings_nummer_key or (
-            zaak_data.get(vestigings_nummer_key) or not submission.is_authenticated
-        ):
+        if not submission.is_authenticated:
             return
 
         auth_context = submission.auth_info.to_auth_context_data()
         branch_number = get_branch_number(auth_context)
 
         if branch_number:
-            glom(zaak_data, Assign(vestigings_nummer_key, branch_number))
+            glom(zaak_data, Assign("initiator.vestigingsNummer", branch_number))
 
     def register_submission(
         self, submission: Submission, options: RegistrationOptions
@@ -484,15 +471,6 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 assert component is not None
                 zaak_data["locatie"]["key"] = component["key"]
 
-            warnings.warn(
-                (
-                    "The usage of the branch number retrieved from the form's submission"
-                    " will be replaced in Open Forms 4.0 by prioritizing the provided"
-                    " branch number after login"
-                ),
-                category=DeprecationWarning,
-                stacklevel=2,
-            )
             self.process_vestiging(submission, zaak_data)
 
             extra_data = self.get_extra_data(submission, options)
