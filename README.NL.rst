@@ -3,7 +3,7 @@ Open Formulieren
 ================
 
 .. image:: .github/assets/open-formulieren-logo.svg
-    :height: 200px
+    :height: 100px
     :alt: Open Formulieren
 
 :Version: 4.0.0-alpha.0

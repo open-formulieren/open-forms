@@ -1,12 +1,13 @@
 .. _index:
 
 .. image:: ../.github/assets/open-formulieren-logo.svg
-    :height: 200px
+    :height: 100px
     :alt: Open Formulieren
+    :class: no-scaled-link product-logo
 
-========================
-Open Forms documentation
-========================
+==============================
+Open Formulieren documentation
+==============================
 
 Using **Open Forms** ("Open Formulieren" in Dutch), administrators can quickly
 create powerful and smart forms that are exposed via an API. With the Open Forms

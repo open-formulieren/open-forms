@@ -3,7 +3,7 @@ Open Forms
 ==========
 
 .. image:: .github/assets/open-formulieren-logo.svg
-    :height: 200px
+    :height: 100px
     :alt: Open Forms
 
 :Version: 4.0.0-alpha.0

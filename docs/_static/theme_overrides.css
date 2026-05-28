@@ -16,7 +16,8 @@
   }
 }
 
-# Navigation .wy-side-nav-search {
+/* Navigation */
+.wy-side-nav-search {
   background-color: #fff;
 }
 .wy-side-nav-search > a {
@@ -48,12 +49,18 @@
   background-color: #f0f4f5;
 }
 
-# Content .wy-nav-content {
+/* Content*/
+.product-logo {
+  margin-block-end: 24px;
+}
+
+.wy-nav-content {
   background: #e8f2f5;
   background: linear-gradient(90deg, rgba(232, 242, 245, 1) 0%, rgba(255, 255, 255, 1) 100%);
 }
 
-# Content links .rst-content a:link,
+/* Content links*/
+.rst-content a:link,
 .rst-content a:visited {
   color: #04a5bb;
 }
