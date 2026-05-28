@@ -1,5 +1,9 @@
 .. _index:
 
+.. image:: ../.github/assets/open-formulieren-logo.svg
+    :height: 200px
+    :alt: Open Formulieren
+
 ========================
 Open Forms documentation
 ========================

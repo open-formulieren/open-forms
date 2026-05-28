@@ -2,6 +2,10 @@
 Open Forms
 ==========
 
+.. image:: .github/assets/open-formulieren-logo.svg
+    :height: 200px
+    :alt: Open Forms
+
 :Version: 4.0.0-alpha.0
 :Source: https://github.com/open-formulieren/open-forms
 :Keywords: e-Formulieren, Common Ground, FormIO, API
