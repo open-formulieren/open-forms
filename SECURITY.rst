@@ -63,4 +63,4 @@ support team is responsible for the handling of security issues.
 
 .. _`CVE identifier`: https://cve.mitre.org/cve/identifiers/
 .. _`commonground.nl`: https://commonground.nl
-.. _`Maykin Media`: https://www.maykinmedia.nl
+.. _`Maykin Media`: https://www.maykin.nl

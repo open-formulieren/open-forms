@@ -26,7 +26,7 @@
   },
   "author": "Maykin Media",
   "license": "UNLICENSED",
-  "homepage": "https://maykinmedia.nl",
+  "homepage": "https://www.maykin.nl",
   "dependencies": {
     "@formatjs/cli": "^6.6.1",
     "@fortawesome/fontawesome-free": "^6.1.1",

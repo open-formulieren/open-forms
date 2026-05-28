@@ -24,7 +24,7 @@ os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("NUM_PROXIES", "0")
 
 os.environ.setdefault(
-    "EHERKENNING_PRIVACY_POLICY", "https://www.maykinmedia.nl/en/privacy/"
+    "EHERKENNING_PRIVACY_POLICY", "https://maykin.nl/nl/privacy-page/"
 )
 os.environ.setdefault("RELEASE", "dev")
 os.environ.setdefault("SDK_RELEASE", "latest")

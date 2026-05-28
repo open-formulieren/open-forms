@@ -106,4 +106,4 @@ is responsible for reviewing all pull requests before they are merged to a relea
 [mailinglist]: t.b.d.
 [standard_for_public_code]: https://standard.publiccode.net
 [repository]: https://github.com/open-formulieren/open-forms
-[maykin_media]: https://www.maykinmedia.nl
+[maykin_media]: https://www.maykin.nl

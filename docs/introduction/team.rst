@@ -25,5 +25,5 @@ project. They are:
 4. Gemeente Den Haag
 
 .. _`Dimpact`: https://www.dimpact.nl/
-.. _`Maykin Media`: https://www.maykinmedia.nl/
+.. _`Maykin Media`: https://www.maykin.nl/
 .. _`Open Gemeente Initiatief`: https://opengem.nl/
