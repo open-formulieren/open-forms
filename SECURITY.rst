@@ -32,7 +32,7 @@ action to be taken, you may receive further followup emails.
 Timeline of the process
 -----------------------
 
-Open Forms community support is provided by `Maykin Media`_. The community 
+Open Forms community support is provided by `Maykin`_. The community
 support team is responsible for the handling of security issues.
 
 1. The recipients of the report first validate if there is indeed a (possible) 
@@ -63,4 +63,4 @@ support team is responsible for the handling of security issues.
 
 .. _`CVE identifier`: https://cve.mitre.org/cve/identifiers/
 .. _`commonground.nl`: https://commonground.nl
-.. _`Maykin Media`: https://www.maykin.nl
+.. _`Maykin`: https://www.maykin.nl

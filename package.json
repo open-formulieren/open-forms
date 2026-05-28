@@ -24,7 +24,7 @@
     "type": "git",
     "url": "git+ssh://git@github.com/open-formulieren/open-forms.git"
   },
-  "author": "Maykin Media",
+  "author": "Maykin",
   "license": "UNLICENSED",
   "homepage": "https://www.maykin.nl",
   "dependencies": {

@@ -98,12 +98,12 @@ supported older versions.
 
 ### Reviews on releases
 
-Open Forms community support is provided by [Maykin Media][maykin_media]. The community support team
-is responsible for reviewing all pull requests before they are merged to a release branch.
+Open Forms community support is provided by [Maykin][maykin]. The community support team is
+responsible for reviewing all pull requests before they are merged to a release branch.
 
 [issues]: https://github.com/open-formulieren/open-forms/issues
 [new_issue]: https://github.com/open-formulieren/open-forms/issues/new/choose
 [mailinglist]: t.b.d.
 [standard_for_public_code]: https://standard.publiccode.net
 [repository]: https://github.com/open-formulieren/open-forms
-[maykin_media]: https://www.maykin.nl
+[maykin]: https://www.maykin.nl

@@ -104,7 +104,7 @@ localisation:
 maintenance:
   type: contract
   contractors:
-    - name: Maykin Media
+    - name: Maykin
       email: info@maykinmedia.nl
       website: https://www.maykin.nl/
   contacts:
