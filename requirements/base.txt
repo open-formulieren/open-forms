@@ -297,7 +297,7 @@ grpcio==1.78.0
     # via opentelemetry-exporter-otlp-proto-grpc
 humanize==4.15.0
     # via flower
-idna==3.11
+idna==3.17
     # via requests
 importlib-metadata==8.7.1
     # via opentelemetry-api

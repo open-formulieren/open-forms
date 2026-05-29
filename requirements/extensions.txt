@@ -478,7 +478,7 @@ humanize==4.15.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   flower
-idna==3.11
+idna==3.17
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

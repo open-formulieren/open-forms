@@ -509,7 +509,7 @@ humanize==4.15.0
     #   flower
 hypothesis==6.151.8
     # via -r requirements/test-tools.in
-idna==3.11
+idna==3.17
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
