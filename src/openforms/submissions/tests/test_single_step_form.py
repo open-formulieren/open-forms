@@ -42,19 +42,7 @@ class SingleStepFormTests(APITestCase):
 
         self.assertEqual(submission_response.status_code, status.HTTP_201_CREATED)
 
-        # 2. validate step data
-        validate_endpoint = reverse(
-            "api:submission-steps-validate",
-            kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
-        )
-        validate_data = {"test-key-0": "foo"}
-        validate_data_response = self.client.post(
-            validate_endpoint, validate_data, HTTP_HOST="testserver.com"
-        )
-
-        self.assertEqual(validate_data_response.status_code, status.HTTP_204_NO_CONTENT)
-
-        # 3. submit step data
+        # 2. submit step data
         submit_data_endpoint = reverse(
             "api:submission-steps-detail",
             kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
@@ -66,7 +54,7 @@ class SingleStepFormTests(APITestCase):
 
         self.assertEqual(submit_data_response.status_code, status.HTTP_201_CREATED)
 
-        # 4. complete form
+        # 3. complete form
         complete_submission_endpoint = reverse(
             "api:submission-complete",
             kwargs={"uuid": submission.uuid},
@@ -81,5 +69,5 @@ class SingleStepFormTests(APITestCase):
 
         self.assertEqual(complete_submission_response.status_code, status.HTTP_200_OK)
 
-        # 5. make sure the prefill was not called
+        # 4. make sure the prefill was not called
         m.assert_not_called()

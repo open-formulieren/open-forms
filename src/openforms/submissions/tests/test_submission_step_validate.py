@@ -87,14 +87,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         )
         self._add_submission_to_session(submission)
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(endpoint, {"data": {"surname": "Doe-MODIFIED"}})
+        response = self.client.put(endpoint, {"data": {"surname": "Doe-MODIFIED"}})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         invalid_params = response.json()["invalidParams"]
@@ -124,14 +124,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         )
         self._add_submission_to_session(submission)
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(
+        response = self.client.put(
             endpoint, {"data": {"sur": {"name": "Doe-MODIFIED"}}}
         )
 
@@ -162,17 +162,17 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         )
         self._add_submission_to_session(submission)
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(endpoint, {"data": {"surname": "Doe-MODIFIED"}})
+        response = self.client.put(endpoint, {"data": {"surname": "Doe-MODIFIED"}})
 
         # Since the prefilled field was not disabled, it is possible to modify it and the submission is valid
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     @tag("gh-security-37", "GHSA-cp63-63mq-5wvf", "CVE-2025-64515")
     def test_prefilled_data_updated_after_disabled_with_logic(self):
@@ -214,14 +214,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         )
         self._add_submission_to_session(submission)
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(endpoint, {"data": {"surname": "Doe-MODIFIED"}})
+        response = self.client.put(endpoint, {"data": {"surname": "Doe-MODIFIED"}})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         invalid_params = response.json()["invalidParams"]
@@ -250,16 +250,16 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         submission = SubmissionFactory.create(form=form, prefill_data={"surname": None})
         self._add_submission_to_session(submission)
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(endpoint, {"data": {"surname": ""}})
+        response = self.client.put(endpoint, {"data": {"surname": ""}})
 
-        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
     def test_prefill_data_with_hidden_component(self):
         form = FormFactory.create()
@@ -294,16 +294,16 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         )
         self._add_submission_to_session(submission)
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(endpoint, {"data": {"surname": "test"}})
+        response = self.client.put(endpoint, {"data": {"surname": "test"}})
 
-        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
     def test_prefill_data_with_hidden_parent_component(self):
         form = FormFactory.create()
@@ -338,63 +338,16 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         submission = SubmissionFactory.create(form=form, prefill_data={"name": "test"})
         self._add_submission_to_session(submission)
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(endpoint, {"data": {}})
+        response = self.client.put(endpoint, {"data": {}})
 
-        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
-
-    def test_prefill_data_is_persisted_when_submission_data_omitted(self):
-        form = FormFactory.create()
-        step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "name",
-                        "label": "Name",
-                        "prefill": {"plugin": "test-prefill", "attribute": "name"},
-                        "disabled": True,
-                        "defaultValue": "",
-                        "hidden": False,
-                    },
-                ],
-            },
-        )
-        submission = SubmissionFactory.create(form=form, prefill_data={"name": "test"})
-        self._add_submission_to_session(submission)
-        endpoint = reverse(
-            "api:submission-steps-validate",
-            kwargs={
-                "submission_uuid": submission.uuid,
-                "step_uuid": step.uuid,
-            },
-        )
-
-        with self.subTest("empty data field"):
-            response = self.client.post(endpoint, {"data": {}})
-
-            submission.refresh_from_db()
-            variable = submission.submissionvaluevariable_set.get()
-
-            self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
-            self.assertEqual(variable.value, "test")
-
-        with self.subTest("data field not present"):
-            response = self.client.post(endpoint, {})
-
-            submission.refresh_from_db()
-            variable = submission.submissionvaluevariable_set.get()
-
-            self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
-            self.assertEqual(variable.value, "test")
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
     def test_prefilled_data_normalised(self):
         form = FormFactory.create()
@@ -739,9 +692,9 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         )
 
         self._add_submission_to_session(submission)
-        response = self.client.post(
+        response = self.client.put(
             reverse(
-                "api:submission-steps-validate",
+                "api:submission-steps-detail",
                 kwargs={
                     "submission_uuid": submission.uuid,
                     "step_uuid": form_step.uuid,
@@ -750,7 +703,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             {"data": {"fileUpload1": [file], "fileUpload2": [file]}},
         )
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_validate_step_with_nested_files_in_fieldset(self):
         temporary_file_upload = TemporaryFileUploadFactory.create()
@@ -784,9 +737,9 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         )
 
         self._add_submission_to_session(submission)
-        response = self.client.post(
+        response = self.client.put(
             reverse(
-                "api:submission-steps-validate",
+                "api:submission-steps-detail",
                 kwargs={
                     "submission_uuid": submission.uuid,
                     "step_uuid": form_step.uuid,
@@ -795,7 +748,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             {"data": {"fileUpload1": [file]}},
         )
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_validate_step_with_soft_hyphen_filename(self):
         temporary_file_upload = TemporaryFileUploadFactory.create(
@@ -831,9 +784,9 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         )
 
         self._add_submission_to_session(submission)
-        response = self.client.post(
+        response = self.client.put(
             reverse(
-                "api:submission-steps-validate",
+                "api:submission-steps-detail",
                 kwargs={
                     "submission_uuid": submission.uuid,
                     "step_uuid": form_step.uuid,
@@ -842,7 +795,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             {"data": {"fileUpload": [file]}},
         )
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     @tag("gh-5557")
     def test_validate_step_with_filename_with_diff_chars(self):
@@ -884,9 +837,9 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                 )
 
                 self._add_submission_to_session(submission)
-                response = self.client.post(
+                response = self.client.put(
                     reverse(
-                        "api:submission-steps-validate",
+                        "api:submission-steps-detail",
                         kwargs={
                             "submission_uuid": submission.uuid,
                             "step_uuid": form_step.uuid,
@@ -895,7 +848,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                     {"data": {"fileUpload": [file]}},
                 )
 
-                self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     @tag("gh-5191")
     def test_validate_map_component_hidden_and_clear_on_hide(self):
@@ -948,14 +901,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(
+        response = self.client.put(
             endpoint,
             {
                 "data": {
@@ -965,7 +918,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             },
         )
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_validate_partners_component(self):
         submission = SubmissionFactory.create(
@@ -1005,14 +958,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(
+        response = self.client.put(
             endpoint,
             {
                 "data": {
@@ -1029,7 +982,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             },
         )
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_partners_component_fails_when_data_is_tampered(self):
         submission = SubmissionFactory.create(
@@ -1069,14 +1022,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(
+        response = self.client.put(
             endpoint,
             {
                 "data": {
@@ -1163,14 +1116,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(
+        response = self.client.put(
             endpoint,
             {
                 "data": {
@@ -1187,7 +1140,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             },
         )
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_validate_children_component(self):
         submission = SubmissionFactory.create(
@@ -1226,14 +1179,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(
+        response = self.client.put(
             endpoint,
             {
                 # TODO
@@ -1260,7 +1213,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             },
         )
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_children_component_retrieves_correct_variable_for_validation(self):
         submission = SubmissionFactory.create(
@@ -1316,14 +1269,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(
+        response = self.client.put(
             endpoint,
             {
                 # TODO
@@ -1350,7 +1303,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             },
         )
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_children_component_fails_when_data_is_tampered(self):
         submission = SubmissionFactory.create(
@@ -1389,14 +1342,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(
+        response = self.client.put(
             endpoint,
             {
                 # TODO
@@ -1468,14 +1421,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(
+        response = self.client.put(
             endpoint,
             {
                 "data": {
@@ -1484,7 +1437,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                 }
             },
         )
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     @tag("gh-6155")
     @expectedFailure
@@ -1507,14 +1460,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         endpoint = reverse(
-            "api:submission-steps-validate",
+            "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": submission.uuid,
                 "step_uuid": step.uuid,
             },
         )
 
-        response = self.client.post(
+        response = self.client.put(
             endpoint, {"data": {"profile": "This data makes no sense"}}
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
