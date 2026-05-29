@@ -252,7 +252,6 @@ def evaluate_conditional_logic(
 
 def check_submission_logic(
     submission: Submission,
-    current_step: SubmissionStep | None = None,
     *,
     reset_configuration_wrapper: bool = True,
     evaluate_all_rules: bool = False,
@@ -265,9 +264,7 @@ def check_submission_logic(
     if not submission_state.form_steps:
         return
 
-    rules = get_rules_to_evaluate(
-        submission, current_step, evaluate_all_rules=evaluate_all_rules
-    )
+    rules = get_rules_to_evaluate(submission, evaluate_all_rules=evaluate_all_rules)
 
     # load the data state and all variables
     submission_variables_state = submission.variables_state
