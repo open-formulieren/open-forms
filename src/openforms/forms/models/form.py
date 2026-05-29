@@ -805,15 +805,18 @@ class Form(models.Model):
             "form_steps"
         ).remote_field.through
 
-        # drop the old relations and create the expected ones.
-
         updated_rules_and_steps = analyze_rules(form=self)
+
+        # drop the old relations and create the expected ones.
+        FormLogic.objects.filter(form=self).delete()
+        FormLogicFormSteps.objects.filter(formlogic__form=self).delete()
+
+        FormLogic.objects.bulk_create([rule for rule, _ in updated_rules_and_steps])
         expected_relations = [
             FormLogicFormSteps(formlogic=rule, formstep=step)
             for rule, steps in updated_rules_and_steps
             for step in steps
         ]
-        FormLogicFormSteps.objects.filter(formlogic__form=self).delete()
         FormLogicFormSteps.objects.bulk_create(expected_relations)
 
 
