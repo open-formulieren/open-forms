@@ -292,7 +292,7 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
     key = factory.Faker("word")
     source = FormVariableSources.user_defined
     data_type = FormVariableDataTypes.string
-    initial_value = None
+    initial_value = ""
 
     class Meta:
         model = "forms.FormVariable"
