@@ -15,7 +15,7 @@ from openforms.forms.tests.factories import FormFactory
 
 from .factories import ThemeFactory
 
-LOGO_FILE = Path(settings.BASE_DIR) / "docs" / "logo.svg"
+LOGO_FILE = Path(settings.BASE_DIR) / ".github" / "assets" / "open-formulieren-logo.svg"
 
 
 @disable_admin_mfa()
