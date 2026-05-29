@@ -65,6 +65,9 @@ const FormStepDefinition = ({
   const setSlug = langCode => {
     // do nothing if there's already a slug set
     if (slug) return;
+    // the slug is not translated, and based on the default language. Do nothing if
+    // we're not editing the targetting language.
+    if (langCode !== DEFAULT_LANGUAGE) return;
 
     // sort-of taken from Django's jquery prepopulate module
     const name = translations[langCode].name;
@@ -213,7 +216,6 @@ const FormStepDefinition = ({
                     />
                   }
                   required
-                  fieldBox
                 >
                   <TextInput
                     value={translations[langCode].name}
@@ -237,7 +239,6 @@ const FormStepDefinition = ({
                       description="Form step internal name field help text"
                     />
                   }
-                  fieldBox
                   disabled={langCode !== defaultLang}
                 >
                   <TextInput value={internalName} onChange={onFieldChange} />
@@ -259,7 +260,6 @@ const FormStepDefinition = ({
                     />
                   }
                   required
-                  fieldBox
                   disabled={langCode !== defaultLang}
                 >
                   <TextInput value={slug} onChange={onFieldChange} />
@@ -281,7 +281,6 @@ const FormStepDefinition = ({
                         description="Form step next text field help text"
                       />
                     }
-                    fieldBox
                   >
                     <TextInput
                       value={translations[langCode].nextText}
@@ -307,7 +306,6 @@ const FormStepDefinition = ({
                           description="Form step previous text field help text"
                         />
                       }
-                      fieldBox
                     >
                       <TextInput
                         value={translations[langCode].previousText}
@@ -331,7 +329,6 @@ const FormStepDefinition = ({
                           description="Form step save text field help text"
                         />
                       }
-                      fieldBox
                     >
                       <TextInput
                         value={translations[langCode].saveText}
