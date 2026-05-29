@@ -2,6 +2,10 @@
 Open Formulieren
 ================
 
+.. image:: .github/assets/open-formulieren-logo.svg
+    :height: 100px
+    :alt: Open Formulieren
+
 :Version: 4.0.0-alpha.0
 :Source: https://github.com/open-formulieren/open-forms
 :Keywords: e-Formulieren, Common Ground, FormIO, API
@@ -71,7 +75,7 @@ Copyright © `"the Stakeholders`_, 2025
 Licensed under the `EUPL`_.
 
 .. _`English version`: README.rst
-.. _`Maykin B.V.`: https://www.maykinmedia.nl
+.. _`Maykin B.V.`: https://www.maykin.nl
 .. _`Dimpact`: https://www.dimpact.nl
 .. _ `"the Stakeholders"`: STAKEHOLDERS.md
 .. _`EUPL`: LICENSE.md

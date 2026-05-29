@@ -2,8 +2,8 @@ Who's behind Open Forms?
 ========================
 
 The Open Forms (Open Formulieren in Dutch) project was initiated by 
-`Maykin Media`_ around mid 2020, as part of the `Open Gemeente Initiatief`_. A 
-year later, Maykin Media made the project open source and donated the code to 
+`Maykin`_ around mid 2020, as part of the `Open Gemeente Initiatief`_. A
+year later, Maykin made the project open source and donated the code to
 `Dimpact`_ after winning a tender by Dimpact.
 
 The participants in this tender are the main stakeholders of the Open Forms 
@@ -25,5 +25,5 @@ project. They are:
 4. Gemeente Den Haag
 
 .. _`Dimpact`: https://www.dimpact.nl/
-.. _`Maykin Media`: https://www.maykinmedia.nl/
+.. _`Maykin`: https://www.maykin.nl/
 .. _`Open Gemeente Initiatief`: https://opengem.nl/

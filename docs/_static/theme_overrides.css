@@ -1,30 +1,70 @@
 /* override table width restrictions */
 @media screen and (min-width: 767px) {
-
-   .wy-table-responsive table td {
-      /* !important prevents the common CSS stylesheets from overriding
-         this as on RTD they are loaded after this stylesheet */
-      white-space: normal !important;
-   }
-   .wy-table-responsive table td:first-child {
-      white-space: nowrap !important;
-   }
-   .wy-table-responsive table {
-      background-color: white;
-   }
-   .wy-table-responsive {
-      overflow: visible !important;
-   }
+  .wy-table-responsive table td {
+    /* !important prevents the common CSS stylesheets from overriding
+       this as on RTD they are loaded after this stylesheet */
+    white-space: normal !important;
+  }
+  .wy-table-responsive table td:first-child {
+    white-space: nowrap !important;
+  }
+  .wy-table-responsive table {
+    background-color: white;
+  }
+  .wy-table-responsive {
+    overflow: visible !important;
+  }
 }
 
+/* Navigation */
 .wy-side-nav-search {
-   background-color: #04A5BB;
+  background-color: #fff;
+}
+.wy-side-nav-search > a {
+  color: #333;
+}
+.wy-nav-side {
+  background-color: #fff;
+}
+.wy-menu-vertical a {
+  color: #333;
+  border-left: 4px solid #fff;
+}
+.wy-menu-vertical a:active {
+  color: #341a90;
+  border-left-color: #341a90;
+}
+.wy-menu-vertical a:hover {
+  background-color: inherit;
+  color: #00bfcb;
+  border-left-color: #00bfcb;
+}
+.wy-menu-vertical li.current > a,
+.wy-menu-vertical li.on a {
+  color: #341a90;
+}
+.wy-side-nav-search input[type='text'] {
+  border-radius: 6px;
+  border-color: #00bfcb;
+  background-color: #f0f4f5;
 }
 
-.rst-content a:link, .rst-content a:visited {
+/* Content*/
+.product-logo {
+  margin-block-end: 24px;
+}
+
+.wy-nav-content {
+  background: #e8f2f5;
+  background: linear-gradient(90deg, rgba(232, 242, 245, 1) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+/* Content links*/
+.rst-content a:link,
+.rst-content a:visited {
   color: #04a5bb;
 }
-
-.rst-content a:focus, .rst-content a:hover {
+.rst-content a:focus,
+.rst-content a:hover {
   color: #00464f;
 }
