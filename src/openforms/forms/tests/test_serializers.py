@@ -326,7 +326,7 @@ class FormSerializerTest(TestCase):
 
         # assert no changes made
         self.assertEqual(form.registration_backends.count(), 2)
-        backend1, backend2 = form.registration_backends.all()
+        backend1, backend2 = form.registration_backends.order_by("pk")
         self.assertEqual(backend1.key, "backend1")
         self.assertEqual(backend1.name, "#1")
         self.assertEqual(backend1.backend, "email")
