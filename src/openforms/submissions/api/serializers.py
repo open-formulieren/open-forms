@@ -263,15 +263,11 @@ class FormLogicFrontendSerializer(OrderedModelSerializer):
     def to_representation(self, instance):
         step: SubmissionStep = self.context["submission_step"]
         state = step.submission.variables_state
-        # We include all data, to make sure we have a (empty) value for every variable.
-        # Component variables of the current step need to be excluded, though, as these
-        # are subject to change with user input. If variables from future steps are not
-        # included here, form designers have to take into account that a value can be
-        # `None`, in addition to an empty value. `None` (or `null` in JS) is the value
-        # that will be used by JSON logic if the variable is not present in the data.
-        data = state.get_data(include_unsaved=True, include_static_variables=True)
+        data = state.get_data(include_unsaved=False, include_static_variables=True)
+        # Component variables of the current step need to be removed, as they are
+        # subject to change with user input.
         for key in state.get_variables_in_submission_step(step).keys():
-            data.pop(key)
+            data.pop(key, None)
 
         # Process action
         action_list: list[dict[str, VariableValue]] = []
