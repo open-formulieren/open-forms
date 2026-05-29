@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import {useContext, useId} from 'react';
+import {useContext, useId, useState} from 'react';
 
 import {ValidationErrorContext} from './ValidationErrors';
 
@@ -28,12 +28,13 @@ const Fieldset = ({
   fieldNames = [],
   ...extra
 }) => {
+  const [isOpen, setIsOpen] = useState(!initialCollapsed);
   const validationErrors = useContext(ValidationErrorContext);
   const hasErrorsInside = checkHasErrors(validationErrors, fieldNames);
   const titleId = useId();
 
-  if (initialCollapsed && hasErrorsInside) {
-    initialCollapsed = false;
+  if (!isOpen && hasErrorsInside) {
+    setIsOpen(true);
   }
 
   const titleNode = title ? (
@@ -48,8 +49,15 @@ const Fieldset = ({
   return (
     <fieldset className={className} aria-labelledby={title ? titleId : undefined} {...extra}>
       {titleNode && collapsible ? (
-        <details open={!initialCollapsed}>
-          <summary>{titleNode}</summary>
+        <details open={isOpen}>
+          <summary
+            onClick={e => {
+              e.preventDefault();
+              setIsOpen(!isOpen);
+            }}
+          >
+            {titleNode}
+          </summary>
           {children}
         </details>
       ) : (
