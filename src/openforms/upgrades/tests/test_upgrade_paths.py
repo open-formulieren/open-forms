@@ -1,3 +1,6 @@
+from io import StringIO
+from unittest.mock import patch
+
 from django.test import SimpleTestCase, TestCase
 
 from unittest_parametrize import ParametrizedTestCase, parametrize
@@ -31,7 +34,12 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
     def test_no_logic(self):
         FormFactory.create(generate_minimal_setup=True)
 
-        self.assertTrue(self.script.execute())
+        with patch("sys.stdout", new_callable=StringIO) as stdout:
+            self.assertTrue(self.script.execute())
+            self.assertIn(
+                "No logic rules with a risk of behaving differently in Open Forms 4.0",
+                stdout.getvalue(),
+            )
 
     def test_with_empty_value_in_trigger_and_component_visibility_not_affected(self):
         form = FormFactory.create()
@@ -44,7 +52,12 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
             form=form, json_logic_trigger={"var": {"==": [{"var": "textfield"}, ""]}}
         )
 
-        self.assertTrue(self.script.execute())
+        with patch("sys.stdout", new_callable=StringIO) as stdout:
+            self.assertTrue(self.script.execute())
+            self.assertIn(
+                "No logic rules with a risk of behaving differently in Open Forms 4.0",
+                stdout.getvalue(),
+            )
 
     @parametrize(
         "logic_trigger",
@@ -96,7 +109,13 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
 
         FormLogicFactory.create(form=form, json_logic_trigger=logic_trigger)
 
-        self.assertFalse(self.script.execute())
+        with patch("sys.stdout", new_callable=StringIO) as stdout:
+            self.assertFalse(self.script.execute())
+            self.assertIn(
+                "Found logic rules with a risk of behaving differently in Open Forms "
+                "4.0",
+                stdout.getvalue(),
+            )
 
     def test_no_empty_value_in_trigger_but_component_visibility_affected_by_other_rule(
         self,
@@ -140,7 +159,12 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
             form=form, json_logic_trigger={"==": [{"var": "textfield"}, "value"]}
         )
 
-        self.assertTrue(self.script.execute())
+        with patch("sys.stdout", new_callable=StringIO) as stdout:
+            self.assertTrue(self.script.execute())
+            self.assertIn(
+                "No logic rules with a risk of behaving differently in Open Forms 4.0",
+                stdout.getvalue(),
+            )
 
     def test_with_empty_value_in_trigger_and_component_visibility_affected_by_conditional(
         self,
@@ -164,7 +188,13 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
             form=form, json_logic_trigger={"==": [{"var": "textfield"}, ""]}
         )
 
-        self.assertFalse(self.script.execute())
+        with patch("sys.stdout", new_callable=StringIO) as stdout:
+            self.assertFalse(self.script.execute())
+            self.assertIn(
+                "Found logic rules with a risk of behaving differently in Open Forms "
+                "4.0",
+                stdout.getvalue(),
+            )
 
     def test_with_selectboxes_inside_editgrid(self):
         form = FormFactory.create()
@@ -194,7 +224,12 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
             json_logic_trigger={"==": [{"var": "editgrid.0.selectboxes"}, False]},
         )
 
-        self.assertTrue(self.script.execute())
+        with patch("sys.stdout", new_callable=StringIO) as stdout:
+            self.assertTrue(self.script.execute())
+            self.assertIn(
+                "No logic rules with a risk of behaving differently in Open Forms 4.0",
+                stdout.getvalue(),
+            )
 
 
 class ReportInvalidFormLogicTests(TestCase):
@@ -205,7 +240,9 @@ class ReportInvalidFormLogicTests(TestCase):
             generate_minimal_setup=True, new_logic_evaluation_enabled=True
         )
 
-        self.assertTrue(self.script.execute())
+        with patch("sys.stdout", new_callable=StringIO) as stdout:
+            self.assertTrue(self.script.execute())
+            self.assertEqual("", stdout.getvalue())
 
     def test_form_not_converted(self):
         form = FormFactory.create(
@@ -226,7 +263,13 @@ class ReportInvalidFormLogicTests(TestCase):
             ],
         )
 
-        self.assertFalse(self.script.execute())
+        with patch("sys.stdout", new_callable=StringIO) as stdout:
+            self.assertFalse(self.script.execute())
+            self.assertIn(
+                "The following forms have have not been converted to the new logic "
+                "evaluation.",
+                stdout.getvalue(),
+            )
 
     def test_new_logic_evaluation_enabled_with_trigger_from_step(self):
         form = FormFactory.create(
@@ -247,4 +290,11 @@ class ReportInvalidFormLogicTests(TestCase):
             ],
         )
 
-        self.assertFalse(self.script.execute())
+        with patch("sys.stdout", new_callable=StringIO) as stdout:
+            self.assertFalse(self.script.execute())
+            self.assertIn(
+                "The following forms have at least one logic rule with "
+                "'trigger_from_step' set up, which is incompatible with the new logic "
+                "evaluation.",
+                stdout.getvalue(),
+            )
