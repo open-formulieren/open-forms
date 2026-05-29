@@ -789,7 +789,7 @@ FormConfigurationFields.propTypes = {
     askPrivacyConsent: statementChoices.isRequired,
     askStatementOfTruth: statementChoices.isRequired,
     appointmentOptions: PropTypes.shape({
-      supportsMultipleProducts: PropTypes.oneOfType([PropTypes.bool, null]),
+      supportsMultipleProducts: PropTypes.oneOfType([PropTypes.bool]),
     }),
     authBackends: PropTypes.arrayOf(
       PropTypes.shape({
