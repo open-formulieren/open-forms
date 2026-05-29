@@ -195,7 +195,7 @@ const FormStepDefinition = ({
           />
         }
         collapsible
-        initialCollapsed={hasName && !!slug && !errors.length}
+        initialCollapsed={hasName && slug && !errors.length}
       >
         <LanguageTabs haveErrors={[...erroredLanguages]}>
           {(langCode, defaultLang) => (
