@@ -100,7 +100,6 @@ def iter_evaluate_rules(
     data: FormioData,
     configuration: FormioConfigurationWrapper,
     submission: Submission,
-    data_for_hidden_state: FormioData,
 ) -> Iterator[ActionOperation]:
     """
     Iterate over the rules and evaluate the trigger, yielding action operations and
@@ -117,7 +116,6 @@ def iter_evaluate_rules(
       structure is updated after every mutation.
     :param configuration: Formio configuration wrapper of a step.
     :param submission: Submission instance.
-    :param data_for_hidden_state: Data to apply when a component is hidden.
     :returns: An iterator yielding :class:`ActionOperation` instances.
     """
     state = submission.variables_state
@@ -131,8 +129,6 @@ def iter_evaluate_rules(
     # state that is the result of logic evaluations. Note that we do need to update this
     # data with non-clearOnHide mutations that have been applied, to make sure we don't
     # override it again with user data.
-    # We need to keep this isolated from data_for_hidden_state, as this contains values
-    # that should be applied when a component goes from visible -> hidden.
     data_for_visible_state = deepcopy(data)
 
     for rule in rules:
@@ -159,7 +155,6 @@ def iter_evaluate_rules(
                     rule,
                     data,
                     configuration,
-                    data_for_hidden_state=data_for_hidden_state,
                     data_for_visible_state=data_for_visible_state,
                 )
                 continue
@@ -169,7 +164,6 @@ def iter_evaluate_rules(
                     data,
                     configuration,
                     submission,
-                    data_for_hidden_state=data_for_hidden_state,
                     data_for_visible_state=data_for_visible_state,
                 ):
                     mutations_python = {
@@ -187,7 +181,6 @@ def _handle_clear_on_hide_for_untriggered_rule(
     data: FormioData,
     configuration: FormioConfigurationWrapper,
     *,
-    data_for_hidden_state: FormioData,
     data_for_visible_state: FormioData,
 ):
     """
@@ -218,6 +211,5 @@ def _handle_clear_on_hide_for_untriggered_rule(
             {"components": [component]},
             data,
             configuration,
-            data_for_hidden_state=data_for_hidden_state,
             data_for_visible_state=data_for_visible_state,
         )

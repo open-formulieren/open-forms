@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from openforms.typing import JSONObject, JSONValue
+from openforms.typing import JSONObject
 
 from .datastructures import FormioConfiguration, FormioConfigurationWrapper, FormioData
 from .registry import register
@@ -63,8 +63,13 @@ def is_hidden(
 
     show, trigger_component_key, compare_value = conditional
 
-    trigger_component_value = data.get(trigger_component_key, None)
     trigger_component = configuration[trigger_component_key]
+    # Defaulting to an empty string when the value is nullish is what our renderer does,
+    # with a note that it may need some revision later because it's a left-over formio
+    # relic.
+    trigger_component_value = (
+        v if (v := data.get(trigger_component_key, None)) is not None else ""
+    )
 
     triggered = register.test_conditional(
         trigger_component, trigger_component_value, compare_value
@@ -75,20 +80,11 @@ def is_hidden(
     return not show if triggered else show
 
 
-def get_component_empty_value(component: Component) -> JSONValue:
-    from .service import get_component_empty_value as _get_component_empty_value
-
-    if component["type"] in ("date", "time", "datetime"):
-        return None
-    return _get_component_empty_value(component)
-
-
 def process_visibility(
     configuration: FormioConfiguration | Component | Column | JSONObject,
     data: FormioData,
     wrapper: FormioConfigurationWrapper,
     *,
-    data_for_hidden_state: FormioData,
     parent_hidden: bool = False,
     get_evaluation_data: GetEvaluationData | None = None,
     components_to_ignore_hidden: set[str] | None = None,
@@ -105,7 +101,6 @@ def process_visibility(
       or column.
     :param data: Data used for processing.
     :param wrapper: Formio configuration wrapper. Required for component lookup.
-    :param data_for_hidden_state: Data to apply when a component is hidden.
     :param parent_hidden: Indicates whether the parent component was hidden. Note that
       the conditional will not be evaluated at all when this is set to ``True``.
     :param get_evaluation_data: Function used to get the evaluation data used during
@@ -132,13 +127,7 @@ def process_visibility(
         # to clear those that don't (fieldset, content, softRequiredErrors, etc.)
         holds_submission_data = register.holds_submission_data(component)
         if hidden and clear_on_hide and holds_submission_data:
-            # NOTE - formio.js (and our own renderer) *delete* the key entirely from the
-            # data instead, while we assign the empty value to ensure every variable is
-            # always present in the submission data
-            # If we don't have an initial value available, just use the empty value.
-            data[key] = data_for_hidden_state.get(key) or get_component_empty_value(
-                component
-            )
+            data.pop(key, None)
 
         # if it's visible, check if any input data should be restored because earlier
         # logic rules may have cleared it (visible -> hidden -> visible)
@@ -157,7 +146,6 @@ def process_visibility(
             component,
             data,
             wrapper,
-            data_for_hidden_state=data_for_hidden_state,
             parent_hidden=hidden,
             get_evaluation_data=get_evaluation_data,
             components_to_ignore_hidden=components_to_ignore_hidden,

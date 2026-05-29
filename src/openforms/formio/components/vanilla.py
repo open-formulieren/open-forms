@@ -1192,16 +1192,14 @@ class EditGrid(BasePlugin[EditGridComponent]):
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
         *,
-        data_for_hidden_state: FormioData,
         parent_hidden: bool,
         components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
         data_for_visible_state: FormioData | None = None,
     ):
         key = component["key"]
-        clear_on_hide = component.get("clearOnHide", True)
         # We only need to process children if the value was not already cleared.
-        if parent_hidden and clear_on_hide:
+        if key not in data:
             return
         edit_grid_data = data[key]
         assert isinstance(edit_grid_data, list)
@@ -1245,7 +1243,6 @@ class EditGrid(BasePlugin[EditGridComponent]):
                 component,
                 item_data,
                 wrapper,
-                data_for_hidden_state=data_for_hidden_state,
                 parent_hidden=parent_hidden,
                 get_evaluation_data=get_evaluation_data,
                 components_to_ignore_hidden=_components_to_ignore_hidden,
@@ -1269,7 +1266,6 @@ class Columns(BasePlugin[ColumnsComponent]):
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
         *,
-        data_for_hidden_state: FormioData,
         parent_hidden: bool,
         components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
@@ -1289,7 +1285,6 @@ class Columns(BasePlugin[ColumnsComponent]):
                 column,
                 data,
                 wrapper,
-                data_for_hidden_state=data_for_hidden_state,
                 parent_hidden=parent_hidden,
                 get_evaluation_data=get_evaluation_data,
                 components_to_ignore_hidden=_components_to_ignore_hidden,
@@ -1317,7 +1312,6 @@ class Fieldset(BasePlugin[FieldsetComponent]):
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
         *,
-        data_for_hidden_state: FormioData,
         parent_hidden: bool,
         components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
@@ -1338,7 +1332,6 @@ class Fieldset(BasePlugin[FieldsetComponent]):
             component,
             data,
             wrapper,
-            data_for_hidden_state=data_for_hidden_state,
             parent_hidden=parent_hidden,
             get_evaluation_data=get_evaluation_data,
             components_to_ignore_hidden=_components_to_ignore_hidden,
