@@ -296,6 +296,48 @@ class FormTestCase(TestCase):
 
         self.assertEqual(actual, expected)
 
+    def test_logic_rules_are_properly_reordered_when_applying_rule_analysis(self):
+        step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {"key": "checkbox", "label": "Checkbox", "type": "checkbox"},
+                    {"key": "textfield", "label": "Textfield", "type": "textfield"},
+                ]
+            }
+        )
+        FormLogicFactory.create(
+            form=step.form,
+            json_logic_trigger={"==": [{"var": "textfield"}, "foo"]},
+            description="Rule A",
+            actions=[
+                {
+                    "form_step_uuid": str(step.uuid),
+                    "action": {"type": "disable-next"},
+                }
+            ],
+        )
+        FormLogicFactory.create(
+            form=step.form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            description="Rule B",
+            actions=[
+                {
+                    "component": "textfield",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+
+        step.form.apply_logic_analysis()
+
+        # Rule B affects visibility of the textfield, which is used as an input
+        # in Rule A. This means Rule B must be executed before Rule A.
+        self.assertEqual("Rule B", step.logic_rules.first().description)
+
 
 class RegressionTests(HypothesisTestCase):
     @given(
