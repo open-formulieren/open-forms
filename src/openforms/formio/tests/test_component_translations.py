@@ -18,7 +18,7 @@ from ..datastructures import FormioConfigurationWrapper
 from ..formatters.tests.utils import load_json
 from ..registry import register
 from ..service import get_dynamic_configuration
-from ..typing import RadioComponent, SelectComponent
+from ..typing import AddressNLComponent, RadioComponent, SelectComponent
 
 
 def disable_prefill_injection():
@@ -1017,3 +1017,30 @@ class EditGridTranslationTests(SimpleTestCase):
         self.assertNotIn("translations", component["openForms"])
         nested = component["components"][0]
         self.assertEqual(nested["label"], "Textfield")
+
+
+class AddressNLTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=...,
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_adddressnl(
+        self,
+        lang_code: str,
+        prop: Literal["label", "description", "tooltip"],
+        translation: str,
+    ):
+        component: AddressNLComponent = {
+            "type": "addressNL",
+            "key": "addressNL",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+            "deriveAddress": False,
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component.get(prop), translation)
+        self.assertNotIn("translations", component["openForms"])

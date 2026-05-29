@@ -10,12 +10,16 @@ aware step definition.
 """
 
 import uuid
+from datetime import datetime
+from typing import Literal
 from unittest.mock import patch
 
 from django.test import tag
 from django.utils.translation import gettext_lazy as _
 
 from freezegun import freeze_time
+from hypothesis import given
+from hypothesis.extra.django import TestCase as HypothesisTestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -132,6 +136,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         }
         self.assertEqual(response.json(), expected)
 
+    @tag("gh-6320")
     def test_dynamic_form_definition(self):
         register = ComponentRegistry()
         register("selectboxes")(SelectBoxes)
@@ -160,7 +165,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "defaultConfiguration": {
                 "components": [
                     {
-                        "label": "Some field",
+                        "label": "Rewritten label",
                         "key": "someField",
                         "type": "textfield",
                     },
@@ -425,7 +430,7 @@ class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
 
-class IntegrationTests(SubmissionsMixin, APITestCase):
+class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # pyright: ignore[reportIncompatibleVariableOverride]
     """
     Integration tests where various subsystems come together.
     """
@@ -458,6 +463,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(textfield["key"], "bar")
         self.assertEqual(textfield["label"], "Kneipe")
 
+    @tag("gh-6320")
     def test_component_properties_are_translated(self):
         submission = SubmissionFactory.create(
             language_code="en",
@@ -554,39 +560,97 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             },
         )
 
-        configuration = self.client.get(endpoint).json()["configuration"]
+        response_data = self.client.get(endpoint).json()
 
-        wrapped_configuration = FormioConfigurationWrapper(configuration)
-        expected = {
-            "repeatingGroup1": {
-                "label": "Repeating group 1",
-                "tooltip": "First tip",
-                "groupLabel": "Item",
+        for _configuration in ("configuration", "defaultConfiguration"):
+            with self.subTest(configuration=_configuration):
+                configuration = response_data[_configuration]
+                wrapped_configuration = FormioConfigurationWrapper(configuration)
+                expected = {
+                    "repeatingGroup1": {
+                        "label": "Repeating group 1",
+                        "tooltip": "First tip",
+                        "groupLabel": "Item",
+                    },
+                    "text1": {
+                        "label": "Text 1",
+                    },
+                }
+
+                for key, translations in expected.items():
+                    for prop, text in translations.items():
+                        with self.subTest(component=key, property=prop, expected=text):
+                            component = wrapped_configuration[key]
+
+                            self.assertEqual(component[prop], text)
+
+                self.assertEqual(
+                    wrapped_configuration["radio1"]["values"][0]["label"], "One"
+                )
+                self.assertEqual(
+                    wrapped_configuration["radio1"]["tooltip"],
+                    "Radio Giraffe's tip of the week",
+                )
+                self.assertEqual(
+                    wrapped_configuration["select1"]["data"]["values"][0]["label"],
+                    "1st Choice",
+                )
+
+                # assert translation doesn't invent attributes.
+                self.assertNotIn("label", wrapped_configuration["radio1"]["values"][1])
+                self.assertNotIn(
+                    "label", wrapped_configuration["select1"]["data"]["values"][1]
+                )
+
+    @tag("gh-6320")
+    @given(mode=..., include_today=...)
+    def test_date_component_dynamic_config_correctly_emitted(
+        self,
+        mode: Literal["past", "future"],
+        include_today: bool,
+    ):
+        config_option = "minDate" if mode == "future" else "maxDate"
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date",
+                        "label": "date",
+                        "openForms": {
+                            config_option: {
+                                "mode": mode,
+                                "includeToday": include_today,
+                            }
+                        },
+                    },
+                ]
             },
-            "text1": {
-                "label": "Text 1",
+        )
+
+        self._add_submission_to_session(submission)
+        form_step = submission.steps[0].form_step
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
             },
-        }
-
-        for key, translations in expected.items():
-            for prop, text in translations.items():
-                with self.subTest(component=key, property=prop, expected=text):
-                    component = wrapped_configuration[key]
-
-                    self.assertEqual(component[prop], text)
-
-        self.assertEqual(wrapped_configuration["radio1"]["values"][0]["label"], "One")
-        self.assertEqual(
-            wrapped_configuration["radio1"]["tooltip"],
-            "Radio Giraffe's tip of the week",
-        )
-        self.assertEqual(
-            wrapped_configuration["select1"]["data"]["values"][0]["label"], "1st Choice"
         )
 
-        # assert translation doesn't invent attributes.
-        self.assertNotIn("label", wrapped_configuration["radio1"]["values"][1])
-        self.assertNotIn("label", wrapped_configuration["select1"]["data"]["values"][1])
+        response_data = self.client.get(endpoint).json()
+
+        self.assertFalse(response_data["requireBackendLogicEvaluation"])
+        default_configuration = response_data["defaultConfiguration"]
+        self.assertIsNotNone(default_configuration)
+        component = default_configuration["components"][0]
+        resolved_date = component["datePicker"][config_option]
+        self.assertIsNotNone(resolved_date)
+        self.assertIsInstance(
+            datetime.fromisoformat(resolved_date),
+            datetime,
+        )
 
     def test_dynamic_date_component_config_based_on_variables(self):
         form = FormFactory.create(
@@ -1007,8 +1071,17 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             "slug": step.slug,
             "defaultConfiguration": {
                 "components": [
-                    {"type": "date", "key": "dateOfBirth", "label": "Date of birth"},
-                    {"type": "textfield", "key": "textfield", "label": "Textfield"},
+                    {
+                        "type": "date",
+                        "key": "dateOfBirth",
+                        "label": "Date of birth",
+                        "placeholder": "dd-mm-jjjj",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    },
                 ]
             },
             "configuration": {
