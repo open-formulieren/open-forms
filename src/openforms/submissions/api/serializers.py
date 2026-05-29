@@ -227,7 +227,10 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer[Submission]):
         return super().create(validated_data)
 
     def to_representation(self, instance):
-        check_submission_logic(instance, current_step=self.context.get("current_step"))
+        if not self.context.get("in_form_logic_evaluation", False):
+            # There is no need to execute submission logic when performing logic
+            # evaluation in a step.
+            check_submission_logic(instance)
         return super().to_representation(instance)
 
 
