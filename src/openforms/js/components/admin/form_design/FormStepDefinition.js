@@ -63,16 +63,17 @@ const FormStepDefinition = ({
   const isSingleStep = type === 'single_step';
 
   const setSlug = langCode => {
-    // // do nothing if there's already a slug set
-    // if (slug) return;
-    // // sort-of taken from Django's jquery prepopulate module
-    // const name = translations[langCode].name;
-    // onFieldChange({
-    //   target: {
-    //     name: 'slug',
-    //     value: slugify(name),
-    //   },
-    // });
+    // do nothing if there's already a slug set
+    if (slug) return;
+
+    // sort-of taken from Django's jquery prepopulate module
+    const name = translations[langCode].name;
+    onFieldChange({
+      target: {
+        name: 'slug',
+        value: slugify(name),
+      },
+    });
   };
 
   // A 'total configuration': merging all the configurations from the different steps, so that we can figure out if
