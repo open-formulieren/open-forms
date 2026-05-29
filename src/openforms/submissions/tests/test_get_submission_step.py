@@ -10,12 +10,16 @@ aware step definition.
 """
 
 import uuid
+from datetime import datetime
+from typing import Literal
 from unittest.mock import patch
 
 from django.test import tag
 from django.utils.translation import gettext_lazy as _
 
 from freezegun import freeze_time
+from hypothesis import given
+from hypothesis.extra.django import TestCase as HypothesisTestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -426,7 +430,7 @@ class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
 
-class IntegrationTests(SubmissionsMixin, APITestCase):
+class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # pyright: ignore[reportIncompatibleVariableOverride]
     """
     Integration tests where various subsystems come together.
     """
@@ -597,6 +601,56 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                 self.assertNotIn(
                     "label", wrapped_configuration["select1"]["data"]["values"][1]
                 )
+
+    @tag("gh-6320")
+    @given(mode=..., include_today=...)
+    def test_date_component_dynamic_config_correctly_emitted(
+        self,
+        mode: Literal["past", "future"],
+        include_today: bool,
+    ):
+        config_option = "minDate" if mode == "future" else "maxDate"
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date",
+                        "label": "date",
+                        "openForms": {
+                            config_option: {
+                                "mode": mode,
+                                "includeToday": include_today,
+                            }
+                        },
+                    },
+                ]
+            },
+        )
+
+        self._add_submission_to_session(submission)
+        form_step = submission.steps[0].form_step
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+
+        response_data = self.client.get(endpoint).json()
+
+        self.assertFalse(response_data["requireBackendLogicEvaluation"])
+        default_configuration = response_data["defaultConfiguration"]
+        self.assertIsNotNone(default_configuration)
+        component = default_configuration["components"][0]
+        resolved_date = component["datePicker"][config_option]
+        self.assertIsNotNone(resolved_date)
+        self.assertIsInstance(
+            datetime.fromisoformat(resolved_date),
+            datetime,
+        )
 
     def test_dynamic_date_component_config_based_on_variables(self):
         form = FormFactory.create(
