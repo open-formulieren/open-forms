@@ -330,6 +330,7 @@ class SubmissionValueVariablesState:
         Component and data-type normalization will be applied before saving.
         """
         variables_to_create: list[SubmissionValueVariable] = []
+        variables_to_update: list[SubmissionValueVariable] = []
         for variable in self.variables.values():
             value = data.get(variable.key, empty)
             if value is empty:
@@ -344,8 +345,15 @@ class SubmissionValueVariablesState:
             # user-defined variables).
             variable.value = variable.to_json(variable.to_python(value))
             variable.source = SubmissionValueVariableSources.prefill
-            variables_to_create.append(variable)
 
+            if variable.pk:
+                variables_to_update.append(variable)
+            else:
+                variables_to_create.append(variable)
+
+        SubmissionValueVariable.objects.bulk_update(
+            variables_to_update, fields=["value", "source"]
+        )
         SubmissionValueVariable.objects.bulk_create(variables_to_create)
 
     def set_values(self, data: FormioData) -> None:
