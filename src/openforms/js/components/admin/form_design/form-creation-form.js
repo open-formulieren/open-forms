@@ -86,6 +86,7 @@ import {
 const initialFormState = {
   form: {
     internalName: '',
+    internalRemarks: '',
     uuid: '',
     url: '',
     slug: '',
@@ -109,6 +110,7 @@ const initialFormState = {
     askStatementOfTruth: 'global_setting',
     registrationBackends: [],
     product: null,
+    priceVariableKey: '',
     paymentBackend: '',
     paymentBackendOptions: {},
     submissionsRemovalOptions: {},
