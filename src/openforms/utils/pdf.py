@@ -5,7 +5,7 @@ import structlog
 logger = structlog.stdlib.get_logger(__name__)
 
 
-def get_base_url():
+def get_base_url() -> str:
     return settings.BASE_URL
 
 
@@ -16,6 +16,12 @@ def render_to_pdf(template_name: str, context: dict[str, object]) -> tuple[str, 
     # local import to avoid importing weasyprint at startup time
     from maykin_common.pdf import render_template_to_pdf as _render_template_to_pdf
 
+    # workaround for https://github.com/Kozea/WeasyPrint/issues/2789 - we can pass the
+    # base URL explicitly to make relevant URLs absolute
+    base_url = get_base_url()
+    if base_url.endswith("/"):
+        base_url = base_url[:-1]
+    context.setdefault("weasyprint_base_url", base_url)
     return _render_template_to_pdf(template_name, context, variant="pdf/ua-1")
 
 
