@@ -1485,6 +1485,303 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         data_updates = response_data["step"]["data"]
         self.assertEqual(data_updates, {})
 
+    def test_with_variable_of_future_step_in_trigger(self):
+        form = FormFactory.create()
+        step_1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"}
+                ],
+            },
+        )
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield2", "key": "Textfield 2", "label": "textfield2"}
+                ],
+            },
+        )
+        # Expected to trigger, because we are evaluating logic on the first step, so
+        # the variable in the trigger is not available yet.
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [{"var": ["textfield2", "not-in-context"]}, "not-in-context"]
+            },
+            actions=[
+                {
+                    "action": {"type": "disable-next"},
+                    "form_step_uuid": str(step_1.uuid),
+                },
+            ],
+        )
+        form.apply_logic_analysis()
+
+        submission = SubmissionFactory.create(form=form)
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step_1.uuid},
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.post(endpoint, data={"data": {"textfield": "foo"}})
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertFalse(response.json()["step"]["canSubmit"])
+
+    def test_clear_on_hide_behaviour_with_saved_step_data(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "checkbox",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "hidden": True,
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "observer",
+                        "label": "observer",
+                        "validate": {"required": False},
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+
+        # Show the textfield
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": "textfield",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [{"var": ["textfield", "not-in-context"]}, "not-in-context"]
+            },
+            actions=[
+                {
+                    "component": "observer",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "validate.required", "type": "bool"},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        form.apply_logic_analysis()
+
+        submission = SubmissionFactory.create(form=form)
+        # Simulate submitting a step: checkbox is True, so textfield was not hidden.
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"checkbox": True, "textfield": "foo", "observer": "bar"},
+        )
+
+        # Navigate back to the step and make the textfield hidden again.
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+        response = self.client.post(
+            logic_check_endpoint,
+            {"data": {"checkbox": False, "textfield": "foo", "observer": "bar"}},
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        data = response.json()
+        observer = data["step"]["configuration"]["components"][2]
+        self.assertTrue(observer["validate"]["required"])
+        self.assertEqual({}, data["step"]["data"])
+
+    def test_hidden_field_that_becomes_visible_properly_restores_value(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "checkbox",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "hidden": True,
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "observer",
+                        "label": "observer",
+                        "validate": {"required": False},
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+
+        # Show the textfield
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": "textfield",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        # Expected to trigger: the value of the textfield will be reset (to the empty
+        # component value) because of the above rule.
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": ["textfield", "not-in-context"]}, ""]},
+            actions=[
+                {
+                    "component": "observer",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "validate.required", "type": "bool"},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        form.apply_logic_analysis()
+
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            logic_check_endpoint, {"data": {"checkbox": True, "observer": "foo"}}
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        data = response.json()
+        observer = data["step"]["configuration"]["components"][2]
+        self.assertTrue(observer["validate"]["required"])
+        self.assertEqual({"textfield": ""}, data["step"]["data"])
+
+    def test_hidden_field_by_frontend_added_to_post_data_anyway(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "checkbox",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                        "conditional": {
+                            "show": False,
+                            "when": "checkbox",
+                            "eq": True,
+                        },
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "observer",
+                        "label": "observer",
+                        "validate": {"required": False},
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [{"var": ["textfield", "not-in-context"]}, "not-in-context"]
+            },
+            actions=[
+                {
+                    "component": "observer",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "validate.required", "type": "bool"},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        form.apply_logic_analysis()
+
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+
+        # Checkbox is True, so the textfield should not be in the data because of
+        # conditional logic, but the user has spoofed the call to include it anyway.
+        response = self.client.post(
+            logic_check_endpoint,
+            {
+                "data": {
+                    "checkbox": True,
+                    "textfield": "some hacky data",
+                    "observer": "foo",
+                }
+            },
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        data = response.json()
+        observer = data["step"]["configuration"]["components"][2]
+        # The logic rule was triggered, which implies conditional logic was executed
+        # to remove the textfield from the context.
+        self.assertTrue(observer["validate"]["required"])
+        self.assertEqual({}, data["step"]["data"])
+
 
 @tag("gh-6005")
 class MultipleRulesTargetingSameComponentVisibilityTests(SubmissionsMixin, APITestCase):
