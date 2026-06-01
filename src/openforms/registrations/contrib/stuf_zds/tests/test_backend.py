@@ -29,6 +29,7 @@ from hypothesis.extra.django import TestCase as HypothesisTestCase
 from lxml import etree
 from privates.test import temp_private_root
 from requests import ConnectTimeout
+from unittest_parametrize import ParametrizedTestCase, parametrize
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -3384,7 +3385,7 @@ class XMLSanitizerVCRTests(OFVCRMixin, StUFAssertionsMixin, HypothesisTestCase):
 
 
 @temp_private_root()
-class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
+class StufZDSPluginVCRTests(OFVCRMixin, ParametrizedTestCase, StUFZDSTestBase):
     VCR_TEST_FILES = TESTS_DIR / "files"
 
     @classmethod
@@ -3719,6 +3720,51 @@ class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
                 f"{prefix}/bg:bezoekadres/bg:aoa.huisnummer": "151",
             },
         )
+
+    @parametrize("submitted_value", [None, {}, "bad"])
+    def test_addressnl_empty_or_broken_mapping(self, submitted_value):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "address",
+                    "type": "addressNL",
+                    "label": "Adres",
+                    "deriveAddress": True,
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_adres
+                    },
+                },
+            ],
+            bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={"address": submitted_value},
+            completed=True,
+            with_report=True,
+        )
+
+        plugin = StufZDSRegistration("stuf")
+        try:
+            plugin.register_submission(submission, self.options)
+        except TypeError:  # crash will be logged in the admin
+            return
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+        self.assertSoapXMLCommon(xml_doc)
+
+        # Ensure that date-related values are formatted correctly
+        prefix = (
+            "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon"
+            "/bg:verblijfsadres"
+        )
+        self.assertXPathNotExists(xml_doc, f"{prefix}/bg:wpl.woonplaatsNaam")
+        self.assertXPathNotExists(xml_doc, f"{prefix}/bg:gor.openbareRuimteNaam")
+        self.assertXPathNotExists(xml_doc, f"{prefix}/bg:gor.straatnaam")
+        self.assertXPathNotExists(xml_doc, f"{prefix}/bg:aoa.postcode")
+        self.assertXPathNotExists(xml_doc, f"{prefix}/bg:aoa.huisnummer")
+        self.assertXPathNotExists(xml_doc, f"{prefix}/bg:aoa.huisletter")
+        self.assertXPathNotExists(xml_doc, f"{prefix}/bg:aoa.huisnummertoevoeging")
 
 
 @freeze_time("2020-12-22")
