@@ -129,6 +129,21 @@ class PartialDate:
                 return cls()
 
 
+def transform_addressnl_to_verblijfsadres(value):
+    if not value:
+        return SKIP
+    if not isinstance(value, dict):
+        raise TypeError("Expected a dictionary with the addressNL data shape.")
+    return {
+        "woonplaatsNaam": value.get("city") or "",
+        "postcode": value.get("postcode") or "",
+        "straatnaam": value.get("streetName") or "",
+        "huisnummer": value.get("houseNumber") or "",
+        "huisletter": value.get("houseLetter") or "",
+        "huisnummertoevoeging": value.get("houseNumberAddition") or "",
+    }
+
+
 def _gender_choices(value):
     """
     Convert value to uppercase, take only the first character and see if it's
@@ -210,6 +225,10 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         "initiator.verblijfsadres.huisnummer": RegistrationAttribute.initiator_huisnummer,
         "initiator.verblijfsadres.huisletter": RegistrationAttribute.initiator_huisletter,
         "initiator.verblijfsadres.huisnummertoevoeging": RegistrationAttribute.initiator_huisnummer_toevoeging,
+        "initiator.verblijfsadres": FieldConf(
+            RegistrationAttribute.initiator_adres,
+            transform=transform_addressnl_to_verblijfsadres,
+        ),
         # heeftAlsAanspreekpunt for Natuurlijk Persoon
         "initiator.contactpersoonNaam": RegistrationAttribute.initiator_contactpersoonNaam,
         "initiator.telefoonnummer": RegistrationAttribute.initiator_telefoonnummer,

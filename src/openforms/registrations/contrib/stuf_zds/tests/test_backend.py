@@ -3612,6 +3612,114 @@ class StufZDSPluginVCRTests(OFVCRMixin, StUFZDSTestBase):
             },
         )
 
+    def test_addressnl_registration_attribute_initiator_address(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "address",
+                    "type": "addressNL",
+                    "label": "Adres",
+                    "deriveAddress": True,
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_adres
+                    },
+                },
+            ],
+            bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={
+                "address": {
+                    "postcode": "1043 GR",
+                    "houseNumber": "151",
+                    "houseLetter": "L",
+                    "houseNumberAddition": "67",
+                    "streetName": "Kingsfordweg",
+                    "city": "Amsterdam",
+                    "secretStreetCity": "-irrelevant-",
+                },
+            },
+            completed=True,
+            with_report=True,
+        )
+
+        plugin = StufZDSRegistration("stuf")
+        plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+        self.assertSoapXMLCommon(xml_doc)
+
+        # Ensure that date-related values are formatted correctly
+        prefix = (
+            "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon"
+        )
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                f"{prefix}/bg:inp.bsn": "111222333",
+                f"{prefix}/bg:verblijfsadres/bg:wpl.woonplaatsNaam": "Amsterdam",
+                f"{prefix}/bg:verblijfsadres/bg:gor.openbareRuimteNaam": "Kingsfordweg",
+                f"{prefix}/bg:verblijfsadres/bg:gor.straatnaam": "Kingsfordweg",
+                f"{prefix}/bg:verblijfsadres/bg:aoa.postcode": "1043GR",
+                f"{prefix}/bg:verblijfsadres/bg:aoa.huisnummer": "151",
+                f"{prefix}/bg:verblijfsadres/bg:aoa.huisletter": "L",
+                f"{prefix}/bg:verblijfsadres/bg:aoa.huisnummertoevoeging": "67",
+            },
+        )
+
+    def test_addressnl_registration_attribute_initiator_partial_address(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "address",
+                    "type": "addressNL",
+                    "label": "Adres",
+                    "deriveAddress": False,
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_adres
+                    },
+                },
+            ],
+            kvk="12345678",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={
+                "address": {
+                    "postcode": "1043 GR",
+                    "houseNumber": "151",
+                    "houseLetter": "",
+                    "houseNumberAddition": "",
+                    "streetName": "",
+                    "city": "",
+                    "secretStreetCity": "",
+                },
+            },
+            completed=True,
+            with_report=True,
+        )
+
+        plugin = StufZDSRegistration("stuf")
+        plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+        self.assertSoapXMLCommon(xml_doc)
+
+        # Ensure that date-related values are formatted correctly
+        prefix = (
+            "//zkn:object/zkn:heeftAlsInitiator/"
+            "zkn:gerelateerde/zkn:nietNatuurlijkPersoon"
+        )
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                f"{prefix}/bg:inn.nnpId": "12345678",
+                f"{prefix}/bg:bezoekadres/bg:aoa.postcode": "1043GR",
+                f"{prefix}/bg:bezoekadres/bg:aoa.huisnummer": "151",
+            },
+        )
+
 
 @freeze_time("2020-12-22")
 @temp_private_root()
