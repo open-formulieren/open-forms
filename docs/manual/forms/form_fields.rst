@@ -183,7 +183,9 @@ Deze worden naar de ZGW API's verstuurd als een ``contactpersoonRol``-object:
 
   ``naam`` is een verplicht attribuut volgens de ZGW API's-specificatie. Geef dit altijd
   mee wanneer je een ander ``contactpersoonRol``-attribuut gebruikt (``telefoonnummer``
-  en/of ``emailadres``), anders retourneren de ZGW API's een foutmelding.
+  en/of ``emailadres``), anders retourneren de ZGW API's een foutmelding. Bovendien wordt
+  een lege waarde voor de ``naam`` niet ondersteund in de ZGW-API's, dus zorg ervoor dat
+  het bijbehorende formulierveld verplicht is.
 
 .. warning::
 
