@@ -3187,3 +3187,149 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "functie": "",
             },
         )
+
+    def test_addressnl_registration_attribute_initiator_address(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "address",
+                    "type": "addressNL",
+                    "label": "Adres",
+                    "deriveAddress": True,
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_adres
+                    },
+                },
+            ],
+            submitted_data={
+                "address": {
+                    "postcode": "1043 GR",
+                    "houseNumber": "151",
+                    "houseLetter": "L",
+                    "houseNumberAddition": "67",
+                    "streetName": "Kingsfordweg",
+                    "city": "Amsterdam",
+                    "secretStreetCity": "-irrelevant-",
+                },
+            },
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case type version
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "product_url": "",
+            "medewerker_roltype": "",
+            "property_mappings": [],
+            "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+        }
+
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        plugin.register_submission(submission, options)
+
+        submission.refresh_from_db()
+        assert submission.registration_result
+
+        initiator_data = submission.registration_result["initiator_rol"]
+        self.assertEqual(
+            initiator_data["betrokkeneIdentificatie"]["verblijfsadres"],
+            {
+                "aoaHuisletter": "L",
+                "aoaHuisnummer": 151,
+                "aoaHuisnummertoevoeging": "67",
+                "aoaIdentificatie": "OFWORKAROUND",
+                "aoaPostcode": "1043 GR",
+                "gorOpenbareRuimteNaam": "Kingsfordweg",
+                "inpLocatiebeschrijving": "",
+                "wplWoonplaatsNaam": "Amsterdam",
+            },
+        )
+
+    # breaks because we can't put a KVK number in an RSIN field
+    @expectedFailure
+    def test_addressnl_registration_attribute_initiator_partial_address(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "label": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+                {
+                    "key": "address",
+                    "type": "addressNL",
+                    "label": "Adres",
+                    "deriveAddress": False,
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_adres
+                    },
+                },
+            ],
+            kvk="12345678",
+            submitted_data={
+                "handelsnaam": "ACME",
+                "address": {
+                    "postcode": "1043 GR",
+                    "houseNumber": "151",
+                    "houseLetter": "",
+                    "houseNumberAddition": "",
+                    "streetName": "",
+                    "city": "",
+                    "secretStreetCity": "",
+                },
+            },
+            completed=True,
+            # Pin to a known case type version
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "product_url": "",
+            "medewerker_roltype": "",
+            "property_mappings": [],
+            "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        plugin.register_submission(submission, options)
+
+        submission.refresh_from_db()
+        assert submission.registration_result
+
+        initiator_data = submission.registration_result["initiator_rol"]
+        self.assertEqual(
+            initiator_data["betrokkeneIdentificatie"]["bezoekadres"], "1043 GR 151"
+        )

@@ -182,6 +182,21 @@ def _get_template_context(submission: Submission) -> ZaakTemplateContext:
     }
 
 
+def transform_addressnl_to_verblijfsadres(value):
+    if not value:
+        return SKIP
+    if not isinstance(value, dict):
+        raise TypeError("Expected a dictionary with the addressNL data shape.")
+    return {
+        "wplWoonplaatsNaam": value.get("city") or "",
+        "aoaPostcode": value.get("postcode") or "",
+        "gorOpenbareRuimteNaam": value.get("streetName") or "",
+        "aoaHuisnummer": value.get("houseNumber") or "",
+        "aoaHuisletter": value.get("houseLetter") or "",
+        "aoaHuisnummertoevoeging": value.get("houseNumberAddition") or "",
+    }
+
+
 @register("zgw-create-zaak")
 class ZGWRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("ZGW API's")
@@ -210,6 +225,10 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         "betrokkeneIdentificatie.verblijfsadres.aoaHuisnummer": RegistrationAttribute.initiator_huisnummer,
         "betrokkeneIdentificatie.verblijfsadres.aoaHuisletter": RegistrationAttribute.initiator_huisletter,
         "betrokkeneIdentificatie.verblijfsadres.aoaHuisnummertoevoeging": RegistrationAttribute.initiator_huisnummer_toevoeging,
+        "betrokkeneIdentificatie.verblijfsadres": FieldConf(
+            RegistrationAttribute.initiator_adres,
+            transform=transform_addressnl_to_verblijfsadres,
+        ),
         # Vestiging
         "betrokkeneIdentificatie.vestigingsNummer": RegistrationAttribute.initiator_vestigingsnummer,
         "betrokkeneIdentificatie.handelsnaam": FieldConf(
@@ -370,6 +389,28 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             initiator_rol_data["betrokkeneType"] = "vestiging"
         elif kvk:
             initiator_rol_data["betrokkeneType"] = "niet_natuurlijk_persoon"
+            # NNP has bezoekadres string field rather than structured data for
+            # verblijfsadres
+            if address := betrokkene_identificatie["verblijfsadres"]:
+                postcode = address["aoaPostcode"]
+                number = address["aoaHuisnummer"]
+                street_name = address["gorOpenbareRuimteNaam"]
+                city = address["wplWoonplaatsNaam"]
+                house_letter = address["aoaHuisletter"]
+                number_addition = address["aoaHuisnummertoevoeging"]
+                full_number = " ".join(
+                    _bit
+                    for bit in [number, house_letter, number_addition]
+                    if (_bit := bit.strip())
+                )
+                formatted_address = (
+                    f"{street_name} {full_number}\n{postcode} {city}"
+                    if (street_name and city)
+                    else f"{postcode} {full_number}"
+                )
+                betrokkene_identificatie["bezoekadres"] = formatted_address
+                del betrokkene_identificatie["verblijfsadres"]
+
         else:
             initiator_rol_data["betrokkeneType"] = "natuurlijk_persoon"
 
