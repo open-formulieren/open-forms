@@ -359,23 +359,13 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
         betrokkene_identificatie = initiator_rol_data.get("betrokkeneIdentificatie", {})
         kvk = betrokkene_identificatie.get("innNnpId")
-        vestigingsnummer = betrokkene_identificatie.get("vestigingsNummer")
 
-        warnings.warn(
-            (
-                "The usage of the branch number retrieved from the vestigingsNummer field"
-                " will be replaced in Open Forms 4.0 by prioritizing the provided"
-                " branch number after login"
-            ),
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
-        if not vestigingsnummer and submission.is_authenticated:
+        if submission.is_authenticated:
             auth_context = submission.auth_info.to_auth_context_data()
             vestigingsnummer = get_branch_number(auth_context)
             betrokkene_identificatie["vestigingsNummer"] = vestigingsnummer
 
-        if kvk and vestigingsnummer:
+        if kvk and betrokkene_identificatie.get("vestigingsNummer"):
             initiator_rol_data["betrokkeneType"] = "vestiging"
         elif kvk:
             initiator_rol_data["betrokkeneType"] = "niet_natuurlijk_persoon"

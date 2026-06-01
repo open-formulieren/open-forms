@@ -631,10 +631,15 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                         "attribute": RegistrationAttribute.initiator_handelsnaam,
                     },
                 },
+                {
+                    "key": "vestingsnummer",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_vestigingsnummer,
+                    },
+                },
             ],
-            submitted_data={
-                "handelsnaam": "ACME",
-            },
+            submitted_data={"handelsnaam": "ACME", "vestingsnummer": "000038509499"},
             kvk="12345678",
             branch_number="000038509490",
             completed=True,
