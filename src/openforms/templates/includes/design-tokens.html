@@ -10,7 +10,7 @@
       {{ token }}: {{ value }};{% endfor %}
 
       {% if theme.logo %}{# if there's a logo, output a design token that the CSS can pick up to set as background #}
-      --of-header-logo-url: url('{{ theme.logo.url }}');{% endif %}
+      --of-header-logo-url: url('{{ weasyprint_base_url }}{{ theme.logo.url }}');{% endif %}
     }
     </style>
 {% endif %}
