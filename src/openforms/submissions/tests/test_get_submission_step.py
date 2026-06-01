@@ -1346,8 +1346,8 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                             {"date": ["2026-03-18"]},
                         ]
                     },
-                    # {"==": [{"var": "textfield"}, ""]} evaluates to True with the empty value
-                    True,
+                    # Variable from future step is not included in the context.
+                    {"==": [{"var": ["textfield"]}, ""]},
                 ]
             },
             "actions": [

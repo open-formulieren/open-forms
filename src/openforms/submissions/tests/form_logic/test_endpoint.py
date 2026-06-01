@@ -320,6 +320,9 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     "time": "Invalid",
                     "date": "2020-13-46",
                     "datetime": "2022-13-46T00:00:00+02:00",
+                    "result": "",
+                    "resultDate": "",
+                    "resultDatetime": "",
                 }
             },
         )
@@ -327,10 +330,9 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         data = response.json()
-
-        self.assertEqual(data["step"]["data"]["result"], "All the variables were None")
-        for key in ("time", "date", "datetime", "resultDate", "resultDatetime"):
-            self.assertNotIn(key, data["step"]["data"])
+        self.assertEqual(
+            {"result": "All the variables were None"}, data["step"]["data"]
+        )
 
     @tag("gh-3975")
     @requests_mock.Mocker()
@@ -577,6 +579,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 },
             ]
         )
+        form_step = submission.form.formstep_set.get()
 
         FormLogicFactory.create(
             form=submission.form,
@@ -603,13 +606,58 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 ]
             ],
         )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={
+                "and": [
+                    # Normal
+                    {"==": [{"var": ["textfield", "foo"]}, "foo"]},
+                    {"==": [{"var": ["date", "foo"]}, "foo"]},
+                    {"==": [{"var": ["textfieldInFieldset", "foo"]}, "foo"]},
+                    {"==": [{"var": ["editgrid.0.textfieldInEditgrid", "foo"]}, "foo"]},
+                    {"==": [{"var": ["editgrid.1.textfieldInEditgrid", "foo"]}, "foo"]},
+                    # Inverted
+                    {"==": [{"var": ["textfieldInverted", "foo"]}, "foo"]},
+                    {"==": [{"var": ["dateInverted", "foo"]}, "foo"]},
+                    {"==": [{"var": ["textfieldInInvertedFieldset", "foo"]}, "foo"]},
+                    {
+                        "==": [
+                            {
+                                "var": [
+                                    "editgridInverted.0.textfieldInInvertedEditgrid",
+                                    "foo",
+                                ]
+                            },
+                            "foo",
+                        ]
+                    },
+                    {
+                        "==": [
+                            {
+                                "var": [
+                                    "editgridInverted.1.textfieldInInvertedEditgrid",
+                                    "foo",
+                                ]
+                            },
+                            "foo",
+                        ]
+                    },
+                ]
+            },
+            actions=[
+                {
+                    "action": {"type": "disable-next"},
+                    "form_step_uuid": str(form_step.uuid),
+                }
+            ],
+        )
         submission.form.apply_logic_analysis()
 
         endpoint = reverse(
             "api:submission-steps-logic-check",
             kwargs={
                 "submission_uuid": submission.uuid,
-                "step_uuid": submission.form.formstep_set.first().uuid,
+                "step_uuid": form_step.uuid,
             },
         )
         self._add_submission_to_session(submission)
@@ -634,15 +682,10 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 },
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertEqual(
-                response.json()["step"]["data"],
-                {
-                    "textfield": "",
-                    "date": "",
-                    "textfieldInFieldset": "",
-                    "editgrid": [],
-                },
-            )
+            self.assertEqual({}, response.json()["step"]["data"])
+            # This means the second logic rule was triggered -> the value of the
+            # hidden fields was not available in the context.
+            self.assertFalse(response.json()["step"]["canSubmit"])
 
         with self.subTest("Logic rule is not triggered"):
             # Assuming we go from a checked to an unchecked state for the checkbox, all
@@ -664,21 +707,12 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 },
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertEqual(
-                response.json()["step"]["data"],
-                {
-                    "textfieldInverted": "",
-                    "dateInverted": "",
-                    "textfieldInInvertedFieldset": "",
-                    "editgridInverted": [],
-                },
-            )
+            self.assertEqual({}, response.json()["step"]["data"])
+            # This means the second logic rule was triggered -> the value of the
+            # hidden fields was not available in the context.
+            self.assertFalse(response.json()["step"]["canSubmit"])
 
     def test_clear_on_hide_behaviour_with_multiple_steps(self):
-        """
-        Ensure that logic check only returns cleared values relevant for the current
-        step.
-        """
         form = FormFactory.create()
         step_1 = FormStepFactory.create(
             form=form,
@@ -774,18 +808,18 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-            # Because the step was already submitted before, we fall back to that value
-            # instead of the empty value.
-            self.assertEqual(
-                response.json()["step"]["data"], {"textfieldStep1": "some data"}
-            )
+            data = response.json()
+            self.assertEqual(data["step"]["data"], {})
+            self.assertTrue(data["step"]["configuration"]["components"][1]["hidden"])
 
         # There will be another logic call because the textfield is now hidden, so it
         # won't be included in the data
         with self.subTest("2nd logic in step 1"):
             response = self.client.post(endpoint, data={"data": {"checkbox": False}})
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertEqual(response.json()["step"]["data"], {})
+            data = response.json()
+            self.assertEqual(data["step"]["data"], {})
+            self.assertTrue(data["step"]["configuration"]["components"][1]["hidden"])
 
         with self.subTest("submit the step"):
             endpoint = reverse(
@@ -797,28 +831,19 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
             )
             self.client.put(endpoint, data={"data": {"checkbox": False}})
 
-        with self.subTest("logic in step 2"):
+        with self.subTest("get the second step"):
             endpoint = reverse(
-                "api:submission-steps-logic-check",
+                "api:submission-steps-detail",
                 kwargs={
                     "submission_uuid": submission.uuid,
                     "step_uuid": step_2.uuid,
                 },
             )
-            self._add_submission_to_session(submission)
-            response = self.client.post(
-                endpoint,
-                data={
-                    "data": {"textfieldStep2": "some more changed data"},
-                },
-            )
+            response = self.client.get(endpoint)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-            # Because the step was already submitted before, we fall back to that value
-            # instead of the empty value.
-            self.assertEqual(
-                response.json()["step"]["data"], {"textfieldStep2": "some data"}
-            )
+            data = response.json()
+            # The component should be hidden with the submitted data from step 1.
+            self.assertTrue(data["configuration"]["components"][0]["hidden"])
 
     def test_clear_on_hide_behaviour_with_conditional_and_logic_rule(self):
         """
@@ -1104,201 +1129,6 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
             "date_multiple=%5B%272026-01-13%27%2C+%272026-01-15%27%5D&"
             "date_single_value_from_multiple=2026-01-15",
         )
-
-    @tag("gh-5685")
-    def test_default_value_is_used_when_component_is_hidden_with_clear_on_hide(self):
-        form = FormFactory.create()
-        step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "checkbox",
-                        "key": "checkbox",
-                        "label": "Checkbox",
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "textfield",
-                        "label": "textfield",
-                        "defaultValue": "foo",
-                        "clearOnHide": True,
-                    },
-                ]
-            },
-        )
-
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
-            actions=[
-                {
-                    "component": "textfield",
-                    "action": {
-                        "name": "Hide textfield",
-                        "type": "property",
-                        "property": {
-                            "type": "object",
-                            "value": "hidden",
-                        },
-                        "state": True,
-                    },
-                }
-            ],
-        )
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={"==": [{"var": "textfield"}, "foo"]},
-            actions=[
-                {
-                    "form_step_uuid": str(step.uuid),
-                    "action": {"type": "disable-next"},
-                }
-            ],
-        )
-        form.apply_logic_analysis()
-        submission = SubmissionFactory.create(form=form)
-
-        # Perform logic check
-        endpoint = reverse(
-            "api:submission-steps-logic-check",
-            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
-        )
-        self._add_submission_to_session(submission)
-
-        response = self.client.post(
-            endpoint,
-            data={"data": {"checkbox": True, "textfield": "some custom input"}},
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        step_data = response.json()["step"]
-        self.assertEqual(step_data["data"], {"textfield": "foo"})
-        # Logic rule should be triggered
-        self.assertEqual(step_data["canSubmit"], False)
-
-    @tag("gh-5685")
-    def test_already_submitted_value_is_used_when_component_is_hidden_with_clear_on_hide(
-        self,
-    ):
-        form = FormFactory.create()
-        step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "checkbox",
-                        "key": "checkbox",
-                        "label": "Checkbox",
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "textfield",
-                        "label": "textfield",
-                        "defaultValue": "foo",
-                        "clearOnHide": True,
-                    },
-                    {
-                        "type": "editgrid",
-                        "key": "editgrid",
-                        "label": "Editgrid",
-                        "groupLabel": "item",
-                        "clearOnHide": True,
-                        "components": [
-                            {
-                                "type": "number",
-                                "key": "number",
-                                "label": "Number",
-                            }
-                        ],
-                    },
-                ]
-            },
-        )
-
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
-            actions=[
-                {
-                    "component": "textfield",
-                    "action": {
-                        "name": "Hide textfield",
-                        "type": "property",
-                        "property": {
-                            "type": "object",
-                            "value": "hidden",
-                        },
-                        "state": True,
-                    },
-                },
-                {
-                    "component": "editgrid",
-                    "action": {
-                        "name": "Hide editgrid",
-                        "type": "property",
-                        "property": {
-                            "type": "object",
-                            "value": "hidden",
-                        },
-                        "state": True,
-                    },
-                },
-            ],
-        )
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={
-                "==": [{"var": "textfield"}, "already submitted value"]
-            },
-            actions=[
-                {
-                    "form_step_uuid": str(step.uuid),
-                    "action": {"type": "disable-next"},
-                }
-            ],
-        )
-        form.apply_logic_analysis()
-        submission = SubmissionFactory.create(form=form)
-
-        # Simulate an already submitted step
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=step,
-            data={
-                "checkbox": False,
-                "textfield": "already submitted value",
-                "editgrid": [{"number": 1}, {"number": 2}],
-            },
-        )
-
-        # Perform logic check
-        endpoint = reverse(
-            "api:submission-steps-logic-check",
-            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
-        )
-        self._add_submission_to_session(submission)
-
-        response = self.client.post(
-            endpoint,
-            data={
-                "data": {
-                    "checkbox": True,
-                    "textfield": "some custom input",
-                    "editgrid": [{"number": 42}],
-                },
-            },
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        step_data = response.json()["step"]
-        self.assertEqual(
-            step_data["data"],
-            {
-                "textfield": "already submitted value",
-                "editgrid": [{"number": 1}, {"number": 2}],
-            },
-        )
-        # Logic rule should be triggered
-        self.assertEqual(step_data["canSubmit"], False)
 
     def test_step_data_does_not_contain_irrelevant_fields(self):
         form = FormFactory.create()
