@@ -19,16 +19,14 @@ from typing_extensions import deprecated
 
 from openforms.formio.service import (
     FormioData,
+    get_component_data_subtype,
+    get_component_datatype,
     get_component_empty_value,
     holds_submission_data,
     normalize_value_for_component,
 )
 from openforms.formio.typing import Component
-from openforms.formio.utils import (
-    get_component_data_subtype,
-    get_component_datatype,
-    iter_components,
-)
+from openforms.formio.utils import iter_components
 from openforms.forms.models.form_variable import FormVariable
 from openforms.typing import (
     JSONEncodable,

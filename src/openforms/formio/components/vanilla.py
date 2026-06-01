@@ -37,6 +37,7 @@ from openforms.typing import JSONObject, JSONValue
 from openforms.utils.json_schema import to_multiple
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
+from openforms.variables.constants import FormVariableDataTypes
 
 from ..api.validators import MimeTypeValidator
 from ..datastructures import FormioConfigurationWrapper, FormioData
@@ -92,6 +93,7 @@ class Default(BasePlugin):
     """
 
     formatter = DefaultFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(self, component: Component) -> serializers.Field:
@@ -101,6 +103,7 @@ class Default(BasePlugin):
 @register("textfield")
 class TextField(BasePlugin[TextFieldComponent]):
     formatter = TextFieldFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     @staticmethod
@@ -188,6 +191,7 @@ class EmailVerificationValidator:
 @register("email")
 class Email(BasePlugin):
     formatter = EmailFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(
@@ -274,6 +278,7 @@ class TimeBetweenValidator:
 @register("time")
 class Time(BasePlugin[Component]):
     formatter = TimeFormatter
+    data_type = FormVariableDataTypes.time
     empty_value = ""
 
     def build_serializer_field(
@@ -329,6 +334,7 @@ class Time(BasePlugin[Component]):
 @register("phoneNumber")
 class PhoneNumber(BasePlugin):
     formatter = PhoneNumberFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(
@@ -467,6 +473,9 @@ class FileSerializer(serializers.Serializer):
 @register("file")
 class File(BasePlugin[FileComponent]):
     formatter = FileFormatter
+    # always an array, even for single-file uploads
+    data_type = FormVariableDataTypes.array
+    data_subtype = FormVariableDataTypes.object
     empty_value = []
 
     @staticmethod
@@ -555,6 +564,7 @@ class File(BasePlugin[FileComponent]):
 @register("textarea")
 class TextArea(BasePlugin[Component]):
     formatter = TextAreaFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(
@@ -597,6 +607,7 @@ class TextArea(BasePlugin[Component]):
 @register("number")
 class Number(BasePlugin):
     formatter = NumberFormatter
+    data_type = FormVariableDataTypes.float
     empty_value = None
 
     def build_serializer_field(
@@ -653,6 +664,7 @@ def validate_required_checkbox(value: bool) -> None:
 @register("checkbox")
 class Checkbox(BasePlugin[Component]):
     formatter = CheckboxFormatter
+    data_type = FormVariableDataTypes.boolean
     empty_value = False
 
     def build_serializer_field(self, component: Component) -> serializers.BooleanField:
@@ -725,6 +737,7 @@ class SelectboxesField(serializers.Serializer):
 @register("selectboxes")
 class SelectBoxes(BasePlugin[SelectBoxesComponent]):
     formatter = SelectBoxesFormatter
+    data_type = FormVariableDataTypes.object
 
     def mutate_config_dynamically(
         self,
@@ -814,6 +827,7 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
 @register("select")
 class Select(BasePlugin[SelectComponent]):
     formatter = SelectFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def mutate_config_dynamically(
@@ -885,6 +899,7 @@ class Select(BasePlugin[SelectComponent]):
 @register("currency")
 class Currency(BasePlugin[Component]):
     formatter = CurrencyFormatter
+    data_type = FormVariableDataTypes.float
     empty_value = None
 
     def build_serializer_field(self, component: Component) -> serializers.FloatField:
@@ -924,6 +939,7 @@ class Currency(BasePlugin[Component]):
 @register("radio")
 class Radio(BasePlugin[RadioComponent]):
     formatter = RadioFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def mutate_config_dynamically(
@@ -976,6 +992,7 @@ class Radio(BasePlugin[RadioComponent]):
 @register("signature")
 class Signature(BasePlugin[Component]):
     formatter = SignatureFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(self, component: Component) -> serializers.CharField:
@@ -1122,6 +1139,8 @@ class EditGridField(serializers.Field):
 
 @register("editgrid")
 class EditGrid(BasePlugin[EditGridComponent]):
+    data_type = FormVariableDataTypes.array
+    data_subtype = FormVariableDataTypes.editgrid
     empty_value = []
 
     def build_serializer_field(self, component: EditGridComponent) -> EditGridField:

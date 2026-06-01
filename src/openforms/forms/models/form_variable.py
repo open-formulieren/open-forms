@@ -13,10 +13,12 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 from opentelemetry import trace
 
-from openforms.formio.service import holds_submission_data
-from openforms.formio.utils import (
+from openforms.formio.service import (
     get_component_data_subtype,
     get_component_datatype,
+    holds_submission_data,
+)
+from openforms.formio.utils import (
     get_component_default_value,
     iter_components,
 )

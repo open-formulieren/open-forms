@@ -34,6 +34,7 @@ from rest_framework.request import Request
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
 from openforms.typing import JSONObject, JSONValue, VariableValue
+from openforms.variables.constants import FormVariableDataTypes
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
@@ -95,6 +96,18 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
     holds_submission_data: ClassVar[bool] = True
     """
     Flag to indicate whether data can be submitted for this component.
+    """
+    data_type: ClassVar[FormVariableDataTypes] = NotImplemented
+    """
+    The intrinsic data type for the component, for the non-multiple case.
+
+    Each component type produces values of a certain data type. :attr:`empty_value` is
+    expected to be an instance of that data type. Note that components that support the
+    ``multiple`` property typically return a list of the intrinsic data type.
+    """
+    data_subtype: ClassVar[FormVariableDataTypes | None] = None
+    """
+    The intrinsic item data type for components that have a collection as data type.
     """
     empty_value: ClassVar[JSONValue] = NotImplemented
     """
@@ -180,7 +193,10 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
         """
         return None
 
-    def get_empty_value(self, component: ComponentT):
+    def get_data_type(self, component: ComponentT) -> FormVariableDataTypes:
+        return self.data_type
+
+    def get_empty_value(self, component: ComponentT) -> JSONValue:
         if component.get("multiple", False):
             return []
         return self.empty_value
@@ -385,7 +401,45 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
         return hook(component, submission)
 
-    def get_empty_value(self, component: Component):
+    def get_component_data_type(self, component: Component) -> FormVariableDataTypes:
+        """
+        Determine the data type for the component instance.
+
+        The top-level method takes into account whether the component is scalar or a
+        collection of values. The data type is looked up from the component plugin
+        registry or defaults to the string type.
+        """
+        if component.get("multiple"):
+            return FormVariableDataTypes.array
+        if (component_type := component["type"]) not in self:
+            return FormVariableDataTypes.string
+        return self[component_type].get_data_type(component)
+
+    def get_component_data_subtype(
+        self, component: Component
+    ) -> Literal[""] | FormVariableDataTypes:
+        """
+        Get the data subtype of a component.
+
+        :returns: The original data type of the component if the component is configured
+          as ``multiple``, an empty string otherwise. Components that are already an
+          array (editgrid, files, partners, children and profile) are a special case,
+          as ``multiple`` is not relevant for these.
+        """
+        if (component_type := component["type"]) not in self:
+            component_type = "default"
+
+        if (subtype := self[component_type].data_subtype) is not None:
+            return subtype
+
+        if not component.get("multiple"):
+            return ""
+
+        # get the intrinsic data type
+        _component: Component = {**component, "multiple": False}
+        return self.get_component_data_type(_component)
+
+    def get_empty_value(self, component: Component) -> JSONValue:
         if (component_type := component["type"]) not in self:
             return ""
         return self[component_type].get_empty_value(component)

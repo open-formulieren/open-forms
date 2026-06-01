@@ -36,7 +36,7 @@ from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam
 from openforms.utils.json_schema import GEO_JSON_COORDINATE_SCHEMAS, to_multiple
 from openforms.utils.validators import BSNValidator, IBANValidator
 from openforms.validations.service import PluginValidator
-from openforms.variables.constants import FormVariableSources
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..datastructures import FormioData
 from ..dynamic_config.date import mutate as mutate_min_max_validation
@@ -96,6 +96,7 @@ class FormioDateField(serializers.DateField):
 @register("date")
 class Date(BasePlugin[DateComponent]):
     formatter = DateFormatter
+    data_type = FormVariableDataTypes.date
     empty_value = ""
 
     def mutate_config_dynamically(
@@ -188,6 +189,7 @@ def _normalize_validation_datetime(value: str) -> datetime:
 @register("datetime")
 class Datetime(BasePlugin):
     formatter = DateTimeFormatter
+    data_type = FormVariableDataTypes.datetime
     empty_value = ""
 
     def mutate_config_dynamically(
@@ -248,6 +250,7 @@ class Datetime(BasePlugin):
 @register("map")
 class Map(BasePlugin[MapComponent]):
     formatter = MapFormatter
+    data_type = FormVariableDataTypes.object
     empty_value = None
 
     def mutate_config_dynamically(
@@ -333,6 +336,7 @@ class Map(BasePlugin[MapComponent]):
 @register("postcode")
 class Postcode(BasePlugin[Component]):
     formatter = TextFieldFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     @staticmethod
@@ -414,6 +418,7 @@ class FamilyMembersHandler(Protocol):
 class NPFamilyMembers(BasePlugin):
     # not actually relevant, as we transform the component into a different type
     formatter = DefaultFormatter
+    data_type = FormVariableDataTypes.object
     empty_value = {}
 
     def build_serializer_field(self, component: Component) -> serializers.Field:
@@ -501,6 +506,7 @@ class NPFamilyMembers(BasePlugin):
 @register("bsn")
 class BSN(BasePlugin[Component]):
     formatter = TextFieldFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(
@@ -653,6 +659,7 @@ class AddressValueSerializer(serializers.Serializer):
 @register("addressNL")
 class AddressNL(BasePlugin[AddressNLComponent]):
     formatter = AddressNLFormatter
+    data_type = FormVariableDataTypes.object
     # addressNL is a composite field, and rendering it in the UI will cause the
     # sub-paths to be set. We can't use `null` as empty value, as that would
     # lead to inconsistent empty-checks, as you want to reliably point to
@@ -816,6 +823,8 @@ class PartnerListField(serializers.Field):
 @register("partners")
 class Partners(BasePlugin[Component]):
     formatter = DefaultFormatter
+    data_type = FormVariableDataTypes.array
+    data_subtype = FormVariableDataTypes.partners
     empty_value = []
 
     def build_serializer_field(self, component: Component) -> PartnerListField:
@@ -974,6 +983,8 @@ class ChildListField(serializers.Field):
 @register("children")
 class Children(BasePlugin[ChildrenComponent]):
     formatter = DefaultFormatter
+    data_type = FormVariableDataTypes.array
+    data_subtype = FormVariableDataTypes.children
     empty_value = []
 
     def build_serializer_field(self, component: ChildrenComponent) -> ChildListField:
@@ -1007,6 +1018,7 @@ class Children(BasePlugin[ChildrenComponent]):
 @register("cosign")
 class Cosign(BasePlugin):
     formatter = CosignFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(self, component: Component) -> serializers.EmailField:
@@ -1026,6 +1038,7 @@ class Cosign(BasePlugin):
 @register("iban")
 class Iban(BasePlugin):
     formatter = DefaultFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(
@@ -1062,6 +1075,7 @@ class Iban(BasePlugin):
 @register("licenseplate")
 class LicensePlate(BasePlugin):
     formatter = DefaultFormatter
+    data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(
@@ -1115,6 +1129,8 @@ class LicensePlate(BasePlugin):
 @register("customerProfile")
 class CustomerProfile(BasePlugin[CustomerProfileComponent]):
     formatter = CustomerProfileFormatter
+    data_type = FormVariableDataTypes.array
+    data_subtype = FormVariableDataTypes.object
 
     def build_serializer_field(
         self, component: CustomerProfileComponent
