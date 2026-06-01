@@ -56,13 +56,46 @@ def get_translated_custom_error_messages(
     config_wrapper: FormioConfigurationWrapper, language_code: str
 ) -> FormioConfigurationWrapper:
     for component in config_wrapper:
-        if (
-            not (custom_error_messages := component.get("translatedErrors"))
-            or "errors" in component
-        ):
-            continue
+        # generic mechanism
+        match component:
+            # if there are already errors in the component definition, do not overwrite
+            case {"errors": dict()}:
+                pass
 
-        component["errors"] = custom_error_messages[language_code]
+            # grab the language-specific error messages if they're available and store
+            # them in the resolved errors property
+            case {"translatedErrors": dict(errors_by_language_code)} if (
+                custom_error_messages := errors_by_language_code.get(language_code)
+            ):
+                component["errors"] = custom_error_messages
+
+        # TODO: the msgspec branch is probably the right opportunity to rectify the
+        # component-specific processing. For this hook, there's no matching registry/
+        # plugin hook.
+
+        match component:
+            case {
+                "type": "addressNL",
+                "openForms": {"components": dict(addressnl_components)},
+            } if addressnl_components:
+                for key in ("postcode", "city"):
+                    if not (component_config := addressnl_components.get(key)):
+                        continue
+                    if component_config.get("errors"):
+                        continue
+                    if not (
+                        errors_by_language_code := component_config.get(
+                            "translatedErrors"
+                        )
+                    ):
+                        continue
+                    if not (
+                        custom_error_messages := errors_by_language_code.get(
+                            language_code
+                        )
+                    ):
+                        continue
+                    component_config["errors"] = custom_error_messages
 
     return config_wrapper
 
