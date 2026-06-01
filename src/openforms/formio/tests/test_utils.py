@@ -7,6 +7,7 @@ from openforms.tests.search_strategies import json_primitives
 from openforms.typing import JSONPrimitive
 
 from ..datastructures import FormioConfigurationWrapper, FormioData
+from ..service import get_component_empty_value
 from ..typing import (
     AddressNLComponent,
     Component,
@@ -14,7 +15,7 @@ from ..typing import (
     MapComponent,
     SelectBoxesComponent,
 )
-from ..utils import get_component_empty_value, is_visible_in_frontend
+from ..utils import is_visible_in_frontend
 
 FORMIO_COMPONENTS: list[Component] = [
     {

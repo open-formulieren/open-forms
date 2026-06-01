@@ -7,8 +7,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from openforms.formio.service import build_serializer
-from openforms.formio.utils import get_component_empty_value
+from openforms.formio.service import build_serializer, get_component_empty_value
 from openforms.forms.constants import FormTypeChoices
 from openforms.forms.models import Form
 from openforms.submissions.api.fields import PrivacyPolicyAcceptedField

@@ -16,8 +16,8 @@ from openforms.formio.typing.vanilla import ColumnsComponent, FileComponent
 from openforms.typing import JSONObject
 
 from .datastructures import FormioConfigurationWrapper
+from .service import get_component_empty_value
 from .typing import AddressNLComponent, Component, MapComponent
-from .utils import get_component_empty_value
 
 logger = structlog.stdlib.get_logger(__name__)
 

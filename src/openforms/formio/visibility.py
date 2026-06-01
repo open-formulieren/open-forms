@@ -5,7 +5,6 @@ from openforms.typing import JSONObject, JSONValue
 from .datastructures import FormioConfiguration, FormioConfigurationWrapper, FormioData
 from .registry import register
 from .typing import Column, Component, ConditionalCompareValue
-from .utils import get_component_empty_value as _get_component_empty_value
 
 
 class GetEvaluationData(Protocol):
@@ -77,6 +76,8 @@ def is_hidden(
 
 
 def get_component_empty_value(component: Component) -> JSONValue:
+    from .service import get_component_empty_value as _get_component_empty_value
+
     if component["type"] in ("date", "time", "datetime"):
         return None
     return _get_component_empty_value(component)

@@ -33,7 +33,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.form_logic import process_visibility
 from openforms.submissions.models import EmailVerification
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, JSONValue
 from openforms.utils.json_schema import to_multiple
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
@@ -92,6 +92,7 @@ class Default(BasePlugin):
     """
 
     formatter = DefaultFormatter
+    empty_value = ""
 
     def build_serializer_field(self, component: Component) -> serializers.Field:
         raise NotImplementedError()
@@ -100,6 +101,7 @@ class Default(BasePlugin):
 @register("textfield")
 class TextField(BasePlugin[TextFieldComponent]):
     formatter = TextFieldFormatter
+    empty_value = ""
 
     @staticmethod
     def normalizer(component: Component, value: str) -> str:
@@ -186,6 +188,7 @@ class EmailVerificationValidator:
 @register("email")
 class Email(BasePlugin):
     formatter = EmailFormatter
+    empty_value = ""
 
     def build_serializer_field(
         self, component: Component
@@ -271,6 +274,7 @@ class TimeBetweenValidator:
 @register("time")
 class Time(BasePlugin[Component]):
     formatter = TimeFormatter
+    empty_value = ""
 
     def build_serializer_field(
         self, component: Component
@@ -325,6 +329,7 @@ class Time(BasePlugin[Component]):
 @register("phoneNumber")
 class PhoneNumber(BasePlugin):
     formatter = PhoneNumberFormatter
+    empty_value = ""
 
     def build_serializer_field(
         self, component: Component
@@ -462,6 +467,7 @@ class FileSerializer(serializers.Serializer):
 @register("file")
 class File(BasePlugin[FileComponent]):
     formatter = FileFormatter
+    empty_value = []
 
     @staticmethod
     def rewrite_for_request(component: FileComponent, request: Request):
@@ -549,6 +555,7 @@ class File(BasePlugin[FileComponent]):
 @register("textarea")
 class TextArea(BasePlugin[Component]):
     formatter = TextAreaFormatter
+    empty_value = ""
 
     def build_serializer_field(
         self, component: Component
@@ -590,6 +597,7 @@ class TextArea(BasePlugin[Component]):
 @register("number")
 class Number(BasePlugin):
     formatter = NumberFormatter
+    empty_value = None
 
     def build_serializer_field(
         self, component: Component
@@ -645,6 +653,7 @@ def validate_required_checkbox(value: bool) -> None:
 @register("checkbox")
 class Checkbox(BasePlugin[Component]):
     formatter = CheckboxFormatter
+    empty_value = False
 
     def build_serializer_field(self, component: Component) -> serializers.BooleanField:
         validate = component.get("validate", {})
@@ -786,10 +795,26 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
         # a single compare value, not an object.
         return value.get(compare_value, False)
 
+    def get_empty_value(self, component: SelectBoxesComponent):
+        # Issue 2838
+        # Component selectboxes is of 'object' type, which would return a {} for an
+        # empty component. However, the empty value is with all the options not selected
+        # (ex. {"a": False, "b": False})
+        # Additionally, the `defaultValue` will be empty if the component uses another
+        # variable or reference lists as a data source. We can generate a correct empty
+        # value from the `values` if the formio configuration was updated dynamically.
+        empty_value: JSONValue
+        if not (empty_value := component.get("defaultValue", {})):
+            values = component.get("values", {})
+            if not (len(values) == 1 and values[0]["label"] == ""):
+                empty_value = {item["label"]: False for item in values}
+        return empty_value
+
 
 @register("select")
 class Select(BasePlugin[SelectComponent]):
     formatter = SelectFormatter
+    empty_value = ""
 
     def mutate_config_dynamically(
         self, component, submission: "Submission", data: FormioData
@@ -860,6 +885,7 @@ class Select(BasePlugin[SelectComponent]):
 @register("currency")
 class Currency(BasePlugin[Component]):
     formatter = CurrencyFormatter
+    empty_value = None
 
     def build_serializer_field(self, component: Component) -> serializers.FloatField:
         validate = component.get("validate", {})
@@ -898,6 +924,7 @@ class Currency(BasePlugin[Component]):
 @register("radio")
 class Radio(BasePlugin[RadioComponent]):
     formatter = RadioFormatter
+    empty_value = ""
 
     def mutate_config_dynamically(
         self, component: RadioComponent, submission: "Submission", data: FormioData
@@ -949,6 +976,7 @@ class Radio(BasePlugin[RadioComponent]):
 @register("signature")
 class Signature(BasePlugin[Component]):
     formatter = SignatureFormatter
+    empty_value = ""
 
     def build_serializer_field(self, component: Component) -> serializers.CharField:
         validate = component.get("validate", {})
@@ -1094,6 +1122,8 @@ class EditGridField(serializers.Field):
 
 @register("editgrid")
 class EditGrid(BasePlugin[EditGridComponent]):
+    empty_value = []
+
     def build_serializer_field(self, component: EditGridComponent) -> EditGridField:
         validate = component.get("validate", {})
         required = validate.get("required", False)

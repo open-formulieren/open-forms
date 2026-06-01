@@ -12,10 +12,9 @@ from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 
 from ..datastructures import FormioData
-from ..service import format_value, holds_submission_data
+from ..service import format_value, get_component_empty_value, holds_submission_data
 from ..typing import Component
 from ..utils import (
-    get_component_empty_value,
     is_visible_in_frontend,
     iterate_components_with_configuration_path,
 )

@@ -96,6 +96,17 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
     """
     Flag to indicate whether data can be submitted for this component.
     """
+    empty_value: ClassVar[JSONValue] = NotImplemented
+    """
+    The empty value specific to the component type.
+
+    The empty value is used when a component changes visibility state from hidden to
+    visible when the value is not or no longer present in the submission data. It's the
+    intrinsic starting point for a pristine component state in the UI.
+
+    For empty values that depend on component configuration, override
+    :meth:`get_empty_value`.
+    """
 
     @property
     def is_enabled(self) -> Literal[True]:
@@ -168,6 +179,11 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
           the child class.
         """
         return None
+
+    def get_empty_value(self, component: ComponentT):
+        if component.get("multiple", False):
+            return []
+        return self.empty_value
 
 
 class ComponentRegistry(BaseRegistry[BasePlugin]):
@@ -368,6 +384,11 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         assert hook is not None
 
         return hook(component, submission)
+
+    def get_empty_value(self, component: Component):
+        if (component_type := component["type"]) not in self:
+            return ""
+        return self[component_type].get_empty_value(component)
 
     def holds_submission_data(self, component: Component) -> bool:
         """Return whether data can be submitted for a particular component."""

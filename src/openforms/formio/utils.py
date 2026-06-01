@@ -10,7 +10,7 @@ from opentelemetry import trace
 from typing_extensions import TypeIs
 
 from openforms.typing import JSONObject
-from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
+from openforms.variables.constants import FormVariableDataTypes
 
 from .constants import COMPONENT_DATA_SUBTYPES, COMPONENT_DATATYPES
 from .typing import Column, ColumnsComponent, Component, FormioConfiguration
@@ -201,56 +201,6 @@ def get_component_data_subtype(component: Component) -> str:
         return ""
 
     return COMPONENT_DATATYPES.get(component["type"], FormVariableDataTypes.string)
-
-
-def get_component_empty_value(component: Component):
-    match component:
-        case {"type": "selectboxes"}:
-            # Issue 2838
-            # Component selectboxes is of 'object' type, which would return a {} for an
-            # empty component. However, the empty value is with all the options not selected
-            # (ex. {"a": False, "b": False})
-            # Additionally, the `defaultValue` will be empty if the component uses another
-            # variable or reference lists as a data source. We can generate a correct empty
-            # value from the `values` if the formio configuration was updated dynamically.
-            if not (empty_value := component.get("defaultValue", {})):
-                values = component.get("values", {})
-                if not (len(values) == 1 and values[0]["label"] == ""):
-                    empty_value = {item["label"]: False for item in values}
-            return empty_value
-
-        case {"type": "map"}:
-            # Issue 5151
-            # Component map is of 'object' type, which would return a {} for an empty component.
-            # However, an empty object would fail validation, as the required properties
-            # `type` and `coordinates` would be missing.
-            return None
-
-        case {"type": "addressNL"}:
-            # addressNL is a composite field, and rendering it in the UI will cause the
-            # sub-paths to be set. We can't use `null` as empty value, as that would
-            # lead to inconsistent empty-checks, as you want to reliably point to
-            # {"var": "myComponent.postcode"} for a test against empty string
-            return {
-                "postcode": "",
-                "houseNumber": "",
-                "houseLetter": "",
-                "houseNumberAddition": "",
-                "streetName": "",
-                "city": "",
-                "secretStreetCity": "",
-                "autoPopulated": False,
-            }
-
-        case {"type": "customerProfile"}:
-            return [
-                {"type": channel, "address": "", "preferenceUpdate": "useOnlyOnce"}
-                for channel in component["digitalAddressTypes"]
-            ]
-
-        case _:
-            data_type = get_component_datatype(component)
-            return DEFAULT_INITIAL_VALUE.get(data_type, "")
 
 
 def get_component_default_value(component: Component) -> Any | None:
