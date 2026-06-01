@@ -548,6 +548,20 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(names, expected_names)
 
     def test_validate_selectboxes_with_dynamic_values_source(self):
+        form = FormFactory.create()
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="items",
+            data_type=FormVariableDataTypes.array,
+            initial_value=[
+                ["a", "Value A"],
+                ["b", "Value B"],
+                ["c", "Value C"],
+                ["d", "Value D"],
+                ["e", "Value E"],
+            ],
+        )
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -567,20 +581,8 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                     },
                     "values": [],
                 },
-            ]
-        )
-        FormVariableFactory.create(
-            form=submission.form,
-            user_defined=True,
-            key="items",
-            data_type=FormVariableDataTypes.array,
-            initial_value=[
-                ["a", "Value A"],
-                ["b", "Value B"],
-                ["c", "Value C"],
-                ["d", "Value D"],
-                ["e", "Value E"],
             ],
+            form=form,
         )
         self._add_submission_to_session(submission)
         endpoint = reverse(

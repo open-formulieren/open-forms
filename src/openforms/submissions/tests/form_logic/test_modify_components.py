@@ -8,6 +8,7 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 
 from ...form_logic import evaluate_form_logic
@@ -92,7 +93,7 @@ class ComponentModificationTests(TestCase):
         }
         self.assertEqual(configuration, expected)
 
-    @tag("gh-1871", "gh-2340", "gh-2409")
+    @tag("gh-1871", "gh-2340", "gh-2409", "gh-6275")
     def test_hiding_component_empties_its_data(self):
         form = FormFactory.create()
         form_step = FormStepFactory.create(
@@ -112,9 +113,17 @@ class ComponentModificationTests(TestCase):
                         "label": "component2",
                         "hidden": False,
                         "clearOnHide": True,
+                        "defaultValue": "default",
                     },
                 ]
             },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="foo",
+            name="foo",
+            initial_value="",
+            user_defined=True,
         )
 
         FormLogicFactory.create(
@@ -137,6 +146,23 @@ class ComponentModificationTests(TestCase):
                         },
                         "state": True,
                     },
+                }
+            ],
+        )
+        # Expected to not trigger, because it shouldn't use the empty, default, or
+        # already submitted value when clearing the field.
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "in": [
+                    {"var": "component2"},
+                    ["", "default", "Some data to be deleted"],
+                ]
+            },
+            actions=[
+                {
+                    "action": {"type": "variable", "value": "I cannot be set"},
+                    "variable": "foo",
                 }
             ],
         )
@@ -172,11 +198,19 @@ class ComponentModificationTests(TestCase):
                     "label": "component2",
                     "hidden": True,
                     "clearOnHide": True,
+                    "defaultValue": "default",
                 },
             ]
         }
         self.assertEqual(configuration, expected)
-        self.assertEqual("", submission_step.unsaved_data["component2"])
+        # Component is hidden -> value removed from evaluation context -> should not be
+        # present in unsaved_data
+        self.assertEqual({}, submission_step.unsaved_data)
+        # This ensures the second logic rule was not triggered, meaning the value of
+        # "component2" during evaluation was not the empty, default, or submitted value
+        self.assertEqual(
+            "", submission.variables_state.get_data(include_unsaved=True)["foo"]
+        )
 
     def test_change_component_to_required(self):
         form = FormFactory.create()

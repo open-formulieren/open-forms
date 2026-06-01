@@ -112,7 +112,7 @@ class ConditionalLogicTests(TestCase):
                 },
             ],
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         # Note that this unsaved data is technically not possible, because the frontend
         # will not send hidden fields to the backend, but it does prove that the backend

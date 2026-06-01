@@ -765,6 +765,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 ]
             },
         )
+        form_step = form.formstep_set.get()
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "radio"}, "show"]},
@@ -782,6 +783,20 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+        # Expected to trigger: the hidden textfield should not be in the context during
+        # logic evaluation.
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [{"var": ["textfield1", "not-in-context"]}, "not-in-context"]
+            },
+            actions=[
+                {
+                    "form_step_uuid": str(form_step.uuid),
+                    "action": {"type": "disable-next"},
+                }
+            ],
+        )
         form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
@@ -789,7 +804,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             "api:submission-steps-logic-check",
             kwargs={
                 "submission_uuid": submission.uuid,
-                "step_uuid": form.formstep_set.get().uuid,
+                "step_uuid": form_step.uuid,
             },
         )
 
@@ -823,110 +838,8 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             data = response.json()
-            self.assertEqual(data["step"]["data"], {"textfield1": ""})
-
-    @tag("gh-2409", "gh-5134")
-    def test_component_values_hidden_fieldset_used_in_subsequent_logic(self):
-        """
-        Test that values that should be cleared can be used safely in other logic rules.
-        """
-        form = FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={
-                "components": [
-                    {
-                        "key": "radio",
-                        "label": "radio",
-                        "type": "radio",
-                        "values": [
-                            {"label": "show", "value": "show"},
-                            {"label": "hide", "value": "hide"},
-                        ],
-                    },
-                    {
-                        "key": "fieldset",
-                        "label": "fieldset",
-                        "type": "fieldset",
-                        "hidden": True,
-                        "components": [
-                            {
-                                "key": "textfield",
-                                "label": "textfield",
-                                "type": "textfield",
-                                "clearOnHide": True,
-                            },
-                        ],
-                    },
-                    {
-                        "key": "calculatedResult",
-                        "label": "calculatedResult",
-                        "type": "fieldset",
-                        "components": [],
-                    },
-                ]
-            },
-        )
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={"==": [{"var": "radio"}, "show"]},
-            actions=[
-                {
-                    "component": "fieldset",
-                    "action": {
-                        "type": "property",
-                        "property": {
-                            "value": "hidden",
-                            "type": "bool",
-                        },
-                        "state": False,
-                    },
-                }
-            ],
-        )
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={"==": [{"var": "textfield"}, "foo"]},
-            actions=[
-                {
-                    "variable": "calculatedResult",
-                    "action": {
-                        "type": "variable",
-                        "value": "bar",
-                    },
-                }
-            ],
-        )
-        form.apply_logic_analysis()
-        submission = SubmissionFactory.create(form=form)
-        self._add_submission_to_session(submission)
-        logic_check_endpoint = reverse(
-            "api:submission-steps-logic-check",
-            kwargs={
-                "submission_uuid": submission.uuid,
-                "step_uuid": form.formstep_set.get().uuid,
-            },
-        )
-
-        # This request body is possible if we assume the initial value of the radio
-        # button is "show" (causing the textfield to be visible) and the user has
-        # entered the value "foo" in the textfield. Then we assert that an empty value
-        # for the textfield is present in the response, and there is no value present
-        # for "calculatedResult", because the textfield was cleared.
-        # See https://github.com/open-formulieren/open-forms/pull/5674#discussion_r2413450813
-        # for more details
-        response = self.client.post(
-            logic_check_endpoint,
-            {
-                "data": {
-                    "radio": "hide",
-                    "textfield": "foo",
-                }
-            },
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.json()
-        self.assertEqual(data["step"]["data"], {"textfield": ""})
+            self.assertEqual(data["step"]["data"], {})
+            self.assertFalse(data["step"]["canSubmit"])
 
     @tag("gh-2827")
     def test_component_value_set_to_now(self):
@@ -1281,23 +1194,18 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
             self.assertEqual(response_1.status_code, status.HTTP_200_OK)
             step_data = response_1.json()["step"]
-            # the backend replies with the "empty" values as the result of clear-on-hide,
-            # but the important part is the updated component configurations, which the
-            # renderer handles by itself and *that* leads to the second call.
-            self.assertEqual(
-                step_data["data"],
-                {
-                    "outerTextfield": "",
-                    "editgrid": [{"innerTextfield": ""}],
-                },
-            )
+            # the backend replies with the values as the result of clear-on-hide, where
+            # the keys are removed completely. The important part is the updated
+            # component configurations, which the renderer handles by itself and *that*
+            # leads to the second call.
+            self.assertEqual(step_data["data"], {"editgrid": [{}]})
 
             textfield, editgrid = step_data["configuration"]["components"][0:2]
             self.assertTrue(textfield["hidden"])
             self.assertTrue(editgrid["hidden"])
 
-        # the rendere applies `undefined` to the hidden components, which *removes the
-        # keys* from the submission data.
+        # the renderer applies `undefined` to the hidden components, which *removes the
+        # keys* from the submission data as well.
         with self.subTest("follow up call after renderer mutations"):
             response_2 = self.client.post(
                 endpoint,
@@ -1382,7 +1290,9 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         rule1.form_steps.set([form_step])
         rule2 = FormLogicFactory.create(
             form=form,
-            json_logic_trigger={"==": [{"var": "textfield"}, "default"]},
+            json_logic_trigger={
+                "==": [{"var": ["textfield", "not-in-context"]}, "not-in-context"]
+            },
             actions=[
                 {
                     "action": {"type": "variable", "value": True},
@@ -1416,7 +1326,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertTrue(fieldset["hidden"])
         self.assertFalse(fieldset["components"][0]["hidden"])
         data_updates = response_data["step"]["data"]
-        self.assertEqual(data_updates, {"textfield": "default", "observer": True})
+        self.assertEqual(data_updates, {"observer": True})
 
     @tag("gh-5962")
     def test_clear_on_hide_behaviour_applied_during_evaluation(self):
@@ -1467,7 +1377,9 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         rule1.form_steps.set([form_step])
         rule2 = FormLogicFactory.create(
             form=form,
-            json_logic_trigger={"!": [{"var": "textfield"}]},
+            json_logic_trigger={
+                "==": [{"var": ["textfield", "not-in-context"]}, "not-in-context"]
+            },
             actions=[
                 {
                     "action": {
@@ -1501,7 +1413,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         number = updated_configuration["components"][2]
         self.assertFalse(number["hidden"])
         data_updates = response_data["step"]["data"]
-        self.assertEqual(data_updates, {"textfield": ""})
+        self.assertEqual(data_updates, {})
 
     @tag("gh-5962")
     def test_clear_on_hide_behaviour_hiding_a_parent_does_not_update_nested_field_data(
@@ -1575,9 +1487,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
 
 @tag("gh-6005")
-class MultipleRulesTargettingSameComponentVisibilityTests(
-    SubmissionsMixin, APITestCase
-):
+class MultipleRulesTargetingSameComponentVisibilityTests(SubmissionsMixin, APITestCase):
     def test_first_rule_triggers_second_does_not_must_not_clear_value(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -1597,6 +1507,11 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                         "key": "show-when-a",
                         "label": "show-when-a",
                         "hidden": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "observer",
+                        "label": "Observer",
                     },
                 ]
             },
@@ -1626,6 +1541,17 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             json_logic_trigger={"==": [{"var": "radio"}, "nonsense-value"]},
             actions=[show_textfield_action],
         )
+        # Rule 3: expected to trigger, because the value should not be cleared
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "show-when-a"}, "do-not-clear-me"]},
+            actions=[
+                {
+                    "action": {"type": "variable", "value": "foo"},
+                    "variable": "observer",
+                },
+            ],
+        )
         form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
@@ -1642,14 +1568,14 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         # field.
         response = self.client.post(
             logic_check_endpoint,
-            {"data": {"radio": "a", "show-when-a": "do-not-clear-me"}},
+            {"data": {"radio": "a", "show-when-a": "do-not-clear-me", "observer": ""}},
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
 
         self.assertFalse(data["step"]["configuration"]["components"][1]["hidden"])
-        self.assertEqual(data["step"]["data"], {})
+        self.assertEqual(data["step"]["data"], {"observer": "foo"})
 
     def test_second_rule_triggers_first_does_not_must_not_clear_value(self):
         form = FormFactory.create(
@@ -1670,6 +1596,11 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                         "key": "show-when-a",
                         "label": "show-when-a",
                         "hidden": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "observer",
+                        "label": "Observer",
                     },
                 ]
             },
@@ -1699,6 +1630,17 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             json_logic_trigger={"==": [{"var": "radio"}, "a"]},
             actions=[show_textfield_action],
         )
+        # Rule 3: expected to trigger, because the value should not be cleared
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "show-when-a"}, "do-not-clear-me"]},
+            actions=[
+                {
+                    "action": {"type": "variable", "value": "foo"},
+                    "variable": "observer",
+                },
+            ],
+        )
         form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
@@ -1712,14 +1654,14 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
 
         response = self.client.post(
             logic_check_endpoint,
-            {"data": {"radio": "a", "show-when-a": "do-not-clear-me"}},
+            {"data": {"radio": "a", "show-when-a": "do-not-clear-me", "observer": ""}},
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
 
         self.assertFalse(data["step"]["configuration"]["components"][1]["hidden"])
-        self.assertEqual(data["step"]["data"], {})
+        self.assertEqual(data["step"]["data"], {"observer": "foo"})
 
     def test_rules_flip_from_hidden_to_visible_state_should_not_clear_value(self):
         form = FormFactory.create(
@@ -1784,7 +1726,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             }
 
         # Hide (and clear) the textfield when 'a' is selected in the radio
-        FormLogicFactory.create(
+        rule_1 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "radio"}, "a"]},
             actions=[
@@ -1794,12 +1736,20 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                 _build_visibility_action(key="fieldset", make_hidden=True),
             ],
         )
-        # Expected to trigger: the value of the textfield gets cleared because of the
-        # above rule.
-        FormLogicFactory.create(
+        # Expected to trigger: the value of the textfield gets cleared (meaning it gets
+        # removed from the evaluation context entirely) because of the above rule.
+        rule_2 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={
-                "==": [{"var": "hide-when-a-but-show-when-checkbox-checked"}, ""]
+                "==": [
+                    {
+                        "var": [
+                            "hide-when-a-but-show-when-checkbox-checked",
+                            "not-in-context",
+                        ]
+                    },
+                    "not-in-context",
+                ]
             },
             actions=[
                 {
@@ -1815,7 +1765,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             ],
         )
         # Show the textfield when the checkbox is checked
-        FormLogicFactory.create(
+        rule_3 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={"var": "checkbox"},
             actions=[
@@ -1825,7 +1775,25 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                 _build_visibility_action(key="fieldset", make_hidden=False),
             ],
         )
-        form.apply_logic_analysis()
+        rule_4 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "hide-when-a-but-show-when-checkbox-checked"},
+                    "do-not-clear-me",
+                ]
+            },
+            actions=[
+                {
+                    "action": {"type": "variable", "value": "foo"},
+                    "variable": "observer",
+                },
+            ],
+        )
+        # Deliberately do not use `form.apply_logic_analysis()` here, because it will
+        # re-order the third logic rule to execute before the second one, which makes it
+        # impossible to check the value after clearing.
+        form_step.logic_rules.set([rule_1, rule_2, rule_3, rule_4])
 
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
@@ -1845,6 +1813,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     "checkbox": True,
                     "hide-when-a-but-show-when-checkbox-checked": "do-not-clear-me",
                     "nestedTextfield": "do-not-clear-me",
+                    "observer": "",
                 }
             },
         )
@@ -1864,9 +1833,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         with self.subTest("observer"):
             observer_component = data["step"]["configuration"]["components"][4]
             self.assertTrue(observer_component["validate"]["required"])
-
-        with self.subTest("data mutations"):
-            self.assertEqual(data["step"]["data"], {})
+            self.assertEqual(data["step"]["data"], {"observer": "foo"})
 
     def test_rules_flip_from_hidden_to_visible_state_should_not_clear_value_inverse(
         self,
@@ -1933,7 +1900,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             }
 
         # Hide (and clear) the textfield when 'a' is selected in the radio
-        FormLogicFactory.create(
+        rule_1 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "radio"}, "a"]},
             actions=[
@@ -1943,12 +1910,20 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                 _build_visibility_action(key="fieldset", make_hidden=True),
             ],
         )
-        # Expected to trigger: the value of the textfield gets cleared because of the
-        # above rule.
-        FormLogicFactory.create(
+        # Expected to trigger: the value of the textfield gets cleared (meaning it gets
+        # removed from the evaluation context entirely) because of the above rule.
+        rule_2 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={
-                "==": [{"var": "hide-when-a-but-show-when-checkbox-checked"}, ""]
+                "==": [
+                    {
+                        "var": [
+                            "hide-when-a-but-show-when-checkbox-checked",
+                            "not-in-context",
+                        ]
+                    },
+                    "not-in-context",
+                ]
             },
             actions=[
                 {
@@ -1964,7 +1939,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
             ],
         )
         # Show the textfield when the checkbox is checked
-        FormLogicFactory.create(
+        rule_3 = FormLogicFactory.create(
             form=form,
             json_logic_trigger={"var": "checkbox"},
             actions=[
@@ -1974,7 +1949,25 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                 _build_visibility_action(key="fieldset", make_hidden=False),
             ],
         )
-        form.apply_logic_analysis()
+        rule_4 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "hide-when-a-but-show-when-checkbox-checked"},
+                    "do-not-clear-me",
+                ]
+            },
+            actions=[
+                {
+                    "action": {"type": "variable", "value": "foo"},
+                    "variable": "observer",
+                },
+            ],
+        )
+        # Deliberately do not use `form.apply_logic_analysis()` here, because it will
+        # re-order the third logic rule to execute before the second one, which makes it
+        # impossible to check the value after clearing.
+        form_step.logic_rules.set([rule_1, rule_2, rule_3, rule_4])
 
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
@@ -1994,6 +1987,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
                     "checkbox": True,
                     "hide-when-a-but-show-when-checkbox-checked": "do-not-clear-me",
                     "nestedTextfield": "do-not-clear-me",
+                    "observer": "",
                 }
             },
         )
@@ -2013,9 +2007,7 @@ class MultipleRulesTargettingSameComponentVisibilityTests(
         with self.subTest("observer"):
             observer_component = data["step"]["configuration"]["components"][4]
             self.assertTrue(observer_component["validate"]["required"])
-
-        with self.subTest("data mutations"):
-            self.assertEqual(data["step"]["data"], {})
+            self.assertEqual(data["step"]["data"], {"observer": "foo"})
 
 
 def is_valid_expression(expr: dict):
