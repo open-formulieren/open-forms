@@ -577,6 +577,18 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                         },
                     ],
                 },
+                {
+                    "key": "observer",
+                    "type": "textfield",
+                    "label": "Observer",
+                    "validate": {"required": False},
+                },
+                {
+                    "key": "observerInverted",
+                    "type": "textfield",
+                    "label": "Observer inverted",
+                    "validate": {"required": False},
+                },
             ]
         )
         form_step = submission.form.formstep_set.get()
@@ -616,6 +628,23 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                     {"==": [{"var": ["textfieldInFieldset", "foo"]}, "foo"]},
                     {"==": [{"var": ["editgrid.0.textfieldInEditgrid", "foo"]}, "foo"]},
                     {"==": [{"var": ["editgrid.1.textfieldInEditgrid", "foo"]}, "foo"]},
+                ]
+            },
+            actions=[
+                {
+                    "component": "observer",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "validate.required", "type": "bool"},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={
+                "and": [
                     # Inverted
                     {"==": [{"var": ["textfieldInverted", "foo"]}, "foo"]},
                     {"==": [{"var": ["dateInverted", "foo"]}, "foo"]},
@@ -646,8 +675,12 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
             },
             actions=[
                 {
-                    "action": {"type": "disable-next"},
-                    "form_step_uuid": str(form_step.uuid),
+                    "component": "observerInverted",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "validate.required", "type": "bool"},
+                        "state": True,
+                    },
                 }
             ],
         )
@@ -682,10 +715,22 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 },
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertEqual({}, response.json()["step"]["data"])
+            # These fields are initially not present in the context because they are
+            # hidden. The rule is triggered, so they become visible, and end up in the
+            # data diff.
+            self.assertEqual(
+                {
+                    "editgridInverted": [],
+                    "textfieldInInvertedFieldset": "",
+                    "textfieldInInvertedFieldsetWithoutClearOnHide": "",
+                    "textfieldInverted": "",
+                },
+                response.json()["step"]["data"],
+            )
             # This means the second logic rule was triggered -> the value of the
             # hidden fields was not available in the context.
-            self.assertFalse(response.json()["step"]["canSubmit"])
+            observer = response.json()["step"]["configuration"]["components"][-2]
+            self.assertTrue(observer["validate"]["required"])
 
         with self.subTest("Logic rule is not triggered"):
             # Assuming we go from a checked to an unchecked state for the checkbox, all
@@ -707,10 +752,22 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 },
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertEqual({}, response.json()["step"]["data"])
-            # This means the second logic rule was triggered -> the value of the
+            # These fields are initially not present in the context because they are
+            # hidden. The rule is triggered, so they become visible, and end up in the
+            # data diff
+            self.assertEqual(
+                {
+                    "editgrid": [],
+                    "textfieldInFieldset": "",
+                    "textfieldInFieldsetWithoutClearOnHide": "",
+                    "textfield": "",
+                },
+                response.json()["step"]["data"],
+            )
+            # This means the third logic rule was triggered -> the value of the
             # hidden fields was not available in the context.
-            self.assertFalse(response.json()["step"]["canSubmit"])
+            observer_inv = response.json()["step"]["configuration"]["components"][-1]
+            self.assertTrue(observer_inv["validate"]["required"])
 
     def test_clear_on_hide_behaviour_with_multiple_steps(self):
         form = FormFactory.create()

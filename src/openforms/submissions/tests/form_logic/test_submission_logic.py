@@ -1413,7 +1413,8 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         number = updated_configuration["components"][2]
         self.assertFalse(number["hidden"])
         data_updates = response_data["step"]["data"]
-        self.assertEqual(data_updates, {})
+        # Number becomes visible, so the default value is set for it.
+        self.assertEqual(data_updates, {"number": 67})
 
     @tag("gh-5962")
     def test_clear_on_hide_behaviour_hiding_a_parent_does_not_update_nested_field_data(

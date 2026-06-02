@@ -101,22 +101,26 @@ def evaluate_form_logic(
     # 4. Apply the (dirty) data to the variable state.
     # This setup avoids having to update the state with unsaved_data. That only happens
     # after logic is evaluated now, which ensures it will not contain user input for
-    # hidden fields. TODO-6275: unless it was submitted before???
+    # hidden fields.
     step_variables = submission_variables_state.get_variables_in_submission_step(
         step, include_unsaved=True
+    )
+    # This data is used to restore the value of a component when it goes from hidden ->
+    # visible. It includes
+    data_for_visible_state = submission_variables_state.get_data(
+        include_unsaved=True, submission_step=step
     )
     if unsaved_data:
         step_data = FormioData()
         for key, variable in step_variables.items():
             if key in unsaved_data:
                 step_data[key] = variable.to_python(unsaved_data[key])
+        data_for_visible_state.update(step_data)
     else:
-        step_data = submission_variables_state.get_data(
-            include_unsaved=True, submission_step=step
-        )
+        step_data = data_for_visible_state
 
     # This includes user-defined variables, static variables, and previously saved step
-    # variables
+    # variables.
     data_for_evaluation = submission_variables_state.get_data(
         include_unsaved=False, include_static_variables=True
     )
@@ -163,6 +167,7 @@ def evaluate_form_logic(
         for operation in iter_evaluate_rules(
             rules,
             data_for_evaluation,
+            data_for_visible_state,
             config_wrapper,
             submission=submission,
         ):
@@ -196,8 +201,6 @@ def evaluate_form_logic(
     # 8.2 Build a difference in data for the step. It is important that we only keep the
     # changes in the data, so that old values do not overwrite otherwise debounced
     # client-side data changes
-
-    # Get relevant step variables
     updated_step_data = FormioData()
     for key, variable in step_variables.items():
         if key not in data_for_evaluation:
@@ -273,8 +276,11 @@ def check_submission_logic(
     )
 
     mutation_operations: list[ActionOperation] = []
+    # Note: values should have already been resolved at this point, so we just pass
+    # `data_for_evaluation` as data for visible state.
     for operation in iter_evaluate_rules(
         rules,
+        data_for_evaluation,
         data_for_evaluation,
         submission.total_configuration_wrapper,
         submission,
