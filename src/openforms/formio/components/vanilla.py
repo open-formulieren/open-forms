@@ -800,7 +800,7 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
 
     @staticmethod
     def test_conditional(
-        component: SelectComponent, value: dict[str, str], compare_value: str
+        component: SelectComponent, value: dict[str, bool], compare_value: str
     ) -> bool:
         # Selectboxes need some special attention as we need to check whether the
         # value corresponding to the key ``compare_value`` is set to ``True`` in the
