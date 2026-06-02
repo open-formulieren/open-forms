@@ -31,11 +31,11 @@ def get_configuration(step):
 
 
 def add_missing_fields_to_existing_submission_value_variables() -> None:
-    from openforms.formio.utils import (
+    from openforms.formio.service import (
         get_component_data_subtype,
         get_component_datatype,
-        iter_components,
     )
+    from openforms.formio.utils import iter_components
     from openforms.submissions.models import SubmissionStep, SubmissionValueVariable
     from openforms.variables.constants import FormVariableSources
 

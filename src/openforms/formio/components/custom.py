@@ -31,12 +31,12 @@ from openforms.prefill.contrib.family_members.plugin import (
     PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
 )
 from openforms.submissions.models import Submission
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, JSONValue
 from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam
 from openforms.utils.json_schema import GEO_JSON_COORDINATE_SCHEMAS, to_multiple
 from openforms.utils.validators import BSNValidator, IBANValidator
 from openforms.validations.service import PluginValidator
-from openforms.variables.constants import FormVariableSources
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..datastructures import FormioData
 from ..dynamic_config.date import mutate as mutate_min_max_validation
@@ -96,6 +96,8 @@ class FormioDateField(serializers.DateField):
 @register("date")
 class Date(BasePlugin[DateComponent]):
     formatter = DateFormatter
+    data_type = FormVariableDataTypes.date
+    empty_value = ""
 
     def mutate_config_dynamically(
         self, component: DateComponent, submission: Submission, data: FormioData
@@ -187,6 +189,8 @@ def _normalize_validation_datetime(value: str) -> datetime:
 @register("datetime")
 class Datetime(BasePlugin):
     formatter = DateTimeFormatter
+    data_type = FormVariableDataTypes.datetime
+    empty_value = ""
 
     def mutate_config_dynamically(
         self,
@@ -246,6 +250,8 @@ class Datetime(BasePlugin):
 @register("map")
 class Map(BasePlugin[MapComponent]):
     formatter = MapFormatter
+    data_type = FormVariableDataTypes.object
+    empty_value = None
 
     def mutate_config_dynamically(
         self, component: MapComponent, submission: Submission, data: FormioData
@@ -330,6 +336,8 @@ class Map(BasePlugin[MapComponent]):
 @register("postcode")
 class Postcode(BasePlugin[Component]):
     formatter = TextFieldFormatter
+    data_type = FormVariableDataTypes.string
+    empty_value = ""
 
     @staticmethod
     def normalizer(component: Component, value: str) -> str:
@@ -410,6 +418,8 @@ class FamilyMembersHandler(Protocol):
 class NPFamilyMembers(BasePlugin):
     # not actually relevant, as we transform the component into a different type
     formatter = DefaultFormatter
+    data_type = FormVariableDataTypes.object
+    empty_value = {}
 
     def build_serializer_field(self, component: Component) -> serializers.Field:
         raise NotImplementedError()
@@ -496,6 +506,8 @@ class NPFamilyMembers(BasePlugin):
 @register("bsn")
 class BSN(BasePlugin[Component]):
     formatter = TextFieldFormatter
+    data_type = FormVariableDataTypes.string
+    empty_value = ""
 
     def build_serializer_field(
         self, component: Component
@@ -647,6 +659,21 @@ class AddressValueSerializer(serializers.Serializer):
 @register("addressNL")
 class AddressNL(BasePlugin[AddressNLComponent]):
     formatter = AddressNLFormatter
+    data_type = FormVariableDataTypes.object
+    # addressNL is a composite field, and rendering it in the UI will cause the
+    # sub-paths to be set. We can't use `null` as empty value, as that would
+    # lead to inconsistent empty-checks, as you want to reliably point to
+    # {"var": "myComponent.postcode"} for a test against empty string
+    empty_value = {
+        "postcode": "",
+        "houseNumber": "",
+        "houseLetter": "",
+        "houseNumberAddition": "",
+        "streetName": "",
+        "city": "",
+        "secretStreetCity": "",
+        "autoPopulated": False,
+    }
 
     def build_serializer_field(
         self, component: AddressNLComponent
@@ -796,6 +823,9 @@ class PartnerListField(serializers.Field):
 @register("partners")
 class Partners(BasePlugin[Component]):
     formatter = DefaultFormatter
+    data_type = FormVariableDataTypes.array
+    data_subtype = FormVariableDataTypes.partners
+    empty_value = []
 
     def build_serializer_field(self, component: Component) -> PartnerListField:
         return PartnerListField(component=component)
@@ -953,6 +983,9 @@ class ChildListField(serializers.Field):
 @register("children")
 class Children(BasePlugin[ChildrenComponent]):
     formatter = DefaultFormatter
+    data_type = FormVariableDataTypes.array
+    data_subtype = FormVariableDataTypes.children
+    empty_value = []
 
     def build_serializer_field(self, component: ChildrenComponent) -> ChildListField:
         return ChildListField(component=component)
@@ -985,6 +1018,8 @@ class Children(BasePlugin[ChildrenComponent]):
 @register("cosign")
 class Cosign(BasePlugin):
     formatter = CosignFormatter
+    data_type = FormVariableDataTypes.string
+    empty_value = ""
 
     def build_serializer_field(self, component: Component) -> serializers.EmailField:
         validate = component.get("validate", {})
@@ -1003,6 +1038,8 @@ class Cosign(BasePlugin):
 @register("iban")
 class Iban(BasePlugin):
     formatter = DefaultFormatter
+    data_type = FormVariableDataTypes.string
+    empty_value = ""
 
     def build_serializer_field(
         self, component: Component
@@ -1038,6 +1075,8 @@ class Iban(BasePlugin):
 @register("licenseplate")
 class LicensePlate(BasePlugin):
     formatter = DefaultFormatter
+    data_type = FormVariableDataTypes.string
+    empty_value = ""
 
     def build_serializer_field(
         self, component: Component
@@ -1088,8 +1127,10 @@ class LicensePlate(BasePlugin):
 
 
 @register("customerProfile")
-class CustomerProfile(BasePlugin):
+class CustomerProfile(BasePlugin[CustomerProfileComponent]):
     formatter = CustomerProfileFormatter
+    data_type = FormVariableDataTypes.array
+    data_subtype = FormVariableDataTypes.object
 
     def build_serializer_field(
         self, component: CustomerProfileComponent
@@ -1118,6 +1159,13 @@ class CustomerProfile(BasePlugin):
     @staticmethod
     def as_json_schema(component: CustomerProfileComponent) -> None:
         raise NotImplementedError()
+
+    def get_empty_value(self, component: CustomerProfileComponent):
+        empty_value: JSONValue = [
+            {"type": channel, "address": "", "preferenceUpdate": "useOnlyOnce"}
+            for channel in component["digitalAddressTypes"]
+        ]
+        return empty_value
 
 
 @register("softRequiredErrors")

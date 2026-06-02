@@ -12,11 +12,12 @@ apps/packages:
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from opentelemetry import trace
 
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, JSONValue
+from openforms.variables.constants import FormVariableDataTypes
 
 from .datastructures import DuplicateKeyError, FormioConfigurationWrapper, FormioData
 from .dynamic_config import (
@@ -29,7 +30,6 @@ from .registry import ComponentRegistry, register
 from .serializers import build_serializer as _build_serializer
 from .typing import Component
 from .utils import (
-    get_component_empty_value,
     get_readable_path_from_configuration_path,
     iter_components,
     iterate_data_with_components,
@@ -82,6 +82,33 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
 def holds_submission_data(component: Component) -> bool:
     """Return whether data can be submitted for a particular component."""
     return register.holds_submission_data(component)
+
+
+def get_component_datatype(component: Component) -> FormVariableDataTypes:
+    """
+    Get the intrinsic data type for a particular component.
+    """
+    return register.get_component_data_type(component)
+
+
+def get_component_data_subtype(
+    component: Component,
+) -> Literal[""] | FormVariableDataTypes:
+    """
+    Get the data subtype of a component.
+
+    :returns: The underlying data type of the component if the component is configured
+      as ``multiple`` or intrinsically has an array data type. Otherwise, an empty
+      string is returned to signal the data subtype is not applicable.
+    """
+    return register.get_component_data_subtype(component)
+
+
+def get_component_empty_value(component: Component) -> JSONValue:
+    """
+    Get the component-specific empty value.
+    """
+    return register.get_empty_value(component)
 
 
 @tracer.start_as_current_span(

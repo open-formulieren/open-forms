@@ -10,9 +10,7 @@ from opentelemetry import trace
 from typing_extensions import TypeIs
 
 from openforms.typing import JSONObject
-from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
-from .constants import COMPONENT_DATA_SUBTYPES, COMPONENT_DATATYPES
 from .typing import Column, ColumnsComponent, Component, FormioConfiguration
 
 if TYPE_CHECKING:
@@ -174,58 +172,6 @@ def get_readable_path_from_configuration_path(
         previous_path_bit = Path(previous_path_bit, path_bit)
 
     return " > ".join(keys_path)
-
-
-def get_component_datatype(component: Component):
-    component_type = component["type"]
-    if component.get("multiple"):
-        return FormVariableDataTypes.array
-    return COMPONENT_DATATYPES.get(component_type, FormVariableDataTypes.string)
-
-
-def get_component_data_subtype(component: Component) -> str:
-    """
-    Get the data subtype of a component.
-
-    :returns: The original data type of the component if the component is configured as
-      'multiple', an empty string otherwise. Components that are already an array
-      (editgrid, files, partners, children and profile) are a special case, as 'multiple'
-      is not relevant for these.
-    """
-    if subtype := COMPONENT_DATA_SUBTYPES.get(component["type"], None):
-        return subtype
-
-    if not component.get("multiple"):
-        return ""
-
-    return COMPONENT_DATATYPES.get(component["type"], FormVariableDataTypes.string)
-
-
-def get_component_empty_value(component: Component):
-    data_type = get_component_datatype(component)
-
-    if component["type"] == "selectboxes":
-        # Issue 2838
-        # Component selectboxes is of 'object' type, which would return a {} for an
-        # empty component. However, the empty value is with all the options not selected
-        # (ex. {"a": False, "b": False})
-        # Additionally, the `defaultValue` will be empty if the component uses another
-        # variable or reference lists as a data source. We can generate a correct empty
-        # value from the `values` if the formio configuration was updated dynamically.
-        if not (empty_value := component.get("defaultValue", {})):
-            values = component.get("values", {})
-            if not (len(values) == 1 and values[0]["label"] == ""):
-                empty_value = {item["label"]: False for item in values}
-        return empty_value
-
-    if component["type"] == "map":
-        # Issue 5151
-        # Component map is of 'object' type, which would return a {} for an empty component.
-        # However, an empty object would fail validation, as the required properties
-        # `type` and `coordinates` would be missing.
-        return component.get("defaultValue", None)
-
-    return DEFAULT_INITIAL_VALUE.get(data_type, "")
 
 
 def get_component_default_value(component: Component) -> Any | None:
