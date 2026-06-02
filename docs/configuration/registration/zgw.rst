@@ -26,22 +26,17 @@ Parameter                     Description
 ============================  =======================================================================================
 **Catalogi API**
 API root URL                  Root URL for the Catalogi API that Open Forms can access.
-OAS                           URL to the OAS.
 Client ID                     Client ID for the JWT-token.
 Secret                        Secret for the JWT-token.
 **Zaken API**
 API root URL                  Root URL for the Zaken API that Open Forms can access.
-OAS                           URL to the OAS.
 Client ID                     Client ID for the JWT-token.
 Secret                        Secret for the JWT-token.
 **Documenten API**
 API root URL                  Root URL for the Documenten API (version 1.1+) that Open Forms can access.
-OAS                           URL to the OAS.
 Client ID                     Client ID for the JWT-token.
 Secret                        Secret for the JWT-token.
 **ZGW API's**
-Zaaktype identificatie        Identification of the (default) zaaktype.
-Informatieobjecttype URL      Full URL the documenttype resource in the Catalogi API, used for the submission PDF.
 Organisatie RSIN              The RSIN for the organization configured in the service
 ============================  =======================================================================================
 
@@ -103,42 +98,16 @@ Configuration
 #. Click **Opslaan en opnieuw bewerken** to save the form to retrieve the list of available types.
 #. Continue entering the following details:
 
-   * **Zaaktype**: Select the default Zaaktype to be used to create the Zaak. *For example:* ``https://example.com/catalogi/api/v1/zaaktypen/1/``
-   * **Informatieobjecttype**: Fill in the URL of the Informatieobjecttype to be used to create the Document. *For example:* ``https://example.com/catalogi/api/v1/informatieobjecttypen/1/``
    * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
 
-#. You can combine ZGW API with Objects API. The submission data will be sent to both if the following have been provided:
-
-   * **Objects API - Objecttype**: Fill in the default URL of the ProductAanvraag OBJECTTYPE in the Objecttypes API. *For example* ``https://example.com/api/v1/objecttypes``
-   * **Objects API - Objecttype version**: Fill in the default version of the OBJECTTYPE in the Objecttypes API. *For example:* ``1``
-
-#. You can map a form variable with a Zaak property (eigenschap) by clicking the related button (*Map variables to case properties*).
-   A modal will open where you have to choose the variable along with providing a valid property name. Both fields must be provided in order to create a mapping.
+#. You can combine ZGW API with Objects API. A default JSON content template is provided.
 
 #. Click **Opslaan**
 
-If you have added services to multiple ZGW APIs, you can create multiple ZGW API sets. This will enable you to specify
-different ZGW API sets on a form. If you do not specify a ZGW API set on the form, then a default set will be used. The
-default can be configured as follows:
-
-#. Navigate to **Miscellaneous** > **ZGW APIs configuration**.
-#. Select the desired default set.
-#. Save the form.
-
-The ZGW API's configuration is now completed and can be selected as registration backend in the form builder.
-In each form, the global defaults can be overwritten and additional properties can be configured. These include:
-
-   * **Vertrouwelijkheidaanduiding**: The level of confidentiality of the case.
-   * **Medewerker roltype**: The description (omschrijving) of the Roltype associated to the Zaaktype to be used
-     when creating a role for an employee filling in a form for a citizen or company.
-     For example: ``some description``.
-
-The following configuration options can can use the Django template syntax:
-
-- case description
-- case explanation
-
-For more information on how to use this syntax and which variables/expressions are available, see the section :ref:`zgw_api_registratie`.
+The ZGW API's configuration is now completed and can be selected as registration backend
+in the form builder. At the form level, you must specify some more configuration
+parameters, such as the catalogue, case type and document type to use. Additional
+optional fields are available too - see the :ref:`user manual <manual_registration_zgw_apis>`.
 
 Technical
 =========
@@ -146,7 +115,7 @@ Technical
 ================  ===================
 API               Supported versions
 ================  ===================
-Zaken API         1.0
+Zaken API         1.0+
 Documenten API    1.1+
-Catalogi API      1.0
+Catalogi API      1.0+
 ================  ===================
