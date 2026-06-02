@@ -1075,7 +1075,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                         "type": "date",
                         "key": "dateOfBirth",
                         "label": "Date of birth",
-                        "placeholder": "dd-mm-jjjj",
+                        "placeholder": _("dd-mm-yyyy"),
                     },
                     {
                         "type": "textfield",
