@@ -113,7 +113,6 @@ COPY ./bin/celery_worker.sh \
 RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle /app/tmp
 COPY \
     ./bin/report_component_problems.py \
-    ./bin/fix_submission_value_variable_missing_fields.py \
     ./bin/fix_payment_status.py \
     ./bin/report_completed_submissions_access.py \
     ./bin/report_invalid_form_logic.py \
