@@ -131,6 +131,70 @@ Registratie
   naar het achterliggende registratie systeem, dan kun je hier een attribuut
   kiezen dat beschikbaar is in het achterliggende registratiesysteem.
 
+De registratiesystemen die registratieattributen ondersteunen:
+
+* StUF-ZDS
+* :ref:`manual_registration_zgw_apis`
+
+Tijdens het registratieproces wordt de ingediende data gekoppeld aan de geselecteerde
+attributen en verstuurd naar de registratieservice.
+
+.. note::
+
+  Verschillende registratiesystemen kunnen dezelfde registratieattributen op een
+  andere manier verwerken, afhankelijk van de mogelijkheden en beperkingen van
+  externe API's.
+
+ZGW API's initiator
+~~~~~~~~~~~~~~~~~~~
+
+In de ZGW API's wordt de aanvrager als initiator geregistreerd bij de zaak.
+
+Je kunt de formuliervelden koppelen aan verschillende initiatorattributen, bijvoorbeeld:
+
+* Initiator > Voorletters
+* Initiator > Geslachtsnaam
+* etc.
+
+**Contactpersoon**
+
+Bij het configureren van registratieattributen moet je rekening houden met hoe ze
+worden verwerkt in het registratiesysteem.
+Er zijn 3 beschikbare attributen voor contactpersoon:
+
+* Initiator > ContactpersoonNaam
+* Initiator > Telefoonnummer
+* Initiator > Emailadres
+
+Deze worden naar de ZGW API's verstuurd als een ``contactpersoonRol``-object:
+
+.. code-block:: json
+
+    {
+        // andere rollenattributen
+        "contactpersoonRol": {
+            "naam": "<waarde uit het veld 'Initiator > ContactpersoonNaam'>",
+            "telefoonnummer": "<waarde uit het veld 'Initiator > Telefoonnummer'>",
+            "emailadres": "<waarde uit het veld 'Initiator > Emailadres'>"
+        }
+    }
+
+.. note::
+
+  ``naam`` is een verplicht attribuut volgens de ZGW API's-specificatie. Geef dit altijd
+  mee wanneer je een ander ``contactpersoonRol``-attribuut gebruikt (``telefoonnummer``
+  en/of ``emailadres``), anders retourneren de ZGW API's een foutmelding. Bovendien wordt
+  een lege waarde voor de ``naam`` niet ondersteund in de ZGW-API's, dus zorg ervoor dat
+  het bijbehorende formulierveld verplicht is.
+
+.. warning::
+
+  Open Forms ondersteunt het instellen van initiator ``contactpersoonRol``-attributen
+  voor ZGW API's, omdat deze aanwezig zijn in de Zaken API 1.5-standaard. De toekomst
+  van deze attributen in volgende versies van de standaard is echter onbekend. Daarom
+  adviseren wij om de :ref:`Klantinteracties API <configuration_prefill_communication_preferences>`
+  te gebruiken voor dergelijke gegevens.
+
 Prefill
 -------
 
