@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"values": {"children": [{"bsn": "999970100", "affixes": "", "initials":
       "O.", "lastName": "Oostingh", "firstNames": "Olle", "dateOfBirth": "2022-02-02"}],
-      "extraChildDetails": [{"bsn": "999970100", "firstNames": "Olle"}], "childrenImmutable":
+      "extraChildDetails": [{"bsn": "999970100", "childName": "Olle"}], "childrenImmutable":
       [{"bsn": "999970100", "affixes": "", "initials": "O.", "lastName": "Oostingh",
       "firstNames": "Olle", "dateOfBirth": "2022-02-02", "dateOfBirthPrecision": "date"},
       {"bsn": "999970112", "affixes": "", "initials": "O.", "lastName": "Oostingh",
@@ -30,9 +30,9 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '1754'
+      - '1753'
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       content-type:
       - application/json
     method: POST
@@ -54,7 +54,7 @@ interactions:
         \         \"dateOfBirthPrecision\": \"date\",\n          \"firstNames\": \"Onne\",\n
         \         \"initials\": \"O.\",\n          \"lastName\": \"Oostingh\"\n        }\n
         \     ],\n      \"extraChildDetails\": [\n        {\n          \"bsn\": \"999970100\",\n
-        \         \"firstNames\": \"Olle\"\n        }\n      ]\n    },\n    \"values_schema\":
+        \         \"childName\": \"Olle\"\n        }\n      ]\n    },\n    \"values_schema\":
         {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
         \     \"additionalProperties\": false,\n      \"properties\": {\n        \"children\":
         {\n          \"items\": {\n            \"additionalProperties\": false,\n
@@ -85,13 +85,13 @@ interactions:
       Connection:
       - close
       Content-Length:
-      - '3103'
+      - '3102'
       Content-Type:
       - application/json
       Date:
-      - Wed, 25 Mar 2026 19:00:40 GMT
+      - Wed, 03 Jun 2026 13:25:23 GMT
       Server:
-      - Werkzeug/3.1.7 Python/3.12.13
+      - Werkzeug/3.1.4 Python/3.12.12
     status:
       code: 201
       message: CREATED

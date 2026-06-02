@@ -1,5 +1,5 @@
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableMapping, Sequence
 from copy import deepcopy
 from datetime import date, datetime
 from typing import Protocol
@@ -31,7 +31,7 @@ from openforms.prefill.contrib.family_members.plugin import (
     PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
 )
 from openforms.submissions.models import Submission
-from openforms.typing import JSONObject, JSONValue
+from openforms.typing import JSONObject, JSONValue, VariableValue
 from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam
 from openforms.utils.json_schema import GEO_JSON_COORDINATE_SCHEMAS, to_multiple
 from openforms.utils.validators import BSNValidator, IBANValidator
@@ -827,10 +827,21 @@ class Partners(BasePlugin[Component]):
     data_subtype = FormVariableDataTypes.partners
     empty_value = []
 
-    internal_properties = {"dateOfBirthPrecision", "__addedManually"}
-
     def build_serializer_field(self, component: Component) -> PartnerListField:
         return PartnerListField(component=component)
+
+    @staticmethod
+    def as_json_data(component: Component, value: VariableValue) -> VariableValue:
+        """
+        Drop the internal data keys from the partner objects.
+        """
+        assert isinstance(value, Sequence)
+        value = deepcopy(value)
+        for partner in value:
+            assert isinstance(partner, MutableMapping)
+            partner.pop("dateOfBirthPrecision", None)
+            partner.pop("__addedManually", None)
+        return value
 
     @staticmethod
     def as_json_schema(component: Component) -> JSONObject:
@@ -989,15 +1000,29 @@ class Children(BasePlugin[ChildrenComponent]):
     data_subtype = FormVariableDataTypes.children
     empty_value = []
 
-    internal_properties = {
-        "dateOfBirthPrecision",
-        "__id",
-        "selected",
-        "__addedManually",
-    }
-
     def build_serializer_field(self, component: ChildrenComponent) -> ChildListField:
         return ChildListField(component=component)
+
+    @staticmethod
+    def as_json_data(component: Component, value: VariableValue) -> VariableValue:
+        """
+        Filter out deselected children and drop internal keys from the data.
+        """
+        assert isinstance(value, Sequence)
+        value = deepcopy(value)
+        selected_children = []
+        for child in value:
+            assert isinstance(child, MutableMapping)
+            if child.get("selected") not in (None, True):
+                continue
+
+            child.pop("dateOfBirthPrecision", None)
+            child.pop("__id", None)
+            child.pop("selected", None)
+            child.pop("__addedManually", None)
+            selected_children.append(child)
+
+        return selected_children
 
     @staticmethod
     def as_json_schema(component: ChildrenComponent) -> JSONObject:

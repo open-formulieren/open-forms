@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen?domein=TEST&rsin=000000000
   response:
@@ -49,7 +49,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/zaaktypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&identificatie=ZT-001&datumGeldigheid=2024-11-09
   response:
@@ -81,9 +81,9 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-03-25", "startdatum": "2026-03-25", "productenOfDiensten":
-      [], "omschrijving": "Short name", "toelichting": "Aangemaakt door Open Formulieren",
-      "betalingsindicatie": "nvt"}'
+      "registratiedatum": "2026-06-03", "startdatum": "2026-06-03", "productenOfDiensten":
+      [], "omschrijving": "Short name", "toelichting": "", "betalingsindicatie": "nvt",
+      "identificatie": "OF-CAFZVM"}'
     headers:
       Accept:
       - '*/*'
@@ -96,17 +96,17 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '376'
+      - '374'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/1eb069bc-c6d8-4f21-89eb-17407555bfbb","uuid":"1eb069bc-c6d8-4f21-89eb-17407555bfbb","identificatie":"ZAAK-2026-0000000086","bronorganisatie":"000000000","omschrijving":"Short
-        name","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-03-25","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-03-25","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/8472203a-a3b4-4cfe-868c-40e64f495148","uuid":"8472203a-a3b4-4cfe-868c-40e64f495148","identificatie":"OF-CAFZVM","bronorganisatie":"000000000","omschrijving":"Short
+        name","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-03","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-03","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -116,13 +116,13 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '1391'
+      - '1348'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/1eb069bc-c6d8-4f21-89eb-17407555bfbb
+      - http://localhost:8003/zaken/api/v1/zaken/8472203a-a3b4-4cfe-868c-40e64f495148
       Referrer-Policy:
       - same-origin
       Vary:
@@ -144,7 +144,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen?domein=TEST&rsin=000000000
   response:
@@ -184,7 +184,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/zaaktypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&identificatie=ZT-001&datumGeldigheid=2024-11-09
   response:
@@ -216,10 +216,10 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-03-25", "startdatum": "2026-03-25", "productenOfDiensten":
+      "registratiedatum": "2026-06-03", "startdatum": "2026-06-03", "productenOfDiensten":
       [], "omschrijving": "Long name that will most definitely be truncated to 80
-      characters right????????\u2026", "toelichting": "Aangemaakt door Open Formulieren",
-      "betalingsindicatie": "nvt"}'
+      characters right????????\u2026", "toelichting": "", "betalingsindicatie": "nvt",
+      "identificatie": "OF-HS738V"}'
     headers:
       Accept:
       - '*/*'
@@ -232,18 +232,17 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '451'
+      - '449'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: "{\"url\":\"http://localhost:8003/zaken/api/v1/zaken/e08f767e-ce48-4d8d-ae5e-923afbf323c3\",\"uuid\":\"e08f767e-ce48-4d8d-ae5e-923afbf323c3\",\"identificatie\":\"ZAAK-2026-0000000087\",\"bronorganisatie\":\"000000000\",\"omschrijving\":\"Long
-        name that will most definitely be truncated to 80 characters right????????\u2026\",\"toelichting\":\"Aangemaakt
-        door Open Formulieren\",\"zaaktype\":\"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774\",\"registratiedatum\":\"2026-03-25\",\"verantwoordelijkeOrganisatie\":\"000000000\",\"startdatum\":\"2026-03-25\",\"einddatum\":null,\"einddatumGepland\":null,\"uiterlijkeEinddatumAfdoening\":null,\"publicatiedatum\":null,\"communicatiekanaal\":\"\",\"communicatiekanaalNaam\":\"\",\"productenOfDiensten\":[],\"vertrouwelijkheidaanduiding\":\"intern\",\"betalingsindicatie\":\"nvt\",\"betalingsindicatieWeergave\":\"Er
+      string: "{\"url\":\"http://localhost:8003/zaken/api/v1/zaken/d90fdf84-8eb7-4711-bf73-b34601ff6a17\",\"uuid\":\"d90fdf84-8eb7-4711-bf73-b34601ff6a17\",\"identificatie\":\"OF-HS738V\",\"bronorganisatie\":\"000000000\",\"omschrijving\":\"Long
+        name that will most definitely be truncated to 80 characters right????????\u2026\",\"toelichting\":\"\",\"zaaktype\":\"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774\",\"registratiedatum\":\"2026-06-03\",\"verantwoordelijkeOrganisatie\":\"000000000\",\"startdatum\":\"2026-06-03\",\"einddatum\":null,\"einddatumGepland\":null,\"uiterlijkeEinddatumAfdoening\":null,\"publicatiedatum\":null,\"communicatiekanaal\":\"\",\"communicatiekanaalNaam\":\"\",\"productenOfDiensten\":[],\"vertrouwelijkheidaanduiding\":\"intern\",\"betalingsindicatie\":\"nvt\",\"betalingsindicatieWeergave\":\"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.\",\"laatsteBetaaldatum\":null,\"zaakgeometrie\":null,\"verlenging\":null,\"opschorting\":{\"indicatie\":false,\"reden\":\"\"},\"selectielijstklasse\":\"\",\"hoofdzaak\":null,\"deelzaken\":[],\"relevanteAndereZaken\":[],\"eigenschappen\":[],\"rollen\":[],\"status\":null,\"zaakinformatieobjecten\":[],\"zaakobjecten\":[],\"kenmerken\":[],\"archiefnominatie\":null,\"archiefstatus\":\"nog_te_archiveren\",\"archiefactiedatum\":null,\"resultaat\":null,\"opdrachtgevendeOrganisatie\":\"\",\"processobjectaard\":\"\",\"startdatumBewaartermijn\":null,\"processobject\":{\"datumkenmerk\":\"\",\"identificatie\":\"\",\"objecttype\":\"\",\"registratie\":\"\"}}"
     headers:
       API-version:
@@ -253,13 +252,13 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '1463'
+      - '1420'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/e08f767e-ce48-4d8d-ae5e-923afbf323c3
+      - http://localhost:8003/zaken/api/v1/zaken/d90fdf84-8eb7-4711-bf73-b34601ff6a17
       Referrer-Policy:
       - same-origin
       Vary:

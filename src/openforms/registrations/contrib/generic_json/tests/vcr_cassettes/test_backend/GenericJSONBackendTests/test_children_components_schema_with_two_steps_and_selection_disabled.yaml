@@ -4,7 +4,7 @@ interactions:
       "O.", "lastName": "Oostingh", "firstNames": "Olle", "dateOfBirth": "2022-02-02"},
       {"bsn": "999970112", "affixes": "", "initials": "O.", "lastName": "Oostingh",
       "firstNames": "Onne", "dateOfBirth": "2022-02-02"}], "extraChildDetails": [{"bsn":
-      "999970100", "firstNames": "Olle"}, {"bsn": "999970112", "firstNames": "Onne"}],
+      "999970100", "childName": "Olle"}, {"bsn": "999970112", "childName": "Onne"}],
       "childrenImmutable": [{"bsn": "999970100", "affixes": "", "initials": "O.",
       "lastName": "Oostingh", "firstNames": "Olle", "dateOfBirth": "2022-02-02", "dateOfBirthPrecision":
       "date"}, {"bsn": "999970112", "affixes": "", "initials": "O.", "lastName": "Oostingh",
@@ -32,9 +32,9 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '1928'
+      - '1926'
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       content-type:
       - application/json
     method: POST
@@ -58,8 +58,8 @@ interactions:
         \         \"dateOfBirth\": \"2022-02-02\",\n          \"dateOfBirthPrecision\":
         \"date\",\n          \"firstNames\": \"Onne\",\n          \"initials\": \"O.\",\n
         \         \"lastName\": \"Oostingh\"\n        }\n      ],\n      \"extraChildDetails\":
-        [\n        {\n          \"bsn\": \"999970100\",\n          \"firstNames\":
-        \"Olle\"\n        },\n        {\n          \"bsn\": \"999970112\",\n          \"firstNames\":
+        [\n        {\n          \"bsn\": \"999970100\",\n          \"childName\":
+        \"Olle\"\n        },\n        {\n          \"bsn\": \"999970112\",\n          \"childName\":
         \"Onne\"\n        }\n      ]\n    },\n    \"values_schema\": {\n      \"$schema\":
         \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
         false,\n      \"properties\": {\n        \"children\": {\n          \"items\":
@@ -91,13 +91,13 @@ interactions:
       Connection:
       - close
       Content-Length:
-      - '3393'
+      - '3391'
       Content-Type:
       - application/json
       Date:
-      - Wed, 25 Mar 2026 19:00:40 GMT
+      - Wed, 03 Jun 2026 13:25:23 GMT
       Server:
-      - Werkzeug/3.1.7 Python/3.12.13
+      - Werkzeug/3.1.4 Python/3.12.12
     status:
       code: 201
       message: CREATED

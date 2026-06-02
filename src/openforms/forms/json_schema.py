@@ -2,17 +2,15 @@ from __future__ import annotations
 
 import uuid
 from collections import UserDict
-from collections.abc import Iterator, Sequence
+from collections.abc import Collection, Iterator, Sequence
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
     rewrite_formio_components,
 )
-from openforms.plugins.registry import BaseRegistry
 from openforms.registrations.service import process_variable_schema
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject, JSONValue
-from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 
@@ -21,20 +19,17 @@ from .models import Form, FormVariable
 
 def _iter_form_variables(
     form: Form,
-    additional_variables_registry: BaseRegistry[BaseStaticVariable] | None = None,
+    additional_variables: Collection[FormVariable] = (),
 ) -> Iterator[FormVariable]:
     """Iterate over static variables and all form variables.
 
     :param form: Form
-    :param additional_variables_registry: Optional registry of static variables.
+    :param additional_variables: Optional collection of additional static variables to
+      include in the JSON schema generation.
     """
     # Static variables are always available
     yield from get_static_variables()
-    # If the optional variables registry is passed
-    if additional_variables_registry is not None:
-        yield from get_static_variables(
-            variables_registry=additional_variables_registry
-        )
+    yield from additional_variables
     # Handle form variables holding dynamic data (component and user defined)
     yield from form.formvariable_set.all()
 
@@ -44,7 +39,7 @@ def generate_json_schema(
     limit_to_variables: Sequence[str],
     backend_id: str = "",
     backend_options: dict | None = None,
-    additional_variables_registry: BaseRegistry[BaseStaticVariable] | None = None,
+    additional_variables: Collection[FormVariable] = (),
     submission: Submission | None = None,
 ) -> JSONObject:
     """Generate a JSON schema from a form, for the specified variables.
@@ -59,7 +54,8 @@ def generate_json_schema(
     :param backend_options: Optional registration backend options. Note: there is
       currently no check if the options correspond to the provided ``backend_id``, so
       please ensure that they do.
-    :param additional_variables_registry: Optional extra registry of static variables.
+    :param additional_variables: Optional collection of additional static variables to
+      include in the JSON schema generation.
     :param submission: Optional submission to use for dynamic data. If not provided, a
       fake submission will be created.
 
@@ -80,7 +76,7 @@ def generate_json_schema(
     )
 
     requested_variables_schema = NestedDict()
-    for variable in _iter_form_variables(form, additional_variables_registry):
+    for variable in _iter_form_variables(form, additional_variables):
         if variable.key not in limit_to_variables:
             continue
 

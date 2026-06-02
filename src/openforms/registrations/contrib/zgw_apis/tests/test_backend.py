@@ -140,13 +140,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             submission.registration_result["zaak"]["identificatie"],
         )
 
-    @patch(
-        "openforms.registrations.contrib.zgw_apis.plugin.generate_unique_submission_reference",
-        return_value="OF-JCRWBX",
-    )
-    def test_submission_has_reference_after_pre_registration_use_of_generator(
-        self, mock
-    ):
+    def test_submission_has_reference_after_pre_registration_use_of_generator(self):
         zgw_group = ZGWApiGroupConfigFactory.create(
             for_test_docker_compose=True,
             organisatie_rsin="000000000",
@@ -169,10 +163,18 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
 
         pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
+        # check that the identification is explicitly provided in the call and what
+        # the Zaken API used + returned.
+        create_zaak_request = next(
+            request
+            for request in self.cassette.requests
+            if request.method == "POST" and request.path.endswith("/zaken/api/v1/zaken")
+        )
+        of_identification = json.loads(create_zaak_request.body)["identificatie"]
         submission.refresh_from_db()
-        self.assertEqual(submission.public_registration_reference, "OF-JCRWBX")
+        self.assertEqual(submission.public_registration_reference, of_identification)
         self.assertEqual(
-            submission.registration_result["zaak"]["identificatie"], "OF-JCRWBX"
+            submission.registration_result["zaak"]["identificatie"], of_identification
         )
 
     @tag("gh-4337")
@@ -2182,11 +2184,17 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
         )
 
+        # download the summary json document and check the contents
+        documents_client = get_documents_client(self.zgw_group)
+        self.addCleanup(documents_client.close)
+
         document_results = result["intermediate"]["documents"]
-        json_details = document_results["json"]
-        assert all(
-            key in json_details for key in ("values", "values_schema", "document")
+        json_document = document_results["json"]["document"]
+        json_document_content_response = documents_client.get(
+            f"{json_document['url']}/download"
         )
+        json_document_content_response.raise_for_status()
+        json_document_data = json.loads(json_document_content_response.content)
 
         expected_values = [
             {
@@ -2195,7 +2203,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 "initials": "A.M.P.",
                 "lastName": "Jansma",
                 "firstNames": "Anna Maria Petra",
-                "dateOfBirth": date(1945, 4, 18),
+                "dateOfBirth": "1945-04-18",
             },
             {
                 "bsn": "123456782",
@@ -2203,7 +2211,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 "initials": "T.s.p.",
                 "lastName": "Test",
                 "firstNames": "Test second partner",
-                "dateOfBirth": date(1945, 4, 18),
+                "dateOfBirth": "1945-04-18",
             },
         ]
         expected_schema = {
@@ -2227,9 +2235,9 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "title": "Partners",
             "type": "array",
         }
-        self.assertEqual(json_details["values"]["partners"], expected_values)
+        self.assertEqual(json_document_data["values"]["partners"], expected_values)
         self.assertEqual(
-            json_details["values_schema"]["properties"]["partners"],
+            json_document_data["values_schema"]["properties"]["partners"],
             expected_schema,
         )
 
@@ -2483,16 +2491,23 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
         )
 
         document_results = result["intermediate"]["documents"]
-        json_details = document_results["json"]
-        assert all(
-            key in json_details for key in ("values", "values_schema", "document")
+
+        # download the summary json document and check the contents
+        documents_client = get_documents_client(self.zgw_group)
+        self.addCleanup(documents_client.close)
+
+        json_document = document_results["json"]["document"]
+        json_document_content_response = documents_client.get(
+            f"{json_document['url']}/download"
         )
+        json_document_content_response.raise_for_status()
+        json_document_data = json.loads(json_document_content_response.content)
 
         expected_values = [
             {
                 "affixes": "",
                 "bsn": "999970100",
-                "dateOfBirth": date(2022, 2, 2),
+                "dateOfBirth": "2022-02-02",
                 "firstNames": "Olle",
                 "initials": "O.",
                 "lastName": "Oostingh",
@@ -2500,7 +2515,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             {
                 "affixes": "",
                 "bsn": "999970112",
-                "dateOfBirth": date(2022, 2, 2),
+                "dateOfBirth": "2022-02-02",
                 "firstNames": "Onne",
                 "initials": "O.",
                 "lastName": "Oostingh",
@@ -2527,9 +2542,9 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "title": "Children",
             "type": "array",
         }
-        self.assertEqual(json_details["values"]["children"], expected_values)
+        self.assertEqual(json_document_data["values"]["children"], expected_values)
         self.assertEqual(
-            json_details["values_schema"]["properties"]["children"],
+            json_document_data["values_schema"]["properties"]["children"],
             expected_schema,
         )
 
@@ -3080,7 +3095,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
 
         document_results = submission.registration_result["intermediate"]["documents"]
         pdf_details = document_results["report"]["document"]
-        self.assertEqual(pdf_details["titel"], "Public form name")
+        self.assertEqual(pdf_details["titel"], "Public form name (PDF)")
 
     def test_create_zaak_with_templated_description_and_explanation(self):
         submission = SubmissionFactory.from_components(
@@ -3654,25 +3669,31 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
         pdf_details = document_results["report"]["document"]
         self.assertEqual(pdf_details["titel"], "Public form name (PDF)")
 
-        json_details = document_results["json"]
-        assert all(
-            key in json_details for key in ("values", "values_schema", "document")
+        # download the summary json document and check the contents
+        documents_client = get_documents_client(self.zgw_group)
+        self.addCleanup(documents_client.close)
+
+        json_document = document_results["json"]["document"]
+        json_document_content_response = documents_client.get(
+            f"{json_document['url']}/download"
         )
-        self.assertEqual(json_details["document"]["titel"], "Public form name (JSON)")
-        self.assertEqual(json_details["document"]["formaat"], "application/json")
-        self.assertEqual(json_details["values"]["someText"], "Foo")
-        self.assertEqual(
-            json_details["values"]["file"],
-            [
-                "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a1d18cc1-717d-4457-9154-3c3028267e30"
-            ],
+        json_document_content_response.raise_for_status()
+        json_document_data = json.loads(json_document_content_response.content)
+
+        self.assertEqual(json_document["titel"], "Public form name (JSON)")
+        self.assertEqual(json_document["formaat"], "application/json")
+        self.assertEqual(json_document_data["values"]["someText"], "Foo")
+        self.assertTrue(
+            json_document_data["values"]["file"][0].startswith(
+                "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/"
+            ),
         )
         self.assertEqual(
-            json_details["values"]["editgrid"],
+            json_document_data["values"]["editgrid"],
             [{"time": "12:34:56"}],
         )
         self.assertEqual(
-            json_details["values_schema"]["properties"]["file"],
+            json_document_data["values_schema"]["properties"]["file"],
             {
                 "type": "array",
                 "title": "File",
@@ -3680,11 +3701,11 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
         )
         self.assertEqual(
-            json_details["values_schema"]["properties"]["someText"],
+            json_document_data["values_schema"]["properties"]["someText"],
             {"title": "Some text", "type": "string"},
         )
         self.assertEqual(
-            json_details["values_schema"]["properties"]["editgrid"],
+            json_document_data["values_schema"]["properties"]["editgrid"],
             {
                 "type": "array",
                 "title": "Editgrid",
@@ -3758,7 +3779,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
 
         document_results = submission.registration_result["intermediate"]["documents"]
         pdf_details = document_results["report"]["document"]
-        self.assertEqual(pdf_details["titel"], "Public form name")
+        self.assertEqual(pdf_details["titel"], "Public form name (PDF)")
         self.assertTrue("json" not in document_results)
 
     def test_no_summary_documents(self):

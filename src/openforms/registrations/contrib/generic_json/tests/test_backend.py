@@ -1293,12 +1293,14 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 "editgrid": [
                     {
                         "nested": {
-                            "file2": {
-                                "url": "some://url",
-                                "name": "file2.txt",
-                                "type": "application/text",
-                                "originalName": "file2.txt",
-                            }
+                            "file2": [
+                                {
+                                    "url": "some://url",
+                                    "name": "file2.txt",
+                                    "type": "application/text",
+                                    "originalName": "file2.txt",
+                                }
+                            ]
                         }
                     }
                 ],
@@ -2192,7 +2194,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     },
                 ],
                 "extraChildDetails": [
-                    {"bsn": "999970100", "firstNames": "Olle"},
+                    {"bsn": "999970100", "childName": "Olle"},
                 ],
             },
             bsn="999970094",
@@ -2269,7 +2271,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 },
             ],
             "extraChildDetails": [
-                {"bsn": "999970100", "firstNames": "Olle"},
+                {"bsn": "999970100", "childName": "Olle"},
             ],
         }
 
@@ -2555,8 +2557,8 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     },
                 ],
                 "extraChildDetails": [
-                    {"bsn": "999970100", "firstNames": "Olle"},
-                    {"bsn": "999970112", "firstNames": "Onne"},
+                    {"bsn": "999970100", "childName": "Olle"},
+                    {"bsn": "999970112", "childName": "Onne"},
                 ],
             },
             bsn="999970094",
@@ -2641,8 +2643,8 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 },
             ],
             "extraChildDetails": [
-                {"bsn": "999970100", "firstNames": "Olle"},
-                {"bsn": "999970112", "firstNames": "Onne"},
+                {"bsn": "999970100", "childName": "Olle"},
+                {"bsn": "999970112", "childName": "Onne"},
             ],
         }
 
@@ -2762,7 +2764,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     },
                 ],
                 "extraChildDetails": [
-                    {"bsn": "999970100", "firstNames": "Olle"},
+                    {"bsn": "999970100", "childName": "Olle"},
                 ],
             },
             bsn="999970094",
@@ -2839,7 +2841,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 },
             ],
             "extraChildDetails": [
-                {"bsn": "999970100", "firstNames": "Olle"},
+                {"bsn": "999970100", "childName": "Olle"},
             ],
         }
 

@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from opentelemetry import trace
 
-from openforms.typing import JSONObject, JSONValue
+from openforms.typing import JSONObject, JSONValue, VariableValue
 from openforms.variables.constants import FormVariableDataTypes
 
 from .datastructures import DuplicateKeyError, FormioConfigurationWrapper, FormioData
@@ -26,7 +26,7 @@ from .dynamic_config import (
     rewrite_formio_components,
     rewrite_formio_components_for_request,
 )
-from .registry import BasePlugin, ComponentRegistry, register
+from .registry import ComponentRegistry, register
 from .serializers import build_serializer as _build_serializer
 from .typing import Component
 from .utils import (
@@ -54,6 +54,7 @@ __all__ = [
     "iterate_data_with_components",
     "build_serializer",
     "rewrite_formio_components",
+    "as_json_data",
     "as_json_schema",
     "process_visibility",
     "get_component_empty_value",
@@ -163,11 +164,23 @@ def build_serializer(
     return _build_serializer(components, register=_register or register, **kwargs)
 
 
-def as_component_plugin(
-    component: Component, _register: ComponentRegistry | None = None
-) -> BasePlugin:
+def as_json_data(
+    component: Component,
+    value: VariableValue,
+    _register: ComponentRegistry | None = None,
+) -> VariableValue:
+    """
+    Prepare the raw component value for output as JSON data.
+
+    :param component: The component instance to as context for the variable value.
+      Component configuration/options may influence the resulting value.
+    :param _register: Optional component registry to use. If no registry was provided,
+      the default registry will be used.
+    :returns: The same value if no processing is necessary, or an updated/modified value
+      to make it suitable for export to JSON (e.g. stripped from internal data).
+    """
     registry = _register or register
-    return registry[component["type"]]
+    return registry.as_json_data(component, value)
 
 
 def as_json_schema(
@@ -178,21 +191,15 @@ def as_json_schema(
 
     A description will be added if it is available.
 
-    Layout components require some extra attention:
-      - Content and softRequiredErrors components do not have any values, so a
-        schema does not exist: returns ``None``
-      - Columns and fieldset components contain other components for which a JSON schema
-        needs to be generated: returns a list of JSON objects with the child component
-        key as key and the child component JSON schema as value.
-
-    :param component: Component
+    :param component: The component instance to generate a schema for. Component
+      configuration/options influence the resulting schema.
     :param _register: Optional component registry to use. If no registry was provided,
       the default registry will be used.
-    :returns: None for content and softRequiredErrors components, list of JSON objects
-      for columns and fieldsets, and a JSON object otherwise.
+    :returns: None for leaf-node components that don't produce a value, a list of
+      JSON objects intermediate layout components with child nodes or a single
+      JSON object otherwise.
+
+    .. todo: Pass a post-processing hook that's registration backend-specific?
     """
-    component_plugin = as_component_plugin(component, _register=_register)
-    schema = component_plugin.as_json_schema(component)
-    if isinstance(schema, dict) and (description := component.get("description")):
-        schema["description"] = description
-    return schema
+    registry = _register or register
+    return registry.as_json_schema(component)

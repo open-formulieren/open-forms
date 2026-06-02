@@ -1,12 +1,7 @@
-import json
 from io import BytesIO
 from typing import Literal
 
-from django.core.serializers.json import DjangoJSONEncoder
-
-from openforms.formio.datastructures import FormioData
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
-from openforms.typing import JSONObject
 
 from .clients.documenten import DocumentenClient
 from .resolvers import DocumentTypeResolver
@@ -106,11 +101,11 @@ def create_attachment_document(
 def create_json_document(
     client: DocumentenClient,
     name: str,
-    document_data: dict[str, FormioData | JSONObject],
+    document_data: str,
     options: DocumentOptions,
     language: SupportedLanguage,
 ) -> dict:
-    content = BytesIO(json.dumps(document_data, cls=DjangoJSONEncoder).encode("utf-8"))
+    content = BytesIO(document_data.encode("utf-8"))
     return client.create_document(
         informatieobjecttype=options["informatieobjecttype"],
         bronorganisatie=options["organisatie_rsin"],
