@@ -262,12 +262,56 @@ For more information about the new logic evaluation, please refer to the
 Clearing of values
 ------------------
 
-TODO (from clear-on-hide PR)
+Before Open Forms 4.0 during a logic check, a component which becomes hidden with "clear on hide" enabled,
+will have its value set to the empty (or default) value of that component. Subsequent logic rules
+that perform a comparison of the variable to the empty/default value in the trigger expression, might
+still execute.
+
+For these components, the new behavior will be to remove the value from the data entirely
+during logic evaluation. This means that any subsequent logic rules that compare the variable
+to the empty/default value of the component, can no longer trigger.
+
+Note that if you want a rule to execute whether a component is hidden or not, it is possible to
+add a default value to the variable expression that will be used when the value is not present
+in the data. For example:
+
+.. code:: json
+
+   {
+     "==": [
+       {
+         "var": ["textfield", ""]
+       },
+       ""
+     ]
+   }
 
 The above example requires the logic rule to be advanced, though. To make this conversion relatively easy for
 existing rules, it is now possible to convert a simple logic rule to an advanced one by clicking the wand icon
 beneath the delete icon of the rule. The icon will then convert into one with sparkles to indicate an advanced
 logic rule as usual. Note that this switch cannot be undone.
+
+Already in 3.5.3, we have included a script that reports any forms which might be at risk of behaving
+differently. This script is still available in 4.0, and can be executed with:
+
+.. code-block:: bash
+
+    # in the container via ``docker exec`` or ``kubectl exec``:
+    python /app/bin/report_logic_with_deprecated_clear_on_hide_behavior.py
+
+Values of components of future steps
+------------------------------------
+
+When evaluating logic on a step, values of components from all (unsubmitted) future steps are no
+longer available in the data during logic evaluation.
+
+Already in 3.5.3, we have included a script that reports any forms which might be at risk of behaving
+differently. This script is still available in 4.0, and can be executed with using:
+
+.. code-block:: bash
+
+    # in the container via ``docker exec`` or ``kubectl exec``:
+    python /app/bin/report_logic_with_deprecated_clear_on_hide_behavior.py
 
 Removal of legacy ZGW URLs support in registration plugins
 ==========================================================
