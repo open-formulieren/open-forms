@@ -14,6 +14,108 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.3 (2026-06-02)
+==================
+
+Regular bugfix release.
+
+The releases in the 3.5.x series gradually introduces migration tooling to prepare for
+the 4.0 upgrade.
+
+**Bugfixes**
+
+* Upgraded the SDK version with a number of renderer-related bugfixes. Please see the
+  SDK changelog for details.
+* Fixed missing custom error message information for ``addressNL`` components.
+* [:backend:`6111`] Fixed a browser window crash/freeze when editing the name of a (new)
+  form step.
+* [:backend:`6302`] Fixed missing logo in the confirmation PDF.
+* [:backend:`6320`] Fixed missing component translations when the form does not require
+  backend logic.
+
+**Migration tooling**
+
+* [:backend:`6274`] Added detection script for breaking changes regarding upcoming clear
+  on hide changes.
+
+.. note::
+
+    Open Forms 4.0 will contain a breaking change regarding "clear on hide".
+
+    Currently during a logic check, a component which becomes hidden with "clear on hide"
+    enabled, will have its value set to the empty (or default) value of that component.
+    Subsequent logic rules that perform a comparison of the variable to the empty/default
+    value in the trigger expression, might still execute.
+
+    For these components, the new behavior will be to remove the value from the data
+    entirely during logic evaluation. This means that any subsequent logic rules that
+    compare the variable to the empty/default value of the component, can no longer
+    trigger.
+
+    We have included a script that checks logic rules for which this might be the case.
+    It reports logic rules for which the JSON logic trigger includes a variable
+    comparison to the empty/default value of the corresponding component, but only if
+    that component has "clear on hide" enabled and its visibility is affected by another
+    logic rule or conditional logic.
+
+    Note that if you want a rule to execute whether a component is hidden or not, it is
+    possible to add a default value to the variable expression that will be used when
+    the value is not present in the data. For example:
+
+    .. code:: json
+
+       {
+         "==": [
+           {
+             "var": ["textfield", ""]
+           },
+           ""
+         ]
+       }
+
+    In an app container, execute:
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/report_logic_with_deprecated_clear_on_hide_behavior.py
+
+* [:backend:`6262`] Added a migration tool for legacy Catalogi API URLs usage.
+
+
+.. note::
+
+    Open Forms 4.0 will remove support for the direct case type/document type URL
+    references in the Objects and ZGW APIs registration backends. We provide a migration
+    tool so that you can (automatically) convert to the new format:
+
+    * for ``file`` components, the URL is looked up and the catalogue + document type
+      description is stored on the component.
+    * for form registration backend options, the URLs are looked up and translated into
+      catalogue and case type identification and/or document type description.
+    * for Objects API groups, the URLs are looked up and translated.
+
+    This can go wrong in some situations, e.g. if not all URLs within a configuration
+    layer are contained in the same catalogue, or the specified document type does not
+    belong to the specified case type. The migration tool will report these situations
+    and you'll have to fix them manually in the admin interface.
+
+    By default, the command line tool does not make any changes in the database, unless
+    you explicitly pass the option ``--no-dry-run``.
+
+    In an app container, execute:
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``, reports changes
+        # without executing them:
+        python /app/src/manage.py migrate_catalogi_api_urls
+        # pass the --no-dry-run argument to make changes:
+        # python /app/src/manage.py migrate_catalogi_api_urls --no-dry-run
+
+    Open Forms 4.0 will refuse to upgrade if it detects legacy configuration that hasn't
+    been migrated.
+
 4.0.0-alpha.0 (2026-05-26)
 ==========================
 
