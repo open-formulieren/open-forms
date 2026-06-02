@@ -445,14 +445,18 @@ class SubmissionValueVariableModelTests(ParametrizedTestCase, TestCase):
         Ensure that we save an empty string as an empty value for date-related
         components (we use ``None`` in our Python type domain).
         """
-        for data_type in (
-            FormVariableDataTypes.date,
-            FormVariableDataTypes.time,
-            FormVariableDataTypes.datetime,
+        for index, data_type in enumerate(
+            [
+                FormVariableDataTypes.date,
+                FormVariableDataTypes.time,
+                FormVariableDataTypes.datetime,
+            ]
         ):
             with self.subTest(data_type):
                 variable = SubmissionValueVariableFactory.create(
-                    value=None, data_type=data_type
+                    key=f"var{index}",
+                    value=None,
+                    data_type=data_type,
                 )
 
                 stored = SubmissionValueVariable.objects.get(key=variable.key)
@@ -460,6 +464,7 @@ class SubmissionValueVariableModelTests(ParametrizedTestCase, TestCase):
 
         with self.subTest("editgrid"):
             variable = SubmissionValueVariableFactory.create(
+                key="editgrid",
                 value=[{"date": None, "time": [None]}],
                 data_type=FormVariableDataTypes.array,
                 data_subtype=FormVariableDataTypes.editgrid,
