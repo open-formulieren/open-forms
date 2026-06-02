@@ -10,7 +10,7 @@ from ..constants import FormTypeChoices
 class AddFormTypeFieldMigrationTests(MigratorTestCase):
     migrate_from = (
         "forms",
-        "0125_alter_form_new_logic_evaluation_enabled",
+        "0116_v330_to_v350",
     )
     migrate_to = (
         "forms",
@@ -40,7 +40,7 @@ class AddFormTypeFieldReverseMigrationTests(MigratorTestCase):
     )
     migrate_to = (
         "forms",
-        "0125_alter_form_new_logic_evaluation_enabled",
+        "0116_v330_to_v350",
     )
 
     def prepare(self):
