@@ -198,8 +198,6 @@ def as_json_schema(
     :returns: None for leaf-node components that don't produce a value, a list of
       JSON objects intermediate layout components with child nodes or a single
       JSON object otherwise.
-
-    .. todo: Pass a post-processing hook that's registration backend-specific?
     """
     registry = _register or register
     return registry.as_json_schema(component)

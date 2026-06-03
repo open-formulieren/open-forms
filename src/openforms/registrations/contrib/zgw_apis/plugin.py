@@ -762,7 +762,6 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     post_process_component=partial(
                         process_component,
                         attachments=submission_uploads,
-                        configuration_wrapper=submission.total_configuration_wrapper,
                     ),
                 )
 
@@ -1072,7 +1071,6 @@ def process_component(
     value: VariableValue,
     schema: NestedDict,
     attachments: Mapping[str, Sequence[str]],
-    configuration_wrapper: FormioConfigurationWrapper,
     key_prefix: str = "",
 ) -> VariableValue:
     key = component["key"]
@@ -1103,13 +1101,12 @@ def process_component(
                 for child_component in component["components"]:  # pyright: ignore[reportGeneralTypeIssues]
                     child_key = child_component["key"]
                     child_value = process_component(
-                        component=configuration_wrapper[child_key],
+                        component=child_component,
                         # keys may be absent if the field is hidden
                         # XXX check if this still applies after the clear on hide rework
                         value=_item_values.get(child_key),
                         schema=edit_grid_schema,
                         attachments=attachments,
-                        configuration_wrapper=configuration_wrapper,
                         key_prefix=(
                             f"{key_prefix}.{key}.{index}"
                             if key_prefix

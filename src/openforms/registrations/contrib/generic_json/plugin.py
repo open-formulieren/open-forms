@@ -235,7 +235,6 @@ def build_post_process_component_hook(
     post_process_component = partial(
         process_component,
         attachments=attachments_dict,
-        configuration_wrapper=submission.total_configuration_wrapper,
         transform_to_list=transform_to_list,
     )
     return post_process_component
@@ -246,7 +245,6 @@ def process_component(
     value: VariableValue,
     schema: NestedDict,
     attachments: dict[str, list[SubmissionFileAttachment]],
-    configuration_wrapper,
     key_prefix: str = "",
     transform_to_list: list[str] | None = None,
 ) -> VariableValue:
@@ -265,8 +263,6 @@ def process_component(
     :param schema: JSON schema describing the values of the submission.
     :param attachments: Mapping from component submission data path to list of
       attachments corresponding to that component.
-    :param configuration_wrapper: Updated total configuration wrapper. This is required
-      for edit grid components, which need to fetch their children from it.
     :param key_prefix: If the component is part of an edit grid component, this key
       prefix includes the parent key and the index of the component as it appears in the
       submitted data list of that edit grid component.
@@ -328,13 +324,12 @@ def process_component(
                 for child_component in component["components"]:
                     child_key = child_component["key"]
                     child_value = process_component(
-                        component=configuration_wrapper[child_key],
+                        component=child_component,
                         # keys may be absent if the field is hidden
                         # XXX check if this still applies after the clear on hide rework
                         value=_item_values.get(child_key),
                         schema=edit_grid_schema,
                         attachments=attachments,
-                        configuration_wrapper=configuration_wrapper,
                         key_prefix=(
                             f"{key_prefix}.{key}.{index}"
                             if key_prefix
