@@ -9,14 +9,16 @@ from freezegun import freeze_time
 from privates.test import temp_private_root
 from pyquery import PyQuery as pq
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.logging.models import TimelineLogProxy
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.constants import DataSrcOptions
-from openforms.forms.tests.factories import FormLogicFactory
+from openforms.forms.constants import LogicActionTypes
+from openforms.forms.tests.factories import FormLogicFactory, FormStepFactory
 
 from ..models import SubmissionReport
 from ..tasks.pdf import generate_submission_report
-from .factories import SubmissionFactory, SubmissionReportFactory
+from .factories import SubmissionFactory, SubmissionReportFactory, SubmissionStepFactory
 
 
 @temp_private_root()
@@ -676,6 +678,73 @@ class SubmissionReportGenerationTests(TestCase):
             "pdf_generation_failure"
         )
         self.assertEqual(logs.count(), 1)
+
+    def test_cosign_component_in_non_applicable_step_does_not_fail_pdf_render(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            cosign_complete=False,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="111222333",
+            language_code="en",
+            with_report=True,
+        )
+
+        # Empty filler form step
+        form_step = FormStepFactory.create(
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "checkbox",
+                        "type": "checkbox",
+                        "label": "Checkbox",
+                    }
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "checkbox": True,
+            },
+        )
+
+        # The form step that will become non-applicable through form logic
+        form_step2 = FormStepFactory.create(
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "cosign",
+                        "type": "cosign",
+                        "label": "Cosign component",
+                        "validate": {"required": True},
+                    },
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step2, data={}
+        )
+
+        # Make the second form step non-applicable
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "action": {"type": LogicActionTypes.step_not_applicable},
+                    "form_step_uuid": str(form_step2.uuid),
+                },
+            ],
+        )
+        submission.form.apply_logic_analysis()
+
+        with self.assertNoLogs(level=logging.ERROR):
+            submission.report.generate_submission_report_pdf()
 
 
 @temp_private_root()
