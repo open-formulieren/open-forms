@@ -13,7 +13,7 @@ from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.constants import LogicActionTypes, PropertyTypes
-from openforms.forms.tests.factories import FormLogicFactory
+from openforms.forms.tests.factories import FormLogicFactory, FormStepFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
@@ -26,7 +26,7 @@ from openforms.tests.utils import log_flaky
 from ..constants import PostSubmissionEvents, RegistrationStatuses
 from ..models import SubmissionReport
 from ..tasks import on_post_submission_event
-from .factories import SubmissionFactory
+from .factories import SubmissionFactory, SubmissionStepFactory
 
 
 @temp_private_root()
@@ -1196,6 +1196,76 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             datetime(2024, 2, 16, 21, 15).replace(tzinfo=UTC),
         )
         self.assertEqual(submission.registration_attempts, 1)
+
+    def test_required_cosign_in_non_applicable_step_via_logic_proceeds_with_registration(
+        self,
+    ):
+        submission = SubmissionFactory.create(
+            completed=True,
+            cosign_complete=False,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="111222333",
+            language_code="en",
+        )
+
+        form_step = FormStepFactory.create(
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "checkbox",
+                        "type": "checkbox",
+                        "label": "Checkbox",
+                    }
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "checkbox": True,
+            },
+        )
+
+        # The form step that will become non-applicable through form logic
+        form_step2 = FormStepFactory.create(
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "cosign",
+                        "type": "cosign",
+                        "label": "Cosign component",
+                        "validate": {"required": True},
+                    },
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step2, data={}
+        )
+
+        # Make the second form step non-applicable
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "action": {"type": LogicActionTypes.step_not_applicable},
+                    "form_step_uuid": str(form_step2.uuid),
+                },
+            ],
+        )
+        submission.form.apply_logic_analysis()
+        assert submission.registration_status == RegistrationStatuses.pending
+
+        on_post_submission_event(submission.pk, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        self.assertEqual(submission.registration_status, RegistrationStatuses.success)
 
 
 @temp_private_root()
