@@ -862,6 +862,8 @@ class Partners(BasePlugin[Component]):
                     "affixes": {"type": "string"},
                     "lastName": {"type": "string"},
                     "dateOfBirth": {"type": "string", "format": "date"},
+                    # obtained from prefill, not exposed in the UI.
+                    "firstNames": {"type": "string"},
                 },
                 "additionalProperties": False,
             },
@@ -1041,6 +1043,10 @@ class Children(BasePlugin[ChildrenComponent]):
                     },
                     "firstNames": {"type": "string"},
                     "dateOfBirth": {"type": "string", "format": "date"},
+                    # obtained from prefill, not exposed in the UI.
+                    "affixes": {"type": "string"},
+                    "initials": {"type": "string"},
+                    "lastName": {"type": "string"},
                 },
                 "additionalProperties": False,
             },

@@ -196,25 +196,6 @@ class GenericJSONRegistration(BasePlugin):
                         options,
                         configuration_wrapper,
                     )
-            case {"type": "partners"}:
-                assert isinstance(schema["items"], dict)
-                _properties = schema["items"]["properties"]
-                assert isinstance(_properties, dict)
-
-                _properties["firstNames"] = {"type": "string"}
-
-            case {"type": "children"}:
-                assert isinstance(schema["items"], dict)
-                _properties = schema["items"]["properties"]
-                assert isinstance(_properties, dict)
-
-                _properties.update(
-                    {
-                        "affixes": {"type": "string"},
-                        "initials": {"type": "string"},
-                        "lastName": {"type": "string"},
-                    }
-                )
 
             case _:
                 pass

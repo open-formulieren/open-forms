@@ -1046,20 +1046,6 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         configuration_wrapper: FormioConfigurationWrapper,
     ) -> None:
         match component:
-            case {"type": "partners"}:
-                assert isinstance(schema["items"], dict)
-                _properties = schema["items"]["properties"]
-                assert isinstance(_properties, dict)
-
-                _properties["firstNames"] = {"type": "string"}
-            case {"type": "children"}:
-                assert isinstance(schema["items"], dict)
-                _properties = schema["items"]["properties"]
-                assert isinstance(_properties, dict)
-
-                _properties["affixes"] = {"type": "string"}
-                _properties["initials"] = {"type": "string"}
-                _properties["lastName"] = {"type": "string"}
             case {"type": "file"}:
                 assert isinstance(schema["items"], dict)
                 schema["items"] = {"type": "string", "format": "uri"}

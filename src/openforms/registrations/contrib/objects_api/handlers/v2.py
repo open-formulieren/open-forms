@@ -106,7 +106,6 @@ def process_mapped_variable(
     if component is not None:
         value = as_json_data(component, value)
 
-    # TODO: move the remainder into the registry!
     match component:
         case {"type": "addressNL"}:
             assert isinstance(value, dict)
