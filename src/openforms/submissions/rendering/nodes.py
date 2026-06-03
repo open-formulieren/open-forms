@@ -57,8 +57,9 @@ class SubmissionStepNode(Node):
         # determine if the step as a whole is relevant or not. The stap may be not
         # applicable because of form logic.
         logic_evaluated = getattr(self.step, "_form_logic_evaluated", False)
-        if not logic_evaluated:
-            # logic should really be evaluated before rendering steps!
+        if not logic_evaluated and self.step.is_applicable:
+            # logic should really be evaluated, for applicable steps, before rendering
+            # steps!
             logger.warning(
                 "submissions.rendering.logic_not_evaluated",
                 submission_uuid=str(self.step.submission.uuid),

@@ -65,13 +65,15 @@ class Renderer:
         Produce only the direct child nodes.
         """
         for step in self.steps:
-            new_configuration = evaluate_form_logic(
-                submission=self.submission, step=step
-            )
-            # update the configuration for introspection - note that we are mutating
-            # an instance here without persisting it to the backend on purpose!
-            # this replicates the run-time behaviour while filling out the form
-            step.form_step.form_definition.configuration = new_configuration
+            if step.is_applicable:
+                new_configuration = evaluate_form_logic(
+                    submission=self.submission, step=step
+                )
+                # update the configuration for introspection - note that we are mutating
+                # an instance here without persisting it to the backend on purpose!
+                # this replicates the run-time behaviour while filling out the form
+                step.form_step.form_definition.configuration = new_configuration
+
             submission_step_node = SubmissionStepNode(renderer=self, step=step)
             if not submission_step_node.is_visible:
                 continue
