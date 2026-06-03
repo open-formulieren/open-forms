@@ -382,8 +382,8 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
         if submission.is_authenticated:
             auth_context = submission.auth_info.to_auth_context_data()
-            vestigingsnummer = get_branch_number(auth_context)
-            betrokkene_identificatie["vestigingsNummer"] = vestigingsnummer
+            if vestigingsnummer := get_branch_number(auth_context):
+                betrokkene_identificatie["vestigingsNummer"] = vestigingsnummer
 
         if kvk and betrokkene_identificatie.get("vestigingsNummer"):
             initiator_rol_data["betrokkeneType"] = "vestiging"
