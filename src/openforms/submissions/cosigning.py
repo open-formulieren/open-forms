@@ -103,23 +103,27 @@ class CosignState:
 
         check_submission_logic(self.submission, reset_configuration_wrapper=False)
 
-        # use the complete view on the Formio component tree(s)
-        configuration_wrapper = self.submission.total_configuration_wrapper
-
         # there should only be one cosign component, so we check our flatmap to find the
         # component.
-        for component in configuration_wrapper.component_map.values():
-            if component["type"] == "cosign":
-                # we can't just blindly return the component, as it may be conditionally
-                # displayed, which is equivalent to "cosign not relevant". See
-                # https://github.com/open-formulieren/open-forms/issues/3901
-                state = self.submission.variables_state
-                visible = configuration_wrapper.is_visible_in_frontend(
-                    component["key"], values=state.get_data(include_unsaved=True)
-                )
-                if not visible:
-                    return None
-                return component
+        for step in self.submission.steps:
+            # co-sign components inside non-applicable steps are not relevant
+            if not step.is_applicable:
+                continue
+
+            assert step.form_step is not None
+            configuration_wrapper = step.form_step.form_definition.configuration_wrapper
+            for component in configuration_wrapper:
+                if component["type"] == "cosign":
+                    # we can't just blindly return the component, as it may be conditionally
+                    # displayed, which is equivalent to "cosign not relevant". See
+                    # https://github.com/open-formulieren/open-forms/issues/3901
+                    state = self.submission.variables_state
+                    visible = configuration_wrapper.is_visible_in_frontend(
+                        component["key"], values=state.get_data(include_unsaved=True)
+                    )
+                    if not visible:
+                        return None
+                    return component
         return None
 
     @property
