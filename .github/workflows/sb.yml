@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: Set up backend environment
         uses: ./.github/actions/setup-backend
         with:
@@ -41,7 +41,7 @@ jobs:
           API_BASE_URL: 'http://localhost:8000'
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: ./storybook-static
 
@@ -62,10 +62,10 @@ jobs:
     steps:
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
 
   chromatic:
     name: Chromatic (interaction & visual tests)
@@ -78,12 +78,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0 # 👈 Required to retrieve git history
 
       - name: Download build artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: github-pages
           path: ./storybook-static
@@ -95,7 +95,7 @@ jobs:
         working-directory: ./storybook-static
 
       - name: Publish to Chromatic
-        uses: chromaui/action@latest
+        uses: chromaui/action@d92ea1ce501f70e8c34745b2c7888648150a368a # v17.2.0
         if: github.event.pull_request.draft == false || github.event.push
         with:
           autoAcceptChanges: main
