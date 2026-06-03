@@ -697,6 +697,17 @@ class AddressNL(BasePlugin[AddressNLComponent]):
         )
 
     @staticmethod
+    def as_json_data(component: Component, value: VariableValue) -> VariableValue:
+        """
+        Drop internal keys from the data.
+        """
+        assert isinstance(value, dict)
+        value = value.copy()
+        # remove internal data
+        value.pop("secretStreetCity", None)
+        return value
+
+    @staticmethod
     def as_json_schema(component: AddressNLComponent) -> JSONObject:
         label = component.get("label", "Address NL")
         components = component.get("openForms", {}).get("components", {})
@@ -719,6 +730,7 @@ class AddressNL(BasePlugin[AddressNLComponent]):
                     "pattern": postcode_validate.get("pattern", POSTCODE_REGEX),
                 },
                 "streetName": {"type": "string"},
+                "autoPopulated": {"type": "boolean"},
             },
             "required": ["houseNumber", "postcode"],
         }

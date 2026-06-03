@@ -110,7 +110,6 @@ def process_mapped_variable(
         case {"type": "addressNL"}:
             assert isinstance(value, dict)
             value = value.copy()
-            value.pop("secretStreetCity", None)
 
             # apply the more specific mappings rather than mapping the whole object
             if detailed_mappings := mapping.get("options"):
