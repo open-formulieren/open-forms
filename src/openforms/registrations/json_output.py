@@ -10,15 +10,15 @@ the variables and their values of a single submission.
 """
 
 import json
-from collections.abc import Collection, Sequence
+from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, cast  # noqa: TID251
 
 from django.core.serializers.json import DjangoJSONEncoder
 
 from openforms.formio.datastructures import FormioData
 from openforms.formio.service import as_json_data
-from openforms.formio.typing import Component
+from openforms.formio.typing import Component, EditGridComponent
 from openforms.forms.json_schema import NestedDict, generate_json_schema
 from openforms.forms.models.form_variable import FormVariable
 from openforms.submissions.models import Submission
@@ -34,6 +34,7 @@ class ComponentPostProcessHook(Protocol):
         component: Component,
         value: VariableValue,
         schema: NestedDict,
+        current_data_path: str = "",
     ) -> VariableValue:
         """
         Post process the component (value and schema).
@@ -49,6 +50,12 @@ class ComponentPostProcessHook(Protocol):
         :param schema: The generated JSON schema, based on the component and variable
           definitions. Registration backend specific changes must be applied as
           mutations.
+        :param current_data_path: A dotted path describing the 'depth' into the
+          submission data currently being processed. Relevant for editgrids, where it
+          is often necessary to know what the path to the parent editgrid itself is.
+          An empty string means the root, inside a top-level editgrid the path looks
+          like ``{editgridKey}.{index}`` with the index of the item in the array of
+          items.
         :returns: The transformed/modified variable, specific to caller providing the
           post processing hook.
         """
@@ -143,9 +150,27 @@ def get_json_data(
         ):
             component = configuration_wrapper[key]
             value = as_json_data(component, value)
+
+            # edit grids have nested component definitions that don't have variables,
+            # so we need to ensure those are properly processed as well, recursively
+            # even because editgrids can be nested...
+            if component["type"] == "editgrid":
+                component = cast(EditGridComponent, component)
+                assert isinstance(value, Sequence)
+                value = get_editgrid_json_data(
+                    component,
+                    value,
+                    schema_for_post_processing,
+                    current_data_path="",
+                    post_process_component=post_process_component,
+                )
+
             if post_process_component is not None:
                 value = post_process_component(
-                    component, value, schema_for_post_processing
+                    component,
+                    value,
+                    schema_for_post_processing,
+                    current_data_path="",
                 )
 
         output_values[key] = value
@@ -154,3 +179,69 @@ def get_json_data(
         values=output_values,
         values_schema=values_schema,
     )
+
+
+def get_editgrid_json_data(
+    component: EditGridComponent,
+    value: Sequence[VariableValue],
+    schema: NestedDict,
+    current_data_path: str = "",
+    post_process_component: ComponentPostProcessHook | None = None,
+) -> list[VariableValue]:
+    key = component["key"]
+    schema_key = f"properties.{key.replace('.', '.properties.')}"
+
+    # Note: the schema actually only needs to be processed once for each child
+    # component, but will be processed for each submitted repeating group entry
+    # for implementation simplicity.
+    # TODO: this is something that might actually have to move into the backend-specific
+    # post processing!
+    array_schema = schema[schema_key]
+    assert isinstance(array_schema, Mapping)
+    item_schema = array_schema["items"]
+    assert isinstance(item_schema, Mapping)
+    edit_grid_schema = NestedDict(item_schema)
+
+    new_value: list[VariableValue] = []
+    for index, item_values in enumerate(value):
+        assert isinstance(item_values, Mapping)
+        _item_values = FormioData(item_values)
+        item_data_path = (
+            f"{current_data_path}.{key}.{index}"
+            if current_data_path
+            else f"{key}.{index}"
+        )
+
+        new_item_values = FormioData()
+        for child_component in component["components"]:
+            child_key = child_component["key"]
+            # keys may be absent if the field is hidden
+            # XXX check if this still applies after the clear on hide rework
+            child_value = as_json_data(component, _item_values.get(child_key))
+
+            # recurse to handle nested edit grids...
+            if child_component["type"] == "editgrid":
+                child_component = cast(EditGridComponent, child_component)
+                assert isinstance(child_value, Sequence | None)
+                child_value = get_editgrid_json_data(
+                    component=child_component,
+                    value=child_value or [],
+                    schema=edit_grid_schema,
+                    current_data_path=item_data_path,
+                )
+
+            if post_process_component is not None:
+                child_value = post_process_component(
+                    child_component,
+                    value=child_value,
+                    schema=edit_grid_schema,
+                    current_data_path=item_data_path,
+                )
+
+            new_item_values[child_key] = child_value
+
+        # Need to manually set it to the list, as ``FormioData`` creates a copy
+        # so mutations are not applied to ``values``
+        new_value.append(new_item_values.data)
+
+    return new_value

@@ -81,9 +81,9 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-06-03", "startdatum": "2026-06-03", "productenOfDiensten":
-      [], "omschrijving": "Form 019", "toelichting": "", "betalingsindicatie": "nog_niet",
-      "identificatie": "OF-P9MC2K"}'
+      "registratiedatum": "2026-06-04", "startdatum": "2026-06-04", "productenOfDiensten":
+      [], "omschrijving": "Form 050", "toelichting": "", "betalingsindicatie": "nog_niet",
+      "identificatie": "OF-X7FQ3C"}'
     headers:
       Accept:
       - '*/*'
@@ -105,8 +105,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14","uuid":"480e289d-69c0-48a2-aef3-284a2eab6b14","identificatie":"OF-P9MC2K","bronorganisatie":"000000000","omschrijving":"Form
-        019","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-03","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-03","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nog_niet","betalingsindicatieWeergave":"De
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3","uuid":"fc007d72-dd28-475d-9337-2c8017999ee3","identificatie":"OF-X7FQ3C","bronorganisatie":"000000000","omschrijving":"Form
+        050","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-04","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-04","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nog_niet","betalingsindicatieWeergave":"De
         met de zaak gemoeide kosten zijn (nog) niet betaald.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -122,7 +122,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14
+      - http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3
       Referrer-Policy:
       - same-origin
       Vary:
@@ -257,9 +257,9 @@ interactions:
       message: OK
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-      "bronorganisatie": "000000000", "creatiedatum": "2026-06-03", "titel": "Form
-      019 (PDF)", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf",
-      "inhoud": "", "status": "definitief", "bestandsnaam": "open-forms-Form 019 (PDF).pdf",
+      "bronorganisatie": "000000000", "creatiedatum": "2026-06-04", "titel": "Form
+      050 (PDF)", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf",
+      "inhoud": "", "status": "definitief", "bestandsnaam": "open-forms-Form 050 (PDF).pdf",
       "ontvangstdatum": null, "beschrijving": "Ingezonden formulier", "indicatieGebruiksrecht":
       false, "bestandsomvang": 0}'
     headers:
@@ -279,9 +279,9 @@ interactions:
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/9c6ca8af-166d-4e0d-a320-6528298b7b87","identificatie":"DOCUMENT-2026-0000000176","bronorganisatie":"000000000","creatiedatum":"2026-06-03","titel":"Form
-        019 (PDF)","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2026-06-03T15:37:40.807679Z","bestandsnaam":"open-forms-Form
-        019 (PDF).pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/9c6ca8af-166d-4e0d-a320-6528298b7b87/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/931d47c6-a5fe-45fe-be9d-c13c7849cc63","identificatie":"DOCUMENT-2026-0000000216","bronorganisatie":"000000000","creatiedatum":"2026-06-04","titel":"Form
+        050 (PDF)","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2026-06-04T08:00:00.677882Z","bestandsnaam":"open-forms-Form
+        050 (PDF).pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/931d47c6-a5fe-45fe-be9d-c13c7849cc63/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
         formulier","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
@@ -295,7 +295,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/9c6ca8af-166d-4e0d-a320-6528298b7b87
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/931d47c6-a5fe-45fe-be9d-c13c7849cc63
       Referrer-Policy:
       - same-origin
       Vary:
@@ -308,8 +308,8 @@ interactions:
       code: 201
       message: Created
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14",
-      "informatieobject": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/9c6ca8af-166d-4e0d-a320-6528298b7b87"}'
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3",
+      "informatieobject": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/931d47c6-a5fe-45fe-be9d-c13c7849cc63"}'
     headers:
       Accept:
       - '*/*'
@@ -327,8 +327,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaakinformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/5e874282-676a-4a49-abda-96189cf34ef6","uuid":"5e874282-676a-4a49-abda-96189cf34ef6","informatieobject":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/9c6ca8af-166d-4e0d-a320-6528298b7b87","zaak":"http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14","aardRelatieWeergave":"Hoort
-        bij, omgekeerd: kent","titel":"","beschrijving":"","registratiedatum":"2026-06-03T15:37:40.939858Z","vernietigingsdatum":null,"status":null}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/fab84272-4a6c-45ed-a80c-acdcea891468","uuid":"fab84272-4a6c-45ed-a80c-acdcea891468","informatieobject":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/931d47c6-a5fe-45fe-be9d-c13c7849cc63","zaak":"http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3","aardRelatieWeergave":"Hoort
+        bij, omgekeerd: kent","titel":"","beschrijving":"","registratiedatum":"2026-06-04T08:00:00.788911Z","vernietigingsdatum":null,"status":null}'
     headers:
       API-version:
       - 1.5.1
@@ -341,7 +341,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/5e874282-676a-4a49-abda-96189cf34ef6
+      - http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/fab84272-4a6c-45ed-a80c-acdcea891468
       Referrer-Policy:
       - same-origin
       Vary:
@@ -392,7 +392,7 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14",
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3",
       "betrokkeneType": "natuurlijk_persoon", "roltype": "http://localhost:8003/catalogi/api/v1/roltypen/43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b",
       "roltoelichting": "inzender formulier", "indicatieMachtiging": "", "betrokkeneIdentificatie":
       {"inpBsn": "111222333"}}'
@@ -413,8 +413,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/rollen
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/rollen/db658834-68f8-499a-86d4-0f8838596292","uuid":"db658834-68f8-499a-86d4-0f8838596292","zaak":"http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14","betrokkene":"","betrokkeneType":"natuurlijk_persoon","afwijkendeNaamBetrokkene":"","roltype":"http://localhost:8003/catalogi/api/v1/roltypen/43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b","omschrijving":"Initiator","omschrijvingGeneriek":"initiator","roltoelichting":"inzender
-        formulier","registratiedatum":"2026-06-03T15:37:41.101799Z","indicatieMachtiging":"","contactpersoonRol":{"emailadres":"","functie":"","telefoonnummer":"","naam":""},"statussen":[],"betrokkeneIdentificatie":{"inpBsn":"111222333","anpIdentificatie":"","inpA_nummer":"","geslachtsnaam":"","voorvoegselGeslachtsnaam":"","voorletters":"","voornamen":"","geslachtsaanduiding":"","geboortedatum":"","verblijfsadres":null,"subVerblijfBuitenland":null}}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/rollen/b2e4a11d-2619-4e1f-a437-5952038c77d9","uuid":"b2e4a11d-2619-4e1f-a437-5952038c77d9","zaak":"http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3","betrokkene":"","betrokkeneType":"natuurlijk_persoon","afwijkendeNaamBetrokkene":"","roltype":"http://localhost:8003/catalogi/api/v1/roltypen/43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b","omschrijving":"Initiator","omschrijvingGeneriek":"initiator","roltoelichting":"inzender
+        formulier","registratiedatum":"2026-06-04T08:00:00.949049Z","indicatieMachtiging":"","contactpersoonRol":{"emailadres":"","functie":"","telefoonnummer":"","naam":""},"statussen":[],"betrokkeneIdentificatie":{"inpBsn":"111222333","anpIdentificatie":"","inpA_nummer":"","geslachtsnaam":"","voorvoegselGeslachtsnaam":"","voorletters":"","voornamen":"","geslachtsaanduiding":"","geboortedatum":"","verblijfsadres":null,"subVerblijfBuitenland":null}}'
     headers:
       API-version:
       - 1.5.1
@@ -427,7 +427,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/rollen/db658834-68f8-499a-86d4-0f8838596292
+      - http://localhost:8003/zaken/api/v1/rollen/b2e4a11d-2619-4e1f-a437-5952038c77d9
       Referrer-Policy:
       - same-origin
       Vary:
@@ -478,9 +478,9 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14",
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3",
       "statustype": "http://localhost:8003/catalogi/api/v1/statustypen/6443ac1a-04a1-4335-9db2-5f3c998dbb34",
-      "datumStatusGezet": "2026-06-03T15:37:41.206928+00:00", "statustoelichting":
+      "datumStatusGezet": "2026-06-04T08:00:01.055842+00:00", "statustoelichting":
       ""}'
     headers:
       Accept:
@@ -499,7 +499,7 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/statussen
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/statussen/2446f2e8-91b7-4740-bd3e-f6da3ed5fc60","uuid":"2446f2e8-91b7-4740-bd3e-f6da3ed5fc60","zaak":"http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14","statustype":"http://localhost:8003/catalogi/api/v1/statustypen/6443ac1a-04a1-4335-9db2-5f3c998dbb34","datumStatusGezet":"2026-06-03T15:37:41.206928Z","statustoelichting":"","indicatieLaatstGezetteStatus":true,"gezetdoor":null,"zaakinformatieobjecten":[]}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/statussen/ed43a2d4-8e17-4f55-8b2a-ca069353eedb","uuid":"ed43a2d4-8e17-4f55-8b2a-ca069353eedb","zaak":"http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3","statustype":"http://localhost:8003/catalogi/api/v1/statustypen/6443ac1a-04a1-4335-9db2-5f3c998dbb34","datumStatusGezet":"2026-06-04T08:00:01.055842Z","statustoelichting":"","indicatieLaatstGezetteStatus":true,"gezetdoor":null,"zaakinformatieobjecten":[]}'
     headers:
       API-version:
       - 1.5.1
@@ -512,7 +512,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/statussen/2446f2e8-91b7-4740-bd3e-f6da3ed5fc60
+      - http://localhost:8003/zaken/api/v1/statussen/ed43a2d4-8e17-4f55-8b2a-ca069353eedb
       Referrer-Policy:
       - same-origin
       Vary:
@@ -540,12 +540,12 @@ interactions:
       User-Agent:
       - python-requests/2.33.0
     method: GET
-    uri: http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14
+    uri: http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14","uuid":"480e289d-69c0-48a2-aef3-284a2eab6b14","identificatie":"OF-P9MC2K","bronorganisatie":"000000000","omschrijving":"Form
-        019","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-03","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-03","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nog_niet","betalingsindicatieWeergave":"De
-        met de zaak gemoeide kosten zijn (nog) niet betaald.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":["http://localhost:8003/zaken/api/v1/rollen/db658834-68f8-499a-86d4-0f8838596292"],"status":"http://localhost:8003/zaken/api/v1/statussen/2446f2e8-91b7-4740-bd3e-f6da3ed5fc60","zaakinformatieobjecten":["http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/5e874282-676a-4a49-abda-96189cf34ef6"],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3","uuid":"fc007d72-dd28-475d-9337-2c8017999ee3","identificatie":"OF-X7FQ3C","bronorganisatie":"000000000","omschrijving":"Form
+        050","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-04","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-04","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nog_niet","betalingsindicatieWeergave":"De
+        met de zaak gemoeide kosten zijn (nog) niet betaald.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":["http://localhost:8003/zaken/api/v1/rollen/b2e4a11d-2619-4e1f-a437-5952038c77d9"],"status":"http://localhost:8003/zaken/api/v1/statussen/ed43a2d4-8e17-4f55-8b2a-ca069353eedb","zaakinformatieobjecten":["http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/fab84272-4a6c-45ed-a80c-acdcea891468"],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
       - 1.5.1
@@ -560,7 +560,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"ac148918c738fb70d3bad059a8281d26"'
+      - '"865f5c1297ccc8ace3b0bd56ebe87be0"'
       Referrer-Policy:
       - same-origin
       Vary:
@@ -573,7 +573,7 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"betalingsindicatie": "geheel", "laatsteBetaaldatum": "2026-06-03T15:37:41.511110+00:00"}'
+    body: '{"betalingsindicatie": "geheel", "laatsteBetaaldatum": "2026-06-04T08:00:01.327848+00:00"}'
     headers:
       Accept:
       - '*/*'
@@ -592,12 +592,12 @@ interactions:
       User-Agent:
       - python-requests/2.33.0
     method: PATCH
-    uri: http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14
+    uri: http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14","uuid":"480e289d-69c0-48a2-aef3-284a2eab6b14","identificatie":"OF-P9MC2K","bronorganisatie":"000000000","omschrijving":"Form
-        019","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-03","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-03","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"geheel","betalingsindicatieWeergave":"De
-        met de zaak gemoeide kosten zijn geheel betaald.","laatsteBetaaldatum":"2026-06-03T15:37:41.511110Z","zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":["http://localhost:8003/zaken/api/v1/rollen/db658834-68f8-499a-86d4-0f8838596292"],"status":"http://localhost:8003/zaken/api/v1/statussen/2446f2e8-91b7-4740-bd3e-f6da3ed5fc60","zaakinformatieobjecten":["http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/5e874282-676a-4a49-abda-96189cf34ef6"],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3","uuid":"fc007d72-dd28-475d-9337-2c8017999ee3","identificatie":"OF-X7FQ3C","bronorganisatie":"000000000","omschrijving":"Form
+        050","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-04","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-04","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"geheel","betalingsindicatieWeergave":"De
+        met de zaak gemoeide kosten zijn geheel betaald.","laatsteBetaaldatum":"2026-06-04T08:00:01.327848Z","zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":["http://localhost:8003/zaken/api/v1/rollen/b2e4a11d-2619-4e1f-a437-5952038c77d9"],"status":"http://localhost:8003/zaken/api/v1/statussen/ed43a2d4-8e17-4f55-8b2a-ca069353eedb","zaakinformatieobjecten":["http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/fab84272-4a6c-45ed-a80c-acdcea891468"],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
       - 1.5.1
@@ -638,12 +638,12 @@ interactions:
       User-Agent:
       - python-requests/2.33.0
     method: GET
-    uri: http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14
+    uri: http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/480e289d-69c0-48a2-aef3-284a2eab6b14","uuid":"480e289d-69c0-48a2-aef3-284a2eab6b14","identificatie":"OF-P9MC2K","bronorganisatie":"000000000","omschrijving":"Form
-        019","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-03","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-03","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"geheel","betalingsindicatieWeergave":"De
-        met de zaak gemoeide kosten zijn geheel betaald.","laatsteBetaaldatum":"2026-06-03T15:37:41.511110Z","zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":["http://localhost:8003/zaken/api/v1/rollen/db658834-68f8-499a-86d4-0f8838596292"],"status":"http://localhost:8003/zaken/api/v1/statussen/2446f2e8-91b7-4740-bd3e-f6da3ed5fc60","zaakinformatieobjecten":["http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/5e874282-676a-4a49-abda-96189cf34ef6"],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/fc007d72-dd28-475d-9337-2c8017999ee3","uuid":"fc007d72-dd28-475d-9337-2c8017999ee3","identificatie":"OF-X7FQ3C","bronorganisatie":"000000000","omschrijving":"Form
+        050","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-04","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-04","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"geheel","betalingsindicatieWeergave":"De
+        met de zaak gemoeide kosten zijn geheel betaald.","laatsteBetaaldatum":"2026-06-04T08:00:01.327848Z","zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":["http://localhost:8003/zaken/api/v1/rollen/b2e4a11d-2619-4e1f-a437-5952038c77d9"],"status":"http://localhost:8003/zaken/api/v1/statussen/ed43a2d4-8e17-4f55-8b2a-ca069353eedb","zaakinformatieobjecten":["http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/fab84272-4a6c-45ed-a80c-acdcea891468"],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
       - 1.5.1
@@ -658,7 +658,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"8a8c1f5a464cb7f0197d7e1ef185e558"'
+      - '"a99b99e0e835bf0eb8fe92bfd2bf35e5"'
       Referrer-Policy:
       - same-origin
       Vary:

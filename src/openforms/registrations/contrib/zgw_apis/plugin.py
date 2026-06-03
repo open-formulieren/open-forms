@@ -33,7 +33,7 @@ from openforms.contrib.zgw.service import (
     create_report_document,
 )
 from openforms.emails.service import get_last_confirmation_email
-from openforms.formio.datastructures import FormioConfigurationWrapper, FormioData
+from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.typing import Component
 from openforms.forms.json_schema import NestedDict
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
@@ -1071,55 +1071,13 @@ def process_component(
     value: VariableValue,
     schema: NestedDict,
     attachments: Mapping[str, Sequence[str]],
-    key_prefix: str = "",
+    current_data_path: str = "",
 ) -> VariableValue:
     key = component["key"]
-    schema_key = f"properties.{key.replace('.', '.properties.')}"
 
     match component:
         case {"type": "file"}:
+            # TODO: check that this works with files inside edit grids
             return attachments.get(key, [])
-
-        case {"type": "editgrid"}:
-            # Note: the schema actually only needs to be processed once for each child
-            # component, but will be processed for each submitted repeating group entry
-            # for implementation simplicity.
-            array_schema = schema[schema_key]
-            assert isinstance(array_schema, Mapping)
-            item_schema = array_schema["items"]
-            assert isinstance(item_schema, Mapping)
-            edit_grid_schema = NestedDict(item_schema)
-
-            assert isinstance(value, list)
-            # recurse into editgrids and apply the post-processing for nested components
-            new_value: list[VariableValue] = []
-            for index, item_values in enumerate(value):
-                assert isinstance(item_values, Mapping)
-                _item_values = FormioData(item_values)
-                new_item_values = FormioData()
-                child_component: Component
-                for child_component in component["components"]:  # pyright: ignore[reportGeneralTypeIssues]
-                    child_key = child_component["key"]
-                    child_value = process_component(
-                        component=child_component,
-                        # keys may be absent if the field is hidden
-                        # XXX check if this still applies after the clear on hide rework
-                        value=_item_values.get(child_key),
-                        schema=edit_grid_schema,
-                        attachments=attachments,
-                        key_prefix=(
-                            f"{key_prefix}.{key}.{index}"
-                            if key_prefix
-                            else f"{key}.{index}"
-                        ),
-                    )
-                    new_item_values[child_key] = child_value
-
-                # Need to manually set it to the list, as ``FormioData`` creates a copy
-                # so mutations are not applied to ``values``
-                new_value.append(new_item_values.data)
-
-            return new_value
-
         case _:
             return value

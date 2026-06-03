@@ -13,11 +13,9 @@ from zgw_consumers.client import build_client
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
-    FormioData,
 )
 from openforms.formio.typing import (
     Component,
-    EditGridComponent,
     FileComponent,
 )
 from openforms.forms.json_schema import NestedDict
@@ -245,7 +243,7 @@ def process_component(
     value: VariableValue,
     schema: NestedDict,
     attachments: dict[str, list[SubmissionFileAttachment]],
-    key_prefix: str = "",
+    current_data_path: str = "",
     transform_to_list: list[str] | None = None,
 ) -> VariableValue:
     """Process a component.
@@ -263,7 +261,7 @@ def process_component(
     :param schema: JSON schema describing the values of the submission.
     :param attachments: Mapping from component submission data path to list of
       attachments corresponding to that component.
-    :param key_prefix: If the component is part of an edit grid component, this key
+    :param current_data_path: If the component is part of an edit grid component, this key
       prefix includes the parent key and the index of the component as it appears in the
       submitted data list of that edit grid component.
     :param transform_to_list: Component keys in this list will be sent as an array of
@@ -278,11 +276,13 @@ def process_component(
     match component:
         case {"type": "file", "multiple": True}:
             _component = cast(FileComponent, component)
-            return get_attachments(_component, attachments, key_prefix)
+            return get_attachments(_component, attachments, current_data_path)
 
         case {"type": "file"}:  # multiple is False or missing
             _component = cast(FileComponent, component)
-            attachment_list = get_attachments(_component, attachments, key_prefix)
+            attachment_list = get_attachments(
+                _component, attachments, current_data_path
+            )
 
             variable_schema = schema[schema_key]
             assert isinstance(variable_schema, dict)
@@ -301,48 +301,6 @@ def process_component(
         case {"type": "selectboxes"} if key in transform_to_list:
             assert isinstance(value, Mapping)
             return [option for option, is_selected in value.items() if is_selected]
-
-        case {"type": "editgrid"}:
-            component = cast(EditGridComponent, component)
-
-            # Note: the schema actually only needs to be processed once for each child
-            # component, but will be processed for each submitted repeating group entry
-            # for implementation simplicity.
-            array_schema = schema[schema_key]
-            assert isinstance(array_schema, Mapping)
-            item_schema = array_schema["items"]
-            assert isinstance(item_schema, Mapping)
-            edit_grid_schema = NestedDict(item_schema)
-
-            assert isinstance(value, list)
-            # recurse into editgrids and apply the post-processing for nested components
-            new_value: list[VariableValue] = []
-            for index, item_values in enumerate(value):
-                assert isinstance(item_values, Mapping)
-                _item_values = FormioData(item_values)
-                new_item_values = FormioData()
-                for child_component in component["components"]:
-                    child_key = child_component["key"]
-                    child_value = process_component(
-                        component=child_component,
-                        # keys may be absent if the field is hidden
-                        # XXX check if this still applies after the clear on hide rework
-                        value=_item_values.get(child_key),
-                        schema=edit_grid_schema,
-                        attachments=attachments,
-                        key_prefix=(
-                            f"{key_prefix}.{key}.{index}"
-                            if key_prefix
-                            else f"{key}.{index}"
-                        ),
-                    )
-                    new_item_values[child_key] = child_value
-
-                # Need to manually set it to the list, as ``FormioData`` creates a copy
-                # so mutations are not applied to ``values``
-                new_value.append(new_item_values.data)
-
-            return new_value
 
         case _:
             return value

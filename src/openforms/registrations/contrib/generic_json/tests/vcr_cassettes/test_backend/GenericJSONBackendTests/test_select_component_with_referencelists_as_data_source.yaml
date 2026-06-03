@@ -22,10 +22,11 @@ interactions:
       Content-Length:
       - '197'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline''; default-src ''self''; base-uri ''self'';
-        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; img-src
-        ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
-        form-action ''self''; frame-ancestors ''none''; font-src ''self'' fonts.gstatic.com'
+      - 'default-src ''self''; script-src ''self'' ''unsafe-inline''; style-src ''self''
+        ''unsafe-inline'' fonts.googleapis.com; frame-ancestors ''none''; object-src
+        ''none''; base-uri ''self''; worker-src ''self'' blob:; frame-src ''self'';
+        img-src ''self'' data: cdn.redoc.ly; form-action ''self''; font-src ''self''
+        fonts.gstatic.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -67,10 +68,11 @@ interactions:
       Content-Length:
       - '325'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline''; default-src ''self''; base-uri ''self'';
-        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; img-src
-        ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
-        form-action ''self''; frame-ancestors ''none''; font-src ''self'' fonts.gstatic.com'
+      - 'default-src ''self''; script-src ''self'' ''unsafe-inline''; style-src ''self''
+        ''unsafe-inline'' fonts.googleapis.com; frame-ancestors ''none''; object-src
+        ''none''; base-uri ''self''; worker-src ''self'' blob:; frame-src ''self'';
+        img-src ''self'' data: cdn.redoc.ly; form-action ''self''; font-src ''self''
+        fonts.gstatic.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -109,10 +111,11 @@ interactions:
       Content-Length:
       - '197'
       Content-Security-Policy:
-      - 'script-src ''self'' ''unsafe-inline''; default-src ''self''; base-uri ''self'';
-        worker-src ''self'' blob:; frame-src ''self''; object-src ''none''; img-src
-        ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
-        form-action ''self''; frame-ancestors ''none''; font-src ''self'' fonts.gstatic.com'
+      - 'default-src ''self''; script-src ''self'' ''unsafe-inline''; style-src ''self''
+        ''unsafe-inline'' fonts.googleapis.com; frame-ancestors ''none''; object-src
+        ''none''; base-uri ''self''; worker-src ''self'' blob:; frame-src ''self'';
+        img-src ''self'' data: cdn.redoc.ly; form-action ''self''; font-src ''self''
+        fonts.gstatic.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -171,7 +174,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 03 Jun 2026 13:25:25 GMT
+      - Thu, 04 Jun 2026 07:59:39 GMT
       Server:
       - Werkzeug/3.1.4 Python/3.12.12
     status:
