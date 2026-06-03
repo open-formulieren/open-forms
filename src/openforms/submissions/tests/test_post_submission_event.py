@@ -1267,6 +1267,131 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         submission.refresh_from_db()
         self.assertEqual(submission.registration_status, RegistrationStatuses.success)
 
+    def test_required_cosign_in_hidden_fieldset_via_logic_proceeds_with_registration(
+        self,
+    ):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "fieldset",
+                    "key": "fieldset",
+                    "label": "Fieldset",
+                    "components": [
+                        {
+                            "key": "cosign",
+                            "type": "cosign",
+                            "label": "Cosign component",
+                            "validate": {"required": True},
+                        },
+                    ],
+                },
+            ],
+            submitted_data={},
+            completed=True,
+            cosign_complete=False,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="111222333",
+            language_code="en",
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": LogicActionTypes.property,
+                        "property": {
+                            "type": PropertyTypes.bool,
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                    "component": "fieldset",
+                }
+            ],
+        )
+        submission.form.apply_logic_analysis()
+        assert submission.registration_status == RegistrationStatuses.pending
+
+        on_post_submission_event(submission.pk, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        self.assertEqual(submission.registration_status, RegistrationStatuses.success)
+
+    def test_empty_required_cosign_in_applicable_step_via_logic_does_not_proceed_with_registration(
+        self,
+    ):
+        submission = SubmissionFactory.create(
+            completed=True,
+            cosign_complete=False,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="111222333",
+            language_code="en",
+        )
+
+        form_step = FormStepFactory.create(
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "checkbox",
+                        "type": "checkbox",
+                        "label": "Checkbox",
+                    }
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "checkbox": True,
+            },
+        )
+
+        # The form step that will become applicable through form logic
+        form_step2 = FormStepFactory.create(
+            form=submission.form,
+            is_applicable=False,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "cosign",
+                        "type": "cosign",
+                        "label": "Cosign component",
+                        "validate": {"required": True},
+                    },
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step2, data={}
+        )
+
+        # Make the second form step applicable
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "action": {"type": LogicActionTypes.step_applicable},
+                    "form_step_uuid": str(form_step2.uuid),
+                },
+            ],
+        )
+        submission.form.apply_logic_analysis()
+        assert submission.registration_status == RegistrationStatuses.pending
+
+        on_post_submission_event(submission.pk, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        # Registration status should still be pending, as cosign is missing
+        self.assertEqual(submission.registration_status, RegistrationStatuses.pending)
+
 
 @temp_private_root()
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
