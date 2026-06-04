@@ -57,3 +57,24 @@ in de plugin-instellingen onder het kopje "Bijlage-documenttypen".
     Sinds Open Formulieren 3.5.2 kan je de bijlage-uploads instellen met een
     catalogusreferentie en documenttypeomschrijving in plaats van een URL naar een
     informatieobjecttype.
+
+Registratie-attributen
+======================
+
+Het merendeel van de :ref:`registratie-attributen <manual_form_fields_registration>` is
+ondersteund in de ZGW APIs. Er gelden echter wat beperkingen.
+
+**Initiator > adres**
+
+Het adres van de initiator moet gevuld worden uit een "AdressNL"-component wat de
+onderliggen attributen bevat. Je kan dus bijvoorbeeld niet een tekstveld registreren
+met dit attribuut - hiervoor zijn meer specifieke attributen beschikbaar.
+
+Daarnaast is er een verschil tussen burgers, bedrijven en vestigingen:
+
+* voor burgers wordt het verblijfsadres gevuld, waarvan de plaatsnaam en openbare
+  ruimtenaam (straatnaam) meegegeven moeten worden. Dit vereist dat de optie
+  "Adres afleiden" ingeschakeld is.
+* voor vestigingen geldt dezelfde beperking.
+* voor niet-natuurijke personen (bedrijven, zonder vestiging) wordt het bezoekadres
+  gevuld en geldt deze beperking niet.

@@ -124,16 +124,19 @@ In de foutmelding kunt refereren naar het formulierveld. Bijvoorbeeld voor een
 ``required`` veld: "Het veld {{ field }} is verplicht". Op het moment van weergave wordt
 ``{{ field }}`` vervangen met de naam van het veld.
 
+.. _manual_form_fields_registration:
+
 Registratie
 -----------
 
-* **Registration attribute**: Indien je de waarde van dit veld wil doorzetten
+* **Registratie-attribuut**: Indien je de waarde van dit veld wil doorzetten
   naar het achterliggende registratie systeem, dan kun je hier een attribuut
   kiezen dat beschikbaar is in het achterliggende registratiesysteem.
 
 De registratiesystemen die registratieattributen ondersteunen:
 
-* StUF-ZDS
+* :ref:`manual_registration_objects_api`
+* :ref:`manual_registration_stuf_zds`
 * :ref:`manual_registration_zgw_apis`
 
 Tijdens het registratieproces wordt de ingediende data gekoppeld aan de geselecteerde
@@ -144,6 +147,9 @@ attributen en verstuurd naar de registratieservice.
   Verschillende registratiesystemen kunnen dezelfde registratieattributen op een
   andere manier verwerken, afhankelijk van de mogelijkheden en beperkingen van
   externe API's.
+
+.. tip:: Zorg ervoor dat je registratie-attributen koppelt aan het juiste gegevenstype.
+   Je kan bijvoorbeeld een e-mailveld niet registreren als "initiatoradres".
 
 ZGW API's initiator
 ~~~~~~~~~~~~~~~~~~~

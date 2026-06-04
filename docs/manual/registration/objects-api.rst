@@ -196,3 +196,13 @@ in de plugin-instellingen onder het kopje "Documenttypen".
     Sinds Open Formulieren 3.5.2 kan je de bijlage-uploads instellen met een
     catalogusreferentie en documenttypeomschrijving in plaats van een URL naar een
     informatieobjecttype.
+
+Registratie-attributen
+======================
+
+Er is beperkte ondersteuning voor de
+:ref:`registratie-attributen <manual_form_fields_registration>` die je op een
+formulierveld kan instellen. Enkel de attributen uit de onderstaande lijst hebben een
+effect:
+
+* Locatie > Coördinaten: wordt enkel gebruikt in de verouderde sjabloonkoppeling.
