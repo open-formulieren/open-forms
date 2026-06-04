@@ -48,6 +48,7 @@ beschikbaar tot het moment van schoning.
    :maxdepth: 1
 
    registration/objects-api
+   registration/stuf-zds
    registration/zgw-apis
 
 Instellingen
