@@ -129,7 +129,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                     },
                 ]
             },
-            "data": {},
+            "data": {"someField": "", "otherField": {}},
             "canSubmit": True,
             "requireBackendLogicEvaluation": False,
             "logicRules": [],
@@ -190,7 +190,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
                     },
                 ]
             },
-            "data": {},
+            "data": {"someField": "", "otherField": {}},
             "canSubmit": True,
             # wrong but our introspection code is not aware of this ad-hoc plugin
             "requireBackendLogicEvaluation": False,
@@ -233,7 +233,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.json()["data"],
-            {"someField": "data"},
+            {"someField": "data", "otherField": {}},
         )
 
     @tag("gh-1208", "gh-1068")
@@ -977,7 +977,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {"type": "textfield", "key": "textfield", "label": "Textfield"},
                 ]
             },
-            "data": {},
+            "data": {"textfield": ""},
             "canSubmit": True,
             "requireBackendLogicEvaluation": False,
             "logicRules": [],
@@ -1019,7 +1019,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {"type": "textfield", "key": "textfield", "label": "I am a label!"},
                 ]
             },
-            "data": {},
+            "data": {"textfield": ""},
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],
@@ -1095,7 +1095,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {"type": "textfield", "key": "textfield", "label": "Textfield"},
                 ]
             },
-            "data": {},
+            "data": {"dateOfBirth": "", "textfield": ""},
             "canSubmit": True,
             "requireBackendLogicEvaluation": False,
             "logicRules": [
@@ -1180,7 +1180,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {"type": "textfield", "key": "textfield", "label": "I am a label!"},
                 ]
             },
-            "data": {},
+            "data": {"dateOfBirth": "", "textfield": ""},
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],  # logic rules are not serialized when the backend is required
@@ -1245,7 +1245,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     {"type": "textfield", "key": "textfield", "label": "Textfield"},
                 ]
             },
-            "data": {},
+            "data": {"dateOfBirth": "", "textfield": ""},
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],  # logic rules are not serialized when the backend is required
