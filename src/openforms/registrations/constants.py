@@ -25,6 +25,7 @@ class RegistrationAttribute(models.TextChoices):
     )
 
     # Verblijfsadres for both Natuurlijk Persoon and Vestiging
+    initiator_adres = "initiator_adres", _("Initiator > Adres")
     initiator_straat = "initiator_straat", _("Initiator > Straat")
     initiator_huisnummer = "initiator_huisnummer", _("Initiator > Huisnummer")
     initiator_huisletter = "initiator_huisletter", _("Initiator > Huisletter")
