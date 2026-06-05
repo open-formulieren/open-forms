@@ -85,6 +85,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "canSubmit": True,
                 "logicRules": [],
                 "requireBackendLogicEvaluation": False,
+                "fromSuspension": False,
             },
         )
         state = self.submission.load_submission_value_variables_state()

@@ -292,9 +292,17 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
     form_step = factory.SubFactory(
         FormStepFactory, form=factory.SelfAttribute("..submission.form")
     )
+    completed_on = factory.Maybe(
+        "from_suspension",
+        yes_declaration=None,
+        no_declaration=factory.Faker("date_time_this_month", tzinfo=UTC),
+    )
 
     class Meta:
         model = SubmissionStep
+
+    class Params:
+        from_suspension = False
 
     @classmethod
     def create(
