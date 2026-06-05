@@ -2,9 +2,14 @@ import re
 from collections.abc import Mapping, MutableMapping, Sequence
 from copy import deepcopy
 from datetime import date, datetime
-from typing import Protocol
+from typing import Protocol, assert_never
 
-from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+    RegexValidator,
+    validate_email,
+)
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.utils.html import format_html
@@ -62,6 +67,7 @@ from ..typing import (
     DatetimeComponent,
     MapComponent,
 )
+from ..typing.custom import DigitalAddress, SupportedChannels
 from ..utils import conform_to_mask
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
@@ -1178,6 +1184,84 @@ class LicensePlate(BasePlugin):
         return to_multiple(base) if multiple else base
 
 
+class ProfileValueSerializer(serializers.ListSerializer):
+    def validate(self, attrs):
+        attrs: list[DigitalAddress] = super().validate(attrs)
+
+        existing_types: list[SupportedChannels] = []
+        for address_data in attrs:
+            type = address_data["type"]
+            if type in existing_types:
+                raise serializers.ValidationError(
+                    _(
+                        "You cannot submit multiple digital addresses for the type '{type}'."
+                    ).format(type=type)
+                )
+
+            existing_types.append(type)
+
+        return attrs
+
+
+class DigitalAddressSerializer(serializers.Serializer):
+    address = serializers.CharField(
+        label=_("address"), help_text=_("The digital address value.")
+    )
+    type = serializers.ChoiceField(
+        label=_("type"),
+        choices=[],  # overwritten in get_fields
+        help_text=_("The type of digital address."),
+    )
+    preferenceUpdate = serializers.ChoiceField(
+        label=_("preference update"),
+        required=False,
+        choices=["useOnlyOnce", "isNewPreferred"],
+        help_text=_("Indicates if it is a one-off address or not."),
+    )
+
+    class Meta:
+        list_serializer_class = ProfileValueSerializer
+
+    def __init__(self, **kwargs):
+        self.digital_address_types: list[SupportedChannels] = kwargs.pop(
+            "digital_address_types", []
+        )
+        super().__init__(**kwargs)
+
+    def get_fields(self):
+        fields = super().get_fields()  # type: ignore
+
+        fields["address"].allow_blank = not self.required
+        # narrow down choices to the configured in the admin
+        fields["type"].choices = self.digital_address_types
+        return fields
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        type: SupportedChannels = attrs["type"]
+        address = attrs["address"]
+
+        if not address:
+            return attrs
+
+        # validate address value depending on its type
+        match type:
+            case "email":
+                validate_email(address)
+
+            case "phoneNumber":
+                # replicate client-side validation in formio-renderer (buildPhoneNumberValidationSchema)
+                RegexValidator(
+                    regex="^[+0-9][- 0-9]+$", message=_("Enter a valid phone number.")
+                )(address)
+
+            case _:  # pragma: no cover
+                assert_never(type)
+
+        return attrs
+
+
 @register("customerProfile")
 class CustomerProfile(BasePlugin[CustomerProfileComponent]):
     formatter = CustomerProfileFormatter
@@ -1186,9 +1270,16 @@ class CustomerProfile(BasePlugin[CustomerProfileComponent]):
 
     def build_serializer_field(
         self, component: CustomerProfileComponent
-    ) -> serializers.JSONField:
+    ) -> DigitalAddressSerializer:
+
         required = component.get("validate", {}).get("required", False)
-        return serializers.JSONField(required=required, allow_null=True)
+
+        return DigitalAddressSerializer(
+            many=True,
+            digital_address_types=component["digitalAddressTypes"],
+            required=required,
+            allow_null=not required,
+        )
 
     @staticmethod
     def pre_registration_hook(
