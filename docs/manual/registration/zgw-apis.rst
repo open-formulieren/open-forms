@@ -15,11 +15,12 @@ geregistreerd bij de zaak, en eventuele bijlagen/uploads worden als documenten
 Zaaknummers
 ===========
 
-Het standaardgedrag van Open Formulieren is dat het een :ref:`publieke referentie <manual_submissions_public_reference>`
-genereert en deze vervolgens als zaaknummer gebruikt bij het aanmaken van een zaak in de Zaken API.
+Het standaardgedrag van Open Formulieren is dat het een :ref:`publieke referentie
+<manual_submissions_public_reference>` genereert en deze vervolgens als zaaknummer
+gebruikt bij het aanmaken van een zaak in de Zaken API.
 
-ZGW API's kunnen zelf zaaknummers genereren, en deze nummers worden gebruikt voor de publieke
-referentie van de aanvraag. Navigeer hiervoor naar:
+ZGW API's kunnen zelf zaaknummers genereren, en deze nummers worden gebruikt voor de
+publieke referentie van de aanvraag. Navigeer hiervoor naar:
 **Admin** > **Configuratie** > **Configuratie overzicht** > **Registratieplugins**. Vind
 hierbinnen het label "ZGW API's" en klik op **API-groepen beheren**. Selecteer in lijst
 van API-groepen de gewenste groep en klik de naam aan om het bewerkscherm te openen.
@@ -28,6 +29,12 @@ op.
 
 .. note:: Indien je onvoldoende rechten hebt, vraag dan een functioneel beheerder om
    deze instelling aan te passen.
+
+Zaakomschrijving en toelichting
+===============================
+
+De "Omschrijving"- en "Toelichting"-opties ondersteunen sjablonen. Voor meer details
+over welke variabelen en expressis beschikbaar zijn, ga naar :ref:`zgw_api_registratie`.
 
 Documenten
 ==========

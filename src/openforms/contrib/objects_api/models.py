@@ -218,16 +218,3 @@ class ObjectsAPIGroupConfig(models.Model):
 
     def __str__(self) -> str:
         return self.name
-
-    def full_clean(self, *args, **kwargs) -> None:
-        # Due to circular imports
-        from .validators import (
-            validate_catalogue_reference,
-            validate_document_type_references,
-        )
-
-        super().full_clean(*args, **kwargs)
-
-        catalogus = validate_catalogue_reference(self)
-        if catalogus is not None:
-            validate_document_type_references(self, catalogus)

@@ -161,24 +161,8 @@ class ZGWApiGroupConfig(models.Model):
     def __str__(self):
         return self.name
 
-    def full_clean(self, *args, **kwargs) -> None:
-        # circular imports otherwise between client/models/validators
-        from .validators import validate_catalogue_reference
-
-        super().full_clean(*args, **kwargs)
-
-        validate_catalogue_reference(self)
-
     def apply_defaults_to(self, options):
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
-
-        # now, normalize the catalogue information and associated document types
-        has_catalogue_override = (catalogue := options.get("catalogue")) is not None
-        if not has_catalogue_override and self.catalogue_domain:
-            # domain implies RSIN is set
-            catalogue = {"domain": self.catalogue_domain, "rsin": self.catalogue_rsin}
-        options.setdefault("catalogue", catalogue)
-
         options.setdefault(
             "zaak_vertrouwelijkheidaanduiding", self.zaak_vertrouwelijkheidaanduiding
         )

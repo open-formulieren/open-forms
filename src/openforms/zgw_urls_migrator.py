@@ -716,7 +716,10 @@ class RegistrationBackendMigrator:
             data=backend.options,
             # we're not validating existing (modern) configuration, but migrating legacy
             # configuration. we'll ignore whatever is already configured in the new way
-            context={"validate_business_logic": False},
+            context={
+                "validate_business_logic": False,
+                "in_migrator": True,
+            },
         )
         is_valid = serializer.is_valid(raise_exception=False)
         if not is_valid:
@@ -800,6 +803,9 @@ class RegistrationBackendMigrator:
             domain, rsin = catalogues_seen.pop()
             _catalogue: CatalogueOption = {"domain": domain, "rsin": rsin}
             options["catalogue"] = _catalogue
+        else:
+            domain, rsin = catalogue
+            options["catalogue"] = {"domain": domain, "rsin": rsin}
 
         # re-use the serializer validation helpers to check that the document type
         # belongs to the specified case type
@@ -832,7 +838,10 @@ class RegistrationBackendMigrator:
             data=backend.options,
             # we're not validating existing (modern) configuration, but migrating legacy
             # configuration. we'll ignore whatever is already configured in the new way
-            context={"validate_business_logic": False},
+            context={
+                "validate_business_logic": False,
+                "in_migrator": True,
+            },
         )
         is_valid = serializer.is_valid(raise_exception=False)
         if not is_valid:

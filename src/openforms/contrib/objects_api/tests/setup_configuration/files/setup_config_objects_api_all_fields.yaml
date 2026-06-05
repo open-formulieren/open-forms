@@ -7,9 +7,4 @@ objects_api:
     objecttypes_service_identifier: objecttypen-test
     documenten_service_identifier: documenten-test
     catalogi_service_identifier: catalogi-test
-    catalogue_domain: TEST
-    catalogue_rsin: "000000000"
     organisatie_rsin: "000000000"
-    document_type_submission_report: PDF Informatieobjecttype
-    document_type_submission_csv: CSV Informatieobjecttype
-    document_type_attachment: Attachment Informatieobjecttype

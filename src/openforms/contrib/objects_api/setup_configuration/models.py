@@ -19,38 +19,17 @@ class SingleObjectsAPIGroupConfigModel(ConfigurationModel):
         ObjectsAPIGroupConfig, "catalogi_service", default="", examples=["catalogi-api"]
     )
 
-    # Renamed to be more descriptive
-    document_type_submission_report: str = DjangoModelRef(
-        ObjectsAPIGroupConfig,
-        "iot_submission_report",
-        examples=["PDF Informatieobjecttype"],
-    )
-    document_type_submission_csv: str = DjangoModelRef(
-        ObjectsAPIGroupConfig,
-        "iot_submission_csv",
-        examples=["CSV Informatieobjecttype"],
-    )
-    document_type_attachment: str = DjangoModelRef(
-        ObjectsAPIGroupConfig,
-        "iot_attachment",
-        examples=["Attachment Informatieobjecttype"],
-    )
-
     class Meta:
         django_model_refs = {
             ObjectsAPIGroupConfig: [
                 "name",
                 "identifier",
-                "catalogue_domain",
-                "catalogue_rsin",
                 "organisatie_rsin",
             ]
         }
         extra_kwargs = {
             "identifier": {"examples": ["objects-api-acceptance"]},
             "name": {"examples": ["Objecten acceptance environment"]},
-            "catalogue_domain": {"examples": ["ABCD"]},
-            "catalogue_rsin": {"examples": ["111222333"]},
             "organisatie_rsin": {"examples": ["123456782"]},
         }
 

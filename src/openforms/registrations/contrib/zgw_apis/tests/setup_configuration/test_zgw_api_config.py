@@ -73,8 +73,6 @@ class ZGWApiConfigurationStepTests(TestCase):
         self.assertEqual(config1.zrc_service, self.zaken_service)
         self.assertEqual(config1.drc_service, self.documenten_service)
         self.assertEqual(config1.ztc_service, self.catalogi_service)
-        self.assertEqual(config1.catalogue_domain, "TEST")
-        self.assertEqual(config1.catalogue_rsin, "000000000")
         self.assertEqual(config1.organisatie_rsin, "000000000")
         self.assertEqual(
             config1.zaak_vertrouwelijkheidaanduiding,
@@ -105,8 +103,6 @@ class ZGWApiConfigurationStepTests(TestCase):
         self.assertEqual(config2.zrc_service, self.zaken_service)
         self.assertEqual(config2.drc_service, self.documenten_service)
         self.assertEqual(config2.ztc_service, self.catalogi_service)
-        self.assertEqual(config2.catalogue_domain, "OTHER")
-        self.assertEqual(config2.catalogue_rsin, "000000000")
         self.assertEqual(config2.organisatie_rsin, "000000000")
         self.assertEqual(config2.zaak_vertrouwelijkheidaanduiding, "")
         self.assertEqual(config2.doc_vertrouwelijkheidaanduiding, "")
@@ -142,8 +138,6 @@ class ZGWApiConfigurationStepTests(TestCase):
         self.assertEqual(config.drc_service, self.documenten_service)
         self.assertEqual(config.ztc_service, self.catalogi_service)
 
-        self.assertEqual(config.catalogue_domain, "")
-        self.assertEqual(config.catalogue_rsin, "")
         self.assertEqual(config.organisatie_rsin, "")
         self.assertEqual(config.zaak_vertrouwelijkheidaanduiding, "")
         self.assertEqual(config.doc_vertrouwelijkheidaanduiding, "")
@@ -163,8 +157,6 @@ class ZGWApiConfigurationStepTests(TestCase):
         self.assertEqual(config.zrc_service, self.zaken_service)
         self.assertEqual(config.drc_service, self.documenten_service)
         self.assertEqual(config.ztc_service, self.catalogi_service)
-        self.assertEqual(config.catalogue_domain, "TEST")
-        self.assertEqual(config.catalogue_rsin, "000000000")
         self.assertEqual(config.organisatie_rsin, "000000000")
         self.assertEqual(
             config.zaak_vertrouwelijkheidaanduiding,
@@ -184,7 +176,7 @@ class ZGWApiConfigurationStepTests(TestCase):
           "submission_id": "{{ submission.kenmerk }}",
           "language_code": "{{ submission.language_code }}",
           "custom_field": "foo"
-        }"""
+        }\n"""
         )
 
         self.assertEqual(config.content_json, expected_json)

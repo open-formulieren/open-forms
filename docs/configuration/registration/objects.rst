@@ -140,34 +140,8 @@ To configure the Objects API follow these steps:
    * **Catalogi API**: Select the Zaaktypecatalogus (ZTC) service created above
    * **Organisatie RSIN**: Fill the RSIN to use as "bronorganisatie" in Document uploads.
      *For example:* ``123456789``. You an override this on a per-form basis.
-
-   The following fields are deprecated - it's better to specify a catalogue and the
-   description of the document types instead.
-
-   * **Submission report informatieobjecttype**: Fill in the default URL of the
-     INFORMATIEOBJECTTYPE for the submission report in the Catalogi API *For example*
-     ``https://example.com/api/v1/informatieobjecttypen/1/``. You an override this on a
-     per-form basis.
    * **Upload submission CSV**: Indicate whether or not the submission CSV should be
      uploaded to the Documenten API by default. You an override this on a per-form basis.
-   * **Submission report CSV informatieobjecttype**: Fill in the default URL of the
-     INFORMATIEOBJECTTYPE for the submission report CSV in the Catalogi API *For example*
-     ``https://example.com/api/v1/informatieobjecttypen/2/``. You an override this on a
-     per-form basis.
-   * **Attachment informatieobjecttype**: Fill in the default URL of the
-     INFORMATIEOBJECTTYPE for the submission attachments in the Catalogi API *For example*
-     ``https://example.com/api/v1/informatieobjecttypen/3/``. You an override this on a
-     per-form and per-file component basis.
-
-   For the legacy configuration format, additional fields are available:
-
-   * **Productaanvraag type**: Optionally fill in the default type of ProductAanvraag
-     *For example:* ``terugbelnotitie``. You an override this on a per-form basis.
-   * **JSON content template**: This is a template for the JSON that will be sent to the
-     Objects API nested in the ``record.data`` field.
-   * **Payment status update JSON template**: This is a template for the JSON that will
-     be sent with a PATCH request to the Object API to update the payment status of a
-     submission. This JSON will be merge-patched in the ``record.data`` field.
 
 #. Click **Opslaan**
 
@@ -178,6 +152,10 @@ When doing so, the corresponding objecttype and objecttype version will have to 
 
    The objecttype URL and version must be configured at the form level, and can no
    longer be configured globally.
+
+.. versionchanged:: 4.0.0
+
+   The legacy document type URLs support has been removed.
 
 .. _configuration_registration_objects_objecttype_tips:
 

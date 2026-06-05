@@ -357,7 +357,9 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="Objects without catalogue in group or options",
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options_1).data,
+            options=ObjectsAPIOptionsSerializer(
+                instance=objects_options_1, context={"in_migrator": True}
+            ).data,
         )
         objects_options_2: ObjectsRegistrationOptionsV2 = {
             "informatieobjecttype_submission_report": (
@@ -386,9 +388,12 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="Objects with catalogue in group",
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options_2).data,
+            options=ObjectsAPIOptionsSerializer(
+                instance=objects_options_2, context={"in_migrator": True}
+            ).data,
         )
-        zgw_options_1: ZGWRegistrationOptions = {
+        # type ignore because the 4.0+ types require catalogue to be set
+        zgw_options_1: ZGWRegistrationOptions = {  # pyright: ignore[reportAssignmentType]
             "zgw_api_group": zgw_group_without_catalogue,
             "case_type_identification": "",
             "document_type_description": "",
@@ -411,9 +416,12 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="ZGW without catalogue in group or options",
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=ZaakOptionsSerializer(
+                instance=zgw_options_1, context={"in_migrator": True}
+            ).data,
         )
-        zgw_options_2: ZGWRegistrationOptions = {
+        # type ignore because the 4.0+ types require catalogue to be set
+        zgw_options_2: ZGWRegistrationOptions = {  # pyright: ignore[reportAssignmentType]
             "zgw_api_group": zgw_group_with_catalogue,
             "case_type_identification": "",
             "document_type_description": "",
@@ -436,7 +444,9 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="ZGW with catalogue in group",
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_2).data,
+            options=ZaakOptionsSerializer(
+                instance=zgw_options_2, context={"in_migrator": True}
+            ).data,
         )
 
         outfile = StringIO()
@@ -598,7 +608,8 @@ class MigratorTests(OFVCRMixin, TestCase):
             zgw_backend_2.refresh_from_db()
             zgw_group_with_catalogue.refresh_from_db()
 
-            self.assertNotIn("catalogue", zgw_backend_2.options)
+            # it gets migrated to the options either way
+            self.assertIn("catalogue", zgw_backend_2.options)
             self.assertEqual(
                 zgw_backend_2.options["case_type_identification"],
                 "ZT-001",
@@ -658,7 +669,9 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="All document types already configured",
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options_1).data,
+            options=ObjectsAPIOptionsSerializer(
+                instance=objects_options_1, context={"in_migrator": True}
+            ).data,
         )
         objects_options_2: ObjectsRegistrationOptionsV2 = {
             "informatieobjecttype_submission_report": (
@@ -687,9 +700,12 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="Partial document types already configured",
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options_2).data,
+            options=ObjectsAPIOptionsSerializer(
+                instance=objects_options_2, context={"in_migrator": True}
+            ).data,
         )
-        zgw_options_1: ZGWRegistrationOptions = {
+        # type ignore because the 4.0+ types require catalogue to be set
+        zgw_options_1: ZGWRegistrationOptions = {  # pyright: ignore[reportAssignmentType]
             "zgw_api_group": zgw_group_with_catalogue,
             "case_type_identification": "do-not-touch",
             "document_type_description": "do-not-touch",
@@ -712,9 +728,12 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="Case type and document type references configured",
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=ZaakOptionsSerializer(
+                instance=zgw_options_1, context={"in_migrator": True}
+            ).data,
         )
-        zgw_options_2: ZGWRegistrationOptions = {
+        # type ignore because the 4.0+ types require catalogue to be set
+        zgw_options_2: ZGWRegistrationOptions = {  # pyright: ignore[reportAssignmentType]
             "zgw_api_group": zgw_group_with_catalogue,
             "case_type_identification": "",
             "document_type_description": "PDF Informatieobjecttype",
@@ -737,7 +756,9 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="Document type reference configured",
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_2).data,
+            options=ZaakOptionsSerializer(
+                instance=zgw_options_2, context={"in_migrator": True}
+            ).data,
         )
 
         outfile = StringIO()
@@ -926,7 +947,9 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="Document types with mismatched catalogues",
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options_1).data,
+            options=ObjectsAPIOptionsSerializer(
+                instance=objects_options_1, context={"in_migrator": True}
+            ).data,
         )
         objects_options_2: ObjectsRegistrationOptionsV2 = {
             "catalogue": {
@@ -960,7 +983,9 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="Document type & options catalogue mismatch",
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options_2).data,
+            options=ObjectsAPIOptionsSerializer(
+                instance=objects_options_2, context={"in_migrator": True}
+            ).data,
         )
         outfile = StringIO()
         migrator = Migrator(outfile=outfile)
@@ -1014,7 +1039,9 @@ class MigratorTests(OFVCRMixin, TestCase):
         FormRegistrationBackendFactory.create(
             name="Objects with bad PDF document type (404)",
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options_1).data,
+            options=ObjectsAPIOptionsSerializer(
+                instance=objects_options_1, context={"in_migrator": True}
+            ).data,
         )
         outfile = StringIO()
         migrator = Migrator(outfile=outfile)
@@ -1136,7 +1163,8 @@ class MigratorTests(OFVCRMixin, TestCase):
             catalogue_rsin="",
         )
         form = FormFactory.create()
-        zgw_options_1: ZGWRegistrationOptions = {
+        # type ignore because the 4.0+ types require catalogue to be set
+        zgw_options_1: ZGWRegistrationOptions = {  # pyright: ignore[reportAssignmentType]
             "zgw_api_group": api_group,
             "case_type_identification": "",
             "document_type_description": "",
@@ -1161,9 +1189,12 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="ZGW with bad hostnames",
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=ZaakOptionsSerializer(
+                instance=zgw_options_1, context={"in_migrator": True}
+            ).data,
         )
-        zgw_options_2: ZGWRegistrationOptions = {
+        # type ignore because the 4.0+ types require catalogue to be set
+        zgw_options_2: ZGWRegistrationOptions = {  # pyright: ignore[reportAssignmentType]
             "zgw_api_group": api_group,
             "case_type_identification": "",
             "document_type_description": "",
@@ -1187,7 +1218,9 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="ZGW 404 resource links",
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_2).data,
+            options=ZaakOptionsSerializer(
+                instance=zgw_options_2, context={"in_migrator": True}
+            ).data,
         )
 
         outfile = StringIO()
@@ -1212,7 +1245,8 @@ class MigratorTests(OFVCRMixin, TestCase):
             catalogue_rsin="",
         )
         form = FormFactory.create()
-        zgw_options_1: ZGWRegistrationOptions = {
+        # type ignore because the 4.0+ types require catalogue to be set
+        zgw_options_1: ZGWRegistrationOptions = {  # pyright: ignore[reportAssignmentType]
             "zgw_api_group": api_group,
             "case_type_identification": "",
             "document_type_description": "",
@@ -1236,9 +1270,12 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="ZGW with bad document type hostnames",
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=ZaakOptionsSerializer(
+                instance=zgw_options_1, context={"in_migrator": True}
+            ).data,
         )
-        zgw_options_2: ZGWRegistrationOptions = {
+        # type ignore because the 4.0+ types require catalogue to be set
+        zgw_options_2: ZGWRegistrationOptions = {  # pyright: ignore[reportAssignmentType]
             "zgw_api_group": api_group,
             "case_type_identification": "",
             "document_type_description": "",
@@ -1262,7 +1299,9 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="ZGW 404 document type resource links",
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_2).data,
+            options=ZaakOptionsSerializer(
+                instance=zgw_options_2, context={"in_migrator": True}
+            ).data,
         )
 
         outfile = StringIO()
@@ -1287,7 +1326,8 @@ class MigratorTests(OFVCRMixin, TestCase):
             catalogue_rsin="",
         )
         form = FormFactory.create()
-        zgw_options_1: ZGWRegistrationOptions = {
+        # type ignore because the 4.0+ types require catalogue to be set
+        zgw_options_1: ZGWRegistrationOptions = {  # pyright: ignore[reportAssignmentType]
             "zgw_api_group": api_group,
             "case_type_identification": "",
             "document_type_description": "",
@@ -1312,7 +1352,9 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="ZGW with bad document type hostnames",
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=ZaakOptionsSerializer(
+                instance=zgw_options_1, context={"in_migrator": True}
+            ).data,
         )
 
         outfile = StringIO()
@@ -1368,7 +1410,9 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="ZGW with bad document type hostnames",
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=ZaakOptionsSerializer(
+                instance=zgw_options_1, context={"in_migrator": True}
+            ).data,
         )
 
         outfile = StringIO()
@@ -1419,7 +1463,9 @@ class MigratorTests(OFVCRMixin, TestCase):
             form=form,
             name="ZGW with incorrect relations",
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=ZaakOptionsSerializer(
+                instance=zgw_options_1, context={"in_migrator": True}
+            ).data,
         )
 
         outfile = StringIO()

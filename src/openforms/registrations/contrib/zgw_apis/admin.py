@@ -45,16 +45,6 @@ class ZGWApiGroupConfigAdmin(admin.ModelAdmin):
             },
         ),
         (
-            _("Catalogue"),
-            {
-                "description": _(
-                    "Specify the catalogue in the selected catalogi API service where "
-                    "the case and document types are defined."
-                ),
-                "fields": ("catalogue_domain", "catalogue_rsin"),
-            },
-        ),
-        (
             _("Default values"),
             {
                 "fields": (

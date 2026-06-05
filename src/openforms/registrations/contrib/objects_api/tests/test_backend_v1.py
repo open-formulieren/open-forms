@@ -38,6 +38,32 @@ FIXED_SUBMISSION_UUID = UUID(hex="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
     maxDiff = None
 
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.document_type_defaults = {
+            "informatieobjecttype_submission_report": (
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                "7a474713-0833-402a-8441-e467c08ac55b"
+            ),
+            "informatieobjecttype_submission_csv": (
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                "b2d83b94-9b9b-4e80-a82f-73ff993c62f3"
+            ),
+            "informatieobjecttype_attachment": (
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                "531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+        }
+        cls.objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            organisatie_rsin="000000000",
+        )
+
     def setUp(self):
         super().setUp()
 
@@ -78,14 +104,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         )
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
-
-        self.objects_api_group = ObjectsAPIGroupConfigFactory.create(
-            for_test_docker_compose=True,
-            informatieobjecttype_submission_report="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
-            informatieobjecttype_submission_csv="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
-            informatieobjecttype_attachment="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-            organisatie_rsin="000000000",
-        )
 
     def test_submission_with_objects_api_backend_override_defaults(self):
         """Test that the configured IOTs are used instead of the global defaults on the Objects API group."""
@@ -148,6 +166,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         submission_step.form_step.save()
 
         objects_form_options = {
+            **self.document_type_defaults,
             "version": 1,
             "objects_api_group": self.objects_api_group,
             "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -161,8 +180,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             # `omschrijving` "CSV Informatieobjecttype other catalog":
             "informatieobjecttype_submission_csv": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f",
             "organisatie_rsin": "123456782",
-            "zaak_vertrouwelijkheidaanduiding": "geheim",
-            "doc_vertrouwelijkheidaanduiding": "geheim",
         }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -244,6 +261,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             with_report=True,
         )
         objects_form_options = {
+            **self.document_type_defaults,
             "version": 1,
             "objects_api_group": self.objects_api_group,
             "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -305,6 +323,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         result = plugin.register_submission(
             submission,
             {
+                **self.document_type_defaults,
                 "version": 1,
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
@@ -338,6 +357,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         result = plugin.register_submission(
             submission,
             {
+                **self.document_type_defaults,
                 "version": 1,
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
@@ -385,6 +405,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         submission_step.form_step.save()
 
         objects_form_options = {
+            **self.document_type_defaults,
             "version": 1,
             "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
             "objecttype_version": 1,
@@ -452,6 +473,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         result = plugin.register_submission(
             submission,
             {
+                **self.document_type_defaults,
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -531,6 +553,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         result = plugin.register_submission(
             submission,
             {
+                **self.document_type_defaults,
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -648,6 +671,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         plugin.register_submission(
             submission,
             {
+                **self.document_type_defaults,
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -748,6 +772,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         plugin.register_submission(
             submission,
             {
+                **self.document_type_defaults,
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -836,6 +861,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         plugin.register_submission(
             submission,
             {
+                **self.document_type_defaults,
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -895,6 +921,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         result = plugin.register_submission(
             submission,
             {
+                **self.document_type_defaults,
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -944,6 +971,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         result = plugin.register_submission(
             submission,
             {
+                **self.document_type_defaults,
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -980,6 +1008,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         result = plugin.register_submission(
             submission,
             {
+                **self.document_type_defaults,
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -1041,6 +1070,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         result = plugin.register_submission(
             submission,
             {
+                **self.document_type_defaults,
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -1160,8 +1190,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
     def test_can_upload_attachments_with_indirect_document_type_reference(self):
         objects_api_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True,
-            catalogue_domain="TEST",
-            catalogue_rsin="000000000",
             organisatie_rsin="000000000",
         )
         submission = SubmissionFactory.from_components(
@@ -1200,6 +1228,10 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "objects_api_group": objects_api_group,
             "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
             "objecttype_version": 3,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
             "iot_submission_report": "",
             "iot_submission_csv": "",
             # a default is required to register file component attachments, aparently
@@ -1277,6 +1309,9 @@ class V1HandlerTests(TestCase):
             "version": 1,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
             "productaanvraag_type": "-dummy-",
             "update_existing_object": False,
             "auth_attribute_path": [],
@@ -1324,6 +1359,9 @@ class V1HandlerTests(TestCase):
             "version": 1,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
             "productaanvraag_type": "-dummy-",
             "update_existing_object": False,
             "auth_attribute_path": [],
@@ -1361,6 +1399,9 @@ class V1HandlerTests(TestCase):
             "version": 1,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
             "productaanvraag_type": "-dummy-",
             "update_existing_object": False,
             "auth_attribute_path": [],

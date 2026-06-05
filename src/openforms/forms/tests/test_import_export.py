@@ -2275,51 +2275,6 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-    def test_import_form_with_zgw_registration_backend_no_available_group(self):
-        self._create_export(
-            self.filepath,
-            {
-                "key": "test-backend",
-                "name": "Test backend",
-                "backend": "zgw-create-zaak",
-                "options": {
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                    "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-                },
-            },
-        )
-
-        with self.assertRaises(ValidationError) as exc:
-            import_form(import_file=self.filepath)
-
-        error_detail = exc.exception.detail["registration_backends"][0]["options"][
-            "zgw_api_group"
-        ][0]
-        self.assertEqual(error_detail.code, "invalid")
-
-    def test_import_form_with_zgw_registration_backend_available_group(self):
-        zgw_group = ZGWApiGroupConfigFactory.create(for_test_docker_compose=True)
-        self._create_export(
-            self.filepath,
-            {
-                "key": "test-backend",
-                "name": "Test backend",
-                "backend": "zgw-create-zaak",
-                "options": {
-                    "zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
-                    "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-                },
-            },
-        )
-
-        import_form(import_file=self.filepath)
-
-        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
-        self.assertEqual(
-            registration_backend.options["zgw_api_group"],
-            zgw_group.pk,
-        )
-
     def test_import_form_with_zgw_registration_backend_with_objects_api_group_apply_default(
         self,
     ):
@@ -2332,7 +2287,7 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
         objects_api_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True
         )
-        ZGWApiGroupConfigFactory.create(for_test_docker_compose=True)
+        api_group = ZGWApiGroupConfigFactory.create(for_test_docker_compose=True)
         self._create_export(
             self.filepath,
             {
@@ -2340,6 +2295,8 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 "name": "Test backend",
                 "backend": "zgw-create-zaak",
                 "options": {
+                    "zgw_api_group": api_group.pk,
+                    "catalogue": {"domain": "", "rsin": ""},
                     "zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
                     "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
                     "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
@@ -2370,6 +2327,7 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
                     "backend": "zgw-create-zaak",
                     "options": {
                         "zgw_api_group": zgw_group.pk,
+                        "catalogue": {"domain": "", "rsin": ""},
                         "zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
                         "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
                         "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
@@ -2398,6 +2356,7 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
                     "backend": "zgw-create-zaak",
                     "options": {
                         "zgw_api_group": zgw_group.pk,
+                        "catalogue": {"domain": "", "rsin": ""},
                         "zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
                         "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
                         "objects_api_group": objects_api_group.identifier,

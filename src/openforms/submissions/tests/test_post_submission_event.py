@@ -1130,6 +1130,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             form__registration_backend="zgw-create-zaak",
             form__registration_backend_options={
                 "zgw_api_group": zgw_group.pk,
+                "catalogue": {"domain": "", "rsin": ""},
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "objects_api_group": None,
@@ -1163,6 +1164,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             form__registration_backend="zgw-create-zaak",
             form__registration_backend_options={
                 "zgw_api_group": zgw_group.pk,
+                "catalogue": {"domain": "", "rsin": ""},
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "objects_api_group": None,

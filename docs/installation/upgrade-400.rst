@@ -261,4 +261,50 @@ For more information about the new logic evaluation, please refer to the
 
 Clearing of values
 ------------------
+
 TODO
+
+Removal of legacy ZGW URLs support in registration plugins
+==========================================================
+
+The support for direct URL references to the Catalogi API for document types
+("informatieobjecttype") and case types is removed. Open Forms 3.5 provides a migration
+tool to convert these URLs into their indirect references that are more portable across
+different environments (like from staging -> production).
+
+ZGW APIs registration
+---------------------
+
+With the legacy URL support removal, the support for a "default catalogue" on the API
+group level is also obsoleted. Open Forms 4.0 automatically moves this configuration
+into all relevant form registration backend options where it's not configured yet.
+
+This still has some impact though:
+
+* users of setup-configuration may need to update their YAML assets that would populate
+  the catalogue domain/RSIN.
+* form exports pre 4.0 will not import cleanly into 4.0 environments, it's recommended
+  to upgrade the source instance to 4.0 and re-generate the exports. Most notably, the
+  registration backend options must contain:
+
+  - an API group reference.
+  - a catalogue reference (domain + RSIN) combination.
+
+Objects API registration
+------------------------
+
+With the legacy URL support removal, the support for a "default catalogue" and default
+document type references on the API group level are also obsoleted. Open Forms 4.0
+automatically moves this configuration into all relevant form registration backend
+options where it's not configured yet.
+
+This still has some impact though:
+
+* users of setup-configuration may need to update their YAML assets that would populate
+  the catalogue domain/RSIN and document type references.
+* form exports pre 4.0 may not import cleanly into 4.0 environments, it's recommended
+  to upgrade the source instance to 4.0 and re-generate the exports. If you have
+  document types configured, make sure the form exports contain:
+
+  - a catalogue reference (domain + RSIN) combination.
+  - the document type references for each configuration option

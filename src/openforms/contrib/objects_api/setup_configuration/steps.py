@@ -40,12 +40,7 @@ class ObjectsAPIConfigurationStep(BaseConfigurationStep[ObjectsAPIGroupConfigMod
                 "objecttypes_service": get_service(
                     config.objecttypes_service_identifier
                 ),
-                "catalogue_domain": config.catalogue_domain,  # type: ignore
-                "catalogue_rsin": config.catalogue_rsin,  # type: ignore
                 "organisatie_rsin": config.organisatie_rsin,  # type: ignore
-                "iot_submission_report": config.document_type_submission_report,
-                "iot_submission_csv": config.document_type_submission_csv,
-                "iot_attachment": config.document_type_attachment,
             }
             if config.documenten_service_identifier:
                 defaults["drc_service"] = get_service(

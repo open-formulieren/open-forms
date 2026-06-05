@@ -80,12 +80,7 @@ class ObjectsAPIConfigurationStepTests(TestCase):
         self.assertEqual(config1.objecttypes_service, self.objecttypes_service)
         self.assertEqual(config1.drc_service, self.drc_service)
         self.assertEqual(config1.catalogi_service, self.catalogi_service)
-        self.assertEqual(config1.catalogue_domain, "TEST")
-        self.assertEqual(config1.catalogue_rsin, "000000000")
         self.assertEqual(config1.organisatie_rsin, "000000000")
-        self.assertEqual(config1.iot_submission_report, "PDF Informatieobjecttype")
-        self.assertEqual(config1.iot_submission_csv, "CSV Informatieobjecttype")
-        self.assertEqual(config1.iot_attachment, "Attachment Informatieobjecttype")
 
         self.assertEqual(config2.name, "Config 2")
         self.assertEqual(config2.identifier, "config-2")
@@ -93,12 +88,7 @@ class ObjectsAPIConfigurationStepTests(TestCase):
         self.assertEqual(config2.objecttypes_service, self.objecttypes_service)
         self.assertEqual(config2.drc_service, self.drc_service)
         self.assertEqual(config2.catalogi_service, self.catalogi_service)
-        self.assertEqual(config2.catalogue_domain, "OTHER")
-        self.assertEqual(config2.catalogue_rsin, "000000000")
         self.assertEqual(config2.organisatie_rsin, "000000000")
-        self.assertEqual(config2.iot_submission_report, "")
-        self.assertEqual(config2.iot_submission_csv, "")
-        self.assertEqual(config2.iot_attachment, "")
 
     def test_execute_update_existing_config(self):
         ObjectsAPIGroupConfigFactory.create(name="old name", identifier="config-1")
@@ -131,12 +121,7 @@ class ObjectsAPIConfigurationStepTests(TestCase):
 
         self.assertIsNone(config.drc_service)
         self.assertIsNone(config.catalogi_service)
-        self.assertEqual(config.catalogue_domain, "")
-        self.assertEqual(config.catalogue_rsin, "")
         self.assertEqual(config.organisatie_rsin, "")
-        self.assertEqual(config.iot_submission_report, "")
-        self.assertEqual(config.iot_submission_csv, "")
-        self.assertEqual(config.iot_attachment, "")
 
     def test_execute_with_all_fields(self):
         execute_single_step(
@@ -153,12 +138,7 @@ class ObjectsAPIConfigurationStepTests(TestCase):
         self.assertEqual(config.objecttypes_service, self.objecttypes_service)
         self.assertEqual(config.drc_service, self.drc_service)
         self.assertEqual(config.catalogi_service, self.catalogi_service)
-        self.assertEqual(config.catalogue_domain, "TEST")
-        self.assertEqual(config.catalogue_rsin, "000000000")
         self.assertEqual(config.organisatie_rsin, "000000000")
-        self.assertEqual(config.iot_submission_report, "PDF Informatieobjecttype")
-        self.assertEqual(config.iot_submission_csv, "CSV Informatieobjecttype")
-        self.assertEqual(config.iot_attachment, "Attachment Informatieobjecttype")
 
     def test_execute_is_idempotent(self):
         self.assertFalse(ObjectsAPIGroupConfig.objects.exists())
