@@ -3,6 +3,7 @@ from uuid import UUID
 
 from django.db import transaction
 from django.db.models import Exists, OuterRef
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import structlog
@@ -621,6 +622,12 @@ class SubmissionStepViewSet(
         serializer.is_valid(raise_exception=True)
 
         create = instance.pk is None
+
+        # regular submission step should get a timestamp upon first save
+        saving_from_suspension = serializer.validated_data["from_suspension"]
+        if create and not saving_from_suspension:
+            instance.completed_on = timezone.now()
+
         serializer.save()
 
         submission = instance.submission

@@ -344,6 +344,13 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         allow_empty=True,
         default=list,
     )
+    from_suspension = serializers.BooleanField(
+        default=False,
+        help_text=_(
+            "Flag for indicating if a submission step is coming from a suspended form or "
+            "a regular submitted form step."
+        ),
+    )
 
     parent_lookup_kwargs = {
         "submission_uuid": "submission__uuid",
@@ -363,6 +370,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "default_configuration",
             "require_backend_logic_evaluation",
             "logic_rules",
+            "from_suspension",
         )
 
         extra_kwargs = {
