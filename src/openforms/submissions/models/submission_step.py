@@ -101,6 +101,15 @@ class SubmissionStep(models.Model):  # noqa: DJ008
     )
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
     modified = models.DateTimeField(_("modified on"), auto_now=True)
+    completed_on = models.DateTimeField(
+        _("completed on"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "This is indicating the date and time that a submission step was for the "
+            "first time completed (all the future are considered as modifications)."
+        ),
+    )
 
     # bugfix for #2135
     form_step_history = models.JSONField(
@@ -179,10 +188,7 @@ class SubmissionStep(models.Model):  # noqa: DJ008
 
     @property
     def completed(self) -> bool:
-        # TODO: should check that all the data for the form definition is present?
-        # and validates?
-        # For now - if it's been saved, we assume that was because it was completed
-        return bool(self.pk)
+        return bool(self.pk and self.completed_on)
 
     @property
     def can_submit(self) -> bool:
