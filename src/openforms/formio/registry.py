@@ -12,6 +12,8 @@ smeared out across the codebase in similar but different implementations, while 
 the public API better defined and smaller.
 """
 
+from __future__ import annotations
+
 import abc
 from collections.abc import Callable
 from typing import (
@@ -36,11 +38,12 @@ from openforms.plugins.registry import BaseRegistry
 from openforms.typing import JSONObject, JSONValue, VariableValue
 from openforms.variables.constants import FormVariableDataTypes
 
-from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
+
+    from .datastructures import FormioConfigurationWrapper, FormioData
 
 ComponentT = TypeVar("ComponentT", bound=Component, contravariant=True)
 
@@ -65,7 +68,7 @@ class RewriterForRequestProtocol(Protocol[ComponentT]):
 
 class PreRegistrationHookProtocol(Protocol[ComponentT]):
     def __call__(
-        self, component: ComponentT, submission: "Submission"
+        self, component: ComponentT, submission: Submission
     ) -> ComponentPreRegistrationResult: ...
 
 
@@ -130,7 +133,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
         return _("{type} component").format(type=self.identifier.capitalize())
 
     def mutate_config_dynamically(
-        self, component: ComponentT, submission: "Submission", data: FormioData
+        self, component: ComponentT, submission: Submission, data: FormioData
     ) -> None: ...
 
     def localize(self, component: ComponentT, language_code: str, enabled: bool):
@@ -312,7 +315,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         )
 
     def update_config(
-        self, component: Component, submission: "Submission", data: FormioData
+        self, component: Component, submission: Submission, data: FormioData
     ) -> None:
         """
         Mutate the component configuration in place.
@@ -437,7 +440,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         return self[component_type].pre_registration_hook is not None
 
     def apply_pre_registration_hook(
-        self, component: Component, submission: "Submission"
+        self, component: Component, submission: Submission
     ) -> ComponentPreRegistrationResult:
         """
         Apply component pre registration hook.

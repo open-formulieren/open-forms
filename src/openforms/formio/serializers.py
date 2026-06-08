@@ -61,13 +61,13 @@ class StepDataSerializer(serializers.Serializer):
             if not register.holds_submission_data(component):
                 continue
 
-            # XXX: is_visible_in_frontend does not understand editgrid at all yet, which
+            # XXX: is_hidden does not understand editgrid at all yet, which
             # is a broader issue, but also manifests here.
-            is_visible = config_wrapper.is_visible_in_frontend(component["key"], values)
+            is_hidden = config_wrapper.is_hidden(component["key"], values)
 
             # we don't have to do anything when the component is visible, regular
             # validation rules apply
-            if is_visible:
+            if not is_hidden:
                 continue
 
             # when it's not visible, grab the field from the serializer and remove all

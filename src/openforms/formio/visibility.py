@@ -1,10 +1,18 @@
-from typing import Protocol
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Protocol
 
 from openforms.typing import JSONObject
 
-from .datastructures import FormioConfiguration, FormioConfigurationWrapper, FormioData
 from .registry import register
 from .typing import Column, Component, ConditionalCompareValue
+
+if TYPE_CHECKING:
+    from .datastructures import (
+        FormioConfiguration,
+        FormioConfigurationWrapper,
+        FormioData,
+    )
 
 
 class GetEvaluationData(Protocol):
@@ -55,7 +63,15 @@ def is_hidden(
 
     show, trigger_component_key, compare_value = conditional
 
-    trigger_component = configuration[trigger_component_key]
+    # Be resilient on the component key lookup
+    if trigger_component_key in configuration:
+        trigger_component = configuration[trigger_component_key]
+    else:
+        trigger_component: Component = {
+            "type": "unknown",
+            "key": trigger_component_key,
+            "label": "unknown",
+        }
     # Defaulting to an empty string when the value is nullish is what our renderer does,
     # with a note that it may need some revision later because it's a left-over formio
     # relic.

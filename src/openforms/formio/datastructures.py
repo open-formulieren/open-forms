@@ -9,7 +9,8 @@ from glom import glom
 from openforms.typing import VariableValue
 
 from .typing import Component, EditGridComponent, FormioConfiguration
-from .utils import flatten_by_path, is_visible_in_frontend, iter_components
+from .utils import flatten_by_path, iter_components
+from .visibility import is_hidden
 
 # TODO: mechanism to wrap/mark root components?
 
@@ -154,7 +155,7 @@ class FormioConfigurationWrapper:
             }
         return self._reverse_flattened
 
-    def is_visible_in_frontend(self, key: str, values: FormioData) -> bool:
+    def is_hidden(self, key: str, values: FormioData) -> bool:
         config_path = self.reverse_flattened[key]
         path_bits = [".".join(bit) for bit in RE_PATH.findall(config_path)]
         nodes: Sequence[Component] = []  # leftmost is root, rightmost is leaf
@@ -162,10 +163,7 @@ class FormioConfigurationWrapper:
             path = ".".join(path_bits[: depth + 1])
             component = glom(self.configuration, path)
             nodes.append(component)
-        return all(
-            is_visible_in_frontend(node, values, configuration_wrapper=self)
-            for node in nodes
-        )
+        return any(is_hidden(node, values, self) for node in nodes)
 
     def get_child_component_keys(self, key: str) -> set[str]:
         """
