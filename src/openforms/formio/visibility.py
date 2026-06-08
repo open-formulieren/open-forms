@@ -37,7 +37,6 @@ def is_hidden(
     component: Component,
     data: FormioData,
     configuration: FormioConfigurationWrapper,
-    ignore_hidden_property: bool,
 ) -> bool:
     """
     Determine whether the component is hidden by checking the conditional and "hidden"
@@ -47,19 +46,12 @@ def is_hidden(
     :param data: Data context required for the trigger component value.
     :param configuration: Configuration context required for the trigger component
       value.
-    :param ignore_hidden_property: Whether to ignore the "hidden" property in
-      determining if the component is hidden. Note that this is only relevant if there
-      is no (valid) conditional present. If there is a conditional, it will take
-      precedence.
     :return: Whether the component is hidden.
     """
     conditional = get_conditional(component)
 
     if conditional is None:
-        if ignore_hidden_property:
-            return False
-        else:
-            return component.get("hidden", False)
+        return component.get("hidden", False)
 
     show, trigger_component_key, compare_value = conditional
 
@@ -87,7 +79,6 @@ def process_visibility(
     *,
     parent_hidden: bool = False,
     get_evaluation_data: GetEvaluationData | None = None,
-    components_to_ignore_hidden: set[str] | None = None,
     data_for_visible_state: FormioData | None = None,
 ) -> None:
     """
@@ -105,13 +96,9 @@ def process_visibility(
       the conditional will not be evaluated at all when this is set to ``True``.
     :param get_evaluation_data: Function used to get the evaluation data used during
       evaluation of the conditional. If not provided, ``data`` will be used instead.
-    :param components_to_ignore_hidden: Set of components for which the "hidden"
-      property is ignored in determining whether the component is hidden. Note that if
-      it was not passed, the hidden property WILL be checked.
     :param data_for_visible_state: The data used to restore values when flipping
       visibility states.
     """
-    components_to_ignore_hidden = components_to_ignore_hidden or set()
     for component in configuration.get("components", []):
         key = component["key"]
         clear_on_hide = component.get("clearOnHide", True)
@@ -120,7 +107,6 @@ def process_visibility(
             component,
             get_evaluation_data(data) if get_evaluation_data else data,
             wrapper,
-            key in components_to_ignore_hidden,
         )
 
         # Need to check whether the component holds submission data, as we do not have
@@ -148,6 +134,5 @@ def process_visibility(
             wrapper,
             parent_hidden=hidden,
             get_evaluation_data=get_evaluation_data,
-            components_to_ignore_hidden=components_to_ignore_hidden,
             data_for_visible_state=data_for_visible_state,
         )

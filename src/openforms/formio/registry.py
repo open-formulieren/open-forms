@@ -173,7 +173,6 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
         wrapper: FormioConfigurationWrapper,
         *,
         parent_hidden: bool,
-        components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
         data_for_visible_state: FormioData | None = None,
     ) -> None:
@@ -187,8 +186,6 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
         :param parent_hidden: Indicates whether the parent component was hidden.
         :param get_evaluation_data: Function used to get the evaluation data used during
           evaluation of the conditional.
-        :param components_to_ignore_hidden: Set of components for which the "hidden"
-          property is ignored in determining whether the component is hidden.
         :param data_for_visible_state: The data used to restore values when flipping
           visibility states.
         """
@@ -285,7 +282,6 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         wrapper: FormioConfigurationWrapper,
         *,
         parent_hidden: bool,
-        components_to_ignore_hidden: set[str],
         get_evaluation_data: Callable | None = None,
         data_for_visible_state: FormioData | None = None,
     ) -> None:
@@ -299,8 +295,6 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         :param parent_hidden: Indicates whether the parent component was hidden.
         :param get_evaluation_data: Function used to get the evaluation data used during
           evaluation of the conditional.
-        :param components_to_ignore_hidden: Set of components for which the "hidden"
-          property is ignored in determining whether the component is hidden.
         :param data_for_visible_state: The data used to restore values when flipping
           visibility states.
         """
@@ -314,7 +308,6 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
             wrapper,
             parent_hidden=parent_hidden,
             get_evaluation_data=get_evaluation_data,
-            components_to_ignore_hidden=components_to_ignore_hidden,
             data_for_visible_state=data_for_visible_state,
         )
 

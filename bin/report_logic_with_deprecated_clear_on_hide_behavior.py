@@ -115,7 +115,9 @@ def report_rules() -> bool:
 
         # Components with visibility affected by logic rules
         for rule in form.formlogic_set.iterator():
-            components_with_affected_visibility |= rule.components_in_hidden_actions
+            components_with_affected_visibility |= {
+                action.component for action in rule.hidden_actions
+            }
 
         # Add children of all components that have their visibility affected. Create
         # a copy to avoid processing children again, as the set is updated directly
