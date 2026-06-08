@@ -84,7 +84,7 @@ interactions:
       "registratiedatum": "2026-06-08", "startdatum": "2026-06-08", "productenOfDiensten":
       ["http://localhost:81/product/1234abcd-12ab-34cd-56ef-12345abcde10"], "omschrijving":
       "Form 012", "toelichting": "", "betalingsindicatie": "nvt", "identificatie":
-      "OF-X2VAJ2"}'
+      "OF-JURCZ9"}'
     headers:
       Accept:
       - '*/*'
@@ -106,7 +106,7 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/1ef8eed6-7700-4119-90f3-14b1cc641889","uuid":"1ef8eed6-7700-4119-90f3-14b1cc641889","identificatie":"OF-X2VAJ2","bronorganisatie":"000000000","omschrijving":"Form
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/96a63824-538d-46b7-8e3f-9f7377a0d310","uuid":"96a63824-538d-46b7-8e3f-9f7377a0d310","identificatie":"OF-JURCZ9","bronorganisatie":"000000000","omschrijving":"Form
         012","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-08","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-08","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":["http://localhost:81/product/1234abcd-12ab-34cd-56ef-12345abcde10"],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
@@ -123,7 +123,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/1ef8eed6-7700-4119-90f3-14b1cc641889
+      - http://localhost:8003/zaken/api/v1/zaken/96a63824-538d-46b7-8e3f-9f7377a0d310
       Referrer-Policy:
       - same-origin
       Vary:
@@ -151,10 +151,10 @@ interactions:
       User-Agent:
       - python-requests/2.33.0
     method: GET
-    uri: http://localhost:8003/zaken/api/v1/zaken/1ef8eed6-7700-4119-90f3-14b1cc641889
+    uri: http://localhost:8003/zaken/api/v1/zaken/96a63824-538d-46b7-8e3f-9f7377a0d310
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/1ef8eed6-7700-4119-90f3-14b1cc641889","uuid":"1ef8eed6-7700-4119-90f3-14b1cc641889","identificatie":"OF-X2VAJ2","bronorganisatie":"000000000","omschrijving":"Form
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/96a63824-538d-46b7-8e3f-9f7377a0d310","uuid":"96a63824-538d-46b7-8e3f-9f7377a0d310","identificatie":"OF-JURCZ9","bronorganisatie":"000000000","omschrijving":"Form
         012","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-08","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-08","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":["http://localhost:81/product/1234abcd-12ab-34cd-56ef-12345abcde10"],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
@@ -171,7 +171,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"85106c5b53028bc73a8c0c3769495995"'
+      - '"97367791eccb3c0566ed6ff4e0a679fb"'
       Referrer-Policy:
       - same-origin
       Vary:

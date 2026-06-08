@@ -743,9 +743,8 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 variable_keys = list(state.variables.keys())
                 all_values = state.get_data(
                     include_static_variables=False,
-                    # TODO: check if we want to be dense or sparse, IMO it should be
-                    # dense for consistency
-                    include_unsaved=False,
+                    # always include all form variables, whether they're visible or not
+                    include_unsaved=True,
                 )
                 document_data = get_json_data(
                     submission,
