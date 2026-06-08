@@ -296,7 +296,7 @@ class FormioNode(Node):
         configuration = self.step.form_step.form_definition.configuration
 
         state = self.step.submission.variables_state
-        data = state.get_data(include_unsaved=True, submission_step=self.step)
+        data = state.get_data(include_unsaved=False, submission_step=self.step)
         for configuration_path, component in iterate_components_with_configuration_path(
             configuration, recursive=False
         ):
