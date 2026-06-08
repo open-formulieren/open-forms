@@ -5,21 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("forms", "0107_delete_formpricelogic"),
-        ("forms", "0108_form_internal_remarks"),
-        ("forms", "0109_formvariable_data_type_and_data_subtype"),
-        ("forms", "0110_add_missing_data_subtype_to_existing_form_variable"),
-        (
-            "forms",
-            "0111_formvariable_form_variable_subtype_empty_iff_data_type_is_not_array_and_more",
-        ),
-        ("forms", "0112_data_migrate_objects_api_group"),
-        ("forms", "0113_form_new_renderer_enabled"),
-        ("forms", "0114_data_migrate_yivi_form_authentication_attribute_groups"),
-        ("forms", "0115_alter_formauthenticationbackend_options"),
-    ]
-
     dependencies = [
         ("objects_api", "0006_alter_objectsapigroupconfig_catalogue_domain"),
         ("forms", "0001_initial_to_v320"),
