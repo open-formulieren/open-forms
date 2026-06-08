@@ -1205,6 +1205,32 @@ class CustomerProfile(BasePlugin):
         result["data"] = data
         return result
 
+    @staticmethod
+    def as_json_schema(component: CustomerProfileComponent) -> JSONObject:
+        label = component["label"]
+        schema = {
+            "title": label,
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["address", "type"],
+                "properties": {
+                    "address": {"type": "string"},
+                    "type": {
+                        "type": "string",
+                        "enum": component["digitalAddressTypes"],
+                    },
+                    "preferenceUpdate": {
+                        "type": "string",
+                        "enum": ["useOnlyOnce", "isNewPreferred"],
+                    },
+                },
+                "additionalProperties": False,
+            },
+        }
+
+        return schema
+
 
 @register("softRequiredErrors")
 class SoftRequiredErrors(BasePlugin):

@@ -10,6 +10,7 @@ from ..typing import (
     ChildrenComponent,
     Component,
     ContentComponent,
+    CustomerProfileComponent,
     DateComponent,
     DatetimeComponent,
     EditGridComponent,
@@ -258,6 +259,16 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
             "key": "children",
             "type": "children",
             "enableSelection": False,
+        }
+        self.assertComponentSchemaIsValid(component=component)
+
+    def test_profile(self):
+        component: CustomerProfileComponent = {
+            "key": "profile",
+            "label": "profile",
+            "type": "customerProfile",
+            "digitalAddressTypes": ["email", "phoneNumber"],
+            "shouldUpdateCustomerData": True,
         }
         self.assertComponentSchemaIsValid(component=component)
 
@@ -1080,3 +1091,18 @@ class AddressNLTests(SimpleTestCase):
             schema["properties"]["postcode"]["pattern"], r"^1234 [A-Z]{2}$"
         )
         self.assertEqual(schema["properties"]["city"]["pattern"], r"Amsterdam")
+
+
+class CustomerProfileTests(SimpleTestCase):
+    def test_includes_selected_digital_types(self):
+        component: CustomerProfileComponent = {
+            "key": "profile",
+            "label": "profile",
+            "type": "customerProfile",
+            "digitalAddressTypes": ["email"],
+            "shouldUpdateCustomerData": True,
+        }
+
+        schema = as_json_schema(component)
+
+        self.assertEqual(schema["items"]["properties"]["type"]["enum"], ["email"])
