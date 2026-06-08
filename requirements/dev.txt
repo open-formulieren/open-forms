@@ -178,7 +178,7 @@ diff-match-patch==20241021
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-import-export
-django==5.2.14
+django==5.2.15
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1385,7 +1385,7 @@ webencodings==0.5.1
     #   cssselect2
     #   tinycss2
     #   tinyhtml5
-webob==1.8.9
+webob==1.8.10
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

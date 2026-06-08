@@ -157,7 +157,7 @@ diff-match-patch==20241021
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-import-export
-django==5.2.14
+django==5.2.15
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1244,7 +1244,7 @@ webencodings==0.5.1
     #   cssselect2
     #   tinycss2
     #   tinyhtml5
-webob==1.8.9
+webob==1.8.10
     # via webtest
 webtest==3.0.7
     # via django-webtest

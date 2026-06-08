@@ -88,7 +88,7 @@ defusedxml==0.7.1
     # via -r requirements/base.in
 diff-match-patch==20241021
     # via django-import-export
-django==5.2.14
+django==5.2.15
     # via
     #   -r requirements/base.in
     #   django-admin-index
