@@ -128,29 +128,21 @@ def evaluate_form_logic(
             if key not in unsaved_data:
                 data_for_evaluation.pop(key)
 
+    # Initial data used to create a data difference at the end
+    initial_data = deepcopy(data_for_evaluation)
+
     # 5. Evaluate conditional logic. We need to do this before evaluating backend logic
     # to make sure we are not processing with outdated data. The frontend will not send
     # data for fields that were (conditionally) hidden, so simply applying the unsaved
     # data to the state will not remove existing values of those fields.
-    rules = get_rules_to_evaluate(submission, step)
-    # These components are affected by a hidden property action, which means we cannot
-    # check the "hidden" property of the component during conditional logic evaluation
-    components_with_hidden_action = set()
-    for rule in rules:
-        components_with_hidden_action |= rule.components_in_hidden_actions
-
     evaluate_conditional_logic(
         config_wrapper.configuration,
         data_for_evaluation,
         config_wrapper,
-        components_with_hidden_action,
     )
 
     # 6. Evaluate the logic rules in order
-    # Now that conditional logic is resolved and matches the state of the frontend, we
-    # can get the initial data before evaluating backend logic. This will be used to
-    # create a data difference at the end
-    initial_data = deepcopy(data_for_evaluation)
+    rules = get_rules_to_evaluate(submission, step)
     mutation_operations = []
 
     # 6.1 If the action type is to set a variable, update the data. This happens inside
@@ -225,7 +217,6 @@ def evaluate_conditional_logic(
     configuration: FormioConfiguration,
     data: FormioData,
     wrapper: FormioConfigurationWrapper,
-    components_to_ignore_hidden: set[str],
 ):
     """
     Evaluate conditional logic through iteration.
@@ -237,8 +228,6 @@ def evaluate_conditional_logic(
     :param data: Data used for evaluation. Mutations will be applied to the data
       directly.
     :param wrapper: Formio configuration wrapper. Required for component lookup.
-    :param components_to_ignore_hidden: Set of components for which the "hidden"
-      property is ignored in determining whether the component is hidden.
     """
     processed_data = None
     _loop_count = 0
@@ -247,12 +236,7 @@ def evaluate_conditional_logic(
             raise RuntimeError("Potential infinite loop stopped!")
         _loop_count += 1
         processed_data = deepcopy(data)
-        process_visibility(
-            configuration,
-            data,
-            wrapper,
-            components_to_ignore_hidden=components_to_ignore_hidden,
-        )
+        process_visibility(configuration, data, wrapper)
 
 
 def check_submission_logic(
