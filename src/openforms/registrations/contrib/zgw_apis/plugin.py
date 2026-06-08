@@ -472,7 +472,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     "doc_vertrouwelijkheidaanduiding"
                 ],
             }
-            summary_documents = options.get("summary_documents", []) or []
+            summary_documents = options["summary_documents"]
             if SummaryDocumentChoices.pdf in summary_documents:
                 summary_pdf_document = execute_unless_result_exists(
                     partial(
