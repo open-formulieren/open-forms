@@ -106,8 +106,8 @@ class SubmissionStep(models.Model):  # noqa: DJ008
         blank=True,
         null=True,
         help_text=_(
-            "This is indicating the date and time that a submission step was for the "
-            "first time completed (all the future are considered as modifications)."
+            "Marks when the step was last submitted. When a submission is being paused, "
+            "the field will be empty to signal it wasn't completed yet."
         ),
     )
 

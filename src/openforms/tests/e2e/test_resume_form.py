@@ -85,11 +85,14 @@ class ResumeFormTests(E2ETestCase):
                 )
 
                 header = page.get_by_role("heading", name="First step")
-                second_form_step = page.get_by_role("link", name="Second step")
+                second_form_step = page.locator("a", has_text="Second step")
 
                 await expect(header).to_be_visible()
+
                 # the second step should not be enabled since the first one has not yet
                 # been completed (suspended form)
+                await expect(second_form_step).to_be_visible()
+                await expect(second_form_step).to_be_attached()
                 await expect(second_form_step).to_have_attribute(
                     "aria-disabled", "true"
                 )

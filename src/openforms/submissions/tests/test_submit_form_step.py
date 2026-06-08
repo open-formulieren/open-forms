@@ -85,12 +85,12 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "canSubmit": True,
                 "logicRules": [],
                 "requireBackendLogicEvaluation": False,
-                "fromSuspension": False,
             },
         )
         state = self.submission.load_submission_value_variables_state()
         data = state.get_data(submission_step=submission_step, include_unsaved=False)
         self.assertEqual({"test-key": "example data"}, data)
+        self.assertIsNotNone(submission_step.completed_on)
 
         submission_variables = SubmissionValueVariable.objects.filter(
             submission=self.submission
@@ -185,6 +185,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         state = self.submission.load_submission_value_variables_state(refresh=True)
         data = state.get_data(submission_step=submission_step, include_unsaved=False)
         self.assertEqual({"modified": "data", "foo": "bar"}, data)
+        self.assertIsNotNone(submission_step.completed_on)
 
         submission_variables = SubmissionValueVariable.objects.filter(
             submission=self.submission

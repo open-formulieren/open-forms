@@ -346,6 +346,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     )
     from_suspension = serializers.BooleanField(
         default=False,
+        write_only=True,
         help_text=_(
             "Flag for indicating if a submission step is coming from a suspended form or "
             "a regular submitted form step."

@@ -133,7 +133,6 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             "canSubmit": True,
             "requireBackendLogicEvaluation": False,
             "logicRules": [],
-            "fromSuspension": False,
         }
         self.assertEqual(response.json(), expected)
 
@@ -196,7 +195,6 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             # wrong but our introspection code is not aware of this ad-hoc plugin
             "requireBackendLogicEvaluation": False,
             "logicRules": [],
-            "fromSuspension": False,
         }
         self.assertEqual(response.json(), expected)
 
@@ -983,7 +981,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "canSubmit": True,
             "requireBackendLogicEvaluation": False,
             "logicRules": [],
-            "fromSuspension": False,
         }
         self.assertEqual(expected, response.json())
 
@@ -1026,7 +1023,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],
-            "fromSuspension": False,
         }
         self.assertEqual(expected, response.json())
 
@@ -1122,7 +1118,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
                     ],
                 }
             ],
-            "fromSuspension": False,
         }
         self.assertEqual(expected, response.json())
 
@@ -1189,7 +1184,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],  # logic rules are not serialized when the backend is required
-            "fromSuspension": False,
         }
         self.assertEqual(expected, response.json())
 
@@ -1255,7 +1249,6 @@ class IntegrationTests(SubmissionsMixin, APITestCase, HypothesisTestCase):  # py
             "canSubmit": True,
             "requireBackendLogicEvaluation": True,
             "logicRules": [],  # logic rules are not serialized when the backend is required
-            "fromSuspension": False,
         }
         self.assertEqual(expected, response.json())
 

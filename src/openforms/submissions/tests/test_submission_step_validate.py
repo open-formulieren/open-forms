@@ -547,36 +547,6 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         expected_names = {"data.textfield", "data.repeatingGroup.1.number"}
         self.assertEqual(names, expected_names)
 
-    def test_timestamp_is_set_for_regular_submitted_step(self):
-        submission = SubmissionFactory.from_components(
-            components_list=[
-                {
-                    "key": "test-key-0",
-                    "type": "textfield",
-                    "label": "Test label 0",
-                }
-            ],
-        )
-
-        self._add_submission_to_session(submission)
-        endpoint = reverse(
-            "api:submission-steps-detail",
-            kwargs={
-                "submission_uuid": submission.uuid,
-                "step_uuid": submission.form.formstep_set.get().uuid,
-            },
-        )
-
-        response = self.client.put(endpoint, {"data": {"test-key-0": "bar"}})
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        submission.refresh_from_db()
-        submitted_step = submission.steps[0]
-
-        self.assertTrue(submitted_step.completed)
-        self.assertIsNotNone(submitted_step.completed_on)
-
     def test_validate_selectboxes_with_dynamic_values_source(self):
         submission = SubmissionFactory.from_components(
             [

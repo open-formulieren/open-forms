@@ -625,7 +625,7 @@ class SubmissionStepViewSet(
 
         # regular submission step should get a timestamp upon first save
         saving_from_suspension = serializer.validated_data["from_suspension"]
-        if create and not saving_from_suspension:
+        if not saving_from_suspension:
             instance.completed_on = timezone.now()
 
         serializer.save()

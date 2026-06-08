@@ -10908,6 +10908,7 @@ components:
             Will be empty if the backend is required to evaluate form logic.
         fromSuspension:
           type: boolean
+          writeOnly: true
           default: false
           description: Flag for indicating if a submission step is coming from a suspended
             form or a regular submitted form step.
