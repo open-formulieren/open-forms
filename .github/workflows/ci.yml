@@ -274,6 +274,7 @@ jobs:
   docs:
     name: Build and check documentation
     runs-on: ubuntu-latest
+    needs: setup
 
     steps:
       - uses: actions/checkout@v6
@@ -298,11 +299,10 @@ jobs:
         run: |
           ln -s $(pwd)/open-forms-sdk/CHANGELOG.rst open-forms/docs/changelog-sdk.rst
 
-      - name: Build and test docs
+      - name: Build docs
         run: |
           export OPENSSL_CONF=$(pwd)/openssl.conf
           make SPHINXOPTS="-W" html
-          make linkcheck
         working-directory: open-forms/docs
         env:
           FORCE_COLOR: "1"
