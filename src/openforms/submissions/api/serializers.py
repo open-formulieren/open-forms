@@ -443,7 +443,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         state = instance.submission.variables_state
         variables = state.get_variables_in_submission_step(instance)
         for key, variable in variables.items():
-            if key not in data:
+            if key not in data or variable.is_undefined:
                 continue
             serialized_data[key] = variable.to_json(data[key])
 

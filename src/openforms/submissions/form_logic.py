@@ -98,34 +98,35 @@ def evaluate_form_logic(
     # 3. Load the (variables) state
     submission_variables_state = submission.variables_state
 
-    # 4. Apply the (dirty) data to the variable state.
-    # This setup avoids having to update the state with unsaved_data. That only happens
-    # after logic is evaluated now, which ensures it will not contain user input for
-    # hidden fields.
-    step_variables = submission_variables_state.get_variables_in_submission_step(
-        step, include_unsaved=True
-    )
+    # 4. Get relevant data structures.
+    if unsaved_data:
+        submission_variables_state.set_values(unsaved_data)
+
     # This data is used to restore the value of a component when it goes from hidden ->
-    # visible. It includes
+    # visible. It should include all fields to make sure we have a value for them.
     data_for_visible_state = submission_variables_state.get_data(
         include_unsaved=True, submission_step=step
     )
-    if unsaved_data:
-        step_data = FormioData()
-        for key, variable in step_variables.items():
-            if key in unsaved_data:
-                step_data[key] = variable.to_python(unsaved_data[key])
-        data_for_visible_state.update(step_data)
-    else:
-        step_data = data_for_visible_state
 
-    # This includes user-defined variables, static variables, and previously saved step
-    # variables.
+    # This includes user-defined variables, static variables, and previously saved
+    # (prefilled) step variables.
     data_for_evaluation = submission_variables_state.get_data(
         include_unsaved=False, include_static_variables=True
     )
-    # Update the data for evaluation with the data from the current step
-    data_for_evaluation.update(step_data)
+    data_for_evaluation.update(data_for_visible_state)
+
+    # Update data for evaluation.
+    step_variables = submission_variables_state.get_variables_in_submission_step(
+        step, include_unsaved=True
+    )
+    if unsaved_data:
+        # If unsaved data was passed, we rely on it accurately reflecting the visible
+        # state of the components, meaning hidden components with clearOnHide enabled
+        # will not be present. Though note that we do execute conditional logic again as
+        # an additional validation step.
+        for key in step_variables:
+            if key not in unsaved_data:
+                data_for_evaluation.pop(key)
 
     # 5. Evaluate conditional logic. We need to do this before evaluating backend logic
     # to make sure we are not processing with outdated data. The frontend will not send
@@ -204,7 +205,8 @@ def evaluate_form_logic(
     updated_step_data = FormioData()
     for key, variable in step_variables.items():
         if key not in data_for_evaluation:
-            # Value was cleared, so we don't need to add it.
+            # Value was cleared, so we need to reset the variable in the state
+            variable.set_undefined()
             continue
 
         if (

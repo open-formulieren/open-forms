@@ -530,6 +530,7 @@ class SubmissionValueVariable(models.Model):
     objects = SubmissionValueVariableManager()
 
     form_variable: FormVariable | None = None
+    _is_undefined: bool | None = None
 
     class Meta:
         verbose_name = _("Submission value variable")
@@ -555,6 +556,14 @@ class SubmissionValueVariable(models.Model):
     def save(self, *args, **kwargs):
         self.value = self.to_json(self.value)
         super().save(*args, **kwargs)
+
+    @property
+    def is_undefined(self) -> None | bool:
+        return self._is_undefined
+
+    def set_undefined(self):
+        self.value = None
+        self._is_undefined = True
 
     def to_json(self, value: VariableValue | object = empty) -> JSONValue:
         """
