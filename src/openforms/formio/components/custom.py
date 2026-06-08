@@ -1300,8 +1300,30 @@ class CustomerProfile(BasePlugin[CustomerProfileComponent]):
         return result
 
     @staticmethod
-    def as_json_schema(component: CustomerProfileComponent) -> None:
-        raise NotImplementedError()
+    def as_json_schema(component: CustomerProfileComponent) -> JSONObject:
+        label = component["label"]
+        schema = {
+            "title": label,
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["address", "type"],
+                "properties": {
+                    "address": {"type": "string"},
+                    "type": {
+                        "type": "string",
+                        "enum": component["digitalAddressTypes"],
+                    },
+                    "preferenceUpdate": {
+                        "type": "string",
+                        "enum": ["useOnlyOnce", "isNewPreferred"],
+                    },
+                },
+                "additionalProperties": False,
+            },
+        }
+
+        return schema
 
     def get_empty_value(self, component: CustomerProfileComponent):
         empty_value: JSONValue = [
