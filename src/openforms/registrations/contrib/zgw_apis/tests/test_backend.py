@@ -3583,6 +3583,15 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                     "file": {"type": []},
                     "filePattern": "",
                     "url": "",
+                    "multiple": False,
+                },
+                {
+                    "key": "fileMultiple",
+                    "type": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "url": "",
+                    "multiple": True,
                 },
                 {
                     "key": "editgrid",
@@ -3593,7 +3602,15 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                             "type": "time",
                             "key": "time",
                             "label": "Time",
-                        }
+                        },
+                        {
+                            "key": "editgridFile",
+                            "type": "file",
+                            "file": {"type": []},
+                            "filePattern": "",
+                            "url": "",
+                            "multiple": False,
+                        },
                     ],
                 },
             ],
@@ -3605,9 +3622,29 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                         "name": "my-foo.bin",
                         "type": "application/foo",
                         "originalName": "my-foo.bin",
+                    },
+                ],
+                "fileMultiple": [
+                    {
+                        "url": "some://url",
+                        "name": "my-bar.bin",
+                        "type": "application/bar",
+                        "originalName": "my-bar.bin",
+                    },
+                ],
+                "editgrid": [
+                    {
+                        "time": "12:34:56",
+                        "editgridFile": [
+                            {
+                                "url": "some://url",
+                                "name": "my-baz.bin",
+                                "type": "application/baz",
+                                "originalName": "my-baz.bin",
+                            },
+                        ],
                     }
                 ],
-                "editgrid": [{"time": "12:34:56"}],
             },
             form__name="Public form name",
             form__internal_name="Internal form name",
@@ -3628,6 +3665,26 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             content__data=b"This is example content.",
             _component_configuration_path="components.1",
             _component_data_path="file",
+        )
+        SubmissionFileAttachmentFactory.create(
+            form_key="fileMultiple",
+            submission_step=submission.steps[0],
+            file_name="test_file2.txt",
+            original_name="test_file2.txt",
+            content_type="application/text",
+            content__data=b"This is example content.",
+            _component_configuration_path="components.2",
+            _component_data_path="fileMultiple",
+        )
+        SubmissionFileAttachmentFactory.create(
+            form_key="editgrid",
+            submission_step=submission.steps[0],
+            file_name="test_file3.txt",
+            original_name="test_file3.txt",
+            content_type="application/text",
+            content__data=b"This is example content.",
+            _component_configuration_path="components.3.components.1",
+            _component_data_path="editgrid.0.editgridFile",
         )
 
         options: RegistrationOptions = {
@@ -3683,46 +3740,107 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
         self.assertEqual(json_document["titel"], "Public form name (JSON)")
         self.assertEqual(json_document["formaat"], "application/json")
         self.assertEqual(json_document_data["values"]["someText"], "Foo")
-        self.assertTrue(
-            json_document_data["values"]["file"][0].startswith(
-                "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/"
-            ),
-        )
-        self.assertEqual(
-            json_document_data["values"]["editgrid"],
-            [{"time": "12:34:56"}],
-        )
-        self.assertEqual(
-            json_document_data["values_schema"]["properties"]["file"],
-            {
-                "type": "array",
-                "title": "File",
-                "items": {"type": "string", "format": "uri"},
-            },
-        )
-        self.assertEqual(
-            json_document_data["values_schema"]["properties"]["someText"],
-            {"title": "Some text", "type": "string"},
-        )
-        self.assertEqual(
-            json_document_data["values_schema"]["properties"]["editgrid"],
-            {
-                "type": "array",
-                "title": "Editgrid",
-                "items": {
-                    "additionalProperties": False,
-                    "type": "object",
-                    "properties": {
-                        "time": {
-                            "format": "time",
-                            "title": "Time",
-                            "type": "string",
-                        }
-                    },
-                    "required": ["time"],
+
+        with self.subTest("single file upload", aspect="values"):
+            single_file_value = json_document_data["values"]["file"]
+
+            self.assertIsInstance(single_file_value, str)
+            self.assertTrue(
+                single_file_value.startswith(
+                    "http://localhost:8003/documenten/api/v1/"
+                    "enkelvoudiginformatieobjecten/"
+                ),
+            )
+
+        with self.subTest("single file upload", aspect="schema"):
+            single_file_schema = json_document_data["values_schema"]["properties"][
+                "file"
+            ]
+
+            self.assertEqual(
+                single_file_schema,
+                {
+                    "type": "string",
+                    "title": "File",
+                    "anyOf": [
+                        {"format": "uri"},
+                        {"const": ""},
+                    ],
                 },
-            },
-        )
+            )
+
+        with self.subTest("multiple file upload", aspect="values"):
+            multiple_file_value = json_document_data["values"]["fileMultiple"]
+
+            self.assertIsInstance(multiple_file_value, list)
+            self.assertTrue(
+                multiple_file_value[0].startswith(
+                    "http://localhost:8003/documenten/api/v1/"
+                    "enkelvoudiginformatieobjecten/"
+                ),
+            )
+
+        with self.subTest("multiple file upload", aspect="schema"):
+            multiple_file_schema = json_document_data["values_schema"]["properties"][
+                "fileMultiple"
+            ]
+
+            self.assertEqual(
+                multiple_file_schema,
+                {
+                    "type": "array",
+                    "title": "Filemultiple",
+                    "items": {"type": "string", "format": "uri"},
+                },
+            )
+
+        with self.subTest("editgrid", aspect="values"):
+            editgrid_value = json_document_data["values"]["editgrid"]
+
+            self.assertIsInstance(editgrid_value, list)
+            item_value = editgrid_value[0]
+            self.assertIsInstance(item_value, dict)
+            self.assertEqual(item_value["time"], "12:34:56")
+            self.assertIsInstance(item_value["editgridFile"], str)
+            self.assertTrue(
+                item_value["editgridFile"].startswith(
+                    "http://localhost:8003/documenten/api/v1/"
+                    "enkelvoudiginformatieobjecten/"
+                ),
+            )
+
+        with self.subTest("editgrid", aspect="schema"):
+            editgrid_schema = json_document_data["values_schema"]["properties"][
+                "editgrid"
+            ]
+
+            self.assertEqual(
+                editgrid_schema,
+                {
+                    "type": "array",
+                    "title": "Editgrid",
+                    "items": {
+                        "additionalProperties": False,
+                        "type": "object",
+                        "properties": {
+                            "time": {
+                                "format": "time",
+                                "title": "Time",
+                                "type": "string",
+                            },
+                            "editgridFile": {
+                                "type": "string",
+                                "title": "File",
+                                "anyOf": [
+                                    {"format": "uri"},
+                                    {"const": ""},
+                                ],
+                            },
+                        },
+                        "required": ["time", "editgridFile"],
+                    },
+                },
+            )
 
     def test_single_document_summary(self):
         submission = SubmissionFactory.from_components(

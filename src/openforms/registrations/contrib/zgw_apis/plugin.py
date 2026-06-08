@@ -724,11 +724,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     attachment._component_data_path
                     or attachment.submission_variable.key
                 )
-                assert submission.registration_result is not None
-                document_url = submission.registration_result["intermediate"][
-                    "documents"
-                ][str(attachment.pk)]["document"]["url"]
-                submission_uploads[key].append(document_url)
+                submission_uploads[key].append(attachment_document["url"])
 
                 execute_unless_result_exists(
                     partial(
@@ -1045,9 +1041,21 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         configuration_wrapper: FormioConfigurationWrapper,
     ) -> None:
         match component:
-            case {"type": "file"}:
+            case {"type": "file", "multiple": True}:
                 assert isinstance(schema["items"], dict)
                 schema["items"] = {"type": "string", "format": "uri"}
+
+            case {"type": "file"}:
+                # If multiple is false, the value will be an empty string if no
+                # attachment is uploaded, or a URL to the Documents API if there is an
+                # upload.
+                del schema["items"]
+                new_schema = {
+                    "type": "string",
+                    "anyOf": [{"format": "uri"}, {"const": ""}],
+                }
+                schema.update(new_schema)
+
             case {"type": "editgrid"}:
                 assert isinstance(schema["items"], dict)
                 _properties = schema["items"]["properties"]
@@ -1074,10 +1082,19 @@ def process_component(
     current_data_path: str = "",
 ) -> VariableValue:
     key = component["key"]
+    attachments_key = key if not current_data_path else f"{current_data_path}.{key}"
 
     match component:
-        case {"type": "file"}:
-            # TODO: check that this works with files inside edit grids
-            return attachments.get(key, [])
+        case {"type": "file", "multiple": True}:
+            # for multiple, always emit a squence of URLs (possibly empty)
+            urls: Sequence[str] = attachments.get(attachments_key, [])
+            return urls
+
+        case {"type": "file"}:  # multiple is False or missing
+            # normalize to a single URL or empty string
+            urls: Sequence[str] = attachments.get(attachments_key, [])
+            assert len(urls) <= 1  # sanity check
+            return urls[0] if urls else ""
+
         case _:
             return value

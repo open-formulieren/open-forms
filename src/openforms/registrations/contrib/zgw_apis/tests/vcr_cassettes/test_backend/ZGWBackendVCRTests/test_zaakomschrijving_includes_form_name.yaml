@@ -81,9 +81,9 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-06-04", "startdatum": "2026-06-04", "productenOfDiensten":
+      "registratiedatum": "2026-06-08", "startdatum": "2026-06-08", "productenOfDiensten":
       [], "omschrijving": "Short name", "toelichting": "", "betalingsindicatie": "nvt",
-      "identificatie": "OF-34RAFP"}'
+      "identificatie": "OF-R3HZ3V"}'
     headers:
       Accept:
       - '*/*'
@@ -105,8 +105,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/0b4e46c2-8cc5-4271-83db-5b16b6ed1c7b","uuid":"0b4e46c2-8cc5-4271-83db-5b16b6ed1c7b","identificatie":"OF-34RAFP","bronorganisatie":"000000000","omschrijving":"Short
-        name","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-04","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-04","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/75063cbc-f6ca-4628-8842-0beace2e8fa8","uuid":"75063cbc-f6ca-4628-8842-0beace2e8fa8","identificatie":"OF-R3HZ3V","bronorganisatie":"000000000","omschrijving":"Short
+        name","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-08","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-08","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -122,7 +122,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/0b4e46c2-8cc5-4271-83db-5b16b6ed1c7b
+      - http://localhost:8003/zaken/api/v1/zaken/75063cbc-f6ca-4628-8842-0beace2e8fa8
       Referrer-Policy:
       - same-origin
       Vary:
@@ -216,10 +216,10 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-06-04", "startdatum": "2026-06-04", "productenOfDiensten":
+      "registratiedatum": "2026-06-08", "startdatum": "2026-06-08", "productenOfDiensten":
       [], "omschrijving": "Long name that will most definitely be truncated to 80
       characters right????????\u2026", "toelichting": "", "betalingsindicatie": "nvt",
-      "identificatie": "OF-WDSKLH"}'
+      "identificatie": "OF-GT4VMU"}'
     headers:
       Accept:
       - '*/*'
@@ -241,8 +241,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: "{\"url\":\"http://localhost:8003/zaken/api/v1/zaken/f7ccaff9-ce00-4281-9255-2e8ef0b11c24\",\"uuid\":\"f7ccaff9-ce00-4281-9255-2e8ef0b11c24\",\"identificatie\":\"OF-WDSKLH\",\"bronorganisatie\":\"000000000\",\"omschrijving\":\"Long
-        name that will most definitely be truncated to 80 characters right????????\u2026\",\"toelichting\":\"\",\"zaaktype\":\"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774\",\"registratiedatum\":\"2026-06-04\",\"verantwoordelijkeOrganisatie\":\"000000000\",\"startdatum\":\"2026-06-04\",\"einddatum\":null,\"einddatumGepland\":null,\"uiterlijkeEinddatumAfdoening\":null,\"publicatiedatum\":null,\"communicatiekanaal\":\"\",\"communicatiekanaalNaam\":\"\",\"productenOfDiensten\":[],\"vertrouwelijkheidaanduiding\":\"intern\",\"betalingsindicatie\":\"nvt\",\"betalingsindicatieWeergave\":\"Er
+      string: "{\"url\":\"http://localhost:8003/zaken/api/v1/zaken/8daee196-aed7-4330-8282-59457b8296bf\",\"uuid\":\"8daee196-aed7-4330-8282-59457b8296bf\",\"identificatie\":\"OF-GT4VMU\",\"bronorganisatie\":\"000000000\",\"omschrijving\":\"Long
+        name that will most definitely be truncated to 80 characters right????????\u2026\",\"toelichting\":\"\",\"zaaktype\":\"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774\",\"registratiedatum\":\"2026-06-08\",\"verantwoordelijkeOrganisatie\":\"000000000\",\"startdatum\":\"2026-06-08\",\"einddatum\":null,\"einddatumGepland\":null,\"uiterlijkeEinddatumAfdoening\":null,\"publicatiedatum\":null,\"communicatiekanaal\":\"\",\"communicatiekanaalNaam\":\"\",\"productenOfDiensten\":[],\"vertrouwelijkheidaanduiding\":\"intern\",\"betalingsindicatie\":\"nvt\",\"betalingsindicatieWeergave\":\"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.\",\"laatsteBetaaldatum\":null,\"zaakgeometrie\":null,\"verlenging\":null,\"opschorting\":{\"indicatie\":false,\"reden\":\"\"},\"selectielijstklasse\":\"\",\"hoofdzaak\":null,\"deelzaken\":[],\"relevanteAndereZaken\":[],\"eigenschappen\":[],\"rollen\":[],\"status\":null,\"zaakinformatieobjecten\":[],\"zaakobjecten\":[],\"kenmerken\":[],\"archiefnominatie\":null,\"archiefstatus\":\"nog_te_archiveren\",\"archiefactiedatum\":null,\"resultaat\":null,\"opdrachtgevendeOrganisatie\":\"\",\"processobjectaard\":\"\",\"startdatumBewaartermijn\":null,\"processobject\":{\"datumkenmerk\":\"\",\"identificatie\":\"\",\"objecttype\":\"\",\"registratie\":\"\"}}"
     headers:
       API-version:
@@ -258,7 +258,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/f7ccaff9-ce00-4281-9255-2e8ef0b11c24
+      - http://localhost:8003/zaken/api/v1/zaken/8daee196-aed7-4330-8282-59457b8296bf
       Referrer-Policy:
       - same-origin
       Vary:
