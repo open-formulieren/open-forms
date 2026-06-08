@@ -1106,7 +1106,8 @@ class ComponentModificationTests(TestCase):
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(submission_step=submission_step, include_unsaved=True)
-        self.assertEqual("", data["nested"]["component"])
+        self.assertEqual(None, data["nested.component"])
+        self.assertTrue(state.variables["nested.component"].is_undefined)
 
     @tag("gh-2838")
     def test_hidden_select_component(self):
@@ -1305,7 +1306,8 @@ class ComponentModificationTests(TestCase):
         )
         state = submission.variables_state
         data = state.get_data(include_unsaved=True)
-        self.assertEqual(data["container.textfield"], "")
+        self.assertEqual(data["container.textfield"], None)
+        self.assertTrue(state.variables["container.textfield"].is_undefined)
 
     @tag("gh-6040")
     def test_fields_inside_a_visible_editgrid(self):
