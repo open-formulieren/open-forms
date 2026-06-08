@@ -35,7 +35,7 @@ from .utils import (
     iterate_data_with_components,
 )
 from .variables import extract_variables_from_template_properties, inject_variables
-from .visibility import process_visibility
+from .visibility import is_hidden, process_visibility
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
@@ -60,6 +60,7 @@ __all__ = [
     "get_component_empty_value",
     "get_readable_path_from_configuration_path",
     "holds_submission_data",
+    "is_hidden",
 ]
 
 tracer = trace.get_tracer("openforms.formio.service")
