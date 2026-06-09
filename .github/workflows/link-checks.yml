@@ -1,0 +1,63 @@
+name: Run link checks (docs)
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'  # 7 AM every Monday
+
+permissions: {}
+
+jobs:
+
+  setup:
+    name: Set up the build variables
+    runs-on: ubuntu-latest
+    outputs:
+      sdk-ref: ${{ steps.sdk-vars.outputs.sdk-ref }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+        with:
+          persist-credentials: false
+      - name: Extract version info
+        id: vars
+        uses: maykinmedia/open-api-workflows/actions/extract-version@79102b911003d75203ca2fed7df01ad79d9b6bba # v6.4.0
+      - name: Extract SDK version info
+        id: sdk-vars
+        uses: ./.github/actions/extract-sdk-version
+        with:
+          backend-version: ${{ steps.vars.outputs.version }}
+
+  docs:
+    name: Build and check documentation
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+        with:
+          persist-credentials: false
+          path: open-forms
+
+      - name: Set up backend environment
+        uses: ./open-forms/.github/actions/setup-backend
+        with:
+          setup-node: 'no'
+          optimize-postgres: 'no'
+          working-directory: 'open-forms'
+
+      - name: Checkout SDK repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+        with:
+          persist-credentials: false
+          repository: 'open-formulieren/open-forms-sdk'
+          ref: ${{ needs.setup.outputs.sdk-ref }}
+          path: open-forms-sdk
+
+      - name: Setup symlinks
+        run: |
+          ln -s $(pwd)/open-forms-sdk/CHANGELOG.rst open-forms/docs/changelog-sdk.rst
+
+      - name: Run linkcheck
+        run: make linkcheck
+        working-directory: open-forms/docs
+        env:
+          FORCE_COLOR: "1"
