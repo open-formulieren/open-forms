@@ -10,6 +10,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
 import AddressNLEditor from './edit_options/AddressNLEditor';
+import FileEditor, {FileEditorV1} from './edit_options/FileEditor';
 import MapEditor from './edit_options/MapEditor';
 import SelectboxesEditor from './edit_options/SelectboxesEditor';
 import {GenericEditor} from './edit_options/generic';
@@ -18,6 +19,7 @@ import {GenericEditor} from './edit_options/generic';
 // adhere to the generic behaviour (GenericEditor)
 const VARIABLE_CONFIGURATION_OPTIONS = {
   addressNL: AddressNLEditor,
+  file: FileEditor,
   map: MapEditor,
   selectboxes: SelectboxesEditor,
 };
@@ -69,6 +71,7 @@ const ObjectsApiV1VariableConfigurationEditor = ({variable}) => {
             <TextInput name={`${namePrefix}._key`} value={variable.key} readOnly />
           </Field>
         </FormRow>
+        <FileEditorV1 namePrefix={namePrefix} backendOptions={backendOptions} />
       </Fieldset>
     </>
   );
