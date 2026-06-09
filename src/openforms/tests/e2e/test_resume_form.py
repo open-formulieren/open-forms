@@ -7,7 +7,7 @@ from furl import furl
 from playwright.async_api import expect
 from rest_framework.test import APIRequestFactory
 
-from openforms.forms.tests.factories import FormFactory
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.submissions.api.serializers import SubmissionSuspensionSerializer
 from openforms.submissions.models import Submission
 from openforms.tests.e2e.base import E2ETestCase, browser_page
@@ -26,9 +26,16 @@ class ResumeFormTests(E2ETestCase):
             form = FormFactory.create(
                 name="Form to save and resume",
                 slug="form-to-pause-and-resume",
-                generate_minimal_setup=True,
-                formstep__form_definition__name="First step",
-                formstep__form_definition__slug="first-step",
+            )
+            FormStepFactory.create(
+                form=form,
+                form_definition__name="First step",
+                form_definition__slug="first-step",
+            )
+            FormStepFactory.create(
+                form=form,
+                form_definition__name="Second step",
+                form_definition__slug="second-step",
             )
             return form
 
@@ -47,7 +54,12 @@ class ResumeFormTests(E2ETestCase):
             / reverse("forms:form-detail", kwargs={"slug": form.slug})
         )
 
-        request = factory.get("/foo")
+        request = factory.get(
+            "/foo",
+            {
+                "from_suspension": True,
+            },
+        )
 
         with patch("openforms.utils.validators.allow_redirect_url", return_value=True):
             async with browser_page() as page:
@@ -73,5 +85,14 @@ class ResumeFormTests(E2ETestCase):
                 )
 
                 header = page.get_by_role("heading", name="First step")
+                second_form_step = page.locator("a", has_text="Second step")
 
                 await expect(header).to_be_visible()
+
+                # the second step should not be enabled since the first one has not yet
+                # been completed (suspended form)
+                await expect(second_form_step).to_be_visible()
+                await expect(second_form_step).to_be_attached()
+                await expect(second_form_step).to_have_attribute(
+                    "aria-disabled", "true"
+                )

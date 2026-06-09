@@ -292,9 +292,13 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
     form_step = factory.SubFactory(
         FormStepFactory, form=factory.SelfAttribute("..submission.form")
     )
+    completed_on = factory.LazyFunction(lambda: timezone.now() - timedelta(minutes=1))
 
     class Meta:
         model = SubmissionStep
+
+    class Params:
+        from_suspension = factory.Trait(completed_on=None)
 
     @classmethod
     def create(

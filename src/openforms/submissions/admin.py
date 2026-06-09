@@ -108,9 +108,9 @@ class SubmissionTimeListFilter(admin.SimpleListFilter):
 class SubmissionStepInline(admin.TabularInline):
     model = SubmissionStep
     extra = 0
-    fields = ("uuid", "form_step", "created_on", "modified")
+    fields = ("uuid", "form_step", "created_on", "modified", "completed_on")
     raw_id_fields = ("form_step",)
-    readonly_fields = ("created_on", "modified")
+    readonly_fields = ("created_on", "modified", "completed_on")
 
 
 class SubmissionPaymentInline(admin.StackedInline):
