@@ -32,9 +32,11 @@ import ZGWOptionsForm from './zgw';
 export const BACKEND_OPTIONS_FORMS = {
   objects_api: {
     form: ObjectsApiOptionsForm,
+    // TODO: update for v1!
     onStepEdit: onObjectsAPIStepEdit,
     onUserDefinedVariableEdit: onObjectsAPIUserDefinedVariableEdit,
-    configurableFromVariables: (variable, component, options) => options.version === 2,
+    configurableFromVariables: (variable, component, options) =>
+      options.version === 2 || (component && component.type === 'file'),
     summaryHandler: ObjectsApiSummaryHandler,
     variableConfigurationEditor: ObjectsApiVariableConfigurationEditor,
   },
