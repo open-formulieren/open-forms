@@ -5,8 +5,8 @@ import {FormattedMessage} from 'react-intl';
  *
  * Only supports file components!
  */
-const ZGWSummaryHandler = ({variable, backendOptions}) => {
-  const documentType = backendOptions?.files?.[variable.key]?.documentTypeDescription;
+const ZGWSummaryHandler = ({component, backendOptions}) => {
+  const documentType = backendOptions?.files?.[component.key]?.documentTypeDescription;
   if (documentType) {
     return (
       <FormattedMessage
