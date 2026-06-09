@@ -47,8 +47,15 @@ const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComp
  */
 const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
   const isSelectboxesComponentType = componentSchema.type === 'selectboxes';
+  const isFileComponentType = componentSchema.type === 'file';
 
-  if (registrationBackendOptions.version !== 2 || !isSelectboxesComponentType) return;
+  // continue if:
+  // * it's version 2, meaning there's always variableMappings to check
+  // * it's version 1 and a file component, as files options may need updating
+  const shouldContinue =
+    registrationBackendOptions.version === 2 ||
+    (registrationBackendOptions.version === 1 && isFileComponentType);
+  if (!shouldContinue) return;
 
   const removed = originalComponent == null;
   if (removed) {
@@ -61,6 +68,11 @@ const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, origi
       if (matchingTransformToListVariableIndex !== -1) {
         registrationBackendOptions.transformToList.splice(matchingTransformToListVariableIndex, 1);
       }
+    }
+
+    // remove any file component configuration
+    if (isFileComponentType) {
+      delete registrationBackendOptions.files[componentSchema.key];
     }
 
     // Objects API mappings
@@ -88,6 +100,14 @@ const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, origi
         }
       });
     }
+
+    // move/rename the key in the files options mapping
+    if (isFileComponentType) {
+      registrationBackendOptions.files[componentSchema.key] =
+        registrationBackendOptions.files[originalComponent.key];
+      delete registrationBackendOptions.files[originalComponent.key];
+    }
+
     return registrationBackendOptions;
   }
 };
