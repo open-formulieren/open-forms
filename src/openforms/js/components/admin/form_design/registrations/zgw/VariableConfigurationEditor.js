@@ -1,8 +1,6 @@
 import {useField, useFormikContext} from 'formik';
-import {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import {FormContext} from 'components/admin/form_design/Context';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
@@ -12,10 +10,7 @@ import ReactSelect from 'components/admin/forms/ReactSelect';
 import {DocumentTypeSelect} from './fields';
 import useCatalogueOptions from './useCatalogueOptions';
 
-const ZGWVariableConfigurationEditor = ({variable}) => {
-  const {components} = useContext(FormContext);
-
-  const component = components[variable.key];
+const ZGWVariableConfigurationEditor = ({variable, component = undefined}) => {
   if (component?.type !== 'file') {
     throw new Error('Only file components are supported');
   }
@@ -25,7 +20,6 @@ const ZGWVariableConfigurationEditor = ({variable}) => {
   const namePrefix = `files['${component.key}']`;
   return (
     <Fieldset>
-      <VariableKey namePrefix={namePrefix} variableKey={variable.key} />
       <DocumentType namePrefix={namePrefix} />
       <OrganizationRSIN namePrefix={namePrefix} />
       <ConfidentialityLevel namePrefix={namePrefix} />
@@ -33,18 +27,6 @@ const ZGWVariableConfigurationEditor = ({variable}) => {
     </Fieldset>
   );
 };
-
-const VariableKey = ({namePrefix, variableKey}) => (
-  <FormRow>
-    <Field
-      name={`${namePrefix}._key`}
-      label={<FormattedMessage description="'Variable key' label" defaultMessage="Variable key" />}
-      required
-    >
-      <TextInput name={`${namePrefix}._key`} value={variableKey} readOnly />
-    </Field>
-  </FormRow>
-);
 
 const DocumentType = ({namePrefix}) => {
   const {

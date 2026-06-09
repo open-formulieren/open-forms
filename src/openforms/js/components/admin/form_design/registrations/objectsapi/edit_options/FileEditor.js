@@ -17,6 +17,7 @@ import {useFetchTargetPaths, useVariableJsonSchema} from './hooks';
  */
 const FileEditor = ({
   variable,
+  component,
   namePrefix,
   components,
   mappedVariable,
@@ -26,6 +27,7 @@ const FileEditor = ({
   backendOptions,
 }) => {
   const {catalogue = undefined} = backendOptions;
+  const isComponentForVariable = component?.key === variable.key;
 
   const variableSchema = useVariableJsonSchema(variable, components);
   const {
@@ -56,10 +58,16 @@ const FileEditor = ({
   // that makes it really hard to handle file components inside edit grids, so we opt
   // for a `files` configuration key and use a consistent approach between v1, v2 objects
   // registration and ZGW APIs registration.
-  const filesConfigurationPrefix = `files['${variable.key}']`;
+  const filesConfigurationPrefix = `files['${component.key}']`;
   return (
     <>
-      <TargetPath namePrefix={namePrefix} loading={loadingTargetPaths} targetPaths={targetPaths} />
+      {isComponentForVariable && (
+        <TargetPath
+          namePrefix={namePrefix}
+          loading={loadingTargetPaths}
+          targetPaths={targetPaths}
+        />
+      )}
       <CustomDocumentType
         namePrefix={filesConfigurationPrefix}
         objectsApiGroup={objectsApiGroup}
@@ -68,7 +76,9 @@ const FileEditor = ({
       <OrganizationRSIN namePrefix={filesConfigurationPrefix} />
       <ConfidentialityLevel namePrefix={filesConfigurationPrefix} />
       <Title namePrefix={filesConfigurationPrefix} />
-      <ShowJSONSchemaToggle availablePaths={targetPaths} targetPath={mappedVariable.targetPath} />
+      {isComponentForVariable && (
+        <ShowJSONSchemaToggle availablePaths={targetPaths} targetPath={mappedVariable.targetPath} />
+      )}
     </>
   );
 };

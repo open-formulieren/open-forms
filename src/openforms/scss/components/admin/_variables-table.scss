@@ -33,12 +33,24 @@
       }
     }
 
+    @include bem.modifier('file') {
+      .variables-table__file-label {
+        padding-inline-start: 16px;
+      }
+    }
+
     .checkbox-row {
       padding: 8px; // Same padding as the icon
     }
 
     code {
       font-size: 100%;
+    }
+  }
+
+  @include bem.element('registration-column') {
+    ul {
+      margin-block-end: 0;
     }
   }
 

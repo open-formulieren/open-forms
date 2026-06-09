@@ -33,44 +33,31 @@ const VARIABLE_CONFIGURATION_OPTIONS = {
  *   objectsApiGroup: string;
  *   objecttype: string;
  *   objecttypeVersion: number;
- *   files: Record<string, {
- *     documentTypeDescription: string,
- *     organizationRsin: string,
- *     confidentialityLevel: string,
- *     title: string,
- *   }>;
+ *   files: {
+ *     key: string;
+ *     documentTypeDescription?: string,
+ *     organizationRsin?: string,
+ *     confidentialityLevel?: string,
+ *     title?: string,
+ *   }[];
  * }} ObjectsAPIV1RegistrationBackendOptions
  *
  * @param {Object} p
  * @param {Object} p.variable - The current variable
  * @returns {JSX.Element} - The configuration form for the Objects API
  */
-const ObjectsApiV1VariableConfigurationEditor = ({variable}) => {
+const ObjectsApiV1VariableConfigurationEditor = ({variable, component}) => {
   const {values: backendOptions} = useFormikContext();
-  const {components} = useContext(FormContext);
-
-  const component = components[variable.key];
   if (component?.type !== 'file') {
     throw new Error('Only file components are supported');
   }
 
   // the formik state is populated with the backend options, so our path needs to be
   // relative to that
-  const namePrefix = `files['${variable.key}']`;
+  const namePrefix = `files['${component.key}']`;
   return (
     <>
       <Fieldset>
-        <FormRow>
-          <Field
-            name={`${namePrefix}._key`}
-            label={
-              <FormattedMessage description="'Variable key' label" defaultMessage="Variable key" />
-            }
-            required
-          >
-            <TextInput name={`${namePrefix}._key`} value={variable.key} readOnly />
-          </Field>
-        </FormRow>
         <FileEditorV1 namePrefix={namePrefix} backendOptions={backendOptions} />
       </Fieldset>
     </>
@@ -94,7 +81,7 @@ const ObjectsApiV1VariableConfigurationEditor = ({variable}) => {
  * @param {Object} p.variable - The current variable
  * @returns {JSX.Element} - The configuration form for the Objects API
  */
-const ObjectsApiV2VariableConfigurationEditor = ({variable}) => {
+const ObjectsApiV2VariableConfigurationEditor = ({variable, component}) => {
   const {values: backendOptions, getFieldProps, setFieldValue} = useFormikContext();
   const {components} = useContext(FormContext);
 
@@ -135,30 +122,38 @@ const ObjectsApiV2VariableConfigurationEditor = ({variable}) => {
   const namePrefix = `variablesMapping.${index}`;
   // check if there is a specific ConfigurationEditor according to the variable type,
   // if not, fallback to the default/generic one
-  const componentType = components[variable?.key]?.type;
+  const componentType = (component ?? components[variable?.key])?.type;
   const VariableConfigurationEditor =
     VARIABLE_CONFIGURATION_OPTIONS?.[componentType] ?? GenericEditor;
+
+  const isComponentForVariable = component && component.key === variable.key;
 
   return (
     <>
       <Fieldset>
-        <FormRow>
-          <Field
-            name={`${namePrefix}.variableKey`}
-            label={
-              <FormattedMessage description="'Variable key' label" defaultMessage="Variable key" />
-            }
-            required
-          >
-            <TextInput
-              {...getFieldProps(`${namePrefix}.variableKey`)}
-              value={mappedVariable.variableKey}
-              readOnly
-            />
-          </Field>
-        </FormRow>
+        {isComponentForVariable && (
+          <FormRow>
+            <Field
+              name={`${namePrefix}.variableKey`}
+              label={
+                <FormattedMessage
+                  description="'Variable key' label"
+                  defaultMessage="Variable key"
+                />
+              }
+              required
+            >
+              <TextInput
+                {...getFieldProps(`${namePrefix}.variableKey`)}
+                value={mappedVariable.variableKey}
+                readOnly
+              />
+            </Field>
+          </FormRow>
+        )}
         <VariableConfigurationEditor
           variable={variable}
+          component={component}
           components={components}
           namePrefix={namePrefix}
           index={index}
@@ -188,17 +183,17 @@ const ObjectsApiV2VariableConfigurationEditor = ({variable}) => {
  * @param {Object} p.variable - The current variable
  * @returns {JSX.Element} - The configuration form for the Objects API
  */
-const ObjectsApiVariableConfigurationEditor = ({variable}) => {
+const ObjectsApiVariableConfigurationEditor = ({variable, component}) => {
   const {values: backendOptions} = useFormikContext();
   /** @type {ObjectsAPIRegistrationBackendOptions} */
   const {version} = backendOptions;
 
   switch (version) {
     case 1: {
-      return <ObjectsApiV1VariableConfigurationEditor variable={variable} />;
+      return <ObjectsApiV1VariableConfigurationEditor variable={variable} component={component} />;
     }
     case 2: {
-      return <ObjectsApiV2VariableConfigurationEditor variable={variable} />;
+      return <ObjectsApiV2VariableConfigurationEditor variable={variable} component={component} />;
     }
     default: {
       throw new Error(`Unknown version '${version}'`);
@@ -213,6 +208,10 @@ ObjectsApiVariableConfigurationEditor.propTypes =
       variable: PropTypes.shape({
         key: PropTypes.string.isRequired,
       }).isRequired,
+      component: PropTypes.shape({
+        key: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
+      }),
     };
 
 export {ObjectsApiVariableConfigurationEditor};
