@@ -358,7 +358,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                     "type": "Point",
                     "coordinates": [4.893164274470299, 52.36673378967122],
                 },
-                "summary_documents": [],
             },
             bsn="111222333",
             form__product__price=Decimal("0"),
@@ -1250,7 +1249,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
-            "summary_documents": [SummaryDocumentChoices.pdf],
+            "summary_documents": [],
         }
         client = get_zaken_client(self.zgw_group)
         self.addCleanup(client.close)
@@ -3899,57 +3898,3 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
         pdf_details = document_results["report"]["document"]
         self.assertEqual(pdf_details["titel"], "Public form name (PDF)")
         self.assertTrue("json" not in document_results)
-
-    def test_no_summary_documents(self):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "type": "textfield",
-                    "key": "someText",
-                    "label": "Some text",
-                }
-            ],
-            submitted_data={
-                "someText": "Foo",
-            },
-            form__name="Public form name",
-            form__internal_name="Internal form name",
-            form__registration_backend=PLUGIN_IDENTIFIER,
-            bsn="111222333",
-            completed=True,
-            # Pin to a known case & document type version
-            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
-            with_report=True,
-        )
-
-        options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "catalogue": {
-                "domain": "TEST",
-                "rsin": "000000000",
-            },
-            "case_type_identification": "ZT-001",
-            "document_type_description": "PDF Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
-            "organisatie_rsin": "000000000",
-            # empty value should be ignored, use the VA from the zaaktype
-            "zaak_vertrouwelijkheidaanduiding": "",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-            # empty-ish value should fall back to default
-            "auteur": "",
-            "summary_documents": [],
-        }
-        plugin = ZGWRegistration("zgw")
-        _run_preregistration(submission, plugin, options)
-
-        plugin.register_submission(submission, options)
-
-        submission.refresh_from_db()
-        assert submission.registration_result
-        self.assertTrue("documents" not in submission.registration_result)
