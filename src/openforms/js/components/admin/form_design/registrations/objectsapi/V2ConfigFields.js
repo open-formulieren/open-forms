@@ -42,13 +42,7 @@ const onObjectTypeChange = prevValues => ({
 
 const V2ConfigFields = ({apiGroupChoices}) => {
   const {
-    values: {
-      objectsApiGroup = null,
-      objecttype = '',
-      objecttypeVersion = null,
-      variablesMapping = [],
-      updateExistingObject = false,
-    },
+    values: {objecttype = '', variablesMapping = []},
     setFieldValue,
   } = useFormikContext();
 
