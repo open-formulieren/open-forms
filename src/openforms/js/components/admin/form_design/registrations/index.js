@@ -16,13 +16,15 @@ import {
   onObjectsAPIUserDefinedVariableEdit,
 } from './userDefinedVariableEditHandlers';
 import ZGWOptionsForm from './zgw';
+import ZGWSummaryHandler from './zgw/SummaryHandler';
+import ZGWVariableConfigurationEditor from './zgw/VariableConfigurationEditor';
 
 /**
  * @typedef {{
  *   form: React.FC,
  *   onStepEdit?: (...args: any) => Object | null,
  *   onUserDefinedVariableEdit?: (...args: any) => Object | null,
- *   configurableFromVariables?: boolean | (variable: Object, component: Object, options: Object) => boolean,
+ *   configurableFromVariables?: boolean | (variable: Object, component: Object | undefined, options: Object) => boolean,
  *   summaryHandler?: React.FC
  *   variableConfigurationEditor?: React.FC
  * }} BackendInfo
@@ -32,7 +34,6 @@ import ZGWOptionsForm from './zgw';
 export const BACKEND_OPTIONS_FORMS = {
   objects_api: {
     form: ObjectsApiOptionsForm,
-    // TODO: update for v1!
     onStepEdit: onObjectsAPIStepEdit,
     onUserDefinedVariableEdit: onObjectsAPIUserDefinedVariableEdit,
     configurableFromVariables: (variable, component, options) =>
@@ -46,6 +47,10 @@ export const BACKEND_OPTIONS_FORMS = {
   'zgw-create-zaak': {
     form: ZGWOptionsForm,
     onStepEdit: onZGWStepEdit,
+    configurableFromVariables: (variable, component, options) =>
+      component && component.type === 'file',
+    summaryHandler: ZGWSummaryHandler,
+    variableConfigurationEditor: ZGWVariableConfigurationEditor,
   },
   'stuf-zds-create-zaak': {
     form: StufZDSOptionsForm,

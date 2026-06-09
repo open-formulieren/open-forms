@@ -9,7 +9,9 @@
  *                                             no changes need to be made.
  */
 const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
-  if (!registrationBackendOptions.propertyMappings) return null;
+  const isFileComponentType = componentSchema.type === 'file';
+  if (!registrationBackendOptions.propertyMappings && !isFileComponentType) return null;
+
   // check if we're dealing with deletion or update
   const isRemove = originalComponent == null;
 
@@ -17,10 +19,16 @@ const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComp
     const matchingMapping = registrationBackendOptions.propertyMappings.find(
       mapping => mapping.componentKey === componentSchema.key
     );
-    if (!matchingMapping) return null;
-    const index = registrationBackendOptions.propertyMappings.indexOf(matchingMapping);
-    // remove the mapped property, since the component is removed completely.
-    registrationBackendOptions.propertyMappings.splice(index, 1);
+    if (matchingMapping) {
+      const index = registrationBackendOptions.propertyMappings.indexOf(matchingMapping);
+      // remove the mapped property, since the component is removed completely.
+      registrationBackendOptions.propertyMappings.splice(index, 1);
+    }
+
+    // remove any file component configuration
+    if (isFileComponentType) {
+      delete registrationBackendOptions.files[componentSchema.key];
+    }
   } else {
     const keyChange = componentSchema.key !== originalComponent.key;
     if (!keyChange) return null;
@@ -30,6 +38,13 @@ const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComp
       if (mapping.componentKey === originalComponent.key) {
         mapping.componentKey = componentSchema.key;
       }
+    }
+
+    // move/rename the key in the files options mapping
+    if (isFileComponentType) {
+      registrationBackendOptions.files[componentSchema.key] =
+        registrationBackendOptions.files[originalComponent.key];
+      delete registrationBackendOptions.files[originalComponent.key];
     }
   }
   return registrationBackendOptions;
