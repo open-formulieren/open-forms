@@ -34,7 +34,8 @@ export const BACKEND_OPTIONS_FORMS = {
     form: ObjectsApiOptionsForm,
     onStepEdit: onObjectsAPIStepEdit,
     onUserDefinedVariableEdit: onObjectsAPIUserDefinedVariableEdit,
-    configurableFromVariables: (variable, component, options) => options.version === 2,
+    configurableFromVariables: (variable, component, options) =>
+      options.version === 2 || component?.type === 'file',
     summaryHandler: ObjectsApiSummaryHandler,
     variableConfigurationEditor: ObjectsApiVariableConfigurationEditor,
   },
