@@ -9,6 +9,10 @@ import MSGraphOptionsForm from './ms_graph';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import {ObjectsApiVariableConfigurationEditor} from './objectsapi/ObjectsApiVariableConfigurationEditor';
+import {
+  formikValuesToOptions as objectsFormikValuesToOptions,
+  optionsToFormikValues as objectsOptionsToFormikValues,
+} from './objectsapi/transformations';
 import {onGenericJSONStepEdit, onObjectsAPIStepEdit, onZGWStepEdit} from './stepEditHandlers';
 import StufZDSOptionsForm from './stufzds';
 import {
@@ -38,6 +42,8 @@ export const BACKEND_OPTIONS_FORMS = {
       options.version === 2 || component?.type === 'file',
     summaryHandler: ObjectsApiSummaryHandler,
     variableConfigurationEditor: ObjectsApiVariableConfigurationEditor,
+    optionsToFormikValues: objectsOptionsToFormikValues,
+    formikValuesToOptions: objectsFormikValuesToOptions,
   },
   email: {
     form: EmailOptionsForm,
