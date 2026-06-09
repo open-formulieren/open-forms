@@ -141,6 +141,24 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin, abc.ABC):  # noqa: UP0
         """Translate a component configuration into a serializer."""
 
     @staticmethod
+    def as_json_data(component: ComponentT, value: VariableValue) -> VariableValue:
+        """
+        Process the input value for json data output.
+
+        When component-type and/or component-instance specific transformations of the
+        raw Formio data are necessary, each component plugin can provide them.
+
+        :param component: The component instance to as context for the variable value.
+          Component configuration/options may influence the resulting value.
+        :param value: The "raw" component value taken from the Formio data, but already
+          converted into the Python domain.
+        :returns: The (possibly) processed value to actually use in the JSON output.
+        """
+        # by default, no processing is necessary and we can just pass-through the
+        # value
+        return value
+
+    @staticmethod
     def as_json_schema(component: ComponentT) -> JSONObject | list[JSONObject] | None:
         """
         Return JSON schema for this formio component plugin. This routine should be
@@ -378,6 +396,48 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
         component_plugin = self[component_type]
         return component_plugin.build_serializer_field(component)
+
+    def as_json_data(self, component: Component, value: VariableValue) -> VariableValue:
+        """
+        Process the input value for json data output.
+
+        When component-type and/or component-instance specific transformations of the
+        raw Formio data are necessary, each component plugin can provide them.
+
+        :param component: The component instance to as context for the variable value.
+          Component configuration/options may influence the resulting value.
+        :param value: The "raw" component value taken from the Formio data, but already
+          converted into the Python domain.
+        :returns: The (possibly) processed value to actually use in the JSON output.
+
+        .. todo:: A generic type at the plugin level to bind the expected value type
+           so that ``VariableValue`` is narrowed.
+        """
+        plugin = self[component["type"]]
+        return plugin.as_json_data(component, value)
+
+    def as_json_schema(
+        self, component: Component
+    ) -> JSONObject | list[JSONObject] | None:
+        """
+        Return a JSON schema of a component.
+
+        A description will be added if it is available.
+
+        The actual schema building is deferred to each component plugin, which handles
+        the nuances for layout components and complex components like editgrids.
+
+        :param component: The component instance to generate a schema for. Component
+          configuration/options influence the resulting schema.
+        :returns: None for leaf-node components that don't produce a value, a list of
+          JSON objects intermediate layout components with child nodes or a single
+          JSON object otherwise.
+        """
+        plugin = self[component["type"]]
+        schema = plugin.as_json_schema(component)
+        if isinstance(schema, dict) and (description := component.get("description")):
+            schema["description"] = description
+        return schema
 
     def has_pre_registration_hook(self, component: Component) -> bool:
         """

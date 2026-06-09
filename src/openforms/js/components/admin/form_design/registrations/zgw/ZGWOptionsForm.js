@@ -11,7 +11,8 @@ import ZGWFormFields from './ZGWOptionsFormFields';
 const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
 
-  const {zgwApiGroup, zaakVertrouwelijkheidaanduiding, objectsApiGroup} = schema.properties;
+  const {zgwApiGroup, zaakVertrouwelijkheidaanduiding, objectsApiGroup, summaryDocuments} =
+    schema.properties;
   const apiGroupChoices = getChoicesFromSchema(zgwApiGroup.enum, zgwApiGroup.enumNames);
   const objectsApiGroupChoices = getChoicesFromSchema(
     objectsApiGroup.enum,
@@ -21,9 +22,14 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
     zaakVertrouwelijkheidaanduiding.enum,
     zaakVertrouwelijkheidaanduiding.enumNames
   );
+  const summaryDocumentChoices = getChoicesFromSchema(
+    summaryDocuments.enum,
+    summaryDocuments.enumNames
+  );
 
   const numErrors = filterErrors(name, validationErrors).length;
   const defaultGroup = apiGroupChoices.length === 1 ? apiGroupChoices[0][0] : undefined;
+  const defaultSummaryDocument = summaryDocumentChoices.find(([value]) => value === 'pdf');
 
   return (
     <ModalOptionsConfiguration
@@ -60,6 +66,7 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
         ...formData,
         // Ensure that if there's only one option, it is automatically selected.
         zgwApiGroup: formData.zgwApiGroup ?? defaultGroup,
+        summaryDocuments: formData.summaryDocuments ?? [defaultSummaryDocument[0]],
       }}
       onSubmit={values => onChange({formData: values})}
     >
@@ -68,6 +75,7 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
         apiGroupChoices={apiGroupChoices}
         objectsApiGroupChoices={objectsApiGroupChoices}
         confidentialityLevelChoices={confidentialityLevelChoices}
+        summaryDocumentChoices={summaryDocumentChoices}
       />
     </ModalOptionsConfiguration>
   );
@@ -87,6 +95,10 @@ ZGWOptionsForm.propTypes = {
         enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
       }).isRequired,
       objectsApiGroup: PropTypes.shape({
+        enum: PropTypes.arrayOf(PropTypes.string).isRequired,
+        enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+      }).isRequired,
+      summaryDocuments: PropTypes.shape({
         enum: PropTypes.arrayOf(PropTypes.string).isRequired,
         enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
       }).isRequired,
@@ -116,6 +128,7 @@ ZGWOptionsForm.propTypes = {
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
     contentJson: PropTypes.string,
+    summaryDocuments: PropTypes.arrayOf(PropTypes.string),
   }),
   onChange: PropTypes.func.isRequired,
 };

@@ -1,30 +1,31 @@
 import base64
-import json
 from collections import defaultdict
+from collections.abc import Mapping
+from functools import partial
 from typing import cast  # noqa: TID251
 
 from django.core.exceptions import SuspiciousOperation
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import F, TextField, Value
 from django.db.models.functions import Coalesce, NullIf
 from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
-from openforms.formio.service import FormioConfigurationWrapper, FormioData
+from openforms.formio.service import (
+    FormioConfigurationWrapper,
+)
 from openforms.formio.typing import (
     Component,
-    EditGridComponent,
     FileComponent,
 )
-from openforms.forms.json_schema import NestedDict, generate_json_schema
+from openforms.forms.json_schema import NestedDict
 from openforms.forms.models import FormVariable
 from openforms.submissions.models import Submission, SubmissionFileAttachment
 from openforms.typing import JSONObject, VariableValue
-from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin  # openforms.registrations.base
+from ...json_output import ComponentPostProcessHook, get_json_data
 from ...registry import register  # openforms.registrations.registry
 from .config import GenericJSONOptionsSerializer
 from .constants import PLUGIN_IDENTIFIER
@@ -46,19 +47,21 @@ class GenericJSONRegistration(BasePlugin):
         all_values = state.get_data(include_static_variables=True)
         all_values.update(state.get_static_data(other_registry=variables_registry))
 
-        # Values
         variables = [key for key in options["variables"] if key in all_values]
-        values = FormioData({key: all_values[key] for key in variables})
-        values_schema = generate_json_schema(
-            submission.form,
-            variables,
-            backend_id=PLUGIN_IDENTIFIER,
-            backend_options=options,  # pyright: ignore[reportArgumentType]
-            submission=submission,
+
+        # Values
+        post_process_component = build_post_process_component_hook(
+            submission=submission, transform_to_list=options["transform_to_list"]
         )
-        transform_to_list = options["transform_to_list"]
-        post_process(
-            variables, values, NestedDict(values_schema), submission, transform_to_list
+        document_data = get_json_data(
+            submission,
+            values=all_values,
+            limit_to_variables=variables,
+            backend_id=PLUGIN_IDENTIFIER,
+            # the cast is just for the type checker - this can be resolved at
+            # some point with union types I suppose
+            backend_options=dict(options),
+            post_process_component=post_process_component,
         )
 
         # Metadata
@@ -68,27 +71,23 @@ class GenericJSONRegistration(BasePlugin):
             *options["fixed_metadata_variables"],
             *options["additional_metadata_variables"],
         ]
-        metadata = {
-            key: value for key, value in all_values.items() if key in metadata_variables
-        }
-        metadata_schema = generate_json_schema(
-            submission.form,
-            metadata_variables,
+        metadata_json_data = get_json_data(
+            submission,
+            values=all_values,
+            limit_to_variables=metadata_variables,
             backend_id=PLUGIN_IDENTIFIER,
-            backend_options=options,  # pyright: ignore[reportArgumentType]
-            additional_variables_registry=variables_registry,
+            # the cast is just for the type checker - this can be resolved at
+            # some point with union types I suppose
+            backend_options=dict(options),
+            additional_variables=self.get_variables(),
         )
 
-        # Send to the service
-        data = json.dumps(
-            {
-                "values": values.data,
-                "values_schema": values_schema,
-                "metadata": metadata,
-                "metadata_schema": metadata_schema,
-            },
-            cls=DjangoJSONEncoder,
+        # serialize and include the metadata keys, to send it to the service
+        data = document_data.serialize(
+            metadata=metadata_json_data.values.data,
+            metadata_schema=metadata_json_data.values_schema,
         )
+        # Send to the service
         service = options["service"]
         with build_client(service) as client:
             if ".." in (path := options["path"]):
@@ -195,57 +194,24 @@ class GenericJSONRegistration(BasePlugin):
                         options,
                         configuration_wrapper,
                     )
-            case {"type": "partners"}:
-                assert isinstance(schema["items"], dict)
-                _properties = schema["items"]["properties"]
-                assert isinstance(_properties, dict)
-
-                _properties["firstNames"] = {"type": "string"}
-
-            case {"type": "children"}:
-                assert isinstance(schema["items"], dict)
-                _properties = schema["items"]["properties"]
-                assert isinstance(_properties, dict)
-
-                _properties.update(
-                    {
-                        "affixes": {"type": "string"},
-                        "initials": {"type": "string"},
-                        "lastName": {"type": "string"},
-                    }
-                )
 
             case _:
                 pass
 
 
-def post_process(
-    variables: list[str],
-    values: FormioData,
-    schema: NestedDict,
+def build_post_process_component_hook(
     submission: Submission,
     transform_to_list: list[str] | None = None,
-) -> None:
-    """Post-process the values and schema.
+) -> ComponentPostProcessHook:
+    """
+    Build a callback function for component-specific post-processing.
 
-    - Update the configuration wrapper. This is necessary to update the options for
-    Select, SelectBoxes, and Radio components that get their options from another form
-    variable.
-    - Get all attachments of this submission, and group them by the data path
-    - Process each component
-
-    :param variables: List of variable keys to process.
-    :param values: Mapping from key to value of the data to be sent.
-    :param schema: JSON schema describing ``values``.
     :param submission: The corresponding submission instance.
     :param transform_to_list: Component keys in this list will be sent as an array of
       values rather than the default object-shape for selectboxes components.
     """
     if transform_to_list is None:
         transform_to_list = []
-
-    state = submission.variables_state
-    configuration_wrapper = submission.total_configuration_wrapper
 
     # Create attachment mapping from key or component data path to attachment list
     attachments = submission.attachments.annotate(
@@ -264,39 +230,22 @@ def post_process(
         key = attachment.data_path  # pyright: ignore[reportAttributeAccessIssue]
         attachments_dict[key].append(attachment)
 
-    for key in variables:
-        variable = state.variables.get(key)
-        if (
-            variable is None
-            or variable.form_variable is None
-            or variable.form_variable.source == FormVariableSources.user_defined
-        ):
-            # None for static variables, and processing user defined variables is
-            # not relevant here
-            continue
-
-        component = configuration_wrapper[key]
-        assert component is not None
-
-        process_component(
-            component,
-            values,
-            schema,
-            attachments_dict,
-            configuration_wrapper,
-            transform_to_list=transform_to_list,
-        )
+    post_process_component = partial(
+        process_component,
+        attachments=attachments_dict,
+        transform_to_list=transform_to_list,
+    )
+    return post_process_component
 
 
 def process_component(
     component: Component,
-    values: FormioData,
+    value: VariableValue,
     schema: NestedDict,
     attachments: dict[str, list[SubmissionFileAttachment]],
-    configuration_wrapper,
-    key_prefix: str = "",
+    current_data_path: str = "",
     transform_to_list: list[str] | None = None,
-) -> None:
+) -> VariableValue:
     """Process a component.
 
     The following components need extra attention:
@@ -308,13 +257,11 @@ def process_component(
       (potentially) need to be processed.
 
     :param component: Component
-    :param values: Mapping from key to value of the data to be sent.
-    :param schema: JSON schema describing ``values``.
+    :param value: Current value of the provided component.
+    :param schema: JSON schema describing the values of the submission.
     :param attachments: Mapping from component submission data path to list of
       attachments corresponding to that component.
-    :param configuration_wrapper: Updated total configuration wrapper. This is required
-      for edit grid components, which need to fetch their children from it.
-    :param key_prefix: If the component is part of an edit grid component, this key
+    :param current_data_path: If the component is part of an edit grid component, this key
       prefix includes the parent key and the index of the component as it appears in the
       submitted data list of that edit grid component.
     :param transform_to_list: Component keys in this list will be sent as an array of
@@ -328,13 +275,13 @@ def process_component(
 
     match component:
         case {"type": "file", "multiple": True}:
-            values[key] = get_attachments(
-                cast(FileComponent, component), attachments, key_prefix
-            )
+            _component = cast(FileComponent, component)
+            return get_attachments(_component, attachments, current_data_path)
 
         case {"type": "file"}:  # multiple is False or missing
+            _component = cast(FileComponent, component)
             attachment_list = get_attachments(
-                cast(FileComponent, component), attachments, key_prefix
+                _component, attachments, current_data_path
             )
 
             variable_schema = schema[schema_key]
@@ -343,87 +290,20 @@ def process_component(
             n_attachments = len(attachment_list)
             assert n_attachments <= 1  # sanity check
             if n_attachments == 0:
-                values[key] = None
-
                 variable_schema["type"] = "null"
                 for key_to_remove in ("properties", "required", "additionalProperties"):
                     variable_schema.pop(key_to_remove)
+                return None
             else:
-                values[key] = attachment_list[0]
                 variable_schema["type"] = "object"
+                return attachment_list[0]
 
         case {"type": "selectboxes"} if key in transform_to_list:
-            values[key] = [
-                option
-                for option, is_selected in values[key].items()  # pyright: ignore[reportAttributeAccessIssue,reportOptionalMemberAccess]
-                if is_selected
-            ]
-
-        case {"type": "editgrid"}:
-            # Note: the schema actually only needs to be processed once for each child
-            # component, but will be processed for each submitted repeating group entry
-            # for implementation simplicity.
-            edit_grid_schema = NestedDict(schema[schema_key]["items"])  # type: ignore
-
-            component = cast(EditGridComponent, component)
-
-            edit_grid_values_list = cast(list[dict[str, VariableValue]], values[key])
-            for index, edit_grid_values in enumerate(edit_grid_values_list):
-                edit_grid_values = FormioData(edit_grid_values)
-
-                for child_component in component["components"]:
-                    child_key = child_component["key"]
-
-                    process_component(
-                        component=configuration_wrapper[child_key],
-                        values=edit_grid_values,
-                        schema=edit_grid_schema,
-                        attachments=attachments,
-                        configuration_wrapper=configuration_wrapper,
-                        key_prefix=(
-                            f"{key_prefix}.{key}.{index}"
-                            if key_prefix
-                            else f"{key}.{index}"
-                        ),
-                    )
-
-                # Need to manually set it to the list, as ``FormioData`` creates a copy
-                # so mutations are not applied to ``values``
-                edit_grid_values_list[index] = edit_grid_values.data
-
-        case {"type": "partners"}:
-            partners = values[key]
-            assert isinstance(partners, list)
-
-            for partner in partners:
-                assert isinstance(partner, dict)
-
-                # these are not relevant (at least for now)
-                partner.pop("dateOfBirthPrecision", None)
-                partner.pop("__addedManually", None)
-
-        case {"type": "children"}:
-            children = values[key]
-            assert isinstance(children, list)
-
-            updated = []
-            for child in children:
-                assert isinstance(child, dict)
-                if child.get("selected") not in (None, True):
-                    continue
-
-                # not relevant properties
-                child.pop("dateOfBirthPrecision", None)
-                child.pop("__id", None)
-                child.pop("__addedManually", None)
-                child.pop("selected", None)
-
-                updated.append(child)
-
-            values[key] = updated
+            assert isinstance(value, Mapping)
+            return [option for option, is_selected in value.items() if is_selected]
 
         case _:
-            pass
+            return value
 
 
 def get_attachments(

@@ -11,9 +11,14 @@ import {
   OrganisationRSIN,
   ProductSelect,
   RoltypeFields,
+  SummaryDocuments,
 } from './fields';
 
-const OptionalOptionsFieldset = ({confidentialityLevelChoices, catalogueUrl}) => {
+const OptionalOptionsFieldset = ({
+  confidentialityLevelChoices,
+  catalogueUrl,
+  summaryDocumentChoices,
+}) => {
   return (
     <Fieldset
       title={
@@ -33,6 +38,7 @@ const OptionalOptionsFieldset = ({confidentialityLevelChoices, catalogueUrl}) =>
         'childrenRoltype',
         'childrenDescription',
         'productUrl',
+        'summaryDocuments',
       ]}
     >
       <div className="description">
@@ -71,6 +77,7 @@ const OptionalOptionsFieldset = ({confidentialityLevelChoices, catalogueUrl}) =>
         }
       >
         <ProductSelect catalogueUrl={catalogueUrl} />
+        <SummaryDocuments summaryDocumentChoices={summaryDocumentChoices} />
       </ErrorBoundary>
     </Fieldset>
   );
@@ -78,6 +85,9 @@ const OptionalOptionsFieldset = ({confidentialityLevelChoices, catalogueUrl}) =>
 
 OptionalOptionsFieldset.propTypes = {
   confidentialityLevelChoices: PropTypes.arrayOf(
+    PropTypes.arrayOf(PropTypes.string) // value & label are both string
+  ).isRequired,
+  summaryDocumentChoices: PropTypes.arrayOf(
     PropTypes.arrayOf(PropTypes.string) // value & label are both string
   ).isRequired,
   catalogueUrl: PropTypes.string,

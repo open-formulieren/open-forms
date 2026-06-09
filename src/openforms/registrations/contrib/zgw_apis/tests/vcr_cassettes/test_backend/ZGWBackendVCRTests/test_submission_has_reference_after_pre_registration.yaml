@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen?domein=TEST&rsin=000000000
   response:
@@ -49,7 +49,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/zaaktypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&identificatie=ZT-001&datumGeldigheid=2024-11-09
   response:
@@ -81,9 +81,9 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-03-25", "startdatum": "2026-03-25", "productenOfDiensten":
-      [], "omschrijving": "Form 014", "toelichting": "Aangemaakt door Open Formulieren",
-      "betalingsindicatie": "nvt"}'
+      "registratiedatum": "2026-06-08", "startdatum": "2026-06-08", "productenOfDiensten":
+      [], "omschrijving": "Form 027", "toelichting": "", "betalingsindicatie": "nvt",
+      "identificatie": "OF-X3AVDM"}'
     headers:
       Accept:
       - '*/*'
@@ -96,17 +96,17 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '374'
+      - '372'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/eba8fae8-fe07-490c-aa4a-a087e94fcd21","uuid":"eba8fae8-fe07-490c-aa4a-a087e94fcd21","identificatie":"ZAAK-2026-0000000073","bronorganisatie":"000000000","omschrijving":"Form
-        014","toelichting":"Aangemaakt door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-03-25","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-03-25","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/4306aa4c-9d24-43cc-8576-d878711b7632","uuid":"4306aa4c-9d24-43cc-8576-d878711b7632","identificatie":"OF-X3AVDM","bronorganisatie":"000000000","omschrijving":"Form
+        027","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-08","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-08","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -116,13 +116,13 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '1389'
+      - '1346'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/eba8fae8-fe07-490c-aa4a-a087e94fcd21
+      - http://localhost:8003/zaken/api/v1/zaken/4306aa4c-9d24-43cc-8576-d878711b7632
       Referrer-Policy:
       - same-origin
       Vary:

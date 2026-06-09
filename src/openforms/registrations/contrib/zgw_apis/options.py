@@ -28,6 +28,7 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
 from .client import get_catalogi_client
+from .constants import SummaryDocumentChoices
 from .models import ZGWApiGroupConfig
 from .typing import RegistrationOptions
 
@@ -45,6 +46,13 @@ class MappedVariablePropertySerializer(serializers.Serializer):
             "mapped."
         ),
     )
+
+
+class JSONMultipleChoiceField(serializers.MultipleChoiceField):
+    def to_representation(self, value) -> list[str]:  # pyright: ignore[reportIncompatibleMethodOverride]
+        # Return a list as MultipleChoiceField fields return a set here by default
+        # which cannot be serialized to JSON with python's stdlib JSON encoder.
+        return list(super().to_representation(value))
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -100,6 +108,13 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
         allow_blank=True,
         default="",
+    )
+
+    summary_documents = JSONMultipleChoiceField(
+        choices=SummaryDocumentChoices.choices,
+        label=_("Summary documents"),
+        help_text=_("Which summary documents to include during registration."),
+        default={SummaryDocumentChoices.pdf},
     )
 
     # DeprecationWarning - deprecated, will be removed in OF 4.0

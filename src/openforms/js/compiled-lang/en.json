@@ -359,6 +359,12 @@
       "value": "Service fetch configuration"
     }
   ],
+  "27Ibq3": [
+    {
+      "type": 0,
+      "value": "Which summary documents to include during registration."
+    }
+  ],
   "294MCM": [
     {
       "type": 0,
@@ -1231,6 +1237,12 @@
     {
       "type": 0,
       "value": "Please select the logic type:"
+    }
+  ],
+  "9EaH83": [
+    {
+      "type": 0,
+      "value": "Summary documents"
     }
   ],
   "9LdZVP": [

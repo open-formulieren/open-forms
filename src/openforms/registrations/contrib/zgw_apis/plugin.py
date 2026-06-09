@@ -1,4 +1,6 @@
 import warnings
+from collections import defaultdict
+from collections.abc import Mapping, Sequence
 from datetime import datetime
 from functools import partial, wraps
 from io import BytesIO
@@ -27,14 +29,18 @@ from openforms.contrib.zgw.service import (
     DocumentOptions,
     DocumentTypeResolver,
     create_attachment_document,
+    create_json_document,
     create_report_document,
 )
 from openforms.emails.service import get_last_confirmation_email
+from openforms.formio.datastructures import FormioConfigurationWrapper
+from openforms.formio.typing import Component
+from openforms.forms.json_schema import NestedDict
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.public_references import generate_unique_submission_reference
 from openforms.template import openforms_backend, render_from_string
-from openforms.typing import VariableValue
+from openforms.typing import JSONObject, VariableValue
 from openforms.utils.date import datetime_in_amsterdam
 from openforms.utils.pdf import convert_html_to_pdf
 
@@ -42,16 +48,20 @@ from ...base import BasePlugin, PreRegistrationResult
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
 from ...contrib.objects_api.handlers.v1 import _get_variables_for_context
 from ...exceptions import RegistrationFailed
+from ...json_output import get_json_data
 from ...registry import register
 from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .client import get_catalogi_client, get_documents_client, get_zaken_client
+from .constants import SummaryDocumentChoices
 from .models import ZGWApiGroupConfig
 from .options import ZaakOptionsSerializer
 from .typing import CatalogueOption, RegistrationOptions
 from .utils import process_according_to_eigenschap_format
 
 logger = structlog.stdlib.get_logger(__name__)
+
+PLUGIN_IDENTIFIER = "zgw-create-zaak"
 
 
 class VariablesProperties(TypedDict):
@@ -197,7 +207,7 @@ def transform_addressnl_to_verblijfsadres(value):
     }
 
 
-@register("zgw-create-zaak")
+@register(PLUGIN_IDENTIFIER)
 class ZGWRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("ZGW API's")
     configuration_options = ZaakOptionsSerializer
@@ -344,7 +354,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
     @wrap_api_errors
     def register_submission(
         self, submission: Submission, options: RegistrationOptions
-    ) -> dict | None:
+    ) -> dict:
         """
         Add the PDF document with the submission data (confirmation report) to the zaak created during pre-registration.
         """
@@ -454,8 +464,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
             result["informatieobjecttype_url"] = informatieobjecttype_url
 
-            # Upload the summary PDF
-            pdf_options: DocumentOptions = {
+            summary_document_options: DocumentOptions = {
                 "informatieobjecttype": informatieobjecttype_url,
                 "organisatie_rsin": options["organisatie_rsin"],
                 "auteur": options["auteur"],
@@ -463,29 +472,30 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     "doc_vertrouwelijkheidaanduiding"
                 ],
             }
-            summary_pdf_document = execute_unless_result_exists(
-                partial(
-                    create_report_document,
-                    client=documents_client,
-                    name=submission.form.name,
-                    submission_report=submission_report,
-                    options=pdf_options,
-                    language=submission_report.submission.language_code,
-                ),
-                submission,
-                "intermediate.documents.report.document",
-            )
-
-            # Relate summary PDF
-            execute_unless_result_exists(
-                partial(
-                    zaken_client.relate_document,
-                    zaak=zaak,
-                    document=summary_pdf_document,
-                ),
-                submission,
-                "intermediate.documents.report.relation",
-            )
+            summary_documents = options["summary_documents"]
+            if SummaryDocumentChoices.pdf in summary_documents:
+                summary_pdf_document = execute_unless_result_exists(
+                    partial(
+                        create_report_document,
+                        client=documents_client,
+                        name=f"{submission.form.name} (PDF)",
+                        submission_report=submission_report,
+                        options=summary_document_options,
+                        language=submission_report.submission.language_code,
+                    ),
+                    submission,
+                    "intermediate.documents.report.document",
+                )
+                # Relate summary PDF
+                execute_unless_result_exists(
+                    partial(
+                        zaken_client.relate_document,
+                        zaak=zaak,
+                        document=summary_pdf_document,
+                    ),
+                    submission,
+                    "intermediate.documents.report.relation",
+                )
 
             initiator_rol = execute_unless_result_exists(
                 partial(
@@ -630,6 +640,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             )
 
             # TODO: threading? asyncio?
+            submission_uploads = defaultdict[str, list[str]](list)
             for attachment in submission.attachments:
                 # default/legacy behaviour, but override it with specific catalogue +
                 # description configuration when available
@@ -708,6 +719,13 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     submission,
                     f"intermediate.documents.{attachment.id}.document",  # type: ignore
                 )
+
+                key: str = (
+                    attachment._component_data_path
+                    or attachment.submission_variable.key
+                )
+                submission_uploads[key].append(attachment_document["url"])
+
                 execute_unless_result_exists(
                     partial(
                         zaken_client.relate_document,
@@ -718,9 +736,56 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     f"intermediate.documents.{attachment.id}.relation",  # type: ignore
                 )
 
+            # needs to be done *after* the attachments have been uploaded to the
+            # Documenten API
+            if SummaryDocumentChoices.json in summary_documents:
+                state = submission.variables_state
+                variable_keys = list(state.variables.keys())
+                all_values = state.get_data(
+                    include_static_variables=False,
+                    # always include all form variables, whether they're visible or not
+                    include_unsaved=True,
+                )
+                document_data = get_json_data(
+                    submission,
+                    values=all_values,
+                    limit_to_variables=variable_keys,
+                    backend_id=PLUGIN_IDENTIFIER,
+                    # the cast is just for the type checker - this can be resolved at
+                    # some point with union types I suppose
+                    backend_options=dict(options),
+                    post_process_component=partial(
+                        process_component,
+                        attachments=submission_uploads,
+                    ),
+                )
+
+                summary_json_document = execute_unless_result_exists(
+                    partial(
+                        create_json_document,
+                        client=documents_client,
+                        document_data=document_data.serialize(),
+                        name=f"{submission.form.name} (JSON)",
+                        options=summary_document_options,
+                        language=submission_report.submission.language_code,
+                    ),
+                    submission,
+                    "intermediate.documents.json.document",
+                )
+
+                # Relate summary JSON
+                execute_unless_result_exists(
+                    partial(
+                        zaken_client.relate_document,
+                        zaak=zaak,
+                        document=summary_json_document,
+                    ),
+                    submission,
+                    "intermediate.documents.json.relation",
+                )
+
             result.update(
                 {
-                    "document": summary_pdf_document,
                     "status": status,
                     "initiator_rol": initiator_rol,
                 }
@@ -962,3 +1027,73 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             )
 
         return result
+
+    @staticmethod
+    def allows_json_schema_generation(options: RegistrationOptions) -> bool:
+        return True
+
+    def process_variable_schema(
+        self,
+        component: Component,
+        schema: JSONObject,
+        options: RegistrationOptions,
+        configuration_wrapper: FormioConfigurationWrapper,
+    ) -> None:
+        match component:
+            case {"type": "file", "multiple": True}:
+                assert isinstance(schema["items"], dict)
+                schema["items"] = {"type": "string", "format": "uri"}
+
+            case {"type": "file"}:
+                # If multiple is false, the value will be an empty string if no
+                # attachment is uploaded, or a URL to the Documents API if there is an
+                # upload.
+                del schema["items"]
+                new_schema = {
+                    "type": "string",
+                    "anyOf": [{"format": "uri"}, {"const": ""}],
+                }
+                schema.update(new_schema)
+
+            case {"type": "editgrid"}:
+                assert isinstance(schema["items"], dict)
+                _properties = schema["items"]["properties"]
+                assert isinstance(_properties, dict)
+
+                for child_key, child_schema in _properties.items():
+                    child_component = configuration_wrapper[child_key]
+                    assert isinstance(child_schema, dict)
+                    self.process_variable_schema(
+                        child_component,
+                        child_schema,
+                        options,
+                        configuration_wrapper,
+                    )
+            case _:
+                pass
+
+
+def process_component(
+    component: Component,
+    value: VariableValue,
+    schema: NestedDict,
+    attachments: Mapping[str, Sequence[str]],
+    current_data_path: str = "",
+) -> VariableValue:
+    key = component["key"]
+    attachments_key = key if not current_data_path else f"{current_data_path}.{key}"
+
+    match component:
+        case {"type": "file", "multiple": True}:
+            # for multiple, always emit a squence of URLs (possibly empty)
+            urls: Sequence[str] = attachments.get(attachments_key, [])
+            return urls
+
+        case {"type": "file"}:  # multiple is False or missing
+            # normalize to a single URL or empty string
+            urls: Sequence[str] = attachments.get(attachments_key, [])
+            assert len(urls) <= 1  # sanity check
+            return urls[0] if urls else ""
+
+        case _:
+            return value

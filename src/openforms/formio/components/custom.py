@@ -1,5 +1,5 @@
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableMapping, Sequence
 from copy import deepcopy
 from datetime import date, datetime
 from typing import Protocol
@@ -31,7 +31,7 @@ from openforms.prefill.contrib.family_members.plugin import (
     PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
 )
 from openforms.submissions.models import Submission
-from openforms.typing import JSONObject, JSONValue
+from openforms.typing import JSONObject, JSONValue, VariableValue
 from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam
 from openforms.utils.json_schema import GEO_JSON_COORDINATE_SCHEMAS, to_multiple
 from openforms.utils.validators import BSNValidator, IBANValidator
@@ -697,6 +697,17 @@ class AddressNL(BasePlugin[AddressNLComponent]):
         )
 
     @staticmethod
+    def as_json_data(component: Component, value: VariableValue) -> VariableValue:
+        """
+        Drop internal keys from the data.
+        """
+        assert isinstance(value, dict)
+        value = value.copy()
+        # remove internal data
+        value.pop("secretStreetCity", None)
+        return value
+
+    @staticmethod
     def as_json_schema(component: AddressNLComponent) -> JSONObject:
         label = component.get("label", "Address NL")
         components = component.get("openForms", {}).get("components", {})
@@ -719,6 +730,7 @@ class AddressNL(BasePlugin[AddressNLComponent]):
                     "pattern": postcode_validate.get("pattern", POSTCODE_REGEX),
                 },
                 "streetName": {"type": "string"},
+                "autoPopulated": {"type": "boolean"},
             },
             "required": ["houseNumber", "postcode"],
         }
@@ -831,6 +843,19 @@ class Partners(BasePlugin[Component]):
         return PartnerListField(component=component)
 
     @staticmethod
+    def as_json_data(component: Component, value: VariableValue) -> VariableValue:
+        """
+        Drop the internal data keys from the partner objects.
+        """
+        assert isinstance(value, Sequence)
+        value = deepcopy(value)
+        for partner in value:
+            assert isinstance(partner, MutableMapping)
+            partner.pop("dateOfBirthPrecision", None)
+            partner.pop("__addedManually", None)
+        return value
+
+    @staticmethod
     def as_json_schema(component: Component) -> JSONObject:
         label = component.get("label", "Partners")
         schema = {
@@ -849,6 +874,8 @@ class Partners(BasePlugin[Component]):
                     "affixes": {"type": "string"},
                     "lastName": {"type": "string"},
                     "dateOfBirth": {"type": "string", "format": "date"},
+                    # obtained from prefill, not exposed in the UI.
+                    "firstNames": {"type": "string"},
                 },
                 "additionalProperties": False,
             },
@@ -991,6 +1018,27 @@ class Children(BasePlugin[ChildrenComponent]):
         return ChildListField(component=component)
 
     @staticmethod
+    def as_json_data(component: Component, value: VariableValue) -> VariableValue:
+        """
+        Filter out deselected children and drop internal keys from the data.
+        """
+        assert isinstance(value, Sequence)
+        value = deepcopy(value)
+        selected_children = []
+        for child in value:
+            assert isinstance(child, MutableMapping)
+            if child.get("selected") not in (None, True):
+                continue
+
+            child.pop("dateOfBirthPrecision", None)
+            child.pop("__id", None)
+            child.pop("selected", None)
+            child.pop("__addedManually", None)
+            selected_children.append(child)
+
+        return selected_children
+
+    @staticmethod
     def as_json_schema(component: ChildrenComponent) -> JSONObject:
         label = component.get("label", "Children")
         schema = {
@@ -1007,6 +1055,10 @@ class Children(BasePlugin[ChildrenComponent]):
                     },
                     "firstNames": {"type": "string"},
                     "dateOfBirth": {"type": "string", "format": "date"},
+                    # obtained from prefill, not exposed in the UI.
+                    "affixes": {"type": "string"},
+                    "initials": {"type": "string"},
+                    "lastName": {"type": "string"},
                 },
                 "additionalProperties": False,
             },

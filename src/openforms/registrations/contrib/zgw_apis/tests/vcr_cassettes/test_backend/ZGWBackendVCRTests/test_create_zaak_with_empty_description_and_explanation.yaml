@@ -81,8 +81,9 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-05-08", "startdatum": "2026-05-08", "productenOfDiensten":
-      [], "omschrijving": "Some form", "toelichting": "", "betalingsindicatie": "nvt"}'
+      "registratiedatum": "2026-06-08", "startdatum": "2026-06-08", "productenOfDiensten":
+      [], "omschrijving": "Some form", "toelichting": "", "betalingsindicatie": "nvt",
+      "identificatie": "OF-LCKA3V"}'
     headers:
       Accept:
       - '*/*'
@@ -95,7 +96,7 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '343'
+      - '373'
       Content-Type:
       - application/json
       User-Agent:
@@ -104,8 +105,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/4b95a53f-57da-4a09-857c-d1cbfcaa2fba","uuid":"4b95a53f-57da-4a09-857c-d1cbfcaa2fba","identificatie":"ZAAK-2026-0000000006","bronorganisatie":"000000000","omschrijving":"Some
-        form","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-05-08","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-05-08","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/11717d04-0e0f-44f1-a624-606728a7ee4c","uuid":"11717d04-0e0f-44f1-a624-606728a7ee4c","identificatie":"OF-LCKA3V","bronorganisatie":"000000000","omschrijving":"Some
+        form","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-08","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-08","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -115,13 +116,13 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '1358'
+      - '1347'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/4b95a53f-57da-4a09-857c-d1cbfcaa2fba
+      - http://localhost:8003/zaken/api/v1/zaken/11717d04-0e0f-44f1-a624-606728a7ee4c
       Referrer-Policy:
       - same-origin
       Vary:
@@ -149,11 +150,11 @@ interactions:
       User-Agent:
       - python-requests/2.33.0
     method: GET
-    uri: http://localhost:8003/zaken/api/v1/zaken/4b95a53f-57da-4a09-857c-d1cbfcaa2fba
+    uri: http://localhost:8003/zaken/api/v1/zaken/11717d04-0e0f-44f1-a624-606728a7ee4c
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/4b95a53f-57da-4a09-857c-d1cbfcaa2fba","uuid":"4b95a53f-57da-4a09-857c-d1cbfcaa2fba","identificatie":"ZAAK-2026-0000000006","bronorganisatie":"000000000","omschrijving":"Some
-        form","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-05-08","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-05-08","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/11717d04-0e0f-44f1-a624-606728a7ee4c","uuid":"11717d04-0e0f-44f1-a624-606728a7ee4c","identificatie":"OF-LCKA3V","bronorganisatie":"000000000","omschrijving":"Some
+        form","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-08","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-08","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -163,13 +164,13 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '1358'
+      - '1347'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"5155d236adfa81f92f669b3ab7d998d7"'
+      - '"5e124cdee212ec80414372dd2d4593a4"'
       Referrer-Policy:
       - same-origin
       Vary:

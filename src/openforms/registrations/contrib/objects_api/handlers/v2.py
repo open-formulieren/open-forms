@@ -10,7 +10,7 @@ from typing import assert_never, cast  # noqa: TID251
 from glom import Assign, Path, glom
 
 from openforms.api.utils import underscore_to_camel
-from openforms.formio.service import FormioData
+from openforms.formio.service import FormioData, as_json_data
 from openforms.formio.typing import Component, EditGridComponent
 from openforms.formio.typing.vanilla import FileComponent
 from openforms.submissions.models import SubmissionValueVariable
@@ -103,13 +103,13 @@ def process_mapped_variable(
         value = value.isoformat()
 
     # transform the value within the context of the component
-    # TODO: convert this in a proper registry in due time so we can use better type
-    # annotations
+    if component is not None:
+        value = as_json_data(component, value)
+
     match component:
         case {"type": "addressNL"}:
             assert isinstance(value, dict)
             value = value.copy()
-            value.pop("secretStreetCity", None)
 
             # apply the more specific mappings rather than mapping the whole object
             if detailed_mappings := mapping.get("options"):
@@ -158,38 +158,6 @@ def process_mapped_variable(
             assert isinstance(value, dict)
             if transform_to_list and variable_key in transform_to_list:
                 value = [option for option, is_selected in value.items() if is_selected]
-        case {"type": "partners"}:
-            assert isinstance(value, list)
-
-            for partner in value:
-                assert isinstance(partner, dict)
-
-                # these are not relevant for the object (at least for now)
-                partner.pop("dateOfBirthPrecision", None)
-                partner.pop("__addedManually", None)
-        case {"type": "children"}:
-            assert isinstance(value, list)
-
-            # these are not relevant for the object
-            need_removal = (
-                "dateOfBirthPrecision",
-                "__id",
-                "selected",
-                "__addedManually",
-            )
-
-            updated = []
-            for child in value:
-                assert isinstance(child, dict)
-                if child.get("selected") not in (None, True):
-                    continue
-
-                for attribute in need_removal:
-                    child.pop(attribute, None)
-
-                updated.append(child)
-
-            value = updated
 
         # not a component or standard behaviour where no transformation is necessary
         case None | _:

@@ -2,15 +2,16 @@ interactions:
 - request:
     body: '{"values": {}, "values_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object", "properties": {}, "required": [], "additionalProperties":
-      false}, "metadata": {"auth_type": "bsn", "public_reference": "OF-ABC123", "form_version":
-      "Version 1.0", "registration_timestamp": "2025-01-30T13:05:00Z"}, "metadata_schema":
-      {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
-      "properties": {"auth_type": {"title": "Authentication type", "type": "string",
-      "enum": ["bsn", "kvk", "pseudo", "employee_id", ""]}, "public_reference": {"title":
-      "Public reference", "type": "string"}, "form_version": {"title": "Form version",
-      "type": "string"}, "registration_timestamp": {"title": "Registration timestamp",
-      "type": "string", "format": "date-time"}}, "required": ["auth_type", "public_reference",
-      "form_version", "registration_timestamp"], "additionalProperties": false}}'
+      false}, "metadata": {"public_reference": "OF-ABC123", "form_version": "Version
+      1.0", "registration_timestamp": "2025-01-30T13:05:00Z", "auth_type": "bsn"},
+      "metadata_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {"auth_type": {"title": "Authentication type",
+      "type": "string", "enum": ["bsn", "kvk", "pseudo", "employee_id", ""]}, "public_reference":
+      {"title": "Public reference", "type": "string"}, "form_version": {"title": "Form
+      version", "type": "string"}, "registration_timestamp": {"title": "Registration
+      timestamp", "type": "string", "format": "date-time"}}, "required": ["auth_type",
+      "public_reference", "form_version", "registration_timestamp"], "additionalProperties":
+      false}}'
     headers:
       Accept:
       - '*/*'
@@ -21,7 +22,7 @@ interactions:
       Content-Length:
       - '909'
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       content-type:
       - application/json
     method: POST
@@ -55,9 +56,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 25 Mar 2026 19:00:40 GMT
+      - Thu, 04 Jun 2026 07:59:38 GMT
       Server:
-      - Werkzeug/3.1.7 Python/3.12.13
+      - Werkzeug/3.1.4 Python/3.12.12
     status:
       code: 201
       message: CREATED

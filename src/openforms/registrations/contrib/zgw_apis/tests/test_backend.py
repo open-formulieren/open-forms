@@ -39,7 +39,8 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from ....constants import RegistrationAttribute
 from ....exceptions import RegistrationFailed
 from ..client import get_documents_client, get_zaken_client
-from ..plugin import ZGWRegistration
+from ..constants import SummaryDocumentChoices
+from ..plugin import PLUGIN_IDENTIFIER, ZGWRegistration
 from ..typing import RegistrationOptions
 from .factories import ZGWApiGroupConfigFactory
 
@@ -139,13 +140,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             submission.registration_result["zaak"]["identificatie"],
         )
 
-    @patch(
-        "openforms.registrations.contrib.zgw_apis.plugin.generate_unique_submission_reference",
-        return_value="OF-JCRWBX",
-    )
-    def test_submission_has_reference_after_pre_registration_use_of_generator(
-        self, mock
-    ):
+    def test_submission_has_reference_after_pre_registration_use_of_generator(self):
         zgw_group = ZGWApiGroupConfigFactory.create(
             for_test_docker_compose=True,
             organisatie_rsin="000000000",
@@ -168,10 +163,18 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
 
         pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
+        # check that the identification is explicitly provided in the call and what
+        # the Zaken API used + returned.
+        create_zaak_request = next(
+            request
+            for request in self.cassette.requests
+            if request.method == "POST" and request.path.endswith("/zaken/api/v1/zaken")
+        )
+        of_identification = json.loads(create_zaak_request.body)["identificatie"]
         submission.refresh_from_db()
-        self.assertEqual(submission.public_registration_reference, "OF-JCRWBX")
+        self.assertEqual(submission.public_registration_reference, of_identification)
         self.assertEqual(
-            submission.registration_result["zaak"]["identificatie"], "OF-JCRWBX"
+            submission.registration_result["zaak"]["identificatie"], of_identification
         )
 
     @tag("gh-4337")
@@ -261,6 +264,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         _run_preregistration(submission, plugin, options)
@@ -386,6 +390,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
 
         plugin = ZGWRegistration("zgw")
@@ -403,9 +408,9 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             documenten_root = self.zgw_group.drc_service.api_root
             self.assertTrue(result["zaak"]["url"].startswith(f"{zaken_root}zaken/"))
             self.assertTrue(
-                result["document"]["url"].startswith(
-                    f"{documenten_root}enkelvoudiginformatieobjecten/"
-                )
+                result["intermediate"]["documents"]["report"]["document"][
+                    "url"
+                ].startswith(f"{documenten_root}enkelvoudiginformatieobjecten/")
             )
             self.assertTrue(
                 result["initiator_rol"]["url"].startswith(f"{zaken_root}rollen/")
@@ -581,6 +586,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_roltype": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -674,6 +680,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_roltype": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -790,6 +797,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -872,6 +880,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
 
         plugin = ZGWRegistration("zgw")
@@ -954,6 +963,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         _run_preregistration(submission, plugin, options)
@@ -1000,6 +1010,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
 
@@ -1061,6 +1072,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
 
@@ -1113,6 +1125,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         client = get_zaken_client(self.zgw_group)
@@ -1173,6 +1186,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 "organisatie_rsin": "000000000",
                 "vertrouwelijkheidaanduiding": "openbaar",
                 "objects_api_group": None,
+                "summary_documents": [],
             },
         )
 
@@ -1235,6 +1249,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [],
         }
         client = get_zaken_client(self.zgw_group)
         self.addCleanup(client.close)
@@ -1326,6 +1341,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         client = get_zaken_client(self.zgw_group)
         self.addCleanup(client.close)
@@ -1384,6 +1400,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         _run_preregistration(submission, plugin, options)
@@ -1476,6 +1493,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
             # empty-ish value should fall back to default
             "auteur": "",
         }
@@ -1673,6 +1691,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                     ]
                 }"""
             ),
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         _run_preregistration(submission, plugin, options)
@@ -1837,6 +1856,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -1913,6 +1933,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -1973,6 +1994,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
 
@@ -2019,6 +2041,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -2092,6 +2115,9 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [
+                SummaryDocumentChoices.json,
+            ],
         }
 
         prefill_variables(submission)
@@ -2157,6 +2183,63 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
         )
 
+        # download the summary json document and check the contents
+        documents_client = get_documents_client(self.zgw_group)
+        self.addCleanup(documents_client.close)
+
+        document_results = result["intermediate"]["documents"]
+        json_document = document_results["json"]["document"]
+        json_document_content_response = documents_client.get(
+            f"{json_document['url']}/download"
+        )
+        json_document_content_response.raise_for_status()
+        json_document_data = json.loads(json_document_content_response.content)
+
+        expected_values = [
+            {
+                "bsn": "999995182",
+                "affixes": "",
+                "initials": "A.M.P.",
+                "lastName": "Jansma",
+                "firstNames": "Anna Maria Petra",
+                "dateOfBirth": "1945-04-18",
+            },
+            {
+                "bsn": "123456782",
+                "affixes": "",
+                "initials": "T.s.p.",
+                "lastName": "Test",
+                "firstNames": "Test second partner",
+                "dateOfBirth": "1945-04-18",
+            },
+        ]
+        expected_schema = {
+            "items": {
+                "additionalProperties": False,
+                "properties": {
+                    "affixes": {"type": "string"},
+                    "bsn": {
+                        "format": "nl-bsn",
+                        "pattern": "^\\d{9}$",
+                        "type": "string",
+                    },
+                    "dateOfBirth": {"format": "date", "type": "string"},
+                    "firstNames": {"type": "string"},
+                    "initials": {"type": "string"},
+                    "lastName": {"type": "string"},
+                },
+                "required": ["bsn"],
+                "type": "object",
+            },
+            "title": "Partners",
+            "type": "array",
+        }
+        self.assertEqual(json_document_data["values"]["partners"], expected_values)
+        self.assertEqual(
+            json_document_data["values_schema"]["properties"]["partners"],
+            expected_schema,
+        )
+
     @tag("gh-5840")
     def test_submission_with_partners_component_and_manually_added_data(self):
         submission = SubmissionFactory.from_components(
@@ -2204,6 +2287,9 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [
+                SummaryDocumentChoices.json,
+            ],
         }
 
         client = get_zaken_client(self.zgw_group)
@@ -2319,6 +2405,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "Children role type",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.json],
         }
 
         prefill_variables(submission)
@@ -2402,6 +2489,64 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
         )
 
+        document_results = result["intermediate"]["documents"]
+
+        # download the summary json document and check the contents
+        documents_client = get_documents_client(self.zgw_group)
+        self.addCleanup(documents_client.close)
+
+        json_document = document_results["json"]["document"]
+        json_document_content_response = documents_client.get(
+            f"{json_document['url']}/download"
+        )
+        json_document_content_response.raise_for_status()
+        json_document_data = json.loads(json_document_content_response.content)
+
+        expected_values = [
+            {
+                "affixes": "",
+                "bsn": "999970100",
+                "dateOfBirth": "2022-02-02",
+                "firstNames": "Olle",
+                "initials": "O.",
+                "lastName": "Oostingh",
+            },
+            {
+                "affixes": "",
+                "bsn": "999970112",
+                "dateOfBirth": "2022-02-02",
+                "firstNames": "Onne",
+                "initials": "O.",
+                "lastName": "Oostingh",
+            },
+        ]
+        expected_schema = {
+            "items": {
+                "additionalProperties": False,
+                "properties": {
+                    "affixes": {"type": "string"},
+                    "bsn": {
+                        "format": "nl-bsn",
+                        "pattern": "^\\d{9}$",
+                        "type": "string",
+                    },
+                    "dateOfBirth": {"format": "date", "type": "string"},
+                    "firstNames": {"type": "string"},
+                    "initials": {"type": "string"},
+                    "lastName": {"type": "string"},
+                },
+                "required": ["bsn"],
+                "type": "object",
+            },
+            "title": "Children",
+            "type": "array",
+        }
+        self.assertEqual(json_document_data["values"]["children"], expected_values)
+        self.assertEqual(
+            json_document_data["values_schema"]["properties"]["children"],
+            expected_schema,
+        )
+
     @patch(
         "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
         return_value=HaalCentraalConfig(
@@ -2465,6 +2610,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "Children role type",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
 
         prefill_variables(submission)
@@ -2613,6 +2759,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "Children role type",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
 
         client = get_zaken_client(self.zgw_group)
@@ -2736,6 +2883,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "Children role type",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
 
         # the submitted data needs extra handling because frontend adds some extra field
@@ -2852,6 +3000,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "Children role type",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
 
         client = get_zaken_client(self.zgw_group)
@@ -2931,6 +3080,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
             # empty-ish value should fall back to default
             "auteur": "",
         }
@@ -2944,7 +3094,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
 
         document_results = submission.registration_result["intermediate"]["documents"]
         pdf_details = document_results["report"]["document"]
-        self.assertEqual(pdf_details["titel"], "Public form name")
+        self.assertEqual(pdf_details["titel"], "Public form name (PDF)")
 
     def test_create_zaak_with_templated_description_and_explanation(self):
         submission = SubmissionFactory.from_components(
@@ -2987,6 +3137,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "auteur": "",
             "zaak_omschrijving": "Description: {{ form_name }}",
             "zaak_toelichting": "Extra explanation about {{ form_name }}",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
 
@@ -3041,6 +3192,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "children_description": "",
             "zaak_omschrijving": "",
             "zaak_toelichting": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
 
@@ -3109,6 +3261,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "children_description": "",
             # empty-ish value should fall back to default
             "auteur": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         _run_preregistration(submission, plugin, options)
@@ -3184,6 +3337,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
 
         plugin = ZGWRegistration("zgw")
@@ -3259,6 +3413,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
 
         plugin = ZGWRegistration("zgw")
@@ -3343,6 +3498,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         _run_preregistration(submission, plugin, options)
@@ -3396,6 +3552,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "partners_description": "",
             "children_roltype": "",
             "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
         }
         plugin = ZGWRegistration("zgw")
         _run_preregistration(submission, plugin, options)
@@ -3410,3 +3567,334 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
 
         initiator_data = submission.registration_result["initiator_rol"]
         self.assertIsNone(initiator_data["betrokkeneIdentificatie"]["verblijfsadres"])
+
+    def test_all_summary_documents(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                },
+                {
+                    "key": "file",
+                    "type": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "url": "",
+                    "multiple": False,
+                },
+                {
+                    "key": "fileMultiple",
+                    "type": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "url": "",
+                    "multiple": True,
+                },
+                {
+                    "key": "editgrid",
+                    "type": "editgrid",
+                    "label": "Editgrid",
+                    "components": [
+                        {
+                            "type": "time",
+                            "key": "time",
+                            "label": "Time",
+                        },
+                        {
+                            "key": "editgridFile",
+                            "type": "file",
+                            "file": {"type": []},
+                            "filePattern": "",
+                            "url": "",
+                            "multiple": False,
+                        },
+                    ],
+                },
+            ],
+            submitted_data={
+                "someText": "Foo",
+                "file": [
+                    {
+                        "url": "some://url",
+                        "name": "my-foo.bin",
+                        "type": "application/foo",
+                        "originalName": "my-foo.bin",
+                    },
+                ],
+                "fileMultiple": [
+                    {
+                        "url": "some://url",
+                        "name": "my-bar.bin",
+                        "type": "application/bar",
+                        "originalName": "my-bar.bin",
+                    },
+                ],
+                "editgrid": [
+                    {
+                        "time": "12:34:56",
+                        "editgridFile": [
+                            {
+                                "url": "some://url",
+                                "name": "my-baz.bin",
+                                "type": "application/baz",
+                                "originalName": "my-baz.bin",
+                            },
+                        ],
+                    }
+                ],
+            },
+            form__name="Public form name",
+            form__internal_name="Internal form name",
+            form__registration_backend=PLUGIN_IDENTIFIER,
+            bsn="111222333",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            form_key="file",
+            submission_step=submission.steps[0],
+            file_name="test_file.txt",
+            original_name="test_file.txt",
+            content_type="application/text",
+            content__data=b"This is example content.",
+            _component_configuration_path="components.1",
+            _component_data_path="file",
+        )
+        SubmissionFileAttachmentFactory.create(
+            form_key="fileMultiple",
+            submission_step=submission.steps[0],
+            file_name="test_file2.txt",
+            original_name="test_file2.txt",
+            content_type="application/text",
+            content__data=b"This is example content.",
+            _component_configuration_path="components.2",
+            _component_data_path="fileMultiple",
+        )
+        SubmissionFileAttachmentFactory.create(
+            form_key="editgrid",
+            submission_step=submission.steps[0],
+            file_name="test_file3.txt",
+            original_name="test_file3.txt",
+            content_type="application/text",
+            content__data=b"This is example content.",
+            _component_configuration_path="components.3.components.1",
+            _component_data_path="editgrid.0.editgridFile",
+        )
+
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "PDF Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "organisatie_rsin": "000000000",
+            # empty value should be ignored, use the VA from the zaaktype
+            "zaak_vertrouwelijkheidaanduiding": "",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "summary_documents": [
+                SummaryDocumentChoices.pdf,
+                SummaryDocumentChoices.json,
+            ],
+            # empty-ish value should fall back to default
+            "auteur": "",
+        }
+
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        plugin.register_submission(submission, options)
+
+        submission.refresh_from_db()
+        assert submission.registration_result
+
+        document_results = submission.registration_result["intermediate"]["documents"]
+        pdf_details = document_results["report"]["document"]
+        self.assertEqual(pdf_details["titel"], "Public form name (PDF)")
+
+        # download the summary json document and check the contents
+        documents_client = get_documents_client(self.zgw_group)
+        self.addCleanup(documents_client.close)
+
+        json_document = document_results["json"]["document"]
+        json_document_content_response = documents_client.get(
+            f"{json_document['url']}/download"
+        )
+        json_document_content_response.raise_for_status()
+        json_document_data = json.loads(json_document_content_response.content)
+
+        self.assertEqual(json_document["titel"], "Public form name (JSON)")
+        self.assertEqual(json_document["formaat"], "application/json")
+        self.assertEqual(json_document_data["values"]["someText"], "Foo")
+
+        with self.subTest("single file upload", aspect="values"):
+            single_file_value = json_document_data["values"]["file"]
+
+            self.assertIsInstance(single_file_value, str)
+            self.assertTrue(
+                single_file_value.startswith(
+                    "http://localhost:8003/documenten/api/v1/"
+                    "enkelvoudiginformatieobjecten/"
+                ),
+            )
+
+        with self.subTest("single file upload", aspect="schema"):
+            single_file_schema = json_document_data["values_schema"]["properties"][
+                "file"
+            ]
+
+            self.assertEqual(
+                single_file_schema,
+                {
+                    "type": "string",
+                    "title": "File",
+                    "anyOf": [
+                        {"format": "uri"},
+                        {"const": ""},
+                    ],
+                },
+            )
+
+        with self.subTest("multiple file upload", aspect="values"):
+            multiple_file_value = json_document_data["values"]["fileMultiple"]
+
+            self.assertIsInstance(multiple_file_value, list)
+            self.assertTrue(
+                multiple_file_value[0].startswith(
+                    "http://localhost:8003/documenten/api/v1/"
+                    "enkelvoudiginformatieobjecten/"
+                ),
+            )
+
+        with self.subTest("multiple file upload", aspect="schema"):
+            multiple_file_schema = json_document_data["values_schema"]["properties"][
+                "fileMultiple"
+            ]
+
+            self.assertEqual(
+                multiple_file_schema,
+                {
+                    "type": "array",
+                    "title": "Filemultiple",
+                    "items": {"type": "string", "format": "uri"},
+                },
+            )
+
+        with self.subTest("editgrid", aspect="values"):
+            editgrid_value = json_document_data["values"]["editgrid"]
+
+            self.assertIsInstance(editgrid_value, list)
+            item_value = editgrid_value[0]
+            self.assertIsInstance(item_value, dict)
+            self.assertEqual(item_value["time"], "12:34:56")
+            self.assertIsInstance(item_value["editgridFile"], str)
+            self.assertTrue(
+                item_value["editgridFile"].startswith(
+                    "http://localhost:8003/documenten/api/v1/"
+                    "enkelvoudiginformatieobjecten/"
+                ),
+            )
+
+        with self.subTest("editgrid", aspect="schema"):
+            editgrid_schema = json_document_data["values_schema"]["properties"][
+                "editgrid"
+            ]
+
+            self.assertEqual(
+                editgrid_schema,
+                {
+                    "type": "array",
+                    "title": "Editgrid",
+                    "items": {
+                        "additionalProperties": False,
+                        "type": "object",
+                        "properties": {
+                            "time": {
+                                "format": "time",
+                                "title": "Time",
+                                "type": "string",
+                            },
+                            "editgridFile": {
+                                "type": "string",
+                                "title": "File",
+                                "anyOf": [
+                                    {"format": "uri"},
+                                    {"const": ""},
+                                ],
+                            },
+                        },
+                        "required": ["time", "editgridFile"],
+                    },
+                },
+            )
+
+    def test_single_document_summary(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={
+                "someText": "Foo",
+            },
+            form__name="Public form name",
+            form__internal_name="Internal form name",
+            form__registration_backend=PLUGIN_IDENTIFIER,
+            bsn="111222333",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
+        )
+
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "PDF Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "organisatie_rsin": "000000000",
+            # empty value should be ignored, use the VA from the zaaktype
+            "zaak_vertrouwelijkheidaanduiding": "",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "summary_documents": [SummaryDocumentChoices.pdf],
+            # empty-ish value should fall back to default
+            "auteur": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        plugin.register_submission(submission, options)
+
+        submission.refresh_from_db()
+        assert submission.registration_result
+
+        document_results = submission.registration_result["intermediate"]["documents"]
+        pdf_details = document_results["report"]["document"]
+        self.assertEqual(pdf_details["titel"], "Public form name (PDF)")
+        self.assertTrue("json" not in document_results)

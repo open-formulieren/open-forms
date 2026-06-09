@@ -23,6 +23,7 @@ const ZGWFormFields = ({
   apiGroupChoices,
   objectsApiGroupChoices,
   confidentialityLevelChoices,
+  summaryDocumentChoices,
 }) => {
   const {
     values: {propertyMappings = []},
@@ -71,6 +72,7 @@ const ZGWFormFields = ({
           <OptionalOptionsFieldset
             confidentialityLevelChoices={confidentialityLevelChoices}
             catalogueUrl={catalogueUrl}
+            summaryDocumentChoices={summaryDocumentChoices}
           />
           <ObjectsAPIOptionsFieldset objectsApiGroupChoices={objectsApiGroupChoices} />
         </TabPanel>
@@ -103,6 +105,9 @@ ZGWFormFields.propTypes = {
     )
   ),
   confidentialityLevelChoices: PropTypes.arrayOf(
+    PropTypes.arrayOf(PropTypes.string) // value & label are both string
+  ).isRequired,
+  summaryDocumentChoices: PropTypes.arrayOf(
     PropTypes.arrayOf(PropTypes.string) // value & label are both string
   ).isRequired,
 };

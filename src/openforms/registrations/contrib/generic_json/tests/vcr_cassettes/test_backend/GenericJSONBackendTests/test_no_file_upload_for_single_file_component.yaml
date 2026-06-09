@@ -15,7 +15,7 @@ interactions:
       Content-Length:
       - '413'
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
       content-type:
       - application/json
     method: POST
@@ -39,9 +39,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 25 Mar 2026 19:00:40 GMT
+      - Thu, 04 Jun 2026 07:59:38 GMT
       Server:
-      - Werkzeug/3.1.7 Python/3.12.13
+      - Werkzeug/3.1.4 Python/3.12.12
     status:
       code: 201
       message: CREATED
