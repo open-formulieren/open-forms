@@ -104,6 +104,58 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         self.assertEqual("example data", variable.value)
         self.assertEqual("2022-05-25T10:53:19+00:00", variable.created_at.isoformat())
 
+    @freeze_time("2022-05-25T10:53:19+00:00")
+    def test_create_step_data_from_suspended_form(self):
+        self._add_submission_to_session(self.submission)
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": self.submission.uuid,
+                "step_uuid": self.step1.uuid,
+            },
+        )
+        body = {"data": {"test-key": "example data"}, "from_suspension": True}
+
+        response = self.client.put(endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        submission_step = self.submission.submissionstep_set.get()
+
+        self.assertEqual(
+            response.json(),
+            {
+                "id": str(submission_step.uuid),
+                "slug": self.step1.slug,
+                "formStepUuid": str(self.step1.uuid),
+                "configuration": {
+                    "components": [{"type": "textfield", "key": "test-key"}]
+                },
+                "defaultConfiguration": {
+                    "components": [{"key": "test-key", "type": "textfield"}]
+                },
+                "data": {"test-key": "example data"},
+                "canSubmit": True,
+                "logicRules": [],
+                "requireBackendLogicEvaluation": False,
+            },
+        )
+        state = self.submission.load_submission_value_variables_state()
+        data = state.get_data(submission_step=submission_step, include_unsaved=False)
+        self.assertEqual({"test-key": "example data"}, data)
+        self.assertIsNone(submission_step.completed_on)
+
+        submission_variables = SubmissionValueVariable.objects.filter(
+            submission=self.submission
+        )
+
+        self.assertEqual(1, submission_variables.count())
+
+        variable = submission_variables.get()
+
+        self.assertEqual("test-key", variable.key)
+        self.assertEqual("example data", variable.value)
+        self.assertEqual("2022-05-25T10:53:19+00:00", variable.created_at.isoformat())
+
     def test_create_step_wrong_step_id(self):
         """
         Validate that the step UUID belongs to the submission form.
