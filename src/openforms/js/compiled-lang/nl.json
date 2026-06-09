@@ -329,6 +329,12 @@
       "value": " bevat de oorspronkelijke bestandsnaam."
     }
   ],
+  "1tLYIe": [
+    {
+      "type": 0,
+      "value": "RSIN of the organization that registers the document in the Documents API. If left blank, the general configuration is used."
+    }
+  ],
   "1y4N2r": [
     {
       "type": 0,
@@ -703,6 +709,12 @@
     {
       "type": 0,
       "value": "Aanvullend"
+    }
+  ],
+  "5F58dY": [
+    {
+      "type": 0,
+      "value": "Document type specified"
     }
   ],
   "5JNnFB": [
@@ -2044,6 +2056,12 @@
       "value": "numSteps"
     }
   ],
+  "EKQv9H": [
+    {
+      "type": 0,
+      "value": "Confidentiality"
+    }
+  ],
   "ENyg8G": [
     {
       "type": 0,
@@ -2464,6 +2482,12 @@
     {
       "type": 0,
       "value": "BRP Personen 'doelbinding' header-waarde"
+    }
+  ],
+  "Hcwvos": [
+    {
+      "type": 0,
+      "value": "Title"
     }
   ],
   "HdRpKT": [
@@ -4162,6 +4186,12 @@
       "value": "Identificatie-attribuut"
     }
   ],
+  "X36TOT": [
+    {
+      "type": 0,
+      "value": "Optional custom title for the document. By default, the form name is used."
+    }
+  ],
   "XAKzo5": [
     {
       "type": 0,
@@ -4597,6 +4627,12 @@
       "value": "Vereist authenticatie"
     }
   ],
+  "aarCQK": [
+    {
+      "type": 0,
+      "value": "Organization RSIN"
+    }
+  ],
   "adFa0X": [
     {
       "type": 0,
@@ -5027,6 +5063,80 @@
     {
       "type": 0,
       "value": "Patroon of waarde voor de postcode"
+    }
+  ],
+  "dGgkk1": [
+    {
+      "type": 0,
+      "value": "Save the document in the Documents API with the selected document type. The document type will be resolved against the "
+    },
+    {
+      "options": {
+        "empty": {
+          "value": [
+            {
+              "type": 0,
+              "value": "specified"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "'"
+            },
+            {
+              "type": 1,
+              "value": "catalogueLabel"
+            },
+            {
+              "type": 0,
+              "value": "'"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "catalogueLabel"
+    },
+    {
+      "type": 0,
+      "value": " catalogue and "
+    },
+    {
+      "options": {
+        "empty": {
+          "value": [
+            {
+              "type": 0,
+              "value": "selected"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "'"
+            },
+            {
+              "type": 1,
+              "value": "caseType"
+            },
+            {
+              "type": 0,
+              "value": "'"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "caseType"
+    },
+    {
+      "type": 0,
+      "value": " case type in the plugin options. If left blank, the default document type configured in the plugin options will be used."
     }
   ],
   "dJNdhr": [
@@ -6969,6 +7079,12 @@
       "value": "Minimale leeftijd"
     }
   ],
+  "sdnxHe": [
+    {
+      "type": 0,
+      "value": "Document type"
+    }
+  ],
   "sgmcmf": [
     {
       "type": 0,
@@ -7325,6 +7441,46 @@
       "value": "E-mailinhoud"
     }
   ],
+  "vayfq9": [
+    {
+      "type": 0,
+      "value": "Save the document in the Documents API with the selected document type. The document type will be resolved against the "
+    },
+    {
+      "options": {
+        "empty": {
+          "value": [
+            {
+              "type": 0,
+              "value": "specified"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "'"
+            },
+            {
+              "type": 1,
+              "value": "catalogueLabel"
+            },
+            {
+              "type": 0,
+              "value": "'"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "catalogueLabel"
+    },
+    {
+      "type": 0,
+      "value": " catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used."
+    }
+  ],
   "ve3rsH": [
     {
       "type": 0,
@@ -7533,6 +7689,12 @@
     {
       "type": 0,
       "value": "Vertalingen ingeschakeld"
+    }
+  ],
+  "xUV58k": [
+    {
+      "type": 0,
+      "value": "Indication of the level to which extent the document is meant to be public. Only provide this if you wish to override the default from the configured document type."
     }
   ],
   "xUt2+r": [

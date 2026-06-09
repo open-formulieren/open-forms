@@ -134,6 +134,11 @@
     "description": "Open Forms variable label",
     "originalDefault": "Open Forms variable"
   },
+  "1tLYIe": {
+    "defaultMessage": "RSIN of the organization that registers the document in the Documents API. If left blank, the general configuration is used.",
+    "description": "Document upload: organizationRsin option help text",
+    "originalDefault": "RSIN of the organization that registers the document in the Documents API. If left blank, the general configuration is used."
+  },
   "1y4N2r": {
     "defaultMessage": "RSIN of the organization, which creates and owns the case and documents.",
     "description": "ZGW APIs registration options 'organisationRSIN' help text",
@@ -303,6 +308,11 @@
     "defaultMessage": "Additional",
     "description": "JSON registration options 'additionalMetadataVariables' label",
     "originalDefault": "Additional"
+  },
+  "5F58dY": {
+    "defaultMessage": "Document type specified",
+    "description": "'Document type override' registration summary message",
+    "originalDefault": "Document type specified"
   },
   "5JNnFB": {
     "defaultMessage": "Switching to the legacy registration options will remove the existing variables mapping. Are you sure you want to continue?",
@@ -879,6 +889,11 @@
     "description": "Description of which key is duplicated in which steps.",
     "originalDefault": "<code>{componentKey}</code>: in {numSteps, plural, =1 {{tail}} other {{lead} and {tail}} }"
   },
+  "EKQv9H": {
+    "defaultMessage": "Confidentiality",
+    "description": "Document upload: confidentialityLevel label",
+    "originalDefault": "Confidentiality"
+  },
   "ENyg8G": {
     "defaultMessage": "There are multiple co-sign components specified in this form. At most one should be present.",
     "description": "Too many cosign components",
@@ -1128,6 +1143,11 @@
     "defaultMessage": "BRP Personen purpose limitation header value",
     "description": "Form 'BRP Personen purpose limitation header value' field label",
     "originalDefault": "BRP Personen purpose limitation header value"
+  },
+  "Hcwvos": {
+    "defaultMessage": "Title",
+    "description": "Document upload: title option label",
+    "originalDefault": "Title"
   },
   "HdRpKT": {
     "defaultMessage": "Version",
@@ -1989,6 +2009,11 @@
     "description": "Objects API registration: authAttributePath label",
     "originalDefault": "Owner identifier"
   },
+  "X36TOT": {
+    "defaultMessage": "Optional custom title for the document. By default, the form name is used.",
+    "description": "Document upload: title option help text",
+    "originalDefault": "Optional custom title for the document. By default, the form name is used."
+  },
   "XAKzo5": {
     "defaultMessage": "Authentication automatic login",
     "description": "Auto-login field label",
@@ -2194,6 +2219,11 @@
     "description": "Form step login required label",
     "originalDefault": "Login required?"
   },
+  "aarCQK": {
+    "defaultMessage": "Organization RSIN",
+    "description": "Document upload: organizationRsin option label",
+    "originalDefault": "Organization RSIN"
+  },
   "adFa0X": {
     "defaultMessage": "Component \"{label}\" uses a prefill that requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin.",
     "description": "Prefill plugin requires unavailable auth plugin warning",
@@ -2358,6 +2388,11 @@
     "defaultMessage": "Introduction page",
     "description": "Introduction page fieldset title",
     "originalDefault": "Introduction page"
+  },
+  "dGgkk1": {
+    "defaultMessage": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue and {caseType, select, empty {selected} other {''{caseType}''} } case type in the plugin options. If left blank, the default document type configured in the plugin options will be used.",
+    "description": "Document upload: document type option help text",
+    "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue and {caseType, select, empty {selected} other {''{caseType}''} } case type in the plugin options. If left blank, the default document type configured in the plugin options will be used."
   },
   "dV8M5q": {
     "defaultMessage": "A recognisable name for this backend configuration.",
@@ -3254,6 +3289,11 @@
     "description": "Family members filters: minimum age field label",
     "originalDefault": "Minimum age"
   },
+  "sdnxHe": {
+    "defaultMessage": "Document type",
+    "description": "Document upload: document type option label",
+    "originalDefault": "Document type"
+  },
   "sokfvf": {
     "defaultMessage": "The service to send the data to.",
     "description": "JSON registration options 'serviceSelect' helpText",
@@ -3409,6 +3449,11 @@
     "description": "Email registration: content fieldset title",
     "originalDefault": "Content"
   },
+  "vayfq9": {
+    "defaultMessage": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used.",
+    "description": "Document upload: document type option help text",
+    "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used."
+  },
   "viEfGU": {
     "defaultMessage": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
     "description": "Confirmation template help text",
@@ -3518,6 +3563,11 @@
     "defaultMessage": "Translation enabled",
     "description": "Form translation enabled field label",
     "originalDefault": "Translation enabled"
+  },
+  "xUV58k": {
+    "defaultMessage": "Indication of the level to which extent the document is meant to be public. Only provide this if you wish to override the default from the configured document type.",
+    "description": "Document upload: confidentialityLevel option help text",
+    "originalDefault": "Indication of the level to which extent the document is meant to be public. Only provide this if you wish to override the default from the configured document type."
   },
   "xcp+LU": {
     "defaultMessage": "Create definition",
