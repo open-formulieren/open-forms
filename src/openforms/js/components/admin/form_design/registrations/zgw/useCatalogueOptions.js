@@ -100,6 +100,7 @@ const useCatalogueOptions = () => {
     loadingCatalogues,
     catalogueOptionGroups,
     cataloguesError,
+    catalogueValue,
     catalogueUrl,
   };
 };
