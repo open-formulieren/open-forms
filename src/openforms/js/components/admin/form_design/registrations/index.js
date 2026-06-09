@@ -22,7 +22,7 @@ import ZGWOptionsForm from './zgw';
  *   form: React.FC,
  *   onStepEdit?: (...args: any) => Object | null,
  *   onUserDefinedVariableEdit?: (...args: any) => Object | null,
- *   configurableFromVariables?: boolean | (options: Object) => boolean,
+ *   configurableFromVariables?: boolean | (variable: Object, component: Object, options: Object) => boolean,
  *   summaryHandler?: React.FC
  *   variableConfigurationEditor?: React.FC
  * }} BackendInfo
@@ -34,7 +34,7 @@ export const BACKEND_OPTIONS_FORMS = {
     form: ObjectsApiOptionsForm,
     onStepEdit: onObjectsAPIStepEdit,
     onUserDefinedVariableEdit: onObjectsAPIUserDefinedVariableEdit,
-    configurableFromVariables: options => options.version === 2,
+    configurableFromVariables: (variable, component, options) => options.version === 2,
     summaryHandler: ObjectsApiSummaryHandler,
     variableConfigurationEditor: ObjectsApiVariableConfigurationEditor,
   },

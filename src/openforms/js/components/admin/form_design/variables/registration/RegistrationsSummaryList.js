@@ -1,10 +1,11 @@
 import {Formik} from 'formik';
 import PropTypes from 'prop-types';
-import React, {useContext, useState} from 'react';
+import {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
+import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
 import {SubmitAction} from 'components/admin/forms/ActionButton';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 import {EditIcon} from 'components/admin/icons';
@@ -126,6 +127,10 @@ RegistrationSummary.propTypes = {
  */
 const RegistrationsSummaryList = ({variable, onFieldChange, registrationBackends}) => {
   const formContext = useContext(FormContext);
+  const component =
+    variable.source === VARIABLE_SOURCES.component
+      ? formContext.components[variable.key]
+      : undefined;
 
   /** @type {RegistrationBackend[]} */
   const filteredRegistrationBackends = registrationBackends || formContext.registrationBackends;
@@ -139,7 +144,7 @@ const RegistrationsSummaryList = ({variable, onFieldChange, registrationBackends
     const configurableFromVariables = backendInfo?.configurableFromVariables;
     if (
       (typeof configurableFromVariables === 'function' &&
-        !configurableFromVariables(backend.options)) ||
+        !configurableFromVariables(variable, component, backend.options)) ||
       !configurableFromVariables
     )
       continue;
