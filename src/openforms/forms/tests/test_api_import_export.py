@@ -1,7 +1,7 @@
 import json
 from io import BytesIO
 from unittest.mock import patch
-from zipfile import ZipFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from django.contrib.auth.models import Permission
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -12,10 +12,11 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
+from openforms.appointments.models import AppointmentsConfig
 from openforms.variables.constants import FormVariableSources
 
 from ...emails.tests.factories import ConfirmationEmailTemplateFactory
-from ..constants import EXPORT_META_KEY
+from ..constants import EXPORT_META_KEY, FormTypeChoices
 from ..models import Form, FormDefinition, FormStep
 from .factories import (
     FormDefinitionFactory,
@@ -231,6 +232,72 @@ class ImportExportAPITests(APITestCase):
             imported_form_step.form_definition.pk, imported_form_definition.pk
         )
         self.assertEqual(imported_form_step.order, form_step1.order)
+
+    def test_old_appointment_form_import_v4(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        config = AppointmentsConfig.get_solo()
+        config.plugin = "demo"
+        config.save()
+
+        form = FormFactory.create()
+
+        url = reverse("api:form-export", args=(form.uuid,))
+        response = self.client.post(
+            url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # need to inject the old `is_appointment` property as now the serializer rejects
+        # it (has been removed in favor of the form type field)
+        zf = ZipFile(BytesIO(response.content))
+        forms_data = json.loads(zf.read("forms.json"))
+        forms_data[0]["appointment_options"] = {
+            "is_appointment": True,
+            "supports_multiple_products": None,
+        }
+        output_zip = BytesIO()
+
+        with ZipFile(output_zip, "w", ZIP_DEFLATED) as zfw:
+            zfw.writestr("forms.json", json.dumps(forms_data))
+
+        modified_content = output_zip.getvalue()
+
+        form.delete()
+
+        f = SimpleUploadedFile(
+            "file.zip", modified_content, content_type="application/zip"
+        )
+        url = reverse("api:forms-import")
+        response = self.client.post(
+            url,
+            {"file": f},
+            format="multipart",
+            HTTP_AUTHORIZATION=f"Token {self.token.key}",
+            HTTP_CONTENT_DISPOSITION="attachment;filename=file.zip",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        self.assertEqual(FormDefinition.objects.count(), 0)
+        self.assertEqual(FormStep.objects.count(), 0)
+
+        form_uuid = response.json()["uuid"]
+        location = response.headers["Location"]
+        imported_form = Form.objects.last()
+
+        self.assertEqual(form_uuid, str(imported_form.uuid))
+        form_detail_full_url = "http://testserver" + reverse(
+            "api:form-detail", kwargs={"uuid_or_slug": form_uuid}
+        )
+        self.assertEqual(form_detail_full_url, location)
+        self.assertNotEqual(imported_form.pk, form.pk)
+        self.assertNotEqual(imported_form.uuid, str(form.uuid))
+        self.assertEqual(imported_form.active, False)
+        self.assertEqual(imported_form.type, FormTypeChoices.appointment)
 
     @patch(
         "openforms.api.exception_handling.uuid.uuid4",

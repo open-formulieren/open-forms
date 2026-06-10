@@ -17,6 +17,7 @@ from rest_framework.test import APIRequestFactory
 
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
+from openforms.forms.constants import FormTypeChoices
 from openforms.typing import JSONObject
 from openforms.variables.constants import FormVariableSources
 
@@ -233,6 +234,13 @@ def import_form_data(
                 # possible at this time, so we reset the theme and admins need to update
                 # the imported form.
                 entry["theme"] = None
+
+                # forms before v4.0 do not have the type field so in case we import an
+                # old appointment form we have to make sure that the form has the right
+                # type configured (by default is regular)
+                if appointment_options := entry.get("appointment_options"):
+                    if appointment_options.get("is_appointment"):
+                        entry["type"] = FormTypeChoices.appointment
 
             if resource == "forms" and not existing_form_instance:
                 entry["active"] = False
