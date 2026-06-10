@@ -1,7 +1,8 @@
 from base64 import b64encode
-from typing import BinaryIO, Literal
+from io import BytesIO
+from typing import Literal, assert_never
 
-from django.core.files.base import ContentFile
+from django.core.files import File
 
 from zgw_consumers.nlx import NLXClient
 
@@ -26,7 +27,7 @@ class DocumentenClient(LoggingMixin, NLXClient):
         author: str,
         language: str,
         format: str,
-        content: ContentFile | BinaryIO,
+        content: File | BytesIO,
         status: DocumentStatus,
         filename: str,
         received_date: str | None = None,
@@ -36,6 +37,16 @@ class DocumentenClient(LoggingMixin, NLXClient):
         assert author, "author must be a non-empty string"
         today = get_today().isoformat()
         file_content = content.read()
+
+        file_size: int
+        match content:
+            case File():
+                file_size = content.size
+            case BytesIO():
+                file_size = len(file_content)
+            case _:  # pragma: no cover
+                assert_never(content)
+
         base64_body = b64encode(file_content).decode()
         data = {
             "informatieobjecttype": informatieobjecttype,
@@ -51,9 +62,7 @@ class DocumentenClient(LoggingMixin, NLXClient):
             "ontvangstdatum": received_date,
             "beschrijving": description,
             "indicatieGebruiksrecht": False,
-            "bestandsomvang": (
-                content.size if hasattr(content, "size") else len(file_content)
-            ),
+            "bestandsomvang": file_size,
         }
 
         if vertrouwelijkheidaanduiding:

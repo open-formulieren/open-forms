@@ -1,4 +1,15 @@
-from typing import NotRequired, TypedDict
+from typing import Literal, NotRequired, TypedDict
+
+type VertrouwelijkheidAanduiding = Literal[
+    "openbaar",
+    "beperkt_openbaar",
+    "intern",
+    "zaakvertrouwelijk",
+    "vertrouwelijk",
+    "confidentieel",
+    "geheim",
+    "zeer_geheim",
+]
 
 
 class DocumentOptions(TypedDict):
