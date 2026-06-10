@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Collection
 from typing import Literal, NotRequired, Required, TypedDict
 from uuid import UUID
 
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+from openforms.contrib.zgw.typing import VertrouwelijkheidAanduiding
 
 type ConfigVersion = Literal[1, 2]
 
@@ -13,6 +15,14 @@ type TargetPath = list[str]
 class CatalogueOption(TypedDict):
     domain: str
     rsin: str
+
+
+class FileComponentOptions(TypedDict, total=False):
+    key: Required[str]
+    document_type_description: str
+    organization_rsin: str
+    confidentiality_level: VertrouwelijkheidAanduiding
+    title: str
 
 
 class _BaseRegistrationOptions(TypedDict, total=False):
@@ -42,6 +52,18 @@ class _BaseRegistrationOptions(TypedDict, total=False):
     informatieobjecttype_submission_report: str
     informatieobjecttype_submission_csv: str
     informatieobjecttype_attachment: str
+
+    files: NotRequired[Collection[FileComponentOptions]]
+    """
+    List of file upload options for the Documents API.
+
+    Each item contains at least the Formio component ``key`` key, which can contain
+    ``.`` characters. It's the literal key string as defined on the component.
+
+    Keys may refer to file components inside editgrid components too. We rely on the
+    admin enforcing key uniqueness for *all* components in the form, which is stricter
+    than vanilla Formio.
+    """
 
 
 class RegistrationOptionsV1(_BaseRegistrationOptions, total=False):
