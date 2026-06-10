@@ -511,11 +511,11 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
         #
         case {
             "event": "prefill_retrieve_success" | "prefill_retrieve_empty" as event,
-            "submission_uuid": str(submission_uuid),
+            "submission_uuid": str(),
             "plugin": PrefillBasePlugin() as plugin,
             "attributes": [*prefill_fields],
         }:
-            submission = Submission.objects.get(uuid=submission_uuid)
+            assert submission is not None
             extra_tags: set[TimelineLogTags] = set()
             if event == "prefill_retrieve_success":
                 extra_tags.add(TimelineLogTags.AVG)
@@ -530,10 +530,10 @@ def from_structlog(event_dict: EventDict) -> EventDetails:
         case {
             "event": "prefill.plugin.retrieve_failure"
             | "prefill.plugin.ownership_check_failure",
-            "submission_uuid": str(submission_uuid),
+            "submission_uuid": str(),
             "plugin": PrefillBasePlugin() as plugin,
         }:
-            submission = Submission.objects.get(uuid=submission_uuid)
+            assert submission is not None
             return EventDetails(
                 event="prefill_retrieve_failure",
                 instance=submission,
