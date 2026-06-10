@@ -227,6 +227,15 @@ class ChangeDisableLogicActionMigrationTests(MigratorTestCase):
         step_2 = FormStep.objects.create(form=form, form_definition=fd_2, order=1)
         FormStep.objects.create(form=form, form_definition=fd_3, order=2)
 
+        # Form without steps (and broken logic rule)
+        form_2 = Form.objects.create(name="Form without steps")
+        FormLogic.objects.create(
+            form=form_2,
+            order=0,
+            json_logic_trigger=True,
+            actions=[{"action": {"type": "disable-next"}, "form_step_uuid": ""}],
+        )
+
         # Form variables
         FormVariable.objects.create(
             form=form,
@@ -360,7 +369,7 @@ class ChangeDisableLogicActionMigrationTests(MigratorTestCase):
 
     def test_migration(self):
         Form = self.new_state.apps.get_model("forms", "Form")
-        form = Form.objects.get()
+        form = Form.objects.get(name="Form")
 
         steps = list(form.formstep_set.all())
         rules = list(form.formlogic_set.all())
