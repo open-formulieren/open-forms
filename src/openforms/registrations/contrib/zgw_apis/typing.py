@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Collection
 from typing import TYPE_CHECKING, Literal, NotRequired, TypedDict
 
+from openforms.contrib.zgw.typing import VertrouwelijkheidAanduiding
+
 from .constants import SummaryDocumentChoices
 
 if TYPE_CHECKING:
@@ -19,18 +21,6 @@ class CatalogueOption(TypedDict):
 class PropertyMapping(TypedDict):
     component_key: str
     eigenschap: str
-
-
-type VertrouwelijkheidAanduiding = Literal[
-    "openbaar",
-    "beperkt_openbaar",
-    "intern",
-    "zaakvertrouwelijk",
-    "vertrouwelijk",
-    "confidentieel",
-    "geheim",
-    "zeer_geheim",
-]
 
 
 class RegistrationOptions(TypedDict):
