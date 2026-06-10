@@ -248,10 +248,18 @@ class FailedPrefillTests(TestCase):
         )
 
         # 1st failure(no values)
-        audit_log.info("prefill_retrieve_empty", submission_uuid=str(submission_1.uuid))
+        audit_log.info(
+            "prefill_retrieve_empty",
+            submission_uuid=str(submission_1.uuid),
+            submission_pk=submission_1.pk,
+        )
 
         # 2nd failure(no values)
-        audit_log.info("prefill_retrieve_empty", submission_uuid=str(submission_2.uuid))
+        audit_log.info(
+            "prefill_retrieve_empty",
+            submission_uuid=str(submission_2.uuid),
+            submission_pk=submission_2.pk,
+        )
 
         # 2nd form with 1 failure in the past 24 hours
         form_2 = FormFactory.create()
@@ -261,6 +269,7 @@ class FailedPrefillTests(TestCase):
         audit_logger.exception(
             "prefill.plugin.retrieve_failure",
             submission_uuid=str(submission.uuid),
+            submission_pk=submission.pk,
             plugin=stufbg_plugin,
             exc_info=NoServiceConfigured(),
         )
@@ -281,6 +290,7 @@ class FailedPrefillTests(TestCase):
         audit_logger.info(
             "prefill_retrieve_empty",
             submission_uuid=str(submission.uuid),
+            submission_pk=submission.pk,
             plugin=hc_plugin,
             attributes=["burgerservicenummer"],
         )

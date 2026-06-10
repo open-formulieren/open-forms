@@ -191,7 +191,10 @@ class EmailDigestTaskIntegrationTests(TestCase):
         )
         hc_plugin = prefill_register["haalcentraal"]
 
-        audit_log = audit_logger.bind(submission_uuid=str(submission.uuid))
+        audit_log = audit_logger.bind(
+            submission_uuid=str(submission.uuid),
+            submission_pk=submission.pk,
+        )
 
         # trigger failures
         with freeze_time("2023-01-02T12:30:00+01:00"):
