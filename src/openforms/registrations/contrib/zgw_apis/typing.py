@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection
+from collections.abc import Collection, Mapping
 from typing import TYPE_CHECKING, Literal, NotRequired, TypedDict
 
 from .constants import SummaryDocumentChoices
@@ -33,6 +33,13 @@ type VertrouwelijkheidAanduiding = Literal[
 ]
 
 
+class FileComponentOptions(TypedDict, total=False):
+    document_type_description: str
+    organization_rsin: str
+    confidentiality_level: VertrouwelijkheidAanduiding
+    title: str
+
+
 class RegistrationOptions(TypedDict):
     zgw_api_group: ZGWApiGroupConfig
     catalogue: CatalogueOption
@@ -61,3 +68,14 @@ class RegistrationOptions(TypedDict):
     zaak_omschrijving: NotRequired[str]
     zaak_toelichting: NotRequired[str]
     summary_documents: Collection[SummaryDocumentChoices]
+    files: NotRequired[Mapping[str, FileComponentOptions]]
+    """
+    Mapping from component key to file upload options for the Documents API.
+
+    The key is the component key and can contain ``.`` characters. No nesting is
+    created, it's the literal key string as defined on the component.
+
+    Keys may refer to file components inside editgrid components too. We rely on the
+    admin enforcing key uniqueness for *all* components in the form, which is stricter
+    than vanilla Formio.
+    """

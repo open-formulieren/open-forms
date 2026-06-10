@@ -91,20 +91,25 @@ const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, origi
     }
 
     // Objects API mappings
-    const matchingMappingIndex = registrationBackendOptions.variablesMapping.findIndex(
-      mapping => mapping.variableKey === componentSchema.key
-    );
+    if (registrationBackendOptions.variablesMapping) {
+      const matchingMappingIndex = registrationBackendOptions.variablesMapping.findIndex(
+        mapping => mapping.variableKey === componentSchema.key
+      );
 
-    if (matchingMappingIndex === -1) return;
-    registrationBackendOptions.variablesMapping.splice(matchingMappingIndex, 1);
+      if (matchingMappingIndex === -1) return;
+      registrationBackendOptions.variablesMapping.splice(matchingMappingIndex, 1);
+    }
+
     return registrationBackendOptions;
   } else {
     const keyChanged = componentSchema.key !== originalComponent.key;
     if (!keyChanged) return null;
 
-    for (const mapping of registrationBackendOptions.variablesMapping) {
-      if (mapping.variableKey === originalComponent.key) {
-        mapping.variableKey = componentSchema.key;
+    if (registrationBackendOptions.variablesMapping) {
+      for (const mapping of registrationBackendOptions.variablesMapping) {
+        if (mapping.variableKey === originalComponent.key) {
+          mapping.variableKey = componentSchema.key;
+        }
       }
     }
 
