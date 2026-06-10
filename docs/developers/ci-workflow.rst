@@ -22,6 +22,9 @@ For these actions, we pin them to commit hashes instead of tags, to prevent modi
 injecting malicious code into our container images. Changes to these commit hashes should be
 thoroughly discussed and/or reviewed.
 
+The entire workflow is also scanned using `zizmor <https://docs.zizmor.sh/>`_, and any vulnerabilities
+will automatically be reported in the pull request.
+
 End-to-end tests
 ----------------
 
