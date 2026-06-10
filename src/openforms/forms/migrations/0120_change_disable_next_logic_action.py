@@ -59,6 +59,10 @@ def add_form_step_uuid_to_disable_next_actions(apps: StateApps, _):
 
         # Mapping from component to step for quick access
         form_steps = form.formstep_set.select_related("form_definition")
+        if form_steps.count() == 0:
+            # We cannot do anything if the form has relevant logic rules, but no steps.
+            # Those are broken forms.
+            continue
         component_to_step = {
             component["key"]: step
             for step in form_steps.iterator()
