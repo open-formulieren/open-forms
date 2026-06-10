@@ -98,6 +98,7 @@ class AVGAuditLogListViewTests(WebTest):
         audit_logger.info(
             "prefill_retrieve_success",
             submission_uuid=str(submission.uuid),
+            submission_pk=submission.pk,
             plugin=register["haalcentraal"],
             attributes=["name"],
         )
