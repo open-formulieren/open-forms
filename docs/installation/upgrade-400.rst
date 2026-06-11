@@ -290,6 +290,19 @@ This still has some impact though:
   - an API group reference.
   - a catalogue reference (domain + RSIN) combination.
 
+File component specific overrides
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Before Open Forms 4.0, you could configure a specific document type, organization RSIN,
+confidentiality level and/or title to use in the registration tab of the file component.
+
+In 4.0, this has been moved into the variables tab, where you can configure these
+options for each configured registration backend. This means the document type dropdown
+now automatically filters valid options based on the specified catalogue and case type.
+
+The old, component-specific configuration is no longer used - this may affect form
+exports created on versions older than 4.0.
+
 Objects API registration
 ------------------------
 
@@ -308,3 +321,20 @@ This still has some impact though:
 
   - a catalogue reference (domain + RSIN) combination.
   - the document type references for each configuration option
+
+Migration steps
+---------------
+
+For a successful migration, there are some manual actions necessary in the previous
+version (3.5).
+
+.. todo:: provide more details
+
+#. Run the ``migrate_catalogi_api_urls --no-dry-run`` management command.
+#. If there are errors, fix them in the admin UI and repeat until all errors are
+   resolved.
+
+On 4.0 (automatic), builds on top of the 3.5 migration result:
+
+* Configuration will be moved from the API group level to the registration backends.
+* Configuration will be moved from file component level to the registration backends.
