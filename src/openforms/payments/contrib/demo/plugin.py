@@ -9,7 +9,7 @@ from openforms.frontend import get_frontend_redirect_url
 from openforms.submissions.tokens import submission_status_token_generator
 
 from ...base import BasePlugin, PaymentInfo
-from ...constants import PaymentStatus, UserAction
+from ...constants import PaymentStatus
 from ...registry import register
 
 
@@ -45,7 +45,6 @@ class DemoPayment(BasePlugin[NoOptions]):
             action_params={
                 "of_payment_status": payment.status,
                 "of_payment_id": str(payment.uuid),
-                "of_payment_action": UserAction.accept,
                 "of_submission_status": status_url,
             },
         )

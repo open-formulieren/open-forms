@@ -15,12 +15,12 @@ export default {
     backends: [
       {id: 'demo', label: 'Demo', schema: {type: 'object', properties: {}}},
       {
-        id: 'ogone-legacy',
-        label: 'Ogone legacy',
+        id: 'worldline',
+        label: 'Worldline',
         schema: {
           type: 'object',
           properties: {
-            merchantId: {
+            merchant: {
               type: 'integer',
               enum: [1, 2],
               enumNames: ['Merchant 1', 'Merchant 2'],
@@ -28,7 +28,7 @@ export default {
               description: 'Merchant to use',
             },
           },
-          required: ['merchantId'],
+          required: ['merchant'],
         },
       },
     ],
@@ -46,12 +46,12 @@ export const Demo = {
   },
 };
 
-export const OgoneLegacy = {
-  name: 'Ogone (legacy)',
+export const Worldline = {
+  name: 'Worldline',
   args: {
-    selectedBackend: 'ogone-legacy',
+    selectedBackend: 'worldine',
     backendOptions: {
-      merchantId: 2,
+      merchant: 2,
     },
   },
 };

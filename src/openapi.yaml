@@ -10165,10 +10165,9 @@ components:
           $ref: '#/components/schemas/FormStepModelTranslations'
     PaymentBackendEnum:
       enum:
-      - ogone-legacy
       - worldline
       type: string
-      description: "* `` - \n* `ogone-legacy` - Ogone legacy\n* `worldline` - Wordline"
+      description: "* `` - \n* `worldline` - Wordline"
     PaymentInfo:
       type: object
       properties:

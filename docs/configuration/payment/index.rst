@@ -7,5 +7,4 @@ Payment plugins
 .. toctree::
    :maxdepth: 1
 
-   ogone
    worldline

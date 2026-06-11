@@ -11,17 +11,6 @@ class PaymentRequestType(models.TextChoices):
     post = "post"
 
 
-# TODO: remove after removal of ogone app
-class UserAction(models.TextChoices):
-    accept = "accept"
-    exception = "exception"
-    cancel = "cancel"
-    # back = "back"
-    # decline = "decline"
-
-    unknown = "unknown"
-
-
 class PaymentStatus(models.TextChoices):
     # not_required = "not_required", _("Not required")
 

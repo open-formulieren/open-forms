@@ -19,7 +19,9 @@ from openforms.config.tests.factories import ThemeFactory
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
-from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
+from openforms.payments.contrib.worldline.tests.factories import (
+    WorldlineMerchantFactory,
+)
 from openforms.products.tests.factories import ProductFactory
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
@@ -217,12 +219,12 @@ class ImportExportTests(TempdirMixin, TestCase):
 
     def test_import(self):
         product = ProductFactory.create()
-        merchant = OgoneMerchantFactory.create()
+        merchant = WorldlineMerchantFactory.create()
         form = FormFactory.create(
             product=product,
             authentication_backend="digid",
-            payment_backend="ogone-legacy",
-            payment_backend_options={"merchant_id": merchant.id},
+            payment_backend="worldline",
+            payment_backend_options={"merchant": merchant.pspid},
         )
         FormRegistrationBackendFactory.create(
             form=form,
@@ -333,13 +335,13 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(imported_form.slug, old_form_slug)
         self.assertEqual(imported_form.auth_backends.count(), 1)
         self.assertEqual(imported_form.auth_backends.get().backend, "digid")
-        self.assertEqual(imported_form.payment_backend, "ogone-legacy")
+        self.assertEqual(imported_form.payment_backend, "worldline")
         self.assertEqual(
             imported_form.payment_backend_options,
             {
-                "merchant_id": merchant.id,
-                "com_template": "",
-                "title_template": "",
+                "merchant": merchant.pspid,
+                "variant": "",
+                "descriptor_template": "",
             },
         )
 

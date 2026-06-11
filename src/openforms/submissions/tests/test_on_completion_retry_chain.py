@@ -48,7 +48,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "objects_api_group": None,
             },
-            form__payment_backend="ogone-legacy",
+            form__payment_backend="worldline",
             registration_result={
                 "zaak": {
                     "url": "https://example.com",
@@ -59,7 +59,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
         )
         assert submission.payment_required, "Form must require payment for this test"
         assert submission.payment_user_has_paid, (
-            "Paid status should be True - the return view received the payment from Ogone."
+            "Paid status should be True - the return view received the payment from Worldline."
         )
         original_register_date = submission.last_register_date
         appointment_info = AppointmentInfoFactory.create(
@@ -104,7 +104,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "objects_api_group": None,
             },
-            form__payment_backend="ogone-legacy",
+            form__payment_backend="worldline",
             registration_result={
                 "zaak": {
                     "url": "https://example.com",
@@ -116,7 +116,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
         )
         assert submission.payment_required, "Form must require payment for this test"
         assert submission.payment_user_has_paid, (
-            "Paid status should be True - the return view received the payment from Ogone."
+            "Paid status should be True - the return view received the payment from Worldline."
         )
         original_register_date = submission.last_register_date
         appointment_info = AppointmentInfoFactory.create(
