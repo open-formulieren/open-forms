@@ -110,7 +110,7 @@ class EscapeHTMLTests(TestCase):
             """{"payment": {
             "completed": {% if payment.completed %}true{% else %}false{% endif %},
             "amount": {{ payment.amount }},
-            "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+            "public_order_ids": [{% for order_id in payment.public_order_ids %}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
         }}"""
         )
 

@@ -27,10 +27,14 @@ class SubmissionPaymentQuerySet(models.QuerySet["SubmissionPayment"]):
         )
 
     def get_completed_public_order_ids(self) -> list[str]:
-        return list(self.paid().values_list("public_order_id", flat=True))
+        return list(
+            self.paid().order_by("pk").values_list("public_order_id", flat=True)
+        )
 
     def get_completed_provider_payment_ids(self) -> list[str]:
-        return list(self.paid().values_list("provider_payment_id", flat=True))
+        return list(
+            self.paid().order_by("pk").values_list("provider_payment_id", flat=True)
+        )
 
 
 class SubmissionPaymentManager(models.Manager.from_queryset(SubmissionPaymentQuerySet)):

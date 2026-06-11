@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e
   response:
@@ -28,11 +28,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 25 Mar 2026 11:37:24 GMT
+      - Thu, 11 Jun 2026 09:36:36 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.5
+      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:
@@ -60,12 +60,12 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/1a62db0e-8c7e-4ec7-9ae2-169631ce97fd","uuid":"1a62db0e-8c7e-4ec7-9ae2-169631ce97fd","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"textfield":"","nestedTextfield":""},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2026-03-25","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/cd8fc7b9-f4d1-4277-adc4-8f87f67b51bf","uuid":"cd8fc7b9-f4d1-4277-adc4-8f87f67b51bf","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"textfield":"","nestedTextfield":""},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2026-06-11","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -80,13 +80,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 25 Mar 2026 11:37:24 GMT
+      - Thu, 11 Jun 2026 09:36:36 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/1a62db0e-8c7e-4ec7-9ae2-169631ce97fd
+      - http://localhost:8002/api/v2/objects/cd8fc7b9-f4d1-4277-adc4-8f87f67b51bf
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.5
+      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:

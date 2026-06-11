@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc
   response:
@@ -50,13 +50,13 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/informatieobjecttypen/ca5ffa84-3806-4663-a226-f2d163b79643
   response:
     body:
       string: '{"type":"http://localhost:8003/ref/fouten/NotFound/","code":"not_found","title":"Niet
-        gevonden.","status":404,"detail":"Niet gevonden.","instance":"urn:uuid:053b7114-ea14-46fd-bf9d-335eb34ab080"}'
+        gevonden.","status":404,"detail":"Niet gevonden.","instance":"urn:uuid:1eded15f-9bf5-43a9-b3fe-693aea148045"}'
     headers:
       API-version:
       - 1.3.1

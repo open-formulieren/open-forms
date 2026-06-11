@@ -56,6 +56,7 @@ class JSONMultipleChoiceField(serializers.MultipleChoiceField):
 
 
 class FileComponentOptionsSerializer(serializers.Serializer):
+    # TODO: validate that it's in the specified catalogue & case type
     document_type_description = serializers.CharField(
         label=_("Document type description"),
         required=False,
@@ -87,7 +88,8 @@ class FileComponentOptionsSerializer(serializers.Serializer):
         label=_("Title"),
         required=False,
         help_text=_(
-            "Optional custom title for the document. By default, the form name is used."
+            "Optional custom title for the document. By default, the attachment file "
+            "name is used."
         ),
         allow_blank=True,
     )

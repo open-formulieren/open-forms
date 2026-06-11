@@ -1441,30 +1441,12 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "field1",
                     "type": "file",
-                    "registration": {
-                        # attachment informatieobjecttype in docker compose
-                        "informatieobjecttype": (
-                            "http://localhost:8003/catalogi/api/v1/"
-                            "informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e"
-                        ),
-                        "bronorganisatie": "100000009",
-                        "docVertrouwelijkheidaanduiding": "zeer_geheim",
-                        "titel": "TITEL",
-                    },
+                    "key": "field1",
                 },
                 {
-                    "key": "field2",
                     "type": "file",
-                    # options should be omitted in the actual call and the document type
-                    # defaults must be used
-                    "registration": {
-                        "informatieobjecttype": "",
-                        "bronorganisatie": "",
-                        "doc_vertrouwelijkheidaanduiding": "",
-                        "titel": "",
-                    },
+                    "key": "field2",
                 },
             ],
             bsn="111222333",
@@ -1496,6 +1478,20 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "summary_documents": [SummaryDocumentChoices.pdf],
             # empty-ish value should fall back to default
             "auteur": "",
+            "files": {
+                "field1": {
+                    "document_type_description": "Attachment Informatieobjecttype",
+                    "organization_rsin": "100000009",
+                    "confidentiality_level": "zeer_geheim",
+                    "title": "TITEL",
+                },
+                # empty values -> document type defaults must be used
+                "field2": {
+                    "document_type_description": "",
+                    "organization_rsin": "",
+                    "title": "",
+                },
+            },
         }
         attachment_1 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
@@ -3214,13 +3210,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                     "key": "file",
                     "label": "File",
                     "registration": {
-                        "documentType": {
-                            "catalogue": {
-                                "domain": "TEST",
-                                "rsin": "000000000",
-                            },
-                            "description": "Attachment Informatieobjecttype",
-                        },
                         "informatieobjecttype": "https://example.com/ignore-me",
                     },
                 }
@@ -3262,6 +3251,11 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             # empty-ish value should fall back to default
             "auteur": "",
             "summary_documents": [SummaryDocumentChoices.pdf],
+            "files": {
+                "file": {
+                    "document_type_description": "Attachment Informatieobjecttype",
+                },
+            },
         }
         plugin = ZGWRegistration("zgw")
         _run_preregistration(submission, plugin, options)

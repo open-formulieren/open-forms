@@ -9,13 +9,13 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/informatieobjecttypen/5e48c3a3-9b12-4692-98ee-5c4576b13465
   response:
     body:
       string: '{"type":"http://localhost:8003/ref/fouten/NotFound/","code":"not_found","title":"Niet
-        gevonden.","status":404,"detail":"Niet gevonden.","instance":"urn:uuid:09701366-bebb-4803-acca-51e4038a8d34"}'
+        gevonden.","status":404,"detail":"Niet gevonden.","instance":"urn:uuid:b7e16401-3bf1-4d0d-81a8-1b9b35dd8295"}'
     headers:
       API-version:
       - 1.3.1
