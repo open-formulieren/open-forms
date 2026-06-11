@@ -3,6 +3,9 @@ from django_test_migrations.contrib.unittest_case import MigratorTestCase
 from openforms.registrations.contrib.objects_api.constants import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
 )
+from openforms.registrations.contrib.zgw_apis.plugin import (
+    PLUGIN_IDENTIFIER as ZGW_APIS_PLUGIN_IDENTIFIER,
+)
 
 from ..constants import FormTypeChoices
 
@@ -238,7 +241,7 @@ class MoveZGWAPIGroupConfigurationToBackendTests(MigratorTestCase):
             form=form,
             key="group-to-ignore",
             name="Should be ignored because of the group",
-            backend="zgw-create-zaak",
+            backend=ZGW_APIS_PLUGIN_IDENTIFIER,
             # incomplete according to the types/serializer, but shouldn't break the
             # migration!
             options={
@@ -249,7 +252,7 @@ class MoveZGWAPIGroupConfigurationToBackendTests(MigratorTestCase):
             form=form,
             key="group-to-update",
             name="Should be updated",
-            backend="zgw-create-zaak",
+            backend=ZGW_APIS_PLUGIN_IDENTIFIER,
             # incomplete according to the types/serializer, but shouldn't break the
             # migration!
             options={
@@ -260,7 +263,7 @@ class MoveZGWAPIGroupConfigurationToBackendTests(MigratorTestCase):
             form=form,
             key="has-local-config-already",
             name="May not be updated despite group qualifying",
-            backend="zgw-create-zaak",
+            backend=ZGW_APIS_PLUGIN_IDENTIFIER,
             # incomplete according to the types/serializer, but shouldn't break the
             # migration!
             options={
@@ -315,4 +318,216 @@ class MoveZGWAPIGroupConfigurationToBackendTests(MigratorTestCase):
                         "rsin": "notouch",
                     },
                 },
+            )
+
+
+class MoveFileComponentRegistrationOverridesTests(MigratorTestCase):
+    migrate_from = (
+        "forms",
+        "0131_move_api_group_configuration_to_backends",
+    )
+    migrate_to = (
+        "forms",
+        "0132_move_file_component_registration_overrides",
+    )
+
+    def prepare(self):
+        apps = self.old_state.apps
+        Service = apps.get_model("zgw_consumers", "Service")
+        ObjectsAPIGroupConfig = apps.get_model("objects_api", "ObjectsAPIGroupConfig")
+        ZGWApiGroupConfig = apps.get_model("zgw_apis", "ZGWApiGroupConfig")
+
+        Form = apps.get_model("forms", "Form")
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        FormStep = apps.get_model("forms", "FormStep")
+        FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+
+        # create API groups
+        dummy_service = Service.objects.create(
+            slug="dummy", api_type="orc", api_root="https://example.com/api/v1/"
+        )
+        objects_group = ObjectsAPIGroupConfig.objects.create(
+            name="Objects API",
+            identifier="objects_group",
+            objects_service=dummy_service,
+            objecttypes_service=dummy_service,
+            drc_service=dummy_service,
+            catalogi_service=dummy_service,
+        )
+        zgw_group = ZGWApiGroupConfig.objects.create(
+            name="ZGW",
+            identifier="zgw_group",
+            zrc_service=dummy_service,
+            drc_service=dummy_service,
+            ztc_service=dummy_service,
+        )
+
+        # forms & registration backends
+        form_with_registration_backends = Form.objects.create(name="Test 1")
+        form_without_registration_backends = Form.objects.create(name="Test 2")
+        form_definition = FormDefinition.objects.create(
+            name="Form def",
+            is_reusable=True,
+            configuration={
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "fileWithoutOverrides",
+                        "label": "File without overrides",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    },
+                    {
+                        "type": "file",
+                        "key": "container.fileWithOverrides",
+                        "label": "File with overrides",
+                        "file": {"type": []},
+                        "filePattern": "",
+                        "registration": {
+                            "documentType": {
+                                # catalogue mismatch -> ignored!
+                                "catalogue": {
+                                    "domain": "OTHER",
+                                    "rsin": "111222333",
+                                },
+                                "description": "Custom document type",
+                            },
+                            "bronorganisatie": "123456782",
+                            "docVertrouwelijkheidaanduiding": "geheim",
+                            "titel": "Custom title",
+                        },
+                    },
+                    {
+                        "type": "editgrid",
+                        "key": "parentEditgrid",
+                        "label": "Parent editgrid",
+                        "groupLabel": "Item",
+                        "components": [
+                            {
+                                "type": "editgrid",
+                                "key": "childEditgrid",
+                                "label": "Child editgrid",
+                                "groupLabel": "Item",
+                                "components": [
+                                    {
+                                        "type": "file",
+                                        "key": "editgrid.file",
+                                        "label": "Editgrid file",
+                                        "file": {"type": []},
+                                        "filePattern": "",
+                                        "registration": {
+                                            "documentType": {
+                                                # catalogue mismatch -> ignored!
+                                                "catalogue": {
+                                                    "domain": "OTHER",
+                                                    "rsin": "111222333",
+                                                },
+                                                "description": "Another one",
+                                            },
+                                            "bronorganisatie": "",
+                                        },
+                                    },
+                                    {
+                                        "type": "textfield",
+                                        "key": "noise",
+                                        "label": "Non-file component as smoke test",
+                                    },
+                                ],
+                            }
+                        ],
+                    },
+                ]
+            },
+        )
+        FormStep.objects.create(
+            form=form_with_registration_backends,
+            form_definition=form_definition,
+            slug="step-1",
+            order=1,
+        )
+        # form not expected to be processed.
+        FormStep.objects.create(
+            form=form_without_registration_backends,
+            form_definition=form_definition,
+            slug="step-1",
+            order=1,
+        )
+        self.backend_objects_pk = FormRegistrationBackend.objects.create(
+            form=form_with_registration_backends,
+            key="objects",
+            name="Objects API",
+            backend=OBJECTS_API_PLUGIN_IDENTIFIER,
+            # incomplete according to the types/serializer, but shouldn't break the
+            # migration!
+            options={
+                "objects_api_group": objects_group.identifier,
+                "catalogue": {
+                    "domain": "TEST",
+                    "rsin": "000000000",
+                },
+            },
+        ).pk
+        self.backend_zgw_pk = FormRegistrationBackend.objects.create(
+            form=form_with_registration_backends,
+            key="zgw",
+            name="ZGW",
+            backend=ZGW_APIS_PLUGIN_IDENTIFIER,
+            # incomplete according to the types/serializer, but shouldn't break the
+            # migration!
+            options={
+                "zgw_api_group": zgw_group.pk,
+                "catalogue": {
+                    "domain": "TEST",
+                    "rsin": "000000000",
+                },
+            },
+        ).pk
+
+    def test_all_file_component_overrides_are_copied_into_registration_backend_options(
+        self,
+    ):
+        FormRegistrationBackend = self.new_state.apps.get_model(
+            "forms", "FormRegistrationBackend"
+        )
+
+        with self.subTest("objects API backend"):
+            backend_objects = FormRegistrationBackend.objects.get(
+                pk=self.backend_objects_pk
+            )
+
+            self.assertEqual(
+                backend_objects.options["files"],
+                [
+                    {
+                        "key": "container.fileWithOverrides",
+                        "document_type_description": "Custom document type",
+                        "organization_rsin": "123456782",
+                        "confidentiality_level": "geheim",
+                        "title": "Custom title",
+                    },
+                    {
+                        "key": "editgrid.file",
+                        "document_type_description": "Another one",
+                    },
+                ],
+            )
+
+        with self.subTest("ZGW APIs backend"):
+            backend_zgw = FormRegistrationBackend.objects.get(pk=self.backend_zgw_pk)
+
+            self.assertEqual(
+                backend_zgw.options["files"],
+                [
+                    {
+                        "key": "container.fileWithOverrides",
+                        "document_type_description": "Custom document type",
+                        "organization_rsin": "123456782",
+                        "confidentiality_level": "geheim",
+                        "title": "Custom title",
+                    },
+                    {
+                        "key": "editgrid.file",
+                        "document_type_description": "Another one",
+                    },
+                ],
             )
