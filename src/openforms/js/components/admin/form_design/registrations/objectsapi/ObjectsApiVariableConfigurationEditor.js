@@ -1,6 +1,6 @@
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import {useContext, useEffect} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import {FormContext} from 'components/admin/form_design/Context';
@@ -9,15 +9,15 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
-import {AddressNlEditor} from './AddressNlObjectsApiVariableConfigurationEditor';
-import {GenericEditor} from './GenericObjectsApiVariableConfigurationEditor';
-import {MapEditor} from './MapObjectsApiVariableConfigurationEditor';
-import {SelectboxesEditor} from './SelectboxesObjectsApiVariableConfigurationEditor';
+import AddressNLEditor from './edit_options/AddressNLEditor';
+import MapEditor from './edit_options/MapEditor';
+import SelectboxesEditor from './edit_options/SelectboxesEditor';
+import {GenericEditor} from './edit_options/generic';
 
 // This can be updated with component-specific variable configuration options which do not
 // adhere to the generic behaviour (GenericEditor)
 const VARIABLE_CONFIGURATION_OPTIONS = {
-  addressNL: AddressNlEditor,
+  addressNL: AddressNLEditor,
   map: MapEditor,
   selectboxes: SelectboxesEditor,
 };
@@ -40,7 +40,7 @@ const VARIABLE_CONFIGURATION_OPTIONS = {
  * @returns {JSX.Element} - The configuration form for the Objects API
  */
 const ObjectsApiVariableConfigurationEditor = ({variable}) => {
-  const {values: backendOptions, getFieldProps} = useFormikContext();
+  const {values: backendOptions, getFieldProps, setFieldValue} = useFormikContext();
   const {components} = useContext(FormContext);
 
   /** @type {ObjectsAPIRegistrationBackendOptions} */
@@ -50,19 +50,34 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   if (version !== 2) throw new Error('Not supported, must be config version 2.');
 
   // get the index of our variable in the mapping, if it exists
-  let index = variablesMapping.findIndex(
+  const index = variablesMapping.findIndex(
     mappedVariable => mappedVariable.variableKey === variable.key
   );
 
-  if (index === -1) {
-    // if not found, grab the next available index to add it as a new record/entry
-    index = variablesMapping.length;
-  }
+  // ensure that the mapping entry is present for the variable, if not -> insert it.
+  useEffect(() => {
+    if (index === -1) {
+      const newVariablesMapping = [
+        ...variablesMapping,
+        {
+          variableKey: variable.key,
+          targetPath: undefined,
+          // options are added dynamically by the component type specific editor
+        },
+      ];
+      setFieldValue('variablesMapping', newVariablesMapping);
+    }
+  }, []);
 
-  let mappedVariable = variablesMapping[index] || {
-    variableKey: variable.key,
-    targetPath: undefined,
-  };
+  // ideally we'd manage validation errors to block modal form submission, but we don't
+  // have a generic way to test this and can only rely on backend validation :(.
+  // To be able to do this, we need to seriously rework our code structure here.
+
+  // Render nothing until the effect above has completed and actually adds the mapping
+  // to the formik state.
+  if (index === -1) return null;
+
+  const mappedVariable = variablesMapping[index];
   // the formik state is populated with the backend options, so our path needs to be
   // relative to that
   const namePrefix = `variablesMapping.${index}`;
@@ -81,6 +96,7 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
             label={
               <FormattedMessage description="'Variable key' label" defaultMessage="Variable key" />
             }
+            required
           >
             <TextInput
               {...getFieldProps(`${namePrefix}.variableKey`)}

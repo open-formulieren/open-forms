@@ -1,6 +1,5 @@
 import {useFormikContext} from 'formik';
-import isEqual from 'lodash/isEqual';
-import React, {useContext} from 'react';
+import {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
 
@@ -12,8 +11,8 @@ import {Checkbox} from 'components/admin/forms/Inputs';
 import {TargetPathSelect} from 'components/admin/forms/objects_api';
 import ErrorMessage from 'components/errors/ErrorMessage';
 
-import {MappedVariableTargetPathSelect} from './GenericObjectsApiVariableConfigurationEditor';
-import {fetchTargetPaths} from './utils';
+import {fetchTargetPaths} from '../utils';
+import {ShowJSONSchemaToggle} from './generic';
 
 const ADDRESSNL_NESTED_PROPERTIES = {
   postcode: {type: 'string'},
@@ -24,7 +23,7 @@ const ADDRESSNL_NESTED_PROPERTIES = {
   streetName: {type: 'string'},
 };
 
-export const AddressNlEditor = ({
+const AddressNLEditor = ({
   variable,
   components,
   namePrefix,
@@ -41,7 +40,6 @@ export const AddressNlEditor = ({
     targetPath => targetPath && targetPath.length
   );
   const [specificTargetPaths, toggleSpecificTargetPaths] = useToggle(hasSpecificOptions);
-  const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
 
   const deriveAddress = components[variable?.key]['deriveAddress'];
 
@@ -67,9 +65,6 @@ export const AddressNlEditor = ({
 
   const [objectTypeTargetPaths = [], stringTypeTargetPaths = [], numberTypeTargetPaths = []] =
     targetPaths || [];
-
-  const getTargetPath = pathSegment =>
-    objectTypeTargetPaths.find(t => isEqual(t.targetPath, pathSegment));
 
   if (error)
     return (
@@ -141,14 +136,13 @@ export const AddressNlEditor = ({
             />
           }
           disabled={specificTargetPaths}
+          noManageChildProps
         >
-          <MappedVariableTargetPathSelect
+          <TargetPathSelect
             name={`${namePrefix}.targetPath`}
-            index={index}
-            mappedVariable={mappedVariable}
-            isDisabled={specificTargetPaths}
             isLoading={loading}
             targetPaths={objectTypeTargetPaths}
+            isDisabled={specificTargetPaths}
           />
         </Field>
       </FormRow>
@@ -271,24 +265,10 @@ export const AddressNlEditor = ({
         </Fieldset>
       )}
       {!specificTargetPaths && (
-        <div style={{marginTop: '1em'}}>
-          <a href="#" onClick={e => e.preventDefault() || toggleJsonSchemaVisible()}>
-            <FormattedMessage
-              description="Objects API variable configuration editor JSON Schema visibility toggle"
-              defaultMessage="Toggle JSON Schema"
-            />
-          </a>
-          {jsonSchemaVisible && (
-            <pre style={{marginTop: '1em'}}>
-              {loading || !mappedVariable.targetPath ? (
-                <FormattedMessage description="Not applicable" defaultMessage="N/A" />
-              ) : (
-                JSON.stringify(getTargetPath(mappedVariable.targetPath).jsonSchema, null, 2)
-              )}
-            </pre>
-          )}
-        </div>
+        <ShowJSONSchemaToggle availablePaths={targetPaths} targetPath={mappedVariable.targetPath} />
       )}
     </>
   );
 };
+
+export default AddressNLEditor;

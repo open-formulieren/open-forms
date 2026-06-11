@@ -1,4 +1,4 @@
-import {useField, useFormikContext} from 'formik';
+import {useField} from 'formik';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
