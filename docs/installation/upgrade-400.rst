@@ -338,3 +338,14 @@ On 4.0 (automatic), builds on top of the 3.5 migration result:
 
 * Configuration will be moved from the API group level to the registration backends.
 * Configuration will be moved from file component level to the registration backends.
+
+.. warning:: The automatic migrations will copy configuration from the file component (
+   description of the document type, RSIN of the organization, confidentiality level
+   and/or document title) to the backend configuration options **as is**.
+
+   It is theoretically possible that the catalogue specified on the file component
+   differs from the catalogue specified in the registration backend options. If this is
+   the case, and the document type does not exist in the catalogue specified in the
+   backend options, then you may encountered registration errors for your form
+   submissions. Our advice is to keep an eye on registration failures and inspect + fix
+   the forms that turn out to be misconfigured, and then retry the submission processing.
