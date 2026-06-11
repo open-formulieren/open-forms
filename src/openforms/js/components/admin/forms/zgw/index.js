@@ -7,5 +7,4 @@ export {
   extractValue as getCatalogueOption,
   groupAndSortOptions as groupAndSortCatalogueOptions,
 } from './CatalogueSelect';
-export {default as CopyDocumentTypesConfig} from './CopyDocumentTypesConfig';
 export {DocumentTypeSelect, useGetDocumentTypes} from './DocumentTypeSelect';
