@@ -290,6 +290,19 @@ This still has some impact though:
   - an API group reference.
   - a catalogue reference (domain + RSIN) combination.
 
+File component specific overrides
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Before Open Forms 4.0, you could configure a specific document type, organization RSIN,
+confidentiality level and/or title to use in the registration tab of the file component.
+
+In 4.0, this has been moved into the variables tab, where you can configure these
+options for each configured registration backend. This means the document type dropdown
+now automatically filters valid options based on the specified catalogue and case type.
+
+The old, component-specific configuration is no longer used. Importing of form exports
+created on versions older than 4.0 will do a best-effort attempt to convert this.
+
 Objects API registration
 ------------------------
 
@@ -308,3 +321,71 @@ This still has some impact though:
 
   - a catalogue reference (domain + RSIN) combination.
   - the document type references for each configuration option
+
+File component specific overrides
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Before Open Forms 4.0, you could configure a specific document type, organization RSIN,
+confidentiality level and/or title to use in the registration tab of the file component.
+
+In 4.0, this has been moved into the variables tab, where you can configure these
+options for each configured registration backend. This means the document type dropdown
+now automatically filters valid options based on the specified catalogue.
+
+The old, component-specific configuration is no longer used. Importing of form exports
+created on versions older than 4.0 will do a best-effort attempt to convert this.
+
+Migration steps
+---------------
+
+For a successful migration, you need to start preparing already on your existing
+instance which must be at least on version 3.5.4. Newer patches are always recommended.
+
+On 3.5.x
+~~~~~~~~
+
+**Migration tool**
+
+A DevOps engineer or other technical (system) administrator must execute a command line
+script to migrate legacy URLs to the combination of ``(catalogueDetails, description)``
+for document type references:
+
+.. code-block:: bash
+
+    # in a container/pod
+    python src/manage.py migrate_catalogi_api_urls --no-dry-run
+
+The output of the command will report which changes were made, and if any problems were
+encountered. If problems are encountered, a functional administrator must edit the
+affected forms in the admin interface to resolve the issues, after which the migration
+tool can be run again.
+
+Repeat these steps until no more problems are reported.
+
+**Check script**
+
+We're providing (currently in development) a check script that reports file components
+in forms that have conflicting catalogue specifications compared to the registration
+backends used in the forms.
+
+You should run this script and resolve the problems in the admin interface. As long as
+problems are reported, the update to Open Forms 4.0 is blocked.
+
+On 4.0.x
+~~~~~~~~
+
+4.0 requires that the migration tool has been run successfully and that configuration is
+consistent. This is automatically checked when you try to upgrade, and if problems are
+detected, the upgrade is blocked so that you can safely roll back to 3.5 to address the
+issues.
+
+If no problems are detected, some automatic migrations will take place. You don't have
+to do anything for this:
+
+* Catalogue configuration specified on API groups will be moved into the registration
+  backend options.
+* Document type configuration specified on the API groups will be moved into the
+  registration backend options.
+* Document options (document type, organization RSIN, title, confidentiality level...)
+  will be moved from the file component configuration into the relevant registration
+  backend options.
