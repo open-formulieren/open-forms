@@ -324,11 +324,11 @@ class MoveZGWAPIGroupConfigurationToBackendTests(MigratorTestCase):
 class MoveFileComponentRegistrationOverridesTests(MigratorTestCase):
     migrate_from = (
         "forms",
-        "0131_move_api_group_configuration_to_backends",
+        "0132_fix_date_datetime_validation_missing_mode",
     )
     migrate_to = (
         "forms",
-        "0132_move_file_component_registration_overrides",
+        "0133_move_file_component_registration_overrides",
     )
 
     def prepare(self):
