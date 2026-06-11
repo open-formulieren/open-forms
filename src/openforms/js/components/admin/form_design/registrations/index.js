@@ -9,6 +9,10 @@ import MSGraphOptionsForm from './ms_graph';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import {ObjectsApiVariableConfigurationEditor} from './objectsapi/ObjectsApiVariableConfigurationEditor';
+import {
+  formikValuesToOptions as objectsFormikValuesToOptions,
+  optionsToFormikValues as objectsOptionsToFormikValues,
+} from './objectsapi/transformations';
 import {onGenericJSONStepEdit, onObjectsAPIStepEdit, onZGWStepEdit} from './stepEditHandlers';
 import StufZDSOptionsForm from './stufzds';
 import {
@@ -18,6 +22,10 @@ import {
 import ZGWOptionsForm from './zgw';
 import ZGWSummaryHandler from './zgw/SummaryHandler';
 import ZGWVariableConfigurationEditor from './zgw/VariableConfigurationEditor';
+import {
+  formikValuesToOptions as ZGWFormikValuesToOptions,
+  optionsToFormikValues as ZGWOptionsToFormikValues,
+} from './zgw/transformations';
 
 /**
  * @typedef {{
@@ -40,6 +48,8 @@ export const BACKEND_OPTIONS_FORMS = {
       options.version === 2 || (component && component.type === 'file'),
     summaryHandler: ObjectsApiSummaryHandler,
     variableConfigurationEditor: ObjectsApiVariableConfigurationEditor,
+    optionsToFormikValues: objectsOptionsToFormikValues,
+    formikValuesToOptions: objectsFormikValuesToOptions,
   },
   email: {
     form: EmailOptionsForm,
@@ -51,6 +61,8 @@ export const BACKEND_OPTIONS_FORMS = {
       component && component.type === 'file',
     summaryHandler: ZGWSummaryHandler,
     variableConfigurationEditor: ZGWVariableConfigurationEditor,
+    optionsToFormikValues: ZGWOptionsToFormikValues,
+    formikValuesToOptions: ZGWFormikValuesToOptions,
   },
   'stuf-zds-create-zaak': {
     form: StufZDSOptionsForm,

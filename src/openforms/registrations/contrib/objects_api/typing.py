@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import Literal, NotRequired, Required, TypedDict
 from uuid import UUID
 
@@ -18,6 +17,7 @@ class CatalogueOption(TypedDict):
 
 
 class FileComponentOptions(TypedDict, total=False):
+    key: Required[str]
     document_type_description: str
     organization_rsin: str
     confidentiality_level: VertrouwelijkheidAanduiding
@@ -52,7 +52,7 @@ class _BaseRegistrationOptions(TypedDict, total=False):
     informatieobjecttype_submission_csv: str
     informatieobjecttype_attachment: str
 
-    files: NotRequired[Mapping[str, FileComponentOptions]]
+    files: NotRequired[list[FileComponentOptions]]
     """
     Mapping from component key to file upload options for the Documents API.
 

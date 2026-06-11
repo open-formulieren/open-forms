@@ -684,18 +684,20 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "domain": "OTHER",
                     "rsin": "000000000",
                 },
-                "files": {
-                    "field1": {
+                "files": [
+                    {
+                        "key": "field1",
                         "document_type_description": (
                             "Attachment Informatieobjecttype other catalog"
                         ),
                     },
-                    "field2": {
+                    {
+                        "key": "field2",
                         "document_type_description": "",
                         "organization_rsin": "",
                         "title": "",
                     },
-                },
+                ],
             },
         )
 
@@ -796,8 +798,9 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "domain": "OTHER",
                     "rsin": "000000000",
                 },
-                "files": {
-                    "fileUpload": {
+                "files": [
+                    {
+                        "key": "fileUpload",
                         "document_type_description": (
                             "Attachment Informatieobjecttype other catalog"
                         ),
@@ -805,7 +808,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                         "confidentiality_level": "geheim",
                         "title": "A Custom Title",
                     }
-                },
+                ],
             },
         )
 
@@ -894,8 +897,9 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "domain": "OTHER",
                     "rsin": "000000000",
                 },
-                "files": {
-                    "fileUpload": {
+                "files": [
+                    {
+                        "key": "fileUpload",
                         "document_type_description": (
                             "Attachment Informatieobjecttype other catalog"
                         ),
@@ -903,7 +907,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                         "confidentiality_level": "geheim",
                         "title": "A Custom Title",
                     }
-                },
+                ],
             },
         )
 
@@ -1268,11 +1272,12 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "upload_submission_csv": False,
             "update_existing_object": False,
             "auth_attribute_path": [],
-            "files": {
-                "file": {
+            "files": [
+                {
+                    "key": "file",
                     "document_type_description": "Attachment Informatieobjecttype",
                 },
-            },
+            ],
         }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)

@@ -26,8 +26,11 @@ const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComp
     }
 
     // remove any file component configuration
-    if (isFileComponentType) {
-      delete registrationBackendOptions.files[componentSchema.key];
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const updatedFiles = registrationBackendOptions.files.filter(
+        options => options.key !== componentSchema.key
+      );
+      registrationBackendOptions.files = updatedFiles;
     }
   } else {
     const keyChange = componentSchema.key !== originalComponent.key;
@@ -41,10 +44,13 @@ const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComp
     }
 
     // move/rename the key in the files options mapping
-    if (isFileComponentType) {
-      registrationBackendOptions.files[componentSchema.key] =
-        registrationBackendOptions.files[originalComponent.key];
-      delete registrationBackendOptions.files[originalComponent.key];
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const fileOptions = registrationBackendOptions.files.find(
+        options => options.key === originalComponent.key
+      );
+      if (fileOptions !== undefined) {
+        fileOptions.key = componentSchema.key;
+      }
     }
   }
   return registrationBackendOptions;
@@ -86,8 +92,11 @@ const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, origi
     }
 
     // remove any file component configuration
-    if (isFileComponentType) {
-      delete registrationBackendOptions.files[componentSchema.key];
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const updatedFiles = registrationBackendOptions.files.filter(
+        options => options.key !== componentSchema.key
+      );
+      registrationBackendOptions.files = updatedFiles;
     }
 
     // Objects API mappings
@@ -122,10 +131,13 @@ const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, origi
     }
 
     // move/rename the key in the files options mapping
-    if (isFileComponentType) {
-      registrationBackendOptions.files[componentSchema.key] =
-        registrationBackendOptions.files[originalComponent.key];
-      delete registrationBackendOptions.files[originalComponent.key];
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const fileOptions = registrationBackendOptions.files.find(
+        options => options.key === originalComponent.key
+      );
+      if (fileOptions !== undefined) {
+        fileOptions.key = componentSchema.key;
+      }
     }
 
     return registrationBackendOptions;

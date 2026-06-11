@@ -67,6 +67,14 @@ class ObjecttypeVariableMappingSerializer(serializers.Serializer):
 
 
 class FileComponentOptionsSerializer(serializers.Serializer):
+    key = FormioVariableKeyField(
+        label=_("component key"),
+        help_text=_(
+            "Literal component key value of the file component for which the options "
+            "apply."
+        ),
+    )
+    # TODO: validate that it's in the specified catalogue
     document_type_description = serializers.CharField(
         label=_("Document type description"),
         required=False,
@@ -246,14 +254,14 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     )
 
     # File component options
-    files = serializers.DictField(
-        child=FileComponentOptionsSerializer(),
+    files = FileComponentOptionsSerializer(
+        many=True,
         label=_("Files"),
         required=False,
         help_text=_(
-            "Mapping of component key name to file upload options. The key is the key "
-            "of the file component in the form, which may be a child in an edit grid. "
-            "Any specified option overrides the equivalent option on the backend "
+            "List of file upload options for file components. Each entry contains the "
+            "key of the file component in the form, which may be a child in an edit "
+            "grid. Any specified option overrides the equivalent option on the backend "
             "level. If unspecified, the backend configuration is used."
         ),
         allow_null=False,

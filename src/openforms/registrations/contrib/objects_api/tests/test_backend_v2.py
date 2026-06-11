@@ -1538,11 +1538,12 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             "iot_submission_csv": "",
             # a default is required to register file component attachments, aparently
             "upload_submission_csv": False,
-            "files": {
-                "file": {
+            "files": [
+                {
+                    "key": "file",
                     "document_type_description": "Attachment Informatieobjecttype",
                 },
-            },
+            ],
         }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)

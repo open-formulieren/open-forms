@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from typing import (
     Any,
@@ -58,6 +58,7 @@ from .registration_variables import (
 )
 from .typing import (
     ConfigVersion,
+    FileComponentOptions,
     RegistrationOptions,
     RegistrationOptionsV1,
     RegistrationOptionsV2,
@@ -177,6 +178,7 @@ def register_submission_attachment(
     submission: Submission,
     attachment: SubmissionFileAttachment,
     options: RegistrationOptions,
+    file_options: Mapping[str, FileComponentOptions],
     documents_client: DocumentenClient,
 ) -> str:
     default_document_type = _resolve_documenttype(
@@ -199,7 +201,7 @@ def register_submission_attachment(
     # look up registration overrides for the component that this file was
     # uploaded for
     if (file_component := attachment.component) is not None and (
-        overrides := options.get("files", {}).get(file_component["key"])
+        overrides := file_options.get(file_component["key"])
     ) is not None:
         if _document_type_description := overrides.get("document_type_description"):
             _options = options.copy()
@@ -280,6 +282,7 @@ class ObjectsAPIRegistrationHandler[
         ) or options.get("informatieobjecttype_attachment")
 
         api_group = options["objects_api_group"]
+        file_options = {item["key"]: item for item in options.get("files", [])}
 
         with (
             get_documents_client(api_group) as documents_client,
@@ -318,6 +321,7 @@ class ObjectsAPIRegistrationHandler[
                             submission,
                             attachment,
                             options,
+                            file_options,
                             documents_client,
                         )
                         submission_attachments.append(

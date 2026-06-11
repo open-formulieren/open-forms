@@ -1478,20 +1478,22 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             "summary_documents": [SummaryDocumentChoices.pdf],
             # empty-ish value should fall back to default
             "auteur": "",
-            "files": {
-                "field1": {
+            "files": [
+                {
+                    "key": "field1",
                     "document_type_description": "Attachment Informatieobjecttype",
                     "organization_rsin": "100000009",
                     "confidentiality_level": "zeer_geheim",
                     "title": "TITEL",
                 },
                 # empty values -> document type defaults must be used
-                "field2": {
+                {
+                    "key": "field2",
                     "document_type_description": "",
                     "organization_rsin": "",
                     "title": "",
                 },
-            },
+            ],
         }
         attachment_1 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
@@ -3251,11 +3253,12 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             # empty-ish value should fall back to default
             "auteur": "",
             "summary_documents": [SummaryDocumentChoices.pdf],
-            "files": {
-                "file": {
+            "files": [
+                {
+                    "key": "file",
                     "document_type_description": "Attachment Informatieobjecttype",
                 },
-            },
+            ],
         }
         plugin = ZGWRegistration("zgw")
         _run_preregistration(submission, plugin, options)

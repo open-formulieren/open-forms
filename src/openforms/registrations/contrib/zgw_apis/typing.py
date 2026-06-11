@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Collection, Mapping
-from typing import TYPE_CHECKING, Literal, NotRequired, TypedDict
+from collections.abc import Collection
+from typing import TYPE_CHECKING, Literal, NotRequired, Required, TypedDict
 
 from openforms.contrib.zgw.typing import VertrouwelijkheidAanduiding
 
@@ -24,6 +24,7 @@ class PropertyMapping(TypedDict):
 
 
 class FileComponentOptions(TypedDict, total=False):
+    key: Required[str]
     document_type_description: str
     organization_rsin: str
     confidentiality_level: VertrouwelijkheidAanduiding
@@ -58,7 +59,7 @@ class RegistrationOptions(TypedDict):
     zaak_omschrijving: NotRequired[str]
     zaak_toelichting: NotRequired[str]
     summary_documents: Collection[SummaryDocumentChoices]
-    files: NotRequired[Mapping[str, FileComponentOptions]]
+    files: NotRequired[list[FileComponentOptions]]
     """
     Mapping from component key to file upload options for the Documents API.
 

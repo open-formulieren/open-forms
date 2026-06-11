@@ -648,6 +648,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             # TODO: threading? asyncio?
             submission_uploads = defaultdict[str, list[str]](list)
             default_cl = options["doc_vertrouwelijkheidaanduiding"]
+            file_options = {item["key"]: item for item in options.get("files", [])}
             for attachment in submission.attachments:
                 # use the default from the backend options as a starting point, override
                 # with component-specific options if they're set.
@@ -668,7 +669,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 # look up registration overrides for the component that this file was
                 # uploaded for
                 if (file_component := attachment.component) is not None and (
-                    overrides := options.get("files", {}).get(file_component["key"])
+                    overrides := file_options.get(file_component["key"])
                 ) is not None:
                     if _document_type_description := overrides.get(
                         "document_type_description"
