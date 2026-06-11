@@ -87,12 +87,6 @@
       "value": "Mark the form step as applicable"
     }
   ],
-  "/MWRm7": [
-    {
-      "type": 0,
-      "value": "There are no file upload components in the form."
-    }
-  ],
   "/XbK4W": [
     {
       "type": 0,
@@ -557,22 +551,10 @@
       "value": "Ask statement of truth"
     }
   ],
-  "3eiHJv": [
-    {
-      "type": 0,
-      "value": "Catalogue RSIN"
-    }
-  ],
   "3h215E": [
     {
       "type": 0,
       "value": "CSS class"
-    }
-  ],
-  "3jd+Cd": [
-    {
-      "type": 0,
-      "value": "Catalogue domain"
     }
   ],
   "3leP68": [
@@ -1799,12 +1781,6 @@
       "value": "Use a variable for the price"
     }
   ],
-  "CpZufh": [
-    {
-      "type": 0,
-      "value": "Check/uncheck all"
-    }
-  ],
   "CtjZFq": [
     {
       "type": 0,
@@ -2189,12 +2165,6 @@
     {
       "type": 0,
       "value": "The co-sign component requires at least one authentication plugin to be enabled."
-    }
-  ],
-  "FJaFwb": [
-    {
-      "type": 0,
-      "value": "Copy"
     }
   ],
   "FNT8nq": [
@@ -2801,20 +2771,6 @@
       "value": "Unfortunately something went wrong!"
     }
   ],
-  "KTmwYn": [
-    {
-      "type": 0,
-      "value": "Update "
-    },
-    {
-      "type": 1,
-      "value": "label"
-    },
-    {
-      "type": 0,
-      "value": " configuration?"
-    }
-  ],
   "Kdgpxf": [
     {
       "type": 0,
@@ -3147,12 +3103,6 @@
       "value": "A short instruction shown below the signature pad."
     }
   ],
-  "NwBpaW": [
-    {
-      "type": 0,
-      "value": "Document type description"
-    }
-  ],
   "NyyJMK": [
     {
       "type": 0,
@@ -3341,22 +3291,10 @@
       "value": "Include confirmation page content in PDF"
     }
   ],
-  "PbVsAV": [
-    {
-      "type": 0,
-      "value": "File component document types"
-    }
-  ],
   "PdaMqg": [
     {
       "type": 0,
       "value": "Add rule"
-    }
-  ],
-  "PhKHkq": [
-    {
-      "type": 0,
-      "value": "You can copy the catalogue and document type description from the plugin options to the selected file upload fields of the form. Note that this will overwrite existing field-level configuration!"
     }
   ],
   "PhN977": [
@@ -4361,12 +4299,6 @@
     {
       "type": 0,
       "value": "Save"
-    }
-  ],
-  "YReu09": [
-    {
-      "type": 0,
-      "value": "Field label"
     }
   ],
   "YSuwK2": [
@@ -6689,12 +6621,6 @@
     {
       "type": 0,
       "value": "Move up"
-    }
-  ],
-  "p0n2wK": [
-    {
-      "type": 0,
-      "value": "The file component changes will be applied immediately. Are you sure you want to continue?"
     }
   ],
   "p5Iv+R": [

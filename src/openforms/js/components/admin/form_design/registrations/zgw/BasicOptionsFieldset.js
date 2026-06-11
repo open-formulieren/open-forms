@@ -4,7 +4,7 @@ import {FormattedMessage} from 'react-intl';
 
 import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
-import {CatalogueSelectOptions, CopyDocumentTypesConfig} from 'components/admin/forms/zgw';
+import {CatalogueSelectOptions} from 'components/admin/forms/zgw';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {CaseTypeSelect, CatalogueSelect, DocumentTypeSelect, ZGWAPIGroup} from './fields';
@@ -88,20 +88,6 @@ const BasicOptionsFieldset = ({
               Are you sure you want to continue?"
             />
           }
-        />
-      </Fieldset>
-      <Fieldset
-        title={
-          <FormattedMessage
-            description="ZGw APIs registration: file components document types fieldset title"
-            defaultMessage="File component document types"
-          />
-        }
-        collapsible
-      >
-        <CopyDocumentTypesConfig
-          catalogueField="catalogue"
-          descriptionField="documentTypeDescription"
         />
       </Fieldset>
     </>

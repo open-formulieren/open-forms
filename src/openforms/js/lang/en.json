@@ -44,11 +44,6 @@
     "description": "action type \"step-applicable\" label",
     "originalDefault": "Mark the form step as applicable"
   },
-  "/MWRm7": {
-    "defaultMessage": "There are no file upload components in the form.",
-    "description": "Copy document types config: no file components text",
-    "originalDefault": "There are no file upload components in the form."
-  },
   "/fAEsY": {
     "defaultMessage": "Submission report CSV informatieobjecttype",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
@@ -248,16 +243,6 @@
     "defaultMessage": "Ask statement of truth",
     "description": "Form askStatementOfTruth field label",
     "originalDefault": "Ask statement of truth"
-  },
-  "3eiHJv": {
-    "defaultMessage": "Catalogue RSIN",
-    "description": "Copy document types config to file components: catalogue RSIN heading",
-    "originalDefault": "Catalogue RSIN"
-  },
-  "3jd+Cd": {
-    "defaultMessage": "Catalogue domain",
-    "description": "Copy document types config to file components: catalogue domain heading",
-    "originalDefault": "Catalogue domain"
   },
   "3z1hhJ": {
     "defaultMessage": "Toggle JSON Schema",
@@ -769,11 +754,6 @@
     "description": "variable pricing mode label",
     "originalDefault": "Use a variable for the price"
   },
-  "CpZufh": {
-    "defaultMessage": "Check/uncheck all",
-    "description": "Accessible label for check/uncheck all file components",
-    "originalDefault": "Check/uncheck all"
-  },
   "CtjZFq": {
     "defaultMessage": "Submission allowed",
     "description": "Form submissionAllowed field label",
@@ -963,11 +943,6 @@
     "defaultMessage": "The co-sign component requires at least one authentication plugin to be enabled.",
     "description": "MissingAuthCosignWarning message",
     "originalDefault": "The co-sign component requires at least one authentication plugin to be enabled."
-  },
-  "FJaFwb": {
-    "defaultMessage": "Copy",
-    "description": "Copy document types config: copy button label",
-    "originalDefault": "Copy"
   },
   "FNT8nq": {
     "defaultMessage": "Variable containing email addresses",
@@ -1324,11 +1299,6 @@
     "description": "'Static' source label for fixed metadata variables table",
     "originalDefault": "Static"
   },
-  "KTmwYn": {
-    "defaultMessage": "Update {label} configuration?",
-    "description": "Accessible label for check/uncheck single file component",
-    "originalDefault": "Update {label} configuration?"
-  },
   "KjDolH": {
     "defaultMessage": "Manually defined",
     "description": "JSON editor: \"manual\" variable source label",
@@ -1524,11 +1494,6 @@
     "description": "ZGW APIs registration options 'document type' label",
     "originalDefault": "Document type"
   },
-  "NwBpaW": {
-    "defaultMessage": "Document type description",
-    "description": "Copy document types config to file components: doc type description heading",
-    "originalDefault": "Document type description"
-  },
   "NyyJMK": {
     "defaultMessage": "The API group specifies which ZGW services to use.",
     "description": "ZGW APIs group field help text",
@@ -1629,20 +1594,10 @@
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Include confirmation page content in PDF"
   },
-  "PbVsAV": {
-    "defaultMessage": "File component document types",
-    "description": "ZGw APIs registration: file components document types fieldset title",
-    "originalDefault": "File component document types"
-  },
   "PdaMqg": {
     "defaultMessage": "Add rule",
     "description": "Add form logic rule button",
     "originalDefault": "Add rule"
-  },
-  "PhKHkq": {
-    "defaultMessage": "You can copy the catalogue and document type description from the plugin options to the selected file upload fields of the form. Note that this will overwrite existing field-level configuration!",
-    "description": "Copy document types config: feature description",
-    "originalDefault": "You can copy the catalogue and document type description from the plugin options to the selected file upload fields of the form. Note that this will overwrite existing field-level configuration!"
   },
   "PhN977": {
     "defaultMessage": "Plugin configuration: StUF-ZDS",
@@ -2083,11 +2038,6 @@
     "defaultMessage": "Save",
     "description": "Admin save submit button",
     "originalDefault": "Save"
-  },
-  "YReu09": {
-    "defaultMessage": "Field label",
-    "description": "Copy document types config to file components: component label heading",
-    "originalDefault": "Field label"
   },
   "YbnFnL": {
     "defaultMessage": "The component \"{label}\" (with key \"{key}\"{location}) has a problem in the field \"{field}\": {error}",
@@ -3093,11 +3043,6 @@
     "defaultMessage": "No advanced configuration is available for this form.",
     "description": "Form advanced configuration fallback message",
     "originalDefault": "No advanced configuration is available for this form."
-  },
-  "p0n2wK": {
-    "defaultMessage": "The file component changes will be applied immediately. Are you sure you want to continue?",
-    "description": "Copy document type configuration to selected file components confirmation modal content",
-    "originalDefault": "The file component changes will be applied immediately. Are you sure you want to continue?"
   },
   "p5Iv+R": {
     "defaultMessage": "Document type API resource URL in the Catalogi API.",
