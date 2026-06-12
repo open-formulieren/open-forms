@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: HEAD
     uri: http://localhost:8003/catalogi/api/v1/informatieobjecttypen/5e48c3a3-9b12-4692-98ee-5c4576b13465
   response:
