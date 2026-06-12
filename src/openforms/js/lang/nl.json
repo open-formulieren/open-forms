@@ -44,11 +44,6 @@
     "description": "action type \"step-applicable\" label",
     "originalDefault": "Mark the form step as applicable"
   },
-  "/MWRm7": {
-    "defaultMessage": "Het formulier bevat geen bestandsuploadvelden.",
-    "description": "Copy document types config: no file components text",
-    "originalDefault": "There are no file upload components in the form."
-  },
   "/fAEsY": {
     "defaultMessage": "Informatieobjecttype CSV-document met inzendingsgegevens",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
@@ -134,6 +129,11 @@
     "defaultMessage": "Formuliervariabele",
     "description": "Open Forms variable label",
     "originalDefault": "Open Forms variable"
+  },
+  "1tLYIe": {
+    "defaultMessage": "RSIN of the organization that registers the document in the Documents API. If left blank, the general configuration is used.",
+    "description": "Document upload: organizationRsin option help text",
+    "originalDefault": "RSIN of the organization that registers the document in the Documents API. If left blank, the general configuration is used."
   },
   "1y4N2r": {
     "defaultMessage": "RSIN van de organisatie die eigenaar is van de zaak en documenten en deze aanmaakt.",
@@ -245,16 +245,6 @@
     "description": "Form askStatementOfTruth field label",
     "originalDefault": "Ask statement of truth"
   },
-  "3eiHJv": {
-    "defaultMessage": "Catalogus-RSIN",
-    "description": "Copy document types config to file components: catalogue RSIN heading",
-    "originalDefault": "Catalogue RSIN"
-  },
-  "3jd+Cd": {
-    "defaultMessage": "Catalogusdomein",
-    "description": "Copy document types config to file components: catalogue domain heading",
-    "originalDefault": "Catalogue domain"
-  },
   "3z1hhJ": {
     "defaultMessage": "Toon/verberg JSON Schema",
     "description": "Objects API variable configuration editor JSON Schema visibility toggle",
@@ -305,6 +295,11 @@
     "defaultMessage": "Aanvullend",
     "description": "JSON registration options 'additionalMetadataVariables' label",
     "originalDefault": "Additional"
+  },
+  "5F58dY": {
+    "defaultMessage": "Document type specified",
+    "description": "'Document type override' registration summary message",
+    "originalDefault": "Document type specified"
   },
   "5JNnFB": {
     "defaultMessage": "Let op! Teruggaan naar het oude configuratieformaat verwijdert de ingestelde variabelekoppelingen. Ben je zeker dat je wil teruggaan?",
@@ -767,11 +762,6 @@
     "description": "variable pricing mode label",
     "originalDefault": "Use a variable for the price"
   },
-  "CpZufh": {
-    "defaultMessage": "Vink alles aan/uit",
-    "description": "Accessible label for check/uncheck all file components",
-    "originalDefault": "Check/uncheck all"
-  },
   "CtjZFq": {
     "defaultMessage": "Inzenden toegestaan",
     "description": "Form submissionAllowed field label",
@@ -889,6 +879,11 @@
     "description": "Description of which key is duplicated in which steps.",
     "originalDefault": "<code>{componentKey}</code>: in {numSteps, plural, =1 {{tail}} other {{lead} and {tail}} }"
   },
+  "EKQv9H": {
+    "defaultMessage": "Confidentiality",
+    "description": "Document upload: confidentialityLevel label",
+    "originalDefault": "Confidentiality"
+  },
   "ENyg8G": {
     "defaultMessage": "Het formulier heeft meerdere mede-ondertekencomponenten. Zorg ervoor dat dit er maximaal één is.",
     "description": "Too many cosign components",
@@ -941,6 +936,11 @@
     "isTranslated": true,
     "originalDefault": "Merchant ID"
   },
+  "F3Uz4r": {
+    "defaultMessage": "Optional custom title for the document. By default, the file name is used.",
+    "description": "Document upload: title option help text",
+    "originalDefault": "Optional custom title for the document. By default, the file name is used."
+  },
   "F4SQsB": {
     "defaultMessage": "Opmerkingen of intenties over het formulier. Kan ook gebruikt worden voor het maken van notities voor later gebruik of voor een andere beheerder.",
     "description": "Internal form remarks field help text",
@@ -960,11 +960,6 @@
     "defaultMessage": "Er moet minstens één authenticatiemethode ingeschakeld zijn voor de mede-ondertekencomponent.",
     "description": "MissingAuthCosignWarning message",
     "originalDefault": "The co-sign component requires at least one authentication plugin to be enabled."
-  },
-  "FJaFwb": {
-    "defaultMessage": "Kopieer",
-    "description": "Copy document types config: copy button label",
-    "originalDefault": "Copy"
   },
   "FNT8nq": {
     "defaultMessage": "Variabele die adres(sen) bevat",
@@ -1141,6 +1136,11 @@
     "description": "Form 'BRP Personen purpose limitation header value' field label",
     "originalDefault": "BRP Personen purpose limitation header value"
   },
+  "Hcwvos": {
+    "defaultMessage": "Title",
+    "description": "Document upload: title option label",
+    "originalDefault": "Title"
+  },
   "HdRpKT": {
     "defaultMessage": "Versie",
     "description": "Objects API prefill options 'objecttypeVersion' label",
@@ -1315,11 +1315,6 @@
     "defaultMessage": "Vast",
     "description": "'Static' source label for fixed metadata variables table",
     "originalDefault": "Static"
-  },
-  "KTmwYn": {
-    "defaultMessage": "{label} instellingen bijwerken?",
-    "description": "Accessible label for check/uncheck single file component",
-    "originalDefault": "Update {label} configuration?"
   },
   "KjDolH": {
     "defaultMessage": "Handmatig ingesteld",
@@ -1517,11 +1512,6 @@
     "description": "ZGW APIs registration options 'document type' label",
     "originalDefault": "Document type"
   },
-  "NwBpaW": {
-    "defaultMessage": "Documenttype-omschrijving",
-    "description": "Copy document types config to file components: doc type description heading",
-    "originalDefault": "Document type description"
-  },
   "NyyJMK": {
     "defaultMessage": "De API-groep die bepaalt welke ZGW services gebruikt moeten worden.",
     "description": "ZGW APIs group field help text",
@@ -1626,20 +1616,10 @@
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Include confirmation page content in PDF"
   },
-  "PbVsAV": {
-    "defaultMessage": "Bijlage-documenttypen",
-    "description": "ZGw APIs registration: file components document types fieldset title",
-    "originalDefault": "File component document types"
-  },
   "PdaMqg": {
     "defaultMessage": "Regel toevoegen",
     "description": "Add form logic rule button",
     "originalDefault": "Add rule"
-  },
-  "PhKHkq": {
-    "defaultMessage": "Je kan de catalogusreferentie en documenttypeomschrijving kopiëren van de plugin-instellingen naar de geselecteerde upload-velden van het formulier. Merk op dat je hiermee bestaande instellingen overschrijft!",
-    "description": "Copy document types config: feature description",
-    "originalDefault": "You can copy the catalogue and document type description from the plugin options to the selected file upload fields of the form. Note that this will overwrite existing field-level configuration!"
   },
   "PhN977": {
     "defaultMessage": "Plugin-instellingen: StUF-ZDS",
@@ -2080,11 +2060,6 @@
     "description": "Admin save submit button",
     "originalDefault": "Save"
   },
-  "YReu09": {
-    "defaultMessage": "Veldlabel",
-    "description": "Copy document types config to file components: component label heading",
-    "originalDefault": "Field label"
-  },
   "YbnFnL": {
     "defaultMessage": "Er is een fout bij de component \"{label}\" (met sleutel \"{key}\"{location}) in het veld \"{field}\": {error}",
     "description": "Formio configuration backend validation error for specific component property",
@@ -2215,6 +2190,11 @@
     "description": "Form step login required label",
     "originalDefault": "Login required?"
   },
+  "aarCQK": {
+    "defaultMessage": "Organization RSIN",
+    "description": "Document upload: organizationRsin option label",
+    "originalDefault": "Organization RSIN"
+  },
   "adFa0X": {
     "defaultMessage": "Component \"{label}\" gebruikt een prefill die (één van) de \"{requiredPlugin}\" inlogoptie(s) nodig heeft. Gebruik één of meerdere van deze inlogopties of verwijder de prefill-plugin.",
     "description": "Prefill plugin requires unavailable auth plugin warning",
@@ -2295,6 +2275,11 @@
     "defaultMessage": "Activeren op",
     "description": "Form activation field label",
     "originalDefault": "Activate on"
+  },
+  "bs8k8k": {
+    "defaultMessage": "Optional custom title for the document. By default, the filename is used.",
+    "description": "Document upload: title option help text",
+    "originalDefault": "Optional custom title for the document. By default, the filename is used."
   },
   "bzVhb6": {
     "defaultMessage": "Verplaats omhoog",
@@ -2381,6 +2366,11 @@
     "defaultMessage": "Introductiepagina",
     "description": "Introduction page fieldset title",
     "originalDefault": "Introduction page"
+  },
+  "dGgkk1": {
+    "defaultMessage": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue and {caseType, select, empty {selected} other {''{caseType}''} } case type in the plugin options. If left blank, the default document type configured in the plugin options will be used.",
+    "description": "Document upload: document type option help text",
+    "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue and {caseType, select, empty {selected} other {''{caseType}''} } case type in the plugin options. If left blank, the default document type configured in the plugin options will be used."
   },
   "dV8M5q": {
     "defaultMessage": "Een herkenbare naam voor deze plugin en configuratie.",
@@ -3083,11 +3073,6 @@
     "description": "Form advanced configuration fallback message",
     "originalDefault": "No advanced configuration is available for this form."
   },
-  "p0n2wK": {
-    "defaultMessage": "De bestandsuploadveldinstellingen worden meteen bijgewerkt. Ben je zeker dat je door wil gaan?",
-    "description": "Copy document type configuration to selected file components confirmation modal content",
-    "originalDefault": "The file component changes will be applied immediately. Are you sure you want to continue?"
-  },
   "p5Iv+R": {
     "defaultMessage": "Documenttype-API-resource-URL in de Catalogi-API.",
     "description": "ZGW APIs registration options 'DocumentType' help text",
@@ -3279,6 +3264,11 @@
     "description": "Family members filters: minimum age field label",
     "originalDefault": "Minimum age"
   },
+  "sdnxHe": {
+    "defaultMessage": "Document type",
+    "description": "Document upload: document type option label",
+    "originalDefault": "Document type"
+  },
   "sokfvf": {
     "defaultMessage": "De service waar de gegevens naartoe worden gestuurd.",
     "description": "JSON registration options 'serviceSelect' helpText",
@@ -3435,6 +3425,11 @@
     "description": "Email registration: content fieldset title",
     "originalDefault": "Content"
   },
+  "vayfq9": {
+    "defaultMessage": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used.",
+    "description": "Document upload: document type option help text",
+    "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used."
+  },
   "viEfGU": {
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Confirmation template help text",
@@ -3545,6 +3540,11 @@
     "defaultMessage": "Vertalingen ingeschakeld",
     "description": "Form translation enabled field label",
     "originalDefault": "Translation enabled"
+  },
+  "xUV58k": {
+    "defaultMessage": "Indication of the level to which extent the document is meant to be public. Only provide this if you wish to override the default from the configured document type.",
+    "description": "Document upload: confidentialityLevel option help text",
+    "originalDefault": "Indication of the level to which extent the document is meant to be public. Only provide this if you wish to override the default from the configured document type."
   },
   "xcp+LU": {
     "defaultMessage": "Formulierdefinitie aanmaken",
