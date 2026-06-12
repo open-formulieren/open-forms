@@ -12,9 +12,6 @@ from openforms.config.models import (
     RichTextColor,
 )
 
-from ..constants import FormTypeChoices
-from ..models import Form
-
 
 def get_rich_text_colors():
     colors = list(RichTextColor.objects.values("color", "label"))
@@ -57,9 +54,6 @@ class FormioConfigMixin:
                     {"label": label, "value": value}
                     for value, label in VertrouwelijkheidsAanduidingen.choices
                 ],
-                "form_type": obj.type
-                if isinstance(obj, Form)
-                else FormTypeChoices.regular,
             }
         )
 
