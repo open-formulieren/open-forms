@@ -3318,6 +3318,93 @@ class StufZDSPluginTests(StUFZDSTestBase):
             "2023",
         )
 
+    @patch("celery.app.task.Task.request")
+    def test_create_zaak_attachment_with_custom_title(self, m, mock_task):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "file",
+                    "key": "field1",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
+            ],
+            form__name="my-form",
+            completed=True,
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            with_report=True,
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="my-attachment.doc",
+            content_type="application/msword",
+            _component_configuration_path="components.0",
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+        mock_task.id = 1
+        options: RegistrationOptions = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "123",
+            "zds_zaaktype_status_omschrijving": "aaabbc",
+            "zds_documenttype_omschrijving_inzending": "dt-omschrijving",
+            "zds_zaakdoc_vertrouwelijkheid": "ZAAKVERTROUWELIJK",
+            "files": [
+                {
+                    "key": "field1",
+                    "title": "a custom title",
+                }
+            ],
+        }
+        plugin = StufZDSRegistration("stuf")
+
+        result = plugin.register_submission(submission, options)
+
+        assert result is not None
+
+        request = m.request_history[-1]
+        self.assertEqual(
+            request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/zkn/0310/voegZaakdocumentToe_Lk01",
+        )
+
+        xml_doc = xml_from_request_history(m, -1)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathExists(xml_doc, "//zkn:edcLk01")
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "EDC",
+                "//zkn:object/zkn:identificatie": "bar-document",
+                "//zkn:object/zkn:dct.omschrijving": "dt-omschrijving",
+                "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
+                "//zkn:object/zkn:inhoud/@xmime:contentType": "application/msword",
+                "//zkn:object/zkn:formaat": "application/msword",
+                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:identificatie": "foo-zaak",
+                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:omschrijving": "my-form",
+                "//zkn:titel": "a custom title",
+            },
+        )
+
 
 @temp_private_root()
 class XMLSanitizerVCRTests(OFVCRMixin, StUFAssertionsMixin, HypothesisTestCase):
