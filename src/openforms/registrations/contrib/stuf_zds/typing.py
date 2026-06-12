@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from typing import Literal, NotRequired, TypedDict
 
 
@@ -8,6 +9,11 @@ class MappingItem(TypedDict):
     """
     If enabled, list values will be serialized as a comma separated string value.
     """
+
+
+class FileComponentOptions(TypedDict):
+    key: str
+    title: NotRequired[str]
 
 
 class RegistrationOptions(TypedDict):
@@ -28,3 +34,14 @@ class RegistrationOptions(TypedDict):
     ]
     variables_mapping: NotRequired[list[MappingItem]]
     variables_mapping_initiator: NotRequired[list[MappingItem]]
+    files: NotRequired[Collection[FileComponentOptions]]
+    """
+    List of file upload options for the Documents API.
+
+    Each item contains at least the Formio component ``key`` key, which can contain
+    ``.`` characters. It's the literal key string as defined on the component.
+
+    Keys may refer to file components inside editgrid components too. We rely on the
+    admin enforcing key uniqueness for *all* components in the form, which is stricter
+    than vanilla Formio.
+    """
