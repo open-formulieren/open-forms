@@ -649,6 +649,8 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             ],
             language_code="en",
             completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2026, 6, 10, 12, 0, 0).replace(tzinfo=UTC),
             with_report=True,
         )
         submission_step = submission.steps[0]
@@ -678,6 +680,24 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "objecttype_version": 1,
                 "update_existing_object": False,
                 "auth_attribute_path": [],
+                "catalogue": {
+                    "domain": "OTHER",
+                    "rsin": "000000000",
+                },
+                "files": [
+                    {
+                        "key": "field1",
+                        "document_type_description": (
+                            "Attachment Informatieobjecttype other catalog"
+                        ),
+                    },
+                    {
+                        "key": "field2",
+                        "document_type_description": "",
+                        "organization_rsin": "",
+                        "title": "",
+                    },
+                ],
             },
         )
 
@@ -717,7 +737,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 attachment_document_2["vertrouwelijkheidaanduiding"], "openbaar"
             )
 
-    def test_submission_with_objects_api_backend_attachments_component_overwrites(self):
+    def test_submission_with_objects_api_backend_attachments_component_overrides(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -725,13 +745,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "type": "file",
                     "file": {"type": []},
                     "filePattern": "",
-                    "registration": {
-                        # `omschrijving` "Attachment Informatieobjecttype other catalog":
-                        "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
-                        "bronorganisatie": "111222333",
-                        "docVertrouwelijkheidaanduiding": "geheim",
-                        "titel": "A Custom Title",
-                    },
                 },
             ],
             submitted_data={
@@ -756,6 +769,8 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
             language_code="en",
             completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2026, 6, 10, 12, 0, 0).replace(tzinfo=UTC),
             with_report=True,
         )
         submission_step = submission.steps[0]
@@ -779,6 +794,21 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "objecttype_version": 1,
                 "update_existing_object": False,
                 "auth_attribute_path": [],
+                "catalogue": {
+                    "domain": "OTHER",
+                    "rsin": "000000000",
+                },
+                "files": [
+                    {
+                        "key": "fileUpload",
+                        "document_type_description": (
+                            "Attachment Informatieobjecttype other catalog"
+                        ),
+                        "organization_rsin": "111222333",
+                        "confidentiality_level": "geheim",
+                        "title": "A Custom Title",
+                    }
+                ],
             },
         )
 
@@ -796,7 +826,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         self.assertEqual(attachment_document["vertrouwelijkheidaanduiding"], "geheim")
         self.assertEqual(attachment_document["titel"], "A Custom Title")
 
-    def test_submission_with_objects_api_backend_attachments_component_inside_fieldset_overwrites(
+    def test_submission_with_objects_api_backend_attachments_component_inside_fieldset_overrides(
         self,
     ):
         submission = SubmissionFactory.from_components(
@@ -812,13 +842,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                             "type": "file",
                             "file": {"type": []},
                             "filePattern": "",
-                            "registration": {
-                                # `omschrijving` "Attachment Informatieobjecttype other catalog":
-                                "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
-                                "bronorganisatie": "111222333",
-                                "docVertrouwelijkheidaanduiding": "geheim",
-                                "titel": "A Custom Title",
-                            },
                         },
                     ],
                 },
@@ -845,6 +868,8 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
             language_code="en",
             completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2026, 6, 10, 12, 0, 0).replace(tzinfo=UTC),
             with_report=True,
         )
         submission_step = submission.steps[0]
@@ -868,6 +893,21 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "objecttype_version": 1,
                 "update_existing_object": False,
                 "auth_attribute_path": [],
+                "catalogue": {
+                    "domain": "OTHER",
+                    "rsin": "000000000",
+                },
+                "files": [
+                    {
+                        "key": "fileUpload",
+                        "document_type_description": (
+                            "Attachment Informatieobjecttype other catalog"
+                        ),
+                        "organization_rsin": "111222333",
+                        "confidentiality_level": "geheim",
+                        "title": "A Custom Title",
+                    }
+                ],
             },
         )
 
@@ -1202,13 +1242,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "file": {"type": []},
                     "filePattern": "",
                     "registration": {
-                        "documentType": {
-                            "catalogue": {
-                                "domain": "TEST",
-                                "rsin": "000000000",
-                            },
-                            "description": "Attachment Informatieobjecttype",
-                        },
                         "informatieobjecttype": "https://example.com/ignore-me",
                     },
                 }
@@ -1240,6 +1273,12 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "upload_submission_csv": False,
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "files": [
+                {
+                    "key": "file",
+                    "document_type_description": "Attachment Informatieobjecttype",
+                },
+            ],
         }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
