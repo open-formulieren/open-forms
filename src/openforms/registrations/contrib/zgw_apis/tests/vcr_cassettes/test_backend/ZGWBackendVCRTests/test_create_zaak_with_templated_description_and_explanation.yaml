@@ -81,9 +81,9 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-06-08", "startdatum": "2026-06-08", "productenOfDiensten":
+      "registratiedatum": "2026-06-11", "startdatum": "2026-06-11", "productenOfDiensten":
       [], "omschrijving": "Description: BBQ permission", "toelichting": "Extra explanation
-      about BBQ permission", "betalingsindicatie": "nvt", "identificatie": "OF-CY2Z5B"}'
+      about BBQ permission", "betalingsindicatie": "nvt", "identificatie": "OF-T24AXH"}'
     headers:
       Accept:
       - '*/*'
@@ -105,8 +105,8 @@ interactions:
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/d6686705-9664-461d-b26f-b8e7b0781c5a","uuid":"d6686705-9664-461d-b26f-b8e7b0781c5a","identificatie":"OF-CY2Z5B","bronorganisatie":"000000000","omschrijving":"Description:
-        BBQ permission","toelichting":"Extra explanation about BBQ permission","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-08","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-08","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/1922d23c-d3e1-42e5-b87c-95ba0386ca59","uuid":"1922d23c-d3e1-42e5-b87c-95ba0386ca59","identificatie":"OF-T24AXH","bronorganisatie":"000000000","omschrijving":"Description:
+        BBQ permission","toelichting":"Extra explanation about BBQ permission","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-11","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-11","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -122,7 +122,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/d6686705-9664-461d-b26f-b8e7b0781c5a
+      - http://localhost:8003/zaken/api/v1/zaken/1922d23c-d3e1-42e5-b87c-95ba0386ca59
       Referrer-Policy:
       - same-origin
       Vary:
@@ -150,11 +150,11 @@ interactions:
       User-Agent:
       - python-requests/2.33.0
     method: GET
-    uri: http://localhost:8003/zaken/api/v1/zaken/d6686705-9664-461d-b26f-b8e7b0781c5a
+    uri: http://localhost:8003/zaken/api/v1/zaken/1922d23c-d3e1-42e5-b87c-95ba0386ca59
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/d6686705-9664-461d-b26f-b8e7b0781c5a","uuid":"d6686705-9664-461d-b26f-b8e7b0781c5a","identificatie":"OF-CY2Z5B","bronorganisatie":"000000000","omschrijving":"Description:
-        BBQ permission","toelichting":"Extra explanation about BBQ permission","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-08","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-08","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/1922d23c-d3e1-42e5-b87c-95ba0386ca59","uuid":"1922d23c-d3e1-42e5-b87c-95ba0386ca59","identificatie":"OF-T24AXH","bronorganisatie":"000000000","omschrijving":"Description:
+        BBQ permission","toelichting":"Extra explanation about BBQ permission","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-11","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-11","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -170,7 +170,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"5bb1faa69005d3d197c569947e7f5b56"'
+      - '"71de05cd5e6ef86e59665eca2084cbcf"'
       Referrer-Policy:
       - same-origin
       Vary:
