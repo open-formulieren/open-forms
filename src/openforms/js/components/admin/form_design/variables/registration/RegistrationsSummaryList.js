@@ -29,6 +29,8 @@ const RegistrationSummary = ({
   backend,
   registrationSummary,
   variableConfigurationEditor,
+  optionsToFormikValues = opts => opts,
+  formikValuesToOptions = values => values,
   onChange,
 }) => {
   const intl = useIntl();
@@ -75,9 +77,9 @@ const RegistrationSummary = ({
           })}
         >
           <Formik
-            initialValues={backend.options}
+            initialValues={optionsToFormikValues(backend.options)}
             onSubmit={(values, actions) => {
-              const updatedBackend = {...backend, options: values};
+              const updatedBackend = {...backend, options: formikValuesToOptions(values)};
               onChange({
                 target: {name: `form.registrationBackends.${backendIndex}`, value: updatedBackend},
               });
@@ -112,6 +114,8 @@ RegistrationSummary.propTypes = {
   registrationSummary: PropTypes.element.isRequired,
   variableConfigurationEditor: PropTypes.element.isRequired,
   onChange: PropTypes.func.isRequired,
+  optionsToFormikValues: PropTypes.func,
+  formikValuesToOptions: PropTypes.func,
 };
 
 /**
@@ -159,6 +163,8 @@ const RegistrationsSummaryList = ({variable, onFieldChange, registrationBackends
       backendIndex,
       registrationSummary: <SummaryHandler variable={variable} backendOptions={backend.options} />,
       variableConfigurationEditor: <VariableConfigurationEditor variable={variable} />,
+      optionsToFormikValues: backendInfo?.optionsToFormikValues,
+      formikValuesToOptions: backendInfo?.formikValuesToOptions,
       onChange: onFieldChange,
     });
   }
