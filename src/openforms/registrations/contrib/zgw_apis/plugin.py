@@ -297,8 +297,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
         # resolve zaaktype to use
         if case_type_identification := options["case_type_identification"]:
-            catalogue = options.get("catalogue")
-            assert catalogue is not None  # enforced by validation
+            catalogue = options["catalogue"]
             with get_catalogi_client(zgw) as catalogi_client:
                 zaaktype_url = _resolve_case_type(
                     catalogi_client,
@@ -639,74 +638,57 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 "intermediate.status",
             )
 
+            # this helps the type checker in narrowing the type
+            # and expressing that it should not happen that submission.completed_on is not set
+            assert submission.completed_on is not None
+            doc_received_date = (
+                datetime_in_amsterdam(submission.completed_on).date().isoformat()
+            )
+
             # TODO: threading? asyncio?
             submission_uploads = defaultdict[str, list[str]](list)
+            default_cl = options["doc_vertrouwelijkheidaanduiding"]
+            file_options = {item["key"]: item for item in options.get("files", [])}
             for attachment in submission.attachments:
-                # default/legacy behaviour, but override it with specific catalogue +
-                # description configuration when available
-                iot = attachment.informatieobjecttype or informatieobjecttype_url
-                # collect attributes of the attachment and add them to the configuration
-                # attribute names conform to the Documenten API specification
-                file_component = attachment.component
-                if file_component is not None:
-                    document_type_configuration = file_component.get(
-                        "registration", {}
-                    ).get("documentType", {})
-                    _document_type_description = document_type_configuration.get(
-                        "description", ""
-                    )
-                    _catalogue = document_type_configuration.get("catalogue", {})
-                    if (
-                        _document_type_description
-                        and (_catalogue_domain := _catalogue.get("domain"))
-                        and (_catalogue_rsin := _catalogue.get("rsin"))
+                # use the default from the backend options as a starting point, override
+                # with component-specific options if they're set.
+                doc_options: DocumentOptions = {
+                    "informatieobjecttype": informatieobjecttype_url,
+                    "organisatie_rsin": options["organisatie_rsin"],
+                    "auteur": options["auteur"],
+                    "titel": attachment.get_display_name(),
+                    "ontvangstdatum": doc_received_date,
+                }
+                assert doc_options["titel"]  # may not be empty
+                if default_cl:
+                    # only specify it if a non-empty value is provided, as the API does
+                    # not allow blank options. The API uses its own default from the
+                    # document type specification if it's not explicitly provided.
+                    doc_options["doc_vertrouwelijkheidaanduiding"] = default_cl
+
+                # look up registration overrides for the component that this file was
+                # uploaded for
+                if (file_component := attachment.component) is not None and (
+                    overrides := file_options.get(file_component["key"])
+                ) is not None:
+                    if _document_type_description := overrides.get(
+                        "document_type_description"
                     ):
-                        iot = _resolve_document_type(
+                        _document_type_url = _resolve_document_type(
                             doc_type_resolver,
-                            catalogue={
-                                "domain": _catalogue_domain,
-                                "rsin": _catalogue_rsin,
-                            },
+                            catalogue=options["catalogue"],
                             zaaktype_url=zaak["zaaktype"],
                             description=_document_type_description,
                             submission_completed=submission.completed_on,
                         )
+                        doc_options["informatieobjecttype"] = _document_type_url
+                    if _bronorganisatie := overrides.get("organization_rsin"):
+                        doc_options["organisatie_rsin"] = _bronorganisatie
+                    if _cl := overrides.get("confidentiality_level"):
+                        doc_options["doc_vertrouwelijkheidaanduiding"] = _cl
+                    if _title := overrides.get("title"):
+                        doc_options["titel"] = _title
 
-                bronorganisatie = (
-                    attachment.bronorganisatie or options["organisatie_rsin"]
-                )
-                vertrouwelijkheidaanduiding = (
-                    attachment.doc_vertrouwelijkheidaanduiding
-                    or options["doc_vertrouwelijkheidaanduiding"]
-                )
-                # `titel` should be a non-empty string
-                # `get_display_name` is used to enforce this
-                titel = attachment.titel or options.get(
-                    "titel", attachment.get_display_name()
-                )
-                doc_options: DocumentOptions = {
-                    "informatieobjecttype": iot,
-                    "organisatie_rsin": bronorganisatie,
-                    "auteur": options["auteur"],
-                    "doc_vertrouwelijkheidaanduiding": options[
-                        "doc_vertrouwelijkheidaanduiding"
-                    ],
-                    "titel": titel,
-                }
-
-                # this helps the type checker in narrowing the type
-                # and expressing that it should not happen that submission.completed_on is not set
-                assert submission.completed_on is not None
-                doc_options["ontvangstdatum"] = (
-                    datetime_in_amsterdam(submission.completed_on).date().isoformat()
-                )
-
-                if vertrouwelijkheidaanduiding:
-                    doc_options["doc_vertrouwelijkheidaanduiding"] = (
-                        vertrouwelijkheidaanduiding
-                    )
-
-                assert doc_options["titel"]
                 attachment_document = execute_unless_result_exists(
                     partial(
                         create_attachment_document,

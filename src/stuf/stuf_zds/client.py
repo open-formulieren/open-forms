@@ -364,7 +364,11 @@ class Client(BaseClient):
         )
 
     def create_zaak_attachment(
-        self, zaak_id: str, doc_id: str, submission_attachment: SubmissionFileAttachment
+        self,
+        zaak_id: str,
+        doc_id: str,
+        submission_attachment: SubmissionFileAttachment,
+        title: str = "",
     ) -> None:
         """
         Create a zaakdocument with the submitted file.
@@ -374,8 +378,7 @@ class Client(BaseClient):
             doc_id=doc_id,
             content=submission_attachment.content,
             doc_data={
-                "titel": submission_attachment.titel
-                or submission_attachment.get_display_name(),
+                "titel": title or submission_attachment.get_display_name(),
                 "bestandsnaam": submission_attachment.get_display_name(),
                 "formaat": submission_attachment.content_type,
                 "beschrijving": "Bijgevoegd document",
