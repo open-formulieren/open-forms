@@ -209,4 +209,34 @@ const onGenericJSONStepEdit = (registrationBackendOptions, componentSchema, orig
   return registrationBackendOptions;
 };
 
-export {onZGWStepEdit, onObjectsAPIStepEdit, onGenericJSONStepEdit};
+const onStUFZDSStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
+  // check if we're dealing with deletion or update
+  const isRemove = originalComponent == null;
+  const isFileComponentType = componentSchema.type === 'file';
+
+  if (isRemove) {
+    // remove any file component configuration
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const updatedFiles = registrationBackendOptions.files.filter(
+        options => options.key !== componentSchema.key
+      );
+      registrationBackendOptions.files = updatedFiles;
+    }
+  } else {
+    const keyChange = componentSchema.key !== originalComponent.key;
+    if (!keyChange) return null;
+
+    // move/rename the key in the files options mapping
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const fileOptions = registrationBackendOptions.files.find(
+        options => options.key === originalComponent.key
+      );
+      if (fileOptions !== undefined) {
+        fileOptions.key = componentSchema.key;
+      }
+    }
+  }
+  return registrationBackendOptions;
+};
+
+export {onZGWStepEdit, onObjectsAPIStepEdit, onGenericJSONStepEdit, onStUFZDSStepEdit};

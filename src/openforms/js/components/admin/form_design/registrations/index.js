@@ -15,6 +15,11 @@ import {
 } from './objectsapi/transformations';
 import {onGenericJSONStepEdit, onObjectsAPIStepEdit, onZGWStepEdit} from './stepEditHandlers';
 import StufZDSOptionsForm from './stufzds';
+import StUFZDSVariableConfigurationEditor from './stufzds/VariableConfigurationEditor';
+import {
+  formikValuesToOptions as StUFZDSFormikValuesToOptions,
+  optionsToFormikValues as StUFZDSOptionsToFormikValues,
+} from './stufzds/transformations';
 import {
   onGenericJSONUserDefinedVariableEdit,
   onObjectsAPIUserDefinedVariableEdit,
@@ -65,6 +70,11 @@ export const BACKEND_OPTIONS_FORMS = {
   },
   'stuf-zds-create-zaak': {
     form: StufZDSOptionsForm,
+    configurableFromVariables: (variable, component, options) => component?.type === 'file',
+    summaryHandler: () => null,
+    variableConfigurationEditor: StUFZDSVariableConfigurationEditor,
+    optionsToFormikValues: StUFZDSOptionsToFormikValues,
+    formikValuesToOptions: StUFZDSFormikValuesToOptions,
   },
   'microsoft-graph': {form: MSGraphOptionsForm},
   json_dump: {
