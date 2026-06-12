@@ -20,14 +20,6 @@ class JccRestAdminTests(WebTest):
 
         self.addCleanup(clear_caches)
 
-    def test_change_form_context(self):
-        user = SuperUserFactory.create()
-        endpoint = reverse("admin:jcc_rest_jccrestconfig_change")
-        response = self.app.get(endpoint, user=user)
-        context = response.context
-
-        self.assertIn("form_type", context)
-
     def test_form_has_configuration_components_populated(self):
         user = SuperUserFactory.create()
         endpoint = reverse("admin:jcc_rest_jccrestconfig_change")

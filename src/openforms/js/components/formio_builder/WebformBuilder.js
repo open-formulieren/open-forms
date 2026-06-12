@@ -40,7 +40,6 @@ const FILE_TYPES = jsonScriptToVar('config-UPLOAD_FILETYPES', {default: []});
 const MAX_FILE_UPLOAD_SIZE = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE', {default: 'unknown'});
 const RICH_TEXT_COLORS = jsonScriptToVar('config-RICH_TEXT_COLORS', {default: []});
 const MAP_TILE_LAYERS = jsonScriptToVar('config-MAP_TILE_LAYERS', {default: []});
-const FORM_TYPE = jsonScriptToVar('FORM_TYPE', {default: 'regular'});
 
 const WebformBuilderFormio = Formio.Builders.builders.webform;
 
@@ -155,7 +154,11 @@ class WebformBuilder extends WebformBuilderFormio {
     };
 
     // this context is not available when editing a form definition (standalone)
-    const {authBackends = [], availablePrefillPlugins = []} = this.webform?.options?.openForms;
+    const {
+      formType,
+      authBackends = [],
+      availablePrefillPlugins = [],
+    } = this.webform?.options?.openForms;
 
     // hand contents of modal over to React
     (async () => {
@@ -165,7 +168,7 @@ class WebformBuilder extends WebformBuilderFormio {
         <IntlProvider {...intlProviderProps}>
           <ComponentConfiguration
             // Context binding
-            formType={FORM_TYPE}
+            formType={formType}
             uniquifyKey={uniquifyKey}
             supportedLanguageCodes={LANGUAGES}
             theme={currentTheme.getValue()}

@@ -15,10 +15,9 @@ Templates.current = customTemplates;
 
 const nlStrings = require('lang/formio/nl.json');
 
-const getBuilderOptions = () => {
+const getBuilderOptions = (formType = 'regular') => {
   const maxFileUploadSize = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE');
   const formFieldsRequiredDefault = jsonScriptToVar('config-REQUIRED_DEFAULT');
-  const formType = jsonScriptToVar('FORM_TYPE');
 
   return {
     builder: BUILDER_FORM_TYPE_MAPPINGS[formType],
@@ -73,18 +72,23 @@ const FormIOBuilder = ({
 
   const featureFlags = useContext(FeatureFlagsContext);
 
+  const {
+    form: {authBackends = [], type},
+    plugins: {availablePrefillPlugins = []},
+  } = useContext(FormContext);
+
+  const isJccRestConfigPage = window.location.pathname.includes('jcc_rest');
+
+  const formType = !isJccRestConfigPage ? type : 'appointment';
+
   // props need to be immutable to not end up in infinite loops
-  const [builderOptions] = useState(getBuilderOptions());
+  const [builderOptions] = useState(getBuilderOptions(formType));
 
   set(builderOptions, 'openForms.componentNamespace', componentNamespaceRef.current);
   set(builderOptions, 'openForms.featureFlags', featureFlags);
   set(builderOptions, 'openForms.registrationBackendInfoRef', registrationBackendInfoRef);
 
   // add custom options here to expose the necessary form context
-  const {
-    form: {authBackends = []},
-    plugins: {availablePrefillPlugins = []},
-  } = useContext(FormContext);
   set(builderOptions, 'openForms.authBackends', authBackends);
   set(builderOptions, 'openForms.availablePrefillPlugins', availablePrefillPlugins);
 
@@ -95,6 +99,7 @@ const FormIOBuilder = ({
       formRef.current = clone;
       setRerenders(rerenders + 1);
     }
+    set(builderOptions, 'openForms.formType', formType);
   });
 
   const extraProps = {};
