@@ -1761,7 +1761,7 @@ class ReferencelistExpiredDataTests(TestCase):
                 "components": [
                     {
                         "key": "textbox",
-                        "type": "textbox",
+                        "type": "textfield",
                         "label": "Textbox",
                     }
                 ],
@@ -1785,6 +1785,7 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
                     {
                         "type": "map",
                         "key": "map",
+                        "label": "map",
                         "defaultZoom": 3,
                         "initialCenter": {
                             "lat": 43.23,
@@ -1810,6 +1811,7 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
                     {
                         "type": "map",
                         "key": "map",
+                        "label": "map",
                         "defaultZoom": 3,
                         "initialCenter": {
                             "lat": 43.23,
@@ -1849,6 +1851,7 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
                     {
                         "type": "map",
                         "key": "map",
+                        "label": "map",
                         "defaultZoom": 3,
                         "initialCenter": {
                             "lat": 43.23,
@@ -1905,6 +1908,7 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
                     {
                         "type": "map",
                         "key": "map",
+                        "label": "map",
                         "defaultZoom": 3,
                         "initialCenter": {
                             "lat": 43.23,
@@ -1949,6 +1953,7 @@ class InvalidMapComponentOverlaysTests(OFVCRMixin, TestCase):
                     {
                         "type": "map",
                         "key": "map",
+                        "label": "map",
                         "defaultZoom": 3,
                         "initialCenter": {
                             "lat": 43.23,
@@ -2015,6 +2020,7 @@ class InvalidComponentConfigsTests(TestCase):
                 "components": [
                     {
                         "key": "profile",
+                        "label": "profile",
                         "type": "customerProfile",
                         "digitalAddressTypes": ["email"],
                         "shouldUpdateCustomerData": True,
@@ -2034,6 +2040,7 @@ class InvalidComponentConfigsTests(TestCase):
                 "components": [
                     {
                         "key": "profile",
+                        "label": "profile",
                         "type": "customerProfile",
                         "digitalAddressTypes": ["email"],
                         "shouldUpdateCustomerData": True,
@@ -2074,6 +2081,7 @@ class InvalidComponentConfigsTests(TestCase):
                 "components": [
                     {
                         "key": "profile",
+                        "label": "profile",
                         "type": "customerProfile",
                         "digitalAddressTypes": ["email"],
                         "shouldUpdateCustomerData": True,

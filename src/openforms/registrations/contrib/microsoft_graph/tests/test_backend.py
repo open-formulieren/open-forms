@@ -74,6 +74,7 @@ class MSGraphRegistrationBackendTests(TestCase):
                 "key": "some_list",
                 "type": "textfield",
                 "multiple": True,
+                "defaultValue": [],
             },
         ]
         submission = SubmissionFactory.from_components(
@@ -163,6 +164,7 @@ class MSGraphRegistrationBackendTests(TestCase):
                     "key": "some_list",
                     "label": "Some list",
                     "multiple": True,
+                    "defaultValue": [],
                 },
             ],
             submitted_data={
@@ -219,6 +221,7 @@ class MSGraphRegistrationBackendTests(TestCase):
                     "type": "date",
                     "label": "Date",
                     "multiple": True,
+                    "defaultValue": [],
                 },
                 {
                     "key": "time",

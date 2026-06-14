@@ -561,6 +561,7 @@ class DetermineVariablesAndStepTests(TestCase):
                         "type": "editgrid",
                         "key": "editgrid",
                         "label": "Editgrid",
+                        "groupLabel": "Item",
                         "components": [
                             {"type": "bsn", "key": "bsn", "label": "BSN"},
                             {"type": "textfield", "key": "childName", "label": "Name"},

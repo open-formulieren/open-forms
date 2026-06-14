@@ -62,21 +62,21 @@ class MappingTests(TestCase):
             [
                 {
                     "key": "voornamen",
-                    "type": "text",
+                    "type": "textfield",
                     "registration": {
                         "attribute": TestAttribute.initiator_voornamen,
                     },
                 },
                 {
                     "key": "geslachtsnaam",
-                    "type": "text",
+                    "type": "textfield",
                     "registration": {
                         "attribute": TestAttribute.initiator_geslachtsnaam,
                     },
                 },
                 {
                     "key": "geslacht",
-                    "type": "text",
+                    "type": "textfield",
                     "registration": {
                         "attribute": "test.geslacht",
                     },
@@ -276,13 +276,13 @@ class MappingTests(TestCase):
                 {
                     "key": "voornaam",
                     "label": "Voornaam",
-                    "type": "text",
+                    "type": "textfield",
                     "mapping_attr": "xyz_voornaam",
                 },
                 {
                     "key": "achternaam",
                     "label": "Achternaam",
-                    "type": "text",
+                    "type": "textfield",
                     "mapping_attr": "xyz_achternaam",
                 },
             ],
@@ -293,7 +293,7 @@ class MappingTests(TestCase):
         expected = {
             "key": "achternaam",
             "label": "Achternaam",
-            "type": "text",
+            "type": "textfield",
             "mapping_attr": "xyz_achternaam",
         }
         self.assertEqual(actual, expected)

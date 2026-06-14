@@ -23,10 +23,12 @@ class SubmissionConfirmationPageTests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                     },
                     {
                         "type": "textfield",
                         "key": "last_name",
+                        "label": "last_name",
                     },
                 ]
             },
@@ -38,6 +40,7 @@ class SubmissionConfirmationPageTests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "favourite_icecream",
+                        "label": "favourite_icecream",
                     }
                 ]
             },
@@ -77,10 +80,12 @@ class SubmissionConfirmationPageTests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                     },
                     {
                         "type": "textfield",
                         "key": "last_name",
+                        "label": "last_name",
                     },
                 ]
             },
@@ -92,6 +97,7 @@ class SubmissionConfirmationPageTests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "favourite_icecream",
+                        "label": "favourite_icecream",
                     }
                 ]
             },
@@ -173,6 +179,7 @@ class SubmissionConfirmationPageTests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                     },
                 ]
             },

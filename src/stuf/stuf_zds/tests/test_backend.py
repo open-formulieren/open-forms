@@ -372,6 +372,8 @@ class StufZDSClientTests(StUFZDSTestBase):
                     "registration": {
                         "titel": "a custom title",
                     },
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
             ]
         )

@@ -530,11 +530,13 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 "components": [
                     {
                         "key": "textFieldSensitive",
+                        "label": "textFieldSensitive",
                         "type": "textfield",
                         "isSensitiveData": True,
                     },
                     {
                         "key": "textFieldNotSensitive",
+                        "label": "textFieldNotSensitive",
                         "type": "textfield",
                         "isSensitiveData": False,
                     },
@@ -546,11 +548,13 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 "components": [
                     {
                         "key": "textFieldSensitive2",
+                        "label": "textFieldSensitive2",
                         "type": "textfield",
                         "isSensitiveData": True,
                     },
                     {
                         "key": "textFieldNotSensitive2",
+                        "label": "textFieldNotSensitive2",
                         "type": "textfield",
                         "isSensitiveData": False,
                     },

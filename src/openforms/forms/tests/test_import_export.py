@@ -172,7 +172,17 @@ class ImportExportTests(TempdirMixin, TestCase):
     def test_export_reusable_form_definition_uuid_already_exists(self):
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "file"}]},
+            configuration={
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "test-key",
+                        "label": "test-key",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    }
+                ]
+            },
             is_reusable=True,
         )
         FormStepFactory.create(form=form, form_definition=form_definition)
@@ -223,7 +233,15 @@ class ImportExportTests(TempdirMixin, TestCase):
             },
         )
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test-key",
+                        "label": "test-key",
+                    }
+                ]
+            }
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         FormVariableFactory.create(
@@ -388,7 +406,15 @@ class ImportExportTests(TempdirMixin, TestCase):
         product = ProductFactory.create()
         form = FormFactory.create(product=product, slug="my-slug")
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]},
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test-key",
+                        "label": "test-key",
+                    }
+                ]
+            },
             is_reusable=True,
         )
         FormStepFactory.create(form=form, form_definition=form_definition)
@@ -413,7 +439,15 @@ class ImportExportTests(TempdirMixin, TestCase):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]},
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test-key",
+                        "label": "test-key",
+                    }
+                ]
+            },
             is_reusable=True,
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
@@ -492,7 +526,15 @@ class ImportExportTests(TempdirMixin, TestCase):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]},
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test-key",
+                        "label": "test-key",
+                    }
+                ]
+            },
             is_reusable=True,  # only re-usable FDs may be related to multiple forms
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
@@ -574,7 +616,17 @@ class ImportExportTests(TempdirMixin, TestCase):
     def test_import_reusable_form_definition_uuid_already_exists(self):
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "file"}]},
+            configuration={
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "test-key",
+                        "label": "test-key",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    }
+                ]
+            },
             is_reusable=True,
         )
         FormStepFactory.create(form=form, form_definition=form_definition)
@@ -864,8 +916,9 @@ class ImportExportTests(TempdirMixin, TestCase):
                     "configuration": {
                         "components": [
                             {
-                                "key": "radio",
                                 "type": "radio",
+                                "key": "radio",
+                                "label": "radio",
                                 "values": [
                                     {"label": "yes", "value": "yes"},
                                     {"label": "no", "value": "no"},
@@ -920,10 +973,11 @@ class ImportExportTests(TempdirMixin, TestCase):
         component = {
             "type": "file",
             "key": "fileTest",
+            "label": "fileTest",
             "url": "",
             "useConfigFiletypes": True,
             "filePattern": "*",
-            "file": {},
+            "file": {"type": []},
         }
 
         form = FormFactory.create(
@@ -944,8 +998,16 @@ class ImportExportTests(TempdirMixin, TestCase):
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
                 "components": [
-                    {"type": "textfield", "key": "textfield"},
-                    {"type": "nottextfield", "key": "nottextfield"},
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "textfield",
+                    },
+                    {
+                        "type": "email",
+                        "key": "nottextfield",
+                        "label": "nottextfield",
+                    },
                 ]
             },
         )
@@ -1156,6 +1218,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                                 "key": "repeatingGroup",
                                 "type": "editgrid",
                                 "label": "Repeating group",
+                                "groupLabel": "Item",
                                 "components": [
                                     {
                                         "key": "textArea7",

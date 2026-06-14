@@ -45,7 +45,9 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
         form = FormFactory.create()
         FormStepFactory.create(
             form_definition__configuration={
-                "components": [{"type": "textfield", "key": "textfield"}]
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "textfield"}
+                ]
             }
         )
         FormLogicFactory.create(
@@ -87,7 +89,14 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
                     {
                         "type": "fieldset",
                         "key": "fieldset",
-                        "components": [{"type": "textfield", "key": "textfield"}],
+                        "label": "fieldset",
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "textfield",
+                                "label": "textfield",
+                            }
+                        ],
                     }
                 ]
             },
@@ -174,12 +183,19 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
             form=form,
             form_definition__configuration={
                 "components": [
-                    {"type": "checkbox", "key": "checkbox"},
+                    {"type": "checkbox", "key": "checkbox", "label": "checkbox"},
                     {
                         "type": "fieldset",
                         "key": "fieldset",
+                        "label": "fieldset",
                         "conditional": {"when": "checkbox", "eq": True, "show": False},
-                        "components": [{"type": "textfield", "key": "textfield"}],
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "textfield",
+                                "label": "textfield",
+                            }
+                        ],
                     },
                 ]
             },
@@ -205,10 +221,13 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
                     {
                         "type": "editgrid",
                         "key": "editgrid",
+                        "label": "editgrid",
+                        "groupLabel": "Item",
                         "components": [
                             {
                                 "type": "selectboxes",
                                 "key": "selectboxes",
+                                "label": "selectboxes",
                                 "values": [
                                     {"value": "a", "label": "A"},
                                     {"value": "b", "label": "B"},

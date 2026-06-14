@@ -104,17 +104,41 @@ class SubmissionAttachmentTest(TestCase):
             ],
         }
         components = [
-            {"key": "my_normal_key", "type": "text"},
-            {"key": "my_file", "type": "file"},
+            {"key": "my_normal_key", "label": "my_normal_key", "type": "textfield"},
+            {
+                "key": "my_file",
+                "label": "my_file",
+                "type": "file",
+                "file": {"type": []},
+                "filePattern": "",
+            },
             {
                 "key": "columnWithFile",
+                "label": "columnWithFile",
                 "type": "columns",
-                "columns": [{"key": "fileInColumn", "type": "file"}],
+                "columns": [
+                    {
+                        "key": "fileInColumn",
+                        "label": "fileInColumn",
+                        "type": "file",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    }
+                ],
             },
             {
                 "type": "fieldset",
                 "key": "aFieldsetWithFile",
-                "components": [{"key": "fileInFieldset", "type": "file"}],
+                "label": "aFieldsetWithFile",
+                "components": [
+                    {
+                        "key": "fileInFieldset",
+                        "label": "fileInFieldset",
+                        "type": "file",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    }
+                ],
             },
         ]
         actual = resolve_uploads_from_data({"components": components}, FormioData(data))
@@ -207,10 +231,26 @@ class SubmissionAttachmentTest(TestCase):
             "components": [
                 {
                     "key": "repeatingGroup",
+                    "label": "repeatingGroup",
                     "type": "editgrid",
-                    "components": [{"type": "file", "key": "fileInRepeatingGroup"}],
+                    "groupLabel": "Item",
+                    "components": [
+                        {
+                            "type": "file",
+                            "key": "fileInRepeatingGroup",
+                            "label": "fileInRepeatingGroup",
+                            "file": {"type": []},
+                            "filePattern": "",
+                        }
+                    ],
                 },
-                {"key": "nested.file", "type": "file"},
+                {
+                    "key": "nested.file",
+                    "label": "nested.file",
+                    "type": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
+                },
             ]
         }
 
@@ -265,8 +305,17 @@ class SubmissionAttachmentTest(TestCase):
             ],
         }
         components = [
-            {"key": "my_normal_key", "type": "text"},
-            {"key": "my_file", "type": "file", "file": {"name": "my-filename.txt"}},
+            {"key": "my_normal_key", "label": "my_normal_key", "type": "textfield"},
+            {
+                "key": "my_file",
+                "label": "my_file",
+                "type": "file",
+                "file": {
+                    "name": "my-filename.txt",
+                    "type": [],
+                },
+                "filePattern": "",
+            },
         ]
         form_step = FormStepFactory.create(
             form=upload.submission.form,
@@ -337,12 +386,15 @@ class SubmissionAttachmentTest(TestCase):
             {
                 "type": "fieldset",
                 "key": "aFieldset",
+                "label": "aFieldset",
                 "components": [
-                    {"key": "age", "type": "number"},
+                    {"key": "age", "label": "age", "type": "number"},
                     {
                         "key": "file",
+                        "label": "file",
                         "type": "file",
-                        "file": {"name": "test.txt"},
+                        "file": {"name": "test.txt", "type": []},
+                        "filePattern": "",
                     },
                 ],
             }
@@ -368,7 +420,13 @@ class SubmissionAttachmentTest(TestCase):
             "my_file": [{"malformed": "No 'url' for the file!"}],
         }
         components = [
-            {"key": "my_file", "type": "file", "file": {"name": "test.txt"}},
+            {
+                "key": "my_file",
+                "label": "my_file",
+                "type": "file",
+                "file": {"name": "test.txt", "type": []},
+                "filePattern": "",
+            },
         ]
         form_step = FormStepFactory.create(
             form_definition__configuration={"components": components}
@@ -454,10 +512,26 @@ class SubmissionAttachmentTest(TestCase):
         components = [
             {
                 "key": "repeatingGroup",
+                "label": "repeatingGroup",
                 "type": "editgrid",
-                "components": [{"type": "file", "key": "fileInRepeatingGroup"}],
+                "groupLabel": "Item",
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "fileInRepeatingGroup",
+                        "label": "fileInRepeatingGroup",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    }
+                ],
             },
-            {"key": "nested.file", "type": "file"},
+            {
+                "key": "nested.file",
+                "label": "nested.file",
+                "type": "file",
+                "file": {"type": []},
+                "filePattern": "",
+            },
         ]
         form_step = FormStepFactory.create(
             form=submission.form,
@@ -496,23 +570,31 @@ class SubmissionAttachmentTest(TestCase):
                 "components": [
                     {
                         "key": "repeatingGroup",
+                        "label": "repeatingGroup",
                         "type": "editgrid",
+                        "groupLabel": "Item",
                         "components": [
                             {
                                 "type": "file",
                                 "key": "attachment",
+                                "label": "attachment",
                                 "registration": {
                                     "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
                                 },
+                                "file": {"type": []},
+                                "filePattern": "",
                             }
                         ],
                     },
                     {
                         "key": "attachment",
+                        "label": "attachment",
                         "type": "file",
                         "registration": {
                             "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
                         },
+                        "file": {"type": []},
+                        "filePattern": "",
                     },
                 ]
             },
@@ -648,10 +730,24 @@ class SubmissionAttachmentTest(TestCase):
         components = [
             {
                 "key": "repeatingGroup",
+                "label": "repeatingGroup",
                 "type": "editgrid",
+                "groupLabel": "Item",
                 "components": [
-                    {"type": "file", "key": "fileInRepeatingGroup1"},
-                    {"type": "file", "key": "fileInRepeatingGroup2"},
+                    {
+                        "type": "file",
+                        "key": "fileInRepeatingGroup1",
+                        "label": "fileInRepeatingGroup1",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    },
+                    {
+                        "type": "file",
+                        "key": "fileInRepeatingGroup2",
+                        "label": "fileInRepeatingGroup2",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    },
                 ],
             },
         ]
@@ -776,11 +872,16 @@ class SubmissionAttachmentTest(TestCase):
         components = [
             {
                 "key": "repeatingGroup",
+                "label": "repeatingGroup",
                 "type": "editgrid",
+                "groupLabel": "Item",
                 "components": [
                     {
                         "type": "file",
                         "key": "fileInRepeatingGroup1",
+                        "label": "fileInRepeatingGroup1",
+                        "file": {"type": []},
+                        "filePattern": "",
                         "registration": {
                             "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
                         },
@@ -788,6 +889,9 @@ class SubmissionAttachmentTest(TestCase):
                     {
                         "type": "file",
                         "key": "fileInRepeatingGroup2",
+                        "label": "fileInRepeatingGroup2",
+                        "file": {"type": []},
+                        "filePattern": "",
                         "registration": {
                             "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
                         },
@@ -796,7 +900,10 @@ class SubmissionAttachmentTest(TestCase):
             },
             {
                 "key": "nested.file",
+                "label": "nested.file",
                 "type": "file",
+                "file": {"type": []},
+                "filePattern": "",
                 "registration": {
                     "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
                 },
@@ -909,12 +1016,18 @@ class SubmissionAttachmentTest(TestCase):
             ],
         }
         components = [
-            {"key": "my_normal_key", "type": "text"},
+            {
+                "key": "my_normal_key",
+                "label": "my_normal_key",
+                "type": "textfield",
+            },
             {
                 "key": "my_file",
+                "label": "my_file",
                 "type": "file",
                 "multiple": True,
-                "file": {"name": "my-filename.txt"},
+                "file": {"name": "my-filename.txt", "type": []},
+                "filePattern": "",
             },
         ]
         form_step = FormStepFactory.create(
@@ -1022,14 +1135,21 @@ class SubmissionAttachmentTest(TestCase):
             ],
         }
         components = [
-            {"key": "my_normal_key", "type": "text"},
+            {
+                "key": "my_normal_key",
+                "label": "my_normal_key",
+                "type": "textfield",
+            },
             {
                 "key": "my_file",
+                "label": "my_file",
                 "type": "file",
                 "of": {
                     "image": {"resize": {"apply": True, "width": 100, "height": 100}}
                 },
                 "multiple": True,
+                "file": {"type": []},
+                "filePattern": "",
             },
         ]
         form_step = FormStepFactory.create(
@@ -1074,8 +1194,11 @@ class SubmissionAttachmentTest(TestCase):
         components = [
             {
                 "key": "my_file",
+                "label": "my_file",
                 "type": "file",
                 "fileMaxSize": "10B",
+                "file": {"type": []},
+                "filePattern": "",
             },
         ]
 
@@ -1263,15 +1386,21 @@ class SubmissionAttachmentTest(TestCase):
             {
                 "type": "file",
                 "key": "someAttachment",
+                "label": "someAttachment",
+                "file": {"type": []},
+                "filePattern": "",
             },
             {
                 "key": "repeatingGroup",
+                "label": "repeatingGroup",
                 "type": "editgrid",
                 "hidden": True,
+                "groupLabel": "Item",
                 "components": [
                     {
                         "type": "textfield",
                         "key": "someTextField",
+                        "label": "someTextField",
                     },
                 ],
             },
@@ -1319,14 +1448,20 @@ class SubmissionAttachmentTest(TestCase):
             {
                 "type": "file",
                 "key": "someAttachment",
+                "label": "someAttachment",
+                "file": {"type": []},
+                "filePattern": "",
             },
             {
                 "key": "repeatingGroup",
+                "label": "repeatingGroup",
                 "type": "editgrid",
+                "groupLabel": "Item",
                 "components": [
                     {
                         "type": "number",
                         "key": "someNumber",
+                        "label": "someNumber",
                     },
                 ],
             },
@@ -1349,9 +1484,12 @@ class SubmissionAttachmentTest(TestCase):
         components = [
             {
                 "key": "someFile",
+                "label": "someFile",
                 "file": {
                     "name": "prefix_{{ fileName }}_postfix",
+                    "type": [],
                 },
+                "filePattern": "",
                 "type": "file",
             }
         ]

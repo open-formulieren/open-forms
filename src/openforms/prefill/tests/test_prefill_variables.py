@@ -383,6 +383,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
                     {
                         "type": "postcode",
                         "key": "postcode",
+                        "label": "postcode",
                         "inputMask": "9999 AA",
                     }
                 ],
@@ -452,6 +453,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
                     {
                         "type": "postcode",
                         "key": "postcode",
+                        "label": "postcode",
                         "inputMask": "9999 AA",
                     }
                 ],
@@ -493,6 +495,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
                     {
                         "type": "postcode",
                         "key": "postcode",
+                        "label": "postcode",
                         "inputMask": "9999 AA",
                     }
                 ],
@@ -534,6 +537,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
                     {
                         "type": "postcode",
                         "key": "postcode",
+                        "label": "postcode",
                         "inputMask": "9999 AA",
                     }
                 ],
@@ -566,6 +570,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
                     {
                         "type": "postcode",
                         "key": "postcode",
+                        "label": "postcode",
                         "inputMask": "9999 AA",
                     }
                 ],
@@ -598,6 +603,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
                     {
                         "type": "postcode",
                         "key": "postcode",
+                        "label": "postcode",
                         "inputMask": "9999 AA",
                     }
                 ],
@@ -649,6 +655,7 @@ class PrefillVariablesTransactionTests(OFVCRMixin, TransactionTestCase):
                     {
                         "type": "postcode",
                         "key": "postcode",
+                        "label": "postcode",
                         "inputMask": "9999 AA",
                         "prefill": {
                             "plugin": "haalcentraal",

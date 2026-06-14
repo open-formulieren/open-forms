@@ -72,6 +72,8 @@ class LegacyCatalogiUsageCheckTests(TestCase):
                         "type": "file",
                         "key": "file",
                         "label": "file",
+                        "file": {"type": []},
+                        "filePattern": "",
                         "registration": {
                             "informatieobjecttype": "https://example.com",
                         },
@@ -98,6 +100,8 @@ class LegacyCatalogiUsageCheckTests(TestCase):
                                 "type": "file",
                                 "key": "file",
                                 "label": "file",
+                                "file": {"type": []},
+                                "filePattern": "",
                                 "registration": {
                                     "documentType": {
                                         "catalogue": {
@@ -128,11 +132,14 @@ class LegacyCatalogiUsageCheckTests(TestCase):
                         "type": "editgrid",
                         "key": "editgrid",
                         "label": "editgrid",
+                        "groupLabel": "Item",
                         "components": [
                             {
                                 "type": "file",
                                 "key": "file",
                                 "label": "file",
+                                "file": {"type": []},
+                                "filePattern": "",
                                 "registration": {
                                     "informatieobjecttype": "https://example.com",
                                 },

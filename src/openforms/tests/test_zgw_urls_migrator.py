@@ -264,6 +264,8 @@ class MigratorTests(OFVCRMixin, TestCase):
                         "type": "file",
                         "key": "fileToIgnore",
                         "label": "Do not update",
+                        "file": {"type": []},
+                        "filePattern": "",
                         "registration": {
                             "documentType": {
                                 # despite these references not being valid, we don't
@@ -292,11 +294,14 @@ class MigratorTests(OFVCRMixin, TestCase):
                         "type": "editgrid",
                         "key": "editgrid",
                         "label": "Edit grid",
+                        "groupLabel": "Item",
                         "components": [
                             {
                                 "type": "file",
                                 "key": "fileToUpdate",
                                 "label": "File to update",
+                                "file": {"type": []},
+                                "filePattern": "",
                                 "registration": {
                                     # a *different* catalogue, should resolve just fine,
                                     # we can't really validate that against the
@@ -313,12 +318,16 @@ class MigratorTests(OFVCRMixin, TestCase):
                                 "type": "file",
                                 "key": "fileToIgnore2",
                                 "label": "File to ignore",
+                                "file": {"type": []},
+                                "filePattern": "",
                                 "registration": {"informatieobjecttype": ""},
                             },
                             {
                                 "type": "file",
                                 "key": "fileToIgnore3",
                                 "label": "File to ignore",
+                                "file": {"type": []},
+                                "filePattern": "",
                             },
                         ],
                     },
@@ -479,6 +488,8 @@ class MigratorTests(OFVCRMixin, TestCase):
                     "type": "file",
                     "key": "fileToIgnore",
                     "label": "Do not update",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "registration": {
                         "documentType": {
                             "catalogue": {
@@ -503,6 +514,8 @@ class MigratorTests(OFVCRMixin, TestCase):
                     "type": "file",
                     "key": "fileToUpdate",
                     "label": "File to update",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "registration": {
                         "documentType": {
                             "catalogue": {
@@ -525,6 +538,8 @@ class MigratorTests(OFVCRMixin, TestCase):
                     "type": "file",
                     "key": "fileToIgnore2",
                     "label": "File to ignore",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "registration": {"informatieobjecttype": ""},
                 },
             )
@@ -534,6 +549,8 @@ class MigratorTests(OFVCRMixin, TestCase):
                     "type": "file",
                     "key": "fileToIgnore3",
                     "label": "File to ignore",
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
             )
 
@@ -845,6 +862,8 @@ class MigratorTests(OFVCRMixin, TestCase):
                         "type": "file",
                         "key": "fileToUpdate1",
                         "label": "File to update",
+                        "file": {"type": []},
+                        "filePattern": "",
                         "registration": {
                             # Simulates a URL to ACC on a PROD environment, which *does*
                             # happen
@@ -859,6 +878,8 @@ class MigratorTests(OFVCRMixin, TestCase):
                         "type": "file",
                         "key": "fileToUpdate2",
                         "label": "File to update",
+                        "file": {"type": []},
+                        "filePattern": "",
                         "registration": {
                             # valid URL/host, but the UUID does not exist (404)
                             "informatieobjecttype": (

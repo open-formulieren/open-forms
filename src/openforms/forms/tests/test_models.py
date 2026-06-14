@@ -136,6 +136,7 @@ class FormTestCase(TestCase):
                         "label": "BBB",
                         "confirmationRecipient": True,
                         "multiple": True,
+                        "defaultValue": [],
                     },
                 ],
             }
@@ -168,14 +169,14 @@ class FormTestCase(TestCase):
                     {
                         "key": "bbb",
                         "label": "BBB",
-                        "type": "textfield",
-                        "multiple": True,
+                        "type": "fieldset",
                         "components": [
                             {
                                 "key": "ccc",
                                 "type": "textfield",
                                 "label": "CCC",
                                 "multiple": True,
+                                "defaultValue": [],
                             },
                         ],
                     },
@@ -195,15 +196,15 @@ class FormTestCase(TestCase):
                 },
                 {
                     "key": "bbb",
-                    "type": "textfield",
+                    "type": "fieldset",
                     "label": "BBB",
-                    "multiple": True,
                     "components": [
                         {
                             "key": "ccc",
                             "type": "textfield",
                             "label": "CCC",
                             "multiple": True,
+                            "defaultValue": [],
                         },
                     ],
                 },
@@ -212,6 +213,7 @@ class FormTestCase(TestCase):
                     "label": "CCC",
                     "type": "textfield",
                     "multiple": True,
+                    "defaultValue": [],
                 },
             ]
 
@@ -227,15 +229,15 @@ class FormTestCase(TestCase):
                 },
                 {
                     "key": "bbb",
-                    "type": "textfield",
+                    "type": "fieldset",
                     "label": "BBB",
-                    "multiple": True,
                     "components": [
                         {
                             "key": "ccc",
                             "type": "textfield",
                             "label": "CCC",
                             "multiple": True,
+                            "defaultValue": [],
                         },
                     ],
                 },

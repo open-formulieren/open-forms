@@ -180,12 +180,18 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "file_1",
                     "type": "file",
+                    "key": "file_1",
+                    "label": "file_1",
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
                 {
-                    "key": "file_2",
                     "type": "file",
+                    "key": "file_2",
+                    "label": "file_2",
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
             ],
             completed=True,
@@ -568,8 +574,11 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "attachment",
                     "type": "file",
+                    "key": "attachment",
+                    "label": "attachment",
+                    "file": {"type": []},
+                    "filePattern": "",
                 }
             ],
             submitted_data={
@@ -636,8 +645,11 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "attachment",
                     "type": "file",
+                    "key": "attachment",
+                    "label": "attachment",
+                    "file": {"type": []},
+                    "filePattern": "",
                 }
             ],
             submitted_data={

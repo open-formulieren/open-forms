@@ -221,11 +221,13 @@ class PrefillHookTests(TransactionTestCase):
                 {
                     "id": "e1a2cv9",
                     "key": "fieldset",
+                    "label": "fieldset",
                     "type": "fieldset",
                     "components": config_factory(),
                 },
                 {
                     "key": "columns",
+                    "label": "columns",
                     "type": "columns",
                     "columns": [
                         {

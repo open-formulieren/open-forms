@@ -15,7 +15,7 @@ from ..migration_converters import (
     remove_unused_error_keys,
     replace_empty_datepicker_properties,
 )
-from ..typing import AddressNLComponent, Component, MapComponent
+from ..typing import AddressNLComponent, Component, FileComponent, MapComponent
 
 
 class LicensePlateTests(SimpleTestCase):
@@ -242,6 +242,7 @@ class PostCodeTests(SimpleTestCase):
         component: Component = {
             "type": "postcode",
             "key": "postcode",
+            "label": "postcode",
             "validate": {
                 "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
             },
@@ -257,6 +258,7 @@ class PostCodeTests(SimpleTestCase):
         component: Component = {
             "type": "postcode",
             "key": "postcode",
+            "label": "postcode",
             "validate": {
                 "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
             },
@@ -359,6 +361,7 @@ class SelectTests(SimpleTestCase):
             "type": "select",
             "key": "select",
             "label": "Select",
+            "data": {"values": []},
         }
 
         changed = fix_multiple_empty_default_value(component)
@@ -372,6 +375,7 @@ class SelectTests(SimpleTestCase):
             "label": "Select",
             "multiple": True,
             "defaultValue": [],
+            "data": {"values": []},
         }
 
         changed = fix_multiple_empty_default_value(component)
@@ -385,6 +389,7 @@ class SelectTests(SimpleTestCase):
             "label": "Select",
             "multiple": True,
             "defaultValue": [""],
+            "data": {"values": []},
         }
 
         changed = fix_multiple_empty_default_value(component)
@@ -398,6 +403,7 @@ class SelectTests(SimpleTestCase):
             "key": "select",
             "label": "Select",
             "defaultValue": None,
+            "data": {"values": []},
         }
 
         changed = fix_empty_default_value(component)
@@ -412,6 +418,7 @@ class SelectTests(SimpleTestCase):
             "label": "Select",
             "multiple": True,
             "defaultValue": None,
+            "data": {"values": []},
         }
 
         changed = fix_empty_default_value(component)
@@ -436,6 +443,7 @@ class SelectTests(SimpleTestCase):
                     "maxLength": "{{ field }} is te lang!!!",
                 },
             },
+            "data": {"values": []},
         }
 
         changed = remove_unused_error_keys(component)
@@ -466,6 +474,7 @@ class SelectTests(SimpleTestCase):
                     "required": "{{ field }} is verplicht!!!",
                 },
             },
+            "data": {"values": []},
         }
 
         changed = remove_unused_error_keys(component)
@@ -1308,11 +1317,13 @@ class RadioTests(SimpleTestCase):
 
 class FileTests(SimpleTestCase):
     def test_none_as_default_value_does_change(self):
-        component: Component = {
+        component: FileComponent = {
             "type": "file",
             "key": "file",
             "label": "File",
             "defaultValue": None,
+            "file": {"type": []},
+            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1321,12 +1332,14 @@ class FileTests(SimpleTestCase):
         self.assertEqual(component["defaultValue"], [])
 
     def test_multiple_none_as_default_value_does_change(self):
-        component: Component = {
+        component: FileComponent = {
             "type": "file",
             "key": "file",
             "label": "File",
             "multiple": True,
             "defaultValue": None,
+            "file": {"type": []},
+            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1335,11 +1348,13 @@ class FileTests(SimpleTestCase):
         self.assertEqual(component["defaultValue"], [])
 
     def test_empty_list_as_default_value_doesnt_change(self):
-        component: Component = {
+        component: FileComponent = {
             "type": "file",
             "key": "file",
             "label": "File",
             "defaultValue": [],
+            "file": {"type": []},
+            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1347,12 +1362,14 @@ class FileTests(SimpleTestCase):
         self.assertFalse(changed)
 
     def test_multiple_empty_list_as_default_value_doesnt_change(self):
-        component: Component = {
+        component: FileComponent = {
             "type": "file",
             "key": "file",
             "label": "File",
             "multiple": True,
             "defaultValue": [],
+            "file": {"type": []},
+            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1360,12 +1377,14 @@ class FileTests(SimpleTestCase):
         self.assertFalse(changed)
 
     def test_none_in_list_as_default_value_does_change(self):
-        component: Component = {
+        component: FileComponent = {
             "type": "file",
             "key": "file",
             "label": "File",
             "multiple": True,
             "defaultValue": [None],
+            "file": {"type": []},
+            "filePattern": "",
         }
 
         changed = fix_file_default_value(component)
@@ -1490,6 +1509,8 @@ class EditGridTests(SimpleTestCase):
             "type": "editgrid",
             "key": "editgrid",
             "label": "Edit grid",
+            "groupLabel": "Item",
+            "components": [],
         }
 
         changed = fix_empty_default_value(component)
@@ -1502,6 +1523,8 @@ class EditGridTests(SimpleTestCase):
             "key": "editgrid",
             "label": "Edit grid",
             "defaultValue": None,
+            "groupLabel": "Item",
+            "components": [],
         }
 
         changed = fix_empty_default_value(component)
@@ -1515,6 +1538,8 @@ class EditGridTests(SimpleTestCase):
             "key": "editgrid",
             "label": "Edit grid",
             "defaultValue": [],
+            "groupLabel": "Item",
+            "components": [],
         }
 
         changed = fix_empty_default_value(component)
