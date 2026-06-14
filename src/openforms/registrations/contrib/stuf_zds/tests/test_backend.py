@@ -5264,6 +5264,8 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     {
                         "type": "editgrid",
                         "key": "extraChildDetails",
+                        "label": "extraChildDetails",
+                        "groupLabel": "Item",
                         "components": [
                             {"type": "bsn", "key": "bsn", "label": "BSN"},
                             {
@@ -5397,6 +5399,8 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     {
                         "type": "editgrid",
                         "key": "extraChildDetails",
+                        "label": "extraChildDetails",
+                        "groupLabel": "Item",
                         "components": [
                             {"type": "bsn", "key": "bsn", "label": "BSN"},
                             {
@@ -5516,6 +5520,8 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     {
                         "type": "editgrid",
                         "key": "extraChildDetails",
+                        "label": "extraChildDetails",
+                        "groupLabel": "Item",
                         "components": [
                             {"type": "bsn", "key": "bsn", "label": "BSN"},
                             {
@@ -5663,8 +5669,14 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     {
                         "type": "editgrid",
                         "key": "extraChildDetails",
+                        "label": "extraChildDetails",
+                        "groupLabel": "Item",
                         "components": [
-                            {"type": "bsn", "key": "bsn", "label": "BSN"},
+                            {
+                                "type": "bsn",
+                                "key": "bsn",
+                                "label": "BSN",
+                            },
                             {
                                 "type": "textfield",
                                 "key": "childName",
@@ -5810,6 +5822,8 @@ class StufZDSPluginChildrenComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     {
                         "type": "editgrid",
                         "key": "extraChildDetails",
+                        "label": "extraChildDetails",
+                        "groupLabel": "Item",
                         "components": [
                             {"type": "bsn", "key": "bsn", "label": "BSN"},
                             {

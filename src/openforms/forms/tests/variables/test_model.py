@@ -148,7 +148,13 @@ class FormVariableModelTests(TestCase):
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
-                "components": [{"type": "textfield", "key": "test"}]
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                        "label": "test",
+                    }
+                ]
             },
         )
 
@@ -164,10 +170,20 @@ class FormVariableModelTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "test1",
+                        "label": "test1",
                         "defaultValue": "test default",
                     },
-                    {"type": "textfield", "key": "test2"},
-                    {"type": "textfield", "key": "test3", "defaultValue": None},
+                    {
+                        "type": "textfield",
+                        "key": "test2",
+                        "label": "test2",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "test3",
+                        "label": "test3",
+                        "defaultValue": "",
+                    },
                 ]
             },
         )
@@ -176,9 +192,11 @@ class FormVariableModelTests(TestCase):
         variable2 = form.formvariable_set.get(key="test2")
         variable3 = form.formvariable_set.get(key="test3")
 
-        self.assertEqual("test default", variable1.initial_value)
+        self.assertEqual(variable1.initial_value, "test default")
+        # FIXME: get_cmponent_default_value just grabs `defaultValue` and falls back to
+        # None
         self.assertIsNone(variable2.initial_value)
-        self.assertIsNone(variable3.initial_value)
+        self.assertEqual(variable3.initial_value, "")
 
     def test_set_variable_info_with_multiple(self):
         form = FormFactory.create(
@@ -188,19 +206,16 @@ class FormVariableModelTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "test1",
+                        "label": "test1",
                         "multiple": True,
                         "defaultValue": ["test default"],
                     },
                     {
                         "type": "textfield",
                         "key": "test2",
+                        "label": "test2",
                         "multiple": True,
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "test3",
-                        "multiple": True,
-                        "defaultValue": None,
+                        "defaultValue": [],
                     },
                 ]
             },
@@ -208,14 +223,11 @@ class FormVariableModelTests(TestCase):
 
         variable1 = form.formvariable_set.get(key="test1")
         variable2 = form.formvariable_set.get(key="test2")
-        variable3 = form.formvariable_set.get(key="test3")
 
         self.assertEqual(["test default"], variable1.initial_value)
         self.assertEqual([], variable2.initial_value)
-        self.assertEqual([], variable3.initial_value)
         self.assertEqual(FormVariableDataTypes.array, variable1.data_type)
         self.assertEqual(FormVariableDataTypes.array, variable2.data_type)
-        self.assertEqual(FormVariableDataTypes.array, variable3.data_type)
 
     def test_variable_with_array_default_value(self):
         variable = FormVariableFactory.create(
@@ -440,7 +452,7 @@ class CommunicationPreferencesPrefillFormVariableModelTests(TestCase):
                         "type": "customerProfile",
                         "label": "Profile",
                         "shouldUpdateCustomerData": True,
-                        "digitalAddressTypes": ["email", "phone_number"],
+                        "digitalAddressTypes": ["email", "phoneNumber"],
                     }
                 ]
             },
@@ -485,14 +497,14 @@ class CommunicationPreferencesPrefillFormVariableModelTests(TestCase):
                         "type": "customerProfile",
                         "label": "Profile",
                         "shouldUpdateCustomerData": True,
-                        "digitalAddressTypes": ["email", "phone_number"],
+                        "digitalAddressTypes": ["email", "phoneNumber"],
                     },
                     {
                         "key": "profile2",
                         "type": "customerProfile",
                         "label": "Profile",
                         "shouldUpdateCustomerData": True,
-                        "digitalAddressTypes": ["email", "phone_number"],
+                        "digitalAddressTypes": ["email", "phoneNumber"],
                     },
                 ]
             },
@@ -536,7 +548,7 @@ class CommunicationPreferencesPrefillFormVariableModelTests(TestCase):
                         "type": "customerProfile",
                         "label": "Profile",
                         "shouldUpdateCustomerData": True,
-                        "digitalAddressTypes": ["email", "phone_number"],
+                        "digitalAddressTypes": ["email", "phoneNumber"],
                     },
                 ]
             }
@@ -833,6 +845,7 @@ class FormVariableManagerTests(TestCase):
                         "type": "editgrid",
                         "key": "repeatingGroup",
                         "label": "A repeating group",
+                        "groupLabel": "Item",
                         "components": [
                             {
                                 "type": "selectboxes",
@@ -849,6 +862,7 @@ class FormVariableManagerTests(TestCase):
                         "key": "textfield",
                         "label": "Textfield",
                         "multiple": True,
+                        "defaultValue": [],
                     },
                 ]
             }
@@ -959,6 +973,7 @@ class FormVariableManagerTests(TestCase):
                                 "type": "coSign",
                                 "key": "coSign",
                                 "label": "Legacy cosign",
+                                "authPlugin": "digid",
                             }
                         ],
                     },

@@ -54,6 +54,7 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
                     {
                         "type": "postcode",
                         "key": "postcode",
+                        "label": "postcode",
                         "inputMask": "9999 AA",
                     }
                 ],

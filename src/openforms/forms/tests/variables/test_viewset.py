@@ -418,6 +418,7 @@ class FormVariableViewsetTest(APITestCase):
                     {
                         "type": "textfield",
                         "key": "test",
+                        "label": "test",
                     }
                 ]
             },
@@ -633,7 +634,13 @@ class FormVariableViewsetTest(APITestCase):
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
-                "components": [{"type": "textfield", "key": "test"}]
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                        "label": "test",
+                    }
+                ]
             },
         )
         form_definition = form.formstep_set.get().form_definition
@@ -692,22 +699,30 @@ class FormVariableViewsetTest(APITestCase):
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
                 "components": [
-                    {"key": "test1", "type": "textfield", "multiple": False},
                     {
-                        "key": "test2",
                         "type": "textfield",
+                        "key": "test1",
+                        "label": "test1",
+                        "multiple": False,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "test2",
+                        "label": "test2",
                         "multiple": False,
                         "defaultValue": "test2 default value",
                     },
                     {
-                        "key": "test3",
                         "type": "textfield",
+                        "key": "test3",
+                        "label": "test3",
                         "multiple": True,
                         "defaultValue": ["test3 default value"],
                     },
                     {
-                        "key": "test4",
                         "type": "number",
+                        "key": "test4",
+                        "label": "test4",
                         "multiple": False,
                         "defaultValue": 4,
                     },
@@ -792,7 +807,11 @@ class FormVariableViewsetTest(APITestCase):
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
                 "components": [
-                    {"key": "1", "type": "textfield"},
+                    {
+                        "type": "textfield",
+                        "key": "1",
+                        "label": "1",
+                    },
                 ]
             },
         )
@@ -1258,10 +1277,12 @@ class FormVariableViewsetTest(APITestCase):
                     {
                         "type": "textfield",
                         "key": "textfield",
+                        "label": "textfield",
                     },
                     {
                         "type": "date",
                         "key": "date",
+                        "label": "date",
                     },
                 ]
             },
@@ -1348,7 +1369,7 @@ class CommunicationPreferencesPrefillPluginFormVariableViewsetTest(APITestCase):
                     {
                         "type": "customerProfile",
                         "key": "profile",
-                        "name": "Profile",
+                        "label": "Profile",
                         "digitalAddressTypes": ["email"],
                         "shouldUpdateCustomerData": True,
                     }
@@ -1409,14 +1430,14 @@ class CommunicationPreferencesPrefillPluginFormVariableViewsetTest(APITestCase):
                     {
                         "type": "customerProfile",
                         "key": "profileComponent",
-                        "name": "Profile component",
+                        "label": "Profile component",
                         "digitalAddressTypes": ["email"],
                         "shouldUpdateCustomerData": True,
                     },
                     {
                         "type": "customerProfile",
                         "key": "secondProfileComponent",
-                        "name": "Second profile component",
+                        "label": "Second profile component",
                         "digitalAddressTypes": ["phoneNumber"],
                         "shouldUpdateCustomerData": True,
                     },
@@ -1503,7 +1524,7 @@ class CommunicationPreferencesPrefillPluginFormVariableViewsetTest(APITestCase):
                     {
                         "type": "customerProfile",
                         "key": "profile",
-                        "name": "Profile",
+                        "label": "Profile",
                         "digitalAddressTypes": ["email"],
                         "shouldUpdateCustomerData": True,
                     }
@@ -1593,7 +1614,7 @@ class CommunicationPreferencesPrefillPluginFormVariableViewsetTest(APITestCase):
                     {
                         "type": "customerProfile",
                         "key": "profile",
-                        "name": "Profile",
+                        "label": "Profile",
                         "digitalAddressTypes": ["email"],
                         "shouldUpdateCustomerData": True,
                     },

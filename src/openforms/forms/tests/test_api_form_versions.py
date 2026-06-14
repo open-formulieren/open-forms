@@ -145,7 +145,16 @@ class FormVersionRestoreAPITests(APITestCase):
         # This form definition is to be discarded (different UUID than the one in export)
         form_definition = FormDefinitionFactory.create(
             slug="test-definition-2",
-            configuration={"test": "2"},
+            configuration={
+                "components": [
+                    {
+                        "test": "2",
+                        "key": "test-2",
+                        "label": "test-2",
+                        "type": "textfield",
+                    }
+                ]
+            },
             is_reusable=True,
         )
         form = FormFactory.create(name="Test Form 2")
@@ -201,6 +210,10 @@ class FormVersionRestoreAPITests(APITestCase):
         self.assertEqual("test-step-1", form_step.slug)
         self.assertEqual("test-definition-1", restored_form_definition.slug)
         self.assertEqual(
-            {"components": [{"key": "test", "test": "1", "type": "textfield"}]},
+            {
+                "components": [
+                    {"key": "test", "label": "test", "test": "1", "type": "textfield"}
+                ]
+            },
             restored_form_definition.configuration,
         )

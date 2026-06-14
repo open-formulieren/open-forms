@@ -351,6 +351,7 @@ class FormJsonSchemaAPITests(APITestCase):
                     {
                         "type": "selectboxes",
                         "key": "selectboxes",
+                        "label": "selectboxes",
                         "values": [
                             {"label": "Option a", "value": "option_a"},
                             {"label": "Option b", "value": "option_b"},

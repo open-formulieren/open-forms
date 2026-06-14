@@ -630,6 +630,7 @@ class FormsStepsAPITests(APITestCase):
                         "key": "repeatingGroup",
                         "label": "Repeating Group",
                         "type": "editgrid",
+                        "groupLabel": "Item",
                         "components": [
                             {
                                 "key": "duplicate",
@@ -695,6 +696,7 @@ class FormsStepsAPITests(APITestCase):
                         "key": "repeatingGroup",
                         "label": "Repeating Group",
                         "type": "editgrid",
+                        "groupLabel": "Item",
                         "components": [
                             {
                                 "key": "duplicate",
@@ -763,6 +765,7 @@ class FormsStepsAPITests(APITestCase):
                         "key": "repeatingGroup",
                         "label": "Repeating Group",
                         "type": "editgrid",
+                        "groupLabel": "Item",
                         "components": [
                             {
                                 "key": "duplicate",

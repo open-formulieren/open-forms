@@ -5,6 +5,7 @@
             "components": [{
                 "test": "1",
                 "key": "test",
+                "label": "test",
                 "type": "textfield"
             }]
         },

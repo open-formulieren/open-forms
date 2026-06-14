@@ -39,16 +39,25 @@ class SubmissionTests(TestCase):
             configuration={
                 "components": [
                     {
-                        "key": "textFieldSensitive",
                         "type": "textfield",
+                        "key": "textFieldSensitive",
+                        "label": "textFieldSensitive",
                         "isSensitiveData": True,
                     },
                     {
-                        "key": "textFieldNotSensitive",
                         "type": "textfield",
+                        "key": "textFieldNotSensitive",
+                        "label": "textFieldNotSensitive",
                         "isSensitiveData": False,
                     },
-                    {"key": "sensitiveFile", "type": "file", "isSensitiveData": True},
+                    {
+                        "type": "file",
+                        "key": "sensitiveFile",
+                        "label": "sensitiveFile",
+                        "file": {"type": []},
+                        "filePattern": "",
+                        "isSensitiveData": True,
+                    },
                 ],
             }
         )
@@ -56,13 +65,15 @@ class SubmissionTests(TestCase):
             configuration={
                 "components": [
                     {
-                        "key": "textFieldSensitive2",
                         "type": "textfield",
+                        "key": "textFieldSensitive2",
+                        "label": "textFieldSensitive2",
                         "isSensitiveData": True,
                     },
                     {
-                        "key": "textFieldNotSensitive2",
                         "type": "textfield",
+                        "key": "textFieldNotSensitive2",
+                        "label": "textFieldNotSensitive2",
                         "isSensitiveData": False,
                     },
                 ],

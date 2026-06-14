@@ -517,6 +517,8 @@ class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
                     "key": "file",
                     "label": "Some upload",
                     "multiple": True,
+                    "file": {"type": []},
+                    "filePattern": "",
                 }
             ]
         )

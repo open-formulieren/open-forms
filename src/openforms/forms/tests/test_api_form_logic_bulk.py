@@ -87,10 +87,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "step1_textfield1",
+                        "label": "step1_textfield1",
                     },
                     {
                         "type": "textfield",
                         "key": "step1_textfield2",
+                        "label": "step1_textfield2",
                     },
                 ]
             },
@@ -171,6 +173,7 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "datetime",
                         "key": "dateOfBirth",
+                        "label": "dateOfBirth",
                     }
                 ]
             },
@@ -216,10 +219,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "datetime",
                         "key": "dateOfBirth",
+                        "label": "dateOfBirth",
                     },
                     {
                         "type": "textfield",
                         "key": "someValue",
+                        "label": "someValue",
                     },
                 ]
             },
@@ -267,6 +272,7 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "step1_textfield1",
+                        "label": "step1_textfield1",
                     }
                 ]
             },
@@ -351,6 +357,7 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "step1_textfield1",
+                        "label": "step1_textfield1",
                     }
                 ]
             },
@@ -396,10 +403,15 @@ class FormLogicAPITests(APITestCase):
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
                 "components": [
-                    {"type": "textfield", "key": "step1_textfield1"},
+                    {
+                        "type": "textfield",
+                        "key": "step1_textfield1",
+                        "label": "step1_textfield1",
+                    },
                     {
                         "type": "date",
                         "key": "step1_date1",
+                        "label": "step1_date1",
                     },
                 ]
             },
@@ -449,10 +461,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                     },
                     {
                         "type": "textfield",
                         "key": "surname",
+                        "label": "surname",
                     },
                 ]
             },
@@ -492,13 +506,18 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "selectboxes",
                         "key": "foo.bar",
+                        "label": "foo.bar",
                         "values": [
                             {"label": "Option 1", "value": "option1"},
                             {"label": "Option 2", "value": "option2"},
                         ],
                     },
-                    {"key": "fuu.ber", "type": "textfield"},
-                    {"key": "normalComponent", "type": "textfield"},
+                    {"key": "fuu.ber", "label": "fuu.ber", "type": "textfield"},
+                    {
+                        "key": "normalComponent",
+                        "label": "normalComponent",
+                        "type": "textfield",
+                    },
                 ]
             },
         )
@@ -566,14 +585,17 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     },
                     {
                         "type": "textfield",
                         "key": "text2",
+                        "label": "text2",
                     },
                     {
                         "type": "textfield",
                         "key": "text3",
+                        "label": "text3",
                     },
                 ]
             },
@@ -661,10 +683,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     },
                     {
                         "type": "textfield",
                         "key": "text2",
+                        "label": "text2",
                     },
                 ]
             },
@@ -712,10 +736,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     },
                     {
                         "type": "textfield",
                         "key": "text2",
+                        "label": "text2",
                     },
                 ]
             },
@@ -764,10 +790,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     },
                     {
                         "type": "textfield",
                         "key": "text2",
+                        "label": "text2",
                     },
                 ]
             },
@@ -816,10 +844,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     },
                     {
                         "type": "textfield",
                         "key": "text2",
+                        "label": "text2",
                     },
                 ]
             },
@@ -865,10 +895,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "number",
                         "key": "nLargeBoxes",
+                        "label": "nLargeBoxes",
                     },
                     {
                         "type": "number",
                         "key": "nGiganticBoxes",
+                        "label": "nGiganticBoxes",
                     },
                 ]
             },
@@ -930,10 +962,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     },
                     {
                         "type": "textfield",
                         "key": "text2",
+                        "label": "text2",
                     },
                 ]
             },
@@ -983,10 +1017,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     },
                     {
                         "type": "textfield",
                         "key": "text2",
+                        "label": "text2",
                     },
                 ]
             },
@@ -1041,10 +1077,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     },
                     {
                         "type": "textfield",
                         "key": "text2",
+                        "label": "text2",
                     },
                 ]
             },
@@ -1085,10 +1123,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "text1",
+                        "label": "text1",
                     },
                     {
                         "type": "textfield",
                         "key": "text2",
+                        "label": "text2",
                     },
                 ]
             },
@@ -1131,6 +1171,7 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "textfield",
                         "key": "testFieldA",
+                        "label": "testFieldA",
                     }
                 ]
             },
@@ -1210,6 +1251,7 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "number",
                         "key": "testNumber",
+                        "label": "testNumber",
                     }
                 ]
             },
@@ -1257,9 +1299,9 @@ class FormLogicAPITests(APITestCase):
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
                 "components": [
-                    {"type": "textfield", "key": "variable1"},
-                    {"type": "textfield", "key": "variable2"},
-                    {"type": "textfield", "key": "variable3"},
+                    {"type": "textfield", "key": "variable1", "label": "variable1"},
+                    {"type": "textfield", "key": "variable2", "label": "variable2"},
+                    {"type": "textfield", "key": "variable3", "label": "variable3"},
                 ]
             },
         )
@@ -1325,9 +1367,9 @@ class FormLogicAPITests(APITestCase):
             form=form,
             form_definition__configuration={
                 "components": [
-                    {"type": "textfield", "key": "variable1"},
-                    {"type": "textfield", "key": "variable2"},
-                    {"type": "textfield", "key": "variable3"},
+                    {"type": "textfield", "key": "variable1", "label": "variable1"},
+                    {"type": "textfield", "key": "variable2", "label": "variable2"},
+                    {"type": "textfield", "key": "variable3", "label": "variable3"},
                 ]
             },
         )
@@ -1335,8 +1377,8 @@ class FormLogicAPITests(APITestCase):
             form=form,
             form_definition__configuration={
                 "components": [
-                    {"type": "textfield", "key": "variable4"},
-                    {"type": "textfield", "key": "variable5"},
+                    {"type": "textfield", "key": "variable4", "label": "variable4"},
+                    {"type": "textfield", "key": "variable5", "label": "variable5"},
                 ]
             },
         )
@@ -1402,10 +1444,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "number",
                         "key": "age",
+                        "label": "age",
                     },
                     {
                         "type": "number",
                         "key": "income",
+                        "label": "income",
                     },
                 ]
             },
@@ -1491,10 +1535,12 @@ class FormLogicAPITests(APITestCase):
                     {
                         "type": "number",
                         "key": "age",
+                        "label": "age",
                     },
                     {
                         "type": "number",
                         "key": "income",
+                        "label": "income",
                     },
                 ]
             },
@@ -1666,6 +1712,7 @@ class FormLogicAPIGraphValidationTests(APITestCase):
                     {
                         "type": "content",
                         "key": "content",
+                        "html": "",
                         "openForms": {
                             "translations": {"nl": {"html": "<p>Dit is content!</p>"}}
                         },

@@ -6,8 +6,10 @@ from ..typing import Component
 
 class NormalizationTests(SimpleTestCase):
     def test_postcode_normalization_with_space(self):
-        component = {
+        component: Component = {
             "type": "postcode",
+            "key": "postcode",
+            "label": "Postcode",
             "inputMask": "9999 AA",
         }
         values = ["1015CJ", "1015 CJ", "1015 cj", "1015cj"]
@@ -19,8 +21,10 @@ class NormalizationTests(SimpleTestCase):
                 self.assertEqual(result.upper(), "1015 CJ")
 
     def test_postcode_normalization_without_space(self):
-        component = {
+        component: Component = {
             "type": "postcode",
+            "key": "postcode",
+            "label": "Postcode",
             "inputMask": "9999AA",
         }
         values = ["1015CJ", "1015 CJ", "1015 cj", "1015cj"]
@@ -32,8 +36,10 @@ class NormalizationTests(SimpleTestCase):
                 self.assertEqual(result.upper(), "1015CJ")
 
     def test_empty_value(self):
-        component = {
+        component: Component = {
             "type": "postcode",
+            "key": "postcode",
+            "label": "Postcode",
             "inputMask": "9999AA",
         }
 
@@ -42,8 +48,10 @@ class NormalizationTests(SimpleTestCase):
         self.assertEqual(result, "")
 
     def test_value_invalid_for_mask(self):
-        component = {
+        component: Component = {
             "type": "postcode",
+            "key": "postcode",
+            "label": "Postcode",
             "inputMask": "9999AA",
         }
 

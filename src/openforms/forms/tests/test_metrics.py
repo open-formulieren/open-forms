@@ -65,13 +65,27 @@ class FormComponentCountMetricTests(MetricsAssertMixin, TestCase):
         fd1 = FormDefinitionFactory.create(
             configuration={
                 "components": [
-                    {"type": "textfield", "key": "component1"},
+                    {
+                        "type": "textfield",
+                        "key": "component1",
+                        "label": "component1",
+                    },
                     {
                         "type": "fieldset",
                         "key": "component2",
+                        "label": "component2",
                         "components": [
-                            {"type": "textfield", "key": "component3"},
-                            {"type": "select", "key": "component4"},
+                            {
+                                "type": "textfield",
+                                "key": "component3",
+                                "label": "component3",
+                            },
+                            {
+                                "type": "select",
+                                "key": "component4",
+                                "label": "component4",
+                                "data": {"values": []},
+                            },
                         ],
                     },
                 ]
@@ -80,7 +94,11 @@ class FormComponentCountMetricTests(MetricsAssertMixin, TestCase):
         fd2 = FormDefinitionFactory.create(
             configuration={
                 "components": [
-                    {"type": "number", "key": "component5"},
+                    {
+                        "type": "number",
+                        "key": "component5",
+                        "label": "component5",
+                    },
                 ]
             }
         )

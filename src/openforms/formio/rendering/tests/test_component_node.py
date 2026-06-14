@@ -39,9 +39,9 @@ class ComponentNodeTests(TestCase):
                     "key": "input3",
                     "label": "Input 3",
                     "hidden": False,
-                    RenderConfigurationOptions.show_in_pdf: True,
-                    RenderConfigurationOptions.show_in_summary: True,
-                    RenderConfigurationOptions.show_in_confirmation_email: True,
+                    RenderConfigurationOptions.show_in_pdf.value: True,
+                    RenderConfigurationOptions.show_in_summary.value: True,
+                    RenderConfigurationOptions.show_in_confirmation_email.value: True,
                 },
                 # hidden in PDF, summary and confirmation email component, leaf node
                 {
@@ -49,9 +49,9 @@ class ComponentNodeTests(TestCase):
                     "key": "input4",
                     "label": "Input 4",
                     "hidden": False,
-                    RenderConfigurationOptions.show_in_pdf: False,
-                    RenderConfigurationOptions.show_in_summary: False,
-                    RenderConfigurationOptions.show_in_confirmation_email: False,
+                    RenderConfigurationOptions.show_in_pdf.value: False,
+                    RenderConfigurationOptions.show_in_summary.value: False,
+                    RenderConfigurationOptions.show_in_confirmation_email.value: False,
                 },
                 # visible in PDF and summary and hidden in confirmation email component, leaf node
                 {
@@ -59,9 +59,9 @@ class ComponentNodeTests(TestCase):
                     "key": "input5",
                     "label": "Input 5",
                     "hidden": False,
-                    RenderConfigurationOptions.show_in_pdf: True,
-                    RenderConfigurationOptions.show_in_summary: True,
-                    RenderConfigurationOptions.show_in_confirmation_email: False,
+                    RenderConfigurationOptions.show_in_pdf.value: True,
+                    RenderConfigurationOptions.show_in_summary.value: True,
+                    RenderConfigurationOptions.show_in_confirmation_email.value: False,
                 },
                 # hidden in PDF and confirmation email component, visible in summary, leaf node
                 {
@@ -69,9 +69,9 @@ class ComponentNodeTests(TestCase):
                     "key": "input5_1",
                     "label": "Input 5.1",
                     "hidden": False,
-                    RenderConfigurationOptions.show_in_pdf: False,
-                    RenderConfigurationOptions.show_in_summary: True,
-                    RenderConfigurationOptions.show_in_confirmation_email: False,
+                    RenderConfigurationOptions.show_in_pdf.value: False,
+                    RenderConfigurationOptions.show_in_summary.value: True,
+                    RenderConfigurationOptions.show_in_confirmation_email.value: False,
                 },
                 # hidden in PDF and summary and visible in confirmation email component, leaf node
                 {
@@ -79,9 +79,9 @@ class ComponentNodeTests(TestCase):
                     "key": "input6",
                     "label": "Input 6",
                     "hidden": False,
-                    RenderConfigurationOptions.show_in_pdf: False,
-                    RenderConfigurationOptions.show_in_summary: False,
-                    RenderConfigurationOptions.show_in_confirmation_email: True,
+                    RenderConfigurationOptions.show_in_pdf.value: False,
+                    RenderConfigurationOptions.show_in_summary.value: False,
+                    RenderConfigurationOptions.show_in_confirmation_email.value: True,
                 },
                 # container: visible fieldset without visible children
                 {
@@ -140,6 +140,7 @@ class ComponentNodeTests(TestCase):
                     "key": "visibleEditGridWithVisibleChildren",
                     "label": "Visible editgrid with visible children",
                     "hidden": False,
+                    "groupLabel": "Item",
                     "components": [
                         {
                             "type": "textfield",
@@ -155,6 +156,7 @@ class ComponentNodeTests(TestCase):
                     "key": "hiddenEditGridWithVisibleChildren",
                     "label": "Hidden editgrid with visible children",
                     "hidden": True,
+                    "groupLabel": "Item",
                     "components": [
                         {
                             "type": "textfield",
@@ -170,6 +172,7 @@ class ComponentNodeTests(TestCase):
                     "key": "visibleEditGridWithHiddenChildren",
                     "label": "Visible editgrid with hidden children",
                     "hidden": False,
+                    "groupLabel": "Item",
                     "components": [
                         {
                             "type": "textfield",

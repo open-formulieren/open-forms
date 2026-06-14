@@ -1127,6 +1127,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "key": "editgrid",
                     "type": "editgrid",
                     "label": "Editgrid",
+                    "groupLabel": "Item",
                     "components": [
                         {
                             "type": "time",

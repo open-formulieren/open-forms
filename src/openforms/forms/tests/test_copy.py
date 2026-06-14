@@ -85,10 +85,12 @@ class CopyFormTests(TestCase):
                     {
                         "type": "textfield",
                         "key": "name",
+                        "label": "name",
                     },
                     {
                         "type": "textfield",
                         "key": "surname",
+                        "label": "surname",
                     },
                 ]
             },
@@ -157,7 +159,11 @@ class CopyFormTests(TestCase):
     def test_copy_form_with_logic_rules_has_correct_formstep_uuid_in_actions(self):
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+            configuration={
+                "components": [
+                    {"key": "test-key", "label": "test-key", "type": "textfield"}
+                ]
+            }
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         FormLogicFactory.create(
@@ -187,7 +193,11 @@ class CopyFormTests(TestCase):
         """
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+            configuration={
+                "components": [
+                    {"key": "test-key", "label": "test-key", "type": "textfield"}
+                ]
+            }
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         FormLogicFactory.create(

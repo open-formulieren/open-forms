@@ -94,18 +94,21 @@ class AddDataTypeInformationTests(TestCase):
                         "type": "textfield",
                         "label": "Textfield",
                         "multiple": True,
+                        "defaultValue": [],
                     },
                     {
                         "key": "date",
                         "type": "date",
                         "label": "Date",
                         "multiple": True,
+                        "defaultValue": [],
                     },
                     {
                         "key": "datetime",
                         "type": "datetime",
                         "label": "Datetime",
                         "multiple": True,
+                        "defaultValue": [],
                     },
                 ],
             },
@@ -375,6 +378,7 @@ class AddDataTypeInformationTests(TestCase):
                         "key": "editgrid",
                         "type": "editgrid",
                         "label": "Editgrid",
+                        "groupLabel": "Item",
                         "components": [
                             {
                                 "type": "textfield",

@@ -453,6 +453,8 @@ class FormNodeTests(TestCase):
             "key": "file",
             "label": "My File",
             "hidden": False,
+            "file": {"type": []},
+            "filePattern": "",
         }
         submission = SubmissionFactory.create(
             form__name="public name",
@@ -480,6 +482,8 @@ class FormNodeTests(TestCase):
                         "storage": "url",
                         "type": "application/msword",
                         "url": "http://localhost:8000/api/v2/submissions/files/35527900-8248-4e75-a553-c2d1039a002b",
+                        "file": {"type": []},
+                        "filePattern": "",
                     }
                 ]
             },
@@ -544,15 +548,20 @@ class FormNodeTests(TestCase):
                         "registration": {
                             "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
                         },
+                        "file": {"type": []},
+                        "filePattern": "",
                     }
                 ],
             },
             {
                 "key": "nested.file",
+                "label": "Nested file",
                 "type": "file",
                 "registration": {
                     "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
                 },
+                "file": {"type": []},
+                "filePattern": "",
             },
         ]
         submission = SubmissionFactory.create(
@@ -721,7 +730,7 @@ class FormNodeTests(TestCase):
             link = nested_file_node.render()
             self.assertTrue(
                 link.startswith(
-                    'nested.file: <a href="http://localhost:8000/submissions/attachment/'
+                    'Nested file: <a href="http://localhost:8000/submissions/attachment/'
                 )
             )
             self.assertTrue(
@@ -743,12 +752,17 @@ class FormNodeTests(TestCase):
                         "type": "file",
                         "label": "File in repeating group",
                         "key": "attachment",
+                        "file": {"type": []},
+                        "filePattern": "",
                     }
                 ],
             },
             {
                 "key": "attachment",
+                "label": "attachment",
                 "type": "file",
+                "file": {"type": []},
+                "filePattern": "",
             },
         ]
         submission = SubmissionFactory.create(
@@ -890,6 +904,8 @@ class FormNodeTests(TestCase):
                         "registration": {
                             "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
                         },
+                        "file": {"type": []},
+                        "filePattern": "",
                     },
                     {
                         "type": "file",
@@ -898,6 +914,8 @@ class FormNodeTests(TestCase):
                         "registration": {
                             "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
                         },
+                        "file": {"type": []},
+                        "filePattern": "",
                     },
                 ],
             },
@@ -1023,6 +1041,8 @@ class FormNodeTests(TestCase):
             "key": "file",
             "label": "My File",
             "hidden": False,
+            "file": {"type": []},
+            "filePattern": "",
         }
         submission = SubmissionFactory.create(
             form__name="public name",
@@ -1104,6 +1124,7 @@ class FormNodeTests(TestCase):
             "key": "children",
             "label": "Children",
             "hidden": False,
+            "groupLabel": "Item",
             "components": [
                 {"key": "name", "type": "textfield", "label": "Name"},
                 {"key": "surname", "type": "textfield", "label": "Surname"},

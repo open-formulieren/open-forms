@@ -123,7 +123,9 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
                 name_nl="Formulier Test Cosign",
                 generate_minimal_setup=True,
                 formstep__form_definition__configuration={
-                    "components": [{"type": "cosign", "key": "cosign"}]
+                    "components": [
+                        {"type": "cosign", "key": "cosign", "label": "cosign"}
+                    ]
                 },
                 authentication_backend="digid",
             )

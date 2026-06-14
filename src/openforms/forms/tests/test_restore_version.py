@@ -26,7 +26,11 @@ class RestoreVersionTest(TestCase):
         form_definition = FormDefinitionFactory.create(
             name="Test Definition 2",
             internal_name="Test Internal 2",
-            configuration={"test": "2"},
+            configuration={
+                "components": [
+                    {"test": "2", "key": "test", "label": "test", "type": "textfield"}
+                ]
+            },
             is_reusable=True,
         )
         form = FormFactory.create(name="Test Form 2")
@@ -51,6 +55,7 @@ class RestoreVersionTest(TestCase):
         self.assertEqual("Test Form Internal 1", form.internal_name)
         self.assertEqual(2, FormDefinition.objects.count())
         last_version = FormVersion.objects.order_by("-created").first()
+        assert last_version is not None
         self.assertEqual(
             last_version.description,
             _("Restored form version {version} (from {created}).").format(
@@ -72,7 +77,11 @@ class RestoreVersionTest(TestCase):
         )
         self.assertEqual("test-definition-1", restored_form_definition.slug)
         self.assertEqual(
-            {"components": [{"test": "1", "key": "test", "type": "textfield"}]},
+            {
+                "components": [
+                    {"test": "1", "key": "test", "type": "textfield", "label": "test"}
+                ]
+            },
             restored_form_definition.configuration,
         )
 
@@ -221,6 +230,7 @@ class RestoreVersionTest(TestCase):
                     {
                         "test": "1",
                         "key": "test",
+                        "label": "test",
                         "type": "textfield",
                     }
                 ]
@@ -263,6 +273,7 @@ class RestoreVersionTest(TestCase):
                     {
                         "type": "textfield",
                         "key": "reusable1",
+                        "label": "reusable1",
                     }
                 ]
             },
@@ -275,6 +286,7 @@ class RestoreVersionTest(TestCase):
                     {
                         "type": "textfield",
                         "key": "notReusable",
+                        "label": "notReusable",
                     }
                 ]
             },
@@ -306,6 +318,7 @@ class RestoreVersionTest(TestCase):
                     {
                         "type": "textfield",
                         "key": "reusable1",
+                        "label": "reusable1",
                     }
                 ]
             },
@@ -343,7 +356,13 @@ FORM = [
 FORM_DEFINITION = [
     {
         "configuration": {
-            "components": [{"key": "favouriteFlavour", "type": "textfield"}]
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "favouriteFlavour",
+                    "label": "favouriteFlavour",
+                }
+            ]
         },
         "name": "Icecream questions",
         "internal_name": "Icecream questions",
@@ -406,10 +425,15 @@ class RestoreVersionsWithVariablesTest(TestCase):
             internal_name="Icecream questionnaire",
             configuration={
                 "components": [
-                    {"key": "favouriteFlavour", "type": "textfield"},
+                    {
+                        "key": "favouriteFlavour",
+                        "type": "textfield",
+                        "label": "favouriteFlavour",
+                    },
                     {
                         "key": "whippedCream",
                         "type": "checkbox",
+                        "label": "whippedCream",
                         "defaultValue": False,
                     },
                 ]
@@ -437,7 +461,11 @@ class RestoreVersionsWithVariablesTest(TestCase):
             internal_name="Icecream questionnaire",
             configuration={
                 "components": [
-                    {"key": "favouriteFlavour", "type": "textfield"},
+                    {
+                        "key": "favouriteFlavour",
+                        "type": "textfield",
+                        "label": "favouriteFlavour",
+                    },
                 ]
             },
         )

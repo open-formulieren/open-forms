@@ -305,6 +305,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                         "type": "email",
                         "label": "Many",
                         "multiple": True,
+                        "defaultValue": [],
                         "confirmationRecipient": True,
                     },
                 ],

@@ -94,9 +94,16 @@ class V2HandlerTests(TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "fieldset",
                     "type": "fieldset",
-                    "components": [{"key": "fieldset.textfield", "type": "textfield"}],
+                    "key": "fieldset",
+                    "label": "fieldset",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "fieldset.textfield",
+                            "label": "fieldset.textfield",
+                        }
+                    ],
                 },
             ],
             completed=True,
@@ -832,21 +839,40 @@ class V2HandlerTests(TestCase):
     def test_date_related_components(self):
         submission = SubmissionFactory.from_components(
             [
-                {"key": "date", "type": "date"},
-                {"key": "date_multiple", "type": "date", "multiple": True},
                 {
-                    "key": "editgrid",
+                    "type": "date",
+                    "key": "date",
+                    "label": "date",
+                },
+                {
+                    "type": "date",
+                    "key": "date_multiple",
+                    "label": "date_multiple",
+                    "multiple": True,
+                    "defaultValue": [],
+                },
+                {
                     "type": "editgrid",
+                    "key": "editgrid",
+                    "label": "editgrid",
+                    "groupLabel": "Item",
                     "components": [
                         {
-                            "key": "fieldset",
                             "type": "fieldset",
+                            "key": "fieldset",
+                            "label": "fieldset",
                             "components": [
-                                {"key": "time", "type": "time"},
                                 {
-                                    "key": "datetime_multiple",
+                                    "type": "time",
+                                    "key": "time",
+                                    "label": "time",
+                                },
+                                {
                                     "type": "datetime",
+                                    "key": "datetime_multiple",
+                                    "label": "datetime_multiple",
                                     "multiple": True,
+                                    "defaultValue": [],
                                 },
                             ],
                         }

@@ -1290,6 +1290,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                             "components": [
                                 {
                                     "key": "textField1",
+                                    "label": "textField1",
                                     "type": "textfield",
                                 }
                             ],
@@ -1299,6 +1300,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                             "components": [
                                 {
                                     "key": "textField2",
+                                    "label": "textField2",
                                     "type": "textfield",
                                 }
                             ],
@@ -1307,6 +1309,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 },
                 {
                     "key": "textField3.blah",
+                    "label": "textField3.blah",
                     "type": "textfield",
                 },
             ],
@@ -1443,6 +1446,8 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 {
                     "key": "field1",
                     "type": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "registration": {
                         # attachment informatieobjecttype in docker compose
                         "informatieobjecttype": (
@@ -1457,6 +1462,8 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 {
                     "key": "field2",
                     "type": "file",
+                    "file": {"type": []},
+                    "filePattern": "",
                     # options should be omitted in the actual call and the document type
                     # defaults must be used
                     "registration": {
@@ -3213,6 +3220,8 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                     "type": "file",
                     "key": "file",
                     "label": "File",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "registration": {
                         "documentType": {
                             "catalogue": {
@@ -3577,16 +3586,18 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                     "label": "Some text",
                 },
                 {
-                    "key": "file",
                     "type": "file",
+                    "key": "file",
+                    "label": "File",
                     "file": {"type": []},
                     "filePattern": "",
                     "url": "",
                     "multiple": False,
                 },
                 {
-                    "key": "fileMultiple",
                     "type": "file",
+                    "key": "fileMultiple",
+                    "label": "Filemultiple",
                     "file": {"type": []},
                     "filePattern": "",
                     "url": "",
@@ -3596,6 +3607,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                     "key": "editgrid",
                     "type": "editgrid",
                     "label": "Editgrid",
+                    "groupLabel": "Item",
                     "components": [
                         {
                             "type": "time",
@@ -3605,6 +3617,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                         {
                             "key": "editgridFile",
                             "type": "file",
+                            "label": "File",
                             "file": {"type": []},
                             "filePattern": "",
                             "url": "",

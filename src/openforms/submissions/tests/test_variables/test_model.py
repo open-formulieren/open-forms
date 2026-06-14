@@ -339,15 +339,18 @@ class SubmissionValueVariableModelTests(ParametrizedTestCase, TestCase):
                 "type": "editgrid",
                 "key": "editgrid",
                 "label": "Editgrid",
+                "groupLabel": "Item",
                 "components": [
                     {
                         "type": "fieldset",
                         "key": "fieldset",
+                        "label": "fieldset",
                         "components": [
                             {
                                 "type": "editgrid",
                                 "key": "nestedEditgrid",
                                 "label": "Nested Editgrid",
+                                "groupLabel": "Item",
                                 "components": [
                                     {
                                         "type": "date",
@@ -359,6 +362,7 @@ class SubmissionValueVariableModelTests(ParametrizedTestCase, TestCase):
                                         "key": "time",
                                         "label": "Time",
                                         "multiple": True,
+                                        "defaultValue": [],
                                     },
                                 ],
                             }
@@ -472,6 +476,7 @@ class SubmissionValueVariableModelTests(ParametrizedTestCase, TestCase):
                     "type": "editgrid",
                     "key": "editgrid",
                     "label": "Editgrid",
+                    "groupLabel": "Item",
                     "components": [
                         {
                             "type": "date",
@@ -483,6 +488,7 @@ class SubmissionValueVariableModelTests(ParametrizedTestCase, TestCase):
                             "key": "time",
                             "label": "Time",
                             "multiple": True,
+                            "defaultValue": [],
                         },
                     ],
                 },
@@ -573,9 +579,19 @@ class SubmissionValueVariableModelTests(ParametrizedTestCase, TestCase):
             configuration={
                 "type": "editgrid",
                 "key": "editgrid",
+                "label": "editgrid",
+                "groupLabel": "Item",
                 "components": [
-                    {"type": "date", "key": "date"},
-                    {"type": "textfield", "key": "textfield"},
+                    {
+                        "type": "date",
+                        "key": "date",
+                        "label": "date",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "textfield",
+                    },
                 ],
             },
         )

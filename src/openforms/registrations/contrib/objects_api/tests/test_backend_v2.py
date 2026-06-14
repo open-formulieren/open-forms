@@ -282,12 +282,18 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "single_file",
                     "type": "file",
+                    "key": "single_file",
+                    "label": "single_file",
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
                 {
-                    "key": "multiple_files",
                     "type": "file",
+                    "key": "multiple_files",
+                    "label": "multiple_files",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "multiple": True,
                 },
             ],
@@ -357,12 +363,18 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "single_file",
                     "type": "file",
+                    "key": "single_file",
+                    "label": "single_file",
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
                 {
-                    "key": "multiple_files",
                     "type": "file",
+                    "key": "multiple_files",
+                    "label": "multiple_files",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "multiple": True,
                 },
             ],
@@ -421,11 +433,13 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "key": "repeatingGroup",
                     "type": "editgrid",
                     "label": "Repeating group",
+                    "groupLabel": "Item",
                     "components": [
                         {
                             "key": "nestedRepeatingGroup",
                             "type": "editgrid",
                             "label": "Yeah this is madness",
+                            "groupLabel": "Item",
                             "components": [
                                 {
                                     "key": "email",
@@ -433,8 +447,11 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                                     "label": "Email",
                                 },
                                 {
-                                    "key": "file",
                                     "type": "file",
+                                    "key": "file",
+                                    "label": "file",
+                                    "file": {"type": []},
+                                    "filePattern": "",
                                     "multiple": False,
                                 },
                             ],
@@ -517,8 +534,11 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "single_file",
                     "type": "file",
+                    "key": "single_file",
+                    "label": "single_file",
+                    "file": {"type": []},
+                    "filePattern": "",
                 },
             ],
             submitted_data={"single_file": []},
@@ -774,8 +794,9 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "children",
                     "type": "children",
+                    "key": "children",
+                    "label": "children",
                     "enableSelection": False,
                 }
             ],
@@ -892,8 +913,9 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "children",
                     "type": "children",
+                    "key": "children",
+                    "label": "children",
                     "enableSelection": True,
                 }
             ],
@@ -994,8 +1016,9 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "children",
                     "type": "children",
+                    "key": "children",
+                    "label": "children",
                     "enableSelection": True,
                 },
             ],
@@ -1088,8 +1111,9 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "children",
                     "type": "children",
+                    "key": "children",
+                    "label": "children",
                     "enableSelection": False,
                 },
             ],
@@ -1188,15 +1212,22 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "children",
                     "type": "children",
+                    "key": "children",
+                    "label": "children",
                     "enableSelection": False,
                 },
                 {
-                    "key": "extraChildDetails",
                     "type": "editgrid",
+                    "key": "extraChildDetails",
+                    "label": "extraChildDetails",
+                    "groupLabel": "Item",
                     "components": [
-                        {"type": "bsn", "key": "bsn"},
+                        {
+                            "type": "bsn",
+                            "key": "bsn",
+                            "label": "bsn",
+                        },
                         {
                             "type": "textfield",
                             "key": "firstNames",
@@ -1312,15 +1343,22 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "key": "children",
                     "type": "children",
+                    "key": "children",
+                    "label": "children",
                     "enableSelection": True,
                 },
                 {
-                    "key": "extraChildDetails",
                     "type": "editgrid",
+                    "key": "extraChildDetails",
+                    "label": "extraChildDetails",
+                    "groupLabel": "Item",
                     "components": [
-                        {"type": "bsn", "key": "bsn"},
+                        {
+                            "type": "bsn",
+                            "key": "bsn",
+                            "label": "bsn",
+                        },
                         {
                             "type": "textfield",
                             "key": "firstNames",
@@ -1436,16 +1474,19 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 {
                     "type": "textfield",
                     "key": "textfield",
+                    "label": "textfield",
                     "hidden": True,
                 },
                 {
                     "type": "fieldset",
                     "key": "hiddenFieldset",
+                    "label": "hiddenFieldset",
                     "hidden": True,
                     "components": [
                         {
                             "type": "textfield",
                             "key": "nestedTextfield",
+                            "label": "nestedTextfield",
                             "hidden": False,
                         }
                     ],
@@ -1498,6 +1539,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "type": "file",
                     "key": "file",
                     "label": "File",
+                    "file": {"type": []},
+                    "filePattern": "",
                     "registration": {
                         "documentType": {
                             "catalogue": {
@@ -1584,6 +1627,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "type": "editgrid",
                     "key": "repeatingGroup",
                     "label": "Repeating group",
+                    "groupLabel": "Item",
                     "components": [
                         {
                             "type": "textfield",
