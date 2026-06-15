@@ -18,7 +18,7 @@ the code for this is organized in the ``openforms.formio`` package.
 
     ``openforms.custom_field_types`` was refactored into the ``openforms.formio`` package,
     and all of the separate registries (formatters, normalizers...) were merged into a
-    single compoment registry.
+    single component registry.
 
 Form.io configuration
 =====================
@@ -127,7 +127,7 @@ the variable names and values at the time.
 For an example of a custom field type, see :class:`openforms.formio.components.custom.Date`.
 
 Finally, the resulting resolved component definitions are evaluated with the template
-engine where variable values are evaluated for compoment labels, descriptions... and
+engine where variable values are evaluated for component labels, descriptions... and
 configuration based on the HTTP request is performed (see
 :func:`openforms.formio.service.rewrite_formio_components_for_request`).
 
@@ -143,7 +143,7 @@ for example updating an external service using the submission data.
 This logic can be implemented in the :meth:`openforms.formio.registry.BasePlugin.pre_registration_hook`.
 
 This method is called for all components during the
-:meth:`openforms.submissions.tasks.on_post_submission_event` proces, between the pre-pregistration
+:meth:`openforms.submissions.tasks.on_post_submission_event` process, between the pre-pregistration
 and registration steps, so the submission reference ID is already generated and can be used.
 
 For an example of a custom field type, see :class:`openforms.formio.components.custom.CustomerProfile`.

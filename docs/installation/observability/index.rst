@@ -15,7 +15,7 @@ Tracing, which provide insight in:
 
 Open Forms operates in distributed environments, and being able to fully trace a
 customer request from start to end, observability tools are crucial. Below we provide
-some additional context for infastructure teams that wish to integrate Open Forms in
+some additional context for infrastructure teams that wish to integrate Open Forms in
 their observability stack.
 
 .. versionadded:: 3.2.0

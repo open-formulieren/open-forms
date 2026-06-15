@@ -7,7 +7,7 @@ Objects API
 The `Objects API`_ is a standard for generic storage of objects/records according to
 your own, process-specific, data description, such as the `ProductAanvraag objecttype`_.
 
-Open Forms supports registering form submisisons in the Objects API. The
+Open Forms supports registering form submissions in the Objects API. The
 :ref:`manual (Dutch) <manual_registration_objects_api>` describes how to configure a form
 for usage with the Objects API.
 

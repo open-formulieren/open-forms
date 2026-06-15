@@ -175,7 +175,7 @@ nginx
 nginx proxies HTTP traffic from the browser/client to the backend service. It also
 serves static assets directly. The nginx config needs to be extended with a location
 handler for the health checks. You should take care to namespace this so that you don't
-get collissions with identifiers of forms that would be masked by this path.
+get collisions with identifiers of forms that would be masked by this path.
 
 Example nginx configuration snippet:
 
