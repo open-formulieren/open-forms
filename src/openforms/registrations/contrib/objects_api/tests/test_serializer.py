@@ -356,3 +356,59 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                 self.assertIn("catalogue", serializer.errors)
                 err = serializer.errors["catalogue"][0]
                 self.assertEqual(err.code, "required")
+
+    def test_validate_iot_descriptions_in_file_options(self):
+        # Note that we can't yet validate that the file keys point to actual file
+        # components - backend options validation runs before the form definitions are
+        # created/updated.
+        api_group = ObjectsAPIGroupConfigFactory.create(for_test_docker_compose=True)
+        base_data = {
+            "objects_api_group": api_group.identifier,
+            "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+            "objecttype_version": 1,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "iot_attachment": "Attachment Informatieobjecttype",
+        }
+
+        with self.subTest("valid reference"):
+            serializer = ObjectsAPIOptionsSerializer(
+                data={
+                    **base_data,
+                    "files": [
+                        {
+                            "key": "someFileComponent",
+                            "document_type_description": "PDF Informatieobjecttype",
+                        },
+                        {
+                            "key": "otherFileComponent",
+                            "title": "Custom title",
+                        },
+                    ],
+                }
+            )
+
+            valid = serializer.is_valid()
+
+            self.assertTrue(valid)
+
+        with self.subTest("invalid reference"):
+            serializer = ObjectsAPIOptionsSerializer(
+                data={
+                    **base_data,
+                    "files": [
+                        {
+                            "key": "someFileComponent",
+                            "document_type_description": "33b4fc70",
+                        }
+                    ],
+                }
+            )
+
+            valid = serializer.is_valid()
+
+            self.assertFalse(valid)
+            err = serializer.errors["files"][0]["document_type_description"]
+            self.assertEqual(err.code, "not-found")
