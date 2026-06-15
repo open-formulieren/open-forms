@@ -74,7 +74,6 @@ class FileComponentOptionsSerializer(serializers.Serializer):
             "apply."
         ),
     )
-    # TODO: validate that it's in the specified catalogue
     document_type_description = serializers.CharField(
         label=_("Document type description"),
         required=False,
@@ -540,6 +539,24 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
                     raise serializers.ValidationError(
                         {field: err_msg}, code="not-found"
                     )
+
+        _files_errors = {}
+        for index, file_options in enumerate(attrs.get("files", [])):
+            if not (description := file_options.get("document_type_description")):
+                continue
+            assert catalogus is not None
+            versions = client.find_informatieobjecttypen(
+                catalogus=catalogus["url"], description=description
+            )
+            if versions is None:
+                err_msg = _(
+                    "No document type with description '{description}' found."
+                ).format(description=description)
+                _files_errors[index] = {
+                    "document_type_description": ErrorDetail(err_msg, code="not-found")
+                }
+        if _files_errors:
+            raise serializers.ValidationError({"files": _files_errors})
 
 
 def _validate_objecttype_and_version(attrs: RegistrationOptions) -> None:

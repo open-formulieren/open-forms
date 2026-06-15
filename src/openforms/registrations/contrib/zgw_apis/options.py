@@ -63,7 +63,6 @@ class FileComponentOptionsSerializer(serializers.Serializer):
             "apply."
         ),
     )
-    # TODO: validate that it's in the specified catalogue & case type
     document_type_description = serializers.CharField(
         label=_("Document type description"),
         required=False,
@@ -584,6 +583,30 @@ def _validate_catalogue_case_and_doc_type(
         # Validate document type URL reference against possible valid URLs.
         elif document_type_url not in valid_document_type_urls:
             _errors["informatieobjecttype"] = err_invalid_document_type
+
+        _files_errors = {}
+        for index, file_options in enumerate(attrs.get("files", [])):
+            if not (description := file_options.get("document_type_description")):
+                continue
+            assert catalogus is not None
+            versions = client.find_informatieobjecttypen(
+                catalogus=catalogus["url"], description=description
+            )
+            if versions is None:
+                _files_errors[index] = {
+                    "document_type_description": err_invalid_document_type
+                }
+            else:
+                document_type_urls = {item["url"] for item in versions}
+                # check the intersection with the known good URLs
+                intersection = document_type_urls & set(valid_document_type_urls)
+                if not intersection:
+                    _files_errors[index] = {
+                        "document_type_description": err_invalid_document_type
+                    }
+
+        if _files_errors:
+            _errors["files"] = _files_errors
 
     else:
         try:
