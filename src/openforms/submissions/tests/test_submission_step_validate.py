@@ -756,8 +756,8 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         )
         file = SubmittedFileFactory.create(
             temporary_upload=temporary_file_upload,
-            temporary_upload__data_name="Schermafbeelding 2025-07-08 om 09.39.36.png",  # no soft-hyphen
-            temporary_upload__original_name="Scherm­afbeelding 2025-07-08 om 09.39.36.png",  # soft-hyphen
+            temporary_upload__data_name="Scherm­afbeelding 2025-07-08 om 09.39.36.png",  # soft-hyphen
+            temporary_upload__original_name="Scherm­­afbeelding 2025-07-08 om 09.39.36.png",  # soft-hyphen
         )
 
         submission = temporary_file_upload.submission

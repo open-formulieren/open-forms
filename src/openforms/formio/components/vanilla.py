@@ -425,6 +425,8 @@ class FileSerializer(serializers.Serializer):
         # Here we apply the same changes to the "originalName" attribute, so it won't differ
         # from the stored file name
         attrs["originalName"] = sanitize_file_name(attrs["originalName"])
+        attrs["name"] = sanitize_file_name(attrs["name"])
+        attrs["data"]["name"] = sanitize_file_name(attrs["data"]["name"])
 
         for root_key, nested_key in (
             ("url", "url"),
@@ -450,7 +452,7 @@ class FileSerializer(serializers.Serializer):
                 {"size": _("Size does not match the uploaded file.")}
             )
 
-        if attrs["originalName"] != temporary_upload.file_name:
+        if attrs["originalName"] != sanitize_file_name(temporary_upload.file_name):
             raise serializers.ValidationError(
                 {"originalName": _("Name does not match the uploaded file.")}
             )
