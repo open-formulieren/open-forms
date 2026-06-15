@@ -1,5 +1,7 @@
 from django.test import SimpleTestCase
 
+from unittest_parametrize import ParametrizedTestCase, parametrize
+
 from ..migration_converters import (
     empty_errors_property,
     ensure_addressnl_has_deriveAddress,
@@ -12,10 +14,18 @@ from ..migration_converters import (
     prevent_datetime_components_from_emptying_invalid_values,
     remove_default_value_translation,
     remove_empty_conditional_values,
+    remove_empty_min_max_validation_spec,
     remove_unused_error_keys,
     replace_empty_datepicker_properties,
 )
-from ..typing import AddressNLComponent, Component, FileComponent, MapComponent
+from ..typing import (
+    AddressNLComponent,
+    Component,
+    DateComponent,
+    DatetimeComponent,
+    FileComponent,
+    MapComponent,
+)
 
 
 class LicensePlateTests(SimpleTestCase):
@@ -318,7 +328,7 @@ class PostCodeTests(SimpleTestCase):
         self.assertEqual(component["errors"], {})
 
 
-class DatetimeTests(SimpleTestCase):
+class DatetimeTests(ParametrizedTestCase, SimpleTestCase):
     def test_update(self):
         component: Component = {
             "type": "datetime",
@@ -353,6 +363,35 @@ class DatetimeTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["datePicker"]["maxDate"], None)
+
+    @parametrize("prop", ("minDate", "maxDate"))
+    def test_fix_missing_mode_in_validation_configuration(self, prop):
+        with self.subTest("remove invalid config"):
+            component: DatetimeComponent = {
+                "type": "date",
+                "key": "aDate",
+                "label": "Date",
+                "openForms": {prop: {}},
+            }
+
+            changed = remove_empty_min_max_validation_spec(component)
+
+            self.assertTrue(changed)
+            self.assertNotIn(prop, component["openForms"])
+
+        with self.subTest("keep valid config"):
+            component: DatetimeComponent = {
+                "type": "date",
+                "key": "aDate",
+                "label": "Date",
+                "openForms": {prop: {"mode": ""}},
+            }
+
+            changed = remove_empty_min_max_validation_spec(component)
+
+            self.assertFalse(changed)
+            self.assertIn(prop, component["openForms"])
+            self.assertIn("mode", component["openForms"][prop])
 
 
 class SelectTests(SimpleTestCase):
@@ -1576,7 +1615,7 @@ class BSNTests(SimpleTestCase):
         self.assertEqual(component["defaultValue"], [])
 
 
-class DateTests(SimpleTestCase):
+class DateTests(ParametrizedTestCase, SimpleTestCase):
     def test_empty_min_date_property(self):
         component: Component = {
             "key": "date",
@@ -1602,6 +1641,35 @@ class DateTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["datePicker"]["maxDate"], None)
+
+    @parametrize("prop", ("minDate", "maxDate"))
+    def test_fix_missing_mode_in_validation_configuration(self, prop):
+        with self.subTest("remove invalid config"):
+            component: DateComponent = {
+                "type": "date",
+                "key": "aDate",
+                "label": "Date",
+                "openForms": {prop: {}},
+            }
+
+            changed = remove_empty_min_max_validation_spec(component)
+
+            self.assertTrue(changed)
+            self.assertNotIn(prop, component["openForms"])
+
+        with self.subTest("keep valid config"):
+            component: DateComponent = {
+                "type": "date",
+                "key": "aDate",
+                "label": "Date",
+                "openForms": {prop: {"mode": ""}},
+            }
+
+            changed = remove_empty_min_max_validation_spec(component)
+
+            self.assertFalse(changed)
+            self.assertIn(prop, component["openForms"])
+            self.assertIn("mode", component["openForms"][prop])
 
 
 class SelectBoxTests(SimpleTestCase):
