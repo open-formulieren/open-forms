@@ -21,7 +21,7 @@ register form submissions.
    :backlinks: none
 
 What does the Open Forms administrator need?
-===========================================
+============================================
 
 The values for these parameters should be provided to the Open Forms
 administrator by the service provider.
