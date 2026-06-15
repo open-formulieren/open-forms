@@ -418,8 +418,19 @@ def remove_unused_error_keys(component: Component) -> bool:
 
 
 def remove_empty_min_max_validation_spec(component: Component) -> bool:
+    if "openForms" not in component:
+        return False
 
-    return False
+    changed = False
+    for key in ("minDate", "maxDate"):
+        if key not in component["openForms"]:
+            continue
+
+        if "mode" not in component["openForms"][key]:
+            changed = True
+            del component["openForms"][key]
+
+    return changed
 
 
 DEFINITION_CONVERTERS = [
