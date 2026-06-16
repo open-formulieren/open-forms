@@ -61,3 +61,4 @@ jobs:
         working-directory: open-forms/docs
         env:
           FORCE_COLOR: "1"
+          DJANGO_SETTINGS_MODULE: openforms.conf.ci
