@@ -737,7 +737,6 @@ class SubmissionReportGenerationTests(TestCase):
                 },
             ],
         )
-        submission.form.apply_logic_analysis()
 
         with self.assertNoLogs(level=logging.ERROR):
             submission.report.generate_submission_report_pdf()

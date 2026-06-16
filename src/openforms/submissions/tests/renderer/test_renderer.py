@@ -157,7 +157,6 @@ class FormNodeTests(TestCase):
                 }
             ],
         )
-        form.apply_logic_analysis()
 
         renderer = Renderer(
             submission=self.submission, mode=RenderModes.export, as_html=True

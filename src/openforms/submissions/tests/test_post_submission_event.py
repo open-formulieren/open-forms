@@ -1256,7 +1256,6 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 },
             ],
         )
-        submission.form.apply_logic_analysis()
         assert submission.registration_status == RegistrationStatuses.pending
 
         on_post_submission_event(submission.pk, PostSubmissionEvents.on_completion)
@@ -1309,7 +1308,6 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 }
             ],
         )
-        submission.form.apply_logic_analysis()
         assert submission.registration_status == RegistrationStatuses.pending
 
         on_post_submission_event(submission.pk, PostSubmissionEvents.on_completion)
@@ -1380,7 +1378,6 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 },
             ],
         )
-        submission.form.apply_logic_analysis()
         assert submission.registration_status == RegistrationStatuses.pending
 
         on_post_submission_event(submission.pk, PostSubmissionEvents.on_completion)
