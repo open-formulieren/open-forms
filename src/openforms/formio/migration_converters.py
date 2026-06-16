@@ -12,7 +12,7 @@ import structlog
 from glom import assign, glom
 
 from openforms.formio.constants import DataSrcOptions
-from openforms.formio.typing.vanilla import ColumnsComponent, FileComponent
+from openforms.formio.typing import ColumnsComponent, FileComponent
 from openforms.typing import JSONObject
 
 from .datastructures import FormioConfigurationWrapper
@@ -417,6 +417,22 @@ def remove_unused_error_keys(component: Component) -> bool:
     return config_modified
 
 
+def remove_empty_min_max_validation_spec(component: Component) -> bool:
+    if "openForms" not in component:
+        return False
+
+    changed = False
+    for key in ("minDate", "maxDate"):
+        if key not in component["openForms"]:
+            continue
+
+        if "mode" not in component["openForms"][key]:
+            changed = True
+            del component["openForms"][key]
+
+    return changed
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -445,12 +461,14 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "remove_empty_conditional_values": remove_empty_conditional_values,
         "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
+        "remove_empty_min_max_validation_spec": remove_empty_min_max_validation_spec,
     },
     "datetime": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "prevent_datetime_components_from_emptying_invalid_values": prevent_datetime_components_from_emptying_invalid_values,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
         "replace_empty_datepicker_properties": replace_empty_datepicker_properties,
+        "remove_empty_min_max_validation_spec": remove_empty_min_max_validation_spec,
     },
     "time": {
         "move_time_validators": move_time_validators,
