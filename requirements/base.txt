@@ -206,7 +206,7 @@ django-otp==1.7.0
     #   maykin-2fa
 django-phonenumber-field==8.4.0
     # via django-two-factor-auth
-django-privates==4.0.2
+django-privates==4.0.3
     # via
     #   -r requirements/base.in
     #   django-simple-certmanager
