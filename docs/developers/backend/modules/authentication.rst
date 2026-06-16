@@ -46,7 +46,7 @@ integration.
 DigiD
 -----
 
-Provides DigiD integration via the SAMLv2 standards. Implemented throught the library
+Provides DigiD integration via the SAMLv2 standards. Implemented using the library
 django-digid-eherkenning.
 
 eHerkenning and eIDAS
@@ -60,7 +60,7 @@ DigiD and eHerkenning/eIDAS via OpenID Connect
 
 DigiD, eHerkenning and eIDAS support through the OIDC protocol rather than SAML. Depends
 on an OpenID Connect provider that implements the SAML flows under the hood. Implemented
-throught the ``oidc`` flavour of the django-digid-eherkenning library.
+using the ``oidc`` flavour of the django-digid-eherkenning library.
 
 Organisation (OIDC)
 -------------------
@@ -104,7 +104,7 @@ do and don't provide.
 and :attr:`openforms.authentication.contrib.yivi_oidc.config.YiviOptionsSerializer.additional_attributes_groups`
 determine which attributes to include in the condiscon parameter.
 
-:meth:`openforms.authentication.contrib.yivi_oidc.oidc_plugins.YiviPlugin.get_extra_params` retrieves the 
+:meth:`openforms.authentication.contrib.yivi_oidc.oidc_plugins.YiviPlugin.get_extra_params` retrieves the
 authentication backend options and adds the attributes to the authentication request.
 
 As the condiscon scope is form-specific, we need to modify the authentication request

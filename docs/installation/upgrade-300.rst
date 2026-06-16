@@ -53,7 +53,7 @@ assumptions about the amount that needs to be paid. Crash information is visible
 in the error monitoring if that's set up correctly.
 
 .. note:: Existing, automatically converted forms are crash-free because we create an
-   explicit fallback logic rule that mimicks the old behaviour.
+   explicit fallback logic rule that mimics the old behaviour.
 
 Removed legacy "machtigen" context
 ==================================
@@ -90,7 +90,7 @@ removed.
 Removal of objecttype URL conversion in the Objects API registration options
 ----------------------------------------------------------------------------
 
-Since the UX improvments in Open Forms 2.8.0 you can select the object type in a
+Since the UX improvements in Open Forms 2.8.0 you can select the object type in a
 dropdown, and under the hood we save the unique identifier rather than the full API
 resource URL (which you used to have to copy-paste in a text field). The usage of
 hyperlinks for the object type is now also disallowed when importing a form.

@@ -207,7 +207,7 @@ Results in post-processed output of:
   ``<script>`` or ``<style>`` tags added by malicious content editors do not receive the
   nonce, and continue being blocked by the CSP of the page.
 
-* Extracted styles are copmiled as CSS rules, targetting elements via their HTML ID. The
+* Extracted styles are compiled as CSS rules, targeting elements via their HTML ID. The
   generated ID is based on the value of the nonce and a unique, implementation-specific
   suffix for every node. This makes it near impossible that an ID will collide with
   statically defined CSS rules, effectively scoping the CSS only to the WYSIWYG content.

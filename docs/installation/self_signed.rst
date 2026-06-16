@@ -67,7 +67,7 @@ Kubernetes, single-server...).
 PKIO
 ----
 
-The Dutch government uses a CA-certificate which is not publicaly trusted. You
+The Dutch government uses a CA-certificate which is not publicly trusted. You
 will need to add the so called PKIO G1 private root certificate.
 
 1. Download the G1 certificate ("Stamcertificaat") from `cert.pkioverheid.nl/ <https://cert.pkioverheid.nl/>`__

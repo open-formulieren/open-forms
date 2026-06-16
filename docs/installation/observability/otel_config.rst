@@ -31,7 +31,7 @@ use any vendor that supports this protocol (over gRPC or HTTP/protobuf).
   are: ``https://otel.example.com:4318`` or ``http://otel-collector.namespace.cluster.svc:4317``.
   It defaults to ``localhost:4317``, which will **not** work in a container context.
 
-* ``OTEL_EXPORTER_OTLP_METRICS_INSECURE``: set to ``true`` if the endoint is not protected
+* ``OTEL_EXPORTER_OTLP_METRICS_INSECURE``: set to ``true`` if the endpoint is not protected
   with TLS.
 
 * ``OTEL_EXPORTER_OTLP_HEADERS``: Any additional HTTP headers, e.g. when your collector

@@ -20,8 +20,8 @@ register form submissions.
    :local:
    :backlinks: none
 
-What does the Open Forms administator need?
-===========================================
+What does the Open Forms administrator need?
+============================================
 
 The values for these parameters should be provided to the Open Forms
 administrator by the service provider.
@@ -141,7 +141,7 @@ These SOAP-operations are used by this plugin:
 
    * ``heeftAlsInitiator`` (the initiator can be excluded if needed)
 
-       * ``extraElementen``, explicitely mapped variables through the configuration
+       * ``extraElementen``, explicitly mapped variables through the configuration
 
    * ``heeftAlsOverigBetrokkene`` (set if: an employee logs in on behalf of
      a client, the submission has been cosigned or there are family member relations)

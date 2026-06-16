@@ -202,7 +202,7 @@ submission data, like:
 
 We urge you to extensively test existing forms before upgrading production, testing all
 possible combinations, and please report any bugs/situations you encounter. We would
-love to ship tooling to faciltate automatic updating as well, so suggestions are welcome.
+love to ship tooling to facilitate automatic updating as well, so suggestions are welcome.
 
 Observability
 =============
