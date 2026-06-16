@@ -353,7 +353,7 @@ django-phonenumber-field==8.4.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-two-factor-auth
-django-privates==4.0.2
+django-privates==4.0.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
