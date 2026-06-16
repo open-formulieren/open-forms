@@ -1,6 +1,6 @@
-const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const webpack = require('webpack');
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import path from 'path';
+import webpack from 'webpack';
 
 const config = {
   core: {
