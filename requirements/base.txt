@@ -71,7 +71,7 @@ click-plugins==1.1.1.2
     # via celery
 click-repl==0.3.0
     # via celery
-cryptography==46.0.7
+cryptography==48.0.1
     # via
     #   django-digid-eherkenning
     #   django-simple-certmanager
@@ -507,11 +507,11 @@ pygments==2.20.0
     # via
     #   django-log-outgoing-requests
     #   rich
-pyjwt==2.12.1
+pyjwt==2.13.0
     # via
     #   msal
     #   zgw-consumers
-pyopenssl==26.0.0
+pyopenssl==26.2.0
     # via webauthn
 pyphen==0.17.2
     # via weasyprint
@@ -634,7 +634,7 @@ tinycss2==1.5.1
     #   weasyprint
 tinyhtml5==2.0.0
     # via weasyprint
-tornado==6.5.5
+tornado==6.5.7
     # via flower
 tqdm==4.67.3
     # via -r requirements/base.in
