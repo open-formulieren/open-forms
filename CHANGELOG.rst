@@ -14,6 +14,108 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+4.0.0-alpha.1 (2026-06-22)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Detailed changes
+----------------
+
+**Breaking changes**
+
+* [:backend:`6164`] Removed deprecated code (please review the instructions in the documentation
+  under **Installation** > **Upgrade details to Open Forms 4.0.0** for all the necessary details):
+
+  - [:backend:`6311`] Removed Ogone-legacy payment plugin..
+  - Removing legacy detection and fix scripts.
+  - [:backend:`4939`] Removing legacy ``zaaktype`` URL and ``documenttype`` URL fields in
+    Objects API and ZGW APIs registration backends.
+  - [:backend:`6294`] The branch number from an eHerkenning login is now favored over the data from
+    a form field if both are available.
+
+**New features**
+
+* [:backend:`6391`] You can now easily convert simple logic rules to advanced logic.
+* Added data migration and import converters for fixing invalid ``date`` and ``datetime`` component
+  min/max date configuration.
+* [:backend:`6351`] The available component types in the form designer are now updated when the
+  form type is changed.
+* [:backend:`6281`] You can now specify the document registration options for file upload
+  components tailored to each registration backend defined on the form:
+
+  - Added registration configuration for Objects API and ZGW API's plugins on the file component
+    variable configuration.
+  - Removed the registration tab from the file component configuration.
+  - Added migration to automatically move the file component level registration configuration to
+    its respective variable registration configuration.
+  - Added documentation about using the new file component variable registration configuration.
+
+* [:backend:`6349`] Added import convertion for appointment forms to the new form type mechanism.
+* [:backend:`6217`] In the ZGW APIS registration, you can now add a JSON-document with the
+  submission details to the case and select which file formats to relate (JSON, PDF).
+* [:backend:`6336`] Added address registration attribute for ``addressNL`` components when using
+  StUF-ZDS and ZGW APIs registration backends.
+* [:backend:`5984`] Added ``contactpersoonRol`` attributes when creating rol objects through
+  the ZGW APIs registration plugin.
+
+**Bugfixes**
+
+* Fixed hooks being called conditionally in the frontend.
+* [:backend:`6346`] Fixed a crash in the admin when navigating to nonexistent objects that
+  normally have protected upload fields.
+* [:backend:`6389`] Fixed the form theme not being applied to cosign and form suspension
+  emails.
+* [:backend:`6254`] Fixed pre-3.5 imports of forms that contain logic rules with
+  "trigger from step" options.
+* [:backend:`6360`] Fixed validation error for valid uploads in the new renderer when
+  soft-hyphens are used, an issue similar to :backend:`5413`.
+* [:backend:`6259`] Fixed "cosign required" validation not taking into account whether a
+  form step is applicable or not.
+* Fixed missing structlog context propagation across threads, causing prefill (audit) logs not to
+  be saved in the database.
+* [:backend:`3535`] Fixed bug where pausing a form allowed users to go to the next step, even when
+  progressing was blocked.
+* [:backend:`6125`] Fixed incorrect empty value definition for ``addressNL`` components.
+* Fixed missing custom error message information for ``addressNL`` components.
+* [:backend:`6111`] Fixed a browser window crash/freeze when editing the name of a (new)
+  form step.
+* [:backend:`6302`] Fixed missing logo in the confirmation PDF.
+* [:backend:`6320`] Fixed missing component translations when the form does not require
+  backend logic.
+
+**Project maintenance**
+
+* Updated frontend dependencies:
+
+  - build toolchain (babel, esbuild)
+  - dompurify (where possible)
+  - js-cookie
+
+* Upgraded to Storybook 10.
+* Reduced flakiness in CI by moving docs linkcheck to a weekly cronjob.
+* Squashed form migrations until Open Forms version 3.5.
+* Addressed some browser console messages.
+* Removed the obsoleted submission step validate API endpoint.
+* Updated backend dependencies:
+
+  - cryptography
+  - django
+  - django-privates
+  - idna
+  - PyJWT
+  - pyopenssl
+  - requests
+  - Tornado
+  - urllib3
+  - webob
+
+* Updated Open Forms theming and logos.
+* Reduced some test flakiness.
+* Updated documentation.
+* Updated translations.
+* Test setup now uses stricter component definitions.
+
 3.5.4 (2026-06-19)
 ==================
 

@@ -6,7 +6,7 @@ Open Formulieren
     :height: 100px
     :alt: Open Formulieren
 
-:Version: 4.0.0-alpha.0
+:Version: 4.0.0-alpha.1
 :Source: https://github.com/open-formulieren/open-forms
 :Keywords: e-Formulieren, Common Ground, FormIO, API
 
