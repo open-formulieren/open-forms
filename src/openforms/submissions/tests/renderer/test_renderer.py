@@ -138,3 +138,36 @@ class FormNodeTests(TestCase):
         # 3. Query the form logic rules for the submission form (and this is cached)
         with self.assertNumQueries(3):
             list(renderer)
+
+    def test_renderer_export_mode_with_form_logic_and_disabled_step(self):
+        """
+        Assert that the renderer contains all steps when exporting, even if some are
+        disabled.
+        """
+        # set up logic
+        form = self.submission.form
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "form_step_uuid": f"{self.sstep2.form_step.uuid}",
+                    "action": {
+                        "name": "Step is not applicable",
+                        "type": "step-not-applicable",
+                    },
+                }
+            ],
+        )
+        form.apply_logic_analysis()
+
+        renderer = Renderer(
+            submission=self.submission, mode=RenderModes.export, as_html=True
+        )
+
+        nodes = [node for node in renderer if isinstance(node, SubmissionStepNode)]
+
+        self.assertEqual(len(nodes), 2)
+        enabled_step_node, non_applicable_step_node = nodes
+        self.assertEqual(enabled_step_node.step, self.sstep1)
+        self.assertEqual(non_applicable_step_node.step, self.sstep2)
