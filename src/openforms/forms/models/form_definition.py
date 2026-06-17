@@ -11,6 +11,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _, override
 
 from autoslug import AutoSlugField
+from typing_extensions import deprecated
 
 from openforms.formio.utils import iter_components
 from openforms.utils.helpers import get_charfield_max_length, truncate_str_if_needed
@@ -163,6 +164,7 @@ class FormDefinition(models.Model):
 
         return FormioConfigurationWrapper(self.configuration)
 
+    @deprecated("Deprecated in favour of formio_config datastructure")
     def iter_components(self, configuration=None, recursive=True, **kwargs):
         if configuration is None:
             configuration = self.configuration

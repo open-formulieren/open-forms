@@ -15,6 +15,7 @@ lxml
 lxml-html-clean
 msgspec
 nh3
+nutree
 onlinepayments-sdk-python3 # Worldline SDK
 O365  # microsoft graph
 phonenumberslite

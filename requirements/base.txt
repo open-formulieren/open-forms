@@ -373,6 +373,8 @@ nh3==0.3.3
     # via -r requirements/base.in
 numpy==2.4.2
     # via shapely
+nutree==1.1.0
+    # via -r requirements/base.in
 o365==2.1.9
     # via
     #   -r requirements/base.in
@@ -651,6 +653,7 @@ typing-extensions==4.15.0
     #   django-timeline-logger
     #   grpcio
     #   mozilla-django-oidc-db
+    #   nutree
     #   opentelemetry-api
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http

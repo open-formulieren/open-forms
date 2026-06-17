@@ -697,6 +697,10 @@ numpy==2.4.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   shapely
+nutree==1.1.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 o365==2.1.9
     # via
     #   -c requirements/ci.txt
@@ -1286,6 +1290,7 @@ typing-extensions==4.15.0
     #   djangorestframework-stubs
     #   grpcio
     #   mozilla-django-oidc-db
+    #   nutree
     #   opentelemetry-api
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
