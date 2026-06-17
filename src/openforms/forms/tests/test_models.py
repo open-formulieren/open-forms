@@ -5,6 +5,7 @@ from django.utils.translation import gettext as _
 from hypothesis import given, strategies as st
 from hypothesis.extra.django import SimpleTestCase, TestCase as HypothesisTestCase
 
+from openforms.formio.datastructures import FormioConfig
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
@@ -463,6 +464,45 @@ class FormDefinitionTestCase(TestCase):
         used_in_num = fd.used_in.count()
 
         self.assertEqual(used_in_num, 0)
+
+    # TODO: hypothesis to generate any valid formio definition
+    def test_get_formio_config(self):
+        fd: FormDefinition = FormDefinitionFactory.build(
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "myLittleTextfield",
+                        "label": "Simple plain textfield component",
+                    },
+                    {
+                        "type": "fieldset",
+                        "key": "aContainer",
+                        "label": "Field set for other components",
+                        "components": [
+                            {
+                                "type": "date",
+                                "key": "itsADateThen",
+                                "label": "Normal leaf node again",
+                            },
+                        ],
+                    },
+                ],
+            }
+        )
+
+        formio_config = fd.formio_config
+
+        assert isinstance(formio_config, FormioConfig)
+        tree = formio_config.tree
+        tree2 = fd.formio_config.tree
+        # test identity (caching, to avoid excessive parsing/processing)
+        self.assertIs(tree2, tree)
+        self.assertEqual(tree.count, 3)
+        self.assertEqual(tree.count_unique, 3)
+        date_node = tree.find(data_id="itsADateThen")
+        assert date_node is not None
+        self.assertEqual(date_node.depth(), 2)
 
 
 class FormStepTestCase(TestCase):

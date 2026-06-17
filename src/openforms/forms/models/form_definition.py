@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import hashlib
 import json
 import uuid
@@ -20,10 +22,11 @@ from ..models import Form
 from ..validators import validate_template_expressions
 
 if TYPE_CHECKING:
+    from openforms.formio.datastructures import FormioConfig
     from openforms.formio.service import FormioConfigurationWrapper
 
 
-def _get_number_of_components(form_definition: "FormDefinition") -> int:
+def _get_number_of_components(form_definition: FormDefinition) -> int:
     """
     Given a form definition, count the total number of (nested) components in the configuration.
     """
@@ -159,10 +162,18 @@ class FormDefinition(models.Model):
         ).hexdigest()
 
     @cached_property
-    def configuration_wrapper(self) -> "FormioConfigurationWrapper":
+    def configuration_wrapper(self) -> FormioConfigurationWrapper:
         from openforms.formio.service import FormioConfigurationWrapper
 
         return FormioConfigurationWrapper(self.configuration)
+
+    @cached_property
+    def formio_config(self) -> FormioConfig:
+        from openforms.formio.datastructures import FormioConfig
+
+        return FormioConfig(
+            name=self.admin_name, components=self.configuration.get("components", [])
+        )
 
     @deprecated("Deprecated in favour of formio_config datastructure")
     def iter_components(self, configuration=None, recursive=True, **kwargs):
