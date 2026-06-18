@@ -15,11 +15,9 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 import structlog
-from glom import glom
 from privates.fields import PrivateMediaFileField
 
 from openforms.formio.typing import FileComponent
-from openforms.typing import JSONValue
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 
 from .submission import Submission
@@ -219,9 +217,6 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
 
     get_display_name.short_description = _("File name")
 
-    def get_format(self):
-        return os.path.splitext(self.get_display_name())[1].lstrip(".")
-
     @property
     def content_hash(self) -> str:
         """
@@ -249,69 +244,6 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
         component = wrapper.flattened_by_path.get(self._component_configuration_path)
         return component
-
-    def _get_formio_config_property(
-        self, lookup: str, default: JSONValue = ""
-    ) -> str | None:
-        """
-        Derive a property from the attached formio configuration.
-        """
-        if not self.component:
-            return None
-
-        if value := glom(self.component, lookup, default=default):
-            assert isinstance(value, str)
-            return value
-
-        return None
-
-    @property
-    def informatieobjecttype(self) -> str:
-        """
-        Get the informatieobjecttype for this attachment from the configuration
-        """
-        if (
-            value := self._get_formio_config_property(
-                "registration.informatieobjecttype"
-            )
-        ) is not None:
-            return str(value)
-        return ""
-
-    @property
-    def bronorganisatie(self) -> str:
-        """
-        Get the bronorganisatie for this attachment from the configuration
-        """
-        if (
-            value := self._get_formio_config_property("registration.bronorganisatie")
-        ) is not None:
-            return str(value)
-        return ""
-
-    @property
-    def doc_vertrouwelijkheidaanduiding(self) -> str:
-        """
-        Get the vertrouwelijkheidaanduiding for this attachment from the configuration
-        """
-        if (
-            value := self._get_formio_config_property(
-                "registration.docVertrouwelijkheidaanduiding"
-            )
-        ) is not None:
-            return str(value)
-        return ""
-
-    @property
-    def titel(self) -> str:
-        """
-        Get the title for this attachment from the configuration
-        """
-        if (
-            value := self._get_formio_config_property("registration.titel")
-        ) is not None:
-            return str(value)
-        return ""
 
     @property
     def form_key(self):

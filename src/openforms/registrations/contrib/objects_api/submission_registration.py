@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from typing import (
     Any,
@@ -58,6 +58,7 @@ from .registration_variables import (
 )
 from .typing import (
     ConfigVersion,
+    FileComponentOptions,
     RegistrationOptions,
     RegistrationOptionsV1,
     RegistrationOptionsV2,
@@ -177,6 +178,7 @@ def register_submission_attachment(
     submission: Submission,
     attachment: SubmissionFileAttachment,
     options: RegistrationOptions,
+    file_options: Mapping[str, FileComponentOptions],
     documents_client: DocumentenClient,
 ) -> str:
     default_document_type = _resolve_documenttype(
@@ -196,46 +198,23 @@ def register_submission_attachment(
         .isoformat(),
     }
 
-    # apply overrides from the attachment itself, if set
-    if va := attachment.doc_vertrouwelijkheidaanduiding:
-        document_options["doc_vertrouwelijkheidaanduiding"] = va
-    if title := attachment.titel:
-        document_options["titel"] = title
-    if rsin := attachment.bronorganisatie:
-        document_options["organisatie_rsin"] = rsin
-
-    # Override the component-specific document type if it's configured
-    if file_component := attachment.component:
-        # default to the legacy URLs, but override with modern configuration if available
-        if document_type := attachment.informatieobjecttype:
-            document_options["informatieobjecttype"] = document_type
-
-        document_type_configuration = file_component.get("registration", {}).get(
-            "documentType", {}
-        )
-        _document_type_description = document_type_configuration.get("description", "")
-        _catalogue = document_type_configuration.get("catalogue", {})
-        if (
-            _document_type_description
-            and (_catalogue_domain := _catalogue.get("domain"))
-            and (_catalogue_rsin := _catalogue.get("rsin"))
-        ):
-            _options: RegistrationOptions = options.copy()
-            _options.update(
-                {
-                    "catalogue": {
-                        "domain": _catalogue_domain,
-                        "rsin": _catalogue_rsin,
-                    },
-                    "iot_attachment": _document_type_description,
-                }
-            )
+    # look up registration overrides for the component that this file was
+    # uploaded for
+    if (file_component := attachment.component) is not None and (
+        overrides := file_options.get(file_component["key"])
+    ) is not None:
+        if _document_type_description := overrides.get("document_type_description"):
+            _options = options.copy()
+            _options["iot_attachment"] = _document_type_description
             document_options["informatieobjecttype"] = _resolve_documenttype(
-                resolver,
-                "attachment",
-                _options,
-                submission,
+                resolver, "attachment", _options, submission
             )
+        if _bronorganisatie := overrides.get("organization_rsin"):
+            document_options["organisatie_rsin"] = _bronorganisatie
+        if _cl := overrides.get("confidentiality_level"):
+            document_options["doc_vertrouwelijkheidaanduiding"] = _cl
+        if _title := overrides.get("title"):
+            document_options["titel"] = _title
 
     attachment_document = create_attachment_document(
         client=documents_client,
@@ -302,6 +281,7 @@ class ObjectsAPIRegistrationHandler[
         ) or options.get("informatieobjecttype_attachment")
 
         api_group = options["objects_api_group"]
+        file_options = {item["key"]: item for item in options.get("files", [])}
 
         with (
             get_documents_client(api_group) as documents_client,
@@ -340,6 +320,7 @@ class ObjectsAPIRegistrationHandler[
                             submission,
                             attachment,
                             options,
+                            file_options,
                             documents_client,
                         )
                         submission_attachments.append(

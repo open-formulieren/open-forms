@@ -589,6 +589,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 result=True,
             )
 
+            file_options = {item["key"]: item for item in options.get("files", [])}
             for attachment in submission.attachments:
                 attachment_doc_id = execute_unless_result_exists(
                     client.create_document_identificatie,
@@ -596,12 +597,23 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                     f"intermediate.document_nummers.{attachment.id}",  # type: ignore
                     default="",
                 )
+
+                title: str = ""
+                if (
+                    (file_component := attachment.component) is not None
+                    and (overrides := file_options.get(file_component["key"]))
+                    is not None
+                    and (_title := overrides.get("title"))
+                ):
+                    title = _title
+
                 execute_unless_result_exists(
                     partial(
                         client.create_zaak_attachment,
                         zaak_id,
                         attachment_doc_id,
                         attachment,
+                        title=title,
                     ),
                     submission,
                     f"intermediate.documents_created.{attachment.id}",  # type: ignore

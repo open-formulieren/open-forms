@@ -575,24 +575,20 @@ class SubmissionAttachmentTest(TestCase):
                         "groupLabel": "Item",
                         "components": [
                             {
+                                "id": "nested",
                                 "type": "file",
                                 "key": "attachment",
                                 "label": "attachment",
-                                "registration": {
-                                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
-                                },
                                 "file": {"type": []},
                                 "filePattern": "",
                             }
                         ],
                     },
                     {
+                        "id": "topLevel",
+                        "type": "file",
                         "key": "attachment",
                         "label": "attachment",
-                        "type": "file",
-                        "registration": {
-                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
-                        },
                         "file": {"type": []},
                         "filePattern": "",
                     },
@@ -663,19 +659,13 @@ class SubmissionAttachmentTest(TestCase):
             original_name="attachmentInside.pdf"
         )
 
-        self.assertEqual(
-            attachment_repeating_group.informatieobjecttype,
-            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
-        )
+        self.assertEqual(attachment_repeating_group.component["id"], "nested")
 
         attachment = submission_step.attachments.get(
             original_name="attachmentOutside.pdf"
         )
 
-        self.assertEqual(
-            attachment.informatieobjecttype,
-            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456",
-        )
+        self.assertEqual(attachment.component["id"], "topLevel")
 
     @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
     def test_attach_multiple_uploads_to_submission_step_in_repeating_group(
@@ -882,9 +872,6 @@ class SubmissionAttachmentTest(TestCase):
                         "label": "fileInRepeatingGroup1",
                         "file": {"type": []},
                         "filePattern": "",
-                        "registration": {
-                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
-                        },
                     },
                     {
                         "type": "file",
@@ -892,9 +879,6 @@ class SubmissionAttachmentTest(TestCase):
                         "label": "fileInRepeatingGroup2",
                         "file": {"type": []},
                         "filePattern": "",
-                        "registration": {
-                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
-                        },
                     },
                 ],
             },
@@ -904,9 +888,6 @@ class SubmissionAttachmentTest(TestCase):
                 "type": "file",
                 "file": {"type": []},
                 "filePattern": "",
-                "registration": {
-                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
-                },
             },
         ]
         form_step = FormStepFactory.create(
@@ -930,16 +911,16 @@ class SubmissionAttachmentTest(TestCase):
         ).order_by("_component_data_path")
 
         self.assertEqual(
-            attachments_repeating_group_1[0].informatieobjecttype,
-            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
+            attachments_repeating_group_1[0].component["key"],
+            "fileInRepeatingGroup1",
         )
         self.assertEqual(
             attachments_repeating_group_1[0]._component_data_path,
             "repeatingGroup.0.fileInRepeatingGroup1",
         )
         self.assertEqual(
-            attachments_repeating_group_1[1].informatieobjecttype,
-            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
+            attachments_repeating_group_1[1].component["key"],
+            "fileInRepeatingGroup1",
         )
         self.assertEqual(
             attachments_repeating_group_1[1]._component_data_path,
@@ -951,8 +932,8 @@ class SubmissionAttachmentTest(TestCase):
             _component_configuration_path="components.0.components.1",
         )
         self.assertEqual(
-            attachments_repeating_group_2[0].informatieobjecttype,
-            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456",
+            attachments_repeating_group_2[0].component["key"],
+            "fileInRepeatingGroup2",
         )
         self.assertEqual(
             attachments_repeating_group_2[0]._component_data_path,
@@ -964,8 +945,8 @@ class SubmissionAttachmentTest(TestCase):
         )
 
         self.assertEqual(
-            attachments_nested[0].informatieobjecttype,
-            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
+            attachments_nested[0].component["key"],
+            "nested.file",
         )
         self.assertEqual(attachments_nested[0]._component_data_path, "nested.file")
 

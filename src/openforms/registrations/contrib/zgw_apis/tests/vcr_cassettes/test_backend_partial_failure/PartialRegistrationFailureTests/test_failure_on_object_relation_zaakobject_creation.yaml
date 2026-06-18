@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen?domein=TEST&rsin=000000000
   response:
@@ -49,7 +49,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/zaaktypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&identificatie=ZT-001&datumGeldigheid=2024-11-09
   response:
@@ -81,9 +81,9 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-03-25", "startdatum": "2026-03-25", "productenOfDiensten":
-      [], "omschrijving": "my-form", "toelichting": "Aangemaakt door Open Formulieren",
-      "betalingsindicatie": "nvt"}'
+      "registratiedatum": "2026-06-11", "startdatum": "2026-06-11", "productenOfDiensten":
+      [], "omschrijving": "my-form", "toelichting": "", "betalingsindicatie": "nvt",
+      "identificatie": "OF-VHR6L8"}'
     headers:
       Accept:
       - '*/*'
@@ -96,17 +96,16 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '373'
+      - '371'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/860c4aa7-6ae7-4e8f-96ba-372f4560fe25","uuid":"860c4aa7-6ae7-4e8f-96ba-372f4560fe25","identificatie":"ZAAK-2026-0000000102","bronorganisatie":"000000000","omschrijving":"my-form","toelichting":"Aangemaakt
-        door Open Formulieren","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-03-25","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-03-25","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/fa6abdeb-5014-4aff-a622-bdffc93754a0","uuid":"fa6abdeb-5014-4aff-a622-bdffc93754a0","identificatie":"OF-VHR6L8","bronorganisatie":"000000000","omschrijving":"my-form","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-11","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-11","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -116,13 +115,13 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '1388'
+      - '1345'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/860c4aa7-6ae7-4e8f-96ba-372f4560fe25
+      - http://localhost:8003/zaken/api/v1/zaken/fa6abdeb-5014-4aff-a622-bdffc93754a0
       Referrer-Policy:
       - same-origin
       Vary:
@@ -144,7 +143,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen?domein=TEST&rsin=000000000
   response:
@@ -184,7 +183,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/informatieobjecttypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&omschrijving=Attachment+Informatieobjecttype&datumGeldigheid=2024-11-09
   response:
@@ -224,7 +223,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774
   response:
@@ -257,11 +256,11 @@ interactions:
       message: OK
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e",
-      "bronorganisatie": "000000000", "creatiedatum": "2026-03-25", "titel": "my-form",
-      "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf", "inhoud":
-      "", "status": "definitief", "bestandsnaam": "open-forms-my-form.pdf", "ontvangstdatum":
-      null, "beschrijving": "Ingezonden formulier", "indicatieGebruiksrecht": false,
-      "bestandsomvang": 0}'
+      "bronorganisatie": "000000000", "creatiedatum": "2026-06-11", "titel": "my-form
+      (PDF)", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf",
+      "inhoud": "", "status": "definitief", "bestandsnaam": "open-forms-my-form (PDF).pdf",
+      "ontvangstdatum": null, "beschrijving": "Ingezonden formulier", "indicatieGebruiksrecht":
+      false, "bestandsomvang": 0}'
     headers:
       Accept:
       - '*/*'
@@ -270,16 +269,18 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '472'
+      - '484'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/00b66ceb-2859-4bfe-a991-bc25affec2cc","identificatie":"DOCUMENT-2026-0000000135","bronorganisatie":"000000000","creatiedatum":"2026-03-25","titel":"my-form","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2026-03-25T11:51:43.573719Z","bestandsnaam":"open-forms-my-form.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/00b66ceb-2859-4bfe-a991-bc25affec2cc/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/533a2513-01dd-41d7-9fad-4c10a773220c","identificatie":"DOCUMENT-2026-0000000451","bronorganisatie":"000000000","creatiedatum":"2026-06-11","titel":"my-form
+        (PDF)","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2026-06-11T07:45:18.625097Z","bestandsnaam":"open-forms-my-form
+        (PDF).pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/533a2513-01dd-41d7-9fad-4c10a773220c/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
         formulier","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
@@ -287,13 +288,13 @@ interactions:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Content-Length:
-      - '1040'
+      - '1052'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/00b66ceb-2859-4bfe-a991-bc25affec2cc
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/533a2513-01dd-41d7-9fad-4c10a773220c
       Referrer-Policy:
       - same-origin
       Vary:
@@ -306,8 +307,8 @@ interactions:
       code: 201
       message: Created
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/860c4aa7-6ae7-4e8f-96ba-372f4560fe25",
-      "informatieobject": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/00b66ceb-2859-4bfe-a991-bc25affec2cc"}'
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/fa6abdeb-5014-4aff-a622-bdffc93754a0",
+      "informatieobject": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/533a2513-01dd-41d7-9fad-4c10a773220c"}'
     headers:
       Accept:
       - '*/*'
@@ -320,13 +321,13 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: http://localhost:8003/zaken/api/v1/zaakinformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/4af4edcf-8b81-43db-9491-feaeef3e3058","uuid":"4af4edcf-8b81-43db-9491-feaeef3e3058","informatieobject":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/00b66ceb-2859-4bfe-a991-bc25affec2cc","zaak":"http://localhost:8003/zaken/api/v1/zaken/860c4aa7-6ae7-4e8f-96ba-372f4560fe25","aardRelatieWeergave":"Hoort
-        bij, omgekeerd: kent","titel":"","beschrijving":"","registratiedatum":"2026-03-25T11:51:43.607374Z","vernietigingsdatum":null,"status":null}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/baebe0d0-978b-41e7-b8a0-0a302af20cce","uuid":"baebe0d0-978b-41e7-b8a0-0a302af20cce","informatieobject":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/533a2513-01dd-41d7-9fad-4c10a773220c","zaak":"http://localhost:8003/zaken/api/v1/zaken/fa6abdeb-5014-4aff-a622-bdffc93754a0","aardRelatieWeergave":"Hoort
+        bij, omgekeerd: kent","titel":"","beschrijving":"","registratiedatum":"2026-06-11T07:45:18.747848Z","vernietigingsdatum":null,"status":null}'
     headers:
       API-version:
       - 1.5.1
@@ -339,7 +340,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/4af4edcf-8b81-43db-9491-feaeef3e3058
+      - http://localhost:8003/zaken/api/v1/zaakinformatieobjecten/baebe0d0-978b-41e7-b8a0-0a302af20cce
       Referrer-Policy:
       - same-origin
       Vary:
@@ -361,7 +362,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/roltypen?zaaktype=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fzaaktypen%2Ff609b6fe-449a-46dc-a0af-de55dc5f6774&omschrijvingGeneriek=initiator
   response:
@@ -390,10 +391,10 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/860c4aa7-6ae7-4e8f-96ba-372f4560fe25",
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/fa6abdeb-5014-4aff-a622-bdffc93754a0",
       "betrokkeneType": "natuurlijk_persoon", "roltype": "http://localhost:8003/catalogi/api/v1/roltypen/bd37e337-e0fd-4e11-a6ed-45a71e1c7aa8",
       "roltoelichting": "inzender formulier", "indicatieMachtiging": "", "betrokkeneIdentificatie":
-      {"inpBsn": "111222333", "vestigingsNummer": ""}}'
+      {"inpBsn": "111222333"}}'
     headers:
       Accept:
       - '*/*'
@@ -402,17 +403,17 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '370'
+      - '346'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: http://localhost:8003/zaken/api/v1/rollen
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/rollen/e214849e-ca8e-42a9-85d3-cc0473922ce4","uuid":"e214849e-ca8e-42a9-85d3-cc0473922ce4","zaak":"http://localhost:8003/zaken/api/v1/zaken/860c4aa7-6ae7-4e8f-96ba-372f4560fe25","betrokkene":"","betrokkeneType":"natuurlijk_persoon","afwijkendeNaamBetrokkene":"","roltype":"http://localhost:8003/catalogi/api/v1/roltypen/bd37e337-e0fd-4e11-a6ed-45a71e1c7aa8","omschrijving":"Initiator","omschrijvingGeneriek":"initiator","roltoelichting":"inzender
-        formulier","registratiedatum":"2026-03-25T11:51:43.661628Z","indicatieMachtiging":"","contactpersoonRol":{"emailadres":"","functie":"","telefoonnummer":"","naam":""},"statussen":[],"betrokkeneIdentificatie":{"inpBsn":"111222333","anpIdentificatie":"","inpA_nummer":"","geslachtsnaam":"","voorvoegselGeslachtsnaam":"","voorletters":"","voornamen":"","geslachtsaanduiding":"","geboortedatum":"","verblijfsadres":null,"subVerblijfBuitenland":null}}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/rollen/3168478e-6af4-4e4c-bba7-4e62890892c0","uuid":"3168478e-6af4-4e4c-bba7-4e62890892c0","zaak":"http://localhost:8003/zaken/api/v1/zaken/fa6abdeb-5014-4aff-a622-bdffc93754a0","betrokkene":"","betrokkeneType":"natuurlijk_persoon","afwijkendeNaamBetrokkene":"","roltype":"http://localhost:8003/catalogi/api/v1/roltypen/bd37e337-e0fd-4e11-a6ed-45a71e1c7aa8","omschrijving":"Initiator","omschrijvingGeneriek":"initiator","roltoelichting":"inzender
+        formulier","registratiedatum":"2026-06-11T07:45:18.890589Z","indicatieMachtiging":"","contactpersoonRol":{"emailadres":"","functie":"","telefoonnummer":"","naam":""},"statussen":[],"betrokkeneIdentificatie":{"inpBsn":"111222333","anpIdentificatie":"","inpA_nummer":"","geslachtsnaam":"","voorvoegselGeslachtsnaam":"","voorletters":"","voornamen":"","geslachtsaanduiding":"","geboortedatum":"","verblijfsadres":null,"subVerblijfBuitenland":null}}'
     headers:
       API-version:
       - 1.5.1
@@ -425,7 +426,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/rollen/e214849e-ca8e-42a9-85d3-cc0473922ce4
+      - http://localhost:8003/zaken/api/v1/rollen/3168478e-6af4-4e4c-bba7-4e62890892c0
       Referrer-Policy:
       - same-origin
       Vary:
@@ -447,7 +448,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/statustypen?zaaktype=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fzaaktypen%2Ff609b6fe-449a-46dc-a0af-de55dc5f6774
   response:
@@ -476,9 +477,9 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/860c4aa7-6ae7-4e8f-96ba-372f4560fe25",
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/fa6abdeb-5014-4aff-a622-bdffc93754a0",
       "statustype": "http://localhost:8003/catalogi/api/v1/statustypen/2937ee1d-9ea1-4048-b642-5a4dfd51fb47",
-      "datumStatusGezet": "2026-03-25T11:51:43.691388+00:00", "statustoelichting":
+      "datumStatusGezet": "2026-06-11T07:45:18.990859+00:00", "statustoelichting":
       ""}'
     headers:
       Accept:
@@ -492,12 +493,12 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: http://localhost:8003/zaken/api/v1/statussen
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/statussen/909ba0f7-5579-4ca5-8531-e9c710ed425b","uuid":"909ba0f7-5579-4ca5-8531-e9c710ed425b","zaak":"http://localhost:8003/zaken/api/v1/zaken/860c4aa7-6ae7-4e8f-96ba-372f4560fe25","statustype":"http://localhost:8003/catalogi/api/v1/statustypen/2937ee1d-9ea1-4048-b642-5a4dfd51fb47","datumStatusGezet":"2026-03-25T11:51:43.691388Z","statustoelichting":"","indicatieLaatstGezetteStatus":true,"gezetdoor":null,"zaakinformatieobjecten":[]}'
+      string: '{"url":"http://localhost:8003/zaken/api/v1/statussen/69f3939d-0cb2-4a18-9374-0b102a2f140c","uuid":"69f3939d-0cb2-4a18-9374-0b102a2f140c","zaak":"http://localhost:8003/zaken/api/v1/zaken/fa6abdeb-5014-4aff-a622-bdffc93754a0","statustype":"http://localhost:8003/catalogi/api/v1/statustypen/2937ee1d-9ea1-4048-b642-5a4dfd51fb47","datumStatusGezet":"2026-06-11T07:45:18.990859Z","statustoelichting":"","indicatieLaatstGezetteStatus":true,"gezetdoor":null,"zaakinformatieobjecten":[]}'
     headers:
       API-version:
       - 1.5.1
@@ -510,7 +511,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/statussen/909ba0f7-5579-4ca5-8531-e9c710ed425b
+      - http://localhost:8003/zaken/api/v1/statussen/69f3939d-0cb2-4a18-9374-0b102a2f140c
       Referrer-Policy:
       - same-origin
       Vary:
@@ -524,9 +525,9 @@ interactions:
       message: Created
 - request:
     body: '{"type": "http://host.docker.internal:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
-      "record": {"typeVersion": 1, "data": {"data": {"fd-2": {"voornaam": "Foo", "achternaam":
-      "Bar"}}, "type": "ProductAanvraag", "bsn": "111222333", "submission_id": "cad32ad2-6268-446a-8d6a-d9cdaf4a8b2d",
-      "language_code": "nl"}, "startAt": "2026-03-25"}}'
+      "record": {"typeVersion": 1, "data": {"data": {"fd-41": {"voornaam": "Foo",
+      "achternaam": "Bar"}}, "type": "ProductAanvraag", "bsn": "111222333", "submission_id":
+      "4528cf54-a5d9-49ba-b97a-f1a69e8d00a8", "language_code": "nl"}, "startAt": "2026-06-11"}}'
     headers:
       Accept:
       - '*/*'
@@ -537,16 +538,16 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '352'
+      - '353'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/1acc73e7-ea7f-40b0-9e38-b531732ff1c3","uuid":"1acc73e7-ea7f-40b0-9e38-b531732ff1c3","type":"http://host.docker.internal:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"data":{"fd-2":{"voornaam":"Foo","achternaam":"Bar"}},"type":"ProductAanvraag","bsn":"111222333","submission_id":"cad32ad2-6268-446a-8d6a-d9cdaf4a8b2d","language_code":"nl"},"geometry":null,"startAt":"2026-03-25","endAt":null,"registrationAt":"2026-03-25","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/e9b2076d-8ddd-42ab-93d3-b5da008eeb33","uuid":"e9b2076d-8ddd-42ab-93d3-b5da008eeb33","type":"http://host.docker.internal:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"data":{"fd-41":{"voornaam":"Foo","achternaam":"Bar"}},"type":"ProductAanvraag","bsn":"111222333","submission_id":"4528cf54-a5d9-49ba-b97a-f1a69e8d00a8","language_code":"nl"},"geometry":null,"startAt":"2026-06-11","endAt":null,"registrationAt":"2026-06-11","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -555,19 +556,19 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '570'
+      - '571'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 25 Mar 2026 11:51:43 GMT
+      - Thu, 11 Jun 2026 07:45:19 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/1acc73e7-ea7f-40b0-9e38-b531732ff1c3
+      - http://localhost:8002/api/v2/objects/e9b2076d-8ddd-42ab-93d3-b5da008eeb33
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.29.5
+      - nginx/1.29.7
       Vary:
       - origin
       X-Content-Type-Options:
@@ -578,8 +579,8 @@ interactions:
       code: 201
       message: Created
 - request:
-    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/860c4aa7-6ae7-4e8f-96ba-372f4560fe25",
-      "object": "http://objects-web:8000/api/v2/objects/1acc73e7-ea7f-40b0-9e38-b531732ff1c3",
+    body: '{"zaak": "http://localhost:8003/zaken/api/v1/zaken/fa6abdeb-5014-4aff-a622-bdffc93754a0",
+      "object": "http://objects-web:8000/api/v2/objects/e9b2076d-8ddd-42ab-93d3-b5da008eeb33",
       "objectType": "overige", "objectTypeOverigeDefinitie": {"url": "http://host.docker.internal:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions/1",
       "schema": ".jsonSchema", "objectData": ".record.data"}}'
     headers:
@@ -594,14 +595,14 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.5
+      - python-requests/2.33.0
     method: POST
     uri: http://localhost:8003/zaken/api/v1/zaakobjecten
   response:
     body:
       string: '{"type":"http://localhost:8003/ref/fouten/ValidationError/","code":"invalid","title":"Invalid
-        input.","status":400,"detail":"","instance":"urn:uuid:913e3bb3-1890-4444-92e3-b215fe1562fe","invalidParams":[{"name":"object","code":"bad-url","reason":"De
-        URL http://objects-web:8000/api/v2/objects/1acc73e7-ea7f-40b0-9e38-b531732ff1c3
+        input.","status":400,"detail":"","instance":"urn:uuid:76b1f29f-7fb2-473f-bb89-3556cbe7ef57","invalidParams":[{"name":"object","code":"bad-url","reason":"De
+        URL http://objects-web:8000/api/v2/objects/e9b2076d-8ddd-42ab-93d3-b5da008eeb33
         gaf als antwoord HTTP 401. Geef een geldige URL op."},{"name":"object","code":"invalid","reason":"Voer
         een geldige URL in."}]}'
     headers:
