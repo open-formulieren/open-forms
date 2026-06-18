@@ -581,6 +581,7 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
             render_email_template(config.save_form_email_content, context),
             settings.DEFAULT_FROM_EMAIL,
             [email],
+            theme=instance.form.theme,
         )
 
 

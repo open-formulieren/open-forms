@@ -4,6 +4,7 @@ from django.core import mail
 from django.test import TestCase
 
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.emails.constants import EmailContentTypeChoices, EmailEventChoices
 from openforms.logging.models import TimelineLogProxy
 
@@ -206,3 +207,29 @@ class OnCompletionTests(TestCase):
                 "X-OF-Event": EmailEventChoices.cosign_request,
             },
         )
+
+    def test_email_uses_form_theme(self):
+        theme = ThemeFactory.create(
+            design_token_values={"of": {"page-footer": {"bg": {"value": "#facade"}}}}
+        )
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                },
+            ],
+            submitted_data={"cosign": "cosigner@example.com"},
+            form__theme=theme,
+        )
+
+        send_email_cosigner(submission.id)
+
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        assert isinstance(message, mail.EmailMultiAlternatives)
+        html_content, _ = message.alternatives[0]
+        assert isinstance(html_content, str)
+
+        self.assertIn("#facade", html_content)

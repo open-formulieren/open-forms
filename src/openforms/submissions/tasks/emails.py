@@ -146,6 +146,7 @@ def send_email_cosigner(submission_id: int) -> None:
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[recipient],
                 text_message=content,
+                theme=submission.form.theme,
                 extra_headers={
                     "Content-Language": submission.language_code,
                     X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
