@@ -98,7 +98,7 @@ certifi==2024.7.4
     #   requests
     #   self-certifi
     #   sentry-sdk
-cffi==1.16.0
+cffi==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -145,7 +145,7 @@ coverage==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==44.0.1
+cryptography==49.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -922,12 +922,12 @@ pygments==2.17.2
     #   -r requirements/ci.txt
     #   sphinx
     #   sphinx-tabs
-pyjwt==2.12.1
+pyjwt==2.13.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   zgw-consumers
-pyopenssl==25.0.0
+pyopenssl==26.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1237,7 +1237,7 @@ tinycss2==1.1.0
     #   -r requirements/ci.txt
     #   cssselect2
     #   weasyprint
-tornado==6.5.5
+tornado==6.5.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

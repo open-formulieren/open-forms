@@ -91,7 +91,7 @@ certifi==2024.7.4
     #   requests
     #   self-certifi
     #   sentry-sdk
-cffi==1.16.0
+cffi==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -136,7 +136,7 @@ click-repl==0.2.0
     #   celery
 coverage==7.4.0
     # via -r requirements/test-tools.in
-cryptography==44.0.1
+cryptography==49.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -870,12 +870,12 @@ pygments==2.17.2
     # via
     #   sphinx
     #   sphinx-tabs
-pyjwt==2.12.1
+pyjwt==2.13.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
-pyopenssl==25.0.0
+pyopenssl==26.3.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1144,7 +1144,7 @@ tinycss2==1.1.0
     #   -r requirements/base.txt
     #   cssselect2
     #   weasyprint
-tornado==6.5.5
+tornado==6.5.7
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
