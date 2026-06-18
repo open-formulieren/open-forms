@@ -24,6 +24,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -341,3 +342,24 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(submission.suspended_on, timezone.now())
         self.assertFalse(submitted_step.completed)
         self.assertIsNone(submitted_step.completed_on)
+
+    def test_email_sent_uses_form_theme(self):
+        theme = ThemeFactory.create(
+            design_token_values={"of": {"page-footer": {"bg": {"value": "#facade"}}}}
+        )
+        submission = SubmissionFactory.create(form__theme=theme)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
+
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        assert isinstance(message, mail.EmailMultiAlternatives)
+        html_content, _ = message.alternatives[0]
+        assert isinstance(html_content, str)
+
+        self.assertIn("#facade", html_content)
