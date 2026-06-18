@@ -11,6 +11,14 @@ import {
   mockObjecttypeVersionsGet,
   mockObjecttypesGet,
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
+import {
+  mockCataloguesGet as mockObjectsAPICataloguesGet,
+  mockDocumentTypesGet as mockObjectsAPIDocumentTypesGet,
+} from 'components/admin/form_design/registrations/objectsapi/mocks';
+import {
+  mockCataloguesGet as mockZGWCataloguesGet,
+  mockDocumenTypesGet as mockZGWDocumenTypesGet,
+} from 'components/admin/form_design/registrations/zgw/mocks';
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 import {serializeValue} from 'components/admin/forms/VariableMapping';
 import {mockYiviAttributeGroupsGet} from 'components/admin/forms/yivi/mocks';
@@ -312,6 +320,14 @@ export default {
           }),
         ],
         yivi: [mockYiviAttributeGroupsGet()],
+        registration: [
+          // Objects APIs
+          mockObjectsAPICataloguesGet(),
+          mockObjectsAPIDocumentTypesGet(),
+          // ZGW
+          mockZGWCataloguesGet(),
+          mockZGWDocumenTypesGet(),
+        ],
       },
     },
   },
@@ -2093,6 +2109,189 @@ export const AddressNLMappingSpecificTargetsDeriveAddress = {
     const streetNameSelect = await canvas.findByLabelText('Bestemmingspad straatnaam');
     expect(streetNameSelect).toBeVisible();
     expect(streetNameSelect).not.toBeDisabled();
+  },
+};
+
+export const FileMapping = {
+  args: {
+    availableFormVariables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+        name: 'File uploads',
+        key: 'fileUploads',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'array',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+        name: 'Repeating group with file',
+        key: 'editgrid',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'array',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+        name: 'Some text',
+        key: 'someText',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: '',
+      },
+    ],
+    availableComponents: {
+      fileUploads: {
+        type: 'file',
+        key: 'fileUploads',
+        label: 'File uploads',
+        multiple: false,
+      },
+      someText: {
+        type: 'textfield',
+        key: 'someText',
+        label: 'Some text',
+      },
+      editgrid: {
+        type: 'editgrid',
+        key: 'editgrid',
+        label: 'Repeating group with file',
+        components: [
+          {
+            type: 'file',
+            key: 'nestedFileUploads',
+            label: 'Nested file uploads',
+            multiple: true,
+          },
+        ],
+      },
+    },
+    registrationBackends: [
+      {
+        backend: 'objects_api',
+        key: 'objects_api_1',
+        name: 'Objects API (v2)',
+        options: {
+          version: 2,
+          objectsApiGroup: 'group-1',
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          catalogue: {
+            domain: 'TEST',
+            rsin: '000000000',
+          },
+          variablesMapping: [],
+        },
+      },
+      {
+        backend: 'objects_api',
+        key: 'objects_api_2',
+        name: 'Objects API (v1)',
+        options: {
+          version: 1,
+          objectsApiGroup: 'group-1',
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          catalogue: {
+            domain: 'TEST',
+            rsin: '000000000',
+          },
+        },
+      },
+      {
+        backend: 'zgw-create-zaak',
+        key: 'zgw',
+        name: "ZGW API's",
+        options: {
+          zgwApiGroup: 1,
+          catalogue: {
+            domain: 'TEST',
+            rsin: '000000000',
+          },
+          caseTypeIdentification: 'ZT01',
+          documentTypeDescription: 'bijlage',
+        },
+      },
+      {
+        backend: 'stuf-zds-create-zaak',
+        key: 'stuf-zds',
+        name: 'StUF-ZDS',
+        options: {
+          variablesMapping: [],
+          zdsDocumenttypeOmschrijvingInzending: '',
+          zdsZaakdocVertrouwelijkheid: 'OPENBAAR',
+          zdsZaaktypeCode: '',
+          zdsZaaktypeOmschrijving: '',
+          zdsZaaktypeStatusCode: '',
+          zdsZaaktypeStatusOmschrijving: '',
+        },
+      },
+    ],
+  },
+
+  parameters: {
+    msw: {
+      handlers: {
+        objectTypeTargetPaths: [
+          mockTargetPathsPost({
+            string: [
+              {
+                targetPath: ['path', 'to.the', 'target'],
+                isRequired: false,
+                jsonSchema: {type: 'string'},
+              },
+            ],
+            number: [
+              {
+                targetPath: ['number', 'target'],
+                isRequired: false,
+                jsonSchema: {type: 'number'},
+              },
+            ],
+            object: [
+              {
+                targetPath: ['other', 'path'],
+                isRequired: false,
+                jsonSchema: {type: 'object', properties: {a: {type: 'string'}}},
+              },
+            ],
+            array: [
+              {
+                targetPath: ['array'],
+                isRequired: false,
+                jsonSchema: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                  },
+                },
+              },
+            ],
+          }),
+        ],
+      },
+    },
   },
 };
 

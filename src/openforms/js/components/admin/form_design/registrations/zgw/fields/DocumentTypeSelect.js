@@ -1,7 +1,6 @@
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import {useMemo} from 'react';
-import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
@@ -14,7 +13,7 @@ const DOCUMENT_TYPES_ENDPOINT = '/api/v2/registration/plugins/zgw-api/document-t
 
 // Components
 
-const DocumentTypeSelect = ({catalogueUrl = ''}) => {
+const DocumentTypeSelect = ({name, label, helpText, catalogueUrl = '', isRequired = false}) => {
   const {
     values: {zgwApiGroup = null, caseTypeIdentification = ''},
   } = useFormikContext();
@@ -32,32 +31,12 @@ const DocumentTypeSelect = ({catalogueUrl = ''}) => {
 
   return (
     <FormRow>
-      <Field
-        name="documentTypeDescription"
-        // TODO: make required once legacy config is dropped
-        required={false}
-        label={
-          <FormattedMessage
-            description="ZGW APIs registration options 'document type' label"
-            defaultMessage="Document type"
-          />
-        }
-        helpText={
-          <FormattedMessage
-            description="ZGW APIs registration options 'document type' helpText"
-            defaultMessage={`Documents produced in the form submission are registered
-            with this document type, unless more fine grained configuration is available.
-            Only document types available on the selected case type are shown.`}
-          />
-        }
-        noManageChildProps
-      >
+      <Field name={name} required={isRequired} label={label} helpText={helpText} noManageChildProps>
         <GenericDocumentTypeSelect
-          name="documentTypeDescription"
+          name={name}
           documentTypes={documentTypes}
           isDisabled={!zgwApiGroup || !caseTypeIdentification}
-          // TODO: make required once legacy config is dropped
-          isRequired={false}
+          isRequired={isRequired}
           isLoading={loading}
         />
       </Field>
@@ -66,7 +45,11 @@ const DocumentTypeSelect = ({catalogueUrl = ''}) => {
 };
 
 DocumentTypeSelect.propTypes = {
+  name: PropTypes.string.isRequired,
+  label: PropTypes.node.isRequired,
+  helpText: PropTypes.node,
   catalogueUrl: PropTypes.string,
+  isRequired: PropTypes.bool,
 };
 
 export default DocumentTypeSelect;

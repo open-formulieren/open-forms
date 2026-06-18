@@ -1,10 +1,11 @@
 import {Formik} from 'formik';
 import PropTypes from 'prop-types';
-import React, {useContext, useState} from 'react';
+import {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
+import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
 import {SubmitAction} from 'components/admin/forms/ActionButton';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 import {EditIcon} from 'components/admin/icons';
@@ -16,6 +17,9 @@ import ErrorBoundary from 'components/errors/ErrorBoundary';
  * @param {Object} p
  * @param {string} p.name - The name of the current registration backend
  * @param {Object} p.variable - The current variable
+ * @param {Object} p.component - Empty if there's no matching component, or either the
+ *   component that the variable is for, or a child component of an edit grid
+ *   variable/component.
  * @param {Object} p.backend - The current backend
  * @param {JSX.Element} p.registrationSummary - The rendered summary of the registration backend for the current variable
  * @param {JSX.Element} p.variableConfigurationEditor - The rendered configuration editor for the current variable
@@ -25,9 +29,12 @@ import ErrorBoundary from 'components/errors/ErrorBoundary';
 const RegistrationSummary = ({
   name,
   variable,
+  component = undefined,
   backend,
   registrationSummary,
   variableConfigurationEditor,
+  optionsToFormikValues = opts => opts,
+  formikValuesToOptions = values => values,
   onChange,
 }) => {
   const intl = useIntl();
@@ -35,6 +42,8 @@ const RegistrationSummary = ({
   const formContext = useContext(FormContext);
   // always pick the right index of the backend from the updated context
   const backendIndex = formContext.registrationBackends.findIndex(item => item.key === backend.key);
+
+  const isForDifferentComponent = component?.key !== variable.key;
 
   return (
     <>
@@ -52,14 +61,17 @@ const RegistrationSummary = ({
           />
         </span>
       </div>
-      <div>{registrationSummary}</div>
+      {!isForDifferentComponent && <div>{registrationSummary}</div>}
       <FormModal
         title={
           <FormattedMessage
             description="Variable registration configuration modal title"
             defaultMessage="{varName}: registration configuration for {backendName}"
             values={{
-              varName: variable.name,
+              varName:
+                component && isForDifferentComponent
+                  ? component.label || component.key
+                  : variable.name,
               backendName: name,
             }}
           />
@@ -74,9 +86,9 @@ const RegistrationSummary = ({
           })}
         >
           <Formik
-            initialValues={backend.options}
+            initialValues={optionsToFormikValues(backend.options)}
             onSubmit={(values, actions) => {
-              const updatedBackend = {...backend, options: values};
+              const updatedBackend = {...backend, options: formikValuesToOptions(values)};
               onChange({
                 target: {name: `form.registrationBackends.${backendIndex}`, value: updatedBackend},
               });
@@ -111,6 +123,8 @@ RegistrationSummary.propTypes = {
   registrationSummary: PropTypes.element.isRequired,
   variableConfigurationEditor: PropTypes.element.isRequired,
   onChange: PropTypes.func.isRequired,
+  optionsToFormikValues: PropTypes.func,
+  formikValuesToOptions: PropTypes.func,
 };
 
 /**
@@ -124,8 +138,19 @@ RegistrationSummary.propTypes = {
  *     taken into account. If not provided, will fallback to the backends from the form context.
  * @returns {JSX.Element} - A <ul> list of summaries
  */
-const RegistrationsSummaryList = ({variable, onFieldChange, registrationBackends}) => {
+const RegistrationsSummaryList = ({
+  variable,
+  component = undefined,
+  onFieldChange,
+  registrationBackends,
+}) => {
   const formContext = useContext(FormContext);
+
+  // if we didn't get an explicit component, resolve it from the variable if it's a
+  // component variable.
+  if (!component && variable.source === VARIABLE_SOURCES.component) {
+    component = formContext.components[variable.key];
+  }
 
   /** @type {RegistrationBackend[]} */
   const filteredRegistrationBackends = registrationBackends || formContext.registrationBackends;
@@ -139,7 +164,7 @@ const RegistrationsSummaryList = ({variable, onFieldChange, registrationBackends
     const configurableFromVariables = backendInfo?.configurableFromVariables;
     if (
       (typeof configurableFromVariables === 'function' &&
-        !configurableFromVariables(backend.options)) ||
+        !configurableFromVariables(variable, component, backend.options)) ||
       !configurableFromVariables
     )
       continue;
@@ -150,10 +175,21 @@ const RegistrationsSummaryList = ({variable, onFieldChange, registrationBackends
     summaries.push({
       name: backend.name,
       variable,
+      component,
       backend,
       backendIndex,
-      registrationSummary: <SummaryHandler variable={variable} backendOptions={backend.options} />,
-      variableConfigurationEditor: <VariableConfigurationEditor variable={variable} />,
+      registrationSummary: (
+        <SummaryHandler
+          variable={variable}
+          component={component}
+          backendOptions={backend.options}
+        />
+      ),
+      variableConfigurationEditor: (
+        <VariableConfigurationEditor variable={variable} component={component} />
+      ),
+      optionsToFormikValues: backendInfo?.optionsToFormikValues,
+      formikValuesToOptions: backendInfo?.formikValuesToOptions,
       onChange: onFieldChange,
     });
   }

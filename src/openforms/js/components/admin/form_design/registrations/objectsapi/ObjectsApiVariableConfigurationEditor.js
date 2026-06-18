@@ -10,6 +10,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
 import AddressNLEditor from './edit_options/AddressNLEditor';
+import FileEditor, {FileEditorV1} from './edit_options/FileEditor';
 import MapEditor from './edit_options/MapEditor';
 import SelectboxesEditor from './edit_options/SelectboxesEditor';
 import {GenericEditor} from './edit_options/generic';
@@ -18,8 +19,49 @@ import {GenericEditor} from './edit_options/generic';
 // adhere to the generic behaviour (GenericEditor)
 const VARIABLE_CONFIGURATION_OPTIONS = {
   addressNL: AddressNLEditor,
+  file: FileEditor,
   map: MapEditor,
   selectboxes: SelectboxesEditor,
+};
+
+/**
+ * Returns the Objects API Configuration editor modal for a specific variable and a specific
+ * component type. This only applies to V1 Options
+ *
+ * @typedef {{
+ *   version: 1;
+ *   objectsApiGroup: string;
+ *   objecttype: string;
+ *   objecttypeVersion: number;
+ *   files: {
+ *     key: string;
+ *     documentTypeDescription?: string,
+ *     organizationRsin?: string,
+ *     confidentialityLevel?: string,
+ *     title?: string,
+ *   }[];
+ * }} ObjectsAPIV1RegistrationBackendOptions
+ *
+ * @param {Object} p
+ * @param {Object} p.variable - The current variable
+ * @returns {JSX.Element} - The configuration form for the Objects API
+ */
+const ObjectsApiV1VariableConfigurationEditor = ({variable, component}) => {
+  const {values: backendOptions} = useFormikContext();
+  if (component?.type !== 'file') {
+    throw new Error('Only file components are supported');
+  }
+
+  // the formik state is populated with the backend options, so our path needs to be
+  // relative to that
+  const namePrefix = `files['${component.key}']`;
+  return (
+    <>
+      <Fieldset>
+        <FileEditorV1 namePrefix={namePrefix} backendOptions={backendOptions} />
+      </Fieldset>
+    </>
+  );
 };
 
 /**
@@ -27,27 +69,24 @@ const VARIABLE_CONFIGURATION_OPTIONS = {
  * component type. This only applies to V2 Options
  *
  * @typedef {{
- *   version: 1 | 2;
+ *   version: 2;
  *   objectsApiGroup: string;
  *   objecttype: string;
  *   objecttypeVersion: number;
  *   variablesMapping: {variableKey: string, targetPath: string[]}[];
  *   geometryVariableKey: string;
- * }} ObjectsAPIRegistrationBackendOptions
+ * }} ObjectsAPIV2RegistrationBackendOptions
  *
  * @param {Object} p
  * @param {Object} p.variable - The current variable
  * @returns {JSX.Element} - The configuration form for the Objects API
  */
-const ObjectsApiVariableConfigurationEditor = ({variable}) => {
+const ObjectsApiV2VariableConfigurationEditor = ({variable, component}) => {
   const {values: backendOptions, getFieldProps, setFieldValue} = useFormikContext();
   const {components} = useContext(FormContext);
 
-  /** @type {ObjectsAPIRegistrationBackendOptions} */
-  const {objectsApiGroup, objecttype, objecttypeVersion, variablesMapping, version} =
-    backendOptions;
-
-  if (version !== 2) throw new Error('Not supported, must be config version 2.');
+  /** @type {ObjectsAPIV2RegistrationBackendOptions} */
+  const {objectsApiGroup, objecttype, objecttypeVersion, variablesMapping} = backendOptions;
 
   // get the index of our variable in the mapping, if it exists
   const index = variablesMapping.findIndex(
@@ -83,30 +122,38 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   const namePrefix = `variablesMapping.${index}`;
   // check if there is a specific ConfigurationEditor according to the variable type,
   // if not, fallback to the default/generic one
-  const componentType = components[variable?.key]?.type;
+  const componentType = (component ?? components[variable?.key])?.type;
   const VariableConfigurationEditor =
     VARIABLE_CONFIGURATION_OPTIONS?.[componentType] ?? GenericEditor;
+
+  const isComponentForVariable = component && component.key === variable.key;
 
   return (
     <>
       <Fieldset>
-        <FormRow>
-          <Field
-            name={`${namePrefix}.variableKey`}
-            label={
-              <FormattedMessage description="'Variable key' label" defaultMessage="Variable key" />
-            }
-            required
-          >
-            <TextInput
-              {...getFieldProps(`${namePrefix}.variableKey`)}
-              value={mappedVariable.variableKey}
-              readOnly
-            />
-          </Field>
-        </FormRow>
+        {isComponentForVariable && (
+          <FormRow>
+            <Field
+              name={`${namePrefix}.variableKey`}
+              label={
+                <FormattedMessage
+                  description="'Variable key' label"
+                  defaultMessage="Variable key"
+                />
+              }
+              required
+            >
+              <TextInput
+                {...getFieldProps(`${namePrefix}.variableKey`)}
+                value={mappedVariable.variableKey}
+                readOnly
+              />
+            </Field>
+          </FormRow>
+        )}
         <VariableConfigurationEditor
           variable={variable}
+          component={component}
           components={components}
           namePrefix={namePrefix}
           index={index}
@@ -121,10 +168,50 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   );
 };
 
-ObjectsApiVariableConfigurationEditor.propTypes = {
-  variable: PropTypes.shape({
-    key: PropTypes.string.isRequired,
-  }).isRequired,
+/**
+ * Returns the Objects API Configuration editor modal for a specific variable and a specific
+ * component type. This only applies to V2 Options
+ *
+ * @typedef {{
+ *   version: 1 | 2;
+ *   objectsApiGroup: string;
+ *   objecttype: string;
+ *   objecttypeVersion: number;
+ * }} ObjectsAPIRegistrationBackendOptions
+ *
+ * @param {Object} p
+ * @param {Object} p.variable - The current variable
+ * @returns {JSX.Element} - The configuration form for the Objects API
+ */
+const ObjectsApiVariableConfigurationEditor = ({variable, component}) => {
+  const {values: backendOptions} = useFormikContext();
+  /** @type {ObjectsAPIRegistrationBackendOptions} */
+  const {version} = backendOptions;
+
+  switch (version) {
+    case 1: {
+      return <ObjectsApiV1VariableConfigurationEditor variable={variable} component={component} />;
+    }
+    case 2: {
+      return <ObjectsApiV2VariableConfigurationEditor variable={variable} component={component} />;
+    }
+    default: {
+      throw new Error(`Unknown version '${version}'`);
+    }
+  }
 };
+
+ObjectsApiVariableConfigurationEditor.propTypes =
+  ObjectsApiV2VariableConfigurationEditor.propTypes =
+  ObjectsApiV1VariableConfigurationEditor.propTypes =
+    {
+      variable: PropTypes.shape({
+        key: PropTypes.string.isRequired,
+      }).isRequired,
+      component: PropTypes.shape({
+        key: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
+      }),
+    };
 
 export {ObjectsApiVariableConfigurationEditor};

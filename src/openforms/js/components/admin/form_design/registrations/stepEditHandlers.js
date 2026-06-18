@@ -9,26 +9,46 @@
  *                                             no changes need to be made.
  */
 const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
-  if (!registrationBackendOptions.propertyMappings) return null;
   // check if we're dealing with deletion or update
   const isRemove = originalComponent == null;
+  const isFileComponentType = componentSchema.type === 'file';
 
   if (isRemove) {
-    const matchingMapping = registrationBackendOptions.propertyMappings.find(
+    const matchingMapping = registrationBackendOptions.propertyMappings?.find(
       mapping => mapping.componentKey === componentSchema.key
     );
-    if (!matchingMapping) return null;
-    const index = registrationBackendOptions.propertyMappings.indexOf(matchingMapping);
-    // remove the mapped property, since the component is removed completely.
-    registrationBackendOptions.propertyMappings.splice(index, 1);
+
+    if (matchingMapping) {
+      const index = registrationBackendOptions.propertyMappings.indexOf(matchingMapping);
+      // remove the mapped property, since the component is removed completely.
+      registrationBackendOptions.propertyMappings.splice(index, 1);
+    }
+
+    // remove any file component configuration
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const updatedFiles = registrationBackendOptions.files.filter(
+        options => options.key !== componentSchema.key
+      );
+      registrationBackendOptions.files = updatedFiles;
+    }
   } else {
     const keyChange = componentSchema.key !== originalComponent.key;
     if (!keyChange) return null;
 
     // check if we need to update any mapped properties
-    for (const mapping of registrationBackendOptions.propertyMappings) {
+    for (const mapping of registrationBackendOptions.propertyMappings ?? []) {
       if (mapping.componentKey === originalComponent.key) {
         mapping.componentKey = componentSchema.key;
+      }
+    }
+
+    // move/rename the key in the files options mapping
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const fileOptions = registrationBackendOptions.files.find(
+        options => options.key === originalComponent.key
+      );
+      if (fileOptions !== undefined) {
+        fileOptions.key = componentSchema.key;
       }
     }
   }
@@ -47,8 +67,15 @@ const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComp
  */
 const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
   const isSelectboxesComponentType = componentSchema.type === 'selectboxes';
+  const isFileComponentType = componentSchema.type === 'file';
 
-  if (registrationBackendOptions.version !== 2 || !isSelectboxesComponentType) return;
+  // continue if:
+  // * it's version 2, meaning there's always variableMappings to check
+  // * it's version 1 and a file component, as files options may need updating
+  const shouldContinue =
+    registrationBackendOptions.version === 2 ||
+    (registrationBackendOptions.version === 1 && isFileComponentType);
+  if (!shouldContinue) return;
 
   const removed = originalComponent == null;
   if (removed) {
@@ -63,21 +90,34 @@ const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, origi
       }
     }
 
-    // Objects API mappings
-    const matchingMappingIndex = registrationBackendOptions.variablesMapping.findIndex(
-      mapping => mapping.variableKey === componentSchema.key
-    );
+    // remove any file component configuration
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const updatedFiles = registrationBackendOptions.files.filter(
+        options => options.key !== componentSchema.key
+      );
+      registrationBackendOptions.files = updatedFiles;
+    }
 
-    if (matchingMappingIndex === -1) return;
-    registrationBackendOptions.variablesMapping.splice(matchingMappingIndex, 1);
+    // Objects API mappings
+    if (registrationBackendOptions.variablesMapping) {
+      const matchingMappingIndex = registrationBackendOptions.variablesMapping.findIndex(
+        mapping => mapping.variableKey === componentSchema.key
+      );
+
+      if (matchingMappingIndex === -1) return;
+      registrationBackendOptions.variablesMapping.splice(matchingMappingIndex, 1);
+    }
+
     return registrationBackendOptions;
   } else {
     const keyChanged = componentSchema.key !== originalComponent.key;
     if (!keyChanged) return null;
 
-    for (const mapping of registrationBackendOptions.variablesMapping) {
-      if (mapping.variableKey === originalComponent.key) {
-        mapping.variableKey = componentSchema.key;
+    if (registrationBackendOptions.variablesMapping) {
+      for (const mapping of registrationBackendOptions.variablesMapping) {
+        if (mapping.variableKey === originalComponent.key) {
+          mapping.variableKey = componentSchema.key;
+        }
       }
     }
 
@@ -88,6 +128,17 @@ const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, origi
         }
       });
     }
+
+    // move/rename the key in the files options mapping
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const fileOptions = registrationBackendOptions.files.find(
+        options => options.key === originalComponent.key
+      );
+      if (fileOptions !== undefined) {
+        fileOptions.key = componentSchema.key;
+      }
+    }
+
     return registrationBackendOptions;
   }
 };
@@ -158,4 +209,34 @@ const onGenericJSONStepEdit = (registrationBackendOptions, componentSchema, orig
   return registrationBackendOptions;
 };
 
-export {onZGWStepEdit, onObjectsAPIStepEdit, onGenericJSONStepEdit};
+const onStUFZDSStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
+  // check if we're dealing with deletion or update
+  const isRemove = originalComponent == null;
+  const isFileComponentType = componentSchema.type === 'file';
+
+  if (isRemove) {
+    // remove any file component configuration
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const updatedFiles = registrationBackendOptions.files.filter(
+        options => options.key !== componentSchema.key
+      );
+      registrationBackendOptions.files = updatedFiles;
+    }
+  } else {
+    const keyChange = componentSchema.key !== originalComponent.key;
+    if (!keyChange) return null;
+
+    // move/rename the key in the files options mapping
+    if (isFileComponentType && registrationBackendOptions.files) {
+      const fileOptions = registrationBackendOptions.files.find(
+        options => options.key === originalComponent.key
+      );
+      if (fileOptions !== undefined) {
+        fileOptions.key = componentSchema.key;
+      }
+    }
+  }
+  return registrationBackendOptions;
+};
+
+export {onZGWStepEdit, onObjectsAPIStepEdit, onGenericJSONStepEdit, onStUFZDSStepEdit};

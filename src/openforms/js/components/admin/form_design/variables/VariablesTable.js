@@ -1,6 +1,6 @@
 import classNames from 'classnames';
+import FormioUtils from 'formiojs/utils';
 import groupBy from 'lodash/groupBy';
-import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
@@ -12,7 +12,7 @@ import Select from 'components/admin/forms/Select';
 import {DeleteIcon, FAIcon} from 'components/admin/icons';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 
-import {DATATYPES_CHOICES} from './constants';
+import {DATATYPES_CHOICES, VARIABLE_SOURCES} from './constants';
 import {PrefillSummary} from './prefill';
 import RegistrationSummaryList from './registration';
 import Variable from './types';
@@ -62,34 +62,88 @@ KeyDisplay.propTypes = {
 };
 
 const VariableRow = ({variable, onFieldChange}) => {
+  const {components} = useContext(FormContext);
+  const component =
+    variable.source === VARIABLE_SOURCES.component ? components[variable.key] : undefined;
+
   const rowClassnames = classNames('variables-table__row', {
     'variables-table__row--errors': variableHasErrors(variable),
   });
 
   return (
-    <tr className={rowClassnames}>
-      <td />
-      <td>{variable.name}</td>
-      <td>
-        <KeyDisplay variable={variable} fieldName="key" />
-      </td>
-      <td>
-        <PrefillSummary
-          plugin={variable.prefillPlugin}
-          attribute={variable.prefillAttribute}
-          identifierRole={variable.prefillIdentifierRole}
-          errors={variable.errors}
+    <>
+      <tr className={rowClassnames}>
+        <td />
+        <td>{variable.name}</td>
+        <td>
+          <KeyDisplay variable={variable} fieldName="key" />
+        </td>
+        <td>
+          <PrefillSummary
+            plugin={variable.prefillPlugin}
+            attribute={variable.prefillAttribute}
+            identifierRole={variable.prefillIdentifierRole}
+            errors={variable.errors}
+          />
+        </td>
+        <td className="variables-table__registration-column">
+          <RegistrationSummaryList variable={variable} onFieldChange={onFieldChange} />
+        </td>
+        <td>{variable.dataType}</td>
+        <td>
+          <SensitiveData isSensitive={variable.isSensitiveData} />
+        </td>
+        <td>{JSON.stringify(variable.initialValue)}</td>
+      </tr>
+      {component && component.type === 'editgrid' && (
+        <EditGridFileComponentRows
+          variable={variable}
+          component={component}
+          onFieldChange={onFieldChange}
         />
-      </td>
-      <td>
-        <RegistrationSummaryList variable={variable} onFieldChange={onFieldChange} />
-      </td>
-      <td>{variable.dataType}</td>
-      <td>
-        <SensitiveData isSensitive={variable.isSensitiveData} />
-      </td>
-      <td>{JSON.stringify(variable.initialValue)}</td>
-    </tr>
+      )}
+    </>
+  );
+};
+
+const EditGridFileComponentRows = ({variable, component, onFieldChange}) => {
+  const fileComponents = [];
+  FormioUtils.eachComponent(component.components, child => {
+    if (child.type === 'file') fileComponents.push(child);
+  });
+
+  if (!fileComponents.length) return null;
+
+  return (
+    <>
+      {fileComponents.map(fileComponent => (
+        <tr className="variables-table__row variables-table__row--file" key={fileComponent.key}>
+          <td />
+          <td className="variables-table__file-label">
+            ↳ {fileComponent.label || fileComponent.key}
+          </td>
+          <td>
+            <Field name="key">
+              <code>{fileComponent.key}</code>
+            </Field>
+          </td>
+          <td></td>
+          <td className="variables-table__registration-column">
+            {/* Different flavour of the summary list -> provide an explicit component
+            so that the summary list knows it doesn't need to look up the component for
+            the edit grid variable again */}
+            <RegistrationSummaryList
+              variable={variable}
+              component={fileComponent}
+              onFieldChange={onFieldChange}
+            />
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      ))}
+    </>
   );
 };
 

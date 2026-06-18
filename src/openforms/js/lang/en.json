@@ -44,11 +44,6 @@
     "description": "action type \"step-applicable\" label",
     "originalDefault": "Mark the form step as applicable"
   },
-  "/MWRm7": {
-    "defaultMessage": "There are no file upload components in the form.",
-    "description": "Copy document types config: no file components text",
-    "originalDefault": "There are no file upload components in the form."
-  },
   "/fAEsY": {
     "defaultMessage": "Submission report CSV informatieobjecttype",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
@@ -133,6 +128,11 @@
     "defaultMessage": "Open Forms variable",
     "description": "Open Forms variable label",
     "originalDefault": "Open Forms variable"
+  },
+  "1tLYIe": {
+    "defaultMessage": "RSIN of the organization that registers the document in the Documents API. If left blank, the general configuration is used.",
+    "description": "Document upload: organizationRsin option help text",
+    "originalDefault": "RSIN of the organization that registers the document in the Documents API. If left blank, the general configuration is used."
   },
   "1y4N2r": {
     "defaultMessage": "RSIN of the organization, which creates and owns the case and documents.",
@@ -244,16 +244,6 @@
     "description": "Form askStatementOfTruth field label",
     "originalDefault": "Ask statement of truth"
   },
-  "3eiHJv": {
-    "defaultMessage": "Catalogue RSIN",
-    "description": "Copy document types config to file components: catalogue RSIN heading",
-    "originalDefault": "Catalogue RSIN"
-  },
-  "3jd+Cd": {
-    "defaultMessage": "Catalogue domain",
-    "description": "Copy document types config to file components: catalogue domain heading",
-    "originalDefault": "Catalogue domain"
-  },
   "3z1hhJ": {
     "defaultMessage": "Toggle JSON Schema",
     "description": "Objects API variable configuration editor JSON Schema visibility toggle",
@@ -303,6 +293,11 @@
     "defaultMessage": "Additional",
     "description": "JSON registration options 'additionalMetadataVariables' label",
     "originalDefault": "Additional"
+  },
+  "5F58dY": {
+    "defaultMessage": "Document type specified",
+    "description": "'Document type override' registration summary message",
+    "originalDefault": "Document type specified"
   },
   "5JNnFB": {
     "defaultMessage": "Switching to the legacy registration options will remove the existing variables mapping. Are you sure you want to continue?",
@@ -759,11 +754,6 @@
     "description": "variable pricing mode label",
     "originalDefault": "Use a variable for the price"
   },
-  "CpZufh": {
-    "defaultMessage": "Check/uncheck all",
-    "description": "Accessible label for check/uncheck all file components",
-    "originalDefault": "Check/uncheck all"
-  },
   "CtjZFq": {
     "defaultMessage": "Submission allowed",
     "description": "Form submissionAllowed field label",
@@ -879,6 +869,11 @@
     "description": "Description of which key is duplicated in which steps.",
     "originalDefault": "<code>{componentKey}</code>: in {numSteps, plural, =1 {{tail}} other {{lead} and {tail}} }"
   },
+  "EKQv9H": {
+    "defaultMessage": "Confidentiality",
+    "description": "Document upload: confidentialityLevel label",
+    "originalDefault": "Confidentiality"
+  },
   "ENyg8G": {
     "defaultMessage": "There are multiple co-sign components specified in this form. At most one should be present.",
     "description": "Too many cosign components",
@@ -929,6 +924,11 @@
     "description": "Ogone legacy payment options 'merchantId' label",
     "originalDefault": "Merchant ID"
   },
+  "F3Uz4r": {
+    "defaultMessage": "Optional custom title for the document. By default, the file name is used.",
+    "description": "Document upload: title option help text",
+    "originalDefault": "Optional custom title for the document. By default, the file name is used."
+  },
   "F4SQsB": {
     "defaultMessage": "Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user.",
     "description": "Internal form remarks field help text",
@@ -948,11 +948,6 @@
     "defaultMessage": "The co-sign component requires at least one authentication plugin to be enabled.",
     "description": "MissingAuthCosignWarning message",
     "originalDefault": "The co-sign component requires at least one authentication plugin to be enabled."
-  },
-  "FJaFwb": {
-    "defaultMessage": "Copy",
-    "description": "Copy document types config: copy button label",
-    "originalDefault": "Copy"
   },
   "FNT8nq": {
     "defaultMessage": "Variable containing email addresses",
@@ -1129,6 +1124,11 @@
     "description": "Form 'BRP Personen purpose limitation header value' field label",
     "originalDefault": "BRP Personen purpose limitation header value"
   },
+  "Hcwvos": {
+    "defaultMessage": "Title",
+    "description": "Document upload: title option label",
+    "originalDefault": "Title"
+  },
   "HdRpKT": {
     "defaultMessage": "Version",
     "description": "Objects API prefill options 'objecttypeVersion' label",
@@ -1303,11 +1303,6 @@
     "defaultMessage": "Static",
     "description": "'Static' source label for fixed metadata variables table",
     "originalDefault": "Static"
-  },
-  "KTmwYn": {
-    "defaultMessage": "Update {label} configuration?",
-    "description": "Accessible label for check/uncheck single file component",
-    "originalDefault": "Update {label} configuration?"
   },
   "KjDolH": {
     "defaultMessage": "Manually defined",
@@ -1504,11 +1499,6 @@
     "description": "ZGW APIs registration options 'document type' label",
     "originalDefault": "Document type"
   },
-  "NwBpaW": {
-    "defaultMessage": "Document type description",
-    "description": "Copy document types config to file components: doc type description heading",
-    "originalDefault": "Document type description"
-  },
   "NyyJMK": {
     "defaultMessage": "The API group specifies which ZGW services to use.",
     "description": "ZGW APIs group field help text",
@@ -1609,20 +1599,10 @@
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Include confirmation page content in PDF"
   },
-  "PbVsAV": {
-    "defaultMessage": "File component document types",
-    "description": "ZGw APIs registration: file components document types fieldset title",
-    "originalDefault": "File component document types"
-  },
   "PdaMqg": {
     "defaultMessage": "Add rule",
     "description": "Add form logic rule button",
     "originalDefault": "Add rule"
-  },
-  "PhKHkq": {
-    "defaultMessage": "You can copy the catalogue and document type description from the plugin options to the selected file upload fields of the form. Note that this will overwrite existing field-level configuration!",
-    "description": "Copy document types config: feature description",
-    "originalDefault": "You can copy the catalogue and document type description from the plugin options to the selected file upload fields of the form. Note that this will overwrite existing field-level configuration!"
   },
   "PhN977": {
     "defaultMessage": "Plugin configuration: StUF-ZDS",
@@ -2059,11 +2039,6 @@
     "description": "Admin save submit button",
     "originalDefault": "Save"
   },
-  "YReu09": {
-    "defaultMessage": "Field label",
-    "description": "Copy document types config to file components: component label heading",
-    "originalDefault": "Field label"
-  },
   "YbnFnL": {
     "defaultMessage": "The component \"{label}\" (with key \"{key}\"{location}) has a problem in the field \"{field}\": {error}",
     "description": "Formio configuration backend validation error for specific component property",
@@ -2194,6 +2169,11 @@
     "description": "Form step login required label",
     "originalDefault": "Login required?"
   },
+  "aarCQK": {
+    "defaultMessage": "Organization RSIN",
+    "description": "Document upload: organizationRsin option label",
+    "originalDefault": "Organization RSIN"
+  },
   "adFa0X": {
     "defaultMessage": "Component \"{label}\" uses a prefill that requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin.",
     "description": "Prefill plugin requires unavailable auth plugin warning",
@@ -2273,6 +2253,11 @@
     "defaultMessage": "Activate on",
     "description": "Form activation field label",
     "originalDefault": "Activate on"
+  },
+  "bs8k8k": {
+    "defaultMessage": "Optional custom title for the document. By default, the filename is used.",
+    "description": "Document upload: title option help text",
+    "originalDefault": "Optional custom title for the document. By default, the filename is used."
   },
   "bzVhb6": {
     "defaultMessage": "Move up",
@@ -2358,6 +2343,11 @@
     "defaultMessage": "Introduction page",
     "description": "Introduction page fieldset title",
     "originalDefault": "Introduction page"
+  },
+  "dGgkk1": {
+    "defaultMessage": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue and {caseType, select, empty {selected} other {''{caseType}''} } case type in the plugin options. If left blank, the default document type configured in the plugin options will be used.",
+    "description": "Document upload: document type option help text",
+    "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue and {caseType, select, empty {selected} other {''{caseType}''} } case type in the plugin options. If left blank, the default document type configured in the plugin options will be used."
   },
   "dV8M5q": {
     "defaultMessage": "A recognisable name for this backend configuration.",
@@ -3059,11 +3049,6 @@
     "description": "Form advanced configuration fallback message",
     "originalDefault": "No advanced configuration is available for this form."
   },
-  "p0n2wK": {
-    "defaultMessage": "The file component changes will be applied immediately. Are you sure you want to continue?",
-    "description": "Copy document type configuration to selected file components confirmation modal content",
-    "originalDefault": "The file component changes will be applied immediately. Are you sure you want to continue?"
-  },
   "p5Iv+R": {
     "defaultMessage": "Document type API resource URL in the Catalogi API.",
     "description": "ZGW APIs registration options 'DocumentType' help text",
@@ -3254,6 +3239,11 @@
     "description": "Family members filters: minimum age field label",
     "originalDefault": "Minimum age"
   },
+  "sdnxHe": {
+    "defaultMessage": "Document type",
+    "description": "Document upload: document type option label",
+    "originalDefault": "Document type"
+  },
   "sokfvf": {
     "defaultMessage": "The service to send the data to.",
     "description": "JSON registration options 'serviceSelect' helpText",
@@ -3409,6 +3399,11 @@
     "description": "Email registration: content fieldset title",
     "originalDefault": "Content"
   },
+  "vayfq9": {
+    "defaultMessage": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used.",
+    "description": "Document upload: document type option help text",
+    "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used."
+  },
   "viEfGU": {
     "defaultMessage": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
     "description": "Confirmation template help text",
@@ -3518,6 +3513,11 @@
     "defaultMessage": "Translation enabled",
     "description": "Form translation enabled field label",
     "originalDefault": "Translation enabled"
+  },
+  "xUV58k": {
+    "defaultMessage": "Indication of the level to which extent the document is meant to be public. Only provide this if you wish to override the default from the configured document type.",
+    "description": "Document upload: confidentialityLevel option help text",
+    "originalDefault": "Indication of the level to which extent the document is meant to be public. Only provide this if you wish to override the default from the configured document type."
   },
   "xcp+LU": {
     "defaultMessage": "Create definition",

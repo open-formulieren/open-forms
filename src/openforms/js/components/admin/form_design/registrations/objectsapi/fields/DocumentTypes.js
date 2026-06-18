@@ -10,7 +10,6 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {
   CatalogueSelect,
-  CopyDocumentTypesConfig,
   DocumentTypeSelect as GenericDocumentTypeSelect,
 } from 'components/admin/forms/zgw';
 import {WarningIcon} from 'components/admin/icons';
@@ -174,7 +173,6 @@ export const DocumentTypesFieldset = () => {
         }
         {...documentTypeProps}
       />
-      <CopyDocumentTypesConfig catalogueField="catalogue" descriptionField="iotAttachment" />
     </Fieldset>
   );
 };

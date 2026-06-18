@@ -4,7 +4,7 @@ import {FormattedMessage} from 'react-intl';
 
 import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
-import {CatalogueSelectOptions, CopyDocumentTypesConfig} from 'components/admin/forms/zgw';
+import {CatalogueSelectOptions} from 'components/admin/forms/zgw';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {CaseTypeSelect, CatalogueSelect, DocumentTypeSelect, ZGWAPIGroup} from './fields';
@@ -77,7 +77,7 @@ const BasicOptionsFieldset = ({
           <MaybeThrowError error={cataloguesError} />
           <CatalogueSelect loading={loadingCatalogues} optionGroups={catalogueOptionGroups} />
           <CaseTypeSelect catalogueUrl={catalogueUrl} />
-          <DocumentTypeSelect catalogueUrl={catalogueUrl} />
+          <DefaultDocumentTypeSelect catalogueUrl={catalogueUrl} />
         </ErrorBoundary>
         <ConfirmationModal
           {...confirmationModalProps}
@@ -88,20 +88,6 @@ const BasicOptionsFieldset = ({
               Are you sure you want to continue?"
             />
           }
-        />
-      </Fieldset>
-      <Fieldset
-        title={
-          <FormattedMessage
-            description="ZGw APIs registration: file components document types fieldset title"
-            defaultMessage="File component document types"
-          />
-        }
-        collapsible
-      >
-        <CopyDocumentTypesConfig
-          catalogueField="catalogue"
-          descriptionField="documentTypeDescription"
         />
       </Fieldset>
     </>
@@ -135,5 +121,28 @@ const MaybeThrowError = ({error = undefined}) => {
 MaybeThrowError.propTypes = {
   error: PropTypes.any,
 };
+
+const DefaultDocumentTypeSelect = ({catalogueUrl = ''}) => (
+  <DocumentTypeSelect
+    name="documentTypeDescription"
+    // TODO: make required once legacy config is dropped
+    isRequired={false}
+    catalogueUrl={catalogueUrl}
+    label={
+      <FormattedMessage
+        description="ZGW APIs registration options 'document type' label"
+        defaultMessage="Document type"
+      />
+    }
+    helpText={
+      <FormattedMessage
+        description="ZGW APIs registration options 'document type' helpText"
+        defaultMessage={`Documents produced in the form submission are registered
+        with this document type, unless more fine grained configuration is available.
+        Only document types available on the selected case type are shown.`}
+      />
+    }
+  />
+);
 
 export default BasicOptionsFieldset;
