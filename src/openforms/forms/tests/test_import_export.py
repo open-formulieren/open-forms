@@ -25,7 +25,7 @@ from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
 from openforms.utils.tests.vcr import OFVCRMixin
-from openforms.variables.constants import FormVariableSources
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ...authentication.tests.factories import AttributeGroupFactory
@@ -1822,6 +1822,254 @@ class ImportExportTests(TempdirMixin, TestCase):
                 "zds_documenttype_omschrijving_inzending": "",
             },
         )
+
+    @tag("gh-6254")
+    def test_import_with_disable_next_actions(self):
+        """
+        Assert that the importing legacy forms still works with the disable-next action
+        rework.
+        """
+        # Form, form definitions, and form steps
+        form = FormFactory.create(name="Form", new_logic_evaluation_enabled=False)
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "checkbox", "label": "Checkbox", "key": "checkbox"}
+                ]
+            },
+        )
+        step_2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "label": "Textfield", "key": "textfield"},
+                    {
+                        "type": "date",
+                        "label": "Date",
+                        "key": "date",
+                        "prefill": {
+                            "plugin": "stufbg",
+                            "attribute": "geboortedatum",
+                            "identifierRole": "main",
+                        },
+                    },
+                ]
+            },
+        )
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [{"type": "time", "label": "Time", "key": "time"}]
+            },
+        )
+
+        # Form variables
+        FormVariableFactory.create(
+            form=form,
+            name="user_defined",
+            key="user_defined",
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.string,
+        )
+        FormVariableFactory.create(
+            form=form,
+            name="user_defined_prefill",
+            key="user_defined_prefill",
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.date,
+            prefill_plugin="stufbg",
+            prefill_attribute="geboortedatum",
+            prefill_identifier_role="main",
+        )
+
+        # Logic rules
+        FormLogicFactory.create(
+            form=form,
+            order=0,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[{"action": {"type": "disable-next"}, "form_step_uuid": ""}],
+        )
+        FormLogicFactory.create(
+            form=form,
+            order=1,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[{"action": {"type": "disable-next"}, "form_step_uuid": ""}],
+            trigger_from_step=step_2,
+        )
+        FormLogicFactory.create(
+            form=form,
+            order=2,
+            json_logic_trigger={"==": [{"var": "date"}, "2000-01-01"]},
+            actions=[{"action": {"type": "disable-next"}, "form_step_uuid": ""}],
+        )
+        FormLogicFactory.create(
+            form=form,
+            order=3,
+            json_logic_trigger={
+                "or": [
+                    {"==": [{"var": "textfield"}, "foo"]},
+                    {"==": [{"var": "checkbox"}, True]},
+                ]
+            },
+            actions=[{"action": {"type": "disable-next"}, "form_step_uuid": ""}],
+            is_advanced=True,
+        )
+        FormLogicFactory.create(
+            form=form,
+            order=4,
+            json_logic_trigger={
+                "or": [
+                    {"==": [{"var": "textfield"}, "foo"]},
+                    {"==": [{"var": "checkbox"}, True]},
+                    {"==": [{"var": "time"}, "12:34"]},
+                ]
+            },
+            actions=[{"action": {"type": "disable-next"}, "form_step_uuid": ""}],
+            trigger_from_step=step_2,
+            is_advanced=True,
+        )
+        FormLogicFactory.create(
+            form=form,
+            order=5,
+            json_logic_trigger={"==": [{"var": "user_defined"}, "foo"]},
+            actions=[{"action": {"type": "disable-next"}, "form_step_uuid": ""}],
+            is_advanced=True,
+        )
+        FormLogicFactory.create(
+            form=form,
+            order=6,
+            json_logic_trigger={
+                "and": [
+                    {"==": [{"var": "user_defined_prefill"}, "2000-01-01"]},
+                    {"==": [{"var": "textfield"}, "foo"]},
+                ]
+            },
+            actions=[{"action": {"type": "disable-next"}, "form_step_uuid": ""}],
+            is_advanced=True,
+        )
+        FormLogic.objects.create(
+            form=form,
+            order=7,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "action": {"type": "disable-next"},
+                    "form_step_uuid": str(step_2.uuid),
+                },
+            ],
+            is_advanced=True,
+        )
+
+        export_form(form.pk, archive_name=self.filepath)
+
+        # Import form
+        import_form(import_file=self.filepath)
+
+        imported_form = Form.objects.last()
+        imported_steps = list(imported_form.formstep_set.all())
+        imported_rules = list(imported_form.formlogic_set.all())
+
+        with self.subTest("Single input variable"):
+            # Only "checkbox" from the first step is in the trigger
+            rule = imported_rules[0]
+            self.assertEqual(len(rule.actions), 1)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[0].uuid)
+            )
+
+        with self.subTest("Trigger from step takes precedence"):
+            # The "trigger_from_step" is defined on this rule, so ensure it is assigned
+            # instead of the input trigger variable step (which would be the first step,
+            # where "checkbox" is located)
+            rule = imported_rules[1]
+            self.assertEqual(len(rule.actions), 1)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[1].uuid)
+            )
+
+        with self.subTest(
+            "First step is added as well if field has prefill configuration"
+        ):
+            # Components with prefill specified will have a value set upon submission
+            # creation, this means executing the rule on the first step has an effect on
+            # whether the user can continue. Therefore, even though the input trigger
+            # contains "date" from step 2, we need to assign step 1 as well to ensure no
+            # changes in behavior.
+            rule = imported_rules[2]
+            self.assertEqual(len(rule.actions), 2)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[0].uuid)
+            )
+            self.assertEqual(
+                rule.actions[1]["form_step_uuid"], str(imported_steps[1].uuid)
+            )
+            self.assertEqual(rule.actions[1]["action"], {"type": "disable-next"})
+
+        with self.subTest("Logic trigger contains input variables from multiple steps"):
+            # The logic trigger contains fields from steps 1 and 2, so ensure we add a
+            # disable-next action for both
+            rule = imported_rules[3]
+            self.assertEqual(len(rule.actions), 2)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[0].uuid)
+            )
+            self.assertEqual(
+                rule.actions[1]["form_step_uuid"], str(imported_steps[1].uuid)
+            )
+            self.assertEqual(rule.actions[1]["action"], {"type": "disable-next"})
+
+        with self.subTest(
+            "Logic trigger contains input variables from multiple steps with "
+            "trigger_form_step defined"
+        ):
+            # The trigger also contains "checkbox" from step 1, but it shouldn't be
+            # included in the actions because the "trigger_from_step" is set to step 2.
+            rule = imported_rules[4]
+            self.assertEqual(len(rule.actions), 2)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[1].uuid)
+            )
+            self.assertEqual(
+                rule.actions[1]["form_step_uuid"], str(imported_steps[2].uuid)
+            )
+            self.assertEqual(rule.actions[1]["action"], {"type": "disable-next"})
+
+        with self.subTest("With user-defined variable"):
+            # The logic trigger only contains a user-defined variable, and the rule does
+            # not have the "trigger_from_step" defined, so we cannot resolve a step.
+            # Ensure we assign the first step as a best guess.
+            rule = imported_rules[5]
+            self.assertEqual(len(rule.actions), 1)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[0].uuid)
+            )
+
+        with self.subTest(
+            "First step is added as well when user-defined variable has prefill "
+            "configuration"
+        ):
+            # The trigger contains "textfield" from the second step, and a user-defined
+            # variable with prefill. Ensure that we add the first and second step in
+            # this case, because prefilled data are available upon submission creation.
+            rule = imported_rules[6]
+            self.assertEqual(len(rule.actions), 2)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[0].uuid)
+            )
+            self.assertEqual(
+                rule.actions[1]["form_step_uuid"], str(imported_steps[1].uuid)
+            )
+            self.assertEqual(rule.actions[1]["action"], {"type": "disable-next"})
+
+        with self.subTest("Already configured disable-next action is left alone"):
+            # According to our analysis, the first step should be assigned to this
+            # action, but the second was already configured, so we leave it be.
+            rule = imported_rules[7]
+            self.assertEqual(len(rule.actions), 1)
+            self.assertEqual(
+                rule.actions[0]["form_step_uuid"], str(imported_steps[1].uuid)
+            )
 
 
 class ExportObjectsAPITests(TempdirMixin, TestCase):
