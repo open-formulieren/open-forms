@@ -12,6 +12,9 @@ from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
 
 from ....constants import FormTypeChoices
+from ....disable_next_import_conversion import (
+    add_form_step_uuid_to_disable_next_actions,
+)
 from ....logic_analysis import (
     CyclesDetected,
     analyze_rules,
@@ -191,3 +194,17 @@ class FormLogicSerializer(
         related_field = self.Meta.model._meta.get_field("form")
         self.fields["form"].help_text = related_field.help_text
         self.fields["form"].label = related_field.verbose_name
+
+    def _handle_import(self, attrs) -> None:
+        if not self.context.get("is_import", False):
+            return
+
+        add_form_step_uuid_to_disable_next_actions(
+            attrs, self.context["form_variables"].variables, self.context["form_steps"]
+        )
+
+    def run_validation(self, data) -> None:
+        # Override `run_validation` instead of `validate`, because it runs before
+        # `LogicComponentActionSerializer.validate`.
+        self._handle_import(data)
+        return super().run_validation(data)
