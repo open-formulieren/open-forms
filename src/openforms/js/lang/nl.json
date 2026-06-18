@@ -326,11 +326,6 @@
     "description": "Variable source group label for user defined variables",
     "originalDefault": "User defined"
   },
-  "5qR3fN": {
-    "defaultMessage": "Sjabloon voor de titel die op de betaalpagina getoond wordt.<br></br> Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de `public_reference` sjabloonvariabele (gebruik de expressie <code>'{{' public_reference '}}'</code>). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt.",
-    "description": "Ogone legacy payment options 'titleTemplate' help text",
-    "originalDefault": "Optional custom template for the title displayed on the payment page.<br></br> You can include all form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used."
-  },
   "5rj0a+": {
     "defaultMessage": "Service",
     "description": "JSON registration options 'serviceSelect' label",
@@ -641,11 +636,6 @@
     "description": "Form definition select confirm button",
     "originalDefault": "Confirm"
   },
-  "B/A1Bk": {
-    "defaultMessage": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier.",
-    "description": "Ogone legacy payment options 'merchantId' help text",
-    "originalDefault": "Which merchant should be used for payments related to this form."
-  },
   "B5RSyi": {
     "defaultMessage": "Onderwerp betaalstatusmail",
     "description": "Email registration options 'emailPaymentSubject' label",
@@ -929,12 +919,6 @@
     "defaultMessage": "Basis",
     "description": "StUF-ZDS registration backend options, 'base' tab label",
     "originalDefault": "Base"
-  },
-  "F2VuCs": {
-    "defaultMessage": "Merchant ID",
-    "description": "Ogone legacy payment options 'merchantId' label",
-    "isTranslated": true,
-    "originalDefault": "Merchant ID"
   },
   "F3Uz4r": {
     "defaultMessage": "Optional custom title for the document. By default, the file name is used.",
@@ -2125,11 +2109,6 @@
     "description": "Form 'BRP Personen processing header value' field help text",
     "originalDefault": "The processing (\"verwerking\") for queries to the BRP Persoon API."
   },
-  "ZSvQcR": {
-    "defaultMessage": "TITLE-parameter",
-    "description": "Ogone legacy payment options 'titleTemplate' label",
-    "originalDefault": "TITLE parameter"
-  },
   "ZdZ2Mb": {
     "defaultMessage": "Zet registratieplugin voor de inzending",
     "description": "action type \"set-registration-backend\" label",
@@ -2427,11 +2406,6 @@
     "description": "Email registration: attachments fieldset title",
     "originalDefault": "Attachments"
   },
-  "eLIclD": {
-    "defaultMessage": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Ogone kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen.<br></br> Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de `public_reference` sjabloonvariabele (gebruik de expressie <code>'{{' public_reference '}}'</code>). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt.<br></br> <strong>Belangrijk</strong>: het resultaat wordt op 100 karakters afgekapt en enkel alfanumerieke tekens zijn toegestaan.",
-    "description": "Ogone legacy payment options 'comTemplate' help text",
-    "originalDefault": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters."
-  },
   "eNSJ0f": {
     "defaultMessage": "Functionaliteiten",
     "description": "Form feature fields fieldset title",
@@ -2441,11 +2415,6 @@
     "defaultMessage": "Zaakstatuscode",
     "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' label",
     "originalDefault": "Zds zaaktype status code"
-  },
-  "eZJFP7": {
-    "defaultMessage": "COM-parameter",
-    "description": "Ogone legacy payment options 'comTemplate' label",
-    "originalDefault": "COM parameter"
   },
   "efsF8+": {
     "defaultMessage": "{label} {isPublished, select, false {<draft>(concept)</draft>} other {}}",
@@ -3647,11 +3616,6 @@
     "defaultMessage": "Sleutel-waarde paar (object)",
     "description": "JSON variable type \"object\" representation",
     "originalDefault": "Object"
-  },
-  "zYu3XI": {
-    "defaultMessage": "Plugin-instellingen: Ogone legacy",
-    "description": "Ogone legacy options modal title",
-    "originalDefault": "Plugin configuration: Ogone legacy"
   },
   "zhPXHY": {
     "defaultMessage": "{plugin} heeft één van de \"{requiredPlugin}\" inlogopties nodig. Selecteer één van deze opties of verwijder de prefill-plugin.",

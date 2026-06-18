@@ -324,11 +324,6 @@
     "description": "Variable source group label for user defined variables",
     "originalDefault": "User defined"
   },
-  "5qR3fN": {
-    "defaultMessage": "Optional custom template for the title displayed on the payment page.<br></br> You can include all form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.",
-    "description": "Ogone legacy payment options 'titleTemplate' help text",
-    "originalDefault": "Optional custom template for the title displayed on the payment page.<br></br> You can include all form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used."
-  },
   "5rj0a+": {
     "defaultMessage": "Service",
     "description": "JSON registration options 'serviceSelect' label",
@@ -634,11 +629,6 @@
     "description": "Form definition select confirm button",
     "originalDefault": "Confirm"
   },
-  "B/A1Bk": {
-    "defaultMessage": "Which merchant should be used for payments related to this form.",
-    "description": "Ogone legacy payment options 'merchantId' help text",
-    "originalDefault": "Which merchant should be used for payments related to this form."
-  },
   "B5RSyi": {
     "defaultMessage": "Email payment subject",
     "description": "Email registration options 'emailPaymentSubject' label",
@@ -918,11 +908,6 @@
     "defaultMessage": "Base",
     "description": "StUF-ZDS registration backend options, 'base' tab label",
     "originalDefault": "Base"
-  },
-  "F2VuCs": {
-    "defaultMessage": "Merchant ID",
-    "description": "Ogone legacy payment options 'merchantId' label",
-    "originalDefault": "Merchant ID"
   },
   "F3Uz4r": {
     "defaultMessage": "Optional custom title for the document. By default, the file name is used.",
@@ -2104,11 +2089,6 @@
     "description": "Form 'BRP Personen processing header value' field help text",
     "originalDefault": "The processing (\"verwerking\") for queries to the BRP Persoon API."
   },
-  "ZSvQcR": {
-    "defaultMessage": "TITLE parameter",
-    "description": "Ogone legacy payment options 'titleTemplate' label",
-    "originalDefault": "TITLE parameter"
-  },
   "ZdZ2Mb": {
     "defaultMessage": "Set the registration backend to use for the submission",
     "description": "action type \"set-registration-backend\" label",
@@ -2404,11 +2384,6 @@
     "description": "Email registration: attachments fieldset title",
     "originalDefault": "Attachments"
   },
-  "eLIclD": {
-    "defaultMessage": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters.",
-    "description": "Ogone legacy payment options 'comTemplate' help text",
-    "originalDefault": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters."
-  },
   "eNSJ0f": {
     "defaultMessage": "Features",
     "description": "Form feature fields fieldset title",
@@ -2418,11 +2393,6 @@
     "defaultMessage": "Zds zaaktype status code",
     "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' label",
     "originalDefault": "Zds zaaktype status code"
-  },
-  "eZJFP7": {
-    "defaultMessage": "COM parameter",
-    "description": "Ogone legacy payment options 'comTemplate' label",
-    "originalDefault": "COM parameter"
   },
   "efsF8+": {
     "defaultMessage": "{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}",
@@ -3618,11 +3588,6 @@
     "defaultMessage": "Object",
     "description": "JSON variable type \"object\" representation",
     "originalDefault": "Object"
-  },
-  "zYu3XI": {
-    "defaultMessage": "Plugin configuration: Ogone legacy",
-    "description": "Ogone legacy options modal title",
-    "originalDefault": "Plugin configuration: Ogone legacy"
   },
   "zhPXHY": {
     "defaultMessage": "{plugin} requires one of the \"{requiredPlugin}\" login options. Please select one or remove the prefill plugin.",

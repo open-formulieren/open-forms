@@ -69,8 +69,7 @@ class SubmissionPaymentManager(models.Manager.from_queryset(SubmissionPaymentQue
         """Create a public order ID to be sent to the payment provider."""
 
         # TODO it isn't really clear what the required format/max length is
-        # for payment providers. Ogone seems to allow up to 40 characters or so,
-        # So this might fail at some point.
+        # for payment providers.
         assert payment.submission.public_registration_reference
 
         config = GlobalConfiguration.get_solo()

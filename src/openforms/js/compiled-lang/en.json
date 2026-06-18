@@ -775,36 +775,6 @@
       "value": "User defined"
     }
   ],
-  "5qR3fN": [
-    {
-      "type": 0,
-      "value": "Optional custom template for the title displayed on the payment page."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": " You can include all form variables (using their keys) and the public-reference variable (using expression "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "{{ public_reference }}"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": "). If unspecified, a default description is used."
-    }
-  ],
   "5rj0a+": [
     {
       "type": 0,
@@ -1453,12 +1423,6 @@
     {
       "type": 0,
       "value": "'Remove row' text"
-    }
-  ],
-  "B/A1Bk": [
-    {
-      "type": 0,
-      "value": "Which merchant should be used for payments related to this form."
     }
   ],
   "B1ONuu": [
@@ -2135,12 +2099,6 @@
     {
       "type": 0,
       "value": "Base"
-    }
-  ],
-  "F2VuCs": [
-    {
-      "type": 0,
-      "value": "Merchant ID"
     }
   ],
   "F3Uz4r": [
@@ -4475,12 +4433,6 @@
       "value": "The processing (\"verwerking\") for queries to the BRP Persoon API."
     }
   ],
-  "ZSvQcR": [
-    {
-      "type": 0,
-      "value": "TITLE parameter"
-    }
-  ],
   "ZYWsHs": [
     {
       "type": 0,
@@ -5231,60 +5183,6 @@
       "value": "Attachments"
     }
   ],
-  "eLIclD": [
-    {
-      "type": 0,
-      "value": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": " You can include form variables (using their keys) and the public-reference variable (using expression "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "{{ public_reference }}"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": "). If unspecified, a default description is used."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": " "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "Note"
-        }
-      ],
-      "type": 8,
-      "value": "strong"
-    },
-    {
-      "type": 0,
-      "value": ": the length of the result is capped to 100 characters."
-    }
-  ],
   "eNSJ0f": [
     {
       "type": 0,
@@ -5301,12 +5199,6 @@
     {
       "type": 0,
       "value": "'Save row' text"
-    }
-  ],
-  "eZJFP7": [
-    {
-      "type": 0,
-      "value": "COM parameter"
     }
   ],
   "ee4oWr": [
@@ -7889,12 +7781,6 @@
       },
       "type": 5,
       "value": "hasDescription"
-    }
-  ],
-  "zYu3XI": [
-    {
-      "type": 0,
-      "value": "Plugin configuration: Ogone legacy"
     }
   ],
   "zhPXHY": [

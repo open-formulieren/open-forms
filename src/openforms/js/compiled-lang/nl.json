@@ -775,36 +775,6 @@
       "value": "Gebruikersvariabelen"
     }
   ],
-  "5qR3fN": [
-    {
-      "type": 0,
-      "value": "Sjabloon voor de titel die op de betaalpagina getoond wordt."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": " Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de `public_reference` sjabloonvariabele (gebruik de expressie "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "{{ public_reference }}"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": "). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt."
-    }
-  ],
   "5rj0a+": [
     {
       "type": 0,
@@ -1457,12 +1427,6 @@
     {
       "type": 0,
       "value": "'Groep verwijderen'-tekst"
-    }
-  ],
-  "B/A1Bk": [
-    {
-      "type": 0,
-      "value": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier."
     }
   ],
   "B1ONuu": [
@@ -2122,12 +2086,6 @@
     {
       "type": 0,
       "value": "Basis"
-    }
-  ],
-  "F2VuCs": [
-    {
-      "type": 0,
-      "value": "Merchant ID"
     }
   ],
   "F3Uz4r": [
@@ -4459,12 +4417,6 @@
       "value": "De waarde voor \"verwerking\" die meegestuurd wordt bij het bevragen van de BRP Personen API. Mogelijke waarden hiervoor zijn afhankelijk van je gateway-leverancier."
     }
   ],
-  "ZSvQcR": [
-    {
-      "type": 0,
-      "value": "TITLE-parameter"
-    }
-  ],
   "ZYWsHs": [
     {
       "type": 0,
@@ -5219,60 +5171,6 @@
       "value": "Bijlagen"
     }
   ],
-  "eLIclD": [
-    {
-      "type": 0,
-      "value": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Ogone kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": " Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de `public_reference` sjabloonvariabele (gebruik de expressie "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "{{ public_reference }}"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": "). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": " "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "Belangrijk"
-        }
-      ],
-      "type": 8,
-      "value": "strong"
-    },
-    {
-      "type": 0,
-      "value": ": het resultaat wordt op 100 karakters afgekapt en enkel alfanumerieke tekens zijn toegestaan."
-    }
-  ],
   "eNSJ0f": [
     {
       "type": 0,
@@ -5289,12 +5187,6 @@
     {
       "type": 0,
       "value": "'Groep bewaren'-tekst"
-    }
-  ],
-  "eZJFP7": [
-    {
-      "type": 0,
-      "value": "COM-parameter"
     }
   ],
   "ee4oWr": [
@@ -7873,12 +7765,6 @@
       },
       "type": 5,
       "value": "hasDescription"
-    }
-  ],
-  "zYu3XI": [
-    {
-      "type": 0,
-      "value": "Plugin-instellingen: Ogone legacy"
     }
   ],
   "zhPXHY": [

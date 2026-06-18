@@ -219,10 +219,6 @@
                 "domain"
             ],
             [
-                "payments_ogone",
-                "ogonewebhookconfiguration"
-            ],
-            [
                 "payments_worldline",
                 "worldlinewebhookconfiguration"
             ],

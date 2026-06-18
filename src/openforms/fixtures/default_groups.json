@@ -1244,26 +1244,6 @@
                 "submissionpayment"
             ],
             [
-                "add_ogonemerchant",
-                "payments_ogone",
-                "ogonemerchant"
-            ],
-            [
-                "change_ogonemerchant",
-                "payments_ogone",
-                "ogonemerchant"
-            ],
-            [
-                "delete_ogonemerchant",
-                "payments_ogone",
-                "ogonemerchant"
-            ],
-            [
-                "view_ogonemerchant",
-                "payments_ogone",
-                "ogonemerchant"
-            ],
-            [
                 "add_product",
                 "products",
                 "product"

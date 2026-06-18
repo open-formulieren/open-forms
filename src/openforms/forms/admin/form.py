@@ -25,8 +25,6 @@ from .views import (
     ExportFormsForm,
     ExportFormsView,
     ImportFormsView,
-    PaymentMigrationForm,
-    PaymentMigrationView,
 )
 
 
@@ -334,11 +332,6 @@ class FormAdmin(
                 self.admin_site.admin_view(ExportFormsView.as_view()),
                 name="forms_export",
             ),
-            path(
-                "worldline-migrate/",
-                self.admin_site.admin_view(PaymentMigrationView.as_view()),
-                name="forms_payment_migration",
-            ),
         ]
         return my_urls + urls
 
@@ -389,14 +382,6 @@ class FormAdmin(
                 count=count,
                 verbose_name=queryset.model._meta.verbose_name,
             ),
-        )
-
-    @admin.action(description=_("Migrate form(s) to Worldline payment provider"))
-    def migrate_to_worldline(self, request, queryset) -> TemplateResponse:
-        form = PaymentMigrationForm(initial={"forms_to_migrate": queryset})
-        context = {**self.admin_site.each_context(request), "form": form}
-        return TemplateResponse(
-            request, "admin/forms/form/migrate-payment-backend.html", context
         )
 
     def delete_model(self, request, form):

@@ -17,7 +17,9 @@ from openforms.config.models import GlobalConfiguration
 from openforms.config.tests.factories import ThemeFactory
 from openforms.frontend import get_frontend_redirect_url
 from openforms.payments.constants import PaymentStatus
-from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
+from openforms.payments.contrib.worldline.tests.factories import (
+    WorldlineMerchantFactory,
+)
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 
 from ..constants import (
@@ -459,11 +461,11 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             self.assertEqual(response_data["mainWebsiteUrl"], "http://example.com")
 
     def test_payment_required(self):
-        merchant = OgoneMerchantFactory.create()
+        merchant = WorldlineMerchantFactory.create()
         submission = SubmissionFactory.create(
             completed=True,
             form__product__price=Decimal("10"),
-            form__payment_backend="ogone-legacy",
+            form__payment_backend="worldline",
             # see PR#650 which drops this requirement
             form__payment_backend_options={"merchant_id": merchant.id},
         )
@@ -484,7 +486,7 @@ class SubmissionStatusExtraInformationTests(APITestCase):
 
             expected_url = reverse(
                 "payments:start",
-                kwargs={"uuid": submission.uuid, "plugin_id": "ogone-legacy"},
+                kwargs={"uuid": submission.uuid, "plugin_id": "worldline"},
             )
             self.assertEqual(
                 response_data["paymentUrl"], f"http://testserver{expected_url}"
