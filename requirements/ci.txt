@@ -128,7 +128,7 @@ click-repl==0.3.0
     #   celery
 coverage==7.13.4
     # via -r requirements/test-tools.in
-cryptography==46.0.7
+cryptography==48.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -883,13 +883,13 @@ pygments==2.20.0
     #   rich
     #   sphinx
     #   sphinx-tabs
-pyjwt==2.12.1
+pyjwt==2.13.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   msal
     #   zgw-consumers
-pyopenssl==26.0.0
+pyopenssl==26.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1136,7 +1136,7 @@ tinyhtml5==2.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   weasyprint
-tornado==6.5.5
+tornado==6.5.7
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

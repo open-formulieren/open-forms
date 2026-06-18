@@ -1,6 +1,10 @@
-const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const webpack = require('webpack');
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import {fileURLToPath} from 'node:url';
+import path, {dirname} from 'path';
+import webpack from 'webpack';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const config = {
   core: {

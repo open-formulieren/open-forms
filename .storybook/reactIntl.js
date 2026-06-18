@@ -1,18 +1,17 @@
-const locales = ['nl', 'en'];
+import enMessages from '../src/openforms/js/compiled-lang/en.json';
+import nlMessages from '../src/openforms/js/compiled-lang/nl.json';
 
-const messages = locales.reduce(
-  (acc, lang) => ({
-    ...acc,
-    [lang]: require(`../src/openforms/js/compiled-lang/${lang}.json`),
-  }),
-  {}
-);
+// Populate the messages object
+const messages = {
+  nl: nlMessages,
+  en: enMessages,
+};
 
 const formats = {}; // optional, if you have any formats
 
 export const reactIntl = {
   defaultLocale: 'nl',
-  locales,
+  locales: Object.keys(messages),
   messages,
   formats,
 };
