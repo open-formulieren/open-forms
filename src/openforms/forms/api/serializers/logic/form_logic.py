@@ -230,6 +230,11 @@ class FormLogicSerializer(
             attrs, self.context["form_variables"].variables, self.context["form_steps"]
         )
 
+        # Remove trigger from step for forms that have new logic evaluation enabled
+        # (which is the default when a form without this flag is imported).
+        if self.context["form"].new_logic_evaluation_enabled:
+            attrs.pop("trigger_from_step", None)
+
     def run_validation(self, data) -> None:
         # Override `run_validation` instead of `validate`, because it runs before
         # `LogicComponentActionSerializer.validate`.
