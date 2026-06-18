@@ -783,3 +783,75 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             self.assertIn("document_type_description", serializer.errors)
             err = serializer.errors["document_type_description"][0]
             self.assertEqual(err.code, "not-found")
+
+    def test_validate_iot_descriptions_in_file_options(self):
+        # Note that we can't yet validate that the file keys point to actual file
+        # components - backend options validation runs before the form definitions are
+        # created/updated.
+        base = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+        }
+
+        with self.subTest("document type exists"):
+            data = {
+                **base,
+                "files": [
+                    {
+                        "key": "someFileComponent",
+                        "document_type_description": "Attachment Informatieobjecttype",
+                    },
+                    {
+                        "key": "otherFileComponent",
+                        "title": "Custom title",
+                    },
+                ],
+            }
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertTrue(is_valid)
+
+        with self.subTest("document type exists, not related to case type"):
+            data = {
+                **base,
+                "files": [
+                    {
+                        "key": "someFileComponent",
+                        "document_type_description": "CSV Informatieobjecttype",
+                    }
+                ],
+            }
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertFalse(is_valid)
+            self.assertIn("files", serializer.errors)
+            err = serializer.errors["files"][0]["document_type_description"]
+            self.assertEqual(err.code, "not-found")
+
+        with self.subTest("document type does not exist"):
+            data = {
+                **base,
+                "files": [
+                    {
+                        "key": "someFileComponent",
+                        "document_type_description": "i-do-not-exist",
+                    }
+                ],
+            }
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertFalse(is_valid)
+            self.assertIn("files", serializer.errors)
+            err = serializer.errors["files"][0]["document_type_description"]
+            self.assertEqual(err.code, "not-found")

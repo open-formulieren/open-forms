@@ -2,6 +2,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from stuf.stuf_zds.constants import VertrouwelijkheidsAanduidingen
 
@@ -45,6 +46,25 @@ class MappingSerializer(serializers.Serializer):
             "If enabled, list values will be serialized to a single element value, "
             "with multiple values joined together by comma's."
         ),
+    )
+
+
+class FileComponentOptionsSerializer(serializers.Serializer):
+    key = FormioVariableKeyField(
+        label=_("component key"),
+        help_text=_(
+            "Literal component key value of the file component for which the options "
+            "apply."
+        ),
+    )
+    title = serializers.CharField(
+        label=_("Title"),
+        required=False,
+        help_text=_(
+            "Optional custom title for the document. By default, the attachment file "
+            "name is used."
+        ),
+        allow_blank=True,
     )
 
 
@@ -107,6 +127,20 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "the submission data are included in heeftAlsInitiator/extraElementen."
         ),
         required=False,
+    )
+
+    # File component options
+    files = FileComponentOptionsSerializer(
+        many=True,
+        label=_("Files"),
+        required=False,
+        help_text=_(
+            "List of file upload options for file components. Each entry contains the "
+            "key of the file component in the form, which may be a child in an edit "
+            "grid. Any specified option overrides the equivalent option on the backend "
+            "level. If unspecified, the backend configuration is used."
+        ),
+        allow_null=False,
     )
 
     @classmethod

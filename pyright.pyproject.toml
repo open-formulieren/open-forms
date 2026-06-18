@@ -44,13 +44,12 @@ include = [
     # Payments
     "src/openforms/payments/",
     # Interaction with the outside world
+    "src/openforms/contrib/auth_oidc/",
     "src/openforms/contrib/customer_interactions/",
-    "src/openforms/contrib/zgw/service.py",
-    "src/openforms/contrib/zgw/clients/zaken.py",
     "src/openforms/contrib/microsoft/",
     "src/openforms/contrib/objects_api/",
     "src/openforms/contrib/reference_lists/",
-    "src/openforms/contrib/auth_oidc/",
+    "src/openforms/contrib/zgw/",
     # Data removal app
     "src/openforms/data_removal/",
     # Emails

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Collection
-from typing import TYPE_CHECKING, Literal, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Literal, NotRequired, Required, TypedDict
+
+from openforms.contrib.zgw.typing import VertrouwelijkheidAanduiding
 
 from .constants import SummaryDocumentChoices
 
@@ -21,16 +23,12 @@ class PropertyMapping(TypedDict):
     eigenschap: str
 
 
-type VertrouwelijkheidAanduiding = Literal[
-    "openbaar",
-    "beperkt_openbaar",
-    "intern",
-    "zaakvertrouwelijk",
-    "vertrouwelijk",
-    "confidentieel",
-    "geheim",
-    "zeer_geheim",
-]
+class FileComponentOptions(TypedDict, total=False):
+    key: Required[str]
+    document_type_description: str
+    organization_rsin: str
+    confidentiality_level: VertrouwelijkheidAanduiding
+    title: str
 
 
 class RegistrationOptions(TypedDict):
@@ -61,3 +59,14 @@ class RegistrationOptions(TypedDict):
     zaak_omschrijving: NotRequired[str]
     zaak_toelichting: NotRequired[str]
     summary_documents: Collection[SummaryDocumentChoices]
+    files: NotRequired[Collection[FileComponentOptions]]
+    """
+    List of file upload options for the Documents API.
+
+    Each item contains at least the Formio component ``key`` key, which can contain
+    ``.`` characters. It's the literal key string as defined on the component.
+
+    Keys may refer to file components inside editgrid components too. We rely on the
+    admin enforcing key uniqueness for *all* components in the form, which is stricter
+    than vanilla Formio.
+    """

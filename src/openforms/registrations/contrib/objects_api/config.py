@@ -7,6 +7,7 @@ from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from furl import furl
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
+from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.api.fields import JSONFieldWithSchema, SlugRelatedAsChoicesField
 from openforms.api.utils import get_from_serializer_data_or_instance
@@ -63,6 +64,51 @@ class ObjecttypeVariableMappingSerializer(serializers.Serializer):
     # registration backend options are saved before the form definitions/steps are
     # saved through the frontend/API.
     options = JSONFieldWithSchema(default=dict, required=False)
+
+
+class FileComponentOptionsSerializer(serializers.Serializer):
+    key = FormioVariableKeyField(
+        label=_("component key"),
+        help_text=_(
+            "Literal component key value of the file component for which the options "
+            "apply."
+        ),
+    )
+    document_type_description = serializers.CharField(
+        label=_("Document type description"),
+        required=False,
+        help_text=_(
+            "The document type will be retrieved from the catalogue and case type "
+            "specified in the backend options. The version will automatically be "
+            "selected based on the submission completion timestamp. Only document "
+            "types related to the case type are valid."
+        ),
+        allow_blank=True,
+    )
+    organization_rsin = serializers.CharField(
+        validators=[validate_rsin],
+        required=False,
+        help_text=_("RSIN of the organization that creates the document."),
+        allow_blank=True,
+    )
+    confidentiality_level = serializers.ChoiceField(
+        label=_("Vertrouwelijkheidaanduiding"),
+        required=False,
+        choices=VertrouwelijkheidsAanduidingen.choices,
+        help_text=_(
+            "Indication of the level to which extend the document is meant to be "
+            "public."
+        ),
+        allow_blank=True,
+    )
+    title = serializers.CharField(
+        label=_("Title"),
+        required=False,
+        help_text=_(
+            "Optional custom title for the document. By default, the form name is used."
+        ),
+        allow_blank=True,
+    )
 
 
 class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -204,6 +250,20 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         ),
         required=False,
         allow_blank=True,
+    )
+
+    # File component options
+    files = FileComponentOptionsSerializer(
+        many=True,
+        label=_("Files"),
+        required=False,
+        help_text=_(
+            "List of file upload options for file components. Each entry contains the "
+            "key of the file component in the form, which may be a child in an edit "
+            "grid. Any specified option overrides the equivalent option on the backend "
+            "level. If unspecified, the backend configuration is used."
+        ),
+        allow_null=False,
     )
 
     # V1 only fields:
@@ -479,6 +539,24 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
                     raise serializers.ValidationError(
                         {field: err_msg}, code="not-found"
                     )
+
+        _files_errors = {}
+        for index, file_options in enumerate(attrs.get("files", [])):
+            if not (description := file_options.get("document_type_description")):
+                continue
+            assert catalogus is not None
+            versions = client.find_informatieobjecttypen(
+                catalogus=catalogus["url"], description=description
+            )
+            if versions is None:
+                err_msg = _(
+                    "No document type with description '{description}' found."
+                ).format(description=description)
+                _files_errors[index] = {
+                    "document_type_description": ErrorDetail(err_msg, code="not-found")
+                }
+        if _files_errors:
+            raise serializers.ValidationError({"files": _files_errors})
 
 
 def _validate_objecttype_and_version(attrs: RegistrationOptions) -> None:

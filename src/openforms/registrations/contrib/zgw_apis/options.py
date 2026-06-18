@@ -55,6 +55,52 @@ class JSONMultipleChoiceField(serializers.MultipleChoiceField):
         return list(super().to_representation(value))
 
 
+class FileComponentOptionsSerializer(serializers.Serializer):
+    key = FormioVariableKeyField(
+        label=_("component key"),
+        help_text=_(
+            "Literal component key value of the file component for which the options "
+            "apply."
+        ),
+    )
+    document_type_description = serializers.CharField(
+        label=_("Document type description"),
+        required=False,
+        help_text=_(
+            "The document type will be retrieved from the catalogue and case type "
+            "specified in the backend options. The version will automatically be "
+            "selected based on the submission completion timestamp. Only document "
+            "types related to the case type are valid."
+        ),
+        allow_blank=True,
+    )
+    organization_rsin = serializers.CharField(
+        validators=[validate_rsin],
+        required=False,
+        help_text=_("RSIN of the organization that creates the document."),
+        allow_blank=True,
+    )
+    confidentiality_level = serializers.ChoiceField(
+        label=_("Vertrouwelijkheidaanduiding"),
+        required=False,
+        choices=VertrouwelijkheidsAanduidingen.choices,
+        help_text=_(
+            "Indication of the level to which extend the document is meant to be "
+            "public."
+        ),
+        allow_blank=True,
+    )
+    title = serializers.CharField(
+        label=_("Title"),
+        required=False,
+        help_text=_(
+            "Optional custom title for the document. By default, the attachment file "
+            "name is used."
+        ),
+        allow_blank=True,
+    )
+
+
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ZGWApiGroupConfig.objects.exclude(
@@ -87,7 +133,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         allow_blank=True,
     )
     document_type_description = serializers.CharField(
-        required=False,  # either htis field or informatieobjecttype (legacy) must be provided
+        required=False,  # either this field or informatieobjecttype (legacy) must be provided
         label=_("Document type description"),
         help_text=_(
             "The document type will be retrieved in the specified catalogue. The version "
@@ -256,6 +302,20 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         many=True,
         label=_("Variable-to-property mappings"),
         required=False,
+    )
+
+    # File component options
+    files = FileComponentOptionsSerializer(
+        many=True,
+        label=_("Files"),
+        required=False,
+        help_text=_(
+            "List of file upload options for file components. Each entry contains the "
+            "key of the file component in the form, which may be a child in an edit "
+            "grid. Any specified option overrides the equivalent option on the backend "
+            "level. If unspecified, the backend configuration is used."
+        ),
+        allow_null=False,
     )
 
     def get_fields(self):
@@ -523,6 +583,30 @@ def _validate_catalogue_case_and_doc_type(
         # Validate document type URL reference against possible valid URLs.
         elif document_type_url not in valid_document_type_urls:
             _errors["informatieobjecttype"] = err_invalid_document_type
+
+        _files_errors = {}
+        for index, file_options in enumerate(attrs.get("files", [])):
+            if not (description := file_options.get("document_type_description")):
+                continue
+            assert catalogus is not None
+            versions = client.find_informatieobjecttypen(
+                catalogus=catalogus["url"], description=description
+            )
+            if versions is None:
+                _files_errors[index] = {
+                    "document_type_description": err_invalid_document_type
+                }
+            else:
+                document_type_urls = {item["url"] for item in versions}
+                # check the intersection with the known good URLs
+                intersection = document_type_urls & set(valid_document_type_urls)
+                if not intersection:
+                    _files_errors[index] = {
+                        "document_type_description": err_invalid_document_type
+                    }
+
+        if _files_errors:
+            _errors["files"] = _files_errors
 
     else:
         try:
