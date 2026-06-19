@@ -582,7 +582,7 @@ jinja2==3.1.6
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
-josepy==1.14.0
+josepy==2.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -931,7 +931,6 @@ pyopenssl==26.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   josepy
     #   webauthn
 pyphen==0.14.0
     # via
