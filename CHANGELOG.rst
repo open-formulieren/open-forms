@@ -14,10 +14,38 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
-3.5.4 (2026-06-23)
+3.5.4 (2026-06-19)
 ==================
 
 Regular bugfix release.
+
+**Bugfixes**
+
+* Fixed a migration crash for forms without any steps that contain logic rules.
+* Fixed missing structlog context propagation across threads, causing prefill (audit)
+  logs not to be saved in the database.
+* [:backend:`6259`] Fixed "cosign required" validation not taking into account whether a
+  form step is applicable or not.
+* [:backend:`6360`] Fixed validation error for valid uploads in the new renderer when
+  soft-hyphens are used, an issue similar to :backend:`5413`.
+* [:backend:`6254`] Fixed pre-3.5 imports of forms that contain logic rules with
+  "trigger from step" options.
+* [:backend:`6389`] Fixed the form theme not being applied to cosign and form suspension
+  emails.
+* [:backend:`6391`] Added migration tooling for logic rules to prepare for upcoming
+  changes in the "clear on hide" behaviour (see below).
+* Upgraded dependencies to their latest security fixes:
+
+  - urllib3
+  - requests
+  - Tornado
+  - PyJWT
+  - cryptography
+  - js-cookie
+  - build toolchain (babel, esbuild)
+  - dompurify (where possible)
+
+* Fixed some test flakiness.
 
 **Migration tooling**
 
@@ -40,11 +68,12 @@ Regular bugfix release.
          ]
        }
 
-    This requires the logic rule to be advanced, though. To make this conversion relatively
-    easy for existing rules, it is now possible to convert a simple logic rule to an
-    advanced one by clicking the wand icon beneath the delete icon of the rule. The icon will
-    then convert into one with sparkles to indicate an advanced logic rule as usual. Note that
-    once converted, it's not possible to switch back to a simple rule.
+    This requires the logic rule to be advanced, though. To make this conversion
+    relatively easy for existing rules, it is now possible to convert a simple logic
+    rule to an advanced one by clicking the wand icon beneath the delete icon of the
+    rule. The icon will then convert into one with sparkles to indicate an advanced
+    logic rule as usual. Note that once converted, it's not possible to switch back to
+    a simple rule.
 
 3.5.3 (2026-06-02)
 ==================
