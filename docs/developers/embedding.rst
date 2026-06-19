@@ -62,6 +62,12 @@ Available options
     Required. The UUID or slug of the form to embed. This can be obtained via the Open
     Forms admin interface.
 
+
+``showFormTitle``:
+    Optional. When set to ``true`` it shows the form title when the form is rendered. This
+    can be set to ``false`` in case this is needed (for example useful for embedded forms
+    that already have an ``h1`` element / title in the dom).
+
 ``basePath``:
     Optional, but highly recommended. The SDK considers this as the base URL and builds all
     URLs relatively to this URL.

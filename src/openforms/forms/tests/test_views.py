@@ -82,6 +82,12 @@ class FormDetailViewTests(WebTest):
 
         self.assertTemplateUsed(form_page, "forms/sdk_snippet.html")
 
+    def test_detail_page_contains_default_form_title_visibility_attribute(self):
+        form_page = self.app.get(self.url)
+        element = form_page.pyquery("[data-show-form-title]")
+
+        self.assertTrue(element.attr("data-show-form-title"))
+
     def test_design_tokens_rendered(self):
         theme = ThemeFactory.create(
             design_token_values={"of": {"layout": {"background": {"value": "#ffffff"}}}}

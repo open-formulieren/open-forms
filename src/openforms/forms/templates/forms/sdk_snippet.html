@@ -7,6 +7,7 @@
     id="openforms-container"
     data-sdk-module="{{ urls.sdk_esm_url }}"
     data-form-id="{{ form.slug }}"
+    data-show-form-title="true"
     data-base-url="{% api_base_url %}"
     data-base-path="{% if base_path %}{{ base_path }}{% else %}{% url 'forms:form-detail' slug=form.slug %}{% endif %}"
     data-csp-nonce="{{ request.csp_nonce }}"
