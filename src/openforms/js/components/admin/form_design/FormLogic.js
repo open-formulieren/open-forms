@@ -341,6 +341,13 @@ const Rule = ({
     defaultMessage: 'Advanced',
   });
 
+  const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
+  const onConvertToAdvancedClick = async () => {
+    if (await openConfirmationModal()) {
+      onChange({target: {name: '_logicType', value: 'advanced'}});
+    }
+  };
+
   // if no logicType has been set yet, we first present the type selection before the
   // actual rule can be set up.
   if (!_logicType) {
@@ -351,13 +358,6 @@ const Rule = ({
       />
     );
   }
-
-  const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
-  const onConvertToAdvancedClick = async () => {
-    if (await openConfirmationModal()) {
-      onChange({target: {name: '_logicType', value: 'advanced'}});
-    }
-  };
 
   const boundaryErrorMessage = (
     <div className="logic-rule-error">
