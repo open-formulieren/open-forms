@@ -440,9 +440,9 @@ export const ConvertToAdvanced = {
     const canvas = within(canvasElement);
 
     // Convert the action
-    const convertIcon = await canvas.findByTitle('Convert to advanced');
+    const convertIcon = await canvas.findByTitle('Omzetten naar geavanceerde logica');
     await userEvent.click(convertIcon);
-    expect(await canvas.findByText(/Converting to an advanced logic rule/));
+    expect(await canvas.findByText(/Zodra een regel omgezet is naar geavanceerde logica/));
     await userEvent.click(await canvas.findByRole('button', {name: 'Accepteren'}));
 
     // 0 for the rule index, event for changing the advanced rule type.

@@ -1042,7 +1042,7 @@
   "7VsfCp": [
     {
       "type": 0,
-      "value": "Advanced"
+      "value": "Geavanceerd"
     }
   ],
   "7X6yT4": [
@@ -1350,7 +1350,7 @@
   "9cOzc0": [
     {
       "type": 0,
-      "value": "Convert to advanced"
+      "value": "Omzetten naar geavanceerde logica"
     }
   ],
   "9dLOs2": [
@@ -7622,7 +7622,7 @@
   "viSx62": [
     {
       "type": 0,
-      "value": "Converting to an advanced logic rule cannot be undone."
+      "value": "Zodra een regel omgezet is naar geavanceerde logica kan dit niet meer teruggedraaid worden."
     },
     {
       "children": [
@@ -7632,7 +7632,7 @@
     },
     {
       "type": 0,
-      "value": " Are you sure you want to do this?"
+      "value": " Ben je zeker dat je wil doorgaan?"
     }
   ],
   "vlY36U": [
