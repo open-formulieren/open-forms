@@ -278,7 +278,7 @@
     "originalDefault": "Variant"
   },
   "4binPe": {
-    "defaultMessage": "Comma-separate list values",
+    "defaultMessage": "Kommagescheiden lijst-waarden",
     "description": "StUF-ZDS extraElement serializeListToCsv label",
     "originalDefault": "Comma-separate list values"
   },

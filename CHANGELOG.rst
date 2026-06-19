@@ -14,6 +14,47 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.4.10 (2026-06-19)
+===================
+
+Regular bugfix release.
+
+* Upgraded to SDK 3.4.4, which includes a number of fixes in the new renderer - see the
+  SDK release notes for details.
+* Fixed typos in translations.
+* Added some workarounds for StUF-ZDS when using Onegov zaaksysteem:
+
+  - [:backend:`6230`] Expose the submission ``completed_on`` timestamp as registration
+    variable.
+  - [:backend:`5951`] Support adding ``extraElementen`` mappings at the initatior level.
+  - [:backend:`6242`] Added option to comma-separate serialize ``extraElement`` values
+    for array-type data.
+
+* [:backend:`6057`] Fixed missing configuration that caused ``application/hal+json``
+  responses not to be saved to the outgoing request logs.
+* [:backend:`6091`] Fixed Objects API and ZGW APIs registration backends using the
+  form's internal name for related documents like the confirmation PDF.
+* [:backend:`4699`] Fixed ``addressNL`` not using custom error messages for the
+  city/postcode during validation.
+* [:backend:`6259`] Fixed "cosign required" validation not taking into account whether a
+  form step is applicable or not.
+* [:backend:`6360`] Fixed validation error for valid uploads in the new renderer when
+  soft-hyphens are used, an issue similar to :backend:`5413`.
+* [:backend:`6389`] Fixed the form theme not being applied to cosign and form suspension
+  emails.
+* Upgraded dependencies to their latest security fixes:
+
+  - urllib3
+  - requests
+  - Tornado
+  - cryptography
+  - josepy
+  - js-cookie
+  - build toolchain (babel, esbuild)
+  - dompurify (where possible)
+
+* Fixed some test flakiness.
+
 3.4.9 (2026-04-28)
 ==================
 
