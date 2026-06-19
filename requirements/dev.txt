@@ -959,7 +959,7 @@ pygments==2.17.2
     #   rich
     #   sphinx
     #   sphinx-tabs
-pyjwt==2.13.0
+pyjwt==2.12.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

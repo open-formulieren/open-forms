@@ -482,7 +482,7 @@ pydantic-settings==2.6.1
     # via django-setup-configuration
 pydyf==0.8.0
     # via weasyprint
-pyjwt==2.13.0
+pyjwt==2.12.1
     # via zgw-consumers
 pyopenssl==26.3.0
     # via webauthn

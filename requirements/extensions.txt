@@ -817,7 +817,7 @@ pydyf==0.8.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   weasyprint
-pyjwt==2.13.0
+pyjwt==2.12.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
