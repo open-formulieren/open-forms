@@ -11,6 +11,9 @@ from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
 
+from ....disable_next_import_conversion import (
+    add_form_step_uuid_to_disable_next_actions,
+)
 from ....logic_analysis import (
     CyclesDetected,
     analyze_rules,
@@ -218,3 +221,22 @@ class FormLogicSerializer(
         related_field = self.Meta.model._meta.get_field("form")
         self.fields["form"].help_text = related_field.help_text
         self.fields["form"].label = related_field.verbose_name
+
+    def _handle_import(self, attrs) -> None:
+        if not self.context.get("is_import", False):
+            return
+
+        add_form_step_uuid_to_disable_next_actions(
+            attrs, self.context["form_variables"].variables, self.context["form_steps"]
+        )
+
+        # Remove trigger from step for forms that have new logic evaluation enabled
+        # (which is the default when a form without this flag is imported).
+        if self.context["form"].new_logic_evaluation_enabled:
+            attrs.pop("trigger_from_step", None)
+
+    def run_validation(self, data) -> None:
+        # Override `run_validation` instead of `validate`, because it runs before
+        # `LogicComponentActionSerializer.validate`.
+        self._handle_import(data)
+        return super().run_validation(data)

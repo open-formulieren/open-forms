@@ -296,7 +296,7 @@ def import_form_data(
                         "form_variables": FormVariableWrapper(_form),
                         "form_steps": {
                             form_step.uuid: form_step
-                            for form_step in _form.formstep_set.all()
+                            for form_step in _form.formstep_set.all().order_by("order")
                         },
                     }
                 )
