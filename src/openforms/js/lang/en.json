@@ -444,6 +444,11 @@
     "description": "Form ID field help text",
     "originalDefault": "Unique identifier for the form"
   },
+  "7VsfCp": {
+    "defaultMessage": "Advanced",
+    "description": "Advanced logic rule icon description",
+    "originalDefault": "Advanced"
+  },
   "7X6yT4": {
     "defaultMessage": "You are modifying an existing form definition! This change affects <link>{count, plural, one {# form} other {# forms} }</link>",
     "description": "Warning when modifying existing form definitions",
@@ -573,6 +578,11 @@
     "defaultMessage": "Active",
     "description": "Form active field label",
     "originalDefault": "Active"
+  },
+  "9cOzc0": {
+    "defaultMessage": "Convert to advanced",
+    "description": "Simple logic rule icon description",
+    "originalDefault": "Convert to advanced"
   },
   "9dLOs2": {
     "defaultMessage": "and",
@@ -3578,6 +3588,11 @@
     "defaultMessage": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
     "description": "Confirmation template help text",
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+  },
+  "viSx62": {
+    "defaultMessage": "Converting to an advanced logic rule cannot be undone.<br></br> Are you sure you want to do this?",
+    "description": "Convert to advanced logic rule confirmation message",
+    "originalDefault": "Converting to an advanced logic rule cannot be undone.<br></br> Are you sure you want to do this?"
   },
   "vng/5K": {
     "defaultMessage": "Set a key name before you can configure this variable",

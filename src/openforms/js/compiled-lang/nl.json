@@ -1039,6 +1039,12 @@
       "value": "Maximale datum"
     }
   ],
+  "7VsfCp": [
+    {
+      "type": 0,
+      "value": "Advanced"
+    }
+  ],
   "7X6yT4": [
     {
       "type": 0,
@@ -1339,6 +1345,12 @@
     {
       "type": 0,
       "value": "Actief"
+    }
+  ],
+  "9cOzc0": [
+    {
+      "type": 0,
+      "value": "Convert to advanced"
     }
   ],
   "9dLOs2": [
@@ -7605,6 +7617,22 @@
     {
       "type": 0,
       "value": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "viSx62": [
+    {
+      "type": 0,
+      "value": "Converting to an advanced logic rule cannot be undone."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " Are you sure you want to do this?"
     }
   ],
   "vlY36U": [
