@@ -262,7 +262,12 @@ For more information about the new logic evaluation, please refer to the
 Clearing of values
 ------------------
 
-TODO
+TODO (from clear-on-hide PR)
+
+The above example requires the logic rule to be advanced, though. To make this conversion relatively easy for
+existing rules, it is now possible to convert a simple logic rule to an advanced one by clicking the wand icon
+beneath the delete icon of the rule. The icon will then convert into one with sparkles to indicate an advanced
+logic rule as usual. Note that this switch cannot be undone.
 
 Removal of legacy ZGW URLs support in registration plugins
 ==========================================================

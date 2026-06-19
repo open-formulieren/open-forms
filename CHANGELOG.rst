@@ -14,6 +14,38 @@ Changelog
         `latest <https://open-forms.readthedocs.io/en/latest/changelog.html>`_ docs
         version.
 
+3.5.4 (2026-06-23)
+==================
+
+Regular bugfix release.
+
+**Migration tooling**
+
+.. note::
+
+    In Open Forms 3.5.3 we have provided some context about breaking changes regarding
+    "clear on hide" (see the relevant changelog entry).
+
+    To keep the old behavior, variable expressions can be adjusted to use a default value,
+    for example:
+
+    .. code:: json
+
+       {
+         "==": [
+           {
+             "var": ["textfield", ""]
+           },
+           ""
+         ]
+       }
+
+    This requires the logic rule to be advanced, though. To make this conversion relatively
+    easy for existing rules, it is now possible to convert a simple logic rule to an
+    advanced one by clicking the wand icon beneath the delete icon of the rule. The icon will
+    then convert into one with sparkles to indicate an advanced logic rule as usual. Note that
+    once converted, it's not possible to switch back to a simple rule.
+
 3.5.3 (2026-06-02)
 ==================
 
