@@ -28,6 +28,7 @@ import LogicTypeSelection from './logic/LogicTypeSelection';
 import Trigger from './logic/Trigger';
 import ActionSet from './logic/actions/ActionSet';
 import {detectProblems} from './logic/actions/Actions';
+import useConfirm from './useConfirm';
 import {parseValidationErrors} from './utils';
 
 const EMPTY_RULE = {
@@ -334,6 +335,14 @@ const Rule = ({
     description: 'Logic rule deletion confirm message',
     defaultMessage: 'Are you sure you want to delete this rule?',
   });
+  const convertToAdvanced = intl.formatMessage({
+    description: 'Simple logic rule icon description',
+    defaultMessage: 'Convert to advanced',
+  });
+  const advancedLogicRule = intl.formatMessage({
+    description: 'Advanced logic rule icon description',
+    defaultMessage: 'Advanced',
+  });
 
   // if no logicType has been set yet, we first present the type selection before the
   // actual rule can be set up.
@@ -345,6 +354,13 @@ const Rule = ({
       />
     );
   }
+
+  const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
+  const onConvertToAdvancedClick = async () => {
+    if (await openConfirmationModal()) {
+      onChange({target: {name: '_logicType', value: 'advanced'}});
+    }
+  };
 
   const boundaryErrorMessage = (
     <div className="logic-rule-error">
@@ -376,12 +392,34 @@ const Rule = ({
           message={deleteConfirmMessage}
           extraClassname="actions__action"
         />
-        {isAdvanced && (
+        {isAdvanced ? (
           <FAIcon
             icon="wand-magic-sparkles"
             extraClassname="icon icon--no-pointer"
-            title="advanced"
+            title={advancedLogicRule}
           />
+        ) : (
+          <>
+            <FAIcon
+              icon="wand-magic"
+              extraClassname="icon actions__action"
+              title={convertToAdvanced}
+              onClick={onConvertToAdvancedClick}
+            />
+            <ConfirmationModal
+              {...confirmationModalProps}
+              message={
+                <FormattedMessage
+                  description="Convert to advanced logic rule confirmation message"
+                  defaultMessage={`Converting to an advanced logic rule cannot be undone.<br></br>
+                    Are you sure you want to do this?`}
+                  values={{
+                    br: () => <br />,
+                  }}
+                />
+              }
+            />
+          </>
         )}
       </div>
 
