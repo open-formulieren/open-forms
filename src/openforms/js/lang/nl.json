@@ -421,7 +421,7 @@
     "originalDefault": "Unique identifier for the form"
   },
   "7VsfCp": {
-    "defaultMessage": "Advanced",
+    "defaultMessage": "Geavanceerd",
     "description": "Advanced logic rule icon description",
     "originalDefault": "Advanced"
   },
@@ -562,7 +562,7 @@
     "originalDefault": "Active"
   },
   "9cOzc0": {
-    "defaultMessage": "Convert to advanced",
+    "defaultMessage": "Omzetten naar geavanceerde logica",
     "description": "Simple logic rule icon description",
     "originalDefault": "Convert to advanced"
   },
@@ -3415,7 +3415,7 @@
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
   },
   "viSx62": {
-    "defaultMessage": "Converting to an advanced logic rule cannot be undone.<br></br> Are you sure you want to do this?",
+    "defaultMessage": "Zodra een regel omgezet is naar geavanceerde logica kan dit niet meer teruggedraaid worden.<br></br> Ben je zeker dat je wil doorgaan?",
     "description": "Convert to advanced logic rule confirmation message",
     "originalDefault": "Converting to an advanced logic rule cannot be undone.<br></br> Are you sure you want to do this?"
   },
