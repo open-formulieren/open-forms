@@ -979,6 +979,12 @@
       "value": "Maximum date"
     }
   ],
+  "7VsfCp": [
+    {
+      "type": 0,
+      "value": "Advanced"
+    }
+  ],
   "7X6yT4": [
     {
       "type": 0,
@@ -1249,6 +1255,12 @@
     {
       "type": 0,
       "value": "Active"
+    }
+  ],
+  "9cOzc0": [
+    {
+      "type": 0,
+      "value": "Convert to advanced"
     }
   ],
   "9dLOs2": [
@@ -7335,6 +7347,22 @@
     {
       "type": 0,
       "value": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+    }
+  ],
+  "viSx62": [
+    {
+      "type": 0,
+      "value": "Converting to an advanced logic rule cannot be undone."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " Are you sure you want to do this?"
     }
   ],
   "vlY36U": [

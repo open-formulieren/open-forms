@@ -393,3 +393,50 @@ export const WithLogicRuleAnalysis = {
     expect(canvas.getByDisplayValue('New logic rule')).toBeVisible();
   },
 };
+
+export const ConvertToAdvanced = {
+  name: 'Convert logic rule to advanced',
+  args: {
+    logicRules: [
+      {
+        uuid: 'foo',
+        _generatedId: 'foo',
+        _logicType: 'simple',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        description: 'Sample rule',
+        _mayGenerateDescription: false,
+        order: 0,
+        jsonLogicTrigger: {'==': [{var: 'foo'}, 'bar']},
+        isAdvanced: false,
+        formSteps: [
+          'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5/steps/8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+        ],
+        actions: [
+          {
+            action: {type: 'variable', value: 'Cool text'},
+            uuid: '',
+            _generatedId: '1',
+            formStepUuid: null,
+            variable: 'bar',
+          },
+        ],
+      },
+    ],
+    availableFormVariables: AVAILABLE_FORM_VARIABLES,
+    availableFormSteps: AVAILABLE_FORM_STEPS,
+  },
+  play: async ({canvasElement, args}) => {
+    const canvas = within(canvasElement);
+
+    // Convert the action
+    const convertIcon = await canvas.findByTitle('Convert to advanced');
+    await userEvent.click(convertIcon);
+    expect(await canvas.findByText(/Converting to an advanced logic rule/));
+    await userEvent.click(await canvas.findByRole('button', {name: 'Accepteren'}));
+
+    // 0 for the rule index, event for changing the advanced rule type.
+    expect(args.onChange).toHaveBeenCalledWith(0, {
+      target: {name: '_logicType', value: 'advanced'},
+    });
+  },
+};

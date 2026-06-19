@@ -420,6 +420,11 @@
     "description": "Form ID field help text",
     "originalDefault": "Unique identifier for the form"
   },
+  "7VsfCp": {
+    "defaultMessage": "Advanced",
+    "description": "Advanced logic rule icon description",
+    "originalDefault": "Advanced"
+  },
   "7X6yT4": {
     "defaultMessage": "U bewerkt een bestaande set van formuliervelden! Deze wijziging heeft effect op <link>{count, plural, one {# formulier} other {# formulieren} }</link>.",
     "description": "Warning when modifying existing form definitions",
@@ -555,6 +560,11 @@
     "defaultMessage": "Actief",
     "description": "Form active field label",
     "originalDefault": "Active"
+  },
+  "9cOzc0": {
+    "defaultMessage": "Convert to advanced",
+    "description": "Simple logic rule icon description",
+    "originalDefault": "Convert to advanced"
   },
   "9dLOs2": {
     "defaultMessage": "en",
@@ -3403,6 +3413,11 @@
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Confirmation template help text",
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+  },
+  "viSx62": {
+    "defaultMessage": "Converting to an advanced logic rule cannot be undone.<br></br> Are you sure you want to do this?",
+    "description": "Convert to advanced logic rule confirmation message",
+    "originalDefault": "Converting to an advanced logic rule cannot be undone.<br></br> Are you sure you want to do this?"
   },
   "vng/5K": {
     "defaultMessage": "Er moet een sleutelnaam ingesteld worden voordat deze variabele geconfigureerd kan worden",
