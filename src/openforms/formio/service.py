@@ -233,7 +233,7 @@ def build_serializer(
 
 
 def as_json_data(
-    component: Component,
+    component: AnyComponent | Component,
     value: VariableValue,
     _register: ComponentRegistry | None = None,
 ) -> VariableValue:
@@ -248,7 +248,11 @@ def as_json_data(
       to make it suitable for export to JSON (e.g. stripped from internal data).
     """
     registry = _register or register
-    _component = _convert_legacy_component(component)
+    _component = (
+        _convert_legacy_component(component)
+        if isinstance(component, dict)
+        else component
+    )
     return registry.as_json_data(_component, value)
 
 

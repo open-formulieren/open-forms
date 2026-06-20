@@ -13,7 +13,7 @@ from rest_framework.exceptions import ValidationError
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.registry import register as formio_registry
-from openforms.formio.service import _convert_legacy_component
+from openforms.formio.service import _convert_legacy_component, dump_to_legacy
 from openforms.formio.typing.base import Component
 from openforms.logging import audit_logger
 from openforms.submissions.constants import (
@@ -482,14 +482,16 @@ def execute_component_pre_registration(
 
 @app.task(bind=True)
 def execute_component_pre_registration_group(task, submission_id: int) -> None:
+    # FIXME: doesn't work with data/components inside edit grids...
     submission = Submission.objects.get(id=submission_id)
 
     task_group = group(
         execute_component_pre_registration.si(
-            submission_id=submission_id, component=component
+            submission_id=submission_id,
+            component=dump_to_legacy(component),
         )
-        for component in submission.total_configuration_wrapper
-        if formio_registry.has_pre_registration_hook(component["type"])
+        for component in submission.formio_config
+        if formio_registry.has_pre_registration_hook(component)
     )
 
     return task.replace(task_group)

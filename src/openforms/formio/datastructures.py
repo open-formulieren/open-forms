@@ -426,3 +426,27 @@ class FormioConfig:
             )
             self._tree = _build_component_tree(self.name, components)
         return self._tree
+
+    def __iter__(self) -> Iterator[AnyComponent]:
+        """
+        Yield the components in the configuration visiting the tree nodes.
+
+        Each (unique) component is guaranteed to be yielded only once, even though
+        it may be present multiple times in the internal datastructures.
+
+        Components inside edit grids are *NOT* included/yielded - if those need to
+        be processed separately, you can probably create a nested :class:`FormioConfig`
+        from them and recurse your processing.
+        """
+        for node in self.tree:
+            yield node.data
+
+    def __contains__(self, key: str) -> bool:
+        node = self.tree.find(data_id=key)
+        return node is not None
+
+    def __getitem__(self, key: str) -> AnyComponent:
+        node = self.tree.find(data_id=key)
+        if node is None:
+            raise KeyError(f"Component with key '{key}' not found.")
+        return node.data

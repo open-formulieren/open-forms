@@ -2,7 +2,6 @@ import base64
 from collections import defaultdict
 from collections.abc import Mapping
 from functools import partial
-from typing import cast  # noqa: TID251
 
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import F, TextField, Value
@@ -11,13 +10,11 @@ from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
+from formio_types import AnyComponent, File, Selectboxes
 from openforms.formio.service import (
     FormioConfigurationWrapper,
 )
-from openforms.formio.typing import (
-    Component,
-    FileComponent,
-)
+from openforms.formio.typing import Component
 from openforms.forms.json_schema import NestedDict
 from openforms.forms.models import FormVariable
 from openforms.submissions.models import Submission, SubmissionFileAttachment
@@ -239,7 +236,7 @@ def build_post_process_component_hook(
 
 
 def process_component(
-    component: Component,
+    component: AnyComponent,
     value: VariableValue,
     schema: NestedDict,
     attachments: dict[str, list[SubmissionFileAttachment]],
@@ -270,19 +267,15 @@ def process_component(
     if transform_to_list is None:
         transform_to_list = []
 
-    key = component["key"]
+    key = component.key
     schema_key = f"properties.{key.replace('.', '.properties.')}"
 
     match component:
-        case {"type": "file", "multiple": True}:
-            _component = cast(FileComponent, component)
-            return get_attachments(_component, attachments, current_data_path)
+        case File(multiple=True):
+            return get_attachments(component, attachments, current_data_path)
 
-        case {"type": "file"}:  # multiple is False or missing
-            _component = cast(FileComponent, component)
-            attachment_list = get_attachments(
-                _component, attachments, current_data_path
-            )
+        case File():  # multiple is False or missing
+            attachment_list = get_attachments(component, attachments, current_data_path)
 
             variable_schema = schema[schema_key]
             assert isinstance(variable_schema, dict)
@@ -298,7 +291,7 @@ def process_component(
                 variable_schema["type"] = "object"
                 return attachment_list[0]
 
-        case {"type": "selectboxes"} if key in transform_to_list:
+        case Selectboxes() if key in transform_to_list:
             assert isinstance(value, Mapping)
             return [option for option, is_selected in value.items() if is_selected]
 
@@ -307,7 +300,7 @@ def process_component(
 
 
 def get_attachments(
-    component: FileComponent,
+    component: File,
     attachments: dict[str, list[SubmissionFileAttachment]],
     key_prefix: str = "",
 ) -> list[JSONObject]:
@@ -322,7 +315,7 @@ def get_attachments(
 
     :return encoded_attachments: List of encoded attachments for this file component.
     """
-    key = f"{key_prefix}.{component['key']}" if key_prefix else component["key"]
+    key = f"{key_prefix}.{component.key}" if key_prefix else component.key
 
     return [
         {

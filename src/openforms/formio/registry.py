@@ -468,13 +468,13 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
             schema["description"] = description
         return schema
 
-    def has_pre_registration_hook(self, component_type: str) -> bool:
+    def has_pre_registration_hook(self, component: AnyComponent) -> bool:
         """
         Determine if a given component has a pre-registration hook.
         """
-        if component_type not in self:
-            return False
-        return self[component_type].pre_registration_hook is not None
+        component_type = TYPE_TO_TAG[type(component)]
+        plugin: BasePlugin[AnyComponent] = self[component_type]
+        return plugin.pre_registration_hook is not None
 
     def apply_pre_registration_hook(
         self, component: AnyComponent, submission: Submission
@@ -483,8 +483,9 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         Apply component pre registration hook.
         """
         component_type = TYPE_TO_TAG[type(component)]
-        assert self.has_pre_registration_hook(component_type)
-        hook = self[component_type].pre_registration_hook
+        assert self.has_pre_registration_hook(component)
+        plugin: BasePlugin[AnyComponent] = self[component_type]
+        hook = plugin.pre_registration_hook
 
         assert hook is not None
 

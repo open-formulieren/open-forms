@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from itertools import groupby
 
 import structlog
@@ -17,8 +17,8 @@ logger = structlog.stdlib.get_logger(__name__)
 
 def transform_digital_addresses(
     digital_addresses: Iterable[DigitaalAdres],
-    configured_address_types: list[SupportedChannels],
-) -> list[CommunicationChannel]:
+    configured_address_types: Sequence[SupportedChannels],
+) -> Sequence[CommunicationChannel]:
     """
     Filter and group digital addresses.
 

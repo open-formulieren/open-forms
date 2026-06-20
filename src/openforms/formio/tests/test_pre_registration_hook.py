@@ -11,7 +11,12 @@ from ..typing.custom import DigitalAddress
 
 class ProfilePreRegistrationHookTests(TestCase):
     def test_profile_has_hook(self):
-        self.assertTrue(register.has_pre_registration_hook("customerProfile"))
+        component = CustomerProfile(
+            key="someCustomerProfile",
+            label="Profile",
+        )
+
+        self.assertTrue(register.has_pre_registration_hook(component))
 
     def test_profile_hook_should_update(self):
         profile_component = CustomerProfile(
@@ -57,7 +62,9 @@ class ProfilePreRegistrationHookTests(TestCase):
 
 class TextFieldPreRegistrationHookTests(TestCase):
     def test_textfield_has_hook(self):
-        self.assertFalse(register.has_pre_registration_hook("textfield"))
+        component = TextField(key="someText", label="Some text")
+
+        self.assertFalse(register.has_pre_registration_hook(component))
 
     def test_textfield_apply_hook(self):
         text_component = TextField(
