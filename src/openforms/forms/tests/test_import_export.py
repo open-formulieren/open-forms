@@ -5,6 +5,7 @@ from pathlib import Path
 from shutil import rmtree
 from textwrap import dedent
 from unittest.mock import patch
+from uuid import UUID
 
 from django.test import TestCase, override_settings, tag
 from django.utils import translation
@@ -23,6 +24,15 @@ from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
 )
 from openforms.products.tests.factories import ProductFactory
+from openforms.registrations.contrib.objects_api.config import (
+    ObjectsAPIOptionsSerializer,
+)
+from openforms.registrations.contrib.objects_api.constants import (
+    PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
+)
+from openforms.registrations.contrib.objects_api.typing import (
+    RegistrationOptionsV2 as ObjectsRegistrationOptionsV2,
+)
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
@@ -2515,6 +2525,141 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             registration_backend.options["objects_api_group"],
             objects_api_group.identifier,
         )
+
+    def test_import_form_with_legacy_file_registration_options(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "toplevel.file1",
+                        "label": "Top level file",
+                        "file": {"type": []},
+                        "filePattern": "",
+                        "registration": {
+                            "bronorganisatie": "100000009",
+                            "docVertrouwelijkheidaanduiding": "geheim",
+                            "titel": "Custom title",
+                            "documentType": {
+                                "catalogue": {
+                                    "domain": "TEST",
+                                    "rsin": "000000000",
+                                },
+                                "description": "PDF Informatieobjecttype",
+                            },
+                        },
+                    },
+                    {
+                        "type": "file",
+                        "key": "toplevel.file2",
+                        "label": "Top level file 2",
+                        "file": {"type": []},
+                        "filePattern": "",
+                    },
+                    {
+                        "type": "file",
+                        "key": "toplevel.file3",
+                        "label": "Top level file 3",
+                        "file": {"type": []},
+                        "filePattern": "",
+                        "registration": {"titel": ""},
+                    },
+                    {
+                        "type": "editgrid",
+                        "key": "editgrid",
+                        "label": "Repeating group",
+                        "groupLabel": "Item",
+                        "components": [
+                            {
+                                "type": "file",
+                                "key": "editgridFile",
+                                "label": "Editgrid file",
+                                "file": {"type": []},
+                                "filePattern": "",
+                                "registration": {
+                                    "bronorganisatie": "100000009",
+                                    "titel": "Another title",
+                                },
+                            }
+                        ],
+                    },
+                ]
+            },
+        )
+        group = ObjectsAPIGroupConfigFactory.create(for_test_docker_compose=True)
+        options: ObjectsRegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "Attachment Informatieobjecttype",
+            "variables_mapping": [],
+            "transform_to_list": [],
+        }
+        FormRegistrationBackend.objects.create(
+            form=form,
+            name="Objects 1",
+            key="objects1",
+            backend=OBJECTS_API_PLUGIN_IDENTIFIER,
+            options=ObjectsAPIOptionsSerializer(instance=options).data,
+        )
+        FormRegistrationBackend.objects.create(
+            form=form,
+            name="Objects 2",
+            key="objects2",
+            backend=OBJECTS_API_PLUGIN_IDENTIFIER,
+            options={
+                **ObjectsAPIOptionsSerializer(instance=options).data,
+                "files": [],
+            },
+        )
+        export_form(form.pk, archive_name=self.filepath)
+        form.delete()
+
+        import_form(import_file=self.filepath)
+
+        backends: dict[str, FormRegistrationBackend] = {
+            backend.key: backend for backend in FormRegistrationBackend.objects.all()
+        }
+        with self.subTest("backend without file options gets them added"):
+            backend_without_initial_files = backends["objects1"]
+            assert "files" in backend_without_initial_files.options
+            file_options = {
+                opts["key"]: opts
+                for opts in backend_without_initial_files.options["files"]
+            }
+            self.assertEqual(
+                file_options,
+                {
+                    "toplevel.file1": {
+                        "key": "toplevel.file1",
+                        "document_type_description": "PDF Informatieobjecttype",
+                        "organization_rsin": "100000009",
+                        "confidentiality_level": "geheim",
+                        "title": "Custom title",
+                    },
+                    "editgridFile": {
+                        "key": "editgridFile",
+                        "organization_rsin": "100000009",
+                        "title": "Another title",
+                    },
+                },
+            )
+
+        with self.subTest("backend with file options is untouched"):
+            backend_with_initial_files = backends["objects2"]
+            assert "files" in backend_with_initial_files.options
+            self.assertEqual(len(backend_with_initial_files.options["files"]), 0)
 
 
 class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
