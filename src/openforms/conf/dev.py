@@ -15,7 +15,6 @@ os.environ.setdefault(
 os.environ.setdefault("IS_HTTPS", "no")
 os.environ.setdefault("SESSION_COOKIE_SAMESITE", "Lax")
 os.environ.setdefault("DISABLE_2FA", "yes")
-os.environ.setdefault("VERSION_TAG", "dev")
 
 os.environ.setdefault("DB_NAME", "openforms")
 os.environ.setdefault("DB_USER", "openforms")
@@ -24,9 +23,6 @@ os.environ.setdefault("DB_PASSWORD", "openforms")
 os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("NUM_PROXIES", "0")
 
-os.environ.setdefault(
-    "EHERKENNING_PRIVACY_POLICY", "https://maykin.nl/nl/privacy-page/"
-)
 os.environ.setdefault("RELEASE", "dev")
 os.environ.setdefault("SDK_RELEASE", "latest")
 # otherwise the test suite is flaky due to logging config lookups to the DB in
