@@ -2,7 +2,8 @@ import json
 import random
 import string
 import zipfile
-from typing import Any
+from collections.abc import Collection
+from typing import Any, Required, TypedDict
 from uuid import uuid4
 
 from django.conf import settings
@@ -18,6 +19,15 @@ from rest_framework.test import APIRequestFactory
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
 from openforms.forms.constants import FormTypeChoices
+from openforms.registrations.contrib.objects_api.constants import (
+    PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
+)
+from openforms.registrations.contrib.stuf_zds.plugin import (
+    PLUGIN_IDENTIFIER as STUF_ZDS_PLUGIN_IDENTIFIER,
+)
+from openforms.registrations.contrib.zgw_apis.plugin import (
+    PLUGIN_IDENTIFIER as ZGW_APIS_PLUGIN_IDENTIFIER,
+)
 from openforms.typing import JSONObject
 from openforms.variables.constants import FormVariableSources
 
@@ -205,6 +215,8 @@ def import_form_data(
         FormLogic.objects.filter(form=existing_form_instance).delete()
         FormVariable.objects.filter(form=existing_form_instance).delete()
 
+    _form_definitions = []
+
     for resource in IMPORT_ORDER.keys():
         if resource not in import_data:
             continue
@@ -241,6 +253,10 @@ def import_form_data(
                 if appointment_options := entry.get("appointment_options"):
                     if appointment_options.get("is_appointment"):
                         entry["type"] = FormTypeChoices.appointment
+
+                # check for file components in the form definitions and move
+                # registration options to the backend registration options
+                move_file_registration_options(entry, _form_definitions)
 
             if resource == "forms" and not existing_form_instance:
                 entry["active"] = False
@@ -339,6 +355,8 @@ def import_form_data(
                     # Once the form steps have been created, we create the component FormVariables
                     # based on the form definition configurations.
                     FormVariable.objects.create_for_form(created_form)
+                if resource == "formDefinitions":
+                    _form_definitions.append(instance)
                 if resource == "formDefinitions" and is_create:
                     uuid_mapping[old_uuid] = str(instance.uuid)
 
@@ -423,3 +441,84 @@ def clear_old_service_fetch_config(rule: dict) -> None:
         # We can't reliably relate the service fetch configured to an existing configuration.
         # So we don't add any existing service fetch config to the variables
         action["action"]["value"] = ""
+
+
+class FileComponentOptions(TypedDict, total=False):
+    key: Required[str]
+    document_type_description: str
+    organization_rsin: str
+    confidentiality_level: str
+    title: str
+
+
+def move_file_registration_options(
+    form_data: dict, form_definitions: Collection[FormDefinition]
+):
+    relevant_backends = [
+        backend
+        for backend in form_data.get("registration_backends", [])
+        if backend.get("backend")
+        in (
+            OBJECTS_API_PLUGIN_IDENTIFIER,
+            STUF_ZDS_PLUGIN_IDENTIFIER,
+            ZGW_APIS_PLUGIN_IDENTIFIER,
+        )
+    ]
+    if not relevant_backends:
+        return
+
+    # collect all file components, including the ones inside edit grids
+    file_component_options: dict[str, FileComponentOptions] = {}
+    for fd in form_definitions:
+        for component in fd.configuration_wrapper:
+            if component["type"] != "file":
+                continue
+            if not (registration := component.get("registration")):
+                continue
+            opts: FileComponentOptions = {"key": component["key"]}
+
+            # NOTE: we ignore the catalogue information - the backend-level catalogue
+            # option is used and this is validate at the serializer level
+            document_type_description = (registration.get("documentType") or {}).get(
+                "description"
+            )
+            organization_rsin = registration.get("bronorganisatie")
+            confidentiality_level = registration.get("docVertrouwelijkheidaanduiding")
+            title = registration.get("titel")
+
+            if document_type_description:
+                opts["document_type_description"] = document_type_description
+            if organization_rsin:
+                opts["organization_rsin"] = organization_rsin
+            if confidentiality_level:
+                opts["confidentiality_level"] = confidentiality_level
+            if title:
+                opts["title"] = title
+
+            if len(opts.keys()) != 1:
+                file_component_options[component["key"]] = opts
+
+    if not file_component_options:
+        return
+
+    files = list(file_component_options.values())
+
+    def _file_for_stuf_zds(opts: FileComponentOptions):
+        if title := opts.get("title"):
+            return {"key": opts["key"], "title": title}
+        return None
+
+    files_for_stuf_zds = [o for opts in files if (o := _file_for_stuf_zds(opts))]
+
+    for backend in relevant_backends:
+        options = backend.get("options") or {}
+        if "files" in options:
+            continue
+
+        plugin_id = backend.get("backend")
+        if plugin_id in (OBJECTS_API_PLUGIN_IDENTIFIER, ZGW_APIS_PLUGIN_IDENTIFIER):
+            options["files"] = files
+        elif plugin_id == STUF_ZDS_PLUGIN_IDENTIFIER:
+            options["files"] = files_for_stuf_zds
+        else:  # pragma: no cover
+            raise ValueError(f"Unknown registration plugin '{plugin_id}'.")
