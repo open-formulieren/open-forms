@@ -14,6 +14,7 @@ os.environ.setdefault(
 )
 os.environ.setdefault("IS_HTTPS", "no")
 os.environ.setdefault("SESSION_COOKIE_SAMESITE", "Lax")
+os.environ.setdefault("DISABLE_2FA", "yes")
 os.environ.setdefault("VERSION_TAG", "dev")
 
 os.environ.setdefault("DB_NAME", "openforms")
@@ -141,10 +142,6 @@ if DISABLE_CSP_RATELIMITING:
 for _setting in (CONTENT_SECURITY_POLICY, CONTENT_SECURITY_POLICY_REPORT_ONLY):
     if _setting and "EXCLUDE_URL_PREFIXES" in _setting:
         _setting["EXCLUDE_URL_PREFIXES"] += ("/dev/", "/_healthz/")
-
-# None of the authentication backends require two-factor authentication.
-if config("DISABLE_2FA", default=True):  # pragma: no cover
-    MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS = AUTHENTICATION_BACKENDS
 
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(

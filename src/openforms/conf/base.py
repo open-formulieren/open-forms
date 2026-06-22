@@ -804,6 +804,10 @@ MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS = [
     "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
 ]
 
+if config("DISABLE_2FA", default=False):  # pragma: no cover
+    # None of the authentication backends require two-factor authentication.
+    MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS = AUTHENTICATION_BACKENDS
+
 #
 # CELERY - async task queue
 #
