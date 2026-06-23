@@ -326,7 +326,7 @@
   "1tLYIe": [
     {
       "type": 0,
-      "value": "RSIN of the organization that registers the document in the Documents API. If left blank, the general configuration is used."
+      "value": "RSIN van de organisatie die het document registreert in de Documenten-API. Als je dit leeglaat, dan wordt de algemene instelling gebruikt."
     }
   ],
   "1y4N2r": [
@@ -362,7 +362,7 @@
   "27Ibq3": [
     {
       "type": 0,
-      "value": "Which summary documents to include during registration."
+      "value": "Welke documenten met inzendingsgegevens aan de zaak worden toegevoegd."
     }
   ],
   "294MCM": [
@@ -696,7 +696,7 @@
   "5F58dY": [
     {
       "type": 0,
-      "value": "Document type specified"
+      "value": "Documenttype geselecteerd"
     }
   ],
   "5JNnFB": [
@@ -1216,7 +1216,7 @@
   "9EaH83": [
     {
       "type": 0,
-      "value": "Summary documents"
+      "value": "Overzichtsdocumenten"
     }
   ],
   "9LdZVP": [
@@ -2011,7 +2011,7 @@
   "EKQv9H": [
     {
       "type": 0,
-      "value": "Confidentiality"
+      "value": "Vertrouwelijkheidaanduiding"
     }
   ],
   "ENyg8G": [
@@ -2103,7 +2103,7 @@
   "F3Uz4r": [
     {
       "type": 0,
-      "value": "Optional custom title for the document. By default, the file name is used."
+      "value": "Optionele aangepaste documenttitel. Standaard wordt de bestandsnaam gebruikt."
     }
   ],
   "F4SQsB": [
@@ -2433,7 +2433,7 @@
   "Hcwvos": [
     {
       "type": 0,
-      "value": "Title"
+      "value": "Titel"
     }
   ],
   "HdRpKT": [
@@ -4530,7 +4530,7 @@
   "aarCQK": [
     {
       "type": 0,
-      "value": "Organization RSIN"
+      "value": "RSIN Organisatie"
     }
   ],
   "adFa0X": [
@@ -4718,7 +4718,7 @@
   "bs8k8k": [
     {
       "type": 0,
-      "value": "Optional custom title for the document. By default, the filename is used."
+      "value": "Optionele aangepaste documenttitel. Standaard wordt de bestandsnaam gebruikt."
     }
   ],
   "bvY9oJ": [
@@ -4974,7 +4974,7 @@
   "dGgkk1": [
     {
       "type": 0,
-      "value": "Save the document in the Documents API with the selected document type. The document type will be resolved against the "
+      "value": "Sla het document op in de Documenten-API met het geselecteerde documenttype. Het documenttype wordt gevalideerd tegen de "
     },
     {
       "options": {
@@ -4982,7 +4982,7 @@
           "value": [
             {
               "type": 0,
-              "value": "specified"
+              "value": "ingestelde"
             }
           ]
         },
@@ -5008,7 +5008,7 @@
     },
     {
       "type": 0,
-      "value": " catalogue and "
+      "value": " catalogus en "
     },
     {
       "options": {
@@ -5016,7 +5016,7 @@
           "value": [
             {
               "type": 0,
-              "value": "selected"
+              "value": "gekozen"
             }
           ]
         },
@@ -5042,7 +5042,7 @@
     },
     {
       "type": 0,
-      "value": " case type in the plugin options. If left blank, the default document type configured in the plugin options will be used."
+      "value": " zaaktype in de plugin opties. Als je dit leeglaat, dan wordt het standaarddocumenttype gebruikt."
     }
   ],
   "dJNdhr": [
@@ -6922,7 +6922,7 @@
   "sdnxHe": [
     {
       "type": 0,
-      "value": "Document type"
+      "value": "Documenttype"
     }
   ],
   "sgmcmf": [
@@ -7284,7 +7284,7 @@
   "vayfq9": [
     {
       "type": 0,
-      "value": "Save the document in the Documents API with the selected document type. The document type will be resolved against the "
+      "value": "Sla het document op in de Documenten-API met het geselecteerde documenttype. Het documenttype wordt gevalideerd tegen de "
     },
     {
       "options": {
@@ -7292,7 +7292,7 @@
           "value": [
             {
               "type": 0,
-              "value": "specified"
+              "value": "ingestelde"
             }
           ]
         },
@@ -7318,7 +7318,7 @@
     },
     {
       "type": 0,
-      "value": " catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used."
+      "value": " catalogus in de plugin opties. Als je dit leeglaat, dan wordt het standaarddocumenttype gebruikt."
     }
   ],
   "ve3rsH": [
@@ -7550,7 +7550,7 @@
   "xUV58k": [
     {
       "type": 0,
-      "value": "Indication of the level to which extent the document is meant to be public. Only provide this if you wish to override the default from the configured document type."
+      "value": "Aanduiding van de mate waarin het document voor de openbaarheid bestemd is. Geeft dit alleen op als je het standaarddocumenttype wilt overschrijven."
     }
   ],
   "xUt2+r": [
