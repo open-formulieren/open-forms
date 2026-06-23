@@ -50,7 +50,7 @@ class ContainerMixin:
         if is_hidden(
             self.component,
             self.step_data,
-            self.renderer.submission.total_configuration_wrapper,
+            configuration=self.renderer.submission.total_configuration_wrapper,
         ):
             return False
 

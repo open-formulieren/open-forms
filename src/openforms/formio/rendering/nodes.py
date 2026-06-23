@@ -139,13 +139,13 @@ class ComponentNode(Node):
                 artificial_repeating_group_data,
                 # we can pass the root config wrapper because all editgrid item component
                 # keys are already exposed in the config wrapper with their prefixed paths
-                formio_config_wrapper,
+                configuration=formio_config_wrapper,
             ):
                 return False
         elif is_hidden(
             self.component,
             self.step_data,
-            formio_config_wrapper,
+            configuration=formio_config_wrapper,
         ):
             return False
 

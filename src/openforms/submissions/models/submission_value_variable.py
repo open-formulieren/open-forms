@@ -623,7 +623,9 @@ class SubmissionValueVariable(models.Model):
 
         if value and data_type == FormVariableDataTypes.editgrid:
             value = FormioData(value)
-            for child_component in iter_components(configuration):
+            for child_component in iter_components(
+                configuration, recurse_into_editgrid=False
+            ):
                 child_key = child_component["key"]
                 if (child_value := value.get(child_key, empty)) is empty:
                     continue
@@ -754,7 +756,9 @@ class SubmissionValueVariable(models.Model):
 
         if value and data_type == FormVariableDataTypes.editgrid:
             value = FormioData(value)
-            for child_component in iter_components(configuration):
+            for child_component in iter_components(
+                configuration, recurse_into_editgrid=False
+            ):
                 child_key = child_component["key"]
                 if (child_value := value.get(child_key, empty)) is empty:
                     continue
@@ -820,7 +824,9 @@ class SubmissionValueVariable(models.Model):
         match self.data_subtype:
             case FormVariableDataTypes.editgrid:
                 child_key = key_list[1]
-                for child_component in iter_components(self.configuration):
+                for child_component in iter_components(
+                    self.configuration, recurse_into_editgrid=False
+                ):
                     if child_key != child_component["key"]:
                         continue
                     return get_component_datatype(child_component)
