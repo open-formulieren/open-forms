@@ -131,7 +131,7 @@
     "originalDefault": "Open Forms variable"
   },
   "1tLYIe": {
-    "defaultMessage": "RSIN of the organization that registers the document in the Documents API. If left blank, the general configuration is used.",
+    "defaultMessage": "RSIN van de organisatie die het document registreert in de Documenten-API. Als je dit leeglaat, dan wordt de algemene instelling gebruikt.",
     "description": "Document upload: organizationRsin option help text",
     "originalDefault": "RSIN of the organization that registers the document in the Documents API. If left blank, the general configuration is used."
   },
@@ -151,7 +151,7 @@
     "originalDefault": "Service fetch configuration"
   },
   "27Ibq3": {
-    "defaultMessage": "Which summary documents to include during registration.",
+    "defaultMessage": "Welke documenten met inzendingsgegevens aan de zaak worden toegevoegd.",
     "description": "ZGW APIs registration options 'summaryDocuments' help text",
     "originalDefault": "Which summary documents to include during registration."
   },
@@ -297,7 +297,7 @@
     "originalDefault": "Additional"
   },
   "5F58dY": {
-    "defaultMessage": "Document type specified",
+    "defaultMessage": "Documenttype geselecteerd",
     "description": "'Document type override' registration summary message",
     "originalDefault": "Document type specified"
   },
@@ -527,7 +527,7 @@
     "originalDefault": "Please select the logic type:"
   },
   "9EaH83": {
-    "defaultMessage": "Summary documents",
+    "defaultMessage": "Overzichtsdocumenten",
     "description": "ZGW APIs registration options 'summaryDocuments' label",
     "originalDefault": "Summary documents"
   },
@@ -880,7 +880,7 @@
     "originalDefault": "<code>{componentKey}</code>: in {numSteps, plural, =1 {{tail}} other {{lead} and {tail}} }"
   },
   "EKQv9H": {
-    "defaultMessage": "Confidentiality",
+    "defaultMessage": "Vertrouwelijkheidaanduiding",
     "description": "Document upload: confidentialityLevel label",
     "originalDefault": "Confidentiality"
   },
@@ -931,7 +931,7 @@
     "originalDefault": "Base"
   },
   "F3Uz4r": {
-    "defaultMessage": "Optional custom title for the document. By default, the file name is used.",
+    "defaultMessage": "Optionele aangepaste documenttitel. Standaard wordt de bestandsnaam gebruikt.",
     "description": "Document upload: title option help text",
     "originalDefault": "Optional custom title for the document. By default, the file name is used."
   },
@@ -1131,7 +1131,7 @@
     "originalDefault": "BRP Personen purpose limitation header value"
   },
   "Hcwvos": {
-    "defaultMessage": "Title",
+    "defaultMessage": "Titel",
     "description": "Document upload: title option label",
     "originalDefault": "Title"
   },
@@ -2180,7 +2180,7 @@
     "originalDefault": "Login required?"
   },
   "aarCQK": {
-    "defaultMessage": "Organization RSIN",
+    "defaultMessage": "RSIN Organisatie",
     "description": "Document upload: organizationRsin option label",
     "originalDefault": "Organization RSIN"
   },
@@ -2266,7 +2266,7 @@
     "originalDefault": "Activate on"
   },
   "bs8k8k": {
-    "defaultMessage": "Optional custom title for the document. By default, the filename is used.",
+    "defaultMessage": "Optionele aangepaste documenttitel. Standaard wordt de bestandsnaam gebruikt.",
     "description": "Document upload: title option help text",
     "originalDefault": "Optional custom title for the document. By default, the filename is used."
   },
@@ -2357,7 +2357,7 @@
     "originalDefault": "Introduction page"
   },
   "dGgkk1": {
-    "defaultMessage": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue and {caseType, select, empty {selected} other {''{caseType}''} } case type in the plugin options. If left blank, the default document type configured in the plugin options will be used.",
+    "defaultMessage": "Sla het document op in de Documenten-API met het geselecteerde documenttype. Het documenttype wordt gevalideerd tegen de {catalogueLabel, select, empty {ingestelde} other {''{catalogueLabel}''} } catalogus en {caseType, select, empty {gekozen} other {''{caseType}''} } zaaktype in de plugin opties. Als je dit leeglaat, dan wordt het standaarddocumenttype gebruikt.",
     "description": "Document upload: document type option help text",
     "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue and {caseType, select, empty {selected} other {''{caseType}''} } case type in the plugin options. If left blank, the default document type configured in the plugin options will be used."
   },
@@ -3244,7 +3244,7 @@
     "originalDefault": "Minimum age"
   },
   "sdnxHe": {
-    "defaultMessage": "Document type",
+    "defaultMessage": "Documenttype",
     "description": "Document upload: document type option label",
     "originalDefault": "Document type"
   },
@@ -3405,7 +3405,7 @@
     "originalDefault": "Content"
   },
   "vayfq9": {
-    "defaultMessage": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used.",
+    "defaultMessage": "Sla het document op in de Documenten-API met het geselecteerde documenttype. Het documenttype wordt gevalideerd tegen de {catalogueLabel, select, empty {ingestelde} other {''{catalogueLabel}''} } catalogus in de plugin opties. Als je dit leeglaat, dan wordt het standaarddocumenttype gebruikt.",
     "description": "Document upload: document type option help text",
     "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used."
   },
@@ -3526,7 +3526,7 @@
     "originalDefault": "Translation enabled"
   },
   "xUV58k": {
-    "defaultMessage": "Indication of the level to which extent the document is meant to be public. Only provide this if you wish to override the default from the configured document type.",
+    "defaultMessage": "Aanduiding van de mate waarin het document voor de openbaarheid bestemd is. Geeft dit alleen op als je het standaarddocumenttype wilt overschrijven.",
     "description": "Document upload: confidentialityLevel option help text",
     "originalDefault": "Indication of the level to which extent the document is meant to be public. Only provide this if you wish to override the default from the configured document type."
   },
