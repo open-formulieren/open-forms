@@ -121,8 +121,7 @@ MaybeThrowError.propTypes = {
 const DefaultDocumentTypeSelect = ({catalogueUrl = ''}) => (
   <DocumentTypeSelect
     name="documentTypeDescription"
-    // TODO: make required once legacy config is dropped
-    isRequired={false}
+    isRequired
     catalogueUrl={catalogueUrl}
     label={
       <FormattedMessage

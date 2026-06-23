@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import React from 'react';
 import {FormattedMessage} from 'react-intl';
 import {components} from 'react-select';
 import useAsync from 'react-use/esm/useAsync';
@@ -75,8 +74,7 @@ const CaseTypeSelect = ({catalogueUrl = ''}) => {
     <FormRow>
       <Field
         name="caseTypeIdentification"
-        // TODO: make required once legacy config is dropped
-        required={false}
+        required
         label={
           <FormattedMessage
             description="ZGW APIs registration options 'case type' label"
@@ -96,8 +94,7 @@ const CaseTypeSelect = ({catalogueUrl = ''}) => {
           options={caseTypes}
           isLoading={loading}
           isDisabled={!zgwApiGroup}
-          // TODO: make required once legacy config is dropped
-          required={false}
+          required
           isClearable
           components={{Option: CaseTypeSelectOption}}
           onChange={selectedOption => {
