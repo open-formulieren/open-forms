@@ -159,9 +159,9 @@ def evaluate_form_logic(
     ):
         for operation in iter_evaluate_rules(
             rules,
-            data_for_evaluation,
-            data_for_visible_state,
-            config_wrapper,
+            data=data_for_evaluation,
+            data_for_visible_state=data_for_visible_state,
+            configuration=config_wrapper,
             submission=submission,
         ):
             mutation_operations.append(operation)
@@ -266,10 +266,10 @@ def check_submission_logic(
     # `data_for_evaluation` as data for visible state.
     for operation in iter_evaluate_rules(
         rules,
-        data_for_evaluation,
-        data_for_evaluation,
-        submission.total_configuration_wrapper,
-        submission,
+        data=data_for_evaluation,
+        data_for_visible_state=data_for_evaluation,
+        configuration=submission.total_configuration_wrapper,
+        submission=submission,
     ):
         mutation_operations.append(operation)
 

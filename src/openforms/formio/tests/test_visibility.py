@@ -24,6 +24,8 @@ FORMIO_COMPONENTS: list[Component] = [
         "type": "file",
         "key": "file1",
         "label": "File",
+        "file": {"type": []},
+        "filePattern": "",
     },
 ]
 
