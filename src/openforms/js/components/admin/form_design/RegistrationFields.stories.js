@@ -612,8 +612,9 @@ export const ConfiguredBackends = {
         backend: 'zgw-create-zaak',
         options: {
           zgwApiGroup: 1,
-          zaaktype: `${OZ_BASE}zaaktypen/7fc0ed69`,
-          informatieobjecttype: `${OZ_BASE}informatieobjecttypen/89ecd526`,
+          catalogue: {domain: 'TEST', rsin: '000000000'},
+          caseTypeIdentification: 'ZT01',
+          documentTypeDescription: 'Attachment',
           organisatieRsin: '',
           zaakVertrouwelijkheidaanduiding: '',
           medewerkerRoltype: '',
@@ -977,8 +978,9 @@ export const ZGW = {
         backend: 'zgw-create-zaak',
         options: {
           zgwApiGroup: 1,
-          zaaktype: `${OZ_BASE}zaaktypen/7fc0ed69`,
-          informatieobjecttype: `${OZ_BASE}informatieobjecttypen/89ecd526`,
+          catalogue: {domain: 'TEST', rsin: '000000000'},
+          caseTypeIdentification: 'ZT01',
+          documentTypeDescription: 'Attachment',
           organisatieRsin: '',
           zaakVertrouwelijkheidaanduiding: '',
           medewerkerRoltype: '',

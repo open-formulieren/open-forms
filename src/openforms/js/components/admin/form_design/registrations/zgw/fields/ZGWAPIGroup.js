@@ -18,8 +18,6 @@ const ZGWAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
       ...prevValues,
       caseTypeIdentification: '',
       documentTypeDescription: '',
-      zaaktype: '',
-      informatieobjecttype: '',
       medewerkerRoltype: '',
       partnersRoltype: '',
       partnersDescription: '',

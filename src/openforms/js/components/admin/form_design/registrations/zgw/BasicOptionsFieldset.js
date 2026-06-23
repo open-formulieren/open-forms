@@ -22,8 +22,6 @@ const BasicOptionsFieldset = ({
     values: {
       caseTypeIdentification,
       documentTypeDescription,
-      zaaktype,
-      informatieobjecttype,
       medewerkerRoltype,
       partnersRoltype,
       partnersDescription,
@@ -40,8 +38,6 @@ const BasicOptionsFieldset = ({
     [
       caseTypeIdentification,
       documentTypeDescription,
-      zaaktype,
-      informatieobjecttype,
       medewerkerRoltype,
       partnersRoltype,
       partnersDescription,
