@@ -46,7 +46,7 @@ Static variables
 ----------------
 
 Static variables are a third type of ``FormVariable``. These are not saved in the database and only live in memory.
-The endpoint ``/api/v1/variables/static`` gives a list of the static variables to which every form will have access to.
+The endpoint ``/api/v2/variables/static`` gives a list of the static variables to which every form will have access to.
 
 Adding new static variables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

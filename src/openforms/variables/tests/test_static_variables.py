@@ -123,6 +123,30 @@ class TodayTests(TestCase):
         self.assertEqual(variable.initial_value.day, 24)
 
 
+class FormUrlTests(TestCase):
+    def test_with_submission(self):
+        submission = SubmissionFactory.build(
+            form_url="https://www.example.com/some/value?foo=1&bar=2"
+        )
+        variable = _get_variable("form_url", submission=submission)
+
+        self.assertEqual(
+            variable.initial_value,
+            {
+                "domain": "www.example.com",
+                "page": "/some/value/",
+                "query": {"foo": "1", "bar": "2"},
+            },
+        )
+
+    def test_without_submission(self):
+        variable = _get_variable("form_url")
+
+        self.assertEqual(
+            variable.initial_value, {"domain": "", "page": "/", "query": {}}
+        )
+
+
 class StaticVariablesValidJsonSchemaTests(TestCase):
     validator = Draft202012Validator
 
@@ -161,4 +185,8 @@ class StaticVariablesValidJsonSchemaTests(TestCase):
 
     def test_form_id(self):
         schema = self._get_json_schema("form_id")
+        self.assertValidSchema(schema)
+
+    def test_form_url(self):
+        schema = self._get_json_schema("form_url")
         self.assertValidSchema(schema)
