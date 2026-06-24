@@ -729,8 +729,8 @@ class RegistrationBackendMigrator:
         options: ZGWRegistrationOptions = serializer.validated_data
 
         api_group = options["zgw_api_group"]
-        legacy_zaaktype_url = options["zaaktype"]
-        legacy_documenttype_url = options["informatieobjecttype"]
+        legacy_zaaktype_url = backend.options.get("zaaktype") or ""
+        legacy_documenttype_url = backend.options.get("informatieobjecttype") or ""
         case_type_identification = options["case_type_identification"]
         document_type_description = options["document_type_description"]
 

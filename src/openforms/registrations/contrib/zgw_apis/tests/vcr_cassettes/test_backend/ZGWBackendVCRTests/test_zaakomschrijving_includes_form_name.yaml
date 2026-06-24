@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen?domein=TEST&rsin=000000000
   response:
@@ -49,7 +49,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/zaaktypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&identificatie=ZT-001&datumGeldigheid=2024-11-09
   response:
@@ -81,9 +81,9 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-06-11", "startdatum": "2026-06-11", "productenOfDiensten":
+      "registratiedatum": "2026-06-24", "startdatum": "2026-06-24", "productenOfDiensten":
       [], "omschrijving": "Short name", "toelichting": "", "betalingsindicatie": "nvt",
-      "identificatie": "OF-8VWEXH"}'
+      "identificatie": "OF-TH3KT5"}'
     headers:
       Accept:
       - '*/*'
@@ -100,13 +100,13 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: POST
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/01ba2b2e-4616-4e06-a5a6-bda9248eee50","uuid":"01ba2b2e-4616-4e06-a5a6-bda9248eee50","identificatie":"OF-8VWEXH","bronorganisatie":"000000000","omschrijving":"Short
-        name","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-11","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-11","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/b045a71c-2571-4cca-9557-05ff0b692c23","uuid":"b045a71c-2571-4cca-9557-05ff0b692c23","identificatie":"OF-TH3KT5","bronorganisatie":"000000000","omschrijving":"Short
+        name","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774","registratiedatum":"2026-06-24","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-24","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
       API-version:
@@ -122,7 +122,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/01ba2b2e-4616-4e06-a5a6-bda9248eee50
+      - http://localhost:8003/zaken/api/v1/zaken/b045a71c-2571-4cca-9557-05ff0b692c23
       Referrer-Policy:
       - same-origin
       Vary:
@@ -144,7 +144,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen?domein=TEST&rsin=000000000
   response:
@@ -184,7 +184,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/zaaktypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&identificatie=ZT-001&datumGeldigheid=2024-11-09
   response:
@@ -216,10 +216,10 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-06-11", "startdatum": "2026-06-11", "productenOfDiensten":
+      "registratiedatum": "2026-06-24", "startdatum": "2026-06-24", "productenOfDiensten":
       [], "omschrijving": "Long name that will most definitely be truncated to 80
       characters right????????\u2026", "toelichting": "", "betalingsindicatie": "nvt",
-      "identificatie": "OF-6HYR7R"}'
+      "identificatie": "OF-QCRP93"}'
     headers:
       Accept:
       - '*/*'
@@ -236,13 +236,13 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: POST
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: "{\"url\":\"http://localhost:8003/zaken/api/v1/zaken/acf67cfd-fee1-482f-abab-52536cbc2451\",\"uuid\":\"acf67cfd-fee1-482f-abab-52536cbc2451\",\"identificatie\":\"OF-6HYR7R\",\"bronorganisatie\":\"000000000\",\"omschrijving\":\"Long
-        name that will most definitely be truncated to 80 characters right????????\u2026\",\"toelichting\":\"\",\"zaaktype\":\"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774\",\"registratiedatum\":\"2026-06-11\",\"verantwoordelijkeOrganisatie\":\"000000000\",\"startdatum\":\"2026-06-11\",\"einddatum\":null,\"einddatumGepland\":null,\"uiterlijkeEinddatumAfdoening\":null,\"publicatiedatum\":null,\"communicatiekanaal\":\"\",\"communicatiekanaalNaam\":\"\",\"productenOfDiensten\":[],\"vertrouwelijkheidaanduiding\":\"intern\",\"betalingsindicatie\":\"nvt\",\"betalingsindicatieWeergave\":\"Er
+      string: "{\"url\":\"http://localhost:8003/zaken/api/v1/zaken/2850b049-c295-45ef-98a9-825c5e28890e\",\"uuid\":\"2850b049-c295-45ef-98a9-825c5e28890e\",\"identificatie\":\"OF-QCRP93\",\"bronorganisatie\":\"000000000\",\"omschrijving\":\"Long
+        name that will most definitely be truncated to 80 characters right????????\u2026\",\"toelichting\":\"\",\"zaaktype\":\"http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774\",\"registratiedatum\":\"2026-06-24\",\"verantwoordelijkeOrganisatie\":\"000000000\",\"startdatum\":\"2026-06-24\",\"einddatum\":null,\"einddatumGepland\":null,\"uiterlijkeEinddatumAfdoening\":null,\"publicatiedatum\":null,\"communicatiekanaal\":\"\",\"communicatiekanaalNaam\":\"\",\"productenOfDiensten\":[],\"vertrouwelijkheidaanduiding\":\"intern\",\"betalingsindicatie\":\"nvt\",\"betalingsindicatieWeergave\":\"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.\",\"laatsteBetaaldatum\":null,\"zaakgeometrie\":null,\"verlenging\":null,\"opschorting\":{\"indicatie\":false,\"reden\":\"\"},\"selectielijstklasse\":\"\",\"hoofdzaak\":null,\"deelzaken\":[],\"relevanteAndereZaken\":[],\"eigenschappen\":[],\"rollen\":[],\"status\":null,\"zaakinformatieobjecten\":[],\"zaakobjecten\":[],\"kenmerken\":[],\"archiefnominatie\":null,\"archiefstatus\":\"nog_te_archiveren\",\"archiefactiedatum\":null,\"resultaat\":null,\"opdrachtgevendeOrganisatie\":\"\",\"processobjectaard\":\"\",\"startdatumBewaartermijn\":null,\"processobject\":{\"datumkenmerk\":\"\",\"identificatie\":\"\",\"objecttype\":\"\",\"registratie\":\"\"}}"
     headers:
       API-version:
@@ -258,7 +258,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/acf67cfd-fee1-482f-abab-52536cbc2451
+      - http://localhost:8003/zaken/api/v1/zaken/2850b049-c295-45ef-98a9-825c5e28890e
       Referrer-Policy:
       - same-origin
       Vary:

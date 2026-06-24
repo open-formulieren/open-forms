@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen?domein=TEST&rsin=000000000
   response:
@@ -49,7 +49,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/zaaktypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&identificatie=ZT-001&datumGeldigheid=2024-06-09
   response:
@@ -81,10 +81,10 @@ interactions:
 - request:
     body: '{"zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
       "bronorganisatie": "000000000", "verantwoordelijkeOrganisatie": "000000000",
-      "registratiedatum": "2026-06-11", "startdatum": "2026-06-11", "productenOfDiensten":
-      [], "omschrijving": "Form 024", "toelichting": "", "betalingsindicatie": "nvt",
+      "registratiedatum": "2026-06-24", "startdatum": "2026-06-24", "productenOfDiensten":
+      [], "omschrijving": "Form 020", "toelichting": "", "betalingsindicatie": "nvt",
       "kenmerken": [{"kenmerk": "OF-1234", "bron": "Open Formulieren"}], "identificatie":
-      "OF-ZMAX29"}'
+      "OF-JSDM68"}'
     headers:
       Accept:
       - '*/*'
@@ -101,13 +101,13 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: POST
     uri: http://localhost:8003/zaken/api/v1/zaken
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/85d8bfef-f072-457d-9f68-a5fc541a28ad","uuid":"85d8bfef-f072-457d-9f68-a5fc541a28ad","identificatie":"OF-ZMAX29","bronorganisatie":"000000000","omschrijving":"Form
-        024","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-11","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-11","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/0dff7a0e-f9da-47cc-8ef4-0ffbd23ac5d3","uuid":"0dff7a0e-f9da-47cc-8ef4-0ffbd23ac5d3","identificatie":"OF-JSDM68","bronorganisatie":"000000000","omschrijving":"Form
+        020","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-24","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-24","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[{"kenmerk":"OF-1234","bron":"Open
         Formulieren"}],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
@@ -124,7 +124,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/zaken/api/v1/zaken/85d8bfef-f072-457d-9f68-a5fc541a28ad
+      - http://localhost:8003/zaken/api/v1/zaken/0dff7a0e-f9da-47cc-8ef4-0ffbd23ac5d3
       Referrer-Policy:
       - same-origin
       Vary:
@@ -150,13 +150,13 @@ interactions:
       Content-Crs:
       - EPSG:4326
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
-    uri: http://localhost:8003/zaken/api/v1/zaken/85d8bfef-f072-457d-9f68-a5fc541a28ad
+    uri: http://localhost:8003/zaken/api/v1/zaken/0dff7a0e-f9da-47cc-8ef4-0ffbd23ac5d3
   response:
     body:
-      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/85d8bfef-f072-457d-9f68-a5fc541a28ad","uuid":"85d8bfef-f072-457d-9f68-a5fc541a28ad","identificatie":"OF-ZMAX29","bronorganisatie":"000000000","omschrijving":"Form
-        024","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-11","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-11","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
+      string: '{"url":"http://localhost:8003/zaken/api/v1/zaken/0dff7a0e-f9da-47cc-8ef4-0ffbd23ac5d3","uuid":"0dff7a0e-f9da-47cc-8ef4-0ffbd23ac5d3","identificatie":"OF-JSDM68","bronorganisatie":"000000000","omschrijving":"Form
+        020","toelichting":"","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc","registratiedatum":"2026-06-24","verantwoordelijkeOrganisatie":"000000000","startdatum":"2026-06-24","einddatum":null,"einddatumGepland":null,"uiterlijkeEinddatumAfdoening":null,"publicatiedatum":null,"communicatiekanaal":"","communicatiekanaalNaam":"","productenOfDiensten":[],"vertrouwelijkheidaanduiding":"intern","betalingsindicatie":"nvt","betalingsindicatieWeergave":"Er
         is geen sprake van te betalen, met de zaak gemoeide, kosten.","laatsteBetaaldatum":null,"zaakgeometrie":null,"verlenging":null,"opschorting":{"indicatie":false,"reden":""},"selectielijstklasse":"","hoofdzaak":null,"deelzaken":[],"relevanteAndereZaken":[],"eigenschappen":[],"rollen":[],"status":null,"zaakinformatieobjecten":[],"zaakobjecten":[],"kenmerken":[{"kenmerk":"OF-1234","bron":"Open
         Formulieren"}],"archiefnominatie":null,"archiefstatus":"nog_te_archiveren","archiefactiedatum":null,"resultaat":null,"opdrachtgevendeOrganisatie":"","processobjectaard":"","startdatumBewaartermijn":null,"processobject":{"datumkenmerk":"","identificatie":"","objecttype":"","registratie":""}}'
     headers:
@@ -173,7 +173,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"616684c685497e8e77aaa80b22db69ed"'
+      - '"ce7973f376da11c6927bc0aee48d2d24"'
       Referrer-Policy:
       - same-origin
       Vary:

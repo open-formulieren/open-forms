@@ -252,8 +252,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "organisatie_rsin": "000000000",
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "doc_vertrouwelijkheidaanduiding": "openbaar",
@@ -296,545 +294,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 "123456782",
             )
 
-    def test_create_zaak_with_natuurlijk_persoon_initiator_and_legacy_config(self):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "voorletters",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_voorletters,
-                    },
-                },
-                {
-                    "key": "voornaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_voornamen,
-                    },
-                },
-                {
-                    "key": "tussenvoegsel",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
-                    },
-                },
-                {
-                    "key": "geboortedatum",
-                    "type": "date",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geboortedatum,
-                    },
-                },
-                {
-                    "key": "geslachtsaanduiding",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geslachtsaanduiding,
-                    },
-                },
-                {
-                    "key": "coordinaat",
-                    "type": "map",
-                    "registration": {
-                        "attribute": RegistrationAttribute.locatie_coordinaat,
-                    },
-                },
-                *NP_INITIATOR_FIELDS,
-            ],
-            submitted_data={
-                "voornaam": "Foo",
-                "achternaam": "Bar",
-                "tussenvoegsel": "de",
-                "postcode": "1000 AA",
-                "woonplaats": "Ketnet",
-                "straat": "Samsonweg",
-                "huisnummer": 101,
-                "geboortedatum": "2000-12-31",
-                "voorletters": "J.W.",
-                "geslachtsaanduiding": "mannelijk",
-                "coordinaat": {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
-            },
-            bsn="111222333",
-            form__product__price=Decimal("0"),
-            form__payment_backend="demo",
-            language_code="en",
-            completed=True,
-            with_report=True,
-        )
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission.steps[0],
-            content_type="image/png",
-        )
-        catalogi_root = self.zgw_group.ztc_service.api_root
-        options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "catalogue": {
-                "domain": "",
-                "rsin": "",
-            },
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-            "summary_documents": [SummaryDocumentChoices.pdf],
-        }
-
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(submission, options)
-        assert submission.registration_result is not None
-        assert isinstance(pre_registration_result.data, dict)
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-
-        result = plugin.register_submission(submission, options)
-        assert result
-
-        with self.subTest("check recorded result"):
-            zaken_root = self.zgw_group.zrc_service.api_root
-            documenten_root = self.zgw_group.drc_service.api_root
-            self.assertTrue(result["zaak"]["url"].startswith(f"{zaken_root}zaken/"))
-            self.assertTrue(
-                result["intermediate"]["documents"]["report"]["document"][
-                    "url"
-                ].startswith(f"{documenten_root}enkelvoudiginformatieobjecten/")
-            )
-            self.assertTrue(
-                result["initiator_rol"]["url"].startswith(f"{zaken_root}rollen/")
-            )
-            self.assertTrue(
-                result["status"]["url"].startswith(f"{zaken_root}statussen/")
-            )
-
-        client = get_zaken_client(self.zgw_group)
-        self.addCleanup(client.close)
-        documents_client = get_documents_client(self.zgw_group)
-        self.addCleanup(documents_client.close)
-
-        with self.subTest("verify zaak"):
-            zaak_data = client.get(result["zaak"]["url"], headers=CRS_HEADERS).json()
-
-            self.assertEqual(zaak_data["kenmerken"], [])
-            self.assertEqual(zaak_data["bronorganisatie"], "000000000")
-            self.assertEqual(zaak_data["verantwoordelijkeOrganisatie"], "000000000")
-            self.assertEqual(zaak_data["vertrouwelijkheidaanduiding"], "openbaar")
-            self.assertEqual(
-                zaak_data["zaaktype"],
-                f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
-            )
-            self.assertEqual(zaak_data["betalingsindicatie"], "nvt")
-            self.assertEqual(
-                zaak_data["zaakgeometrie"],
-                {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
-            )
-
-        with self.subTest("verify rol"):
-            rol_data = client.get(result["initiator_rol"]["url"]).json()
-
-            self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
-            self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
-            self.assertEqual(rol_data["betrokkene"], "")
-            self.assertEqual(rol_data["betrokkeneType"], "natuurlijk_persoon")
-            expected_identificatie = {
-                "inpBsn": "111222333",
-                "anpIdentificatie": "",
-                "inpA_nummer": "",
-                "geboortedatum": "2000-12-31",
-                "geslachtsaanduiding": "m",
-                "geslachtsnaam": "Bar",
-                "voorletters": "J.W.",
-                "voornamen": "Foo",
-                "subVerblijfBuitenland": None,
-                "verblijfsadres": {
-                    "aoaHuisletter": "",
-                    "aoaHuisnummer": 101,
-                    "aoaHuisnummertoevoeging": "",
-                    "aoaIdentificatie": "OFWORKAROUND",
-                    "aoaPostcode": "1000 AA",
-                    "gorOpenbareRuimteNaam": "Samsonweg",
-                    "inpLocatiebeschrijving": "",
-                    "wplWoonplaatsNaam": "Ketnet",
-                },
-                "voorvoegselGeslachtsnaam": "de",
-            }
-            self.assertEqual(
-                rol_data["betrokkeneIdentificatie"], expected_identificatie
-            )
-
-        with self.subTest("verify initial status"):
-            status_data = client.get(
-                "statussen", params={"zaak": result["zaak"]["url"]}
-            ).json()
-            self.assertEqual(status_data["count"], 1)
-
-        with self.subTest("verify related documents"):
-            zios = client.get(
-                "zaakinformatieobjecten", params={"zaak": result["zaak"]["url"]}
-            ).json()
-            self.assertEqual(len(zios), 2)  # one for summary PDF, one for attachment
-
-            attachment_document_data = documents_client.get(
-                zios[0]["informatieobject"]
-            ).json()
-            summary_pdf_data = documents_client.get(zios[1]["informatieobject"]).json()
-
-            self.assertEqual(summary_pdf_data["bronorganisatie"], "000000000")
-            self.assertEqual(summary_pdf_data["formaat"], "application/pdf")
-            self.assertEqual(
-                summary_pdf_data["vertrouwelijkheidaanduiding"], "openbaar"
-            )
-            self.assertEqual(summary_pdf_data["taal"], "eng")
-
-            self.assertEqual(attachment_document_data["bronorganisatie"], "000000000")
-            self.assertEqual(attachment_document_data["formaat"], "image/png")
-            self.assertEqual(
-                attachment_document_data["vertrouwelijkheidaanduiding"], "openbaar"
-            )
-            self.assertEqual(attachment_document_data["taal"], "eng")
-
-    def test_create_zaak_with_vestiging_and_kvk_initiator_and_legacy_config(self):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "handelsnaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_handelsnaam,
-                    },
-                },
-                {
-                    "key": "postcode",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_postcode,
-                    },
-                },
-                {
-                    "key": "woonplaats",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_woonplaats
-                    },
-                },
-                {
-                    "key": "straat",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_straat,
-                    },
-                },
-                {
-                    "key": "huisnummer",
-                    "type": "number",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_huisnummer,
-                    },
-                },
-                {
-                    "key": "vestigingsNummer",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_vestigingsnummer,
-                    },
-                },
-            ],
-            submitted_data={
-                "handelsnaam": "ACME",
-                "postcode": "1000 AA",
-                "woonplaats": "Ketnet",
-                "straat": "Samsonweg",
-                "huisnummer": 101,
-                "vestigingsNummer": "87654321",
-            },
-            kvk="12345678",
-            completed=True,
-            with_report=True,
-        )
-        catalogi_root = self.zgw_group.ztc_service.api_root
-        options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "catalogue": {
-                "domain": "",
-                "rsin": "",
-            },
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_description": "",
-            "partners_roltype": "",
-            "children_roltype": "",
-            "children_description": "",
-            "summary_documents": [SummaryDocumentChoices.pdf],
-        }
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(submission, options)
-        assert submission.registration_result is not None
-        assert isinstance(pre_registration_result.data, dict)
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-
-        result = plugin.register_submission(submission, options)
-        assert result
-
-        with self.subTest("check recorded result"):
-            zaken_root = self.zgw_group.zrc_service.api_root
-            self.assertTrue(
-                result["initiator_rol"]["url"].startswith(f"{zaken_root}rollen/")
-            )
-
-        client = get_zaken_client(self.zgw_group)
-        self.addCleanup(client.close)
-
-        with self.subTest("verify initiator"):
-            rol_data = client.get(result["initiator_rol"]["url"]).json()
-
-            self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
-            self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
-            self.assertEqual(rol_data["betrokkene"], "")
-            self.assertEqual(rol_data["betrokkeneType"], "vestiging")
-            expected_identificatie = {
-                "handelsnaam": ["ACME"],
-                "kvkNummer": "12345678",
-                "vestigingsNummer": "87654321",
-                "verblijfsadres": {
-                    "aoaHuisletter": "",
-                    "aoaHuisnummer": 101,
-                    "aoaHuisnummertoevoeging": "",
-                    "aoaIdentificatie": "OFWORKAROUND",
-                    "aoaPostcode": "1000 AA",
-                    "gorOpenbareRuimteNaam": "Samsonweg",
-                    "inpLocatiebeschrijving": "",
-                    "wplWoonplaatsNaam": "Ketnet",
-                },
-                "subVerblijfBuitenland": None,
-            }
-            self.assertEqual(
-                rol_data["betrokkeneIdentificatie"], expected_identificatie
-            )
-
-    def test_create_zaak_with_vestiging_and_kvk_initiator_and_legacy_config_through_auth(
-        self,
-    ):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "handelsnaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_handelsnaam,
-                    },
-                },
-                {
-                    "key": "vestingsnummer",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_vestigingsnummer,
-                    },
-                },
-            ],
-            submitted_data={"handelsnaam": "ACME", "vestingsnummer": "000038509499"},
-            kvk="12345678",
-            branch_number="000038509490",
-            completed=True,
-            with_report=True,
-        )
-        catalogi_root = self.zgw_group.ztc_service.api_root
-        options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "catalogue": {
-                "domain": "",
-                "rsin": "",
-            },
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_description": "",
-            "partners_roltype": "",
-            "children_roltype": "",
-            "children_description": "",
-            "summary_documents": [SummaryDocumentChoices.pdf],
-        }
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(submission, options)
-        assert submission.registration_result is not None
-        assert isinstance(pre_registration_result.data, dict)
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-
-        result = plugin.register_submission(submission, options)
-        assert result
-
-        with self.subTest("check recorded result"):
-            zaken_root = self.zgw_group.zrc_service.api_root
-            self.assertTrue(
-                result["initiator_rol"]["url"].startswith(f"{zaken_root}rollen/")
-            )
-
-        client = get_zaken_client(self.zgw_group)
-        self.addCleanup(client.close)
-
-        with self.subTest("verify initiator"):
-            rol_data = client.get(result["initiator_rol"]["url"]).json()
-
-            self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
-            self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
-            self.assertEqual(rol_data["betrokkene"], "")
-            self.assertEqual(rol_data["betrokkeneType"], "vestiging")
-            expected_identificatie = {
-                "handelsnaam": ["ACME"],
-                "kvkNummer": "12345678",
-                "vestigingsNummer": "000038509490",
-                "verblijfsadres": None,
-                "subVerblijfBuitenland": None,
-            }
-            self.assertEqual(
-                rol_data["betrokkeneIdentificatie"], expected_identificatie
-            )
-
-    # breaks because we can't put a KVK number in an RSIN field
-    @expectedFailure
-    def test_create_zaak_with_kvk_initiator_only_and_legacy_config(self):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "handelsnaam",
-                    "label": "handelsnaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_handelsnaam,
-                    },
-                },
-                {
-                    "key": "postcode",
-                    "label": "postcode",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_postcode,
-                    },
-                },
-                {
-                    "key": "woonplaats",
-                    "label": "woonplaats",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_woonplaats
-                    },
-                },
-                {
-                    "key": "straat",
-                    "label": "straat",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_straat,
-                    },
-                },
-                {
-                    "key": "huisnummer",
-                    "label": "huisnummer",
-                    "type": "number",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_huisnummer,
-                    },
-                },
-            ],
-            submitted_data={
-                "handelsnaam": "ACME",
-                "postcode": "1000 AA",
-                "woonplaats": "Ketnet",
-                "straat": "Samsonweg",
-                "huisnummer": 101,
-            },
-            kvk="12345678",
-            completed=True,
-            with_report=True,
-        )
-
-        catalogi_root = self.zgw_group.ztc_service.api_root
-        options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "catalogue": {
-                "domain": "",
-                "rsin": "",
-            },
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-            "partners_roltype": "",
-            "partners_description": "",
-            "children_roltype": "",
-            "children_description": "",
-            "summary_documents": [SummaryDocumentChoices.pdf],
-        }
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(submission, options)
-        assert submission.registration_result is not None
-        assert isinstance(pre_registration_result.data, dict)
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-
-        result = plugin.register_submission(submission, options)
-        assert result
-
-        with self.subTest("check recorded result"):
-            zaken_root = self.zgw_group.zrc_service.api_root
-            self.assertTrue(result["rol"]["url"].startswith(f"{zaken_root}rollen/"))
-
-        client = get_zaken_client(self.zgw_group)
-        self.addCleanup(client.close)
-
-        with self.subTest("verify initiator"):
-            rol_data = client.get(result["rol"]["url"]).json()
-
-            self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
-            self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
-            self.assertEqual(rol_data["betrokkene"], "")
-            self.assertEqual(rol_data["betrokkeneType"], "niet_natuurlijk_persoon")
-            expected_identificatie = {
-                "annIdentificatie": "",
-                "bezoekadres": "",
-                "innNnpId": "12345678",
-                "innRechtsvorm": "",
-                "statutaireNaam": "ACME",
-                "subVerblijfBuitenland": None,
-            }
-            self.assertEqual(
-                rol_data["betrokkeneIdentificatie"], expected_identificatie
-            )
-
     def test_create_zaak_with_case_identification_reference(self):
         submission = SubmissionFactory.from_components(
             [
@@ -850,7 +309,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             bsn="123456782",
             completed=True,
             # Pin to a known case type version
-            completed_on=datetime(2024, 9, 9, 15, 30, 0).replace(tzinfo=UTC),
+            completed_on=datetime(2024, 7, 9, 15, 30, 0).replace(tzinfo=UTC),
             with_report=True,
         )
         RegistratorInfoFactory.create(submission=submission, value="employee-123")
@@ -861,12 +320,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 "rsin": "000000000",
             },
             "case_type_identification": "ZT-001",
-            "document_type_description": "",
-            "zaaktype": "",
-            "informatieobjecttype": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
-            ),
+            "document_type_description": "Attachment Informatieobjecttype",
             "product_url": "",
             "medewerker_roltype": "Baliemedewerker",
             "property_mappings": [
@@ -954,8 +408,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "INCOMPLETE",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "organisatie_rsin": "000000000",
             "objects_api_group": None,
             "product_url": "",
@@ -998,12 +450,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 "rsin": "000000000",
             },
             "case_type_identification": "ZT-001",
-            "document_type_description": "",
-            "zaaktype": "",
-            "informatieobjecttype": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
-            ),
+            "document_type_description": "Attachment Informatieobjecttype",
             "product_url": "http://localhost:81/product/1234abcd-12ab-34cd-56ef-12345abcde10",
             "objects_api_group": None,
             "partners_roltype": "",
@@ -1060,12 +507,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 "rsin": "000000000",
             },
             "case_type_identification": "DRAFT-01",
-            "document_type_description": "",
-            "zaaktype": "",
-            "informatieobjecttype": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/3628d25f-f491-4375-a752-39d16bf2dd59"
-            ),
+            "document_type_description": "Unpublished",
             "product_url": "",
             "objects_api_group": None,
             "partners_roltype": "",
@@ -1117,8 +559,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "objects_api_group": None,
             "product_url": "",
             "partners_roltype": "",
@@ -1181,8 +621,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 "catalogue": {"domain": "TEST", "rsin": "000000000"},
                 "case_type_identification": "ZT-001",
                 "document_type_description": "Attachment Informatieobjecttype",
-                "zaaktype": "",
-                "informatieobjecttype": "",
                 "organisatie_rsin": "000000000",
                 "vertrouwelijkheidaanduiding": "openbaar",
                 "objects_api_group": None,
@@ -1237,8 +675,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "product_url": "",
             "property_mappings": [
                 {"component_key": "textField1", "eigenschap": "a property name"},
@@ -1332,8 +768,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "product_url": "",
             "property_mappings": [
                 {"component_key": "textField1", "eigenschap": "a property name"},
@@ -1395,8 +829,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "objects_api_group": None,
             "product_url": "",
             "partners_roltype": "",
@@ -1471,8 +903,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "PDF Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "organisatie_rsin": "000000000",
             # empty value should be ignored, use the VA from the zaaktype
             "zaak_vertrouwelijkheidaanduiding": "",
@@ -1659,8 +1089,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "PDF Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "organisatie_rsin": "000000000",
             "objects_api_group": objects_api_group,
             "objecttype": (
@@ -1853,8 +1281,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "objects_api_group": None,
             "product_url": "",
             "partners_roltype": "",
@@ -1930,8 +1356,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "objects_api_group": None,
             "product_url": "",
             "partners_roltype": "",
@@ -1991,8 +1415,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "objects_api_group": None,
             "product_url": "",
             "partners_roltype": "",
@@ -2038,8 +1460,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "objects_api_group": None,
             "product_url": "",
             "partners_roltype": "",
@@ -2112,8 +1532,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZAAKTYPE-2020-0000000001",
             "document_type_description": "Partners PDF Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "product_url": "",
             "objects_api_group": None,
             "partners_roltype": "Partner role type",
@@ -2284,8 +1702,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZAAKTYPE-2020-0000000001",
             "document_type_description": "Partners PDF Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "product_url": "",
             "objects_api_group": None,
             "partners_roltype": "Partner role type",
@@ -2393,7 +1809,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
         )
 
-        catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
             "catalogue": {
@@ -2402,8 +1817,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZAAKTYPE-2020-0000000002",
             "document_type_description": "Children PDF Informatieobjecttype",
-            "zaaktype": f"{catalogi_root}zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35",
             "product_url": "",
             "objects_api_group": None,
             "partners_roltype": "",
@@ -2598,7 +2011,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
         )
 
-        catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
             "catalogue": {
@@ -2607,8 +2019,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZAAKTYPE-2020-0000000002",
             "document_type_description": "Children PDF Informatieobjecttype",
-            "zaaktype": f"{catalogi_root}zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35",
             "product_url": "",
             "objects_api_group": None,
             "partners_roltype": "",
@@ -2747,7 +2157,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
         )
 
-        catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
             "catalogue": {
@@ -2756,8 +2165,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZAAKTYPE-2020-0000000002",
             "document_type_description": "Children PDF Informatieobjecttype",
-            "zaaktype": f"{catalogi_root}zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35",
             "product_url": "",
             "objects_api_group": None,
             "partners_roltype": "",
@@ -2871,7 +2278,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
         )
 
-        catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
             "catalogue": {
@@ -2880,8 +2286,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZAAKTYPE-2020-0000000002",
             "document_type_description": "Children PDF Informatieobjecttype",
-            "zaaktype": f"{catalogi_root}zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35",
             "product_url": "",
             "objects_api_group": None,
             "partners_roltype": "",
@@ -2988,7 +2392,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             with_report=True,
         )
 
-        catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
             "catalogue": {
@@ -2997,8 +2400,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZAAKTYPE-2020-0000000002",
             "document_type_description": "Children PDF Informatieobjecttype",
-            "zaaktype": f"{catalogi_root}zaaktypen/a516793a-cb5f-446d-bfa3-56077c1897be",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/68ce2d9c-fe0f-49cc-a1d6-ddb3d404da35",
             "product_url": "",
             "objects_api_group": None,
             "partners_roltype": "",
@@ -3074,8 +2475,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "PDF Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "organisatie_rsin": "000000000",
             # empty value should be ignored, use the VA from the zaaktype
             "zaak_vertrouwelijkheidaanduiding": "",
@@ -3127,8 +2526,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "PDF Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "organisatie_rsin": "000000000",
             # empty value should be ignored, use the VA from the zaaktype
             "zaak_vertrouwelijkheidaanduiding": "",
@@ -3183,12 +2580,7 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
                 "rsin": "000000000",
             },
             "case_type_identification": "ZT-001",
-            "document_type_description": "",
-            "zaaktype": "",
-            "informatieobjecttype": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
-            ),
+            "document_type_description": "PDF Informatieobjecttype",
             "product_url": "",
             "objects_api_group": None,
             "partners_roltype": "",
@@ -3248,8 +2640,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "PDF Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "organisatie_rsin": "000000000",
             # empty value should be ignored, use the VA from the zaaktype
             "zaak_vertrouwelijkheidaanduiding": "",
@@ -3321,19 +2711,18 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             bsn="111222333",
             language_code="en",
             completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
             with_report=True,
         )
-        catalogi_root = self.zgw_group.ztc_service.api_root
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
             "catalogue": {
                 "domain": "TEST",
                 "rsin": "000000000",
             },
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
-            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
             "organisatie_rsin": "000000000",
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "doc_vertrouwelijkheidaanduiding": "openbaar",
@@ -3409,8 +2798,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "product_url": "",
             "medewerker_roltype": "",
             "property_mappings": [],
@@ -3494,8 +2881,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "product_url": "",
             "medewerker_roltype": "",
             "property_mappings": [],
@@ -3548,8 +2933,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "Attachment Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "product_url": "",
             "medewerker_roltype": "",
             "property_mappings": [],
@@ -3704,8 +3087,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "PDF Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "organisatie_rsin": "000000000",
             # empty value should be ignored, use the VA from the zaaktype
             "zaak_vertrouwelijkheidaanduiding": "",
@@ -3881,8 +3262,6 @@ class ZGWBackendVCRTests(OFVCRMixin, ParametrizedTestCase, TestCase):
             },
             "case_type_identification": "ZT-001",
             "document_type_description": "PDF Informatieobjecttype",
-            "zaaktype": "",
-            "informatieobjecttype": "",
             "organisatie_rsin": "000000000",
             # empty value should be ignored, use the VA from the zaaktype
             "zaak_vertrouwelijkheidaanduiding": "",

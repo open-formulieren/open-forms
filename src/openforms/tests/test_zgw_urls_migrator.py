@@ -1412,7 +1412,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             catalogue_rsin="",
         )
         form = FormFactory.create()
-        zgw_options_1: ZGWRegistrationOptions = {
+        zgw_options_1: ZGWRegistrationOptions = {  # type: ignore
             "zgw_api_group": api_group,
             "catalogue": {
                 "domain": "OTHER",
@@ -1470,7 +1470,7 @@ class MigratorTests(OFVCRMixin, TestCase):
             catalogue_rsin="",
         )
         form = FormFactory.create()
-        zgw_options_1: ZGWRegistrationOptions = {
+        zgw_options_1: ZGWRegistrationOptions = {  # type: ignore
             "zgw_api_group": api_group,
             "catalogue": {
                 "domain": "TEST",

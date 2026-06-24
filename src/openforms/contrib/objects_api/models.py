@@ -66,6 +66,7 @@ class ObjectsAPIGroupConfig(models.Model):
     # Specify which catalogus to use to look up document types. See
     # https://catalogi-api.vng.cloud/ for the API specification. A catalogus is uniquely
     # identified by the combination (domein, rsin)
+    # DeprecationWarning - to be removed in Open Forms 4.1, only kept for data migrations
     catalogue_domain = models.CharField(
         _("catalogus domain"),
         # blank because: opt-in to new config pattern & may be specified on form-level
@@ -76,6 +77,7 @@ class ObjectsAPIGroupConfig(models.Model):
             "The 'domein' attribute for the Catalogus resource in the Catalogi API."
         ),
     )
+    # DeprecationWarning - to be removed in Open Forms 4.1, only kept for data migrations
     catalogue_rsin = models.CharField(
         _("catalogus RSIN"),
         # blank because: opt-in to new config pattern & may be specified on form-level
@@ -140,7 +142,7 @@ class ObjectsAPIGroupConfig(models.Model):
     )
 
     # XXX: the URLFields are to be replaced with charfields storing the omschrijving.
-    # DeprecationWarning: remove in OF 4.0
+    # DeprecationWarning: remove in OF 4.1, only used in data migrations now
     informatieobjecttype_submission_report = models.URLField(
         _("submission report informatieobjecttype"),
         max_length=1000,

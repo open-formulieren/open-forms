@@ -10,14 +10,13 @@ class CatalogueSerializer(serializers.Serializer):
     """
     Specify which catalogue to use to look up case/document types.
 
-    Certain configuration models also define default fields like ``catalogue_domain``
-    and ``catalogue_rsin`` to fall back on, such as:
-
-    - :class:`openforms.contrib.objects_api.models.ObjectsAPIGroupConfig`
-    - :class:`openforms.registrations.contrib.zgw_apis.models.ZGWApiGroupConfig`
+    Note that domain/rsin both need to be not-empty to correctly identify a catalogue
+    in the Catalogi API, but we allow blank values so that the parent serializer can
+    make the ``catalogue`` field required with empty options if the catalogue is not
+    a hard requirement, which simplifies runtime code.
 
     Use this serializer to persist the catalogue selection in registration backend
-    options. When return available catalogues in an API endpoint, use
+    options. When returning available catalogues in an API endpoint, use
     :class:`openforms.contrib.zgw.api.serializers.CatalogueSerializer` instead.
     """
 
