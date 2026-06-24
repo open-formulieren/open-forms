@@ -328,12 +328,6 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         ),
     )
 
-    def get_fields(self):
-        fields = super().get_fields()
-        if self.context.get("in_migrator"):
-            fields["catalogue"].required = False
-        return fields
-
     def _handle_import(self, attrs) -> None:
         # we're not importing, nothing to do
         if not self.context.get("is_import", False):

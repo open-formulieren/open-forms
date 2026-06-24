@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from django.test import TestCase
 
+from rest_framework import serializers
 from upgrade_check import CommandCheck
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
@@ -35,6 +36,13 @@ check = CommandCheck(
         "stderr": StringIO(),
     },
 )
+
+
+class LegacyZaakOptionsSerializer(ZaakOptionsSerializer):
+    zaaktype = serializers.URLField(required=False, allow_blank=True, default="")
+    informatieobjecttype = serializers.URLField(
+        required=False, allow_blank=True, default=""
+    )
 
 
 class LegacyCatalogiUsageCheckTests(TestCase):
@@ -483,7 +491,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         api_group = ZGWApiGroupConfigFactory.create(
             catalogue_domain="", catalogue_rsin=""
         )
-        zgw_options_1: ZGWRegistrationOptions = {
+        zgw_options_1: ZGWRegistrationOptions = {  # type: ignore
             "zgw_api_group": api_group,
             "catalogue": {
                 "domain": "TEST",
@@ -508,7 +516,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=LegacyZaakOptionsSerializer(instance=zgw_options_1).data,
         )
 
         result = check.execute()
@@ -519,7 +527,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         api_group = ZGWApiGroupConfigFactory.create(
             catalogue_domain="", catalogue_rsin=""
         )
-        zgw_options_1: ZGWRegistrationOptions = {
+        zgw_options_1: ZGWRegistrationOptions = {  # type: ignore
             "zgw_api_group": api_group,
             "catalogue": {
                 "domain": "TEST",
@@ -544,7 +552,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=LegacyZaakOptionsSerializer(instance=zgw_options_1).data,
         )
 
         result = check.execute()
@@ -555,7 +563,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         api_group = ZGWApiGroupConfigFactory.create(
             catalogue_domain="", catalogue_rsin=""
         )
-        zgw_options_1: ZGWRegistrationOptions = {
+        zgw_options_1: ZGWRegistrationOptions = {  # type: ignore
             "zgw_api_group": api_group,
             "catalogue": {
                 "domain": "TEST",
@@ -580,7 +588,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=LegacyZaakOptionsSerializer(instance=zgw_options_1).data,
         )
 
         result = check.execute()

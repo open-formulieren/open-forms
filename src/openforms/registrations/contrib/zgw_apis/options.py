@@ -297,12 +297,6 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         allow_null=False,
     )
 
-    def get_fields(self):
-        fields = super().get_fields()
-        if self.context.get("in_migrator"):
-            fields["catalogue"].required = False
-        return fields
-
     def _handle_import(self, attrs) -> None:
         # we're not importing, nothing to do
         if not self.context.get("is_import", False):
@@ -360,10 +354,6 @@ def _iter_case_type_versions(
     yield from case_type_versions
 
 
-def _noop_iter_case_type_versions() -> Iterator[CaseType]:
-    return iter(())
-
-
 def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
     """
     Validate the configuration options against the specified catalogi API.
@@ -387,15 +377,12 @@ def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
         # api_group.ztc_service is not null.
         result = _validate_catalogue_case_and_doc_type(client, attrs)
 
-        if catalogue := result["catalogue"]:
-            iter_case_type_versions = partial(
-                _iter_case_type_versions,
-                client,
-                catalogue,
-                attrs["case_type_identification"],
-            )
-        else:
-            iter_case_type_versions = _noop_iter_case_type_versions
+        iter_case_type_versions = partial(
+            _iter_case_type_versions,
+            client,
+            result["catalogue"],
+            attrs["case_type_identification"],
+        )
 
         _validate_case_type_properties(
             client, attrs, iter_case_type_versions=iter_case_type_versions
@@ -443,7 +430,7 @@ def _validate_against_objects_api_group(attrs: RegistrationOptions) -> None:
 
 
 class _CatalogueAndTypeValidationResult(TypedDict):
-    catalogue: Catalogus | None
+    catalogue: Catalogus
 
 
 def _validate_catalogue_case_and_doc_type(
