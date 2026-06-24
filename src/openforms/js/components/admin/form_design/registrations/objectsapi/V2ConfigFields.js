@@ -14,7 +14,6 @@ import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {
   AuthAttributePath,
   DocumentTypesFieldset,
-  LegacyDocumentTypesFieldet,
   OrganisationRSIN,
   UpdateExistingObject,
   UploadSubmissionCsv,
@@ -42,7 +41,7 @@ const onObjectTypeChange = prevValues => ({
 
 const V2ConfigFields = ({apiGroupChoices}) => {
   const {
-    values: {objecttype = '', variablesMapping = []},
+    values: {variablesMapping = []},
     setFieldValue,
   } = useFormikContext();
 
@@ -132,8 +131,6 @@ const V2ConfigFields = ({apiGroupChoices}) => {
       >
         <DocumentTypesFieldset />
       </ErrorBoundary>
-
-      <LegacyDocumentTypesFieldet />
 
       <Fieldset
         title={

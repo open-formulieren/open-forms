@@ -124,14 +124,6 @@ export const DocumentTypesFieldset = () => {
       collapsible
       fieldNames={['catalogue', 'iotSubmissionReport', 'iotSubmissionCsv', 'iotAttachment']}
     >
-      <div className="description">
-        <FormattedMessage
-          description="New document types informative message"
-          defaultMessage={`The legacy document types configuration will be ignored
-        as soon as a catalogue is selected, even if you don't select any document
-        type in the dropdowns.`}
-        />
-      </div>
       <CatalogueSelect
         label={
           <FormattedMessage
