@@ -2413,12 +2413,6 @@
       "value": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
     }
   ],
-  "HNB0l+": [
-    {
-      "type": 0,
-      "value": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns."
-    }
-  ],
   "HNoGb8": [
     {
       "type": 0,
@@ -2783,12 +2777,6 @@
       "value": "The maximum number of files that can be uploaded."
     }
   ],
-  "KtVIGz": [
-    {
-      "type": 0,
-      "value": "Document types (legacy)"
-    }
-  ],
   "KvSkZT": [
     {
       "type": 0,
@@ -3053,12 +3041,6 @@
     {
       "type": 0,
       "value": ")"
-    }
-  ],
-  "Nfn2qu": [
-    {
-      "type": 0,
-      "value": "Case type API resource URL in the Catalogi API."
     }
   ],
   "NrF5vy": [
@@ -3633,12 +3615,6 @@
       "value": "Which authentication method the co-signer must use. Note that this must be an authentication method available on the form."
     }
   ],
-  "Sw6TLH": [
-    {
-      "type": 0,
-      "value": "Document type"
-    }
-  ],
   "T0OLUV": [
     {
       "type": 0,
@@ -4091,12 +4067,6 @@
       "value": "Type"
     }
   ],
-  "WnKF/i": [
-    {
-      "type": 0,
-      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
-    }
-  ],
   "WxwqZJ": [
     {
       "type": 0,
@@ -4335,12 +4305,6 @@
     {
       "type": 0,
       "value": "Select the plugin to use for the prefill functionality."
-    }
-  ],
-  "Yyvvx1": [
-    {
-      "type": 0,
-      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
     }
   ],
   "YzLSHY": [
@@ -5171,12 +5135,6 @@
       "value": "Loading..."
     }
   ],
-  "eBtStW": [
-    {
-      "type": 0,
-      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
-    }
-  ],
   "eC2etA": [
     {
       "type": 0,
@@ -5755,12 +5713,6 @@
       "value": "is less than"
     }
   ],
-  "ieF+xK": [
-    {
-      "type": 0,
-      "value": "Case type"
-    }
-  ],
   "ifG3sd": [
     {
       "type": 0,
@@ -6215,12 +6167,6 @@
       "value": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?"
     }
   ],
-  "mCHS+l": [
-    {
-      "type": 0,
-      "value": "You have selected a catalogue - the document type URLs configured here will be ignored."
-    }
-  ],
   "mH3X/G": [
     {
       "type": 0,
@@ -6531,12 +6477,6 @@
     {
       "type": 0,
       "value": "Move up"
-    }
-  ],
-  "p5Iv+R": [
-    {
-      "type": 0,
-      "value": "Document type API resource URL in the Catalogi API."
     }
   ],
   "p7g2h+": [
@@ -7407,12 +7347,6 @@
       "value": "Map settings"
     }
   ],
-  "wLfQfD": [
-    {
-      "type": 0,
-      "value": "The configuration options here are legacy options. They will continue working, but you should upgrade to the new configuration options above. If a new configuration option is specified, the matching legacy option will be ignored."
-    }
-  ],
   "wOMoEs": [
     {
       "type": 0,
@@ -7495,12 +7429,6 @@
     {
       "type": 0,
       "value": "Specify either none or all three of the fields below to configure the document type to use."
-    }
-  ],
-  "wrdDVu": [
-    {
-      "type": 0,
-      "value": "Legacy configuration"
     }
   ],
   "x+ORaW": [

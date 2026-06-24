@@ -2400,12 +2400,6 @@
       "value": "Aantal dagen dat een niet voltooide inzendingen (door fouten in de afhandeling) bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
-  "HNB0l+": [
-    {
-      "type": 0,
-      "value": "Zodra je een catalogus selecteert, zullen de verouderde documenttype-instellingen genegeerd worden - zelfs als je geen documenttype in de dropdowns kiest."
-    }
-  ],
   "HNoGb8": [
     {
       "type": 0,
@@ -2770,12 +2764,6 @@
       "value": "Het maximaal aantal bestanden die mogen geüpload worden."
     }
   ],
-  "KtVIGz": [
-    {
-      "type": 0,
-      "value": "Documenttypen (oud)"
-    }
-  ],
   "KvSkZT": [
     {
       "type": 0,
@@ -3040,12 +3028,6 @@
     {
       "type": 0,
       "value": ")"
-    }
-  ],
-  "Nfn2qu": [
-    {
-      "type": 0,
-      "value": "Zaaktype-API-resource URL in de Catalogi-API."
     }
   ],
   "NrF5vy": [
@@ -3616,12 +3598,6 @@
       "value": "Welke authenticatiemethode de mede-ondertekenaar moet gebruiken. Let op: Dit moet dezelfde authenticatiemethode zijn als is gebruikt op het formulier."
     }
   ],
-  "Sw6TLH": [
-    {
-      "type": 0,
-      "value": "Documenttype"
-    }
-  ],
   "T0OLUV": [
     {
       "type": 0,
@@ -4074,12 +4050,6 @@
       "value": "Type"
     }
   ],
-  "WnKF/i": [
-    {
-      "type": 0,
-      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor de bijlagen."
-    }
-  ],
   "WxwqZJ": [
     {
       "type": 0,
@@ -4318,12 +4288,6 @@
     {
       "type": 0,
       "value": "Selecteer de plugin om te gebruiken voor prefill."
-    }
-  ],
-  "Yyvvx1": [
-    {
-      "type": 0,
-      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor het CSV-document."
     }
   ],
   "YzLSHY": [
@@ -5159,12 +5123,6 @@
       "value": "Aan het laden..."
     }
   ],
-  "eBtStW": [
-    {
-      "type": 0,
-      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor het PDF-document."
-    }
-  ],
   "eC2etA": [
     {
       "type": 0,
@@ -5743,12 +5701,6 @@
       "value": "is kleiner dan"
     }
   ],
-  "ieF+xK": [
-    {
-      "type": 0,
-      "value": "Zaaktype"
-    }
-  ],
   "ifG3sd": [
     {
       "type": 0,
@@ -6203,12 +6155,6 @@
       "value": "Wanneer je de instellingen van een registratiepluginoptie overneemt, dan worden alle bestaande instellingen overschreven. Ben je zeker dat je door wil gaan?"
     }
   ],
-  "mCHS+l": [
-    {
-      "type": 0,
-      "value": "Je hebt een catalogus geselecteerd - de hier ingestelde documenttype-URLs worden genegeerd."
-    }
-  ],
   "mH3X/G": [
     {
       "type": 0,
@@ -6519,12 +6465,6 @@
     {
       "type": 0,
       "value": "Omhoog"
-    }
-  ],
-  "p5Iv+R": [
-    {
-      "type": 0,
-      "value": "Documenttype-API-resource-URL in de Catalogi-API."
     }
   ],
   "p7g2h+": [
@@ -7391,12 +7331,6 @@
       "value": "Kaartinstellingen"
     }
   ],
-  "wLfQfD": [
-    {
-      "type": 0,
-      "value": "De instellingen hieronder zijn verouderd. Ze werken nog, maar we raden aan om te upgraden naar de instellingen hierboven. Wanneer een nieuwe instelling gezet is, dan zal de overeenkomstige oude instelling genegeerd worden."
-    }
-  ],
   "wOMoEs": [
     {
       "type": 0,
@@ -7479,12 +7413,6 @@
     {
       "type": 0,
       "value": "Vul alle drie de onderstaande velden velden in om een documenttype in te stellen, of laat ze allemaal leeg om niets in te stellen."
-    }
-  ],
-  "wrdDVu": [
-    {
-      "type": 0,
-      "value": "Instellingen (oud)"
     }
   ],
   "x+ORaW": [

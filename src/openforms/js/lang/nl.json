@@ -1110,11 +1110,6 @@
     "description": "Errored Submissions Removal Limit help text",
     "originalDefault": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
-  "HNB0l+": {
-    "defaultMessage": "Zodra je een catalogus selecteert, zullen de verouderde documenttype-instellingen genegeerd worden - zelfs als je geen documenttype in de dropdowns kiest.",
-    "description": "New document types informative message",
-    "originalDefault": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns."
-  },
   "HVG1xy": {
     "defaultMessage": "Inhoud (bij mede-ondertekenen)",
     "description": "Confirmation Email for cosign Content label",
@@ -1325,11 +1320,6 @@
     "description": "JSON registration options 'path' label",
     "originalDefault": "Path"
   },
-  "KtVIGz": {
-    "defaultMessage": "Documenttypen (oud)",
-    "description": "Objects registration: document types (legacy)",
-    "originalDefault": "Document types (legacy)"
-  },
   "KzlSYi": {
     "defaultMessage": "Herstellen",
     "description": "Restore form version link",
@@ -1495,11 +1485,6 @@
     "defaultMessage": "Catalogus",
     "description": "Objects API registration options 'catalogue' label",
     "originalDefault": "Catalogue"
-  },
-  "Nfn2qu": {
-    "defaultMessage": "Zaaktype-API-resource URL in de Catalogi-API.",
-    "description": "ZGW APIs registration options 'CaseType' help text",
-    "originalDefault": "Case type API resource URL in the Catalogi API."
   },
   "NrF5vy": {
     "defaultMessage": "Documenttype",
@@ -1770,11 +1755,6 @@
     "description": "Introduction page description",
     "originalDefault": "You can (optionally) configure an introduction page shown before the form start page. Leave the content field blank to disable this page - users will then immediately go to the start page."
   },
-  "Sw6TLH": {
-    "defaultMessage": "Documenttype",
-    "description": "ZGW APIs registration options 'DocumentType' label",
-    "originalDefault": "Document type"
-  },
   "T0OLUV": {
     "defaultMessage": "Sleutel-waarde paar (object) toevoegen",
     "description": "JSON editor: add object key-value pair button",
@@ -1964,11 +1944,6 @@
     "isTranslated": true,
     "originalDefault": "Type"
   },
-  "WnKF/i": {
-    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor de bijlagen.",
-    "description": "Objects API registration options \"Attachment informatieobjecttype\" description",
-    "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
-  },
   "Wz5QZo": {
     "defaultMessage": "Actief",
     "description": "Form list 'active' column header",
@@ -2068,11 +2043,6 @@
     "defaultMessage": "Item toevoegen",
     "description": "JSON editor: add array value button",
     "originalDefault": "Add item"
-  },
-  "Yyvvx1": {
-    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor het CSV-document.",
-    "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" description",
-    "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
   },
   "YzLSHY": {
     "defaultMessage": "Weet u zeker dat u dit wilt verwijderen?",
@@ -2401,11 +2371,6 @@
     "description": "ZGW APIs registration options 'partnersDescription' label",
     "originalDefault": "Partners description"
   },
-  "eBtStW": {
-    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor het PDF-document.",
-    "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" description",
-    "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
-  },
   "eC2etA": {
     "defaultMessage": "Naam van het productaanvraagtype. Deze naam is in het JSON-inhoudsjabloon beschikbaar als de 'productaanvraag_type' variabele.",
     "description": "Legacy objects API registration options: 'productaanvraagType' helpText",
@@ -2682,11 +2647,6 @@
     "description": "\"<\" operator description",
     "originalDefault": "is less than"
   },
-  "ieF+xK": {
-    "defaultMessage": "Zaaktype",
-    "description": "ZGW APIs registration options 'CaseType' label",
-    "originalDefault": "Case type"
-  },
   "ighCxq": {
     "defaultMessage": "Plugin-instellingen: MS Graph/Sharepoint",
     "description": "MS Graph registration options modal title",
@@ -2887,11 +2847,6 @@
     "description": "Objects API prefill configuration: warning message when copying the config from registration backend",
     "originalDefault": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?"
   },
-  "mCHS+l": {
-    "defaultMessage": "Je hebt een catalogus geselecteerd - de hier ingestelde documenttype-URLs worden genegeerd.",
-    "description": "Objects registration: warning that legacy document types will be ignored",
-    "originalDefault": "You have selected a catalogue - the document type URLs configured here will be ignored."
-  },
   "mH3X/G": {
     "defaultMessage": "vandaag",
     "description": "\"today\" operand type",
@@ -3051,11 +3006,6 @@
     "defaultMessage": "Er zijn geen relevante geavanceerde instellingen.",
     "description": "Form advanced configuration fallback message",
     "originalDefault": "No advanced configuration is available for this form."
-  },
-  "p5Iv+R": {
-    "defaultMessage": "Documenttype-API-resource-URL in de Catalogi-API.",
-    "description": "ZGW APIs registration options 'DocumentType' help text",
-    "originalDefault": "Document type API resource URL in the Catalogi API."
   },
   "p8LSwF": {
     "defaultMessage": "Actie toevoegen",
@@ -3439,11 +3389,6 @@
     "description": "Errored Submissions Removal Method field label",
     "originalDefault": "Errored Submissions Removal Method"
   },
-  "wLfQfD": {
-    "defaultMessage": "De instellingen hieronder zijn verouderd. Ze werken nog, maar we raden aan om te upgraden naar de instellingen hierboven. Wanneer een nieuwe instelling gezet is, dan zal de overeenkomstige oude instelling genegeerd worden.",
-    "description": "ZGW APIs legacy config options informative message",
-    "originalDefault": "The configuration options here are legacy options. They will continue working, but you should upgrade to the new configuration options above. If a new configuration option is specified, the matching legacy option will be ignored."
-  },
   "wOMoEs": {
     "defaultMessage": "Bron",
     "description": "JSON editor: value source selector label",
@@ -3478,11 +3423,6 @@
     "defaultMessage": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Dit wordt toegepast op de zaakdocumenten die aangemaakt worden.",
     "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' helpText",
     "originalDefault": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK."
-  },
-  "wrdDVu": {
-    "defaultMessage": "Instellingen (oud)",
-    "description": "ZGw APIs registration: legacy configuration options fieldset title",
-    "originalDefault": "Legacy configuration"
   },
   "x+ORaW": {
     "defaultMessage": "Deactiveren op",
