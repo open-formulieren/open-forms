@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING
 
 from rest_framework.request import Request
 
+from formio_types._base import SupportedLanguage
+
 from ..datastructures import FormioConfigurationWrapper, FormioData
 from ..registry import register
 
@@ -35,9 +37,23 @@ def rewrite_formio_components(
     :param data: key-value mapping of variable name to variable value. If a submission
       context is available, the variables of the submission are included here.
     """
+    from ..service import _convert_legacy_component, _dump_to_legacy_component
+
     data = data or FormioData()  # normalize
     for component in configuration_wrapper:
-        register.update_config(component, submission=submission, data=data)
+        # TODO: lift up the conversion to avoid all these round-trips
+        _component = _convert_legacy_component(component)
+        replacement = register.update_config(
+            _component, submission=submission, data=data
+        )
+        component.update(_dump_to_legacy_component(replacement or _component))
+
+    # reset the configuration wrapper because nested components in fieldsets, editgrids
+    # and columns will be different instances rather than having been mutated due to
+    # using msgspec.to_builtins(...)
+    # TODO: remove this when the msgspec machinery is lifted all the way to the top
+    configuration_wrapper._cached_component_map = None
+
     return configuration_wrapper
 
 
@@ -47,8 +63,20 @@ def rewrite_formio_components_for_request(
     """
     Loop over the formio configuration and inject request-specific configuration.
     """
+    from ..service import _convert_legacy_component, _dump_to_legacy_component
+
     for component in configuration_wrapper:
-        register.update_config_for_request(component, request=request)
+        # TODO: lift up the conversion to avoid all these round-trips
+        _component = _convert_legacy_component(component)
+        register.update_config_for_request(_component, request=request)
+        component.update(_dump_to_legacy_component(_component))
+
+    # reset the configuration wrapper because nested components in fieldsets, editgrids
+    # and columns will be different instances rather than having been mutated due to
+    # using msgspec.to_builtins(...)
+    # TODO: remove this when the msgspec machinery is lifted all the way to the top
+    configuration_wrapper._cached_component_map = None
+
     return configuration_wrapper
 
 
@@ -102,7 +130,7 @@ def get_translated_custom_error_messages(
 
 def localize_components(
     configuration_wrapper: FormioConfigurationWrapper,
-    language_code: str,
+    language_code: SupportedLanguage,
     enabled: bool = True,
 ) -> None:
     """
@@ -110,7 +138,12 @@ def localize_components(
 
     .. note:: this function mutates the configuration.
     """
+    from ..service import _convert_legacy_component, _dump_to_legacy_component
+
     for component in configuration_wrapper:
+        # TODO: lift up the conversion to avoid all these round-trips
+        _component = _convert_legacy_component(component)
         register.localize_component(
-            component, language_code=language_code, enabled=enabled
+            _component, language_code=language_code, enabled=enabled
         )
+        component.update(_dump_to_legacy_component(_component))

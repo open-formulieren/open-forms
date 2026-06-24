@@ -1,40 +1,56 @@
+from collections.abc import Sequence
 from typing import Protocol
 
-from openforms.typing import JSONObject, JSONValue
+from formio_types import (
+    AnyComponent,
+    Columns,
+    CosignV1,
+    Date,
+    DateTime,
+    SoftRequiredErrors,
+    Time,
+)
+from formio_types._base import Conditional
+from openforms.typing import JSONValue
 
-from .datastructures import FormioConfiguration, FormioConfigurationWrapper, FormioData
+from .datastructures import FormioConfigurationWrapper, FormioData
 from .registry import register
-from .typing import Column, Component, ConditionalCompareValue
+from .typing import Component
 
 
 class GetEvaluationData(Protocol):
     def __call__(self, data: FormioData) -> FormioData:
         """Get evaluation data context."""
+        ...
 
 
-def get_conditional(
-    component: Component,
-) -> tuple[bool, str, ConditionalCompareValue] | None:
+def get_conditional(component: AnyComponent) -> Conditional | None:
     """
     Get the conditional logic for this component. Will return ``None`` if the
     conditional is not configured or complete.
     """
-    conditional = component.get("conditional")
-    if not conditional:
+    match component:
+        # these don't support conditionals at all
+        case Columns() | SoftRequiredErrors() | CosignV1():
+            return None
+        case _:
+            conditional: Conditional | None = component.conditional
+
+    if conditional is None:
         return None
 
-    show = conditional.get("show")
-    when = conditional.get("when")
-    eq = conditional.get("eq")
-
+    # test that the conditional is properly configured
+    show = conditional.show
+    when = conditional.when
+    eq = conditional.eq
     if any([show in ["", None], when in ["", None], eq is None]):
         return None
 
-    return show, when, eq
+    return conditional
 
 
 def is_hidden(
-    component: Component,
+    component: AnyComponent,
     data: FormioData,
     configuration: FormioConfigurationWrapper,
     ignore_hidden_property: bool,
@@ -53,21 +69,33 @@ def is_hidden(
       precedence.
     :return: Whether the component is hidden.
     """
+    from .service import _convert_legacy_component
+
     conditional = get_conditional(component)
 
     if conditional is None:
         if ignore_hidden_property:
             return False
-        else:
-            return component.get("hidden", False)
+        match component:
+            case SoftRequiredErrors():
+                return False
+            case _:
+                return component.hidden
 
-    show, trigger_component_key, compare_value = conditional
+    assert conditional.when is not None
+    assert isinstance(conditional.show, bool)
+
+    show = conditional.show
+    trigger_component_key = conditional.when
+    compare_value = conditional.eq
 
     trigger_component_value = data.get(trigger_component_key, None)
-    trigger_component = configuration[trigger_component_key]
+    trigger_component = _convert_legacy_component(configuration[trigger_component_key])
 
     triggered = register.test_conditional(
-        trigger_component, trigger_component_value, compare_value
+        trigger_component,
+        trigger_component_value,
+        compare_value,
     )
 
     # Note that we return whether the component is hidden, not shown, so we invert the
@@ -75,16 +103,14 @@ def is_hidden(
     return not show if triggered else show
 
 
-def get_component_empty_value(component: Component) -> JSONValue:
-    from .service import get_component_empty_value as _get_component_empty_value
-
-    if component["type"] in ("date", "time", "datetime"):
+def get_component_empty_value(component: AnyComponent) -> JSONValue:
+    if isinstance(component, Date | Time | DateTime):
         return None
-    return _get_component_empty_value(component)
+    return register.get_empty_value(component)
 
 
 def process_visibility(
-    configuration: FormioConfiguration | Component | Column | JSONObject,
+    components: Sequence[AnyComponent] | Sequence[Component],
     data: FormioData,
     wrapper: FormioConfigurationWrapper,
     *,
@@ -116,10 +142,20 @@ def process_visibility(
     :param data_for_visible_state: The data used to restore values when flipping
       visibility states.
     """
+    from .service import _convert_legacy_component
+
+    # process legacy structures into their msgspec equivalents, as this is the top-level
+    # entry point for a number of call sites working with legacy typed dicts
+    components = [
+        _convert_legacy_component(comp) if isinstance(comp, dict) else comp
+        for comp in components
+    ]
+
     components_to_ignore_hidden = components_to_ignore_hidden or set()
-    for component in configuration.get("components", []):
-        key = component["key"]
-        clear_on_hide = component.get("clearOnHide", True)
+    for component in components:
+        key = component.key
+        # FIXME: only consider components that define clear_on_hide (e.g. exclude content)
+        clear_on_hide = getattr(component, "clear_on_hide", True)
 
         hidden = parent_hidden or is_hidden(
             component,

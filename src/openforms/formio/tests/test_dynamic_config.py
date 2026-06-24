@@ -13,10 +13,14 @@ from openforms.formio.dynamic_config import (
 )
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from .assertions import FormioMixin
+
 rf = APIRequestFactory()
 
 
-class DynamicConfigTests(TestCase):
+class DynamicConfigTests(FormioMixin, TestCase):
+    maxDiff = None
+
     @patch("openforms.formio.components.vanilla.GlobalConfiguration.get_solo")
     def test_map_without_default_map_config(self, m_solo: Mock):
         m_solo.return_value = GlobalConfiguration(
@@ -58,7 +62,7 @@ class DynamicConfigTests(TestCase):
             },
             "useConfigDefaultMapSettings": False,
         }
-        self.assertEqual(configuration["components"][0], expected)
+        self.assertComponentProperties(configuration["components"][0], expected)
 
     @patch("openforms.formio.components.vanilla.GlobalConfiguration.get_solo")
     def test_map_with_default_map_config(self, m_solo: Mock):
@@ -101,7 +105,7 @@ class DynamicConfigTests(TestCase):
             },
             "useConfigDefaultMapSettings": True,
         }
-        self.assertEqual(configuration["components"][0], expected)
+        self.assertComponentProperties(configuration["components"][0], expected)
 
     def test_map_without_tile_layer_identifier(self):
         configuration = {
@@ -139,7 +143,7 @@ class DynamicConfigTests(TestCase):
             "useConfigDefaultMapSettings": False,
             "tileLayerIdentifier": None,
         }
-        self.assertEqual(configuration["components"][0], expected)
+        self.assertComponentProperties(configuration["components"][0], expected)
 
     def test_map_with_invalid_tile_layer_identifier(self):
         configuration = {
@@ -177,7 +181,7 @@ class DynamicConfigTests(TestCase):
             "useConfigDefaultMapSettings": False,
             "tileLayerIdentifier": "",
         }
-        self.assertEqual(configuration["components"][0], expected)
+        self.assertComponentProperties(configuration["components"][0], expected)
 
     def test_map_with_valid_unknown_tile_layer_identifier(self):
         configuration = {
@@ -215,7 +219,7 @@ class DynamicConfigTests(TestCase):
             "useConfigDefaultMapSettings": False,
             "tileLayerIdentifier": "identifier",
         }
-        self.assertEqual(configuration["components"][0], expected)
+        self.assertComponentProperties(configuration["components"][0], expected)
 
     def test_map_with_valid_known_tile_layer_identifier(self):
         map = MapTileLayerFactory.create(identifier="identifier")
@@ -255,7 +259,7 @@ class DynamicConfigTests(TestCase):
             "tileLayerIdentifier": "identifier",
             "tileLayerUrl": map.url,
         }
-        self.assertEqual(configuration["components"][0], expected)
+        self.assertComponentProperties(configuration["components"][0], expected)
 
     @patch("openforms.formio.components.vanilla.GlobalConfiguration.get_solo")
     def test_map_with_valid_known_tile_layer_identifier_and_use_config_default_map_settings(
@@ -303,7 +307,7 @@ class DynamicConfigTests(TestCase):
             "tileLayerIdentifier": "identifier",
             "tileLayerUrl": map.url,
         }
-        self.assertEqual(configuration["components"][0], expected)
+        self.assertComponentProperties(configuration["components"][0], expected)
 
     def test_map_with_known_WMS_overlay(self):
         MapWMSTileLayerFactory.create(
@@ -360,7 +364,7 @@ class DynamicConfigTests(TestCase):
                 }
             ],
         }
-        self.assertEqual(configuration["components"][0], expected)
+        self.assertComponentProperties(configuration["components"][0], expected)
 
     def test_map_with_unknown_WMS_overlay(self):
         configuration = {
@@ -406,4 +410,4 @@ class DynamicConfigTests(TestCase):
             },
             "overlays": [],
         }
-        self.assertEqual(configuration["components"][0], expected)
+        self.assertComponentProperties(configuration["components"][0], expected)

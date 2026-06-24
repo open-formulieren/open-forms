@@ -4,10 +4,10 @@ from django.utils.translation import gettext_lazy as _
 from openforms.formio.typing import Component
 
 
-class GenderType(IntegerChoices):
-    other = 0, _("Other")
-    male = 1, _("Male")
-    female = 2, _("Female")
+class GenderType(TextChoices):
+    other = "0", _("Other")
+    male = "1", _("Male")
+    female = "2", _("Female")
 
 
 class FieldState(IntegerChoices):

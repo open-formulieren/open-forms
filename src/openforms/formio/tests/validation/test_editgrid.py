@@ -4,6 +4,7 @@ from django.test import SimpleTestCase, tag
 
 from rest_framework import serializers
 
+from formio_types import TextField
 from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject, JSONValue
@@ -466,9 +467,7 @@ class EditGridFieldTests(SimpleTestCase):
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
-                components=[
-                    {"type": "textfield", "key": "textfield", "label": "Text field"}
-                ],
+                components=[TextField(key="textfield", label="Text field")],
                 allow_empty=False,
                 min_length=3,
             )
@@ -485,9 +484,7 @@ class EditGridFieldTests(SimpleTestCase):
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
                 registry=register,
-                components=[
-                    {"type": "textfield", "key": "textfield", "label": "Text field"}
-                ],
+                components=[TextField(key="textfield", label="Text field")],
                 allow_empty=False,
                 max_length=3,
             )
@@ -503,8 +500,7 @@ class EditGridFieldTests(SimpleTestCase):
     def test_to_representation(self):
         class Serializer(serializers.Serializer):
             editgrid = EditGridField(
-                registry=register,
-                components=[{"type": "textfield", "key": "bar", "label": "Bar"}],
+                registry=register, components=[TextField(key="bar", label="Bar")]
             )
 
         Foo = namedtuple("Foo", "bar")

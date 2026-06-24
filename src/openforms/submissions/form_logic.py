@@ -266,7 +266,7 @@ def evaluate_conditional_logic(
         _loop_count += 1
         processed_data = deepcopy(data)
         process_visibility(
-            configuration,
+            configuration["components"],
             data,
             wrapper,
             data_for_hidden_state=data_for_hidden_state,

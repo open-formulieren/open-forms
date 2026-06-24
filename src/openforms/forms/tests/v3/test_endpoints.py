@@ -3345,6 +3345,8 @@ def close_db_connections(future: Future) -> None:
 
 
 class FormEndpointConcurrentTests(APITransactionTestCase):
+    maxDiff = None
+
     def test_create_form_with_definitions_with_update(self):
         """
         Test that updating the same form definition, by creating two forms
@@ -3464,9 +3466,10 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
         self.assertEqual(len(error_responses), 1)
         self.assertEqual(len(success_responses), 1)
         response_data = underscoreize(success_responses[0].json())
-        expected_form_definition = response_data["steps"][0]["form_definition"][  # pyright: ignore[reportArgumentType,reportCallIssue,reportIndexIssue]
+        successfull_form_definition = response_data["steps"][0]["form_definition"][  # pyright: ignore[reportArgumentType,reportCallIssue,reportIndexIssue]
             "configuration"
         ]
+        assert isinstance(successfull_form_definition, dict)
 
         form = Form.objects.get()
 
@@ -3479,7 +3482,12 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
         step_form_definition = form_step.form_definition
         self.assertEqual(step_form_definition.uuid, form_definition.uuid)
         self.assertTrue(step_form_definition.login_required)
-        self.assertEqual(step_form_definition.configuration, expected_form_definition)
+
+        returned_component = successfull_form_definition["components"][0]
+        for key, expected in step_form_definition.configuration["components"][
+            0
+        ].items():
+            self.assertEqual(returned_component[key], expected)
 
     def test_update_form_definitions(self):
         """
@@ -3605,9 +3613,10 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
         self.assertEqual(len(error_responses), 1)
         self.assertEqual(len(success_responses), 1)
         response_data = underscoreize(success_responses[0].json())
-        expected_form_definition = response_data["steps"][0]["form_definition"][  # pyright: ignore[reportArgumentType,reportCallIssue,reportIndexIssue]
+        successfull_form_definition = response_data["steps"][0]["form_definition"][  # pyright: ignore[reportArgumentType,reportCallIssue,reportIndexIssue]
             "configuration"
         ]
+        assert isinstance(successfull_form_definition, dict)
 
         self.assertEqual(Form.objects.count(), 2)
         updated_form = next(
@@ -3628,7 +3637,10 @@ class FormEndpointConcurrentTests(APITransactionTestCase):
 
         # step form definition
         self.assertEqual(form_step.form_definition, form_definition)
-        self.assertEqual(
-            form_step.form_definition.configuration, expected_form_definition
-        )
+        step_form_definition = form_step.form_definition
+        returned_component = successfull_form_definition["components"][0]
+        for key, expected in step_form_definition.configuration["components"][
+            0
+        ].items():
+            self.assertEqual(returned_component[key], expected)
         self.assertEqual(FormDefinition.objects.count(), 1)  # pyright: ignore[reportAttributeAccessIssue]

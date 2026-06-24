@@ -24,6 +24,7 @@ from opentelemetry import trace
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.datastructures import FormioConfig
 from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.models import FormRegistrationBackend, FormStep
 from openforms.logging import audit_logger
@@ -466,6 +467,19 @@ class Submission(models.Model):
                 wrapper += form_step.form_definition.configuration_wrapper
             self._total_configuration_wrapper = wrapper
         return self._total_configuration_wrapper
+
+    @cached_property
+    def formio_config(self) -> FormioConfig:
+        state = self.load_execution_state()
+        form_steps = state.form_steps
+        all_step_components = sum(
+            (
+                form_step.form_definition.configuration.get("components", [])
+                for form_step in form_steps
+            ),
+            [],
+        )
+        return FormioConfig(name=self.form.admin_name, components=all_step_components)
 
     @property
     def form_login_required(self):

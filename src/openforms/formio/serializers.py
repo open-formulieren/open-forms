@@ -15,10 +15,10 @@ import structlog
 from glom import assign, glom
 from rest_framework import serializers
 
+from formio_types import AnyComponent, FormioConfiguration as FormioConfigurationStruct
 from openforms.formio.typing.base import FormioConfiguration
 
 from .datastructures import FormioConfigurationWrapper, FormioData
-from .typing import Component
 from .utils import iter_components
 
 if TYPE_CHECKING:
@@ -45,6 +45,8 @@ class StepDataSerializer(serializers.Serializer):
         Hidden fields in Formio don't run *any* validation, see the
         ``Component.shouldSkipValidation`` method for reference.
         """
+        from .service import _convert_legacy_component
+
         # initial_data is only set if Serializer(data=...) was used, and we can't take
         # (dynamic) hidden state into account without initial data.
         if not hasattr(self, "initial_data"):
@@ -58,7 +60,8 @@ class StepDataSerializer(serializers.Serializer):
         for component in iter_components(configuration, recurse_into_editgrid=False):
             # Components without submission data do not have serializer fields
             # associated with them.
-            if not register.holds_submission_data(component):
+            _component = _convert_legacy_component(component)
+            if not register.holds_submission_data(_component):
                 continue
 
             # XXX: is_visible_in_frontend does not understand editgrid at all yet, which
@@ -142,7 +145,7 @@ def dict_to_serializer(
 
 
 def build_serializer(
-    components: Sequence[Component], register: ComponentRegistry, **kwargs
+    components: Sequence[AnyComponent], register: ComponentRegistry, **kwargs
 ) -> StepDataSerializer:
     """
     Translate a sequence of Formio.js component definitions into a serializer.
@@ -150,9 +153,11 @@ def build_serializer(
     This recursively builds up the serializer fields for each (nested) component and
     puts them into a serializer instance ready for validation.
     """
+    from openforms.formio.service import dump_to_legacy
+
     fields: dict[str, FieldOrNestedFields] = {}
 
-    config: FormioConfiguration = {"components": components}
+    config = FormioConfigurationStruct(components=components)
     for component in iter_components(config, recurse_into_editgrid=False):
         # Components without submission data do not have serializer fields
         # associated with them.
@@ -160,8 +165,10 @@ def build_serializer(
             continue
 
         field = register.build_serializer_field(component)
-        assign(obj=fields, path=component["key"], val=field, missing=dict)
+        assign(obj=fields, path=component.key, val=field, missing=dict)
 
     serializer = dict_to_serializer(fields, **kwargs)
-    serializer.apply_hidden_state(config, fields, register)
+    # TODO: make all this work with structs too :)))
+    legacy_config: FormioConfiguration = dump_to_legacy(config)
+    serializer.apply_hidden_state(legacy_config, fields, register)
     return serializer

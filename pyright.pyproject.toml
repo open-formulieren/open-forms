@@ -33,8 +33,12 @@ include = [
     "src/openforms/formio/serializers.py",
     "src/openforms/formio/service.py",
     "src/openforms/formio/typing/",
+    "src/openforms/formio/components/translations.py",
     "src/openforms/formio/formatters/",
+    "src/openforms/formio/dynamic_config/date.py",
     "src/openforms/formio/dynamic_config/reference_lists.py",
+    "src/openforms/formio/dynamic_config/tests/test_reference_lists_config.py",
+    # "src/openforms/formio/tests/test_component_translations.py",
     # Core forms app
     "src/openforms/forms/api/serializers/logic/action_serializers.py",
     "src/openforms/forms/api/v3/",
@@ -62,6 +66,7 @@ include = [
     "src/openforms/prefill/",
     # Registrations
     "src/openforms/registrations/tasks.py",
+    "src/openforms/registrations/tests/test_component_pre_registration_tasks.py",
     "src/openforms/registrations/contrib/demo/",
     "src/openforms/registrations/contrib/email/",
     "src/openforms/registrations/contrib/generic_json/",
@@ -117,7 +122,6 @@ exclude = [
     "src/openforms/authentication/contrib/eherkenning/tests/test_signicat_integration.py",
     "src/openforms/contrib/objects_api/tests/",
     "src/openforms/contrib/objects_api/json_schema.py",
-    "src/openforms/formio/formatters/tests/",
     "src/openforms/payments/management/commands/checkpaymentemaildupes.py",
     "src/openforms/payments/tests/",
     "src/openforms/payments/contrib/demo/tests/",

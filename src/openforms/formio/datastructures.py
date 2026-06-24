@@ -4,8 +4,11 @@ import re
 from collections import UserDict
 from collections.abc import Iterator, Sequence
 
+import msgspec
 from glom import glom
+from nutree import Node, Tree
 
+from formio_types import AnyComponent, Columns, EditGrid, Fieldset
 from openforms.typing import VariableValue
 
 from .typing import Component, EditGridComponent, FormioConfiguration
@@ -114,7 +117,8 @@ class FormioConfigurationWrapper:
         it may be present multiple times in the internal datastructures.
         """
         seen = set()
-        for component in self.component_map.values():
+        # reverse to go from leaf nodes up to root nodes
+        for component in reversed(self.component_map.values()):
             # dicts are not hashable, the memory address is a stable reference
             component_id = id(component)
             if component_id in seen:
@@ -343,3 +347,106 @@ class FormioData(UserDict):
                 raise error
         else:
             raise error
+
+
+def _calc_component_data_id(tree: Tree[AnyComponent], data: AnyComponent) -> str:
+    return data.key
+
+
+def _build_component_tree(
+    name: str, components: Sequence[AnyComponent]
+) -> Tree[AnyComponent]:
+    tree = Tree[AnyComponent](name=name, calc_data_id=_calc_component_data_id)
+    for component in components:
+        node = tree.add(component)
+        _add_component_children(node, component)
+    return tree
+
+
+def _add_component_children(node: Node[AnyComponent], component: AnyComponent) -> None:
+    # recurse for components with children
+    match component:
+        case Fieldset():
+            for child in component.components:
+                child_node = node.add(child)
+                _add_component_children(child_node, child)
+
+        case Columns():
+            for column in component.columns:
+                for child in column.components:
+                    child_node = node.add(child)
+                    _add_component_children(child_node, child)
+
+        # XXX: do we want to process the children here or not? Let's see how far we get
+        # without doing so.
+        case EditGrid():
+            pass
+
+        case _:
+            pass
+
+
+class FormioConfig:
+    """
+    msgspec-based replacement for :class:`FormioConfigurationWrapper`.
+    """
+
+    _tree: Tree | None = None
+
+    def __init__(
+        self,
+        name: str,
+        components: Sequence[Component],
+    ):
+        self.name = name
+        self._components = components
+
+    @property
+    def tree(self) -> Tree[AnyComponent]:
+        """
+        Parse the formio form definition to msgspec structs and return the tree.
+
+        We grab the raw component definition dicts and parse this as Formio definition
+        with msgspec, to convert it all into proper Python datatypes. Then we process
+        the result into a proper tree structure using the ``nutree`` package for easier
+        handling later on (such as lookups, filtering. depth derivation...).
+
+        :raises: :class:`nutree.common.UniqueConstraintError` if non-unique component
+          keys are used.
+
+        .. todo:: Wrap errors in DuplicateKeyError
+        """
+        from .service import _fixup_component_properties
+
+        if self._tree is None:
+            components = msgspec.convert(
+                self._components,
+                type=Sequence[AnyComponent],
+                dec_hook=_fixup_component_properties,
+            )
+            self._tree = _build_component_tree(self.name, components)
+        return self._tree
+
+    def __iter__(self) -> Iterator[AnyComponent]:
+        """
+        Yield the components in the configuration visiting the tree nodes.
+
+        Each (unique) component is guaranteed to be yielded only once, even though
+        it may be present multiple times in the internal datastructures.
+
+        Components inside edit grids are *NOT* included/yielded - if those need to
+        be processed separately, you can probably create a nested :class:`FormioConfig`
+        from them and recurse your processing.
+        """
+        for node in self.tree:
+            yield node.data
+
+    def __contains__(self, key: str) -> bool:
+        node = self.tree.find(data_id=key)
+        return node is not None
+
+    def __getitem__(self, key: str) -> AnyComponent:
+        node = self.tree.find(data_id=key)
+        if node is None:
+            raise KeyError(f"Component with key '{key}' not found.")
+        return node.data

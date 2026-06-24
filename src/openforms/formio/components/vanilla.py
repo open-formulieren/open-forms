@@ -5,7 +5,9 @@ Custom component types (defined by us or third parties) need to be organized in 
 adjacent custom.py module.
 """
 
-from collections.abc import Callable, Mapping
+from __future__ import annotations
+
+from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from datetime import time
 from typing import TYPE_CHECKING, Any
@@ -21,19 +23,40 @@ from django.core.validators import (
 from django.utils.translation import gettext_lazy as _
 
 import structlog
-from glom import glom
 from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 from rest_framework.utils.formatting import lazy_format
 
 from csp_post_processor import post_process_html
+from formio_types import (
+    AnyComponent,
+    Checkbox,
+    Column,
+    Columns,
+    Content,
+    Currency,
+    EditGrid,
+    Email,
+    Fieldset,
+    File,
+    Number,
+    PhoneNumber,
+    Radio,
+    Select,
+    Selectboxes,
+    Signature,
+    Textarea,
+    TextField,
+    Time,
+)
+from formio_types._base import SupportedLanguage
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.form_logic import process_visibility
 from openforms.submissions.models import EmailVerification
-from openforms.typing import JSONObject, JSONValue
+from openforms.typing import JSONObject, JSONValue, VariableValue
 from openforms.utils.json_schema import to_multiple
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
@@ -61,33 +84,21 @@ from ..formatters.formio import (
 from ..registry import BasePlugin, register
 from ..serializers import build_serializer
 from ..service import as_json_schema
-from ..typing import (
-    Column,
-    ColumnsComponent,
-    Component,
-    ContentComponent,
-    EditGridComponent,
-    FieldsetComponent,
-    FileComponent,
-    FileValue,
-    RadioComponent,
-    SelectBoxesComponent,
-    SelectComponent,
-    TextFieldComponent,
-)
-from ..typing.base import OpenFormsConfig
+from ..typing import FileValue
 from .translations import translate_options
 from .utils import _normalize_pattern, sanitize_file_name
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
+    from ..visibility import GetEvaluationData
+
 
 logger = structlog.stdlib.get_logger(__name__)
 
 
 @register("default")
-class Default(BasePlugin):
+class DefaultPlugin(BasePlugin[AnyComponent]):
     """
     Fallback for unregistered component types, implementing default behaviour.
     """
@@ -96,38 +107,37 @@ class Default(BasePlugin):
     data_type = FormVariableDataTypes.string
     empty_value = ""
 
-    def build_serializer_field(self, component: Component) -> serializers.Field:
+    def build_serializer_field(self, component: AnyComponent) -> serializers.Field:
         raise NotImplementedError()
 
 
 @register("textfield")
-class TextField(BasePlugin[TextFieldComponent]):
+class TextFieldPlugin(BasePlugin[TextField]):
     formatter = TextFieldFormatter
     data_type = FormVariableDataTypes.string
     empty_value = ""
 
     @staticmethod
-    def normalizer(component: Component, value: str) -> str:
+    def normalizer(component: TextField, value: str | float) -> str:
         if isinstance(value, int | float):
             return str(value)
         return value
 
     def build_serializer_field(
-        self, component: TextFieldComponent
+        self, component: TextField
     ) -> serializers.CharField | serializers.ListField:
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+        validate = component.validate
+        required = validate is not None and validate.required
 
         # dynamically add in more kwargs based on the component configuration
         extra = {}
-        if (max_length := validate.get("maxLength")) is not None:
+        if (max_length := (validate and validate.max_length)) is not None:
             extra["max_length"] = max_length
 
         # adding in the validator is more explicit than changing to serialiers.RegexField,
         # which essentially does the same.
         validators = []
-        if pattern := validate.get("pattern"):
+        if validate and (pattern := validate.pattern):
             validators.append(
                 RegexValidator(
                     _normalize_pattern(pattern),
@@ -136,7 +146,7 @@ class TextField(BasePlugin[TextFieldComponent]):
             )
 
         # Run plugin validators at the end after all basic checks have been performed.
-        if plugin_ids := validate.get("plugins", []):
+        if validate and (plugin_ids := validate.plugins):
             validators.append(PluginValidator(plugin_ids))
 
         if validators:
@@ -147,24 +157,21 @@ class TextField(BasePlugin[TextFieldComponent]):
             allow_blank=not required,
             # FIXME: should always be False, but formio client sends `null` for
             # untouched fields :( See #4068
-            allow_null=multiple,
+            allow_null=component.multiple,
             **extra,
         )
-        return serializers.ListField(child=base) if multiple else base
+        return serializers.ListField(child=base) if component.multiple else base
 
     @staticmethod
-    def as_json_schema(component: TextFieldComponent) -> JSONObject:
-        label = component.get("label", "Text")
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
+    def as_json_schema(component: TextField) -> JSONObject:
+        base: JSONObject = {"title": component.label, "type": "string"}
+        if validate := component.validate:
+            if pattern := validate.pattern:
+                base["pattern"] = pattern
+            if max_length := validate.max_length:
+                base["maxLength"] = max_length
 
-        base = {"title": label, "type": "string"}
-        if pattern := validate.get("pattern"):
-            base["pattern"] = pattern
-        if validate.get("maxLength"):
-            base["maxLength"] = validate["maxLength"]
-
-        return to_multiple(base) if multiple else base
+        return to_multiple(base) if component.multiple else base
 
 
 class EmailVerificationValidator:
@@ -189,31 +196,31 @@ class EmailVerificationValidator:
 
 
 @register("email")
-class Email(BasePlugin):
+class EmailPlugin(BasePlugin[Email]):
     formatter = EmailFormatter
     data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(
-        self, component: Component
+        self, component: Email
     ) -> serializers.EmailField | serializers.ListField:
-        extensions: OpenFormsConfig = component.get("openForms", {})
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
-        verification_required = extensions.get("requireVerification", False)
+        validate = component.validate
+        required = validate is not None and validate.required
+        verification_required = (
+            component.open_forms and component.open_forms.require_verification
+        )
 
         # dynamically add in more kwargs based on the component configuration
         extra = {}
-        if (max_length := validate.get("maxLength")) is not None:
+        if validate and (max_length := validate.max_length) is not None:
             extra["max_length"] = max_length
 
         validators = []
-        if plugin_ids := validate.get("plugins", []):
+        if validate and (plugin_ids := validate.plugins):
             validators.append(PluginValidator(plugin_ids))
 
         if verification_required:
-            validators.append(EmailVerificationValidator(component["key"]))
+            validators.append(EmailVerificationValidator(component.key))
 
         if validators:
             extra["validators"] = validators
@@ -223,18 +230,19 @@ class Email(BasePlugin):
             allow_blank=not required,
             # FIXME: should always be False, but formio client sends `null` for
             # untouched fields :( See #4068
-            allow_null=multiple,
+            allow_null=component.multiple,
             **extra,
         )
-        return serializers.ListField(child=base) if multiple else base
+        return serializers.ListField(child=base) if component.multiple else base
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Email")
-        multiple = component.get("multiple", False)
-
-        base = {"title": label, "type": "string", "format": "email"}
-        return to_multiple(base) if multiple else base
+    def as_json_schema(component: Email) -> JSONObject:
+        base: JSONObject = {
+            "title": component.label,
+            "type": "string",
+            "format": "email",
+        }
+        return to_multiple(base) if component.multiple else base
 
 
 class FormioTimeField(serializers.TimeField):
@@ -276,121 +284,122 @@ class TimeBetweenValidator:
 
 
 @register("time")
-class Time(BasePlugin[Component]):
+class TimePlugin(BasePlugin[Time]):
     formatter = TimeFormatter
     data_type = FormVariableDataTypes.time
     empty_value = ""
 
     def build_serializer_field(
-        self, component: Component
+        self, component: Time
     ) -> FormioTimeField | serializers.ListField:
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+        validate = component.validate
+        required = validate is not None and validate.required
 
         validators = []
 
-        match (
-            min_time := validate.get("minTime"),
-            max_time := validate.get("maxTime"),
-        ):
-            case (None, None):
-                pass
-            case (str(), None):
-                validators.append(MinValueValidator(time.fromisoformat(min_time)))
-            case (None, str()):
-                validators.append(MaxValueValidator(time.fromisoformat(max_time)))
-            case (str(), str()):
-                validators.append(
-                    TimeBetweenValidator(
-                        time.fromisoformat(min_time),
-                        time.fromisoformat(max_time),
+        if validate:
+            match (
+                min_time := (validate.min_time or None),
+                max_time := (validate.max_time or None),
+            ):
+                case (None, None):
+                    pass
+                case (str(), None):
+                    validators.append(MinValueValidator(time.fromisoformat(min_time)))
+                case (None, str()):
+                    validators.append(MaxValueValidator(time.fromisoformat(max_time)))
+                case (str(), str()):
+                    validators.append(
+                        TimeBetweenValidator(
+                            time.fromisoformat(min_time),
+                            time.fromisoformat(max_time),
+                        )
                     )
-                )
-            case _:  # pragma: no cover
-                logger.warning(
-                    "formio.unexpected_min_max_time",
-                    component=component,
-                    min_time=min_time,
-                    max_time=max_time,
-                )
+                case _:  # pragma: no cover
+                    logger.warning(
+                        "formio.unexpected_min_max_time",
+                        component=component,
+                        min_time=min_time,
+                        max_time=max_time,
+                    )
 
         base = FormioTimeField(
             required=required,
             allow_null=not required,
             validators=validators,
         )
-        return serializers.ListField(child=base) if multiple else base
+        return serializers.ListField(child=base) if component.multiple else base
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Time")
-        multiple = component.get("multiple", False)
-
-        base = {"title": label, "type": "string", "format": "time"}
-        return to_multiple(base) if multiple else base
+    def as_json_schema(component: Time) -> JSONObject:
+        base: JSONObject = {
+            "title": component.label,
+            "type": "string",
+            "format": "time",
+        }
+        return to_multiple(base) if component.multiple else base
 
 
 @register("phoneNumber")
-class PhoneNumber(BasePlugin):
+class PhoneNumberPlugin(BasePlugin[PhoneNumber]):
     formatter = PhoneNumberFormatter
     data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(
-        self, component: Component
+        self, component: PhoneNumber
     ) -> serializers.CharField | serializers.ListField:
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+        validate = component.validate
+        required = validate is not None and validate.required
 
         # dynamically add in more kwargs based on the component configuration
         extra = {}
-        # maxLength because of the usage in appointments, even though our form builder
-        # does not expose it. See `openforms.appointments.contrib.qmatic.constants`.
-        if (max_length := validate.get("maxLength")) is not None:
-            extra["max_length"] = max_length
+        if validate:
+            # maxLength because of the usage in appointments, even though our form builder
+            # does not expose it. See `openforms.appointments.contrib.qmatic.constants`.
+            if (max_length := validate.max_length) is not None:
+                extra["max_length"] = max_length
 
-        # adding in the validator is more explicit than changing to serialiers.RegexField,
-        # which essentially does the same.
-        validators = []
-        if pattern := validate.get("pattern"):
-            validators.append(
-                RegexValidator(
-                    _normalize_pattern(pattern),
-                    message=_("This value does not match the required pattern."),
+            # adding in the validator is more explicit than changing to serialiers.RegexField,
+            # which essentially does the same.
+            validators = []
+            if pattern := validate.pattern:
+                validators.append(
+                    RegexValidator(
+                        _normalize_pattern(pattern),
+                        message=_("This value does not match the required pattern."),
+                    )
                 )
-            )
 
-        # Run plugin validators at the end after all basic checks have been performed.
-        if plugin_ids := validate.get("plugins", []):
-            validators.append(PluginValidator(plugin_ids))
+            # Run plugin validators at the end after all basic checks have been performed.
+            if plugin_ids := validate.plugins:
+                validators.append(PluginValidator(plugin_ids))
 
-        if validators:
-            extra["validators"] = validators
+            if validators:
+                extra["validators"] = validators
 
         base = serializers.CharField(
             required=required,
             allow_blank=not required,
             # FIXME: should always be False, but formio client sends `null` for
             # untouched fields :( See #4068
-            allow_null=multiple,
+            allow_null=component.multiple,
             **extra,
         )
-        return serializers.ListField(child=base) if multiple else base
+        return serializers.ListField(child=base) if component.multiple else base
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Phone number")
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
+    def as_json_schema(component: PhoneNumber) -> JSONObject:
+        pattern: str = r"^\+?[\d\s]+$"
+        if (validate := component.validate) and validate.pattern:
+            pattern = validate.pattern
 
-        base = {
-            "title": label,
+        base: JSONObject = {
+            "title": component.label,
             "type": "string",
-            "pattern": validate.get("pattern", r"^\+?[\d\s]+$"),
+            "pattern": pattern,
         }
-        return to_multiple(base) if multiple else base
+        return to_multiple(base) if component.multiple else base
 
 
 class FileDataSerializer(serializers.Serializer):
@@ -473,7 +482,7 @@ class FileSerializer(serializers.Serializer):
 
 
 @register("file")
-class File(BasePlugin[FileComponent]):
+class FilePlugin(BasePlugin[File]):
     formatter = FileFormatter
     # always an array, even for single-file uploads
     data_type = FormVariableDataTypes.array
@@ -481,35 +490,32 @@ class File(BasePlugin[FileComponent]):
     empty_value = []
 
     @staticmethod
-    def rewrite_for_request(component: FileComponent, request: Request):
+    def rewrite_for_request(component: File, request: Request):
         # write the upload endpoint information
         upload_endpoint = reverse("api:formio:temporary-file-upload")
-        component["url"] = build_absolute_uri(upload_endpoint, request=request)
+        component.url = build_absolute_uri(upload_endpoint, request=request)
 
         # check if we need to apply "filePattern" modifications
-        if component.get("useConfigFiletypes", False):
+        if component.use_config_filetypes:
             config = GlobalConfiguration.get_solo()
             mimetypes: list[str] = config.form_upload_default_file_types  # type: ignore
-            component["filePattern"] = ",".join(mimetypes)
-            component["file"].update(
-                {
-                    "allowedTypesLabels": [
-                        UploadFileType(mimetype).label for mimetype in mimetypes
-                    ],
-                }
-            )
+            component.file_pattern = ",".join(mimetypes)
+            component.file.allowed_types_labels = [
+                str(UploadFileType(mimetype).label) for mimetype in mimetypes
+            ]
 
-    def build_serializer_field(self, component: FileComponent) -> serializers.ListField:
-        multiple = component.get("multiple", False)
-        max_number_of_files = component.get("maxNumberOfFiles", None if multiple else 1)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+    def build_serializer_field(self, component: File) -> serializers.ListField:
+        max_number_of_files = component.max_number_of_files
+        if max_number_of_files is None and not component.multiple:
+            max_number_of_files = 1
+        validate = component.validate
+        required = validate is not None and validate.required
 
-        if component.get("useConfigFiletypes"):
+        if component.use_config_filetypes:
             config = GlobalConfiguration.get_solo()
             allowed_mime_types = config.form_upload_default_file_types
         else:
-            allowed_mime_types = glom(component, "file.type", default=[])
+            allowed_mime_types = component.file.type
 
         return serializers.ListField(
             max_length=max_number_of_files,
@@ -519,12 +525,10 @@ class File(BasePlugin[FileComponent]):
         )
 
     @staticmethod
-    def as_json_schema(component: FileComponent) -> JSONObject:
-        label = component.get("label", "File")
-
+    def as_json_schema(component: File) -> JSONObject:
         # fmt: off
-        base = {
-            "title": label,
+        base: JSONObject = {
+            "title": component.label,
             "type": "array",
             "items": {
                 "type": "object",
@@ -555,30 +559,27 @@ class File(BasePlugin[FileComponent]):
         return base
 
     @staticmethod
-    def test_conditional(
-        component: FileComponent, value: FileValue, compare_value: str
-    ) -> bool:
+    def test_conditional(component: File, value: FileValue, compare_value: str) -> bool:
         # See 6181 where we opted for a bandaid fix to handle the wrong compare value
         # type.
         return compare_value == "" and value == []
 
 
 @register("textarea")
-class TextArea(BasePlugin[Component]):
+class TextAreaPlugin(BasePlugin[Textarea]):
     formatter = TextAreaFormatter
     data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def build_serializer_field(
-        self, component: Component
+        self, component: Textarea
     ) -> serializers.CharField | serializers.ListField:
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+        validate = component.validate
+        required = validate is not None and validate.required
 
         # dynamically add in more kwargs based on the component configuration
         extra = {}
-        if (max_length := validate.get("maxLength")) is not None:
+        if validate and (max_length := validate.max_length) is not None:
             extra["max_length"] = max_length
 
         base = serializers.CharField(
@@ -586,71 +587,60 @@ class TextArea(BasePlugin[Component]):
             allow_blank=not required,
             # FIXME: should always be False, but formio client sends `null` for
             # untouched fields :( See #4068
-            allow_null=multiple,
+            allow_null=component.multiple,
             **extra,
         )
-        return serializers.ListField(child=base) if multiple else base
+        return serializers.ListField(child=base) if component.multiple else base
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Text area")
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-
-        base = {"title": label, "type": "string"}
-        if pattern := validate.get("pattern"):
-            base["pattern"] = pattern
-        if validate.get("maxLength"):
-            base["maxLength"] = validate["maxLength"]
-
-        return to_multiple(base) if multiple else base
+    def as_json_schema(component: Textarea) -> JSONObject:
+        base: JSONObject = {"title": component.label, "type": "string"}
+        if validate := component.validate:
+            if pattern := validate.pattern:
+                base["pattern"] = pattern
+            if max_length := validate.max_length:
+                base["maxLength"] = max_length
+        return to_multiple(base) if component.multiple else base
 
 
 @register("number")
-class Number(BasePlugin):
+class NumberPlugin(BasePlugin[Number]):
     formatter = NumberFormatter
     data_type = FormVariableDataTypes.float
     empty_value = None
 
-    def build_serializer_field(
-        self, component: Component
-    ) -> serializers.FloatField | serializers.ListField:
+    def build_serializer_field(self, component: Number) -> serializers.FloatField:
         # new builder no longer exposes this, but existing forms may have multiple set
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+        validate = component.validate
+        required = validate is not None and validate.required
 
         extra = {}
-        if (max_value := validate.get("max")) is not None:
-            extra["max_value"] = max_value
-        if (min_value := validate.get("min")) is not None:
-            extra["min_value"] = min_value
+        if validate:
+            if (max_value := validate.max) is not None:
+                extra["max_value"] = max_value
+            if (min_value := validate.min) is not None:
+                extra["min_value"] = min_value
 
-        validators = []
-        if plugin_ids := validate.get("plugins", []):
-            validators.append(PluginValidator(plugin_ids))
+            validators = []
+            if plugin_ids := validate.plugins:
+                validators.append(PluginValidator(plugin_ids))
 
-        if validators:
-            extra["validators"] = validators
+            if validators:
+                extra["validators"] = validators
 
-        base = serializers.FloatField(
+        return serializers.FloatField(
             required=required, allow_null=not required, **extra
         )
-        return serializers.ListField(child=base) if multiple else base
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Number")
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-
-        base = {"title": label, "type": "number"}
-        if min_value := validate.get("min"):
-            base["minimum"] = min_value
-        if max_value := validate.get("max"):
-            base["maximum"] = max_value
-
-        return to_multiple(base) if multiple else base
+    def as_json_schema(component: Number) -> JSONObject:
+        base: JSONObject = {"title": component.label, "type": "number"}
+        if validate := component.validate:
+            if min_value := validate.min:
+                base["minimum"] = min_value
+            if max_value := validate.max:
+                base["maximum"] = max_value
+        return base
 
 
 def validate_required_checkbox(value: bool) -> None:
@@ -664,14 +654,14 @@ def validate_required_checkbox(value: bool) -> None:
 
 
 @register("checkbox")
-class Checkbox(BasePlugin[Component]):
+class CheckboxPlugin(BasePlugin[Checkbox]):
     formatter = CheckboxFormatter
     data_type = FormVariableDataTypes.boolean
     empty_value = False
 
-    def build_serializer_field(self, component: Component) -> serializers.BooleanField:
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+    def build_serializer_field(self, component: Checkbox) -> serializers.BooleanField:
+        validate = component.validate
+        required = validate is not None and validate.required
 
         # dynamically add in more kwargs based on the component configuration
         extra = {}
@@ -679,7 +669,7 @@ class Checkbox(BasePlugin[Component]):
         validators = []
         if required:
             validators.append(validate_required_checkbox)
-        if plugin_ids := validate.get("plugins", []):
+        if validate and (plugin_ids := validate.plugins):
             validators.append(PluginValidator(plugin_ids))
 
         if validators:
@@ -688,10 +678,8 @@ class Checkbox(BasePlugin[Component]):
         return serializers.BooleanField(**extra)
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Checkbox")
-
-        base = {"title": label, "type": "boolean"}
+    def as_json_schema(component: Checkbox) -> JSONObject:
+        base: JSONObject = {"title": component.label, "type": "boolean"}
         return base
 
 
@@ -737,54 +725,51 @@ class SelectboxesField(serializers.Serializer):
 
 
 @register("selectboxes")
-class SelectBoxes(BasePlugin[SelectBoxesComponent]):
+class SelectBoxesPlugin(BasePlugin[Selectboxes]):
     formatter = SelectBoxesFormatter
     data_type = FormVariableDataTypes.object
 
     def mutate_config_dynamically(
         self,
-        component: SelectBoxesComponent,
-        submission: "Submission",
+        component: Selectboxes,
+        submission: Submission,
         data: FormioData,
     ) -> None:
         add_options_to_config(component, data, submission)
 
     def localize(
-        self, component: SelectBoxesComponent, language_code: str, enabled: bool
+        self, component: Selectboxes, language_code: SupportedLanguage, enabled: bool
     ):
-        if not (options := component.get("values", [])):
+        if not (options := component.values):
             return
         translate_options(options, language_code, enabled)
 
-    def build_serializer_field(
-        self, component: SelectBoxesComponent
-    ) -> serializers.Serializer:
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+    def build_serializer_field(self, component: Selectboxes) -> serializers.Serializer:
+        validate = component.validate
+        required = validate is not None and validate.required
 
         serializer = SelectboxesField(
             required=required,
             allow_null=not required,
-            min_selected_count=validate.get("minSelectedCount"),
-            max_selected_count=validate.get("maxSelectedCount"),
+            min_selected_count=validate and validate.min_selected_count,
+            max_selected_count=validate and validate.max_selected_count,
         )
-        for option in component["values"]:
-            serializer.fields[option["value"]] = serializers.BooleanField(required=True)
+        for option in component.values:
+            serializer.fields[option.value] = serializers.BooleanField(required=True)
 
         return serializer
 
     @staticmethod
-    def as_json_schema(component: SelectBoxesComponent) -> JSONObject:
-        label = component.get("label", "Select boxes")
-        values = component["values"]
+    def as_json_schema(component: Selectboxes) -> JSONObject:
+        values = component.values
 
-        base = {"title": label, "type": "object"}
+        base: JSONObject = {"title": component.label, "type": "object"}
         # Note: the 'values' will be a list with a single empty option if the data
         # source is another variable or reference lists, AND the configuration was not
         # updated before generating the schema.
-        if not (len(values) == 1 and values[0]["label"] == ""):
-            properties = {
-                options["value"]: {"type": "boolean"} for options in component["values"]
+        if values and not (len(values) == 1 and values[0].label == ""):
+            properties: JSONObject = {
+                option.value: {"type": "boolean"} for option in values
             }
             base.update(
                 {
@@ -800,7 +785,9 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
 
     @staticmethod
     def test_conditional(
-        component: SelectComponent, value: dict[str, str], compare_value: str
+        component: Selectboxes,
+        value: VariableValue,
+        compare_value: VariableValue,
     ) -> bool:
         # Selectboxes need some special attention as we need to check whether the
         # value corresponding to the key ``compare_value`` is set to ``True`` in the
@@ -808,9 +795,13 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
         # NOTE: the previous implementation defaulted to the direct comparison, but
         # this is not useful for selectboxes components, because a user can only set
         # a single compare value, not an object.
-        return value.get(compare_value, False)
+        assert isinstance(value, dict)
+        assert isinstance(compare_value, str)
+        result = value.get(compare_value, False)
+        assert isinstance(result, bool)
+        return result
 
-    def get_empty_value(self, component: SelectBoxesComponent):
+    def get_empty_value(self, component: Selectboxes):
         # Issue 2838
         # Component selectboxes is of 'object' type, which would return a {} for an
         # empty component. However, the empty value is with all the options not selected
@@ -819,48 +810,45 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
         # variable or reference lists as a data source. We can generate a correct empty
         # value from the `values` if the formio configuration was updated dynamically.
         empty_value: JSONValue
-        if not (empty_value := component.get("defaultValue", {})):
-            values = component.get("values", {})
-            if not (len(values) == 1 and values[0]["label"] == ""):
-                empty_value = {item["label"]: False for item in values}
+        # FIXME: why are we using the default value here, that may have non-false
+        # defaults for options???
+        if default_value := component.default_value:
+            empty_value = dict(default_value)
+        else:
+            values = component.values
+            empty_value = {item.label: False for item in values}
+            if len(values) == 1 and values[0].label == "":
+                empty_value = {}
         return empty_value
 
 
 @register("select")
-class Select(BasePlugin[SelectComponent]):
+class SelectPlugin(BasePlugin[Select]):
     formatter = SelectFormatter
     data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def mutate_config_dynamically(
-        self, component, submission: "Submission", data: FormioData
+        self, component: Select, submission: Submission, data: FormioData
     ) -> None:
-        add_options_to_config(
-            component,
-            data,
-            submission,
-            options_path="data.values",
-        )
+        add_options_to_config(component, data, submission)
 
-    def localize(self, component: SelectComponent, language_code: str, enabled: bool):
-        if not (options := component.get("data", {}).get("values", [])):
+    def localize(
+        self, component: Select, language_code: SupportedLanguage, enabled: bool
+    ):
+        if not (options := component.data.values):
             return
         translate_options(options, language_code, enabled)
 
-    def build_serializer_field(
-        self, component: SelectComponent
-    ) -> serializers.ChoiceField:
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
-        assert "values" in component["data"]
-        choices = [
-            (value["value"], value["label"]) for value in component["data"]["values"]
-        ]
+    def build_serializer_field(self, component: Select) -> serializers.ChoiceField:
+        validate = component.validate
+        required = validate is not None and validate.required
+        choices = [(value.value, value.label) for value in component.data.values]
 
         # map multiple false/true to the respective serializer field configuration
         field_kwargs: dict[str, Any]
         match component:
-            case {"multiple": True}:
+            case Select(multiple=True):
                 field_cls = serializers.MultipleChoiceField
                 field_kwargs = {"allow_empty": not required}
             case _:
@@ -877,86 +865,82 @@ class Select(BasePlugin[SelectComponent]):
         )
 
     @staticmethod
-    def as_json_schema(component: SelectComponent) -> JSONObject:
-        multiple = component.get("multiple", False)
-        label = component.get("label", "Select")
-        values = component["data"]["values"]
+    def as_json_schema(component: Select) -> JSONObject:
+        values = component.data.values
 
-        base = {"type": "string"}
+        base: JSONObject = {"type": "string"}
         # Note: the 'values' will be a list with a single empty option if the data
         # source is another variable or reference lists, AND the configuration was not
         # updated before generating the schema.
-        if not (len(values) == 1 and values[0]["label"] == ""):
-            choices = [options["value"] for options in component["data"]["values"]]
-            choices.append("")  # Take into account an unfilled field
-            base["enum"] = choices
+        if values and not (len(values) == 1 and values[0].label == ""):
+            # Take into account an unfilled field
+            base["enum"] = [option.value for option in values] + [""]
 
-        if multiple:
+        if component.multiple:
             base = {"type": "array", "items": base}
-        base["title"] = label
 
+        base["title"] = component.label
         return base
 
 
 @register("currency")
-class Currency(BasePlugin[Component]):
+class CurrencyPlugin(BasePlugin[Currency]):
     formatter = CurrencyFormatter
     data_type = FormVariableDataTypes.float
     empty_value = None
 
-    def build_serializer_field(self, component: Component) -> serializers.FloatField:
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+    def build_serializer_field(self, component: Currency) -> serializers.FloatField:
+        validate = component.validate
+        required = validate is not None and validate.required
 
         extra = {}
-        if (max_value := validate.get("max")) is not None:
-            extra["max_value"] = max_value
-        if (min_value := validate.get("min")) is not None:
-            extra["min_value"] = min_value
+        if validate:
+            if (max_value := validate.max) is not None:
+                extra["max_value"] = max_value
+            if (min_value := validate.min) is not None:
+                extra["min_value"] = min_value
 
-        validators = []
-        if plugin_ids := validate.get("plugins", []):
-            validators.append(PluginValidator(plugin_ids))
+            validators = []
+            if plugin_ids := validate.plugins:
+                validators.append(PluginValidator(plugin_ids))
 
-        if validators:
-            extra["validators"] = validators
+            if validators:
+                extra["validators"] = validators
 
         return serializers.FloatField(
             required=required, allow_null=not required, **extra
         )
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Currency")
-        validate = component.get("validate", {})
-
-        base = {"title": label, "type": "number"}
-        if min_value := validate.get("min"):
-            base["minimum"] = min_value
-        if max_value := validate.get("max"):
-            base["maximum"] = max_value
+    def as_json_schema(component: Currency) -> JSONObject:
+        base: JSONObject = {"title": component.label, "type": "number"}
+        if validate := component.validate:
+            if min_value := validate.min:
+                base["minimum"] = min_value
+            if max_value := validate.max:
+                base["maximum"] = max_value
         return base
 
 
 @register("radio")
-class Radio(BasePlugin[RadioComponent]):
+class RadioPlugin(BasePlugin[Radio]):
     formatter = RadioFormatter
     data_type = FormVariableDataTypes.string
     empty_value = ""
 
     def mutate_config_dynamically(
-        self, component: RadioComponent, submission: "Submission", data: FormioData
+        self, component: Radio, submission: Submission, data: FormioData
     ) -> None:
         add_options_to_config(component, data, submission)
 
-    def localize(self, component: RadioComponent, language_code: str, enabled: bool):
-        if not (options := component.get("values", [])):
+    def localize(
+        self, component: Radio, language_code: SupportedLanguage, enabled: bool
+    ):
+        if not (options := component.values):
             return
         translate_options(options, language_code, enabled)
 
-    def build_serializer_field(
-        self, component: RadioComponent
-    ) -> serializers.ChoiceField:
+    def build_serializer_field(self, component: Radio) -> serializers.ChoiceField:
         """
         Convert a radio component to a serializer field.
 
@@ -964,9 +948,9 @@ class Radio(BasePlugin[RadioComponent]):
         value may not be required. The available choices are taken from the ``values``
         key, which may be set dynamically (see :meth:`mutate_config_dynamically`).
         """
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
-        choices = [(value["value"], value["label"]) for value in component["values"]]
+        validate = component.validate
+        required = validate is not None and validate.required
+        choices = [(value.value, value.label) for value in component.values]
         return serializers.ChoiceField(
             choices=choices,
             required=required,
@@ -975,43 +959,45 @@ class Radio(BasePlugin[RadioComponent]):
         )
 
     @staticmethod
-    def as_json_schema(component: RadioComponent) -> JSONObject:
-        label = component.get("label", "Radio")
-        values = component["values"]
+    def as_json_schema(component: Radio) -> JSONObject:
+        values = component.values
 
-        base = {"title": label, "type": "string"}
+        base: JSONObject = {"title": component.label, "type": "string"}
         # Note: the 'values' will be a list with a single empty option if the data
         # source is another variable or reference lists, AND the configuration was not
         # updated before generating the schema.
-        if not (len(values) == 1 and values[0]["label"] == ""):
-            choices = [options["value"] for options in component["values"]]
-            choices.append("")  # Take into account an unfilled field
-            base["enum"] = choices
+        # FIXME: this single empty option should not be present with the builder - fixup
+        # the data/configuration that violates this assumption.
+        if values and not (len(values) == 1 and values[0].label == ""):
+            # Take into account an unfilled field
+            base["enum"] = [option.value for option in values] + [""]
 
         return base
 
 
 @register("signature")
-class Signature(BasePlugin[Component]):
+class SignaturePlugin(BasePlugin[Signature]):
     formatter = SignatureFormatter
     data_type = FormVariableDataTypes.string
     empty_value = ""
 
-    def build_serializer_field(self, component: Component) -> serializers.CharField:
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
+    def build_serializer_field(self, component: Signature) -> serializers.CharField:
+        validate = component.validate
+        required = validate is not None and validate.required
         return serializers.CharField(required=required, allow_blank=not required)
 
     @staticmethod
-    def as_json_schema(component: Component) -> JSONObject:
-        label = component.get("label", "Signature")
-        base = {"title": label, "type": "string", "format": "base64"}
-
+    def as_json_schema(component: Signature) -> JSONObject:
+        base: JSONObject = {
+            "title": component.label,
+            "type": "string",
+            "format": "base64",
+        }
         return base
 
 
 @register("content")
-class Content(BasePlugin):
+class ContentPlugin(BasePlugin[Content]):
     """
     Formio's WYSIWYG component.
     """
@@ -1020,11 +1006,11 @@ class Content(BasePlugin):
     formatter = DefaultFormatter
     holds_submission_data = False
 
-    def build_serializer_field(self, component: Component) -> serializers.Field:
+    def build_serializer_field(self, component: Content) -> serializers.Field:
         raise NotImplementedError()
 
     @staticmethod
-    def rewrite_for_request(component: ContentComponent, request: Request):
+    def rewrite_for_request(component: Content, request: Request):
         """
         Ensure that the inline styles are made compatible with Content-Security-Policy.
 
@@ -1035,10 +1021,14 @@ class Content(BasePlugin):
            as template context to these HTML blobs, posing a potential injection
            security risk.
         """
-        component["html"] = post_process_html(component["html"], request)
+        # taking the slices forces SafeString to be evaluated to a plain string
+        if component._csp_post_processing_done:
+            return
+        component.html = post_process_html(component.html, request)
+        component._csp_post_processing_done = True
 
     @staticmethod
-    def as_json_schema(component: ContentComponent) -> None:
+    def as_json_schema(component: Content) -> None:
         # Not relevant as content components don't have values
         return None
 
@@ -1064,7 +1054,7 @@ class EditGridField(serializers.Field):
 
     def __init__(self, **kwargs):
         self.registry = kwargs.pop("registry")
-        self.components: list[Component] = kwargs.pop("components", [])
+        self.components: Sequence[AnyComponent] = kwargs.pop("components", [])
         self.allow_empty = kwargs.pop("allow_empty", True)
         self.max_length = kwargs.pop("max_length", None)
         self.min_length = kwargs.pop("min_length", None)
@@ -1140,20 +1130,39 @@ class EditGridField(serializers.Field):
 
 
 @register("editgrid")
-class EditGrid(BasePlugin[EditGridComponent]):
+class EditGridPlugin(BasePlugin[EditGrid]):
     data_type = FormVariableDataTypes.array
     data_subtype = FormVariableDataTypes.editgrid
     empty_value = []
 
-    def build_serializer_field(self, component: EditGridComponent) -> EditGridField:
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
-        components = component.get("components", [])
+    def localize(
+        self, component: EditGrid, language_code: SupportedLanguage, enabled: bool
+    ) -> None:
+        # EditGrid doesn't use BaseExtensions due to missing camel->snake case
+        # conversion of some translatable properties
+        if (
+            component.open_forms is None
+            or (generic_translations := component.open_forms.translations) is None
+        ):
+            return
+
+        translations = generic_translations.get(language_code)
+        if enabled and translations is not None:
+            for field in translations.__struct_fields__:
+                if not (translation := getattr(translations, field)):
+                    continue
+                setattr(component, field, translation)
+
+        component.open_forms.translations = None
+
+    def build_serializer_field(self, component: EditGrid) -> EditGridField:
+        validate = component.validate
+        required = validate is not None and validate.required
         kwargs = {}
-        if (max_length := validate.get("maxLength")) is not None:
+        if validate and (max_length := validate.max_length) is not None:
             kwargs["max_length"] = max_length
         return EditGridField(
-            components=components,
+            components=component.components,
             registry=self.registry,
             required=required,
             allow_null=not required,
@@ -1162,17 +1171,16 @@ class EditGrid(BasePlugin[EditGridComponent]):
         )
 
     @staticmethod
-    def as_json_schema(component: EditGridComponent) -> JSONObject:
-        label = component.get("label", "Edit grid")
-        validate = component.get("validate", {})
+    def as_json_schema(component: EditGrid) -> JSONObject:
+        validate = component.validate
 
         # Build the edit grid object properties by iterating over the child schemas
         properties = {}
         for child_schema in _build_child_schema_list(component):
             properties.update(child_schema)
 
-        base = {
-            "title": label,
+        base: JSONObject = {
+            "title": component.label or "Edit grid",
             "type": "array",
             "items": {
                 "type": "object",
@@ -1181,25 +1189,27 @@ class EditGrid(BasePlugin[EditGridComponent]):
                 "additionalProperties": False,
             },
         }
-        if max_length := validate.get("maxLength"):
-            base["maxItems"] = max_length
+
+        if validate := component.validate:
+            if max_length := validate.max_length:
+                base["maxItems"] = max_length
 
         return base
 
     @staticmethod
     def apply_visibility(
-        component: EditGridComponent,
+        component: EditGrid,
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
         *,
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
         components_to_ignore_hidden: set[str],
-        get_evaluation_data: Callable | None = None,
+        get_evaluation_data: GetEvaluationData | None = None,
         data_for_visible_state: FormioData | None = None,
     ):
-        key = component["key"]
-        clear_on_hide = component.get("clearOnHide", True)
+        key = component.key
+        clear_on_hide = component.clear_on_hide
         # We only need to process children if the value was not already cleared.
         if parent_hidden and clear_on_hide:
             return
@@ -1214,7 +1224,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
         # If the hidden property of the parent should be ignored, so should it for its
         # children.
         _components_to_ignore_hidden = (
-            set(child["key"] for child in component["components"])
+            set(child.key for child in component.components)
             if key in components_to_ignore_hidden
             else set()
         ).union(components_to_ignore_hidden)
@@ -1226,15 +1236,17 @@ class EditGrid(BasePlugin[EditGridComponent]):
         # affect components outside the editgrid.
         inner_evaluation_data = deepcopy(data)
 
-        def get_evaluation_data(item_data_: FormioData) -> FormioData:
+        def _get_evaluation_data(data: FormioData) -> FormioData:
             # We cannot have nested FormioData structures.
-            inner_evaluation_data[key] = item_data_.data
+            inner_evaluation_data[key] = data.data
             return outer_get_evaluation_data(inner_evaluation_data)
 
         edit_grid_data_for_visible_state = (
             data_for_visible_state[key] if data_for_visible_state else None
         )
         for i, item_data in enumerate(edit_grid_data):
+            assert isinstance(item_data, dict)
+
             item_data_for_visible_state = (
                 FormioData(edit_grid_data_for_visible_state[i])
                 if edit_grid_data_for_visible_state
@@ -1242,12 +1254,12 @@ class EditGrid(BasePlugin[EditGridComponent]):
             )
             item_data = FormioData(item_data)
             process_visibility(
-                component,
+                component.components,
                 item_data,
                 wrapper,
                 data_for_hidden_state=data_for_hidden_state,
                 parent_hidden=parent_hidden,
-                get_evaluation_data=get_evaluation_data,
+                get_evaluation_data=_get_evaluation_data,
                 components_to_ignore_hidden=_components_to_ignore_hidden,
                 data_for_visible_state=item_data_for_visible_state,
             )
@@ -1257,36 +1269,36 @@ class EditGrid(BasePlugin[EditGridComponent]):
 
 
 @register("columns")
-class Columns(BasePlugin[ColumnsComponent]):
+class ColumnsPlugin(BasePlugin[Columns]):
     holds_submission_data = False
 
-    def build_serializer_field(self, component: Component) -> serializers.Field:
+    def build_serializer_field(self, component: Columns) -> serializers.Field:
         raise NotImplementedError()
 
     @staticmethod
     def apply_visibility(
-        component: ColumnsComponent,
+        component: Columns,
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
         *,
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
         components_to_ignore_hidden: set[str],
-        get_evaluation_data: Callable | None = None,
+        get_evaluation_data: GetEvaluationData | None = None,
         data_for_visible_state: FormioData | None = None,
     ):
-        key = component["key"]
-        for column in component["columns"]:
+        key = component.key
+        for column in component.columns:
             # If the hidden property of the parent should be ignored, so should it for
             # its children.
             _components_to_ignore_hidden: set[str] = (
-                set(child["key"] for child in column["components"])
+                set(child.key for child in column.components)
                 if key in components_to_ignore_hidden
                 else set()
             ).union(components_to_ignore_hidden)
 
             process_visibility(
-                column,
+                column.components,
                 data,
                 wrapper,
                 data_for_hidden_state=data_for_hidden_state,
@@ -1297,37 +1309,37 @@ class Columns(BasePlugin[ColumnsComponent]):
             )
 
     @staticmethod
-    def as_json_schema(component: ColumnsComponent) -> list[JSONObject]:
+    def as_json_schema(component: Columns) -> list[JSONObject]:
         schemas = []
-        for column in component["columns"]:
+        for column in component.columns:
             schemas.extend(_build_child_schema_list(column))
         return schemas
 
 
 @register("fieldset")
-class Fieldset(BasePlugin[FieldsetComponent]):
+class FieldsetPlugin(BasePlugin[Fieldset]):
     holds_submission_data = False
 
-    def build_serializer_field(self, component: Component) -> serializers.Field:
+    def build_serializer_field(self, component: Fieldset) -> serializers.Field:
         raise NotImplementedError()
 
     @staticmethod
     def apply_visibility(
-        component: FieldsetComponent,
+        component: Fieldset,
         data: FormioData,
         wrapper: FormioConfigurationWrapper,
         *,
         data_for_hidden_state: FormioData,
         parent_hidden: bool,
         components_to_ignore_hidden: set[str],
-        get_evaluation_data: Callable | None = None,
+        get_evaluation_data: GetEvaluationData | None = None,
         data_for_visible_state: FormioData | None = None,
     ):
-        key = component["key"]
+        key = component.key
         # If the hidden property of the parent should be ignored, so should it for
         # its children.
         _components_to_ignore_hidden: set[str] = (
-            set(child["key"] for child in component["components"])
+            set(child.key for child in component.components)
             if key in components_to_ignore_hidden
             else set()
         ).union(components_to_ignore_hidden)
@@ -1335,7 +1347,7 @@ class Fieldset(BasePlugin[FieldsetComponent]):
         # We need to process the children, so we just pass the component as the
         # configuration.
         process_visibility(
-            component,
+            component.components,
             data,
             wrapper,
             data_for_hidden_state=data_for_hidden_state,
@@ -1346,16 +1358,16 @@ class Fieldset(BasePlugin[FieldsetComponent]):
         )
 
     @staticmethod
-    def as_json_schema(component: FieldsetComponent) -> list[JSONObject]:
+    def as_json_schema(component: Fieldset) -> list[JSONObject]:
         return _build_child_schema_list(component)
 
 
 def _build_child_schema_list(
-    component_like: EditGridComponent | FieldsetComponent | Column,
+    component_like: EditGrid | Fieldset | Column,
 ) -> list[JSONObject]:
     """Generate and add the children's schemas to a list."""
     schema_list = []
-    for child in component_like["components"]:
+    for child in component_like.components:
         child_schema = as_json_schema(child)
         match child_schema:
             case None:
@@ -1363,5 +1375,6 @@ def _build_child_schema_list(
             case list():
                 schema_list.extend(child_schema)
             case _:
-                schema_list.append({child["key"]: child_schema})
+                schema_list.append({child.key: child_schema})
+
     return schema_list

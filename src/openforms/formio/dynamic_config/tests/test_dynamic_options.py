@@ -73,22 +73,22 @@ class TestDynamicConfigAddingOptions(TestCase):
         self.assertEqual(
             configuration["components"][0]["values"],
             [
-                {"label": "A", "value": "a"},
-                {"label": "B", "value": "b"},
+                {"label": "A", "value": "a", "description": "", "openForms": None},
+                {"label": "B", "value": "b", "description": "", "openForms": None},
             ],
         )
         self.assertEqual(
             configuration["components"][1]["data"]["values"],
             [
-                {"label": "A", "value": "a"},
-                {"label": "B", "value": "b"},
+                {"label": "A", "value": "a", "description": "", "openForms": None},
+                {"label": "B", "value": "b", "description": "", "openForms": None},
             ],
         )
         self.assertEqual(
             configuration["components"][2]["values"],
             [
-                {"label": "A", "value": "a"},
-                {"label": "B", "value": "b"},
+                {"label": "A", "value": "a", "description": "", "openForms": None},
+                {"label": "B", "value": "b", "description": "", "openForms": None},
             ],
         )
 
@@ -162,22 +162,52 @@ class TestDynamicConfigAddingOptions(TestCase):
         self.assertEqual(
             configuration["components"][1]["values"],
             [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
+                {
+                    "label": "Test1",
+                    "value": "Test1",
+                    "description": "",
+                    "openForms": None,
+                },
+                {
+                    "label": "Test2",
+                    "value": "Test2",
+                    "description": "",
+                    "openForms": None,
+                },
             ],
         )
         self.assertEqual(
             configuration["components"][2]["data"]["values"],
             [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
+                {
+                    "label": "Test1",
+                    "value": "Test1",
+                    "description": "",
+                    "openForms": None,
+                },
+                {
+                    "label": "Test2",
+                    "value": "Test2",
+                    "description": "",
+                    "openForms": None,
+                },
             ],
         )
         self.assertEqual(
             configuration["components"][3]["values"],
             [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
+                {
+                    "label": "Test1",
+                    "value": "Test1",
+                    "description": "",
+                    "openForms": None,
+                },
+                {
+                    "label": "Test2",
+                    "value": "Test2",
+                    "description": "",
+                    "openForms": None,
+                },
             ],
         )
 
@@ -248,15 +278,15 @@ class TestDynamicConfigAddingOptions(TestCase):
 
         self.assertEqual(
             configuration["components"][1]["values"],
-            [{"label": "", "value": ""}],
+            [{"label": "", "value": "", "description": "", "openForms": None}],
         )
         self.assertEqual(
             configuration["components"][2]["data"]["values"],
-            [{"label": "", "value": ""}],
+            [{"label": "", "value": "", "description": "", "openForms": None}],
         )
         self.assertEqual(
             configuration["components"][3]["values"],
-            [{"label": "", "value": ""}],
+            [{"label": "", "value": "", "description": "", "openForms": None}],
         )
 
     def test_variable_options_multiple_component(self):
@@ -321,22 +351,52 @@ class TestDynamicConfigAddingOptions(TestCase):
         self.assertEqual(
             configuration["components"][1]["values"],
             [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
+                {
+                    "label": "Test1",
+                    "value": "Test1",
+                    "description": "",
+                    "openForms": None,
+                },
+                {
+                    "label": "Test2",
+                    "value": "Test2",
+                    "description": "",
+                    "openForms": None,
+                },
             ],
         )
         self.assertEqual(
             configuration["components"][2]["data"]["values"],
             [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
+                {
+                    "label": "Test1",
+                    "value": "Test1",
+                    "description": "",
+                    "openForms": None,
+                },
+                {
+                    "label": "Test2",
+                    "value": "Test2",
+                    "description": "",
+                    "openForms": None,
+                },
             ],
         )
         self.assertEqual(
             configuration["components"][3]["values"],
             [
-                {"label": "Test1", "value": "Test1"},
-                {"label": "Test2", "value": "Test2"},
+                {
+                    "label": "Test1",
+                    "value": "Test1",
+                    "description": "",
+                    "openForms": None,
+                },
+                {
+                    "label": "Test2",
+                    "value": "Test2",
+                    "description": "",
+                    "openForms": None,
+                },
             ],
         )
 
@@ -399,15 +459,15 @@ class TestDynamicConfigAddingOptions(TestCase):
 
         self.assertEqual(
             configuration["components"][1]["values"],
-            [{"label": "", "value": ""}],
+            [{"label": "", "value": "", "description": "", "openForms": None}],
         )
         self.assertEqual(
             configuration["components"][2]["data"]["values"],
-            [{"label": "", "value": ""}],
+            [{"label": "", "value": "", "description": "", "openForms": None}],
         )
         self.assertEqual(
             configuration["components"][3]["values"],
-            [{"label": "", "value": ""}],
+            [{"label": "", "value": "", "description": "", "openForms": None}],
         )
 
     def test_variable_options_repeating_group_missing_map(self):
@@ -479,15 +539,15 @@ class TestDynamicConfigAddingOptions(TestCase):
 
         self.assertEqual(
             configuration["components"][1]["values"],
-            [{"label": "", "value": ""}],
+            [{"label": "", "value": "", "description": "", "openForms": None}],
         )
         self.assertEqual(
             configuration["components"][2]["data"]["values"],
-            [{"label": "", "value": ""}],
+            [{"label": "", "value": "", "description": "", "openForms": None}],
         )
         self.assertEqual(
             configuration["components"][3]["values"],
-            [{"label": "", "value": ""}],
+            [{"label": "", "value": "", "description": "", "openForms": None}],
         )
 
         logs = TimelineLogProxy.objects.filter(
@@ -548,6 +608,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                 {
                     "label": "Some data &lt;IMG src=&quot;/test&quot; /&gt;",
                     "value": "Some data &lt;IMG src=&quot;/test&quot; /&gt;",
+                    "description": "",
+                    "openForms": None,
                 }
             ],
         )
@@ -586,7 +648,7 @@ class TestDynamicConfigAddingOptions(TestCase):
 
         self.assertEqual(
             configuration["components"][1]["values"],
-            [{"label": "", "value": ""}],
+            [{"label": "", "value": "", "description": "", "openForms": None}],
         )
 
         logs = TimelineLogProxy.objects.filter(
@@ -633,7 +695,14 @@ class TestDynamicConfigAddingOptions(TestCase):
         )
         self.assertEqual(
             configuration["components"][1]["values"],
-            [{"label": "duplicate", "value": "duplicate"}],
+            [
+                {
+                    "label": "duplicate",
+                    "value": "duplicate",
+                    "description": "",
+                    "openForms": None,
+                }
+            ],
         )
 
     def test_duplicate_options_with_repeating_group(self):
@@ -676,7 +745,14 @@ class TestDynamicConfigAddingOptions(TestCase):
         )
         self.assertEqual(
             configuration["components"][1]["values"],
-            [{"label": "duplicate", "value": "duplicate"}],
+            [
+                {
+                    "label": "duplicate",
+                    "value": "duplicate",
+                    "description": "",
+                    "openForms": None,
+                }
+            ],
         )
 
     def test_badly_formatted_items(self):
@@ -721,7 +797,15 @@ class TestDynamicConfigAddingOptions(TestCase):
         )
         self.assertEqual(
             configuration["components"][0]["values"],
-            [{"label": "111", "value": "111"}, {"label": "label", "value": "key"}],
+            [
+                {"label": "111", "value": "111", "description": "", "openForms": None},
+                {
+                    "label": "label",
+                    "value": "key",
+                    "description": "",
+                    "openForms": None,
+                },
+            ],
         )
 
         logs = TimelineLogProxy.objects.filter(
@@ -744,8 +828,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "type": "editgrid",
                     "groupLabel": "Item",
                     "components": [
-                        {"type": "textfield", "key": "name"},
-                        {"type": "textfield", "key": "bsn"},
+                        {"type": "textfield", "key": "name", "label": "name"},
+                        {"type": "textfield", "key": "bsn", "label": "bsn"},
                     ],
                 },
                 {
@@ -786,8 +870,18 @@ class TestDynamicConfigAddingOptions(TestCase):
         self.assertEqual(
             configuration["components"][1]["values"],
             [
-                {"label": "Test1", "value": "123456789"},
-                {"label": "Test2", "value": "987654321"},
+                {
+                    "label": "Test1",
+                    "value": "123456789",
+                    "description": "",
+                    "openForms": None,
+                },
+                {
+                    "label": "Test2",
+                    "value": "987654321",
+                    "description": "",
+                    "openForms": None,
+                },
             ],
         )
 

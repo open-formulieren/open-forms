@@ -11,10 +11,13 @@ from openforms.forms.tests.factories import (
 )
 
 from ...form_logic import evaluate_form_logic
+from ..constants import POSTCODE_FIELD_DEFAULTS, TEXT_FIELD_DEFAULTS
 from ..factories import SubmissionFactory, SubmissionStepFactory
 
 
 class ComponentModificationTests(TestCase):
+    maxDiff = None
+
     def test_change_component_to_hidden(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -83,6 +86,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "step2_textfield1",
                     "label": "step2_textfield1",
@@ -160,6 +164,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "component1",
                     "label": "component1",
@@ -167,6 +172,7 @@ class ComponentModificationTests(TestCase):
                     "clearOnHide": True,
                 },
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "component2",
                     "label": "component2",
@@ -246,6 +252,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "surname",
                     "label": "surname",
@@ -323,6 +330,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "test",
                     "label": "test",
@@ -400,6 +408,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "test",
                     "label": "test",
@@ -477,6 +486,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "test",
                     "label": "test",
@@ -554,6 +564,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "test",
                     "label": "test",
@@ -622,6 +633,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "step2_textfield1",
                     "label": "step2_textfield1",
@@ -708,10 +720,16 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "surname",
-                    "validate": {"required": False},
                     "label": "surname",
+                    "validate": {
+                        "maxLength": None,
+                        "pattern": "",
+                        "plugins": [],
+                        "required": False,
+                    },
                 }
             ]
         }
@@ -860,6 +878,7 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **TEXT_FIELD_DEFAULTS,
                     "type": "textfield",
                     "key": "step1_textfield",
                     "label": "step1_textfield",
@@ -1122,17 +1141,9 @@ class ComponentModificationTests(TestCase):
                         "key": "nicePostcode",
                         "label": "nicePostcode",
                         "validate": {
-                            "custom": "",
-                            "unique": False,
                             "pattern": "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
                             "plugins": [],
-                            "multiple": False,
                             "required": True,
-                            "maxLength": "",
-                            "minLength": "",
-                            "customMessage": "Invalid Postcode",
-                            "customPrivate": False,
-                            "strictDateValidation": False,
                         },
                     }
                 ]
@@ -1170,26 +1181,18 @@ class ComponentModificationTests(TestCase):
         expected = {
             "components": [
                 {
+                    **POSTCODE_FIELD_DEFAULTS,
                     "type": "postcode",
                     "key": "nicePostcode",
                     "label": "nicePostcode",
                     "validate": {
-                        "custom": "",
-                        "unique": False,
                         "pattern": "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
                         "plugins": [],
-                        "multiple": False,
                         "required": False,  # Changed
-                        "maxLength": "",
-                        "minLength": "",
-                        "customMessage": "Invalid Postcode",
-                        "customPrivate": False,
-                        "strictDateValidation": False,
                     },
                 }
             ]
         }
-
         self.assertEqual(configuration, expected)
 
     @tag("gh-6014")
