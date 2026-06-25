@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from datetime import date, datetime
 from typing import TypedDict
 from urllib.parse import ParseResult, parse_qs, urlparse
@@ -16,7 +17,7 @@ from ..registry import register_static_variable
 class UrlInfo(TypedDict):
     domain: str
     page: str
-    query: dict[str, str]
+    query: Mapping[str, str]
 
 
 @register_static_variable("now")
@@ -108,13 +109,18 @@ class FormUrl(BaseStaticVariable):
         parsed: ParseResult = urlparse(form_url)
         return {
             "domain": parsed.netloc,
-            "page": parsed.path if parsed.path.endswith("/") else parsed.path + "/",
-            "query": {k: v[0] for k, v in parse_qs(parsed.query).items()},
+            "page": parsed.path,
+            "query": {k: v[-1] for k, v in parse_qs(parsed.query).items()},
         }
 
     def as_json_schema(self):
         return {
-            "title": "Form url metadata",
-            "description": "Details concerning the form's url",
-            "type": ["object", "null"],
+            "type": "object",
+            "properties": {
+                "domain": {"type": "string"},
+                "page": {"type": "string"},
+                "query": {"type": "object", "additionalProperties": {"type": "string"}},
+            },
+            "required": ["domain", "page", "query"],
+            "additionalProperties": False,
         }

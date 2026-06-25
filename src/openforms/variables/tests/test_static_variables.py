@@ -134,8 +134,23 @@ class FormUrlTests(TestCase):
             variable.initial_value,
             {
                 "domain": "www.example.com",
-                "page": "/some/value/",
+                "page": "/some/value",
                 "query": {"foo": "1", "bar": "2"},
+            },
+        )
+
+    def test_with_submission_and_repeating_query_params(self):
+        submission = SubmissionFactory.build(
+            form_url="https://www.example.com/some/value?foo=1&foo=3&bar=2"
+        )
+        variable = _get_variable("form_url", submission=submission)
+
+        self.assertEqual(
+            variable.initial_value,
+            {
+                "domain": "www.example.com",
+                "page": "/some/value",
+                "query": {"foo": "3", "bar": "2"},
             },
         )
 
@@ -143,7 +158,7 @@ class FormUrlTests(TestCase):
         variable = _get_variable("form_url")
 
         self.assertEqual(
-            variable.initial_value, {"domain": "", "page": "/", "query": {}}
+            variable.initial_value, {"domain": "", "page": "", "query": {}}
         )
 
 
