@@ -1,4 +1,7 @@
+from collections.abc import Mapping
 from datetime import date, datetime
+from typing import TypedDict
+from urllib.parse import ParseResult, parse_qs, urlparse
 
 from django.conf import settings
 from django.utils import timezone
@@ -9,6 +12,12 @@ from openforms.submissions.models import Submission
 from ..base import BaseStaticVariable
 from ..constants import FormVariableDataTypes
 from ..registry import register_static_variable
+
+
+class UrlInfo(TypedDict):
+    domain: str
+    page: str
+    query: Mapping[str, str]
 
 
 @register_static_variable("now")
@@ -88,3 +97,30 @@ class FormID(BaseStaticVariable):
 
     def as_json_schema(self):
         return {"title": "Form identifier", "type": "string", "format": "uuid"}
+
+
+@register_static_variable("form_url")
+class FormUrl(BaseStaticVariable):
+    name = _("Form Url")
+    data_type = FormVariableDataTypes.object
+
+    def get_initial_value(self, submission: Submission | None = None) -> UrlInfo:
+        form_url = str(submission.form_url) if submission else ""
+        parsed: ParseResult = urlparse(form_url)
+        return {
+            "domain": parsed.netloc,
+            "page": parsed.path,
+            "query": {k: v[-1] for k, v in parse_qs(parsed.query).items()},
+        }
+
+    def as_json_schema(self):
+        return {
+            "type": "object",
+            "properties": {
+                "domain": {"type": "string"},
+                "page": {"type": "string"},
+                "query": {"type": "object", "additionalProperties": {"type": "string"}},
+            },
+            "required": ["domain", "page", "query"],
+            "additionalProperties": False,
+        }
