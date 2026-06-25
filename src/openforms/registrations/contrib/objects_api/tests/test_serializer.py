@@ -1,5 +1,3 @@
-from unittest.mock import PropertyMock, patch
-
 from django.test import TestCase
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
@@ -58,75 +56,6 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
         )
         self.assertFalse(options.is_valid())
 
-    @patch(
-        "openforms.contrib.zgw.clients.catalogi.CatalogiClient.api_version",
-        return_value=(1, 2, 0),
-        new_callable=PropertyMock,
-    )
-    def test_unknown_informatieobjecttype(self, mock_api_version):
-        options = ObjectsAPIOptionsSerializer(
-            data={
-                "objects_api_group": self.objects_api_group.identifier,
-                "version": 2,
-                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                "objecttype_version": 1,
-                "informatieobjecttype_attachment": (
-                    "http://localhost:8003/catalogi/api/v1/"
-                    "informatieobjecttypen/5e48c3a3-9b12-4692-98ee-5c4576b13465"
-                ),
-            },
-        )
-
-        self.assertFalse(options.is_valid())
-        self.assertIn("informatieobjecttype_attachment", options.errors)
-        error = options.errors["informatieobjecttype_attachment"][0]
-        self.assertEqual(error.code, "not-found")
-
-    @patch(
-        "openforms.contrib.zgw.clients.catalogi.CatalogiClient.api_version",
-        return_value=(1, 0, 0),
-        new_callable=PropertyMock,
-    )
-    def test_unknown_informatieobjecttype_validate_with_get_request(
-        self, mock_api_version
-    ):
-        options = ObjectsAPIOptionsSerializer(
-            data={
-                "objects_api_group": self.objects_api_group.identifier,
-                "version": 2,
-                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                "objecttype_version": 1,
-                "informatieobjecttype_attachment": (
-                    "http://localhost:8003/catalogi/api/v1/"
-                    "informatieobjecttypen/5e48c3a3-9b12-4692-98ee-5c4576b13465"
-                ),
-            },
-        )
-
-        self.assertFalse(options.is_valid())
-        self.assertIn("informatieobjecttype_attachment", options.errors)
-        error = options.errors["informatieobjecttype_attachment"][0]
-        self.assertEqual(error.code, "not-found")
-
-    def test_using_zaaktype_instead_of_informatieobjecttype(self):
-        options = ObjectsAPIOptionsSerializer(
-            data={
-                "objects_api_group": self.objects_api_group.identifier,
-                "version": 2,
-                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                "objecttype_version": 1,
-                "informatieobjecttype_attachment": (
-                    "http://localhost:8003/catalogi/api/v1/"
-                    "zaaktypen/5e48c3a3-9b12-4692-98ee-5c4576b13465"  # incorrect endpoint
-                ),
-            },
-        )
-
-        self.assertFalse(options.is_valid())
-        self.assertIn("informatieobjecttype_attachment", options.errors)
-        error = options.errors["informatieobjecttype_attachment"][0]
-        self.assertEqual(error.code, "not-found")
-
     def test_unknown_objecttype(self):
         options = ObjectsAPIOptionsSerializer(
             data={
@@ -184,9 +113,13 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                 "version": 2,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
-                "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
-                "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
-                "informatieobjecttype_submission_csv": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+                "catalogue": {
+                    "domain": "TEST",
+                    "rsin": "000000000",
+                },
+                "iot_attachment": "PDF Informatieobjecttype",
+                "iot_submission_report": "CSV Informatieobjecttype",
+                "iot_submission_csv": "Attachment Informatieobjecttype",
             },
         )
 

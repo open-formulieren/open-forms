@@ -1,4 +1,3 @@
-from unittest.mock import patch
 from uuid import UUID
 
 from django.test import TestCase
@@ -8,32 +7,29 @@ from freezegun import freeze_time
 
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
+from ..models import ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..typing import RegistrationOptionsV2
 
 
 @freeze_time("2020-02-02")
 class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
-    def setUp(self):
-        super().setUp()
+    config_group: ObjectsAPIGroupConfig
 
-        self.config_group = ObjectsAPIGroupConfigFactory.create(
-            for_test_docker_compose=True
-        )
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-        config_patcher = patch(
-            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-            return_value=ObjectsAPIConfig(),
+        cls.config_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
         )
-        self.mock_get_config = config_patcher.start()
-        self.addCleanup(config_patcher.stop)
 
     def test_update_payment_status(self):
         # We manually create the objects instance, to be in the same state after
@@ -66,17 +62,9 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
 
         submission = SubmissionFactory.from_components(
             [
-                # fmt: off
                 {"key": "age", "type": "number"},
-                {
-                    "key": "lastname",
-                    "type": "textfield",
-                },
-                {
-                    "key": "location",
-                    "type": "map",
-                },
-                # fmt: on
+                {"key": "lastname", "type": "textfield"},
+                {"key": "location", "type": "map"},
             ],
             registration_success=True,
             submitted_data={
@@ -91,22 +79,29 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
             form__payment_backend="demo",
             form__product__price=10.01,
         )
-
+        SubmissionPaymentFactory.create(
+            submission=submission,
+            status=PaymentStatus.completed,
+            amount=10.01,
+            public_order_id="TEST-123",
+            provider_payment_id="12345",
+        )
         ObjectsAPIRegistrationData.objects.create(submission=submission)
-
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
             "objects_api_group": self.config_group,
             # See the docker compose fixtures for more info on these values:
             "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
             "objecttype_version": 3,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "auth_attribute_path": [],
+            "update_existing_object": False,
             "upload_submission_csv": True,
-            "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
-            "informatieobjecttype_submission_csv": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
-            "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
-                # fmt: off
                 {
                     "variable_key": "age",
                     "target_path": ["age"],
@@ -140,27 +135,16 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
                     "variable_key": "provider_payment_ids",
                     "target_path": ["submission_provider_payment_ids"],
                 },
-                # fmt: on
             ],
             "geometry_variable_key": "location",
+            "transform_to_list": [],
         }
-
-        SubmissionPaymentFactory.create(
-            submission=submission,
-            status=PaymentStatus.completed,
-            amount=10.01,
-            public_order_id="TEST-123",
-            provider_payment_id="12345",
-        )
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         result = plugin.update_payment_status(submission, v2_options)
 
         assert result is not None
-
         result_data = result["record"]["data"]
-
         self.assertTrue(result_data["submission_payment_completed"])
         self.assertEqual(
             result_data["nested"],

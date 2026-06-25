@@ -42,23 +42,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.document_type_defaults = {
-            "informatieobjecttype_submission_report": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "7a474713-0833-402a-8441-e467c08ac55b"
-            ),
-            "informatieobjecttype_submission_csv": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "b2d83b94-9b9b-4e80-a82f-73ff993c62f3"
-            ),
-            "informatieobjecttype_attachment": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "531f6c1a-97f7-478c-85f0-67d2f23661c7"
-            ),
-            "iot_submission_report": "",
-            "iot_submission_csv": "",
-            "iot_attachment": "",
-        }
         cls.objects_api_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True,
             organisatie_rsin="000000000",
@@ -105,9 +88,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
 
-    def test_submission_with_objects_api_backend_override_defaults(self):
-        """Test that the configured IOTs are used instead of the global defaults on the Objects API group."""
-
+    def test_objecttype_and_document_types_are_resolved(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -158,15 +139,16 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
             language_code="en",
             uuid=FIXED_SUBMISSION_UUID,
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2026, 6, 10, 12, 0, 0).replace(tzinfo=UTC),
             with_report=True,
         )
         submission_step = submission.steps[0]
         assert submission_step.form_step
         submission_step.form_step.slug = "test-slug"
         submission_step.form_step.save()
-
-        objects_form_options = {
-            **self.document_type_defaults,
+        options: RegistrationOptionsV1 = {
             "version": 1,
             "objects_api_group": self.objects_api_group,
             "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
@@ -174,18 +156,18 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "productaanvraag_type": "testproduct",
             "update_existing_object": False,
             "auth_attribute_path": [],
-            # `omschrijving` "PDF Informatieobjecttype other catalog":
-            "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
+            "catalogue": {"domain": "OTHER", "rsin": "000000000"},
+            "iot_submission_report": "PDF Informatieobjecttype other catalog",
+            "iot_submission_csv": "CSV Informatieobjecttype other catalog",
+            "iot_attachment": "Attachment Informatieobjecttype other catalog",
             "upload_submission_csv": True,
-            # `omschrijving` "CSV Informatieobjecttype other catalog":
-            "informatieobjecttype_submission_csv": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f",
             "organisatie_rsin": "123456782",
         }
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        result = plugin.register_submission(submission, objects_form_options)
+        result = plugin.register_submission(submission, options)
+        assert result is not None
 
         registration_data = ObjectsAPIRegistrationData.objects.get(
             submission=submission
@@ -230,7 +212,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
         )
 
-        # Assert that it used the IOTs in the config, not the defaults in the config group:
+        # Assert that it resolved the IOTs
         with get_documents_client(self.objects_api_group) as documents_client:
             csv_document = documents_client.get(registration_data.csv_url).json()
             pdf_document = documents_client.get(registration_data.pdf_url).json()
@@ -245,9 +227,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
         )
 
-    def test_submission_with_objects_api_backend_override_defaults_upload_csv_default_type(
-        self,
-    ):
+    def test_no_csv_upload_configuration_option(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -258,132 +238,74 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 },
             ],
             submitted_data={"voornaam": "Foo"},
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2026, 6, 10, 12, 0, 0).replace(tzinfo=UTC),
             with_report=True,
         )
-        objects_form_options = {
-            **self.document_type_defaults,
+        options: RegistrationOptionsV1 = {
             "version": 1,
-            "objects_api_group": self.objects_api_group,
             "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
             "objecttype_version": 1,
-            "productaanvraag_type": "testproduct",
-            "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
+            "objects_api_group": self.objects_api_group,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
+            "iot_submission_report": "PDF Informatieobjecttype",
+            "iot_submission_csv": "CSV Informatieobjecttype",
+            "iot_attachment": "Attachment Informatieobjecttype",
+            "upload_submission_csv": False,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+        }
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        registration_data = ObjectsAPIRegistrationData.objects.get(
+            submission=submission
+        )
+
+        with self.subTest("No CSV uploaded"):
+            self.assertEqual(result["record"]["data"]["csv"], "")
+            self.assertEqual(registration_data.csv_url, "")
+
+        with (
+            self.subTest("PDF is uploaded"),
+            get_documents_client(self.objects_api_group) as documents_client,
+        ):
+            pdf_response = documents_client.get(registration_data.pdf_url)
+
+            self.assertTrue(pdf_response.ok)
+
+    def test_no_csv_uploaded_if_document_type_not_configured(self):
+        submission = SubmissionFactory.create(with_report=True, completed=True)
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "objects_api_group": self.objects_api_group,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
             "upload_submission_csv": True,
             "update_existing_object": False,
             "auth_attribute_path": [],
-            "organisatie_rsin": "123456782",
-            "zaak_vertrouwelijkheidaanduiding": "geheim",
-            "doc_vertrouwelijkheidaanduiding": "geheim",
         }
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(submission, objects_form_options)
+        result = plugin.register_submission(submission, options)
+        assert result is not None
 
         registration_data = ObjectsAPIRegistrationData.objects.get(
             submission=submission
         )
-
-        with get_documents_client(self.objects_api_group) as documents_client:
-            csv_document = documents_client.get(registration_data.csv_url).json()
-            pdf_document = documents_client.get(registration_data.pdf_url).json()
-
-        self.assertEqual(
-            csv_document["informatieobjecttype"],
-            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
-            "should have used the default IOT in the config group",
-        )
-
-        self.assertEqual(
-            pdf_document["informatieobjecttype"],
-            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
-            "should have used the IOT in the config",
-        )
-
-    def test_submission_with_objects_api_backend_override_defaults_do_not_upload_csv(
-        self,
-    ):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "voornaam",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_voornamen,
-                    },
-                },
-            ],
-            submitted_data={"voornaam": "Foo"},
-            with_report=True,
-        )
-
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        # Run the registration
-        result = plugin.register_submission(
-            submission,
-            {
-                **self.document_type_defaults,
-                "version": 1,
-                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                "objecttype_version": 1,
-                "objects_api_group": self.objects_api_group,
-                "upload_submission_csv": False,
-                "update_existing_object": False,
-                "auth_attribute_path": [],
-            },
-        )
-
-        registration_data = ObjectsAPIRegistrationData.objects.get(
-            submission=submission
-        )
-
         self.assertEqual(result["record"]["data"]["csv"], "")
+        self.assertEqual(registration_data.csv_url, "")
 
-        with get_documents_client(self.objects_api_group) as documents_client:
-            pdf_document = documents_client.get(registration_data.pdf_url).json()
-
-        self.assertEqual(
-            pdf_document["informatieobjecttype"],
-            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
-        )
-
-    def test_submission_with_objects_api_backend_missing_csv_iotype(self):
-        submission = SubmissionFactory.create(with_report=True, completed=True)
-
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        # Run the registration
-        result = plugin.register_submission(
-            submission,
-            {
-                **self.document_type_defaults,
-                "version": 1,
-                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                "objecttype_version": 1,
-                "objects_api_group": self.objects_api_group,
-                "upload_submission_csv": True,
-                "update_existing_object": False,
-                "auth_attribute_path": [],
-                "informatieobjecttype_submission_csv": "",
-            },
-        )
-
-        registration_data = ObjectsAPIRegistrationData.objects.get(
-            submission=submission
-        )
-
-        self.assertEqual(result["record"]["data"]["csv"], "")
-
-        with get_documents_client(self.objects_api_group) as documents_client:
-            pdf_document = documents_client.get(registration_data.pdf_url).json()
-
-        self.assertEqual(
-            pdf_document["informatieobjecttype"],
-            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
-        )
-
-    def test_submission_with_objects_api_backend_override_content_json(self):
+    def test_override_content_json(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -397,19 +319,22 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             submitted_data={"voornaam": "Foo"},
             language_code="en",
             uuid=FIXED_SUBMISSION_UUID,
+            completed=True,
             with_report=True,
         )
         submission_step = submission.steps[0]
         assert submission_step.form_step
         submission_step.form_step.slug = "test-slug"
         submission_step.form_step.save()
-
-        objects_form_options = {
-            **self.document_type_defaults,
+        options: RegistrationOptionsV1 = {
             "version": 1,
             "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
             "objecttype_version": 1,
             "objects_api_group": self.objects_api_group,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
             "upload_submission_csv": False,
             "update_existing_object": False,
             "auth_attribute_path": [],
@@ -427,11 +352,11 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             """
             ),
         }
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        result = plugin.register_submission(submission, objects_form_options)
+        result = plugin.register_submission(submission, options)
+        assert result is not None
 
         self.assertEqual(
             result["record"]["data"],
@@ -446,7 +371,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
         )
 
-    def test_submission_with_objects_api_backend_use_config_defaults(self):
+    def test_use_config_defaults(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -459,30 +384,34 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             submitted_data={"voornaam": "Foo"},
             language_code="en",
             uuid=FIXED_SUBMISSION_UUID,
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2026, 6, 10, 12, 0, 0).replace(tzinfo=UTC),
             with_report=True,
         )
         submission_step = submission.steps[0]
         assert submission_step.form_step
         submission_step.form_step.slug = "test-slug"
         submission_step.form_step.save()
-
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.objects_api_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
+            "iot_submission_report": "PDF Informatieobjecttype",
+            "iot_submission_csv": "CSV Informatieobjecttype",
+            "iot_attachment": "Attachment Informatieobjecttype",
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+        }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration, applying default options from the config
         # (while still specifying the required fields):
-        result = plugin.register_submission(
-            submission,
-            {
-                **self.document_type_defaults,
-                "version": 1,
-                "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                "objecttype_version": 1,
-                "update_existing_object": False,
-                "auth_attribute_path": [],
-            },
-        )
+        result = plugin.register_submission(submission, options)
 
+        assert result is not None
         registration_data = ObjectsAPIRegistrationData.objects.get(
             submission=submission
         )
@@ -495,7 +424,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             self.assertEqual(pdf_document["bronorganisatie"], "000000000")
             self.assertEqual(
                 pdf_document["informatieobjecttype"],
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/29b63e5c-3835-4f68-8fad-f2aea9ae6b71",
             )
             self.assertEqual(pdf_document["vertrouwelijkheidaanduiding"], "openbaar")
 
@@ -526,7 +455,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 },
             )
 
-    def test_submission_with_objects_api_backend_attachments(self):
+    def test_attachments_uploaded_with_attachment_document_type(self):
         # Form.io configuration is irrelevant for this test, but normally you'd have
         # set up some file upload components.
         submission = SubmissionFactory.from_components(
@@ -536,6 +465,8 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             submitted_data={},
             language_code="en",
             completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2026, 6, 10, 12, 0, 0).replace(tzinfo=UTC),
             with_report=True,
         )
         submission_step = submission.steps[0]
@@ -546,29 +477,25 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         file_attachment_2 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step, file_name="attachment2.jpg"
         )
-
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.objects_api_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "Attachment Informatieobjecttype",
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+        }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        result = plugin.register_submission(
-            submission,
-            {
-                **self.document_type_defaults,
-                "version": 1,
-                "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                "objecttype_version": 1,
-                "update_existing_object": False,
-                "auth_attribute_path": [],
-            },
-        )
+        result = plugin.register_submission(submission, options)
 
-        registration_data = ObjectsAPIRegistrationData.objects.get(
-            submission=submission
-        )
-
+        assert result is not None
         with get_documents_client(self.objects_api_group) as documents_client:
-            pdf_document = documents_client.get(registration_data.pdf_url).json()
             attachment_document_1 = documents_client.get(
                 ObjectsAPISubmissionAttachment.objects.get(
                     submission_file_attachment=file_attachment_1
@@ -583,7 +510,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         with self.subTest("object creation"):
             record_data = result["record"]["data"]
 
-            self.assertEqual(record_data["pdf"], registration_data.pdf_url)
             self.assertCountEqual(
                 record_data["bijlagen"],
                 ObjectsAPISubmissionAttachment.objects.values_list(
@@ -591,21 +517,12 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 ),
             )
 
-        with self.subTest("Document creation (PDF summary)"):
-            self.assertEqual(pdf_document["bronorganisatie"], "000000000")
-            self.assertEqual(
-                pdf_document["informatieobjecttype"],
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
-            )
-            self.assertEqual(pdf_document["vertrouwelijkheidaanduiding"], "openbaar")
-            self.assertEqual(pdf_document["titel"], "Public form name")
-
         with self.subTest("Document creation (attachment 1)"):
             self.assertEqual(attachment_document_1["bronorganisatie"], "000000000")
             self.assertEqual(attachment_document_1["taal"], "eng")
             self.assertEqual(
                 attachment_document_1["informatieobjecttype"],
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e",
             )
             self.assertEqual(
                 attachment_document_1["vertrouwelijkheidaanduiding"], "openbaar"
@@ -617,127 +534,14 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             self.assertEqual(attachment_document_2["taal"], "eng")
             self.assertEqual(
                 attachment_document_2["informatieobjecttype"],
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7755ab0f-9e37-4834-8bbf-158f9f2da38e",
             )
             self.assertEqual(
                 attachment_document_2["vertrouwelijkheidaanduiding"], "openbaar"
             )
             self.assertIsNotNone(attachment_document_2["ontvangstdatum"])
 
-    def test_submission_with_objects_api_backend_attachments_specific_iotypen(self):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "field1",
-                    "type": "file",
-                    "registration": {
-                        # `omschrijving` "Attachment Informatieobjecttype other catalog":
-                        "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
-                    },
-                    "file": {"type": []},
-                    "filePattern": "",
-                },
-                {
-                    "key": "field2",
-                    "type": "file",
-                    "registration": {
-                        "informatieobjecttype": "",
-                    },
-                    "file": {"type": []},
-                    "filePattern": "",
-                },
-            ],
-            language_code="en",
-            completed=True,
-            # the version of the document types are valid on this timestamp
-            completed_on=datetime(2026, 6, 10, 12, 0, 0).replace(tzinfo=UTC),
-            with_report=True,
-        )
-        submission_step = submission.steps[0]
-        file_attachment_1 = SubmissionFileAttachmentFactory.create(
-            submission_step=submission_step,
-            file_name="attachment1.jpg",
-            form_key="field1",
-            _component_configuration_path="components.0",
-        )
-        file_attachment_2 = SubmissionFileAttachmentFactory.create(
-            submission_step=submission_step,
-            file_name="attachment2.jpg",
-            form_key="field2",
-            _component_configuration_path="component.1",
-        )
-
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        # Run the registration
-        plugin.register_submission(
-            submission,
-            {
-                **self.document_type_defaults,
-                "version": 1,
-                "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                "objecttype_version": 1,
-                "update_existing_object": False,
-                "auth_attribute_path": [],
-                "catalogue": {
-                    "domain": "OTHER",
-                    "rsin": "000000000",
-                },
-                "files": [
-                    {
-                        "key": "field1",
-                        "document_type_description": (
-                            "Attachment Informatieobjecttype other catalog"
-                        ),
-                    },
-                    {
-                        "key": "field2",
-                        "document_type_description": "",
-                        "organization_rsin": "",
-                        "title": "",
-                    },
-                ],
-            },
-        )
-
-        with get_documents_client(self.objects_api_group) as documents_client:
-            attachment_document_1 = documents_client.get(
-                ObjectsAPISubmissionAttachment.objects.get(
-                    submission_file_attachment=file_attachment_1
-                ).document_url
-            ).json()
-            attachment_document_2 = documents_client.get(
-                ObjectsAPISubmissionAttachment.objects.get(
-                    submission_file_attachment=file_attachment_2
-                ).document_url
-            ).json()
-
-        with self.subTest("Document creation (attachment 1)"):
-            self.assertEqual(attachment_document_1["bronorganisatie"], "000000000")
-            self.assertEqual(attachment_document_1["taal"], "eng")
-            # Use overridden IOType:
-            self.assertEqual(
-                attachment_document_1["informatieobjecttype"],
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
-            )
-            self.assertEqual(
-                attachment_document_1["vertrouwelijkheidaanduiding"], "openbaar"
-            )
-
-        with self.subTest("Document creation (attachment 2)"):
-            self.assertEqual(attachment_document_2["bronorganisatie"], "000000000")
-            self.assertEqual(attachment_document_2["taal"], "eng")
-            # Fallback to default IOType
-            self.assertEqual(
-                attachment_document_2["informatieobjecttype"],
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-            )
-            self.assertEqual(
-                attachment_document_2["vertrouwelijkheidaanduiding"], "openbaar"
-            )
-
-    def test_submission_with_objects_api_backend_attachments_component_overrides(self):
+    def test_attachments_uploaded_with_file_component_overrides(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -780,136 +584,36 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             form_key="fileUpload",
             _component_configuration_path="components.0",
         )
-
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        # Run the registration
-        plugin.register_submission(
-            submission,
-            {
-                **self.document_type_defaults,
-                "version": 1,
-                "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                "objecttype_version": 1,
-                "update_existing_object": False,
-                "auth_attribute_path": [],
-                "catalogue": {
-                    "domain": "OTHER",
-                    "rsin": "000000000",
-                },
-                "files": [
-                    {
-                        "key": "fileUpload",
-                        "document_type_description": (
-                            "Attachment Informatieobjecttype other catalog"
-                        ),
-                        "organization_rsin": "111222333",
-                        "confidentiality_level": "geheim",
-                        "title": "A Custom Title",
-                    }
-                ],
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.objects_api_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "catalogue": {
+                "domain": "OTHER",
+                "rsin": "000000000",
             },
-        )
-
-        with get_documents_client(self.objects_api_group) as documents_client:
-            attachment_document = documents_client.get(
-                ObjectsAPISubmissionAttachment.objects.get().document_url
-            ).json()
-
-        # Check use of overridden settings
-        self.assertEqual(
-            attachment_document["informatieobjecttype"],
-            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
-        )
-        self.assertEqual(attachment_document["bronorganisatie"], "111222333")
-        self.assertEqual(attachment_document["vertrouwelijkheidaanduiding"], "geheim")
-        self.assertEqual(attachment_document["titel"], "A Custom Title")
-
-    def test_submission_with_objects_api_backend_attachments_component_inside_fieldset_overrides(
-        self,
-    ):
-        submission = SubmissionFactory.from_components(
-            [
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "PDF Informatieobjecttype other catalog",
+            "files": [
                 {
-                    "key": "fieldset",
-                    "type": "fieldset",
-                    "label": "A fieldset",
-                    "components": [
-                        {
-                            "key": "fileUpload",
-                            "label": "fileUpload",
-                            "type": "file",
-                            "file": {"type": []},
-                            "filePattern": "",
-                        },
-                    ],
-                },
+                    "key": "fileUpload",
+                    "document_type_description": (
+                        "Attachment Informatieobjecttype other catalog"
+                    ),
+                    "organization_rsin": "111222333",
+                    "confidentiality_level": "geheim",
+                    "title": "A Custom Title",
+                }
             ],
-            submitted_data={
-                "fileUpload": [
-                    {
-                        "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
-                        "data": {
-                            "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
-                            "form": "",
-                            "name": "some-attachment.jpg",
-                            "size": 46114,
-                            "baseUrl": "http://server/form",
-                            "project": "",
-                        },
-                        "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
-                        "size": 46114,
-                        "type": "image/jpg",
-                        "storage": "url",
-                        "originalName": "some-attachment.jpg",
-                    }
-                ],
-            },
-            language_code="en",
-            completed=True,
-            # the version of the document types are valid on this timestamp
-            completed_on=datetime(2026, 6, 10, 12, 0, 0).replace(tzinfo=UTC),
-            with_report=True,
-        )
-        submission_step = submission.steps[0]
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission_step,
-            file_name="some-attachment.jpg",
-            form_key="fileUpload",
-            _component_configuration_path="components.0.components.0",
-        )
-
+        }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(
-            submission,
-            {
-                **self.document_type_defaults,
-                "version": 1,
-                "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                "objecttype_version": 1,
-                "update_existing_object": False,
-                "auth_attribute_path": [],
-                "catalogue": {
-                    "domain": "OTHER",
-                    "rsin": "000000000",
-                },
-                "files": [
-                    {
-                        "key": "fileUpload",
-                        "document_type_description": (
-                            "Attachment Informatieobjecttype other catalog"
-                        ),
-                        "organization_rsin": "111222333",
-                        "confidentiality_level": "geheim",
-                        "title": "A Custom Title",
-                    }
-                ],
-            },
-        )
+        plugin.register_submission(submission, options)
 
         with get_documents_client(self.objects_api_group) as documents_client:
             attachment_document = documents_client.get(
@@ -926,7 +630,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         self.assertEqual(attachment_document["titel"], "A Custom Title")
 
     @override_settings(ESCAPE_REGISTRATION_OUTPUT=True)
-    def test_submission_with_objects_api_escapes_html(self):
+    def test_escapes_html_in_json(self):
         content_template = textwrap.dedent(
             """
             {
@@ -947,6 +651,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             ],
             submitted_data={"voornaam": "<script>alert();</script>"},
             language_code="en",
+            completed=True,
             with_report=True,
         )
 
@@ -954,25 +659,26 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         assert submission_step.form_step
         submission_step.form_step.slug = "test-slug"
         submission_step.form_step.save()
-
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.objects_api_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "content_json": content_template,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "upload_submission_csv": False,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+        }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        result = plugin.register_submission(
-            submission,
-            {
-                **self.document_type_defaults,
-                "version": 1,
-                "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                "objecttype_version": 1,
-                "content_json": content_template,
-                "upload_submission_csv": False,
-                "update_existing_object": False,
-                "auth_attribute_path": [],
-            },
-        )
+        result = plugin.register_submission(submission, options)
 
+        assert result is not None
         self.assertEqual(
             result["record"]["data"],
             {
@@ -985,7 +691,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
         )
 
-    def test_submission_with_payment(self):
+    def test_payment_information_included(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -998,6 +704,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             language_code="en",
             form__payment_backend="demo",
             form__product__price=10,
+            completed=True,
             with_report=True,
         )
         SubmissionPaymentFactory.for_submission(
@@ -1006,21 +713,23 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             public_order_id="",
             provider_payment_id="123456",
         )
-
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.objects_api_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+        }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-        result = plugin.register_submission(
-            submission,
-            {
-                **self.document_type_defaults,
-                "version": 1,
-                "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                "objecttype_version": 1,
-                "update_existing_object": False,
-                "auth_attribute_path": [],
-            },
-        )
 
+        result = plugin.register_submission(submission, options)
+
+        assert result is not None
         self.assertEqual(
             result["record"]["data"]["payment"],
             {
@@ -1032,9 +741,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         )
 
     def test_submission_with_auth_context_data(self):
-        # skip document uploads
-        self.objects_api_group.informatieobjecttype_submission_report = ""
-        self.objects_api_group.save()
         submission = SubmissionFactory.create(
             completed=True,
             form__generate_minimal_setup=True,
@@ -1043,24 +749,25 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             auth_info__plugin="demo",
             auth_info__is_eh_bewindvoering=True,
         )
-
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.objects_api_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "upload_submission_csv": False,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "content_json": r"""{"auth": {% as_json variables.auth_context %}}""",
+        }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-        result = plugin.register_submission(
-            submission,
-            {
-                **self.document_type_defaults,
-                "version": 1,
-                "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                "objecttype_version": 1,
-                "informatieobjecttype_submission_report": "",
-                "upload_submission_csv": False,
-                "update_existing_object": False,
-                "auth_attribute_path": [],
-                "content_json": r"""{"auth": {% as_json variables.auth_context %}}""",
-            },
-        )
 
+        result = plugin.register_submission(submission, options)
+
+        assert result is not None
         # for the values, see openforms.authentication.tests.factories.AuthInfoFactory
         expected = {
             "source": "eherkenning",
@@ -1096,33 +803,30 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         self.assertEqual(result["record"]["data"]["auth"], expected)
 
     def test_submission_with_auth_context_data_not_authenticated(self):
-        # skip document uploads
-        self.objects_api_group.informatieobjecttype_submission_report = ""
-        self.objects_api_group.save()
         submission = SubmissionFactory.create(
             completed=True,
             form__generate_minimal_setup=True,
         )
         assert not submission.is_authenticated
-
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.objects_api_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "upload_submission_csv": False,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "content_json": r"""{"auth": {% as_json variables.auth_context %}}""",
+        }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
-        result = plugin.register_submission(
-            submission,
-            {
-                **self.document_type_defaults,
-                "version": 1,
-                "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                "objecttype_version": 1,
-                "informatieobjecttype_submission_report": "",
-                "upload_submission_csv": False,
-                "update_existing_object": False,
-                "auth_attribute_path": [],
-                "content_json": r"""{"auth": {% as_json variables.auth_context %}}""",
-            },
-        )
+        result = plugin.register_submission(submission, options)
 
+        assert result is not None
         self.assertEqual(result["record"]["data"]["auth"], None)
 
     @tag("gh-5034")
@@ -1184,16 +888,17 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             },
             language_code="en",
             uuid=FIXED_SUBMISSION_UUID,
+            completed=True,
             with_report=True,
         )
-
-        objects_form_options: RegistrationOptionsV1 = {
+        options: RegistrationOptionsV1 = {
             "version": 1,
             "objects_api_group": self.objects_api_group,
             "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
             "objecttype_version": 1,
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_submission_report": "",
             "iot_submission_csv": "",
             "iot_attachment": "",
@@ -1210,12 +915,12 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 """
             ),
         }
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        result = plugin.register_submission(submission, objects_form_options)
+        result = plugin.register_submission(submission, options)
 
+        assert result is not None
         self.assertEqual(
             result["record"]["data"],
             {
@@ -1226,79 +931,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "editgrid": "[{'time': '12:34:56'}]",
                 },
             },
-        )
-
-    def test_can_upload_attachments_with_indirect_document_type_reference(self):
-        objects_api_group = ObjectsAPIGroupConfigFactory.create(
-            for_test_docker_compose=True,
-            organisatie_rsin="000000000",
-        )
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "type": "file",
-                    "key": "file",
-                    "label": "File",
-                    "file": {"type": []},
-                    "filePattern": "",
-                    "registration": {
-                        "informatieobjecttype": "https://example.com/ignore-me",
-                    },
-                }
-            ],
-            submitted_data={},
-            completed=True,
-            # the version of the document types are valid on this timestamp
-            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
-        )
-        attachment = SubmissionFileAttachmentFactory.create(
-            submission_step=submission.steps[0],
-            content_type="image/png",
-            form_key="file",
-            _component_configuration_path="components.0",
-        )
-        options: RegistrationOptionsV1 = {
-            "version": 1,
-            "objects_api_group": objects_api_group,
-            "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
-            "objecttype_version": 3,
-            "catalogue": {
-                "domain": "TEST",
-                "rsin": "000000000",
-            },
-            "iot_submission_report": "",
-            "iot_submission_csv": "",
-            # a default is required to register file component attachments, aparently
-            "iot_attachment": "PDF Informatieobjecttype",
-            "upload_submission_csv": False,
-            "update_existing_object": False,
-            "auth_attribute_path": [],
-            "files": [
-                {
-                    "key": "file",
-                    "document_type_description": "Attachment Informatieobjecttype",
-                },
-            ],
-        }
-
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        # Run the registration
-        plugin.register_submission(submission, options)
-
-        submission.refresh_from_db()
-        assert submission.registration_result
-
-        with get_documents_client(objects_api_group) as documents_client:
-            attachment_document = documents_client.get(
-                ObjectsAPISubmissionAttachment.objects.get(
-                    submission_file_attachment=attachment
-                ).document_url
-            ).json()
-
-        self.assertEqual(
-            attachment_document["informatieobjecttype"],
-            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
         )
 
 
@@ -1349,6 +981,7 @@ class V1HandlerTests(TestCase):
             "version": 1,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_submission_report": "",
             "iot_submission_csv": "",
             "iot_attachment": "",
@@ -1399,6 +1032,7 @@ class V1HandlerTests(TestCase):
             "version": 1,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_submission_report": "",
             "iot_submission_csv": "",
             "iot_attachment": "",
@@ -1439,6 +1073,7 @@ class V1HandlerTests(TestCase):
             "version": 1,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_submission_report": "",
             "iot_submission_csv": "",
             "iot_attachment": "",

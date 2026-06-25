@@ -308,7 +308,7 @@ class RegistrationBackendMigrator:
 
                 # as soon as a catalogue is specified in the options, it enables the
                 # new document types, ignoring any legacy URLs configured
-                if catalogue:
+                if catalogue and catalogue != {"domain": "", "rsin": ""}:
                     return False
 
                 # otherwise, all fields are optional, so only complain if there are

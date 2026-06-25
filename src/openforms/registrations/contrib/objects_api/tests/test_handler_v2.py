@@ -1,4 +1,3 @@
-from pathlib import Path
 from uuid import UUID
 
 from django.test import TestCase, tag
@@ -14,8 +13,6 @@ from ..models import ObjectsAPIRegistrationData
 from ..registration_variables import PaymentAmount
 from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2
-
-VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
 class V2HandlerTests(TestCase):
@@ -72,6 +69,7 @@ class V2HandlerTests(TestCase):
                 },
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -128,6 +126,7 @@ class V2HandlerTests(TestCase):
                 },
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -173,6 +172,7 @@ class V2HandlerTests(TestCase):
                 },
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -206,6 +206,7 @@ class V2HandlerTests(TestCase):
                 },
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -268,6 +269,7 @@ class V2HandlerTests(TestCase):
                 },
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -330,6 +332,7 @@ class V2HandlerTests(TestCase):
                 },
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -404,6 +407,7 @@ class V2HandlerTests(TestCase):
                 },
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -517,6 +521,7 @@ class V2HandlerTests(TestCase):
                 },
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -654,6 +659,7 @@ class V2HandlerTests(TestCase):
                 }
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -722,6 +728,7 @@ class V2HandlerTests(TestCase):
                 }
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -775,6 +782,7 @@ class V2HandlerTests(TestCase):
                 {"variable_key": "addressNl", "target_path": ["addressNL"]}
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -823,6 +831,7 @@ class V2HandlerTests(TestCase):
                 {"variable_key": "selectBoxes1", "target_path": ["path1"]},
                 {"variable_key": "selectBoxes2", "target_path": ["path2"]},
             ],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -909,6 +918,7 @@ class V2HandlerTests(TestCase):
                 {"variable_key": "date_multiple", "target_path": ["path2"]},
                 {"variable_key": "editgrid", "target_path": ["path3"]},
             ],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",

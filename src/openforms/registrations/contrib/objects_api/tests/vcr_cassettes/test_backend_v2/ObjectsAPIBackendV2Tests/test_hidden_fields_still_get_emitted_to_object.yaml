@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e
   response:
@@ -28,7 +28,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 11 Jun 2026 09:36:36 GMT
+      - Thu, 25 Jun 2026 18:26:44 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -45,7 +45,7 @@ interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"textfield": "", "nestedTextfield": ""},
-      "startAt": "2024-03-19"}}'
+      "startAt": "2026-06-25"}}'
     headers:
       Accept:
       - '*/*'
@@ -60,12 +60,12 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: POST
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/cd8fc7b9-f4d1-4277-adc4-8f87f67b51bf","uuid":"cd8fc7b9-f4d1-4277-adc4-8f87f67b51bf","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"textfield":"","nestedTextfield":""},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2026-06-11","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/e0c77f0b-7eaa-4883-9c6d-b9976dbad8f8","uuid":"e0c77f0b-7eaa-4883-9c6d-b9976dbad8f8","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"textfield":"","nestedTextfield":""},"geometry":null,"startAt":"2026-06-25","endAt":null,"registrationAt":"2026-06-25","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -80,9 +80,9 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 11 Jun 2026 09:36:36 GMT
+      - Thu, 25 Jun 2026 18:26:44 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/cd8fc7b9-f4d1-4277-adc4-8f87f67b51bf
+      - http://localhost:8002/api/v2/objects/e0c77f0b-7eaa-4883-9c6d-b9976dbad8f8
       Referrer-Policy:
       - same-origin
       Server:

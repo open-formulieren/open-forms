@@ -80,30 +80,24 @@ def _resolve_documenttype(
     :return: the resolved document type URL, if any. Empty string means that the upload
       should be skipped.
     """
-    catalogue = options.get("catalogue")
+    catalogue = options["catalogue"]
+    # validation ensures both are empty or not empty at the same time
+    if not (catalogue["domain"] and catalogue["domain"]):
+        return ""
+
     match field:
         case "submission_report":
             description = options["iot_submission_report"]
-            url_ref = options.get("informatieobjecttype_submission_report", "")
         case "submission_csv":
             description = options["iot_submission_csv"]
-            url_ref = options.get("informatieobjecttype_submission_csv", "")
         case "attachment":
             description = options["iot_attachment"]
-            url_ref = options.get("informatieobjecttype_attachment", "")
         case _:  # pragma: no cover
             assert_never(field)
 
-    # descriptions only work if a catalogue is provided to look up the document type
-    # inside it
-    if catalogue is None:
-        return url_ref
-
     if not description:
-        return url_ref
+        return ""
 
-    # domain and rsin should not be empty, otherwise our validation is broken.
-    assert catalogue["domain"] and catalogue["rsin"]
     assert submission.completed_on is not None
 
     version_valid_on = datetime_in_amsterdam(submission.completed_on).date()
@@ -244,7 +238,7 @@ def save_and_raise(
 
 
 class ObjectsAPIRegistrationHandler[
-    OptionsT: (RegistrationOptionsV1, RegistrationOptionsV2)
+    OptionsT: RegistrationOptionsV1 | RegistrationOptionsV2
 ](ABC):
     """Provide the registration data to be sent to the Objects API.
 
@@ -276,9 +270,12 @@ class ObjectsAPIRegistrationHandler[
         )
         submission_attachments: list[ObjectsAPISubmissionAttachment] = []
 
-        _is_attachment_document_type_configured = (
-            options.get("catalogue") and options.get("iot_attachment")
-        ) or options.get("informatieobjecttype_attachment")
+        _is_catalogue_empty = not (
+            options["catalogue"]["domain"] and options["catalogue"]["rsin"]
+        )
+        _is_attachment_document_type_configured = (not _is_catalogue_empty) and options[
+            "iot_attachment"
+        ]
 
         api_group = options["objects_api_group"]
         file_options = {item["key"]: item for item in options.get("files", [])}

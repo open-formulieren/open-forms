@@ -1,4 +1,5 @@
 import textwrap
+from datetime import UTC, datetime
 from unittest.mock import patch
 from uuid import UUID
 
@@ -47,7 +48,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
 
-    @freeze_time("2022-09-12")
+    @freeze_time("2026-06-25T18:07:00+00:00")
     def test_default_template(self):
         submission = SubmissionFactory.from_components(
             components_list=[
@@ -59,6 +60,8 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             form_definition_kwargs={"slug": "test-step-tralala"},
             auth_info__value="123456789",
             completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 8, 19, 13, 40, 34).replace(tzinfo=UTC),
             uuid=UUID("9b22e363-2268-4e9c-8d57-c1084d8a45a9"),
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
@@ -70,16 +73,12 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             "objecttype_version": 1,
             "update_existing_object": False,
             "auth_attribute_path": [],
-            "iot_submission_report": "",
-            "informatieobjecttype_submission_report": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25"
-            ),
-            "iot_attachment": "",
-            "informatieobjecttype_attachment": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f"
-            ),
+            "catalogue": {
+                "domain": "OTHER",
+                "rsin": "000000000",
+            },
+            "iot_submission_report": "PDF Informatieobjecttype other catalog",
+            "iot_attachment": "CSV Informatieobjecttype other catalog",
             "iot_submission_csv": "",
         }
 
@@ -136,14 +135,14 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
                     "geometry": None,
                     "correctedBy": None,
                     "correctionFor": None,
-                    "startAt": "2022-09-12",
+                    "startAt": "2026-06-25",
                     "registrationAt": record["registrationAt"],
                     "endAt": None,
                     "index": 1,
                 },
             )
 
-    @freeze_time("2022-09-12")
+    @freeze_time("2026-06-25T18:07:00+00:00")
     def test_custom_template(self):
         self.config.content_json = textwrap.dedent(
             """
@@ -178,6 +177,8 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             auth_info__attribute="bsn",
             auth_info__value="123456789",
             completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 8, 19, 13, 40, 34).replace(tzinfo=UTC),
             uuid=UUID("9b22e363-2268-4e9c-8d57-c1084d8a45a9"),
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
@@ -190,22 +191,14 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             "objecttype_version": 1,
             "update_existing_object": False,
             "auth_attribute_path": [],
-            "iot_submission_report": "",
-            "informatieobjecttype_submission_report": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25"
-            ),
-            "iot_attachment": "",
-            "informatieobjecttype_attachment": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f"
-            ),
-            "iot_submission_csv": "",
+            "catalogue": {
+                "domain": "OTHER",
+                "rsin": "000000000",
+            },
+            "iot_submission_report": "PDF Informatieobjecttype other catalog",
+            "iot_attachment": "CSV Informatieobjecttype other catalog",
+            "iot_submission_csv": "CSV Informatieobjecttype other catalog",
             "upload_submission_csv": True,
-            "informatieobjecttype_submission_csv": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f"
-            ),
         }
 
         result = plugin.register_submission(submission, options)
@@ -271,7 +264,7 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
                     "geometry": None,
                     "correctedBy": None,
                     "correctionFor": None,
-                    "startAt": "2022-09-12",
+                    "startAt": "2026-06-25",
                     "registrationAt": record["registrationAt"],
                     "endAt": None,
                     "index": 1,
@@ -305,7 +298,12 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             ]
             }"""
         )
-        submission = SubmissionFactory.create(with_report=True)
+        submission = SubmissionFactory.create(
+            with_report=True,
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 8, 19, 13, 40, 34).replace(tzinfo=UTC),
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         options: RegistrationOptionsV1 = {
             "version": 1,
@@ -314,16 +312,12 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             "objecttype_version": 1,
             "update_existing_object": False,
             "auth_attribute_path": [],
-            "iot_submission_report": "",
-            "informatieobjecttype_submission_report": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25"
-            ),
-            "iot_attachment": "",
-            "informatieobjecttype_attachment": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f"
-            ),
+            "catalogue": {
+                "domain": "OTHER",
+                "rsin": "000000000",
+            },
+            "iot_submission_report": "PDF Informatieobjecttype other catalog",
+            "iot_attachment": "CSV Informatieobjecttype other catalog",
             "iot_submission_csv": "",
         }
 
@@ -335,7 +329,12 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
 
     def test_submission_with_objects_api_content_json_not_valid_json(self):
         self.config.content_json = ('{"key": "value",}',)  # Invalid JSON,
-        submission = SubmissionFactory.create(with_report=True)
+        submission = SubmissionFactory.create(
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 8, 19, 13, 40, 34).replace(tzinfo=UTC),
+            with_report=True,
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         options: RegistrationOptionsV1 = {
             "version": 1,
@@ -344,16 +343,12 @@ class JSONTemplatingTests(OFVCRMixin, TestCase):
             "objecttype_version": 1,
             "update_existing_object": False,
             "auth_attribute_path": [],
-            "iot_submission_report": "",
-            "informatieobjecttype_submission_report": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25"
-            ),
-            "iot_attachment": "",
-            "informatieobjecttype_attachment": (
-                "http://localhost:8003/catalogi/api/v1/"
-                "informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f"
-            ),
+            "catalogue": {
+                "domain": "OTHER",
+                "rsin": "000000000",
+            },
+            "iot_submission_report": "PDF Informatieobjecttype other catalog",
+            "iot_attachment": "CSV Informatieobjecttype other catalog",
             "iot_submission_csv": "",
         }
 
@@ -435,10 +430,9 @@ class JSONTemplatingRegressionTests(OFVCRMixin, SubmissionsMixin, TestCase):
             "objecttype_version": 1,
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_submission_report": "",
-            "informatieobjecttype_submission_report": "",
             "iot_attachment": "",
-            "informatieobjecttype_attachment": "",
             "iot_submission_csv": "",
             "upload_submission_csv": False,
         }
@@ -528,10 +522,9 @@ class JSONTemplatingRegressionTests(OFVCRMixin, SubmissionsMixin, TestCase):
             "objecttype_version": 1,
             "update_existing_object": False,
             "auth_attribute_path": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_submission_report": "",
-            "informatieobjecttype_submission_report": "",
             "iot_attachment": "",
-            "informatieobjecttype_attachment": "",
             "iot_submission_csv": "",
             "upload_submission_csv": False,
             "content_json": "{% json_summary %}",

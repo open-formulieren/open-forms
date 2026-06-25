@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen?domein=TEST&rsin=000000000
   response:
@@ -49,7 +49,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/informatieobjecttypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&omschrijving=PDF+Informatieobjecttype&datumGeldigheid=2024-07-01
   response:
@@ -81,7 +81,7 @@ interactions:
       message: OK
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
-      "bronorganisatie": "000000000", "creatiedatum": "2026-06-11", "titel": "Form
+      "bronorganisatie": "000000000", "creatiedatum": "2026-06-25", "titel": "Form
       005", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf", "inhoud":
       "", "status": "definitief", "bestandsnaam": "open-forms-Form 005.pdf", "ontvangstdatum":
       null, "beschrijving": "Ingezonden formulier", "indicatieGebruiksrecht": false,
@@ -98,14 +98,14 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: POST
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/32bc0e09-b197-473d-bd99-aabde4c5e929","identificatie":"DOCUMENT-2026-0000000496","bronorganisatie":"000000000","creatiedatum":"2026-06-11","titel":"Form
-        005","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2026-06-11T09:36:25.671486Z","bestandsnaam":"open-forms-Form
-        005.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/32bc0e09-b197-473d-bd99-aabde4c5e929/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/ffda1e51-2486-4ce8-bcc6-90902d94a26e","identificatie":"DOCUMENT-2026-0000000715","bronorganisatie":"000000000","creatiedatum":"2026-06-25","titel":"Form
+        005","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2026-06-25T18:51:38.491097Z","bestandsnaam":"open-forms-Form
+        005.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/ffda1e51-2486-4ce8-bcc6-90902d94a26e/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
         formulier","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
@@ -119,7 +119,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/32bc0e09-b197-473d-bd99-aabde4c5e929
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/ffda1e51-2486-4ce8-bcc6-90902d94a26e
       Referrer-Policy:
       - same-origin
       Vary:
@@ -141,7 +141,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/informatieobjecttypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&omschrijving=CSV+Informatieobjecttype&datumGeldigheid=2024-07-01
   response:

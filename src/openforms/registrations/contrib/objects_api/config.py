@@ -1,10 +1,7 @@
-import warnings
-
 from django.db.models import IntegerChoices
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
-from furl import furl
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
@@ -124,11 +121,8 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     catalogue = CatalogueSerializer(
         label=_("catalogue"),
         required=False,
-        help_text=_(
-            "The catalogue in the catalogi API from the selected API group. This "
-            "overrides the catalogue specified in the API group, if it's set. When "
-            "specified, the document types specified on the API group are ignored."
-        ),
+        help_text=_("The catalogue in the catalogi API from the selected API group."),
+        default=lambda: {"domain": "", "rsin": ""},
     )
     version = serializers.ChoiceField(
         label=_("options version"),
@@ -221,35 +215,6 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "selected based on the submission timestamp and validity dates of the "
             "document type versions."
         ),
-    )
-
-    # DeprecationWarning: remove in OF 4.0
-    informatieobjecttype_submission_report = serializers.URLField(
-        label=_("submission report PDF informatieobjecttype"),
-        help_text=_(
-            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
-            "to be used for the submission report PDF."
-        ),
-        required=False,
-        allow_blank=True,
-    )
-    informatieobjecttype_submission_csv = serializers.URLField(
-        label=_("submission report CSV informatieobjecttype"),
-        help_text=_(
-            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
-            "to be used for the submission report CSV."
-        ),
-        required=False,
-        allow_blank=True,
-    )
-    informatieobjecttype_attachment = serializers.URLField(
-        label=_("attachment informatieobjecttype"),
-        help_text=_(
-            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
-            "to be used for the submission attachments."
-        ),
-        required=False,
-        allow_blank=True,
     )
 
     # File component options
@@ -414,63 +379,53 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
     Doing something else would require us to "hoist" configuration from the API group
     to the serializer and that doesn't seem logical.
     """
+    DOCUMENT_TYPE_FIELDS = (
+        "iot_submission_report",
+        "iot_submission_csv",
+        "iot_attachment",
+    )
+
     api_group = attrs["objects_api_group"]
     catalogus = None
-    catalogue_option = attrs.get("catalogue")
+    catalogue_option = attrs["catalogue"]
+    domain, rsin = catalogue_option["domain"], catalogue_option["rsin"]
 
-    domain, rsin = (
-        (catalogue_option["domain"], catalogue_option["rsin"])
-        if catalogue_option is not None
-        else ("", "")
-    )
+    #  serializer validation guarantees that both or none are empty at the same time
+    if not (domain and rsin):  # no catalogue configured, nothing to do
+        any_doc_type_specified = any(attrs.get(field) for field in DOCUMENT_TYPE_FIELDS)
+        if not any_doc_type_specified:
+            return
+        raise serializers.ValidationError(
+            {
+                "catalogue": _(
+                    "To look up document types by their description, a catalogue "
+                    "reference is required."
+                )
+            },
+            code="required",
+        )
+
+    _errors = {}
+    _files_errors = {}
 
     # validate the catalogue itself - the queryset in the field guarantees that
     # api_group.catalogi_service is not null.
     with get_catalogi_client(api_group) as client:
-        # DB check constraint + serializer validation guarantee that both or none
-        # are empty at the same time
-        if domain and rsin:
-            catalogus = client.find_catalogus(domain=domain, rsin=rsin)
-            if catalogus is None:
-                raise serializers.ValidationError(
-                    {
-                        "catalogue": _(
-                            "The specified catalogue does not exist. Maybe you made a "
-                            "typo in the domain or RSIN?"
-                        ),
-                    },
-                    code="invalid-catalogue",
-                )
+        catalogus = client.find_catalogus(domain=domain, rsin=rsin)
+        if catalogus is None:
+            raise serializers.ValidationError(
+                {
+                    "catalogue": _(
+                        "The specified catalogue does not exist. Maybe you made a "
+                        "typo in the domain or RSIN?"
+                    ),
+                },
+                code="invalid-catalogue",
+            )
 
-            informatieobjecttypen_urls = catalogus["informatieobjecttypen"]
-        else:
-            # Previously all informatieobjecttypen were fetched here, if there were no
-            # catalogue domain and RSIN specified and the legacy fields were used.
-            # This led to bad performance if the Catalogi service has a lot of IOtypen however
-            # So instead we validate each URL separately by checking if the prefix of the
-            # URL matches and if we can retrieve it (see below)
-            # issue: https://github.com/open-formulieren/open-forms/issues/4695
-            informatieobjecttypen_urls = None
-
-        _errors = {}
-        for field in (
-            "iot_submission_report",
-            "iot_submission_csv",
-            "iot_attachment",
-        ):
+        for field in DOCUMENT_TYPE_FIELDS:
             if not (description := attrs[field]):
                 continue
-            # catalogue must be specified if making use of the reference-by-description
-            # config options.
-            if catalogus is None:
-                err_msg = _(
-                    "To look up document types by their description, a catalogue reference "
-                    "is required. Either specify one on the API group or in the plugin "
-                    "options."
-                )
-                raise serializers.ValidationError(
-                    {"catalogue": err_msg}, code="required"
-                )
 
             versions = client.find_informatieobjecttypen(
                 catalogus=catalogus["url"], description=description
@@ -480,65 +435,10 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
                     "No document type with description '{description}' found."
                 ).format(description=description)
                 _errors[field] = ErrorDetail(err_msg, code="not-found")
-        if _errors:
-            raise serializers.ValidationError(_errors)
 
-        # Remove these legacy fields in Open Forms 3.0
-        for field in (
-            "informatieobjecttype_submission_report",
-            "informatieobjecttype_submission_csv",
-            "informatieobjecttype_attachment",
-        ):
-            url = attrs.get(field)
-            if not url:
-                continue
-
-            warnings.warn(
-                "URL references to document types are deprecated and will be remove in "
-                "Open Forms 3.0",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
-            err_tpl = (
-                _("The provided {field} does not exist in the Catalogi API.")
-                if catalogus is None
-                else _("The provided {field} does not exist in the selected catalogue.")
-            )
-            err_msg = err_tpl.format(field=field)
-
-            if informatieobjecttypen_urls is not None:
-                if url not in informatieobjecttypen_urls:
-                    raise serializers.ValidationError(
-                        {field: err_msg}, code="not-found"
-                    )
-            else:
-                assert api_group.catalogi_service
-                iotypen_endpoint = (
-                    furl(api_group.catalogi_service.api_root) / "informatieobjecttypen/"
-                ).url
-
-                if not url.startswith(iotypen_endpoint):
-                    raise serializers.ValidationError(
-                        {field: err_msg}, code="not-found"
-                    )
-
-                response = (
-                    client.head(url)
-                    if client.api_version >= (1, 1, 0)
-                    else client.get(url)
-                )
-
-                if response.status_code != 200:
-                    raise serializers.ValidationError(
-                        {field: err_msg}, code="not-found"
-                    )
-
-        _files_errors = {}
         for index, file_options in enumerate(attrs.get("files", [])):
             if not (description := file_options.get("document_type_description")):
                 continue
-            assert catalogus is not None
             versions = client.find_informatieobjecttypen(
                 catalogus=catalogus["url"], description=description
             )
@@ -549,8 +449,12 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
                 _files_errors[index] = {
                     "document_type_description": ErrorDetail(err_msg, code="not-found")
                 }
-        if _files_errors:
-            raise serializers.ValidationError({"files": _files_errors})
+
+    if _files_errors:
+        _errors["files"] = _files_errors
+
+    if _errors:
+        raise serializers.ValidationError(_errors)
 
 
 def _validate_objecttype_and_version(attrs: RegistrationOptions) -> None:
