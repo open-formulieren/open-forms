@@ -277,6 +277,11 @@ The support for direct URL references to the Catalogi API for document types
 tool to convert these URLs into their indirect references that are more portable across
 different environments (like from staging -> production).
 
+On top of that, we have moved the registration options for file components out of the
+file component configuration. You can now find these options on the "Variables" tab of
+each form, where you have fine grained control of the options for each registration
+backend.
+
 ZGW APIs registration
 ---------------------
 
@@ -307,6 +312,15 @@ now automatically filters valid options based on the specified catalogue and cas
 
 The old, component-specific configuration is no longer used. Importing of form exports
 created on versions older than 4.0 will do a best-effort attempt to convert this.
+
+The upgrade will automatically copy over the overrides of each file component into each
+registration backend.
+
+.. warning:: The copy is just that - we cannot fix already-broken configurations.
+   Typical broken configurations can be file components in reusable form definitions
+   where the "embedded" document type reference is not valid in the context of different
+   case types specified in different form registration backends. This can happen already
+   with two different forms and case types that use the same reusable step.
 
 Objects API registration
 ------------------------
@@ -340,6 +354,13 @@ now automatically filters valid options based on the specified catalogue.
 The old, component-specific configuration is no longer used. Importing of form exports
 created on versions older than 4.0 will do a best-effort attempt to convert this.
 
+The upgrade will automatically copy over the overrides of each file component into each
+registration backend.
+
+.. warning:: The copy is just that - we cannot fix already-broken configurations.
+   Before, it was possible to specify document types from different catalogues which
+   would typically cause problems when trying to relate them to a case later on.
+
 Migration steps
 ---------------
 
@@ -367,15 +388,6 @@ tool can be run again.
 
 Repeat these steps until no more problems are reported.
 
-**Check script**
-
-We're providing (currently in development) a check script that reports file components
-in forms that have conflicting catalogue specifications compared to the registration
-backends used in the forms.
-
-You should run this script and resolve the problems in the admin interface. As long as
-problems are reported, the update to Open Forms 4.0 is blocked.
-
 On 4.0.x
 ~~~~~~~~
 
@@ -397,11 +409,15 @@ to do anything for this:
 
 **Check script**
 
-You can detect possible broken configurations for file component registration when the
-original document type didn't belong to the catalogue specified in the form registration
-options:
+We provide a check script that reports file components in forms that have conflicting
+catalogue specifications compared to the registration backends used in the forms.
 
 .. code-block:: bash
 
     # in a container/pod
     python /app/bin/report_file_component_inconsistent_catalogues.py
+
+You should run this script and resolve the problems in the admin interface, once
+upgraded to 4.0. We cannot run this script as an upgrade blocking check because it's
+simply not possible to fix this pre-4.0 (one of the reasons for the breaking changes in
+4.0 is making it possible to prevent/fix this).
