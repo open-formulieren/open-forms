@@ -29,21 +29,15 @@ What does the Open Forms administrator need?
 
 * An instance of the Catalogi API (e.g. via Open Zaak) with:
 
-    - API credentials (client ID + secret) to read the available document types (
-      informatieobjecttypen)
-    - API resource URLs of the document type to use for the PDF summary of submitted
-      form data
-    - API resource URLs of the document type to use for the CSV of submitted form data
-      (optional)
-    - API resource URLs of the document type to use for the user uploaded attachments
-      (optional, works as fallback). The document type can also be selected on each
-      individual ``file`` component
+    - API credentials (client ID + secret) to read the available catalogues and document
+      types (informatieobjecttypen)
 
 * An instance of the Documenten API (e.g. via Open Zaak) with:
 
     - (API) access to the above Catalogi API
     - API credentials (client ID + secret) with write access to create documents of the
-      document types mentioned above
+      document types that will be used for the confirmation PDF, submission CSV and/or
+      user-uploaded files.
 
 Configuration
 =============
@@ -63,8 +57,6 @@ To configure the Objects API follow these steps:
       * **Authorization type**: Select the option: ``API Key``
       * **Header key**: Fill in ``Authorization``
       * **Header value**: Fill in ``Token <tokenValue>`` where ``<tokenValue>`` is replaced by the token provided by the backend service
-      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
-        *for example:* ``https://example.com/objecten/api/v1/schema/openapi.yaml``
 
       * **NLX**: Support for NLX can be selected here if enabled in the installation
 
@@ -82,8 +74,6 @@ To configure the Objects API follow these steps:
       * **Authorization type**: Select the option: ``API Key``
       * **Header key**: Fill in ``Authorization``
       * **Header value**: Fill in ``Token <tokenValue>`` where ``<tokenValue>`` is replaced by the token provided by the backend service
-      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
-        *for example:* ``https://example.com/objecttypen/api/v1/schema/openapi.yaml``
 
       * **NLX**: Support for NLX can be selected here if enabled in the installation
 
@@ -101,8 +91,6 @@ To configure the Objects API follow these steps:
       * **Client ID**: Fill the value provided by the backend service *For example:* ``open-forms``
       * **Secret**: Fill the value provided by the backend service
       * **Authorization type**: Select the option: ``ZGW client_id + secret``
-      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
-        *for example:* ``https://example.com/documenten/api/v1/schema/openapi.yaml``
 
       * **NLX**: Support for NLX can be selected here if enabled in the installation
       * **User ID**: Audit trail user ID, usually same as the Client ID
@@ -120,8 +108,6 @@ To configure the Objects API follow these steps:
       * **Client ID**: Fill the value provided by the backend service *For example:* ``open-forms``
       * **Secret**: Fill the value provided by the backend service
       * **Authorization type**: Select the option: ``ZGW client_id + secret``
-      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
-        *for example:* ``https://example.com/catalogi/api/v1/schema/openapi.yaml``
 
       * **NLX**: Support for NLX can be selected here if enabled in the installation
       * **User ID**: Audit trail user ID, usually same as the Client ID
@@ -140,8 +126,6 @@ To configure the Objects API follow these steps:
    * **Catalogi API**: Select the Zaaktypecatalogus (ZTC) service created above
    * **Organisatie RSIN**: Fill the RSIN to use as "bronorganisatie" in Document uploads.
      *For example:* ``123456789``. You an override this on a per-form basis.
-   * **Upload submission CSV**: Indicate whether or not the submission CSV should be
-     uploaded to the Documenten API by default. You an override this on a per-form basis.
 
 #. Click **Opslaan**
 
@@ -155,7 +139,9 @@ When doing so, the corresponding objecttype and objecttype version will have to 
 
 .. versionchanged:: 4.0.0
 
-   The legacy document type URLs support has been removed.
+   The legacy document type URLs support has been removed. Additionally, configuring
+   document types on the API-group level is no longer possible, this must be done for
+   each form individually.
 
 .. _configuration_registration_objects_objecttype_tips:
 

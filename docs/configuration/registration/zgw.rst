@@ -77,8 +77,6 @@ Configuration
       * **Client ID**: Fill the value provided by the backend service. *For example:* ``open-zaak`` (*NOTE* this could be different for each component)
       * **Secret**: Fill the value provided by the backend service (*NOTE* this could be different for each component)
       * **Authorization type**: Select the option: ``ZGW client_id + secret``
-      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it.
-        *For example:* ``https://example.com/zaken/api/v1/schema/openapi.yaml``
 
       * **NLX**: Support for NLX can be selected here if enabled in the installation
       * **User ID**: Audit trail user ID, usually same as the Client ID
@@ -94,10 +92,6 @@ Configuration
    * **Zaken API**: Select the Zaakregistratiecomponent (ZRC) service created above
    * **Documenten API**: Select the Documentregistratiecomponent (DRC) service created above
    * **Catalogi API**: Select the Zaaktypecatalogus (ZTC) service created above
-
-#. Click **Opslaan en opnieuw bewerken** to save the form to retrieve the list of available types.
-#. Continue entering the following details:
-
    * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
 
 #. You can combine ZGW API with Objects API. A default JSON content template is provided.
