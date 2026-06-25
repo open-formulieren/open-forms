@@ -179,6 +179,67 @@ class PreRegistrationTests(BaseRegistrationTestCase):
             submission.registration_result["zaak"]["identificatie"], of_identification
         )
 
+    def test_register_location_information(self):
+        submission = SubmissionFactory.from_components(
+            [
+                *NP_INITIATOR_FIELDS,
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            submitted_data={
+                **NP_INITIATOR_DATA,
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
+            },
+            bsn="111222333",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
+        )
+
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "PDF Informatieobjecttype",
+            "organisatie_rsin": "000000000",
+            # empty value should be ignored, use the VA from the zaaktype
+            "zaak_vertrouwelijkheidaanduiding": "",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "summary_documents": [],
+        }
+        plugin = ZGWRegistration("zgw")
+
+        result = plugin.pre_register_submission(submission, options)
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        assert result.data is not None
+        zaak_data = client.get(result.data["zaak"]["url"], headers=CRS_HEADERS).json()
+        self.assertEqual(
+            zaak_data["zaakgeometrie"],
+            {
+                "type": "Point",
+                "coordinates": [4.893164274470299, 52.36673378967122],
+            },
+        )
+
     @tag("gh-4337")
     def test_zaakomschrijving_includes_form_name(self):
         with self.subTest("Short name that is not truncated"):
@@ -1932,6 +1993,70 @@ class FileAttachmentTests(BaseRegistrationTestCase):
                             "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
                         )
 
+    def test_default_confidentiality_level_can_be_specified(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={
+                "someText": "Foo",
+            },
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
+        )
+        SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "doc_vertrouwelijkheidaanduiding": "geheim",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "summary_documents": [],
+        }
+        plugin = ZGWRegistration("zgw")
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        with self.subTest("full registration"):
+            result = plugin.register_submission(submission, options)
+            assert result is not None
+            zaak_url = result["zaak"]["url"]
+
+        with self.subTest("verify related case document"):
+            zios = client.get(
+                "zaakinformatieobjecten", params={"zaak": zaak_url}
+            ).json()
+            # one for the PDF, one for the attachment
+            self.assertEqual(len(zios), 1)
+
+            with get_documents_client(self.zgw_group) as documents_client:
+                zio = zios[0]
+                document_data_response = documents_client.get(zio["informatieobject"])
+                document_data_response.raise_for_status()
+
+                cl = document_data_response.json()["vertrouwelijkheidaanduiding"]
+                self.assertEqual(cl, "geheim")
+
     @tag("sentry-334882", "gh-3649")
     def test_file_attachments_respect_field_specific_overrides(self):
         """
@@ -2203,6 +2328,325 @@ class FileAttachmentTests(BaseRegistrationTestCase):
 
 
 class RolAndBetrokkeneTests(BaseRegistrationTestCase):
+    def test_natuurlijk_persoon_initiator(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voorletters",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voorletters,
+                    },
+                },
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "type": "date",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+                {
+                    "key": "geslachtsaanduiding",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsaanduiding,
+                    },
+                },
+                *NP_INITIATOR_FIELDS,
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "postcode": "1000 AA",
+                "woonplaats": "Ketnet",
+                "straat": "Samsonweg",
+                "huisnummer": 101,
+                "geboortedatum": "2000-12-31",
+                "voorletters": "J.W.",
+                "geslachtsaanduiding": "mannelijk",
+            },
+            bsn="111222333",
+            language_code="en",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
+        )
+
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "",
+            "medewerker_roltype": "",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "summary_documents": [],
+        }
+
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        with self.subTest("full registration"):
+            result = plugin.register_submission(submission, options)
+            assert result
+
+        with (
+            self.subTest("verify created rol"),
+            get_zaken_client(self.zgw_group) as client,
+        ):
+            rol_data = client.get(result["initiator_rol"]["url"]).json()
+
+            self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
+            self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
+            self.assertEqual(rol_data["betrokkene"], "")
+            self.assertEqual(rol_data["betrokkeneType"], "natuurlijk_persoon")
+            expected_identificatie = {
+                "inpBsn": "111222333",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geboortedatum": "2000-12-31",
+                "geslachtsaanduiding": "m",
+                "geslachtsnaam": "Bar",
+                "voorletters": "J.W.",
+                "voornamen": "Foo",
+                "subVerblijfBuitenland": None,
+                "verblijfsadres": {
+                    "aoaHuisletter": "",
+                    "aoaHuisnummer": 101,
+                    "aoaHuisnummertoevoeging": "",
+                    "aoaIdentificatie": "OFWORKAROUND",
+                    "aoaPostcode": "1000 AA",
+                    "gorOpenbareRuimteNaam": "Samsonweg",
+                    "inpLocatiebeschrijving": "",
+                    "wplWoonplaatsNaam": "Ketnet",
+                },
+                "voorvoegselGeslachtsnaam": "de",
+            }
+            self.assertEqual(
+                rol_data["betrokkeneIdentificatie"], expected_identificatie
+            )
+
+    def test_vestiging_initiator(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "woonplaats",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_woonplaats
+                    },
+                },
+                {
+                    "key": "straat",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_straat,
+                    },
+                },
+                {
+                    "key": "huisnummer",
+                    "type": "number",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_huisnummer,
+                    },
+                },
+                {
+                    "key": "vestigingsNummer",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_vestigingsnummer,
+                    },
+                },
+            ],
+            submitted_data={
+                "handelsnaam": "ACME",
+                "postcode": "1000 AA",
+                "woonplaats": "Ketnet",
+                "straat": "Samsonweg",
+                "huisnummer": 101,
+                "vestigingsNummer": "87654321",
+            },
+            kvk="12345678",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
+        )
+
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "",
+            "medewerker_roltype": "",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "summary_documents": [],
+        }
+
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        with self.subTest("full registration"):
+            result = plugin.register_submission(submission, options)
+            assert result
+
+        with (
+            self.subTest("verify created rol"),
+            get_zaken_client(self.zgw_group) as client,
+        ):
+            rol_data = client.get(result["initiator_rol"]["url"]).json()
+
+            self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
+            self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
+            self.assertEqual(rol_data["betrokkene"], "")
+            self.assertEqual(rol_data["betrokkeneType"], "vestiging")
+            expected_identificatie = {
+                "handelsnaam": ["ACME"],
+                "kvkNummer": "12345678",
+                "vestigingsNummer": "87654321",
+                "verblijfsadres": {
+                    "aoaHuisletter": "",
+                    "aoaHuisnummer": 101,
+                    "aoaHuisnummertoevoeging": "",
+                    "aoaIdentificatie": "OFWORKAROUND",
+                    "aoaPostcode": "1000 AA",
+                    "gorOpenbareRuimteNaam": "Samsonweg",
+                    "inpLocatiebeschrijving": "",
+                    "wplWoonplaatsNaam": "Ketnet",
+                },
+                "subVerblijfBuitenland": None,
+            }
+            self.assertEqual(
+                rol_data["betrokkeneIdentificatie"], expected_identificatie
+            )
+
+    def test_vestiging_initiator_branch_number_from_auth(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+                {
+                    "key": "vestigingsNummer",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_vestigingsnummer,
+                    },
+                },
+            ],
+            submitted_data={
+                "handelsnaam": "ACME",
+                "vestigingsNummer": "000038509499",
+            },
+            kvk="12345678",
+            branch_number="000038509490",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            with_report=True,
+        )
+
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "",
+            "medewerker_roltype": "",
+            "objects_api_group": None,
+            "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "summary_documents": [],
+        }
+
+        plugin = ZGWRegistration("zgw")
+        _run_preregistration(submission, plugin, options)
+
+        with self.subTest("full registration"):
+            result = plugin.register_submission(submission, options)
+            assert result
+
+        with (
+            self.subTest("verify created rol"),
+            get_zaken_client(self.zgw_group) as client,
+        ):
+            rol_data = client.get(result["initiator_rol"]["url"]).json()
+
+            self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
+            self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
+            self.assertEqual(rol_data["betrokkene"], "")
+            self.assertEqual(rol_data["betrokkeneType"], "vestiging")
+            expected_identificatie = {
+                "handelsnaam": ["ACME"],
+                "kvkNummer": "12345678",
+                "vestigingsNummer": "000038509490",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            }
+            self.assertEqual(
+                rol_data["betrokkeneIdentificatie"], expected_identificatie
+            )
+
     @override_settings(LANGUAGE_CODE="en")
     def test_submission_with_registrator(self):
         submission = SubmissionFactory.from_components(
