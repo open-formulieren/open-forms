@@ -246,9 +246,11 @@ jobs:
 
       - name: Extract SDK files from SDK docker image
         run: |
-          container_id=$(docker create openformulieren/open-forms-sdk:${{ needs.setup.outputs.sdk-version }})
+          container_id=$(docker create openformulieren/open-forms-sdk:${NEEDS_SETUP_OUTPUTS_SDK_VERSION})
           docker cp $container_id:/sdk ./src/openforms/static/
           docker rm -v $container_id
+        env:
+          NEEDS_SETUP_OUTPUTS_SDK_VERSION: ${{ needs.setup.outputs.sdk-version }}
 
       - name: Run testsuite
         run: |
