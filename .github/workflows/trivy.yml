@@ -6,6 +6,8 @@ on:
     - cron: '51 0 * * *'  # Run daily
   workflow_dispatch:  # Allow manual triggering
 
+permissions: {}
+
 jobs:
   update-trivy-db:
     runs-on: ubuntu-latest

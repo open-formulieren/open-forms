@@ -18,6 +18,8 @@ on:
       - '**.yaml'
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   prettier:
     name: Check frontend code formatting with prettier

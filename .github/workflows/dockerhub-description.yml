@@ -17,6 +17,8 @@ on:
       DOCKER_TOKEN:
         required: true
 
+permissions: {}
+
 jobs:
   update-docker-readme:
     name: Generate and update Docker Hub description

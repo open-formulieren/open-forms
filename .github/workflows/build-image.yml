@@ -38,6 +38,8 @@ on:
         description: Artifact name for the built image
         value: ${{ jobs.image_build.outputs.artifact-name }}
 
+permissions: {}
+
 jobs:
   image_build:
     name: Build image

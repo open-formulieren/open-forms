@@ -11,6 +11,8 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   ruff:
     name: Ruff - lint and check code formatting

@@ -8,6 +8,8 @@ on:
       - synchronized
       - reopened
 
+permissions: {}
+
 jobs:
   sync-label:
     runs-on: ubuntu-latest
