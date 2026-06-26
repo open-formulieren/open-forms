@@ -103,6 +103,7 @@ CatalogueSelect.propTypes = {
   isDisabled: PropTypes.bool,
   loading: PropTypes.bool.isRequired,
   optionGroups: CatalogueSelectOptions,
+  isRequired: PropTypes.bool,
 };
 
 export default CatalogueSelect;
