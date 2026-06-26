@@ -1326,8 +1326,8 @@ SETUP_CONFIGURATION_STEPS = [
 #
 UPGRADE_CHECK_PATHS: UpgradePaths = {
     "4.0.0": UpgradeCheck(
-        # 3.5.3 will provide the necessary migration tooling, update when it's released
-        VersionRange(minimum="3.5.2"),
+        # 3.5.4 will provide the necessary migration tooling, update when it's released
+        VersionRange(minimum="3.5.4"),
         code_checks=[
             BinScriptCheck("report_invalid_form_logic"),
             CommandCheck("check_legacy_catalogi_api_urls"),
