@@ -1,0 +1,8 @@
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        # codeql-action is intentionally ref-pinned rather than hash-pinned.
+        # Its moving tag (@v4) automatically pulls in updated query packs and
+        # detection rules; pinning to a SHA would freeze those at a point in time.
+        github/codeql-action/*: ref-pin

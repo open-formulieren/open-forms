@@ -6,11 +6,13 @@ on:
     - cron: '51 0 * * *'  # Run daily
   workflow_dispatch:  # Allow manual triggering
 
+permissions: {}
+
 jobs:
   update-trivy-db:
     runs-on: ubuntu-latest
     steps:
-      - uses: oras-project/setup-oras@v1
+      - uses: oras-project/setup-oras@38de303aac69abb66f3e6255b7198bff35f323e3 # v2.0.0
       - name: Get current date
         id: date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
@@ -30,7 +32,7 @@ jobs:
           rm javadb.tar.gz
 
       - name: Cache DBs
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ github.workspace }}/.cache/trivy
           key: cache-trivy-${{ steps.date.outputs.date }}

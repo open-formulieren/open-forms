@@ -11,19 +11,23 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   ruff:
     name: Ruff - lint and check code formatting
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
       - name: Determine ruff version
         id: ruff-version
         run: |
           version=$(grep -oP '(?<=ruff==)\d+\.\d+\.\d+' requirements/ci.txt)
           echo "version=$version" >> $GITHUB_OUTPUT
-      - uses: astral-sh/ruff-action@v3  # runs ruff check
+      - uses: astral-sh/ruff-action@0ce1b0bf8b818ef400413f810f8a11cdbda0034b # v4.0.0 (runs ruff check)
         with:
           version: "${{ steps.ruff-version.outputs.version }}"
       - run: ruff format --check --diff
@@ -44,7 +48,9 @@ jobs:
           --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
       - name: Set up backend environment
         uses: ./.github/actions/setup-backend
         with:
@@ -77,8 +83,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.12'
 
@@ -90,8 +98,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.12'
       - name: Install additional dependencies
@@ -102,7 +112,23 @@ jobs:
             -r requirements/type-checking.txt
       - name: Create dummy local.py settings file
         run: touch src/openforms/conf/local.py
-      - uses: jakebailey/pyright-action@v1
+      - uses: jakebailey/pyright-action@8ec14b5cfe41f26e5f41686a31eb6012758217ef # v3.0.2
         with:
           version: 1.1.407
           project: pyright.pyproject.toml
+
+  zizmor:
+    name: GitHub Actions Security Analysis with zizmor 🌈
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Run zizmor 🌈
+        uses: zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d # v0.5.6

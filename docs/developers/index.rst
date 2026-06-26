@@ -37,3 +37,4 @@ familiarize yourself with the design principles.
    npm
    releases
    versioning
+   ci-workflow

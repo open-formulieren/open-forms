@@ -28,7 +28,7 @@ runs:
 
   steps:
     - name: Set up backend environment
-      uses: maykinmedia/setup-django-backend@v1.3
+      uses: maykinmedia/setup-django-backend@4a6c5facc65bb1dd510cf06be20871db11a156b3 # v1.4.2
       with:
         apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gettext postgresql-client gdal-bin'
         python-version: '3.12'
