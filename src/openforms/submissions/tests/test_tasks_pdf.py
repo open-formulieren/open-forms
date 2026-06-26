@@ -602,7 +602,13 @@ class SubmissionReportGenerationTests(TestCase):
                     ],
                 },
             ],
-            submitted_data={"repeatingGroup": [{"textfield2": None}]},
+            submitted_data={
+                "textfield": "",
+                "selectboxes": {"option1": False, "option2": False, "option3": False},
+                "radio": "",
+                "textfield1": "",
+                "repeatingGroup": [{"textfield2": ""}],
+            },
             with_report=True,
         )
         html = submission.report.generate_submission_report_pdf()
