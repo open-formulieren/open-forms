@@ -219,19 +219,14 @@ div.breadcrumbs {
 }
 
 /* Footer */
-.login .version {
-  text-align: center;
-}
-.version {
-  padding: 0 30px;
-  color: vars.$color_secondary_dark;
-  font-size: smaller;
-}
 
-#footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.maykin_footer {
+  .maykin_footer__second-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    column-gap: 20px;
+  }
 }
 
 /**
