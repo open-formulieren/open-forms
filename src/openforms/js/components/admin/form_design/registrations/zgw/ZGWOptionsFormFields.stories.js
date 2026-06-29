@@ -33,8 +33,6 @@ const render = ({
       // defaults
       caseTypeIdentification: '',
       documentTypeDescription: '',
-      zaaktype: '',
-      informatieobjecttype: '',
       organisatieRsin: '',
       zaakOmschrijving: '',
       zaakToelichting: '',
@@ -128,7 +126,6 @@ export const Default = {
   args: {
     formData: {
       zgwApiGroup: 1,
-      zaaktype: 'https://example.com',
       propertyMappings: [
         {eigenschap: 'Property 1', componentKey: 'textField1'},
         {eigenschap: '', componentKey: ''},
@@ -144,8 +141,6 @@ export const ValidationErrorsBaseTab = {
       [`${NAME}.catalogue`, 'Computer says no'],
       [`${NAME}.caseTypeIdentification`, 'Computer says no'],
       [`${NAME}.documentTypeDescription`, 'Computer says no'],
-      [`${NAME}.zaaktype`, 'Computer says no'],
-      [`${NAME}.informatieobjecttype`, 'Computer says no'],
       [`${NAME}.organisatieRsin`, 'Computer says no'],
       [`${NAME}.zaakOmschrijving`, 'Computer says no'],
       [`${NAME}.zaakToelichting`, 'Computer says no'],
@@ -186,7 +181,6 @@ export const SelectCaseTypeAndDocumentType = {
   args: {
     formData: {
       zgwApiGroup: 1,
-      zaaktype: '',
       propertyMappings: [],
       summaryDocuments: [],
     },
@@ -230,7 +224,6 @@ export const CataloguesLoadingFails = {
   args: {
     formData: {
       zgwApiGroup: 1,
-      zaaktype: '',
       propertyMappings: [],
     },
   },
@@ -239,17 +232,6 @@ export const CataloguesLoadingFails = {
       handlers: {
         catalogues: [mockCataloguesGetError()],
       },
-    },
-  },
-};
-
-export const RenderLegacyRoltype = {
-  args: {
-    formData: {
-      zgwApiGroup: 1,
-      zaaktype: 'https://example.com/catalogi/api/v1/zaaktypen/123',
-      propertyMappings: [],
-      medewerkerRoltype: 'Baliemedewerker',
     },
   },
 };

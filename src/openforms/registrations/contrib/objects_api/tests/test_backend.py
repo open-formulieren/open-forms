@@ -35,7 +35,7 @@ from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
-from ..typing import RegistrationOptionsV2
+from ..typing import RegistrationOptionsV1, RegistrationOptionsV2
 
 
 class BeforeRecordRequestWrapper:
@@ -117,27 +117,25 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
             with_report=True,
         )
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": objects_api_group,
+            "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+            "objecttype_version": 3,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "iot_submission_report": "PDF Informatieobjecttype",
+            "iot_submission_csv": "CSV Informatieobjecttype",
+            "iot_attachment": "",
+            "upload_submission_csv": True,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+        }
 
         with self.assertRaises(RegistrationFailed):
-            plugin.register_submission(
-                submission,
-                {
-                    "version": 1,
-                    "objects_api_group": objects_api_group,
-                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
-                    "objecttype_version": 3,
-                    "catalogue": {
-                        "domain": "TEST",
-                        "rsin": "000000000",
-                    },
-                    "iot_submission_report": "PDF Informatieobjecttype",
-                    "iot_submission_csv": "CSV Informatieobjecttype",
-                    "iot_attachment": "",
-                    "upload_submission_csv": True,
-                    "update_existing_object": False,
-                    "auth_attribute_path": [],
-                },
-            )
+            plugin.register_submission(submission, options)
 
         registration_data = ObjectsAPIRegistrationData.objects.get(
             submission=submission
@@ -209,25 +207,25 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             file_name="attachment2.png",
             form_key="file_2",
         )
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": objects_api_group,
+            "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+            "objecttype_version": 3,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "iot_attachment": "Attachment Informatieobjecttype",
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "upload_submission_csv": False,
+            "auth_attribute_path": [],
+            "update_existing_object": False,
+        }
 
         with self.assertRaises(RegistrationFailed):
-            plugin.register_submission(
-                submission,
-                {
-                    "version": 1,
-                    "objects_api_group": objects_api_group,
-                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
-                    "objecttype_version": 3,
-                    "catalogue": {
-                        "domain": "TEST",
-                        "rsin": "000000000",
-                    },
-                    "iot_attachment": "Attachment Informatieobjecttype",
-                    "iot_submission_report": "",
-                    "iot_submission_csv": "",
-                    "upload_submission_csv": False,
-                },
-            )
+            plugin.register_submission(submission, options)
 
         attachment = ObjectsAPISubmissionAttachment.objects.filter(
             submission_file_attachment=attachment_1
@@ -278,27 +276,25 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             submission=submission,
             pdf_url="https://example.com",
         )
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": objects_api_group,
+            "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+            "objecttype_version": 3,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "iot_submission_report": "",
+            "iot_submission_csv": "CSV Informatieobjecttype",
+            "iot_attachment": "",
+            "upload_submission_csv": True,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+        }
 
         with self.assertRaises(RegistrationFailed):
-            plugin.register_submission(
-                submission,
-                {
-                    "version": 1,
-                    "objects_api_group": objects_api_group,
-                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
-                    "objecttype_version": 3,
-                    "catalogue": {
-                        "domain": "TEST",
-                        "rsin": "000000000",
-                    },
-                    "iot_submission_report": "",
-                    "iot_submission_csv": "CSV Informatieobjecttype",
-                    "iot_attachment": "",
-                    "upload_submission_csv": True,
-                    "update_existing_object": False,
-                    "auth_attribute_path": [],
-                },
-            )
+            plugin.register_submission(submission, options)
 
         registration_data = ObjectsAPIRegistrationData.objects.get(
             submission=submission
@@ -347,19 +343,20 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                 form_step=form_step,
                 data={"voornaam": "My last name"},
             )
+            options1: RegistrationOptionsV1 = {
+                "version": 1,
+                "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+                "objecttype_version": 3,
+                "objects_api_group": objects_api_group,
+                "catalogue": {"domain": "", "rsin": ""},
+                "iot_submission_report": "",
+                "iot_submission_csv": "",
+                "iot_attachment": "",
+                "update_existing_object": False,
+                "auth_attribute_path": [],
+            }
             object_create_result = plugin.register_submission(
-                submission_create,
-                {
-                    "version": 1,
-                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
-                    "objecttype_version": 3,
-                    "objects_api_group": objects_api_group,
-                    "iot_submission_report": "",
-                    "iot_submission_csv": "",
-                    "iot_attachment": "",
-                    "update_existing_object": False,
-                    "auth_attribute_path": [],
-                },
+                submission_create, options1
             )
 
             assert object_create_result is not None
@@ -381,19 +378,20 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                 form_step=form_step,
                 data={"voornaam": "Updated value"},
             )
+            options2: RegistrationOptionsV1 = {
+                "version": 1,
+                "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+                "objecttype_version": 3,
+                "objects_api_group": objects_api_group,
+                "catalogue": {"domain": "", "rsin": ""},
+                "iot_submission_report": "",
+                "iot_submission_csv": "",
+                "iot_attachment": "",
+                "update_existing_object": True,
+                "auth_attribute_path": ["bsn"],
+            }
             object_update_result = plugin.register_submission(
-                submission_update,
-                {
-                    "version": 1,
-                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
-                    "objecttype_version": 3,
-                    "objects_api_group": objects_api_group,
-                    "iot_submission_report": "",
-                    "iot_submission_csv": "",
-                    "iot_attachment": "",
-                    "update_existing_object": True,
-                    "auth_attribute_path": ["bsn"],
-                },
+                submission_update, options2
             )
 
             assert object_update_result
@@ -420,20 +418,21 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                 form_step=form_step,
                 data={"voornaam": "Updated value"},
             )
+            options3: RegistrationOptionsV1 = {
+                "version": 1,
+                "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+                "objecttype_version": 3,
+                "objects_api_group": objects_api_group,
+                "catalogue": {"domain": "", "rsin": ""},
+                "iot_submission_report": "",
+                "iot_submission_csv": "",
+                "iot_attachment": "",
+                "update_existing_object": False,
+                "auth_attribute_path": [],
+            }
 
             object_create_result2 = plugin.register_submission(
-                submission_update2,
-                {
-                    "version": 1,
-                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
-                    "objecttype_version": 3,
-                    "objects_api_group": objects_api_group,
-                    "iot_submission_report": "",
-                    "iot_submission_csv": "",
-                    "iot_attachment": "",
-                    "update_existing_object": False,
-                    "auth_attribute_path": [],
-                },
+                submission_update2, options3
             )
 
             assert object_create_result2
@@ -453,20 +452,21 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                 form_step=form_step,
                 data={"voornaam": "Updated value"},
             )
+            options4: RegistrationOptionsV1 = {
+                "version": 1,
+                "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+                "objecttype_version": 3,
+                "objects_api_group": objects_api_group,
+                "catalogue": {"domain": "", "rsin": ""},
+                "iot_submission_report": "",
+                "iot_submission_csv": "",
+                "iot_attachment": "",
+                "update_existing_object": True,
+                "auth_attribute_path": ["bsn"],
+            }
 
             object_create_result3 = plugin.register_submission(
-                submission_update3,
-                {
-                    "version": 1,
-                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
-                    "objecttype_version": 3,
-                    "objects_api_group": objects_api_group,
-                    "iot_submission_report": "",
-                    "iot_submission_csv": "",
-                    "iot_attachment": "",
-                    "update_existing_object": True,
-                    "auth_attribute_path": ["bsn"],
-                },
+                submission_update3, options4
             )
 
             assert object_create_result3

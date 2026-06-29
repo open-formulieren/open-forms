@@ -38,7 +38,6 @@ from ....constants import RegistrationAttribute
 from ..config import ObjectsAPIOptionsSerializer
 from ..constants import PLUGIN_IDENTIFIER
 from ..models import (
-    ObjectsAPIConfig,
     ObjectsAPIRegistrationData,
     ObjectsAPISubmissionAttachment,
 )
@@ -47,7 +46,6 @@ from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2
 
 
-@freeze_time("2024-03-19T13:40:34.222258+00:00")
 @temp_private_root()
 class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
     """This test case requires the Objects & Objecttypes API and Open Zaak to be running.
@@ -57,34 +55,21 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
 
     maxDiff = None
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-        config_patcher = patch(
-            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-            return_value=ObjectsAPIConfig(),
-        )
-        self.mock_get_config = config_patcher.start()
-        self.addCleanup(config_patcher.stop)
-
-        self.objects_api_group = ObjectsAPIGroupConfigFactory.create(
+        cls.objects_api_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True
         )
 
-    def test_submission_with_objects_api_v2(self):
+    @freeze_time("2026-06-25T18:07:00+00:00")
+    def test_register_with_mapping_and_objecttype_and_document_types_resolve(self):
         submission = SubmissionFactory.from_components(
             [
-                # fmt: off
                 {"key": "age", "type": "number"},
-                {
-                    "key": "lastname",
-                    "type": "textfield",
-                },
-                {
-                    "key": "location",
-                    "type": "map",
-                },
-                # fmt: on
+                {"key": "lastname", "type": "textfield"},
+                {"key": "location", "type": "map"},
             ],
             completed=True,
             submitted_data={
@@ -95,9 +80,10 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "coordinates": [4.893164274470299, 52.36673378967122],
                 },
             },
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 3, 19, 13, 40, 34).replace(tzinfo=UTC),
             with_report=True,
         )
-
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
             "objects_api_group": self.objects_api_group,
@@ -107,12 +93,12 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             "upload_submission_csv": True,
             "update_existing_object": False,
             "auth_attribute_path": [],
-            "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
-            "informatieobjecttype_submission_csv": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
-            "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
+            "iot_submission_report": "PDF Informatieobjecttype",
+            "iot_submission_csv": "CSV Informatieobjecttype",
+            "iot_attachment": "Attachment Informatieobjecttype",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
-                # fmt: off
                 {
                     "variable_key": "age",
                     "target_path": ["age"],
@@ -146,62 +132,74 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "variable_key": "cosign_date",
                     "target_path": ["cosign_date"],
                 },
-                # fmt: on
             ],
             "geometry_variable_key": "location",
             "transform_to_list": [],
-            "iot_attachment": "",
-            "iot_submission_csv": "",
-            "iot_submission_report": "",
         }
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
         result = plugin.register_submission(submission, v2_options)
 
+        assert result is not None
         registration_data = ObjectsAPIRegistrationData.objects.get(
             submission=submission
         )
 
-        self.assertEqual(
-            result["type"],
-            "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-        )
-        self.assertEqual(
-            result["record"]["typeVersion"], v2_options["objecttype_version"]
-        )
-        submission_date = timezone.now().replace(second=0, microsecond=0).isoformat()
-        self.assertEqual(
-            result["record"]["data"],
-            {
-                "age": 20,
-                "cosign_date": None,
-                "name": {
-                    "last.name": "My last name",
+        with self.subTest("objects API record"):
+            self.assertEqual(
+                result["type"],
+                "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+            )
+            self.assertEqual(
+                result["record"]["typeVersion"], v2_options["objecttype_version"]
+            )
+            submission_date = (
+                timezone.now().replace(second=0, microsecond=0).isoformat()
+            )
+            self.assertEqual(
+                result["record"]["data"],
+                {
+                    "age": 20,
+                    "cosign_date": None,
+                    "name": {
+                        "last.name": "My last name",
+                    },
+                    "submission_pdf_url": registration_data.pdf_url,
+                    "submission_csv_url": registration_data.csv_url,
+                    "submission_payment_completed": False,
+                    "submission_payment_amount": None,
+                    "submission_payment_public_ids": [],
+                    "submission_date": submission_date,
                 },
-                "submission_pdf_url": registration_data.pdf_url,
-                "submission_csv_url": registration_data.csv_url,
-                "submission_payment_completed": False,
-                "submission_payment_amount": None,
-                "submission_payment_public_ids": [],
-                "submission_date": submission_date,
-            },
-        )
-        self.assertEqual(
-            result["record"]["geometry"],
-            {
-                "type": "Point",
-                "coordinates": [4.893164274470299, 52.36673378967122],
-            },
-        )
+            )
+            self.assertEqual(
+                result["record"]["geometry"],
+                {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
+            )
 
-    def test_submission_with_objects_api_v2_with_payment_attributes(self):
-        submission = SubmissionFactory.from_components(
-            [],
-            completed=True,
-            submitted_data={},
-        )
+        with (
+            self.subTest("document types"),
+            get_documents_client(self.objects_api_group) as client,
+        ):
+            csv_document = client.get(registration_data.csv_url).json()
+            pdf_document = client.get(registration_data.pdf_url).json()
+
+            self.assertEqual(
+                csv_document["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
+            )
+
+            self.assertEqual(
+                pdf_document["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
+            )
+
+    def test_payment_attributes_mapping(self):
+        submission = SubmissionFactory.create(completed=True)
 
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
@@ -231,6 +229,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
+            "catalogue": {"domain": "", "rsin": ""},
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -265,20 +264,14 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         # Run the registration
         result = plugin.register_submission(submission, v2_options)
 
-        self.assertEqual(
-            result["type"],
-            "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-        )
-        self.assertEqual(result["record"]["typeVersion"], 3)
-
+        assert result is not None
         data = result["record"]["data"]
-
         self.assertEqual(data["submission_payment_completed"], True)
         self.assertEqual(data["submission_payment_amount"], 40.0)
         self.assertEqual(data["submission_payment_public_ids"], ["foo", "bar"])
         self.assertEqual(data["submission_provider_payment_ids"], ["123456", "654321"])
 
-    def test_submission_with_file_components(self):
+    def test_upload_attachments_from_file_components(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -298,6 +291,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
             ],
             completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 3, 19, 13, 40, 34).replace(tzinfo=UTC),
         )
         submission_step = submission.steps[0]
         SubmissionFileAttachmentFactory.create(
@@ -310,56 +305,68 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             file_name="attachment2_1.jpg",
             form_key="multiple_files",
         )
-
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
             "objects_api_group": self.objects_api_group,
             # See the docker compose fixtures for more info on these values:
             "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
             "objecttype_version": 1,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
+            "iot_attachment": "Attachment Informatieobjecttype",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
             "upload_submission_csv": False,
             "update_existing_object": False,
             "auth_attribute_path": [],
-            "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
-                # fmt: off
                 {
                     "variable_key": "single_file",
                     "target_path": ["single_file"],
                 },
-                {"variable_key": "multiple_files", "target_path": ["multiple_files"]},
-                # fmt: on
+                {
+                    "variable_key": "multiple_files",
+                    "target_path": ["multiple_files"],
+                },
             ],
             "transform_to_list": [],
-            "iot_attachment": "",
-            "iot_submission_csv": "",
-            "iot_submission_report": "",
         }
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
         result = plugin.register_submission(submission, v2_options)
 
-        self.assertEqual(
-            result["type"],
-            "http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2",
-        )
-        self.assertEqual(
-            result["record"]["typeVersion"], v2_options["objecttype_version"]
-        )
-
-        self.assertTrue(
-            result["record"]["data"]["single_file"].startswith(
-                "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/"
+        assert result is not None
+        with self.subTest("file values mapping"):
+            self.assertTrue(
+                result["record"]["data"]["single_file"].startswith(
+                    "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/"
+                )
             )
-        )
+            self.assertIsInstance(result["record"]["data"]["multiple_files"], list)
+            self.assertEqual(len(result["record"]["data"]["multiple_files"]), 1)
 
-        self.assertIsInstance(result["record"]["data"]["multiple_files"], list)
-        self.assertEqual(len(result["record"]["data"]["multiple_files"]), 1)
+        with (
+            self.subTest("document type resolution"),
+            get_documents_client(self.objects_api_group) as client,
+        ):
+            attachment_1 = client.get(result["record"]["data"]["single_file"]).json()
+            attachment_2_1 = client.get(
+                result["record"]["data"]["multiple_files"][0]
+            ).json()
 
-    def test_submission_with_file_components_container_variable(self):
+            self.assertEqual(
+                attachment_1["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                "531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            )
+            self.assertEqual(
+                attachment_2_1["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                "531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            )
+
+    def test_mapping_file_components_container_variable(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -379,6 +386,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
             ],
             completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 3, 19, 13, 40, 34).replace(tzinfo=UTC),
         )
         submission_step = submission.steps[0]
         SubmissionFileAttachmentFactory.create(
@@ -391,17 +400,19 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             file_name="attachment2_1.jpg",
             form_key="multiple_files",
         )
-
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
             "objects_api_group": self.objects_api_group,
             # See the docker compose fixtures for more info on these values:
             "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
             "objecttype_version": 1,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
+            "iot_attachment": "Attachment Informatieobjecttype",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
             "upload_submission_csv": False,
             "update_existing_object": False,
             "auth_attribute_path": [],
-            "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
                 {
@@ -410,17 +421,13 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
-            "iot_attachment": "",
-            "iot_submission_csv": "",
-            "iot_submission_report": "",
         }
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
         result = plugin.register_submission(submission, v2_options)
-        assert result is not None
 
+        assert result is not None
         self.assertIsInstance(result["record"]["data"]["multiple_files"], list)
         self.assertEqual(len(result["record"]["data"]["multiple_files"]), 2)
 
@@ -472,6 +479,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 ],
             },
             completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 3, 19, 13, 40, 34).replace(tzinfo=UTC),
         )
         submission_step = submission.steps[0]
         attachment = SubmissionFileAttachmentFactory.create(
@@ -482,17 +491,19 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             _component_configuration_path="components.0.components.0.components.1",
             _component_data_path="repeatingGroup.0.nestedRepeatingGroup.0.file",
         )
-
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
             "objects_api_group": self.objects_api_group,
             # See the docker compose fixtures for more info on these values:
             "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
             "objecttype_version": 1,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
+            "iot_attachment": "Attachment Informatieobjecttype",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
             "upload_submission_csv": False,
             "update_existing_object": False,
             "auth_attribute_path": [],
-            "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
                 {
@@ -501,17 +512,13 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
             ],
             "transform_to_list": [],
-            "iot_attachment": "",
-            "iot_submission_csv": "",
-            "iot_submission_report": "",
         }
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
         result = plugin.register_submission(submission, v2_options)
-        assert result is not None
 
+        assert result is not None
         objects_api_attachment = (
             attachment.objectsapisubmissionattachment_set.get()  # pyright: ignore[reportAttributeAccessIssue]
         )
@@ -543,6 +550,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             ],
             submitted_data={"single_file": []},
             completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 3, 19, 13, 40, 34).replace(tzinfo=UTC),
         )
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
@@ -550,23 +559,21 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             # See the docker compose fixtures for more info on these values:
             "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
             "objecttype_version": 1,
+            "catalogue": {"domain": "TEST", "rsin": "000000000"},
+            "iot_attachment": "Attachment Informatieobjecttype",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
             "upload_submission_csv": False,
             "update_existing_object": False,
             "auth_attribute_path": [],
-            "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
-                # fmt: off
                 {
                     "variable_key": "single_file",
                     "target_path": ["single_file"],
                 },
-                # fmt: on
             ],
             "transform_to_list": [],
-            "iot_attachment": "",
-            "iot_submission_csv": "",
-            "iot_submission_report": "",
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -574,6 +581,86 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         result = plugin.register_submission(submission, v2_options)
 
         assert result is not None
+
+    def test_can_upload_attachments_with_file_component_specific_overrides(self):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            organisatie_rsin="000000000",
+        )
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "file",
+                    "key": "file",
+                    "label": "File",
+                    "file": {"type": []},
+                    "filePattern": "",
+                    "registration": {
+                        "informatieobjecttype": "https://example.com/ignore-me",
+                    },
+                }
+            ],
+            submitted_data={},
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
+        )
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            content_type="image/png",
+            form_key="file",
+            _component_configuration_path="components.0",
+        )
+        options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "variables_mapping": [
+                {
+                    "variable_key": "environment",
+                    "target_path": ["environment"],
+                },
+            ],
+            "transform_to_list": [],
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            # a default is required to register file component attachments
+            "iot_attachment": "PDF Informatieobjecttype",
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "upload_submission_csv": False,
+            "files": [
+                {
+                    "key": "file",
+                    "document_type_description": "Attachment Informatieobjecttype",
+                    "title": "Custom title",
+                },
+            ],
+        }
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, options)
+
+        assert result is not None
+        with get_documents_client(objects_api_group) as documents_client:
+            attachment_document = documents_client.get(
+                ObjectsAPISubmissionAttachment.objects.get(
+                    submission_file_attachment=attachment
+                ).document_url
+            ).json()
+
+        self.assertEqual(
+            attachment_document["informatieobjecttype"],
+            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+        )
+        self.assertEqual(attachment_document["titel"], "Custom title")
 
     def test_addressNl_legacy_before_of_30(self):
         """
@@ -592,7 +679,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "label": "AddressNl component",
                 },
             ],
-            completed=True,
             submitted_data={
                 "addressNl": {
                     "city": "",
@@ -604,6 +690,9 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "houseNumberAddition": "2",
                 },
             },
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 3, 19, 13, 40, 34).replace(tzinfo=UTC),
         )
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         # simulates old, non-migrated options structure
@@ -626,7 +715,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         is_valid = serializer.is_valid()
         assert is_valid
         v2_options: RegistrationOptionsV2 = serializer.validated_data
-
         handler = ObjectsAPIV2Handler()
 
         record_data = handler.get_record_data(submission=submission, options=v2_options)
@@ -650,6 +738,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
     def test_object_ownership_not_validated_if_new_object(self):
         submission = SubmissionFactory.from_components(
             [{"key": "textfield", "type": "textfield"}],
+            submitted_data={"textfield": "test"},
             completed_not_preregistered=True,
             form__registration_backend=PLUGIN_IDENTIFIER,
             form__registration_backend_options={
@@ -661,7 +750,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "auth_attribute_path": [],
                 "variables_mapping": [],
             },
-            submitted_data={"textfield": "test"},
             initial_data_reference="some ref",
         )
 
@@ -669,6 +757,202 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             pre_registration(submission.pk, PostSubmissionEvents.on_retry)
         except AssertionError:
             self.fail("Assertion should have passed.")
+
+    @tag("gh-6007")
+    def test_hidden_fields_still_get_emitted_to_object(self):
+        """
+        Assert that components that are hidden are not omitted from the JSON payload.
+
+        4a295cb968ed8f96dee7d27405c9cb4a80defd19 results in hidden fields no longer
+        creating a database record for the hidden variable, but it *is* still available
+        in the submission state and should be processed accordingly.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "textfield",
+                    "label": "textfield",
+                    "hidden": True,
+                },
+                {
+                    "type": "fieldset",
+                    "key": "hiddenFieldset",
+                    "label": "hiddenFieldset",
+                    "hidden": True,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "nestedTextfield",
+                            "label": "nestedTextfield",
+                            "hidden": False,
+                        }
+                    ],
+                },
+            ],
+            submitted_data={},
+            completed=True,
+        )
+        state = submission.variables_state
+        assert not state.saved_variables
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "variables_mapping": [
+                {
+                    "variable_key": "textfield",
+                    "target_path": ["textfield"],
+                },
+                {
+                    "variable_key": "nestedTextfield",
+                    "target_path": ["nestedTextfield"],
+                },
+            ],
+            "transform_to_list": [],
+            "catalogue": {"rsin": "", "domain": ""},
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+        }
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, v2_options)
+
+        assert result is not None
+        self.assertEqual(
+            result["record"]["data"],
+            {
+                "textfield": "",
+                "nestedTextfield": "",
+            },
+        )
+
+    @tag("dh-864")
+    def test_conditional_fieldset_inside_repeating_group(self):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            organisatie_rsin="000000000",
+        )
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "checkbox",
+                    "key": "showNestedFieldset",
+                    "label": "Show nested fieldset",
+                },
+                {
+                    "type": "editgrid",
+                    "key": "repeatingGroup",
+                    "label": "Repeating group",
+                    "groupLabel": "Item",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "editgridTextfield",
+                            "label": "Edit grid text field",
+                        },
+                        {
+                            "type": "fieldset",
+                            "key": "editgridFieldset",
+                            "label": "Edit grid fieldset",
+                            "conditional": {
+                                "show": True,
+                                "when": "showNestedFieldset",
+                                "eq": True,
+                            },
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "container.nestedTextfield",
+                                    "label": "Nested text field",
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+            submitted_data={
+                # leads to no submission data for the fields inside the fieldset,
+                # because they aren't visible
+                "showNestedFieldset": False,
+                "repeatingGroup": [
+                    {
+                        "editgridTextfield": "foo",
+                    }
+                ],
+            },
+            completed=True,
+            # the version of the document types are valid on this timestamp
+            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
+        )
+        options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_attachment": "",
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "variables_mapping": [
+                {
+                    "variable_key": "showNestedFieldset",
+                    "target_path": ["fieldsetShown"],
+                },
+                {
+                    "variable_key": "repeatingGroup",
+                    "target_path": ["repeatingGroupItems"],
+                },
+            ],
+            "transform_to_list": [],
+            "upload_submission_csv": False,
+        }
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, options)
+
+        assert result is not None
+        record_data = result["record"]["data"]
+        self.assertEqual(
+            record_data,
+            {
+                "fieldsetShown": False,
+                "repeatingGroupItems": [
+                    {
+                        "editgridTextfield": "foo",
+                        # the component key structure is used in the output of the mapped
+                        # item of the edit grid.
+                        # Note that DH would expect this parent key and child not to be
+                        # present at all, however because of #6007 we can't do that,
+                        # unless #6012 gets implemented.
+                        "container": {
+                            "nestedTextfield": "",
+                        },
+                    },
+                ],
+            },
+        )
+
+
+@temp_private_root()
+class FamilyMembersRegistrationTests(OFVCRMixin, TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
+        )
 
     @patch(
         "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
@@ -713,43 +997,34 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "max_age": None,
             },
         )
-
-        serializer = ObjectsAPIOptionsSerializer(
-            data={
-                "version": 2,
-                "objects_api_group": self.objects_api_group.identifier,
-                # See the docker compose fixtures for more info on these values:
-                "objecttype": UUID("59cdc902-576b-495f-ae63-c9c78b8afc09"),
-                "objecttype_version": 1,
-                "upload_submission_csv": False,
-                "update_existing_object": False,
-                "variables_mapping": [
-                    {
-                        "variable_key": "partners",
-                        "target_path": ["partners"],
-                    },
-                ],
-                "transform_to_list": [],
-                "iot_attachment": "",
-                "iot_submission_csv": "",
-                "iot_submission_report": "",
-            }
-        )
-
-        is_valid = serializer.is_valid()
-        assert is_valid
-
-        v2_options: RegistrationOptionsV2 = serializer.validated_data
-
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("59cdc902-576b-495f-ae63-c9c78b8afc09"),
+            "objecttype_version": 1,
+            "upload_submission_csv": False,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+            "auth_attribute_path": [],
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "partners",
+                    "target_path": ["partners"],
+                },
+            ],
+            "transform_to_list": [],
+        }
         prefill_variables(submission)
-
         handler = ObjectsAPIV2Handler()
         ObjectsAPIRegistrationData.objects.create(submission=submission)
 
         record_data = handler.get_record_data(submission=submission, options=v2_options)
 
         data = record_data["data"]
-
         self.assertEqual(
             data,
             {
@@ -816,34 +1091,27 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "max_age": None,
             },
         )
-
-        serializer = ObjectsAPIOptionsSerializer(
-            data={
-                "version": 2,
-                "objects_api_group": self.objects_api_group.identifier,
-                # See the docker compose fixtures for more info on these values:
-                "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
-                "objecttype_version": 1,
-                "upload_submission_csv": False,
-                "update_existing_object": False,
-                "variables_mapping": [
-                    {
-                        "variable_key": "children",
-                        "target_path": ["children"],
-                    },
-                ],
-                "transform_to_list": [],
-                "iot_attachment": "",
-                "iot_submission_csv": "",
-                "iot_submission_report": "",
-            }
-        )
-
-        is_valid = serializer.is_valid()
-        assert is_valid
-
-        v2_options: RegistrationOptionsV2 = serializer.validated_data
-
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
+            "objecttype_version": 1,
+            "upload_submission_csv": False,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+            "auth_attribute_path": [],
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "children",
+                    "target_path": ["children"],
+                },
+            ],
+            "transform_to_list": [],
+        }
         prefill_variables(submission)
         # the submitted data needs extra handling because frontend adds some extra field
         # to it which is not happenning here, so we have to update it manually in order
@@ -851,7 +1119,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         state = submission.variables_state
         children_data = state.get_data()["children"]
         assert isinstance(children_data, list)
-
         for child in children_data:
             assert isinstance(child, dict)
             child.update(
@@ -861,14 +1128,12 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "__addedManually": False,
                 }
             )
-
         handler = ObjectsAPIV2Handler()
         ObjectsAPIRegistrationData.objects.create(submission=submission)
 
         record_data = handler.get_record_data(submission=submission, options=v2_options)
 
         data = record_data["data"]
-
         self.assertEqual(
             data,
             {
@@ -935,34 +1200,27 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "max_age": None,
             },
         )
-
-        serializer = ObjectsAPIOptionsSerializer(
-            data={
-                "version": 2,
-                "objects_api_group": self.objects_api_group.identifier,
-                # See the docker compose fixtures for more info on these values:
-                "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
-                "objecttype_version": 1,
-                "upload_submission_csv": False,
-                "update_existing_object": False,
-                "variables_mapping": [
-                    {
-                        "variable_key": "children",
-                        "target_path": ["children"],
-                    },
-                ],
-                "transform_to_list": [],
-                "iot_attachment": "",
-                "iot_submission_csv": "",
-                "iot_submission_report": "",
-            }
-        )
-
-        is_valid = serializer.is_valid()
-        assert is_valid
-
-        v2_options: RegistrationOptionsV2 = serializer.validated_data
-
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+            "upload_submission_csv": False,
+            "auth_attribute_path": [],
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "children",
+                    "target_path": ["children"],
+                },
+            ],
+            "transform_to_list": [],
+        }
         prefill_variables(submission)
         # the submitted data needs extra handling because frontend adds some extra field
         # to it which is not happenning here, so we have to update it manually in order
@@ -986,14 +1244,12 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "__addedManually": False,
             }
         )
-
         handler = ObjectsAPIV2Handler()
         ObjectsAPIRegistrationData.objects.create(submission=submission)
 
         record_data = handler.get_record_data(submission=submission, options=v2_options)
 
         data = record_data["data"]
-
         self.assertEqual(
             data,
             {
@@ -1022,7 +1278,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "enableSelection": True,
                 },
             ],
-            completed=True,
             submitted_data={
                 "children": [
                     {
@@ -1052,43 +1307,36 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 ],
             },
             bsn="123456782",
+            completed=True,
             with_public_registration_reference=True,
         )
-
-        serializer = ObjectsAPIOptionsSerializer(
-            data={
-                "version": 2,
-                "objects_api_group": self.objects_api_group.identifier,
-                # See the docker compose fixtures for more info on these values:
-                "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
-                "objecttype_version": 1,
-                "upload_submission_csv": False,
-                "update_existing_object": False,
-                "variables_mapping": [
-                    {
-                        "variable_key": "children",
-                        "target_path": ["children"],
-                    },
-                ],
-                "transform_to_list": [],
-                "iot_attachment": "",
-                "iot_submission_csv": "",
-                "iot_submission_report": "",
-            }
-        )
-
-        is_valid = serializer.is_valid()
-        assert is_valid
-
-        v2_options: RegistrationOptionsV2 = serializer.validated_data
-
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+            "upload_submission_csv": False,
+            "auth_attribute_path": [],
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "children",
+                    "target_path": ["children"],
+                },
+            ],
+            "transform_to_list": [],
+        }
         handler = ObjectsAPIV2Handler()
         ObjectsAPIRegistrationData.objects.create(submission=submission)
 
         record_data = handler.get_record_data(submission=submission, options=v2_options)
 
         data = record_data["data"]
-
         self.assertEqual(
             data,
             {
@@ -1117,7 +1365,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "enableSelection": False,
                 },
             ],
-            completed=True,
             submitted_data={
                 "children": [
                     {
@@ -1147,43 +1394,36 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 ],
             },
             bsn="123456782",
+            completed=True,
             with_public_registration_reference=True,
         )
-
-        serializer = ObjectsAPIOptionsSerializer(
-            data={
-                "version": 2,
-                "objects_api_group": self.objects_api_group.identifier,
-                # See the docker compose fixtures for more info on these values:
-                "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
-                "objecttype_version": 1,
-                "upload_submission_csv": False,
-                "update_existing_object": False,
-                "variables_mapping": [
-                    {
-                        "variable_key": "children",
-                        "target_path": ["children"],
-                    },
-                ],
-                "transform_to_list": [],
-                "iot_attachment": "",
-                "iot_submission_csv": "",
-                "iot_submission_report": "",
-            }
-        )
-
-        is_valid = serializer.is_valid()
-        assert is_valid
-
-        v2_options: RegistrationOptionsV2 = serializer.validated_data
-
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+            "upload_submission_csv": False,
+            "auth_attribute_path": [],
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "children",
+                    "target_path": ["children"],
+                },
+            ],
+            "transform_to_list": [],
+        }
         handler = ObjectsAPIV2Handler()
         ObjectsAPIRegistrationData.objects.create(submission=submission)
 
         record_data = handler.get_record_data(submission=submission, options=v2_options)
 
         data = record_data["data"]
-
         self.assertEqual(
             data,
             {
@@ -1236,7 +1476,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     ],
                 },
             ],
-            completed=True,
             submitted_data={
                 "children": [
                     {
@@ -1270,47 +1509,40 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 ],
             },
             bsn="999970094",
+            completed=True,
             with_public_registration_reference=True,
         )
-
-        serializer = ObjectsAPIOptionsSerializer(
-            data={
-                "version": 2,
-                "objects_api_group": self.objects_api_group.identifier,
-                # See the docker compose fixtures for more info on these values:
-                "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
-                "objecttype_version": 1,
-                "upload_submission_csv": False,
-                "update_existing_object": False,
-                "variables_mapping": [
-                    {
-                        "variable_key": "children",
-                        "target_path": ["children"],
-                    },
-                    {
-                        "variable_key": "extraChildDetails",
-                        "target_path": ["extraChildDetails"],
-                    },
-                ],
-                "transform_to_list": [],
-                "iot_attachment": "",
-                "iot_submission_csv": "",
-                "iot_submission_report": "",
-            }
-        )
-
-        is_valid = serializer.is_valid()
-        assert is_valid
-
-        v2_options: RegistrationOptionsV2 = serializer.validated_data
-
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+            "upload_submission_csv": False,
+            "auth_attribute_path": [],
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "children",
+                    "target_path": ["children"],
+                },
+                {
+                    "variable_key": "extraChildDetails",
+                    "target_path": ["extraChildDetails"],
+                },
+            ],
+            "transform_to_list": [],
+        }
         handler = ObjectsAPIV2Handler()
         ObjectsAPIRegistrationData.objects.create(submission=submission)
 
         record_data = handler.get_record_data(submission=submission, options=v2_options)
 
         data = record_data["data"]
-
         self.assertEqual(
             data,
             {
@@ -1367,7 +1599,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     ],
                 },
             ],
-            completed=True,
             submitted_data={
                 "children": [
                     {
@@ -1400,47 +1631,41 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 ],
             },
             bsn="999970094",
+            completed=True,
             with_public_registration_reference=True,
         )
 
-        serializer = ObjectsAPIOptionsSerializer(
-            data={
-                "version": 2,
-                "objects_api_group": self.objects_api_group.identifier,
-                # See the docker compose fixtures for more info on these values:
-                "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
-                "objecttype_version": 1,
-                "upload_submission_csv": False,
-                "update_existing_object": False,
-                "variables_mapping": [
-                    {
-                        "variable_key": "children",
-                        "target_path": ["children"],
-                    },
-                    {
-                        "variable_key": "extraChildDetails",
-                        "target_path": ["extraChildDetails"],
-                    },
-                ],
-                "transform_to_list": [],
-                "iot_attachment": "",
-                "iot_submission_csv": "",
-                "iot_submission_report": "",
-            }
-        )
-
-        is_valid = serializer.is_valid()
-        assert is_valid
-
-        v2_options: RegistrationOptionsV2 = serializer.validated_data
-
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("db4e8653-1f84-4df7-82bd-96787c52b298"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+            "upload_submission_csv": False,
+            "auth_attribute_path": [],
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "children",
+                    "target_path": ["children"],
+                },
+                {
+                    "variable_key": "extraChildDetails",
+                    "target_path": ["extraChildDetails"],
+                },
+            ],
+            "transform_to_list": [],
+        }
         handler = ObjectsAPIV2Handler()
         ObjectsAPIRegistrationData.objects.create(submission=submission)
 
         record_data = handler.get_record_data(submission=submission, options=v2_options)
 
         data = record_data["data"]
-
         self.assertEqual(
             data,
             {
@@ -1456,348 +1681,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 ],
                 "extraChildDetails": [
                     {"bsn": "999970100", "firstNames": "Olle"},
-                ],
-            },
-        )
-
-    @tag("gh-6007")
-    def test_hidden_fields_still_get_emitted_to_object(self):
-        """
-        Assert that components that are hidden are not omitted from the JSON payload.
-
-        4a295cb968ed8f96dee7d27405c9cb4a80defd19 results in hidden fields no longer
-        creating a database record for the hidden variable, but it *is* still available
-        in the submission state and should be processed accordingly.
-        """
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "type": "textfield",
-                    "key": "textfield",
-                    "label": "textfield",
-                    "hidden": True,
-                },
-                {
-                    "type": "fieldset",
-                    "key": "hiddenFieldset",
-                    "label": "hiddenFieldset",
-                    "hidden": True,
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "nestedTextfield",
-                            "label": "nestedTextfield",
-                            "hidden": False,
-                        }
-                    ],
-                },
-            ],
-            completed=True,
-            submitted_data={},
-        )
-        state = submission.variables_state
-        assert not state.saved_variables
-        v2_options: RegistrationOptionsV2 = {
-            "version": 2,
-            "objects_api_group": self.objects_api_group,
-            # See the docker compose fixtures for more info on these values:
-            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-            "objecttype_version": 1,
-            "update_existing_object": False,
-            "auth_attribute_path": [],
-            "variables_mapping": [
-                {"variable_key": "textfield", "target_path": ["textfield"]},
-                {"variable_key": "nestedTextfield", "target_path": ["nestedTextfield"]},
-            ],
-            "transform_to_list": [],
-            "iot_attachment": "",
-            "iot_submission_csv": "",
-            "iot_submission_report": "",
-        }
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        # Run the registration
-        result = plugin.register_submission(submission, v2_options)
-
-        assert result is not None
-        self.assertEqual(
-            result["record"]["data"],
-            {
-                "textfield": "",
-                "nestedTextfield": "",
-            },
-        )
-
-    def test_can_upload_attachments_with_indirect_document_type_reference(self):
-        objects_api_group = ObjectsAPIGroupConfigFactory.create(
-            for_test_docker_compose=True,
-            organisatie_rsin="000000000",
-        )
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "type": "file",
-                    "key": "file",
-                    "label": "File",
-                    "file": {"type": []},
-                    "filePattern": "",
-                    "registration": {
-                        "informatieobjecttype": "https://example.com/ignore-me",
-                    },
-                }
-            ],
-            submitted_data={},
-            completed=True,
-            # the version of the document types are valid on this timestamp
-            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
-        )
-        attachment = SubmissionFileAttachmentFactory.create(
-            submission_step=submission.steps[0],
-            content_type="image/png",
-            form_key="file",
-            _component_configuration_path="components.0",
-        )
-        options: RegistrationOptionsV2 = {
-            "version": 2,
-            "objects_api_group": objects_api_group,
-            # See the docker compose fixtures for more info on these values:
-            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-            "objecttype_version": 1,
-            "update_existing_object": False,
-            "auth_attribute_path": [],
-            "variables_mapping": [
-                {
-                    "variable_key": "environment",
-                    "target_path": ["environment"],
-                },
-            ],
-            "transform_to_list": [],
-            "catalogue": {
-                "domain": "TEST",
-                "rsin": "000000000",
-            },
-            "iot_attachment": "PDF Informatieobjecttype",
-            "iot_submission_report": "",
-            "iot_submission_csv": "",
-            # a default is required to register file component attachments, aparently
-            "upload_submission_csv": False,
-            "files": [
-                {
-                    "key": "file",
-                    "document_type_description": "Attachment Informatieobjecttype",
-                },
-            ],
-        }
-
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        # Run the registration
-        plugin.register_submission(submission, options)
-
-        submission.refresh_from_db()
-        assert submission.registration_result
-
-        with get_documents_client(objects_api_group) as documents_client:
-            attachment_document = documents_client.get(
-                ObjectsAPISubmissionAttachment.objects.get(
-                    submission_file_attachment=attachment
-                ).document_url
-            ).json()
-
-        self.assertEqual(
-            attachment_document["informatieobjecttype"],
-            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-        )
-
-    def test_can_upload_attachments_with_document_options_overrides(self):
-        objects_api_group = ObjectsAPIGroupConfigFactory.create(
-            for_test_docker_compose=True,
-            organisatie_rsin="000000000",
-        )
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "type": "file",
-                    "key": "file",
-                    "label": "File",
-                    "registration": {
-                        "informatieobjecttype": "https://example.com/ignore-me",
-                    },
-                }
-            ],
-            submitted_data={},
-            completed=True,
-            # the version of the document types are valid on this timestamp
-            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
-        )
-        attachment = SubmissionFileAttachmentFactory.create(
-            submission_step=submission.steps[0],
-            content_type="image/png",
-            form_key="file",
-            _component_configuration_path="components.0",
-        )
-        options: RegistrationOptionsV2 = {
-            "version": 2,
-            "objects_api_group": objects_api_group,
-            # See the docker compose fixtures for more info on these values:
-            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-            "objecttype_version": 1,
-            "update_existing_object": False,
-            "auth_attribute_path": [],
-            "variables_mapping": [
-                {
-                    "variable_key": "environment",
-                    "target_path": ["environment"],
-                },
-            ],
-            "transform_to_list": [],
-            "catalogue": {
-                "domain": "TEST",
-                "rsin": "000000000",
-            },
-            "iot_attachment": "Attachment Informatieobjecttype",
-            "iot_submission_report": "",
-            "iot_submission_csv": "",
-            # a default is required to register file component attachments, aparently
-            "upload_submission_csv": False,
-            "files": [
-                {
-                    "key": "file",
-                    "title": "Custom title",
-                },
-            ],
-        }
-
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        # Run the registration
-        plugin.register_submission(submission, options)
-
-        submission.refresh_from_db()
-        assert submission.registration_result
-
-        with get_documents_client(objects_api_group) as documents_client:
-            attachment_document = documents_client.get(
-                ObjectsAPISubmissionAttachment.objects.get(
-                    submission_file_attachment=attachment
-                ).document_url
-            ).json()
-
-        self.assertEqual(
-            attachment_document["informatieobjecttype"],
-            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
-        )
-        self.assertEqual(attachment_document["titel"], "Custom title")
-
-    @tag("dh-864")
-    def test_conditional_fieldset_inside_repeating_group(self):
-        objects_api_group = ObjectsAPIGroupConfigFactory.create(
-            for_test_docker_compose=True,
-            organisatie_rsin="000000000",
-        )
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "type": "checkbox",
-                    "key": "showNestedFieldset",
-                    "label": "Show nested fieldset",
-                },
-                {
-                    "type": "editgrid",
-                    "key": "repeatingGroup",
-                    "label": "Repeating group",
-                    "groupLabel": "Item",
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "editgridTextfield",
-                            "label": "Edit grid text field",
-                        },
-                        {
-                            "type": "fieldset",
-                            "key": "editgridFieldset",
-                            "label": "Edit grid fieldset",
-                            "conditional": {
-                                "show": True,
-                                "when": "showNestedFieldset",
-                                "eq": True,
-                            },
-                            "components": [
-                                {
-                                    "type": "textfield",
-                                    "key": "container.nestedTextfield",
-                                    "label": "Nested text field",
-                                },
-                            ],
-                        },
-                    ],
-                },
-            ],
-            submitted_data={
-                # leads to no submission data for the fields inside the fieldset,
-                # because they aren't visible
-                "showNestedFieldset": False,
-                "repeatingGroup": [
-                    {
-                        "editgridTextfield": "foo",
-                    }
-                ],
-            },
-            completed=True,
-            # the version of the document types are valid on this timestamp
-            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
-        )
-        options: RegistrationOptionsV2 = {
-            "version": 2,
-            "objects_api_group": objects_api_group,
-            # See the docker compose fixtures for more info on these values:
-            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-            "objecttype_version": 1,
-            "catalogue": {
-                "domain": "TEST",
-                "rsin": "000000000",
-            },
-            "update_existing_object": False,
-            "auth_attribute_path": [],
-            "variables_mapping": [
-                {
-                    "variable_key": "showNestedFieldset",
-                    "target_path": ["fieldsetShown"],
-                },
-                {
-                    "variable_key": "repeatingGroup",
-                    "target_path": ["repeatingGroupItems"],
-                },
-            ],
-            "transform_to_list": [],
-            "iot_attachment": "",
-            "iot_submission_report": "",
-            "iot_submission_csv": "",
-            "upload_submission_csv": False,
-        }
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        # Run the registration
-        result = plugin.register_submission(submission, options)
-        assert result is not None
-
-        record_data = result["record"]["data"]
-        self.assertEqual(
-            record_data,
-            {
-                "fieldsetShown": False,
-                "repeatingGroupItems": [
-                    {
-                        "editgridTextfield": "foo",
-                        # the component key structure is used in the output of the mapped
-                        # item of the edit grid.
-                        # Note that DH would expect this parent key and child not to be
-                        # present at all, however because of #6007 we can't do that,
-                        # unless #6012 gets implemented.
-                        "container": {
-                            "nestedTextfield": "",
-                        },
-                    },
                 ],
             },
         )

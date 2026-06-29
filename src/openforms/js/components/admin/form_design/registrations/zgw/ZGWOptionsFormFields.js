@@ -1,6 +1,6 @@
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 
@@ -12,7 +12,6 @@ import {
 } from 'components/admin/forms/ValidationErrors';
 
 import BasicOptionsFieldset from './BasicOptionsFieldset';
-import LegacyOptionsFieldset from './LegacyOptionsFieldset';
 import ManageVariableToPropertyMappings from './ManageVariableToPropertyMappings';
 import ObjectsAPIOptionsFieldset from './ObjectsAPIOptionsFieldset';
 import OptionalOptionsFieldset from './OptionalOptionsFieldset';
@@ -68,7 +67,6 @@ const ZGWFormFields = ({
             cataloguesError={cataloguesError}
             catalogueUrl={catalogueUrl}
           />
-          <LegacyOptionsFieldset />
           <OptionalOptionsFieldset
             confidentialityLevelChoices={confidentialityLevelChoices}
             catalogueUrl={catalogueUrl}

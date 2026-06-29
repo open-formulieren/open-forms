@@ -1,4 +1,3 @@
-export {LegacyDocumentTypesFieldet} from './LegacyDocumentType';
 export {DocumentTypesFieldset} from './DocumentTypes';
 export {default as UpdateExistingObject} from './UpdateExistingObject';
 export {default as UploadSubmissionCsv} from './UploadSubmissionCSV';

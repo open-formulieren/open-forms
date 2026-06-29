@@ -106,8 +106,6 @@ include = [
     "src/openforms/validations/api/serializers.py",
     "src/geo_visualization",
     # (temporary) migration tool
-    "src/openforms/forms/management/commands/migrate_catalogi_api_urls.py",
-    "src/openforms/tests/test_zgw_urls_migrator.py",
     "src/openforms/zgw_urls_migrator.py",
 ]
 exclude = [
@@ -122,10 +120,6 @@ exclude = [
     "src/openforms/payments/tests/",
     "src/openforms/payments/contrib/demo/tests/",
     "src/openforms/payments/contrib/ogone/tests/",
-    "src/openforms/registrations/contrib/objects_api/tests/test_backend_v1.py",
-    "src/openforms/registrations/contrib/objects_api/tests/test_backend_v2.py",
-    "src/openforms/registrations/contrib/objects_api/tests/test_update_payment_status_v1.py",
-    "src/openforms/registrations/contrib/objects_api/tests/test_update_payment_status_v2.py",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_backend_partial_failure.py",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_utils.py",
 ]

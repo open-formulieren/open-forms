@@ -8,9 +8,11 @@ from freezegun import freeze_time
 
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
+from openforms.registrations.contrib.objects_api.typing import RegistrationOptionsV1
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
@@ -19,12 +21,18 @@ from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 
 
 class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
-    def setUp(self):
-        super().setUp()
+    config_group: ObjectsAPIGroupConfig
 
-        self.config_group = ObjectsAPIGroupConfigFactory.create(
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.config_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True,
         )
+
+    def setUp(self):
+        super().setUp()
 
         # We manually create the objects instance, to be in the same state after
         # `plugin.register_submission` was called:
@@ -62,7 +70,6 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
             public_order_id="TEST-123",
             provider_payment_id="12345",
         )
-
         config = ObjectsAPIConfig(
             payment_status_update_json=textwrap.dedent(
                 """
@@ -76,7 +83,18 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
                 }"""
             ),
         )
-
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.config_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "auth_attribute_path": [],
+            "update_existing_object": False,
+        }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         with (
@@ -86,16 +104,9 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
                 return_value=config,
             ),
         ):
-            result = plugin.update_payment_status(
-                submission,
-                {
-                    "version": 1,
-                    "objects_api_group": self.config_group,
-                    "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                    "objecttype_version": 1,
-                },
-            )
+            result = plugin.update_payment_status(submission, options)
 
+        assert result is not None
         self.assertEqual(
             result["record"]["data"]["payment"],
             {
@@ -129,9 +140,30 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
             public_order_id="TEST-123",
             provider_payment_id="12345",
         )
-
         config = ObjectsAPIConfig()
-
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.config_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "auth_attribute_path": [],
+            "update_existing_object": False,
+            "payment_status_update_json": textwrap.dedent(
+                """
+            {
+                "payment": {
+                    "completed": {% if payment.completed %}true{% else %}false{% endif %},
+                    "amount": {{ payment.amount }},
+                    "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+                    "payment_ids": [{% for payment_id in payment.provider_payment_ids%}"{{ payment_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+                }
+            }"""
+            ),
+        }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         with (
@@ -141,27 +173,9 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
                 return_value=config,
             ),
         ):
-            result = plugin.update_payment_status(
-                submission,
-                {
-                    "version": 1,
-                    "objects_api_group": self.config_group,
-                    "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                    "objecttype_version": 1,
-                    "payment_status_update_json": textwrap.dedent(
-                        """
-                {
-                    "payment": {
-                        "completed": {% if payment.completed %}true{% else %}false{% endif %},
-                        "amount": {{ payment.amount }},
-                        "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
-                        "payment_ids": [{% for payment_id in payment.provider_payment_ids%}"{{ payment_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
-                    }
-                }"""
-                    ),
-                },
-            )
+            result = plugin.update_payment_status(submission, options)
 
+        assert result is not None
         self.assertEqual(
             result["record"]["data"]["payment"],
             {
@@ -192,11 +206,19 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
             amount=10,
             public_order_id="TEST-123",
         )
-
-        config = ObjectsAPIConfig(
-            payment_status_update_json="",
-        )
-
+        config = ObjectsAPIConfig(payment_status_update_json="")
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.config_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "catalogue": {"domain": "", "rsin": ""},
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+            "auth_attribute_path": [],
+            "update_existing_object": False,
+        }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         with (
@@ -206,14 +228,6 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
                 return_value=config,
             ),
         ):
-            result = plugin.update_payment_status(
-                submission,
-                {
-                    "version": 1,
-                    "objects_api_group": self.config_group,
-                    "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-                    "objecttype_version": 1,
-                },
-            )
+            result = plugin.update_payment_status(submission, options)
 
         self.assertIsNone(result)

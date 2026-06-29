@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from django.test import TestCase
 
+from rest_framework import serializers
 from upgrade_check import CommandCheck
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
@@ -35,6 +36,13 @@ check = CommandCheck(
         "stderr": StringIO(),
     },
 )
+
+
+class LegacyZaakOptionsSerializer(ZaakOptionsSerializer):
+    zaaktype = serializers.URLField(required=False, allow_blank=True, default="")
+    informatieobjecttype = serializers.URLField(
+        required=False, allow_blank=True, default=""
+    )
 
 
 class LegacyCatalogiUsageCheckTests(TestCase):
@@ -238,18 +246,6 @@ class LegacyCatalogiUsageCheckTests(TestCase):
             informatieobjecttype_attachment="",
         )
         objects_options_1: ObjectsRegistrationOptionsV2 = {
-            "informatieobjecttype_submission_report": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "7a474713-0833-402a-8441-e467c08ac55b"
-            ),
-            "informatieobjecttype_submission_csv": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "b2d83b94-9b9b-4e80-a82f-73ff993c62f3"
-            ),
-            "informatieobjecttype_attachment": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "531f6c1a-97f7-478c-85f0-67d2f23661c7"
-            ),
             "catalogue": {
                 "domain": "TEST",
                 "rsin": "000000000",
@@ -270,12 +266,23 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options_1).data,
+            options={
+                **ObjectsAPIOptionsSerializer(instance=objects_options_1).data,
+                "informatieobjecttype_submission_report": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "7a474713-0833-402a-8441-e467c08ac55b"
+                ),
+                "informatieobjecttype_submission_csv": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "b2d83b94-9b9b-4e80-a82f-73ff993c62f3"
+                ),
+                "informatieobjecttype_attachment": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "531f6c1a-97f7-478c-85f0-67d2f23661c7"
+                ),
+            },
         )
-        objects_options_2: ObjectsRegistrationOptionsV2 = {
-            "informatieobjecttype_submission_report": "",
-            "informatieobjecttype_submission_csv": "",
-            "informatieobjecttype_attachment": "",
+        objects_options_2: ObjectsRegistrationOptionsV2 = {  # type: ignore
             "iot_submission_report": "",
             "iot_submission_csv": "",
             "iot_attachment": "",
@@ -292,24 +299,14 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options_2).data,
+            options={
+                **ObjectsAPIOptionsSerializer(instance=objects_options_2).data,
+                "informatieobjecttype_submission_report": "",
+                "informatieobjecttype_submission_csv": "",
+                "informatieobjecttype_attachment": "",
+            },
         )
         objects_options_3: ObjectsRegistrationOptionsV2 = {
-            "informatieobjecttype_submission_report": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "7a474713-0833-402a-8441-e467c08ac55b"
-            ),
-            # may not trip up detection, because a catalogue is specified, you opt
-            # into the new behaviour! This effectively means there's no document type
-            # configured for CSV and the file will not be created.
-            "informatieobjecttype_submission_csv": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "b2d83b94-9b9b-4e80-a82f-73ff993c62f3"
-            ),
-            "informatieobjecttype_attachment": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "531f6c1a-97f7-478c-85f0-67d2f23661c7"
-            ),
             "catalogue": {
                 "domain": "TEST",
                 "rsin": "000000000",
@@ -330,7 +327,24 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options_3).data,
+            options={
+                **ObjectsAPIOptionsSerializer(instance=objects_options_3).data,
+                "informatieobjecttype_submission_report": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "7a474713-0833-402a-8441-e467c08ac55b"
+                ),
+                # may not trip up detection, because a catalogue is specified, you opt
+                # into the new behaviour! This effectively means there's no document type
+                # configured for CSV and the file will not be created.
+                "informatieobjecttype_submission_csv": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "b2d83b94-9b9b-4e80-a82f-73ff993c62f3"
+                ),
+                "informatieobjecttype_attachment": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "531f6c1a-97f7-478c-85f0-67d2f23661c7"
+                ),
+            },
         )
 
         result = check.execute()
@@ -348,19 +362,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
             informatieobjecttype_submission_csv="",
             informatieobjecttype_attachment="",
         )
-        objects_options: ObjectsRegistrationOptionsV2 = {
-            "informatieobjecttype_submission_report": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "7a474713-0833-402a-8441-e467c08ac55b"
-            ),
-            "informatieobjecttype_submission_csv": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "b2d83b94-9b9b-4e80-a82f-73ff993c62f3"
-            ),
-            "informatieobjecttype_attachment": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "531f6c1a-97f7-478c-85f0-67d2f23661c7"
-            ),
+        objects_options: ObjectsRegistrationOptionsV2 = {  # type: ignore
             # note the absence of a catalogue here. The 3.5 migration tool will result
             # in it being set on the backend options.
             "iot_submission_report": "",
@@ -379,7 +381,21 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options).data,
+            options={
+                **ObjectsAPIOptionsSerializer(instance=objects_options).data,
+                "informatieobjecttype_submission_report": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "7a474713-0833-402a-8441-e467c08ac55b"
+                ),
+                "informatieobjecttype_submission_csv": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "b2d83b94-9b9b-4e80-a82f-73ff993c62f3"
+                ),
+                "informatieobjecttype_attachment": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "531f6c1a-97f7-478c-85f0-67d2f23661c7"
+                ),
+            },
         )
 
         result = check.execute()
@@ -399,16 +415,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
             informatieobjecttype_submission_csv="",
             informatieobjecttype_attachment="",
         )
-        objects_options: ObjectsRegistrationOptionsV2 = {
-            "informatieobjecttype_submission_report": "",
-            "informatieobjecttype_submission_csv": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "b2d83b94-9b9b-4e80-a82f-73ff993c62f3"
-            ),
-            "informatieobjecttype_attachment": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "531f6c1a-97f7-478c-85f0-67d2f23661c7"
-            ),
+        objects_options: ObjectsRegistrationOptionsV2 = {  # type: ignore
             # note the absence of a catalogue here. The 3.5 migration tool will result
             # in it being set on the backend options.
             "iot_submission_report": "",
@@ -427,7 +434,18 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options).data,
+            options={
+                **ObjectsAPIOptionsSerializer(instance=objects_options).data,
+                "informatieobjecttype_submission_report": "",
+                "informatieobjecttype_submission_csv": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "b2d83b94-9b9b-4e80-a82f-73ff993c62f3"
+                ),
+                "informatieobjecttype_attachment": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "531f6c1a-97f7-478c-85f0-67d2f23661c7"
+                ),
+            },
         )
 
         result = check.execute()
@@ -447,13 +465,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
             informatieobjecttype_submission_csv="",
             informatieobjecttype_attachment="",
         )
-        objects_options: ObjectsRegistrationOptionsV2 = {
-            "informatieobjecttype_submission_report": "",
-            "informatieobjecttype_submission_csv": "",
-            "informatieobjecttype_attachment": (
-                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
-                "531f6c1a-97f7-478c-85f0-67d2f23661c7"
-            ),
+        objects_options: ObjectsRegistrationOptionsV2 = {  # type: ignore
             # note the absence of a catalogue here. The 3.5 migration tool will result
             # in it being set on the backend options.
             "iot_submission_report": "",
@@ -472,7 +484,15 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend=OBJECTS_PLUGIN_IDENTIFIER,
-            options=ObjectsAPIOptionsSerializer(instance=objects_options).data,
+            options={
+                **ObjectsAPIOptionsSerializer(instance=objects_options).data,
+                "informatieobjecttype_submission_report": "",
+                "informatieobjecttype_submission_csv": "",
+                "informatieobjecttype_attachment": (
+                    "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/"
+                    "531f6c1a-97f7-478c-85f0-67d2f23661c7"
+                ),
+            },
         )
 
         result = check.execute()
@@ -483,7 +503,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         api_group = ZGWApiGroupConfigFactory.create(
             catalogue_domain="", catalogue_rsin=""
         )
-        zgw_options_1: ZGWRegistrationOptions = {
+        zgw_options_1: ZGWRegistrationOptions = {  # type: ignore
             "zgw_api_group": api_group,
             "catalogue": {
                 "domain": "TEST",
@@ -508,7 +528,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=LegacyZaakOptionsSerializer(instance=zgw_options_1).data,
         )
 
         result = check.execute()
@@ -519,7 +539,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         api_group = ZGWApiGroupConfigFactory.create(
             catalogue_domain="", catalogue_rsin=""
         )
-        zgw_options_1: ZGWRegistrationOptions = {
+        zgw_options_1: ZGWRegistrationOptions = {  # type: ignore
             "zgw_api_group": api_group,
             "catalogue": {
                 "domain": "TEST",
@@ -544,7 +564,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=LegacyZaakOptionsSerializer(instance=zgw_options_1).data,
         )
 
         result = check.execute()
@@ -555,7 +575,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         api_group = ZGWApiGroupConfigFactory.create(
             catalogue_domain="", catalogue_rsin=""
         )
-        zgw_options_1: ZGWRegistrationOptions = {
+        zgw_options_1: ZGWRegistrationOptions = {  # type: ignore
             "zgw_api_group": api_group,
             "catalogue": {
                 "domain": "TEST",
@@ -580,7 +600,7 @@ class LegacyCatalogiUsageCheckTests(TestCase):
         }
         FormRegistrationBackendFactory.create(
             backend="zgw-create-zaak",
-            options=ZaakOptionsSerializer(instance=zgw_options_1).data,
+            options=LegacyZaakOptionsSerializer(instance=zgw_options_1).data,
         )
 
         result = check.execute()

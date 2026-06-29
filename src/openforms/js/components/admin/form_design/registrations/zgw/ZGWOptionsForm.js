@@ -46,8 +46,6 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
         // defaults
         caseTypeIdentification: '',
         documentTypeDescription: '',
-        zaaktype: '',
-        informatieobjecttype: '',
         organisatieRsin: '',
         zaakOmschrijving: '',
         zaakToelichting: '',
@@ -106,8 +104,6 @@ ZGWOptionsForm.propTypes = {
   }).isRequired,
   formData: PropTypes.shape({
     zgwApiGroup: PropTypes.number,
-    zaaktype: PropTypes.string,
-    informatieobjecttype: PropTypes.string,
     organisatieRsin: PropTypes.string,
     zaakOmschrijving: PropTypes.string,
     zaakToelichting: PropTypes.string,

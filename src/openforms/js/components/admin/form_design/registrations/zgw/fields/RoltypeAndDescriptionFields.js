@@ -5,21 +5,12 @@ import useAsync from 'react-use/esm/useAsync';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import {TextInput} from 'components/admin/forms/Inputs';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
 import {getAvailableRoleTypes} from '../utils';
 import {ChildrenDescription, PartnersDescription} from './FamilyMembersDescription';
 
 // Components
-
-/**
- * @deprecated
- */
-const MedewerkerRoltypeLegacy = () => {
-  const [fieldProps] = useField('medewerkerRoltype');
-  return <TextInput id="id_medewerkerRoltype" {...fieldProps} />;
-};
 
 const RoltypeSelect = ({
   roltypeTypeName,
@@ -56,10 +47,8 @@ RoltypeSelect.propTypes = {
 
 const RoltypeFields = ({catalogueUrl = ''}) => {
   const {
-    values: {zgwApiGroup = null, caseTypeIdentification = '', zaaktype = ''},
+    values: {zgwApiGroup = null, caseTypeIdentification = ''},
   } = useFormikContext();
-  // render legacy field if a case type URL is used instead of a identification reference
-  const renderLegacy = !!zaaktype && !caseTypeIdentification;
 
   const {
     loading,
@@ -91,17 +80,13 @@ const RoltypeFields = ({catalogueUrl = ''}) => {
           }
           noManageChildProps
         >
-          {renderLegacy ? (
-            <MedewerkerRoltypeLegacy />
-          ) : (
-            <RoltypeSelect
-              roltypeTypeName="medewerkerRoltype"
-              roltypes={roleTypes}
-              loading={loading}
-              zgwApiGroup={zgwApiGroup}
-              caseTypeIdentification={caseTypeIdentification}
-            />
-          )}
+          <RoltypeSelect
+            roltypeTypeName="medewerkerRoltype"
+            roltypes={roleTypes}
+            loading={loading}
+            zgwApiGroup={zgwApiGroup}
+            caseTypeIdentification={caseTypeIdentification}
+          />
         </Field>
       </FormRow>
       <FormRow>

@@ -1,4 +1,3 @@
-import warnings
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from datetime import datetime
@@ -296,23 +295,14 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             zaak_data["identificatie"] = public_reference
 
         # resolve zaaktype to use
-        if case_type_identification := options["case_type_identification"]:
-            catalogue = options["catalogue"]
-            with get_catalogi_client(zgw) as catalogi_client:
-                zaaktype_url = _resolve_case_type(
-                    catalogi_client,
-                    catalogue,
-                    case_type_identification,
-                    submission.completed_on,
-                )
-        else:
-            warnings.warn(
-                "Using the zaaktype URL option is deprecated and will be removed in "
-                "Open Forms 4.0.",
-                DeprecationWarning,
-                stacklevel=2,
+        catalogue = options["catalogue"]
+        with get_catalogi_client(zgw) as catalogi_client:
+            zaaktype_url = _resolve_case_type(
+                catalogi_client,
+                catalogue,
+                options["case_type_identification"],
+                submission.completed_on,
             )
-            zaaktype_url = options["zaaktype"]
 
         # resolve templated variables
         context = _get_template_context(submission)
@@ -442,24 +432,14 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             doc_type_resolver = DocumentTypeResolver(catalogi_client)
 
             # resolve (default) document type to use
-            if document_type_description := options["document_type_description"]:
-                catalogue = options.get("catalogue")
-                assert catalogue is not None  # enforced by validation
-                informatieobjecttype_url = _resolve_document_type(
-                    doc_type_resolver,
-                    catalogue=catalogue,
-                    zaaktype_url=zaak["zaaktype"],
-                    description=document_type_description,
-                    submission_completed=submission.completed_on,
-                )
-            else:
-                warnings.warn(
-                    "Using the informatieobjecttype URL option is deprecated and will "
-                    "be removed in Open Forms 4.0.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
-                informatieobjecttype_url = options["informatieobjecttype"]
+            catalogue = options["catalogue"]
+            informatieobjecttype_url = _resolve_document_type(
+                doc_type_resolver,
+                catalogue=catalogue,
+                zaaktype_url=zaak["zaaktype"],
+                description=options["document_type_description"],
+                submission_completed=submission.completed_on,
+            )
 
             result["informatieobjecttype_url"] = informatieobjecttype_url
 

@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/39da819c-ac6c-4037-ae2b-6bfc39f6564b/versions
   response:
@@ -27,7 +27,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 11 Jun 2026 09:36:23 GMT
+      - Thu, 25 Jun 2026 18:51:36 GMT
       Referrer-Policy:
       - same-origin
       Server:

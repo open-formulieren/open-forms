@@ -29,8 +29,9 @@ class _BaseRegistrationOptions(TypedDict, total=False):
     # which services to use
     objects_api_group: Required[ObjectsAPIGroupConfig]
 
-    # which catalogue in the Catalogi API to use (for lookups/validation)
-    catalogue: CatalogueOption
+    # which catalogue in the Catalogi API to use (for lookups/validation). The
+    # serializer provides a default (possibly empty-ish!).
+    catalogue: Required[CatalogueOption]
 
     # which object type to use for the registration & how does it interact with
     # initial data reference
@@ -47,11 +48,6 @@ class _BaseRegistrationOptions(TypedDict, total=False):
     iot_submission_report: Required[str]
     iot_submission_csv: Required[str]
     iot_attachment: Required[str]
-
-    # DeprecationWarning: URL properties will be removed in OF 4.0
-    informatieobjecttype_submission_report: str
-    informatieobjecttype_submission_csv: str
-    informatieobjecttype_attachment: str
 
     files: NotRequired[Collection[FileComponentOptions]]
     """

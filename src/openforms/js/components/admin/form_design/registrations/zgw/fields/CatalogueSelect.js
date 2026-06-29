@@ -19,6 +19,7 @@ const CatalogueSelect = ({loading, optionGroups}) => {
         />
       }
       isDisabled={!zgwApiGroup}
+      isRequired
       loading={loading}
       optionGroups={optionGroups}
     />

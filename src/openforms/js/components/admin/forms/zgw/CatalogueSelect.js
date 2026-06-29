@@ -47,7 +47,13 @@ export const groupAndSortOptions = catalogues => {
   return groups;
 };
 
-const CatalogueSelect = ({label, isDisabled = false, loading, optionGroups}) => {
+const CatalogueSelect = ({
+  label,
+  isDisabled = false,
+  loading,
+  optionGroups,
+  isRequired = false,
+}) => {
   const {
     values: {catalogue = {}},
     getFieldHelpers,
@@ -57,7 +63,7 @@ const CatalogueSelect = ({label, isDisabled = false, loading, optionGroups}) => 
   const value = extractValue(optionGroups, catalogue);
   return (
     <FormRow>
-      <Field name="catalogue" label={label} noManageChildProps>
+      <Field name="catalogue" label={label} noManageChildProps required={isRequired}>
         <ReactSelect
           name="catalogue"
           options={optionGroups}
@@ -72,6 +78,7 @@ const CatalogueSelect = ({label, isDisabled = false, loading, optionGroups}) => 
           }}
           getOptionValue={option => JSON.stringify(option)}
           isClearable
+          required={isRequired}
         />
       </Field>
     </FormRow>
@@ -96,6 +103,7 @@ CatalogueSelect.propTypes = {
   isDisabled: PropTypes.bool,
   loading: PropTypes.bool.isRequired,
   optionGroups: CatalogueSelectOptions,
+  isRequired: PropTypes.bool,
 };
 
 export default CatalogueSelect;

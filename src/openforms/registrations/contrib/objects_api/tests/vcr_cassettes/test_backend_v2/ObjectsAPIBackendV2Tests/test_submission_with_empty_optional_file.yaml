@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2
   response:
@@ -28,7 +28,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 11 Jun 2026 09:36:38 GMT
+      - Thu, 25 Jun 2026 18:26:45 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -44,7 +44,7 @@ interactions:
       message: OK
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2",
-      "record": {"typeVersion": 1, "data": {"single_file": ""}, "startAt": "2024-03-19"}}'
+      "record": {"typeVersion": 1, "data": {"single_file": ""}, "startAt": "2026-06-25"}}'
     headers:
       Accept:
       - '*/*'
@@ -59,12 +59,12 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.33.0
+      - python-requests/2.34.2
     method: POST
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/9deefeab-bc46-477b-8710-1fd0e4bb58a7","uuid":"9deefeab-bc46-477b-8710-1fd0e4bb58a7","type":"http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","record":{"index":1,"typeVersion":1,"data":{"single_file":""},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2026-06-11","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/4a140328-e62e-4bb6-8bd4-19b1fdc9a79a","uuid":"4a140328-e62e-4bb6-8bd4-19b1fdc9a79a","type":"http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","record":{"index":1,"typeVersion":1,"data":{"single_file":""},"geometry":null,"startAt":"2026-06-25","endAt":null,"registrationAt":"2026-06-25","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -79,9 +79,9 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 11 Jun 2026 09:36:38 GMT
+      - Thu, 25 Jun 2026 18:26:45 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/9deefeab-bc46-477b-8710-1fd0e4bb58a7
+      - http://localhost:8002/api/v2/objects/4a140328-e62e-4bb6-8bd4-19b1fdc9a79a
       Referrer-Policy:
       - same-origin
       Server:
