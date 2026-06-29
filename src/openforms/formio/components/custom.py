@@ -1177,7 +1177,6 @@ class CustomerProfile(BasePlugin):
     def build_serializer_field(
         self, component: CustomerProfileComponent
     ) -> DigitalAddressSerializer:
-
         required = component.get("validate", {}).get("required", False)
 
         return DigitalAddressSerializer(
