@@ -12,7 +12,7 @@ class CustomerInteractionsAPIGroupConfigFactory(factory.django.DjangoModelFactor
         "zgw_consumers.test.factories.ServiceFactory", api_type=APITypes.kc
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = CustomerInteractionsAPIGroupConfig
 
     class Params:
