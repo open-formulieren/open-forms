@@ -341,6 +341,9 @@ jobs:
       - setup
       - docker_build
 
+    permissions:
+      security-events: write
+
     steps:
       # So the scanner gets commit meta-information
       - name: Checkout code
