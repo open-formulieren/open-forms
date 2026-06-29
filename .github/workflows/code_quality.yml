@@ -17,13 +17,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
       - name: Determine ruff version
         id: ruff-version
         run: |
           version=$(grep -oP '(?<=ruff==)\d+\.\d+\.\d+' requirements/ci.txt)
           echo "version=$version" >> $GITHUB_OUTPUT
-      - uses: astral-sh/ruff-action@v3  # runs ruff check
+      - uses: astral-sh/ruff-action@4919ec5cf1f49eff0871dbcea0da843445b837e6  # v3
         with:
           version: "${{ steps.ruff-version.outputs.version }}"
       - run: ruff format --check --diff
@@ -44,7 +46,9 @@ jobs:
           --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
       - name: Set up backend environment
         uses: ./.github/actions/setup-backend
         with:
@@ -77,8 +81,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
 
@@ -90,8 +96,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
       - name: Install additional dependencies
@@ -102,7 +110,7 @@ jobs:
             -r requirements/type-checking.txt
       - name: Create dummy local.py settings file
         run: touch src/openforms/conf/local.py
-      - uses: jakebailey/pyright-action@v1
+      - uses: jakebailey/pyright-action@6baf8b2bcc1727b5a89249955f936d4a6f9f995b # v1
         with:
           version: 1.1.407
           project: pyright.pyproject.toml

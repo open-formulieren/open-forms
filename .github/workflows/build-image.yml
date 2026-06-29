@@ -52,34 +52,49 @@ jobs:
       artifact-name: ${{ steps.build-args.outputs.artifact-name }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
 
       - name: Extract build args
         id: build-args
         run: |
           # Obtain the SDK release to bundle along, use latest if backend is also latest
           SDK_RELEASE=$(cat .sdk-release | tr -d '[:space:]')
-          [ "${{ inputs.version }}" == "latest" ] && SDK_RELEASE=latest
+          [ "${INPUTS_VERSION}" == "latest" ] && SDK_RELEASE=latest
           echo "sdk_release=${SDK_RELEASE}" >> $GITHUB_OUTPUT
 
-          echo "image-name=${{ inputs.image-name }}:${{ inputs.image-tag-prefix }}${{ inputs.version }}" >> $GITHUB_OUTPUT
-          echo "artifact-name=docker-image-${{ inputs.image-tag-prefix }}${{ inputs.version }}" >> $GITHUB_OUTPUT
+          echo "image-name=${INPUTS_IMAGE_NAME}:${INPUTS_IMAGE_TAG_PREFIX}${INPUTS_VERSION}" >> $GITHUB_OUTPUT
+          echo "artifact-name=docker-image-${INPUTS_IMAGE_TAG_PREFIX}${INPUTS_VERSION}" >> $GITHUB_OUTPUT
+        env:
+          INPUTS_VERSION: ${{ inputs.version }}
+          INPUTS_IMAGE_NAME: ${{ inputs.image-name }}
+          INPUTS_IMAGE_TAG_PREFIX: ${{ inputs.image-tag-prefix }}
 
       - name: Build the Docker image
         run: |
           docker build . \
-            --tag ${{ steps.build-args.outputs.image-name }} \
-            --build-arg TARGET_ENVIRONMENT=${{ inputs.target-env }} \
-            --build-arg EXTENSIONS=${{ inputs.extensions }} \
-            --build-arg SDK_RELEASE=${{ steps.build-args.outputs.sdk_release }} \
-            --build-arg COMMIT_HASH=${{ inputs.git-hash }} \
-            --build-arg RELEASE=${{ inputs.version }}
+            --tag ${STEPS_BUILD_ARGS_OUTPUTS_IMAGE_NAME} \
+            --build-arg TARGET_ENVIRONMENT=${INPUTS_TARGET_ENV} \
+            --build-arg EXTENSIONS=${INPUTS_EXTENSIONS} \
+            --build-arg SDK_RELEASE=${STEPS_BUILD_ARGS_OUTPUTS_SDK_RELEASE} \
+            --build-arg COMMIT_HASH=${INPUTS_GIT_HASH} \
+            --build-arg RELEASE=${INPUTS_VERSION}
+        env:
+          STEPS_BUILD_ARGS_OUTPUTS_IMAGE_NAME: ${{ steps.build-args.outputs.image-name }}
+          INPUTS_TARGET_ENV: ${{ inputs.target-env }}
+          INPUTS_EXTENSIONS: ${{ inputs.extensions }}
+          STEPS_BUILD_ARGS_OUTPUTS_SDK_RELEASE: ${{ steps.build-args.outputs.sdk_release }}
+          INPUTS_GIT_HASH: ${{ inputs.git-hash }}
+          INPUTS_VERSION: ${{ inputs.version }}
 
       - name: Dump image to file
-        run: docker image save -o image.tar ${{ steps.build-args.outputs.image-name }}
+        run: docker image save -o image.tar ${STEPS_BUILD_ARGS_OUTPUTS_IMAGE_NAME}
+        env:
+          STEPS_BUILD_ARGS_OUTPUTS_IMAGE_NAME: ${{ steps.build-args.outputs.image-name }}
 
       - name: Store image artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ steps.build-args.outputs.artifact-name }}
           path: image.tar

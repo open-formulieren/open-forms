@@ -35,14 +35,16 @@ jobs:
       sdk-version: ${{ steps.sdk-vars.outputs.sdk-version }}
       sdk-ref: ${{ steps.sdk-vars.outputs.sdk-ref }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
       - name: Set output with default values
         id: envars-to-outputs
         run: |
           echo "image-name=${{ env.IMAGE_NAME }}" >> $GITHUB_OUTPUT
       - name: Extract version info
         id: vars
-        uses: maykinmedia/open-api-workflows/actions/extract-version@v6
+        uses: maykinmedia/open-api-workflows/actions/extract-version@79102b911003d75203ca2fed7df01ad79d9b6bba # v6.4.0
       - name: Extract SDK version info
         id: sdk-vars
         uses: ./.github/actions/extract-sdk-version
@@ -69,9 +71,10 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           submodules: true
+          persist-credentials: false
       - name: Set up backend environment
         uses: ./.github/actions/setup-backend
 
@@ -126,7 +129,7 @@ jobs:
         run: npm test
 
       - name: Publish coverage report
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -150,9 +153,10 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           submodules: true
+          persist-credentials: false
       - name: Set up backend environment
         uses: ./.github/actions/setup-backend
 
@@ -197,15 +201,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: open-formulieren/actions/check-message-extraction@v1
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+      - uses: open-formulieren/actions/check-message-extraction@599d67bf43a0c630d26675244a2d4774835a6897 # v1
         with:
           paths: src/openforms/js/{compiled-lang,lang}
           extraction-command: ./bin/makemessages_js.sh
           compilation-command: ./bin/compilemessages_js.sh
 
       # Only actually does anything in release/* branches or for pushed tags
-      - uses: open-formulieren/actions/check-missing-translations@v1
+      - uses: open-formulieren/actions/check-missing-translations@599d67bf43a0c630d26675244a2d4774835a6897 # v1
         with:
           messages-path: src/openforms/js/lang
           locales: nl
@@ -242,27 +248,22 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
       - name: Set up backend environment
         uses: ./.github/actions/setup-backend
-
-      # See https://playwright.dev/python/docs/ci#caching-browsers
-      - name: Cache Playwright browser
-        id: cache-browser
-        uses: actions/cache@v4
-        with:
-          path: /home/runner/.cache/ms-playwright
-          key:
-            ${{ runner.os }}-${{ matrix.browser }}-playwright-${{ hashFiles('requirements/ci.txt') }}
 
       - name: Install playwright deps
         run: playwright install --with-deps ${{ matrix.browser }}
 
       - name: Extract SDK files from SDK docker image
         run: |
-          container_id=$(docker create openformulieren/open-forms-sdk:${{ needs.setup.outputs.sdk-version }})
+          container_id=$(docker create openformulieren/open-forms-sdk:${NEEDS_SETUP_OUTPUTS_SDK_VERSION})
           docker cp $container_id:/sdk ./src/openforms/static/
           docker rm -v $container_id
+        env:
+          NEEDS_SETUP_OUTPUTS_SDK_VERSION: ${{ needs.setup.outputs.sdk-version }}
 
       - name: Run testsuite
         run: |
@@ -280,7 +281,7 @@ jobs:
 
       - name: Upload playwright traces artifact on failure
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: playwright-traces-${{ matrix.browser }}
           path: /tmp/playwright_traces
@@ -291,9 +292,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           path: open-forms
+          persist-credentials: false
 
       - name: Set up backend environment
         uses: ./open-forms/.github/actions/setup-backend
@@ -303,11 +305,12 @@ jobs:
           working-directory: 'open-forms'
 
       - name: Checkout SDK repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           repository: 'open-formulieren/open-forms-sdk'
           ref: ${{ needs.setup.outputs.sdk-ref }}
           path: open-forms-sdk
+          persist-credentials: false
 
       - name: Setup symlinks
         run: |
@@ -351,13 +354,19 @@ jobs:
       - setup
       - docker_build
 
+    permissions:
+      contents: read
+      security-events: write
+
     steps:
       # So the scanner gets commit meta-information
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
 
       - name: Download built image
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: docker-image-all-extensions-${{ needs.setup.outputs.version }}
 
@@ -374,7 +383,7 @@ jobs:
           TRIVY_SKIP_JAVA_DB_UPDATE: true
 
       - name: Upload results to GH Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@dd903d2e4f5405488e5ef1422510ee31c8b32357 # v3
         with:
           sarif_file: 'trivy-results-docker.sarif'
 
@@ -393,9 +402,11 @@ jobs:
           - '3.3.9'
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
       - name: Download built image
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: docker-image-${{ needs.setup.outputs.version }}
       - name: Load image
@@ -423,7 +434,7 @@ jobs:
 
   oas:
     name: OAS
-    uses: maykinmedia/open-api-workflows/.github/workflows/oas.yml@v6
+    uses: maykinmedia/open-api-workflows/.github/workflows/oas.yml@79102b911003d75203ca2fed7df01ad79d9b6bba # v6.4.0
     with:
       python-version: '3.12'
       apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
@@ -466,10 +477,12 @@ jobs:
             image-tag-prefix: 'all-extensions-'
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
 
       - name: Download built image
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: docker-image-${{ matrix.target.image-tag-prefix }}${{ needs.setup.outputs.version }}
 
@@ -478,7 +491,7 @@ jobs:
           docker image load -i image.tar
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -492,7 +505,7 @@ jobs:
           TAG: ${{ matrix.target.image-tag-prefix }}${{ needs.setup.outputs.version }}
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
