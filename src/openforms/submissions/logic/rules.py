@@ -136,7 +136,11 @@ def iter_evaluate_rules(
         ):
             triggered = False
             with log_errors(rule.json_logic_trigger, rule):
-                triggered = bool(jsonLogic(rule.json_logic_trigger, data.data))
+                triggered = bool(
+                    jsonLogic(
+                        rule.json_logic_trigger, data.data, use_var_undefined=True
+                    )
+                )
 
             # If the rule was not triggered, we still need to handle the clear on hide,
             # as components can be hidden by default and shown when a logic rule is

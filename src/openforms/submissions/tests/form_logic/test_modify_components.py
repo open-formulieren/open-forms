@@ -10,6 +10,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.variables.constants import FormVariableSources
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
@@ -1510,3 +1511,104 @@ class ComponentModificationTests(TestCase):
         state = submission.variables_state
         data = state.get_data(include_unsaved=True)
         self.assertEqual("foo", data["textfield"])
+
+    def test_change_component_to_hidden_and_change_variable_value_action(self):
+        """
+        Test a form where a component with clearOnHide is hidden when a checkbox is checked.
+        Based on its value we update the value of a user defined and a component variable.
+        """
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textField",
+                        "label": "TextField",
+                        "hidden": False,
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textField1",
+                        "label": "TextField 1",
+                        "hidden": False,
+                        "clearOnHide": False,
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            source=FormVariableSources.user_defined,
+            key="test",
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": "textField",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                },
+                {
+                    "component": "",
+                    "variable": "test",
+                    "action": {"type": "variable", "value": {"var": "textField"}},
+                },
+                {
+                    "component": "",
+                    "variable": "textField1",
+                    "action": {"type": "variable", "value": {"var": "textField"}},
+                },
+            ],
+        )
+
+        form.apply_logic_analysis()
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission, form_step=step1
+        )
+
+        data = FormioData({"checkbox": True, "textField1": ""})
+
+        configuration = evaluate_form_logic(submission, submission_step, data)
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "textField",
+                    "label": "TextField",
+                    "hidden": True,
+                    "clearOnHide": True,
+                },
+                {"type": "checkbox", "key": "checkbox", "label": "Checkbox"},``
+                {
+                    "type": "textfield",
+                    "key": "textField1",
+                    "label": "TextField 1",
+                    "hidden": False,
+                    "clearOnHide": False,
+                },
+            ]
+        }
+
+        state = submission.variables_state
+        data = state.get_data(include_unsaved=True)
+
+        self.assertEqual(configuration, expected)
+        self.assertEqual(
+            data, {"test": "", "textField": None, "checkbox": True, "textField1": ""}
+        )
+        self.assertTrue(state.variables["textField"].is_undefined)
