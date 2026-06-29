@@ -1,0 +1,20 @@
+{% load static maykin_common %}
+{% comment %}
+Custom template overriding maykin_common/includes/footer.html so that we can include
+our session-expiry node updated through React as well.
+{% endcomment %}
+
+{# Standard/default admin footer layout for our projects #}
+{# Django 5.2 already has an outer <footer id="footer"> element #}
+{% if user.is_authenticated and user.is_staff %}
+    <link rel="stylesheet" href="{% static 'maykin_common/css/maykin_footer.css' %}">
+    <div class="maykin_footer">
+        <div>
+            {% show_product_branding %}
+        </div>
+        <div class="maykin_footer__second-row">
+            {% show_version_info %}
+            <div class="react-session-status">{# react managed #}</div>
+        </div>
+    </div>
+{% endif %}

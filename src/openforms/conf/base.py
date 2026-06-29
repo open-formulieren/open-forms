@@ -14,7 +14,8 @@ from celery.schedules import crontab
 from corsheaders.defaults import default_headers as default_cors_headers
 from log_outgoing_requests.datastructures import ContentType
 from log_outgoing_requests.structlog import ExtractRequestAndResponseDetails
-from maykin_common.config import config
+from maykin_common.branding import ProductDefinition
+from maykin_common.config import DocumentationParams, config
 from maykin_common.health_checks import default_health_check_apps
 from upgrade_check import CommandCheck, UpgradeCheck, VersionRange
 from upgrade_check.constraints import UpgradePaths
@@ -1344,6 +1345,61 @@ MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_LIVENESS_FILE = (
     BASE_DIR / "tmp" / "celery_worker_event_loop.live"
 )
 MKN_HEALTH_CHECKS_WORKER_READINESS_FILE = BASE_DIR / "tmp" / "celery_worker.ready"
+
+#
+# MAYKIN-COMMON branding
+#
+MKN_BRANDING_PRODUCT_DEFINITION = ProductDefinition(
+    name="Open Formulieren",
+    hyperlink="https://github.com/open-formulieren/open-forms",
+    logo_path="ico/open-formulieren-icon.svg",
+)
+custom_product_name: str = config(
+    "CUSTOM_PRODUCT_NAME",
+    default="",
+    documentation=DocumentationParams(
+        help_text=(
+            "Specify the custom product name when redistributing the application, e.g. "
+            "as part of your own software suite."
+        ),
+        group="Branding",
+    ),
+)
+MKN_BRANDING_DERIVED_PRODUCT_DEFINITION = (
+    ProductDefinition(
+        name=custom_product_name,
+        hyperlink=config(
+            "CUSTOM_PRODUCT_URL",
+            default="",
+            documentation=DocumentationParams(
+                help_text=(
+                    "Optional link for the custom product when redistributing the "
+                    "application. If provided, the product name will be clickable."
+                ),
+                group="Branding",
+            ),
+        ),
+        logo_path=config(
+            "CUSTOM_PRODUCT_LOGO_PATH",
+            default="",
+            documentation=DocumentationParams(group="Branding"),
+        ),
+        logo_url=config(
+            "CUSTOM_PRODUCT_LOGO_URL",
+            default="",
+            documentation=DocumentationParams(
+                help_text=(
+                    "Optional link for the custom product logo when redistributing the "
+                    "application. When using externally hosted assets, note that you may "
+                    "need to tweak the Content-Security-Policy settings."
+                ),
+                group="Branding",
+            ),
+        ),
+    )
+    if custom_product_name
+    else None
+)
 
 #
 # DJANGO-STRUCTLOG
