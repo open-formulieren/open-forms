@@ -600,7 +600,7 @@ maykin-2fa==2.1.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   maykin-common
-maykin-common==0.18.0
+maykin-common==0.20.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

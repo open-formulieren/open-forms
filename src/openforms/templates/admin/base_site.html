@@ -1,18 +1,18 @@
-{% extends "admin/base.html" %}
+{% extends "admin/base_site.html" %}
 {% load i18n static multidomain maykin_common %}
 
-{% block title %}{{ title }} | {{ settings.PROJECT_NAME }}{% endblock %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ settings.PROJECT_NAME }}{% endblock %}
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'maykin_common/css/version.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'maykin_common/css/env-info.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'bundles/admin_overrides.css' %}">
 
-    <link href="{% static 'ico/favicon.svg' %}" sizes="any" rel="icon" type="image/svg+xml" />
-    <link href="{% static 'ico/favicon-96x96.png' %}" sizes="96x96" rel="icon" type="image/png" />
-    <link href="{% static 'ico/favicon-32x32.png' %}" sizes="32x32" rel="icon" type="image/png" />
-    <link href="{% static 'ico/favicon.png' %}" sizes="16x16" rel="icon" type="image/png" />
-    <link href="{% static 'ico/favicon.png' %}" rel="shortcut icon">
+    <link href="{% static 'maykin_common/ico/favicon.svg' %}" sizes="any" rel="icon" type="image/svg+xml" />
+    <link href="{% static 'maykin_common/ico/favicon-96x96.png' %}" sizes="96x96" rel="icon" type="image/png" />
+    <link href="{% static 'maykin_common/ico/favicon-32x32.png' %}" sizes="32x32" rel="icon" type="image/png" />
+    <link href="{% static 'maykin_common/ico/favicon.png' %}" sizes="16x16" rel="icon" type="image/png" />
+    <link href="{% static 'maykin_common/ico/favicon.png' %}" rel="shortcut icon">
 {% endblock %}
 
 {% block extrahead %}
@@ -62,15 +62,6 @@
 
 {# end block usertools #}
 
-{% block nav-global %}{% endblock %}
-
 {% block footer %}
-    <div id="footer">
-        {% if user.is_authenticated and user.is_staff %}
-            <div class="version" title="Git SHA: {{ settings.GIT_SHA|default:'' }}">
-                {% blocktrans with version=settings.RELEASE %}version {{version}}{% endblocktrans %}
-            </div>
-            <div class="react-session-status">{# react managed #}</div>
-        {% endif %}
-    </div>
+    {% include "admin/footer.html" with user=user only %}
 {% endblock %}
