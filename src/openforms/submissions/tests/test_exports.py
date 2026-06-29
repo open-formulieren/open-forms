@@ -78,7 +78,7 @@ class ExportTests(TestCase):
                                     "key": "input5",
                                     "label": "input5",
                                     "hidden": False,
-                                    "clearOnHide": False,
+                                    "clearOnHide": True,
                                 },
                             ],
                         },
@@ -105,7 +105,10 @@ class ExportTests(TestCase):
             ],
             submitted_data={
                 "input1": "Input 1",
+                "input2": "",
                 "input3": "Input 3",
+                "input4": "",
+                "input6": "",
             },
             form__name="Export test",
             completed=True,
@@ -136,7 +139,7 @@ class ExportTests(TestCase):
                 "",
                 "Input 3",
                 "",
-                "",
+                None,
                 "",
             ),
         )
@@ -258,7 +261,7 @@ class ExportTests(TestCase):
                 "Export form 1",
                 datetime(2022, 5, 9, 15, 0, 0),
                 "sub2.input1",
-                "",
+                None,
             ),
         )
         self.assertEqual(

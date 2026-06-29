@@ -8,7 +8,9 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
+from openforms.variables.constants import FormVariableSources
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
@@ -92,7 +94,7 @@ class ComponentModificationTests(TestCase):
         }
         self.assertEqual(configuration, expected)
 
-    @tag("gh-1871", "gh-2340", "gh-2409")
+    @tag("gh-1871", "gh-2340", "gh-2409", "gh-6275")
     def test_hiding_component_empties_its_data(self):
         form = FormFactory.create()
         form_step = FormStepFactory.create(
@@ -112,9 +114,17 @@ class ComponentModificationTests(TestCase):
                         "label": "component2",
                         "hidden": False,
                         "clearOnHide": True,
+                        "defaultValue": "default",
                     },
                 ]
             },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="foo",
+            name="foo",
+            initial_value="",
+            user_defined=True,
         )
 
         FormLogicFactory.create(
@@ -137,6 +147,23 @@ class ComponentModificationTests(TestCase):
                         },
                         "state": True,
                     },
+                }
+            ],
+        )
+        # Expected to not trigger, because it shouldn't use the empty, default, or
+        # already submitted value when clearing the field.
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "in": [
+                    {"var": "component2"},
+                    ["", "default", "Some data to be deleted"],
+                ]
+            },
+            actions=[
+                {
+                    "action": {"type": "variable", "value": "I cannot be set"},
+                    "variable": "foo",
                 }
             ],
         )
@@ -172,11 +199,19 @@ class ComponentModificationTests(TestCase):
                     "label": "component2",
                     "hidden": True,
                     "clearOnHide": True,
+                    "defaultValue": "default",
                 },
             ]
         }
         self.assertEqual(configuration, expected)
-        self.assertEqual("", submission_step.unsaved_data["component2"])
+        # Component is hidden -> value removed from evaluation context -> should not be
+        # present in unsaved_data
+        self.assertEqual({}, submission_step.unsaved_data)
+        # This ensures the second logic rule was not triggered, meaning the value of
+        # "component2" during evaluation was not the empty, default, or submitted value
+        self.assertEqual(
+            "", submission.variables_state.get_data(include_unsaved=True)["foo"]
+        )
 
     def test_change_component_to_required(self):
         form = FormFactory.create()
@@ -1072,7 +1107,8 @@ class ComponentModificationTests(TestCase):
 
         state = submission.load_submission_value_variables_state()
         data = state.get_data(submission_step=submission_step, include_unsaved=True)
-        self.assertEqual("", data["nested"]["component"])
+        self.assertEqual(None, data["nested.component"])
+        self.assertTrue(state.variables["nested.component"].is_undefined)
 
     @tag("gh-2838")
     def test_hidden_select_component(self):
@@ -1271,7 +1307,8 @@ class ComponentModificationTests(TestCase):
         )
         state = submission.variables_state
         data = state.get_data(include_unsaved=True)
-        self.assertEqual(data["container.textfield"], "")
+        self.assertEqual(data["container.textfield"], None)
+        self.assertTrue(state.variables["container.textfield"].is_undefined)
 
     @tag("gh-6040")
     def test_fields_inside_a_visible_editgrid(self):
@@ -1474,3 +1511,104 @@ class ComponentModificationTests(TestCase):
         state = submission.variables_state
         data = state.get_data(include_unsaved=True)
         self.assertEqual("foo", data["textfield"])
+
+    def test_change_component_to_hidden_and_change_variable_value_action(self):
+        """
+        Test a form where a component with clearOnHide is hidden when a checkbox is checked.
+        Based on its value we update the value of a user defined and a component variable.
+        """
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textField",
+                        "label": "TextField",
+                        "hidden": False,
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "label": "Checkbox",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textField1",
+                        "label": "TextField 1",
+                        "hidden": False,
+                        "clearOnHide": False,
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            source=FormVariableSources.user_defined,
+            key="test",
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "component": "textField",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                },
+                {
+                    "component": "",
+                    "variable": "test",
+                    "action": {"type": "variable", "value": {"var": "textField"}},
+                },
+                {
+                    "component": "",
+                    "variable": "textField1",
+                    "action": {"type": "variable", "value": {"var": "textField"}},
+                },
+            ],
+        )
+
+        form.apply_logic_analysis()
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission, form_step=step1
+        )
+
+        data = FormioData({"checkbox": True, "textField1": ""})
+
+        configuration = evaluate_form_logic(submission, submission_step, data)
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "textField",
+                    "label": "TextField",
+                    "hidden": True,
+                    "clearOnHide": True,
+                },
+                {"type": "checkbox", "key": "checkbox", "label": "Checkbox"},``
+                {
+                    "type": "textfield",
+                    "key": "textField1",
+                    "label": "TextField 1",
+                    "hidden": False,
+                    "clearOnHide": False,
+                },
+            ]
+        }
+
+        state = submission.variables_state
+        data = state.get_data(include_unsaved=True)
+
+        self.assertEqual(configuration, expected)
+        self.assertEqual(
+            data, {"test": "", "textField": None, "checkbox": True, "textField1": ""}
+        )
+        self.assertTrue(state.variables["textField"].is_undefined)

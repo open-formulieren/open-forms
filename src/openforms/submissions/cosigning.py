@@ -118,10 +118,10 @@ class CosignState:
                     # displayed, which is equivalent to "cosign not relevant". See
                     # https://github.com/open-formulieren/open-forms/issues/3901
                     state = self.submission.variables_state
-                    visible = configuration_wrapper.is_visible_in_frontend(
+                    hidden = configuration_wrapper.is_hidden(
                         component["key"], values=state.get_data(include_unsaved=True)
                     )
-                    if not visible:
+                    if hidden:
                         return None
                     return component
         return None

@@ -23,6 +23,7 @@ class DeterministicEvaluationTests(TestCase):
             key="a",
             user_defined=True,
             data_type=FormVariableDataTypes.int,
+            initial_value=3,
         )
         FormVariableFactory.create(
             form=form,
@@ -63,7 +64,7 @@ class DeterministicEvaluationTests(TestCase):
         form.apply_logic_analysis()
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
-            submission=submission, form_step=step, data={"a": 3}
+            submission=submission, form_step=step
         )
 
         evaluate_form_logic(submission, submission_step)

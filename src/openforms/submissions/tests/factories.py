@@ -40,6 +40,7 @@ from ..models import (
     SubmissionValueVariable,
     TemporaryFileUpload,
 )
+from ..utils import initialise_user_defined_variables
 
 
 def _calculate_price(
@@ -204,6 +205,16 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
         kwargs["submission"] = obj
         AuthInfoFactory.create(**kwargs)
+
+    @factory.post_generation
+    def initialize_user_defined_variables(obj, create, extracted, **kwargs):
+        # This happens upon submission creation in the SubmissionViewSet
+        if create:
+            initialise_user_defined_variables(obj)
+            # Need to reset these cached properties to make sure we are not dealing
+            # with outdated states later
+            del obj._variables_state
+            del obj._execution_state
 
     @classmethod
     def from_components(

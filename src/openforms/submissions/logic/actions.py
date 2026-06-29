@@ -12,7 +12,7 @@ from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 
 from glom import assign
-from json_logic import jsonLogic
+from json_logic import UNDEFINED_VALUE, jsonLogic
 
 from openforms.dmn.service import evaluate_dmn
 from openforms.formio.service import (
@@ -147,7 +147,6 @@ class ActionOperation:
         configuration: FormioConfigurationWrapper,
         submission: Submission,
         *,
-        data_for_hidden_state: FormioData,
         data_for_visible_state: FormioData,
     ) -> DataMapping | None:
         """
@@ -204,7 +203,6 @@ class PropertyAction(ActionOperation):
         configuration: FormioConfigurationWrapper,
         submission: Submission,
         *,
-        data_for_hidden_state: FormioData,
         data_for_visible_state: FormioData,
     ) -> DataMapping | None:
         # To avoid doing unnecessary work, only apply clear-on-hide logic for components
@@ -237,7 +235,6 @@ class PropertyAction(ActionOperation):
             {"components": [component]},
             context,
             configuration,
-            data_for_hidden_state=data_for_hidden_state,
             parent_hidden=should_be_hidden,
             data_for_visible_state=data_for_visible_state,
         )
@@ -431,11 +428,20 @@ class VariableAction(ActionOperation):
         configuration: FormioConfigurationWrapper,
         submission: Submission,
         *,
-        data_for_hidden_state: FormioData,
         data_for_visible_state: FormioData,
     ) -> DataMapping:
         with log_errors(self.value, self.rule):
-            return {self.variable: jsonLogic(self.value, context.data)}  # pyright: ignore[reportArgumentType]
+            result = jsonLogic(
+                self.value,  # pyright: ignore[reportArgumentType]
+                context.data,  # pyright: ignore[reportArgumentType]
+                use_var_undefined=True,
+            )
+            # variables with None/null values are returned as UNDEFINED_VALUE when
+            # use_var_undefined is set to True and they should not be returned
+            if result is UNDEFINED_VALUE:
+                return {}
+
+            return {self.variable: result}
 
 
 class DataMappingsConfig(TypedDict):
@@ -572,7 +578,6 @@ class SynchronizeVariablesAction(ActionOperation):
         configuration: FormioConfigurationWrapper,
         submission: Submission,
         *,
-        data_for_hidden_state: FormioData,
         data_for_visible_state: FormioData,
     ) -> DataMapping | None:
         configuration = submission.total_configuration_wrapper
@@ -637,7 +642,6 @@ class ServiceFetchAction(ActionOperation):
         configuration: FormioConfigurationWrapper,
         submission: Submission,
         *,
-        data_for_hidden_state: FormioData,
         data_for_visible_state: FormioData,
     ) -> DataMapping:
         var = self.rule.form.formvariable_set.get(key=self.variable)
@@ -712,7 +716,6 @@ class EvaluateDMNAction(ActionOperation):
         configuration: FormioConfigurationWrapper,
         submission: Submission,
         *,
-        data_for_hidden_state: FormioData,
         data_for_visible_state: FormioData,
     ) -> DataMapping | None:
         # Mapping from form variables to DMN inputs
