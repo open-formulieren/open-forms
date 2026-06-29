@@ -1,6 +1,3 @@
-from io import StringIO
-from unittest.mock import patch
-
 from django.test import SimpleTestCase, TestCase
 
 from unittest_parametrize import ParametrizedTestCase, parametrize
@@ -12,6 +9,7 @@ from openforms.forms.tests.factories import (
 )
 
 from ..script_checks import BinScriptCheck
+from .utils import capture_output
 
 
 class DjangoScriptTests(SimpleTestCase):
@@ -34,7 +32,7 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
     def test_no_logic(self):
         FormFactory.create(generate_minimal_setup=True)
 
-        with patch("sys.stdout", new_callable=StringIO) as stdout:
+        with capture_output() as stdout:
             self.assertTrue(self.script.execute())
             self.assertIn(
                 "No logic rules with a risk of behaving differently in Open Forms 4.0",
@@ -54,7 +52,7 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
             form=form, json_logic_trigger={"var": {"==": [{"var": "textfield"}, ""]}}
         )
 
-        with patch("sys.stdout", new_callable=StringIO) as stdout:
+        with capture_output() as stdout:
             self.assertTrue(self.script.execute())
             self.assertIn(
                 "No logic rules with a risk of behaving differently in Open Forms 4.0",
@@ -118,7 +116,7 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
 
         FormLogicFactory.create(form=form, json_logic_trigger=logic_trigger)
 
-        with patch("sys.stdout", new_callable=StringIO) as stdout:
+        with capture_output() as stdout:
             self.assertFalse(self.script.execute())
             self.assertIn(
                 "Found logic rules with a risk of behaving differently in Open Forms "
@@ -168,7 +166,7 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
             form=form, json_logic_trigger={"==": [{"var": "textfield"}, "value"]}
         )
 
-        with patch("sys.stdout", new_callable=StringIO) as stdout:
+        with capture_output() as stdout:
             self.assertTrue(self.script.execute())
             self.assertIn(
                 "No logic rules with a risk of behaving differently in Open Forms 4.0",
@@ -204,7 +202,7 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
             form=form, json_logic_trigger={"==": [{"var": "textfield"}, ""]}
         )
 
-        with patch("sys.stdout", new_callable=StringIO) as stdout:
+        with capture_output() as stdout:
             self.assertFalse(self.script.execute())
             self.assertIn(
                 "Found logic rules with a risk of behaving differently in Open Forms "
@@ -243,7 +241,7 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
             json_logic_trigger={"==": [{"var": "editgrid.0.selectboxes"}, False]},
         )
 
-        with patch("sys.stdout", new_callable=StringIO) as stdout:
+        with capture_output() as stdout:
             self.assertTrue(self.script.execute())
             self.assertIn(
                 "No logic rules with a risk of behaving differently in Open Forms 4.0",
@@ -259,7 +257,7 @@ class ReportInvalidFormLogicTests(TestCase):
             generate_minimal_setup=True, new_logic_evaluation_enabled=True
         )
 
-        with patch("sys.stdout", new_callable=StringIO) as stdout:
+        with capture_output() as stdout:
             self.assertTrue(self.script.execute())
             self.assertEqual("", stdout.getvalue())
 
@@ -282,7 +280,7 @@ class ReportInvalidFormLogicTests(TestCase):
             ],
         )
 
-        with patch("sys.stdout", new_callable=StringIO) as stdout:
+        with capture_output() as stdout:
             self.assertFalse(self.script.execute())
             self.assertIn(
                 "The following forms have have not been converted to the new logic "
@@ -309,7 +307,7 @@ class ReportInvalidFormLogicTests(TestCase):
             ],
         )
 
-        with patch("sys.stdout", new_callable=StringIO) as stdout:
+        with capture_output() as stdout:
             self.assertFalse(self.script.execute())
             self.assertIn(
                 "The following forms have at least one logic rule with "

@@ -394,3 +394,14 @@ to do anything for this:
 * Document options (document type, organization RSIN, title, confidentiality level...)
   will be moved from the file component configuration into the relevant registration
   backend options.
+
+**Check script**
+
+You can detect possible broken configurations for file component registration when the
+original document type didn't belong to the catalogue specified in the form registration
+options:
+
+.. code-block:: bash
+
+    # in a container/pod
+    python /app/bin/report_file_component_inconsistent_catalogues.py
