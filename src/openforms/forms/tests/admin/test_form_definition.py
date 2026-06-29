@@ -34,7 +34,7 @@ class TestFormDefinitionAdmin(WebTest):
 
         self.assertInHTML(
             f'<ul><li><a href="{self.form_url}">{self.form.admin_name}</a></li></ul>',
-            str(response.content),
+            response.text,
         )
 
     def test_used_in_forms_when_form_has_user_input_properly_escaped(self):
@@ -45,7 +45,7 @@ class TestFormDefinitionAdmin(WebTest):
 
         self.assertInHTML(
             "&lt;script&gt;alert(&#39;foo&#39;)&lt;/script&gt;",
-            str(response.content),
+            response.text,
         )
 
     def test_make_copies_action_makes_copy_of_a_form_definition(self):
@@ -89,11 +89,11 @@ class TestFormDefinitionAdmin(WebTest):
 
         self.assertInHTML(
             f'<li><a href="{active_form_url}">{active_form.admin_name}</a></li>',
-            str(response.content),
+            response.text,
         )
         self.assertNotIn(
             deleted_form_url,
-            str(response.content),
+            response.text,
         )
 
     def test_cannot_mark_form_definition_as_non_reusable_if_used_in_multiple_forms(
@@ -117,7 +117,7 @@ class TestFormDefinitionAdmin(WebTest):
                 "This form definition cannot be marked as 'not-reusable' as it is used "
                 "in multiple existing forms."
             ),
-            str(response.content),
+            response.text,
         )
 
     def test_template_syntax_errors_in_formio_config(self):
