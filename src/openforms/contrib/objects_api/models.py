@@ -99,6 +99,7 @@ class ObjectsAPIGroupConfig(models.Model):
     )
 
     # Replaces informatiobjecttype_submission_report
+    # DeprecationWarning - to be removed in Open Forms 4.1, only kept for data migrations
     iot_submission_report = models.CharField(
         _("submission report document type description"),
         # InformatieObjecttype.omschrijving resource attribute in Catalogi API spec
@@ -113,6 +114,7 @@ class ObjectsAPIGroupConfig(models.Model):
         ),
     )
     # Replaces informatiobjecttype_submission_csv
+    # DeprecationWarning - to be removed in Open Forms 4.1, only kept for data migrations
     iot_submission_csv = models.CharField(
         _("submission report CSV document type description"),
         # InformatieObjecttype.omschrijving resource attribute in Catalogi API spec
@@ -127,6 +129,7 @@ class ObjectsAPIGroupConfig(models.Model):
         ),
     )
     # Replaces informatiobjecttype_attachment
+    # DeprecationWarning - to be removed in Open Forms 4.1, only kept for data migrations
     iot_attachment = models.CharField(
         _("attachment document type description"),
         # InformatieObjecttype.omschrijving resource attribute in Catalogi API spec

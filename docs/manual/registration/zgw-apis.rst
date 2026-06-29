@@ -53,17 +53,15 @@ geüpload naar de Documenten API en aan de zaak gerelateerd.
 
 In de plugin-instellingen kan je een catalogus selecteren en vervolgens kies je het
 standaard-documenttype wat voor dergelijke bijlagen gebruikt dient te worden. Per
-"Bestandsupload"-veld kan je hiervan afwijken, indien nodig, via de "Registratie"-tab,
-waar je de catalogus-identificatie en omschrijving van het documenttype kan opgeven.
-Omdat dit omslachtig kan zijn als je veel uploadvelden hebt, kan je ook de
-plugin-instellingen in bulk kopiëren naar (een deel van) de uploadvelden. Dit vind je
-in de plugin-instellingen onder het kopje "Bijlage-documenttypen".
+"Bestandsupload"-veld kan je hiervan afwijken, indien nodig. Ga hiervoor in de
+formulierinstellingen naar de "Variabelen" tab. Daarbinnen vind je een bewerk-icoon in
+de "Registratie"-kolom om instellingen voor specifieke bestanduploadvelden aan te
+passen.
 
-.. versionadded:: 3.5.2
+.. versionchanged:: 4.0.0
 
-    Sinds Open Formulieren 3.5.2 kan je de bijlage-uploads instellen met een
-    catalogusreferentie en documenttypeomschrijving in plaats van een URL naar een
-    informatieobjecttype.
+    Sinds Open Formulieren 4.0.0 kan je de registratie-instellingen niet meer in het
+    veld zelf instellen, maar moet dit via de "Variabelen"-tab.
 
 Registratie-attributen
 ======================
