@@ -8,6 +8,8 @@ from django.http import HttpRequest
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
+from maykin_common.accounts.admin import PreventPrivilegeEscalationMixin
+
 from .forms import UserPreferencesForm
 from .models import User, UserPreferences
 
@@ -21,7 +23,7 @@ def _append_field_to_fieldsets(fieldsets, set_name, *field_names):
 
 
 @admin.register(User)
-class _UserAdmin(UserAdmin):
+class _UserAdmin(PreventPrivilegeEscalationMixin, UserAdmin):
     list_display = tuple(UserAdmin.list_display) + (  # pyright: ignore[reportGeneralTypeIssues]
         "employee_id",
         "is_superuser",
