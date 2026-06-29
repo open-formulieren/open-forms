@@ -200,7 +200,7 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           persist-credentials: false
-      - uses: open-formulieren/actions/check-message-extraction@599d67bf43a0c630d26675244a2d4774835a6897 # v1
+      - uses: open-formulieren/actions/check-message-extraction@c3a381fb81dde99084eaeeb861bb95a433b1a535 # v1.1
         with:
           paths: src/openforms/js/{compiled-lang,lang}
           extraction-command: ./bin/makemessages_js.sh
