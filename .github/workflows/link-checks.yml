@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
       - name: Extract version info
         id: vars
-        uses: maykinmedia/open-api-workflows/actions/extract-version@79102b911003d75203ca2fed7df01ad79d9b6bba # v6.4.0
+        uses: maykinmedia/open-api-workflows/actions/extract-version@0a5525c13f8eea10be40c8eaee5e535ea3a10721 # v6.4.1
       - name: Extract SDK version info
         id: sdk-vars
         uses: ./.github/actions/extract-sdk-version
