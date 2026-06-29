@@ -36,6 +36,8 @@ runs:
       id: vars
       run: |
         ${{ github.action_path }}/extract_sdk_version.sh \
-          "${{ inputs.backend-version }}" \
-          "${{ github.base_ref }}"
+          "${INPUTS_BACKEND_VERSION}" \
+          "${GITHUB_BASE_REF}"
       shell: bash
+      env:
+        INPUTS_BACKEND_VERSION: ${{ inputs.backend-version }}
