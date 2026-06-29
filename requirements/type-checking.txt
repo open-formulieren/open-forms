@@ -648,7 +648,7 @@ maykin-2fa==2.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-common==0.18.0
+maykin-common==0.20.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
