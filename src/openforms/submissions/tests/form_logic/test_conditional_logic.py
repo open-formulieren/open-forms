@@ -705,6 +705,54 @@ class ConditionalLogicTests(TestCase):
         self.assertEqual(step.unsaved_data, {})
         self.assertTrue(state.variables["textfield2"].is_undefined)
 
+    def test_selectboxes_already_hidden(self):
+        """
+        Ensure that evaluating conditional logic does not crash when a hidden
+        selectboxes is used as a trigger.
+        """
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "label": "Selectboxes hidden",
+                    "hidden": True,
+                    "values": [
+                        {"value": "a", "label": "a"},
+                        {"value": "b", "label": "b"},
+                        {"value": "c", "label": "c"},
+                    ],
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield",
+                    "label": "Textfield",
+                    "hidden": False,
+                    "conditional": {
+                        "show": False,
+                        "when": "selectboxes",
+                        "eq": "a",
+                    },
+                    "clearOnHide": True,
+                },
+            ],
+        )
+        step = submission.submissionstep_set.get()
+
+        evaluate_form_logic(submission, step, FormioData({"textfield": "keep me"}))
+
+        state = submission.variables_state
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
+        self.assertEqual(
+            data,
+            {
+                "selectboxes": None,
+                "textfield": "keep me",
+            },
+        )
+        self.assertEqual(step.unsaved_data, {})
+        self.assertTrue(state.variables["selectboxes"].is_undefined)
+
     def test_file(self):
         """
         Ensure that we check whether the compare value for a file compares against
