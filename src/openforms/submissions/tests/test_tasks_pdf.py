@@ -119,13 +119,18 @@ class SubmissionReportGenerationTests(TestCase):
                 {
                     "type": "date",
                     "key": "date1",
+                    "label": "Date",
                 },
                 {
                     "type": "date",
                     "key": "updatedDate",
+                    "label": "Updated date",
                 },
             ],
-            submitted_data={"date1": "2025-01-01"},
+            # Note: this submission data is only possible by modifying the submission
+            # step put call, because the logic rule would have already been executed
+            # while filling out the step -> value should be "2025-02-01" already.
+            submitted_data={"date1": "2025-01-01", "updatedDate": ""},
             completed=True,
             with_report=True,
         )
@@ -597,7 +602,13 @@ class SubmissionReportGenerationTests(TestCase):
                     ],
                 },
             ],
-            submitted_data={"repeatingGroup": [{"textfield2": None}]},
+            submitted_data={
+                "textfield": "",
+                "selectboxes": {"option1": False, "option2": False, "option3": False},
+                "radio": "",
+                "textfield1": "",
+                "repeatingGroup": [{"textfield2": ""}],
+            },
             with_report=True,
         )
         html = submission.report.generate_submission_report_pdf()

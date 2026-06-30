@@ -9,6 +9,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
+from ...models import SubmissionValueVariable
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 
@@ -88,10 +89,6 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
             "api:submission-steps-detail",
             kwargs={"submission_uuid": submission.uuid, "step_uuid": step1.uuid},
         )
-        step2_url = reverse(
-            "api:submission-steps-detail",
-            kwargs={"submission_uuid": submission.uuid, "step_uuid": step2.uuid},
-        )
         submission_url = reverse(
             "api:submission-detail",
             kwargs={"uuid": submission.uuid},
@@ -100,6 +97,9 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
             submission_detail = self.client.get(submission_url)
 
             self.assertTrue(submission_detail.data["steps"][1]["is_applicable"])
+            self.assertTrue(
+                SubmissionValueVariable.objects.filter(key="step2").exists()
+            )
 
         # now alter the data of step one, triggering the N/A logic
         with self.subTest("Modify step 1 data to trigger logic"):
@@ -118,10 +118,11 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
         # check the state of step 2 again
         with self.subTest("Verify step 2 state"):
             submission_detail = self.client.get(submission_url)
-            step2_detail = self.client.get(step2_url)
 
             self.assertFalse(submission_detail.data["steps"][1]["is_applicable"])
-            self.assertEqual(step2_detail.data["data"], {})
+            self.assertFalse(
+                SubmissionValueVariable.objects.filter(key="step2").exists()
+            )
 
     def test_blocked_submission_is_reset(self):
         """

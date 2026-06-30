@@ -14,7 +14,7 @@ from openforms.typing import JSONObject
 from .typing import Column, ColumnsComponent, Component, FormioConfiguration
 
 if TYPE_CHECKING:
-    from .datastructures import FormioConfigurationWrapper, FormioData
+    from .datastructures import FormioData
 
 logger = structlog.stdlib.get_logger(__name__)
 tracer = trace.get_tracer("openforms.formio.utils")
@@ -285,79 +285,6 @@ def conform_to_mask(value: str, mask: str) -> str:
             )
 
     return "".join(result)
-
-
-def is_visible_in_frontend(
-    component: Component,
-    data: FormioData,
-    configuration_wrapper: FormioConfigurationWrapper,
-) -> bool:
-    """Check if the component is visible because of frontend logic
-
-    The rules in formio are expressed as:
-
-    .. code-block:: json
-
-        {
-            "show": true/false,
-            "when": <key of trigger component>,
-            "eq": <compare value>
-        }
-
-    .. warning:: this function currently does not take parent components into account
-       that may be hidden, which lead to this component being hidden too.
-    """
-    hidden = component.get("hidden")
-    conditional = component.get("conditional")
-
-    if not conditional or (conditional_show := conditional.get("show")) in [None, ""]:
-        return not hidden
-
-    if not (trigger_component_key := conditional.get("when")):
-        return not hidden
-
-    assert conditional_show is not None
-
-    # be resilient on the component key lookup - the old comparison seemed to mostly
-    # work and this whole code should be cleaned up anyway when we go the msgspec route
-    if trigger_component_key in configuration_wrapper:
-        trigger_component = configuration_wrapper[trigger_component_key]
-    else:
-        trigger_component: Component = {
-            "type": "unknown",
-            "key": trigger_component_key,
-            "label": "unknown",
-        }
-    trigger_component_value = data.get(trigger_component_key, None)
-    compare_value = conditional.get("eq")
-
-    # special treatment for emptyness check of file component - due to a bug in the
-    # formio-builder you can configure the `eq` as an empty string by leaving it blank.
-    # Our new renderer needed the same patch, and the legacy formio.js renderer already
-    # exhibited this behaviour.
-    if (
-        trigger_component["type"] == "file"
-        and compare_value == ""
-        and trigger_component_value == []
-    ):
-        return conditional_show
-
-    if (
-        trigger_component["type"] == "selectboxes"
-        and isinstance(trigger_component_value, dict)
-        and compare_value in trigger_component_value
-    ):
-        return (
-            conditional_show
-            if trigger_component_value[compare_value]
-            else not conditional_show
-        )
-
-    return (
-        conditional_show
-        if trigger_component_value == compare_value
-        else not conditional_show
-    )
 
 
 @dataclass

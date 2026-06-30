@@ -14,10 +14,8 @@ from openforms.submissions.rendering.constants import RenderModes
 from ..datastructures import FormioData
 from ..service import format_value, get_component_empty_value, holds_submission_data
 from ..typing import Component
-from ..utils import (
-    is_visible_in_frontend,
-    iterate_components_with_configuration_path,
-)
+from ..utils import iterate_components_with_configuration_path
+from ..visibility import is_hidden
 
 if TYPE_CHECKING:
     from openforms.submissions.rendering import Renderer
@@ -136,18 +134,18 @@ class ComponentNode(Node):
             artificial_repeating_group_data[self.parent_node.path] = (
                 current_iteration_data
             )
-            if not is_visible_in_frontend(
+            if is_hidden(
                 self.component,
                 artificial_repeating_group_data,
                 # we can pass the root config wrapper because all editgrid item component
                 # keys are already exposed in the config wrapper with their prefixed paths
-                configuration_wrapper=formio_config_wrapper,
+                configuration=formio_config_wrapper,
             ):
                 return False
-        elif not is_visible_in_frontend(
+        elif is_hidden(
             self.component,
             self.step_data,
-            configuration_wrapper=formio_config_wrapper,
+            configuration=formio_config_wrapper,
         ):
             return False
 
@@ -298,7 +296,7 @@ class FormioNode(Node):
         configuration = self.step.form_step.form_definition.configuration
 
         state = self.step.submission.variables_state
-        data = state.get_data(include_unsaved=True, submission_step=self.step)
+        data = state.get_data(include_unsaved=False, submission_step=self.step)
         for configuration_path, component in iterate_components_with_configuration_path(
             configuration, recursive=False
         ):

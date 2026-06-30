@@ -553,6 +553,8 @@ class PrefillVariablesFromOptionsTests(TestCase):
                 "var_key": "voornamen",
                 "var_value": "foo, bar",
             },
+            initial_value={},
+            data_type=FormVariableDataTypes.object,
         )
         submission = SubmissionFactory.create(form=form)
 
@@ -560,7 +562,9 @@ class PrefillVariablesFromOptionsTests(TestCase):
 
         variables_state = submission.variables_state
 
-        self.assertEqual(variables_state.get_data(), {})
+        self.assertEqual(
+            variables_state.get_data(), {"voornamen": "", "prefillData": {}}
+        )
 
     def test_prefill_skipped_exception(self):
         form = FormFactory.create(
@@ -586,6 +590,8 @@ class PrefillVariablesFromOptionsTests(TestCase):
                 "var_key": "voornamen",
                 "var_value": "foo, bar",
             },
+            initial_value={},
+            data_type=FormVariableDataTypes.object,
         )
         submission = SubmissionFactory.create(form=form)
 
@@ -593,7 +599,9 @@ class PrefillVariablesFromOptionsTests(TestCase):
 
         variables_state = submission.variables_state
 
-        self.assertEqual(variables_state.get_data(), {})
+        self.assertEqual(
+            variables_state.get_data(), {"voornamen": "", "prefillData": {}}
+        )
 
     def test_prefill_generic_exception(self):
         form = FormFactory.create(
@@ -619,6 +627,8 @@ class PrefillVariablesFromOptionsTests(TestCase):
                 "var_key": "voornamen",
                 "var_value": "foo, bar",
             },
+            initial_value={},
+            data_type=FormVariableDataTypes.object,
         )
         submission = SubmissionFactory.create(form=form)
 
@@ -626,7 +636,9 @@ class PrefillVariablesFromOptionsTests(TestCase):
 
         variables_state = submission.variables_state
 
-        self.assertEqual(variables_state.get_data(), {})
+        self.assertEqual(
+            variables_state.get_data(), {"voornamen": "", "prefillData": {}}
+        )
 
 
 class PrefillVariablesTransactionTests(OFVCRMixin, TransactionTestCase):
