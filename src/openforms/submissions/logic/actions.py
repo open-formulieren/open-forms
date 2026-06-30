@@ -222,7 +222,6 @@ class PropertyAction(ActionOperation):
             return None
 
         component = configuration[self.component]
-        should_be_hidden = self.value is True
 
         # apply the state mutation immediately, so that it's visible to follow up
         # actions and rules operating on the same component.
@@ -235,7 +234,7 @@ class PropertyAction(ActionOperation):
             {"components": [component]},
             context,
             configuration,
-            parent_hidden=should_be_hidden,
+            parent_hidden=configuration.is_hidden(component["key"], context),
             data_for_visible_state=data_for_visible_state,
         )
         return None
