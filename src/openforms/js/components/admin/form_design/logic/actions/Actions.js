@@ -115,16 +115,31 @@ const ActionProperty = ({action, errors, onChange}) => {
   );
 };
 
-const ActionVariableValue = ({action, errors, onChange}) => (
-  <>
-    <DSLEditorNode errors={errors.variable}>
-      <VariableSelection name="variable" onChange={onChange} value={action.variable} />
-    </DSLEditorNode>
-    <DSLEditorNode errors={errors.action?.value}>
-      <JsonWidget name="action.value" logic={action.action.value} onChange={onChange} />
-    </DSLEditorNode>
-  </>
-);
+const ActionVariableValue = ({action, errors, onChange}) => {
+  const {form} = useContext(FormContext);
+
+  return (
+    <>
+      <DSLEditorNode errors={errors.variable}>
+        <VariableSelection
+          name="variable"
+          onChange={onChange}
+          value={action.variable}
+          filter={
+            form.type === 'single_step'
+              ? variable => {
+                  return variable.source === 'user_defined';
+                }
+              : undefined
+          }
+        />
+      </DSLEditorNode>
+      <DSLEditorNode errors={errors.action?.value}>
+        <JsonWidget name="action.value" logic={action.action.value} onChange={onChange} />
+      </DSLEditorNode>
+    </>
+  );
+};
 
 const ActionSynchronizeVariables = ({action, errors, onChange}) => {
   const intl = useIntl();

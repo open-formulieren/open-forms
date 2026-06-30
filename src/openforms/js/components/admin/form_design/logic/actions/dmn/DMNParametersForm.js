@@ -1,10 +1,11 @@
 import {parseExpression} from 'feelin';
 import {useFormikContext} from 'formik';
 import produce from 'immer';
-import React, {useEffect} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {useAsync} from 'react-use';
 
+import {FormContext} from 'components/admin/form_design/Context';
 import {DMN_DECISION_DEFINITIONS_PARAMS_LIST} from 'components/admin/form_design/constants';
 import VariableMapping from 'components/admin/forms/VariableMapping';
 import {FAIcon} from 'components/admin/icons';
@@ -104,6 +105,7 @@ const processInputParams = params => {
 const DMNParametersForm = () => {
   const intl = useIntl();
   const {values, setValues} = useFormikContext();
+  const {form} = useContext(FormContext);
   const {pluginId, decisionDefinitionId, decisionDefinitionVersion, inputMapping, outputMapping} =
     values;
 
@@ -218,6 +220,13 @@ const DMNParametersForm = () => {
             propertyHeading={dmnVariableColumnLabel}
             propertySelectLabel={dmnVariableSelectAriaLabel}
             rowCheck={detectMappingProblems}
+            filter={
+              form.type === 'single_step'
+                ? variable => {
+                    return variable.source === 'user_defined';
+                  }
+                : undefined
+            }
           />
         </div>
       </div>
