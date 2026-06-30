@@ -1975,6 +1975,73 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         # not be set.
         self.assertEqual({}, data["step"]["data"])
 
+    def test_non_applicable_step_with_other_step_containing_only_layout_components(
+        self,
+    ):
+        form = FormFactory.create()
+        step_1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "checkbox", "key": "checkbox", "label": "Checkbox"}
+                ]
+            },
+        )
+        step_2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "textfield", "label": "Textfield"}
+                ]
+            },
+        )
+        step_3 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "content",
+                        "key": "content",
+                        "label": "Content",
+                        "html": "This step has no components that hold submission data",
+                    }
+                ]
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "checkbox"}, True]},
+            actions=[
+                {
+                    "form_step_uuid": str(step_2.uuid),
+                    "action": {"type": "step-not-applicable"},
+                }
+            ],
+        )
+        form.apply_logic_analysis()
+
+        submission = SubmissionFactory.create(form=form)
+
+        # Simulate submitting the first step
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step_1, data={"checkbox": True}
+        )
+
+        # Perform logic check on the last step
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step_3.uuid,
+            },
+        )
+
+        response = self.client.post(logic_check_endpoint, {"data": {}})
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertFalse(response.json()["submission"]["steps"][1]["isApplicable"])
+
 
 @tag("gh-6005")
 class MultipleRulesTargetingSameComponentVisibilityTests(SubmissionsMixin, APITestCase):
