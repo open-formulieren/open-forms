@@ -87,6 +87,17 @@ class PrefillConfiguration(TypedDict):
     ]
 
 
+class FAQItemConfiguration(TypedDict):
+    label: str
+    content: str
+
+
+class FAQItemsConfiguration(FAQItemConfiguration):
+    openForms: NotRequired[
+        dict[Literal["translations"], dict[str, FAQItemConfiguration]]
+    ]
+
+
 class Component(TypedDict):
     """
     A formio component definition.
@@ -114,6 +125,7 @@ class Component(TypedDict):
     placeholder: NotRequired[str]
     dataType: NotRequired[Literal["string"]]
     showInEmail: NotRequired[bool]
+    faqItems: NotRequired[list[FAQItemsConfiguration]]
 
 
 class FormioConfiguration(TypedDict):
