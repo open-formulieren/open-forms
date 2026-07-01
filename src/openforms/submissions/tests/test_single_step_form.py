@@ -6,7 +6,12 @@ from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
-from openforms.forms.tests.factories import FormFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormVariableFactory,
+)
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..models import Submission
 
@@ -71,3 +76,105 @@ class SingleStepFormTests(APITestCase):
 
         # 4. make sure the prefill was not called
         m.assert_not_called()
+
+    def test_single_step_form_with_substr_and_variable_action(self):
+        endpoint = reverse_lazy("api:submission-list")
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            is_single_step_form=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textField",
+                        "label": "Textfield",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="department",
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.string,
+            form_definition=form.formstep_set.get().form_definition,
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "department",
+                    "action": {
+                        "type": "variable",
+                        "value": {
+                            "if": [
+                                {
+                                    "==": [
+                                        {"substr": [{"var": "form_url.page"}, 0, 1]},
+                                        "/",
+                                    ]
+                                },
+                                "a@example.com",
+                                "b@example.com",
+                            ]
+                        },
+                    },
+                }
+            ],
+        )
+
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        # 1. create the submission
+        submission_body = {
+            "form": f"http://testserver.com{form_url}",
+            "formUrl": "http://testserver.com/my-form",
+            "anonymous": True,
+            "initialDataReference": "of-or-3452fre3",
+        }
+
+        submission_response = self.client.post(
+            endpoint, submission_body, HTTP_HOST="testserver.com"
+        )
+        submission = Submission.objects.get()
+        form_step = form.formstep_set.get()
+
+        submission.form.apply_logic_analysis()
+
+        self.assertEqual(submission_response.status_code, status.HTTP_201_CREATED)
+
+        # 2. submit step data
+        submit_data_endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
+        )
+        submit_data = {"data": {"textField": "foo"}}
+        submit_data_response = self.client.put(
+            submit_data_endpoint, submit_data, HTTP_HOST="testserver.com"
+        )
+
+        self.assertEqual(submit_data_response.status_code, status.HTTP_201_CREATED)
+
+        # 3. complete form
+        complete_submission_endpoint = reverse(
+            "api:submission-complete",
+            kwargs={"uuid": submission.uuid},
+        )
+        complete_data = {
+            "privacy_policy_accepted": True,
+            "statementOfTruthAccepted": False,
+        }
+        complete_submission_response = self.client.post(
+            complete_submission_endpoint, complete_data, HTTP_HOST="testserver.com"
+        )
+
+        self.assertEqual(complete_submission_response.status_code, status.HTTP_200_OK)
+
+        # 4. make sure the submission value variables are correctly updated
+        variables = submission.submissionvaluevariable_set.all()
+        expected = {"textField": "foo", "department": "a@example.com"}
+
+        for key, expected_value in expected.items():
+            obj = next(o for o in variables if o.key == key)
+            self.assertEqual(obj.value, expected_value)
