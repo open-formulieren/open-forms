@@ -206,8 +206,6 @@ VariableMappingRow.propTypes = {
   filter: PropTypes.func,
 };
 
-const allowAny = () => true;
-
 /**
  * Map form variables to other properties.
  *
@@ -228,7 +226,7 @@ const VariableMapping = ({
   propertySelectLabel,
   includeStaticVariables = false,
   rowCheck,
-  filter = allowAny,
+  filter,
 }) => {
   const {values, getFieldProps} = useFormikContext();
   const {value: mappings = []} = getFieldProps(name);

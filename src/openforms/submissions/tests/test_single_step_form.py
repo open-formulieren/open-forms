@@ -14,7 +14,7 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 from openforms.utils.tests.vcr import OFVCRMixin
-from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.constants import FormVariableDataTypes
 
 from ..models import Submission
 
@@ -103,9 +103,8 @@ class SingleStepFormTests(APITestCase):
         FormVariableFactory.create(
             form=form,
             key="test",
-            source=FormVariableSources.user_defined,
+            user_defined=True,
             data_type=FormVariableDataTypes.string,
-            form_definition=form.formstep_set.get().form_definition,
         )
         FormLogicFactory.create(
             form=form,
@@ -229,9 +228,8 @@ class SingleStepFormVCRTests(OFVCRMixin, APITestCase):
         FormVariableFactory.create(
             form=form,
             key="test",
-            source=FormVariableSources.user_defined,
+            user_defined=True,
             data_type=FormVariableDataTypes.string,
-            form_definition=form.formstep_set.get().form_definition,
         )
         FormLogicFactory.create(
             form=form,
@@ -292,7 +290,7 @@ class SingleStepFormVCRTests(OFVCRMixin, APITestCase):
             "api:submission-steps-detail",
             kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
         )
-        submit_data = {"data": {"textField": "Misc", "invoiceAmount": 100, "test": ""}}
+        submit_data = {"data": {"textField": "Misc", "invoiceAmount": 100}}
         submit_data_response = self.client.put(
             submit_data_endpoint, submit_data, HTTP_HOST="testserver.com"
         )
