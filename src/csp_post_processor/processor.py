@@ -46,6 +46,8 @@ WYSIWYG_ALLOWED_TAGS: set[str] = {
     "table",
     "thead",
     "tbody",
+    "colgroup",
+    "col",
     "tr",
     "th",
     "td",
@@ -68,6 +70,10 @@ _TAGS_WITH_STYLE = [
     "h4",
     "h5",
     "h6",
+    "table",
+    "col",
+    "td",
+    "th",
 ]
 _STYLE_ATTRS: set[str] = {
     "id",
@@ -141,6 +147,8 @@ WYSIWYG_CSS_PROPERTIES: set[str] = {
     "list-style-type",
     # TinyMCE uses padding-left for indent
     "padding-left",
+    # Table styling in TinyMCE
+    "border-style",
 }
 WYSIWYG_SVG_PROPERTIES: set[str] = {
     "fill",
