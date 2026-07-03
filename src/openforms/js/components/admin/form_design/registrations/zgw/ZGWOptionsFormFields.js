@@ -12,6 +12,7 @@ import {
 } from 'components/admin/forms/ValidationErrors';
 
 import BasicOptionsFieldset from './BasicOptionsFieldset';
+import CaseObjectFieldsets from './CaseObjects';
 import ManageVariableToPropertyMappings from './ManageVariableToPropertyMappings';
 import ObjectsAPIOptionsFieldset from './ObjectsAPIOptionsFieldset';
 import OptionalOptionsFieldset from './OptionalOptionsFieldset';
@@ -23,9 +24,10 @@ const ZGWFormFields = ({
   objectsApiGroupChoices,
   confidentialityLevelChoices,
   summaryDocumentChoices,
+  caseObjectTypeChoices,
 }) => {
   const {
-    values: {propertyMappings = []},
+    values: {propertyMappings = [], caseObjects = []},
   } = useFormikContext();
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
@@ -36,6 +38,8 @@ const ZGWFormFields = ({
 
   const numCasePropertyErrors = filterErrors(`${name}.propertyMappings`, validationErrors).length;
   const numBaseErrors = relevantErrors.length - numCasePropertyErrors;
+  // fixme
+  const numCaseObjectErrors = 0;
 
   return (
     <ValidationErrorsProvider errors={relevantErrors}>
@@ -53,6 +57,15 @@ const ZGWFormFields = ({
               defaultMessage="Case properties ({count})"
               values={{
                 count: propertyMappings.length,
+              }}
+            />
+          </Tab>
+          <Tab hasErrors={numCaseObjectErrors > 0}>
+            <FormattedMessage
+              description="ZGW APIs registration backend options, 'case objects' tab label"
+              defaultMessage="Case objects ({count})"
+              values={{
+                count: caseObjects.length,
               }}
             />
           </Tab>
@@ -78,6 +91,11 @@ const ZGWFormFields = ({
         {/* zaakeigenschappen / case properties */}
         <TabPanel>
           <ManageVariableToPropertyMappings />
+        </TabPanel>
+
+        {/* zaakobjecten / case objects */}
+        <TabPanel>
+          <CaseObjectFieldsets caseObjectTypeChoices={caseObjectTypeChoices} />
         </TabPanel>
       </Tabs>
     </ValidationErrorsProvider>
@@ -106,6 +124,9 @@ ZGWFormFields.propTypes = {
     PropTypes.arrayOf(PropTypes.string) // value & label are both string
   ).isRequired,
   summaryDocumentChoices: PropTypes.arrayOf(
+    PropTypes.arrayOf(PropTypes.string) // value & label are both string
+  ).isRequired,
+  objectTypeChoices: PropTypes.arrayOf(
     PropTypes.arrayOf(PropTypes.string) // value & label are both string
   ).isRequired,
 };

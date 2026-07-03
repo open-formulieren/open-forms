@@ -104,8 +104,7 @@ class ObjectOverigeSerializer(serializers.Serializer):
     overige_data = serializers.CharField(
         label=_("Overige data"),
         help_text=_(
-            "Data for the 'overige' object in a free format. You can use the expressions like "
-            "'{{ form_name }}' or other variables here."
+            "Data for the 'overige' object in a free format. You can use form variables here."
         ),
         validators=[
             DjangoTemplateValidator(backend="openforms.template.openforms_backend")

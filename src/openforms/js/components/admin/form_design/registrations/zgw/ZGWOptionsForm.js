@@ -11,8 +11,17 @@ import ZGWFormFields from './ZGWOptionsFormFields';
 const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
 
-  const {zgwApiGroup, zaakVertrouwelijkheidaanduiding, objectsApiGroup, summaryDocuments} =
-    schema.properties;
+  const {
+    zgwApiGroup,
+    zaakVertrouwelijkheidaanduiding,
+    objectsApiGroup,
+    summaryDocuments,
+    caseObjects: {
+      items: {
+        properties: {caseObjectType},
+      },
+    },
+  } = schema.properties;
   const apiGroupChoices = getChoicesFromSchema(zgwApiGroup.enum, zgwApiGroup.enumNames);
   const objectsApiGroupChoices = getChoicesFromSchema(
     objectsApiGroup.enum,
@@ -26,6 +35,8 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
     summaryDocuments.enum,
     summaryDocuments.enumNames
   );
+
+  const caseObjectTypeChoices = getChoicesFromSchema(caseObjectType.enum, caseObjectType.enumNames);
 
   const numErrors = filterErrors(name, validationErrors).length;
   const defaultGroup = apiGroupChoices.length === 1 ? apiGroupChoices[0][0] : undefined;
@@ -60,6 +71,7 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
         // Ensure that this is explicitly set to null instead of undefined,
         // because the field is required by the serializer
         objectsApiGroup: null,
+        caseObjects: [],
         // saved data, overwrites defaults
         ...formData,
         // Ensure that if there's only one option, it is automatically selected.
@@ -74,6 +86,7 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
         objectsApiGroupChoices={objectsApiGroupChoices}
         confidentialityLevelChoices={confidentialityLevelChoices}
         summaryDocumentChoices={summaryDocumentChoices}
+        caseObjectTypeChoices={caseObjectTypeChoices}
       />
     </ModalOptionsConfiguration>
   );
@@ -100,6 +113,16 @@ ZGWOptionsForm.propTypes = {
         enum: PropTypes.arrayOf(PropTypes.string).isRequired,
         enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
       }).isRequired,
+      caseObjects: PropTypes.shape({
+        items: PropTypes.shape({
+          properties: PropTypes.shape({
+            caseObjectType: PropTypes.shape({
+              enum: PropTypes.arrayOf(PropTypes.string).isRequired,
+              enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+            }).isRequired,
+          }).isRequired,
+        }).isRequired,
+      }).isRequired,
     }).isRequired,
   }).isRequired,
   formData: PropTypes.shape({
@@ -125,6 +148,15 @@ ZGWOptionsForm.propTypes = {
     objecttypeVersion: PropTypes.string,
     contentJson: PropTypes.string,
     summaryDocuments: PropTypes.arrayOf(PropTypes.string),
+    caseObjects: PropTypes.arrayOf(
+      PropTypes.shape({
+        caseObjectType: PropTypes.string,
+        caseObjectTypeOverige: PropTypes.string,
+        caseObjectIdentification: PropTypes.shape({
+          overigeData: PropTypes.string,
+        }),
+      })
+    ),
   }),
   onChange: PropTypes.func.isRequired,
 };
