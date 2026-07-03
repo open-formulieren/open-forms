@@ -707,9 +707,9 @@ class SubmissionStepViewSet(
         form_data_serializer = FormDataSerializer(data=request.data)
         form_data_serializer.is_valid(raise_exception=True)
 
-        if data := form_data_serializer.validated_data["data"]:
-            new_configuration = evaluate_form_logic(submission, submission_step, data)
-            submission_step.form_step.form_definition.configuration = new_configuration
+        data = form_data_serializer.validated_data["data"]
+        new_configuration = evaluate_form_logic(submission, submission_step, data)
+        submission_step.form_step.form_definition.configuration = new_configuration
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(
             instance=SubmissionStateLogic(submission=submission, step=submission_step),
