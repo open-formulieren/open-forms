@@ -13656,7 +13656,7 @@ msgstr "vrijgeven"
 
 #: openforms/templates/includes/a11y_toolbar.html:2
 msgid "Accessibility tools"
-msgstr "Toegangelijkheidshulpmiddelen"
+msgstr "Toegankelijkheidshulpmiddelen"
 
 #: openforms/templates/includes/a11y_toolbar.html:11
 msgid "Back to top"
