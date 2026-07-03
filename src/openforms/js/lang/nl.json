@@ -44,6 +44,11 @@
     "description": "action type \"step-applicable\" label",
     "originalDefault": "Mark the form step as applicable"
   },
+  "/GRLBW": {
+    "defaultMessage": "Inhoud van het exportbestand",
+    "description": "Form export 'export file content' options fieldset title",
+    "originalDefault": "Export file content"
+  },
   "/fAEsY": {
     "defaultMessage": "Informatieobjecttype CSV-document met inzendingsgegevens",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
@@ -69,6 +74,11 @@
     "defaultMessage": "DMN-variabele",
     "description": "DMN variable label",
     "originalDefault": "DMN variable"
+  },
+  "0PB1XV": {
+    "defaultMessage": "WMS-kaartlagen",
+    "description": "Label for additionalFormConfiguration wmsTileLayers input",
+    "originalDefault": "WMS tile layers"
   },
   "0PhQl9": {
     "defaultMessage": "Indien aangevinkt, dan worden overleden kinderen ook weergegeven.",
@@ -114,6 +124,12 @@
     "defaultMessage": "Opties instellen",
     "description": "Link label to open registration options modal",
     "originalDefault": "Configure options"
+  },
+  "1cMfAA": {
+    "defaultMessage": "Product",
+    "description": "Label for additionalFormConfiguration product input",
+    "isTranslated": true,
+    "originalDefault": "Product"
   },
   "1fD+K4": {
     "defaultMessage": "Opschoonmethode voor niet voltooide inzendingen",
@@ -879,6 +895,11 @@
     "description": "Objects API registration: uploadSubmissionCsv helpText",
     "originalDefault": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the product request."
   },
+  "E3pztQ": {
+    "defaultMessage": "Anonimiseer gevoelige formulierinstellingen bij het exporteren.",
+    "description": "Form export options 'removeSensitiveContent' help text",
+    "originalDefault": "Whether sensative form configuration should be anonymized during exporting."
+  },
   "EDwCbX": {
     "defaultMessage": "<code>{componentKey}</code>: in {numSteps, plural, =1 {{tail}} other {{lead} en {tail}} }",
     "description": "Description of which key is duplicated in which steps.",
@@ -1080,6 +1101,11 @@
     "description": "StUF-ZDS registration variablesMapping label",
     "originalDefault": "Variables mapping (case)"
   },
+  "H51Ms+": {
+    "defaultMessage": "Formulier exporteren",
+    "description": "Form export options modal submit button text",
+    "originalDefault": "Export form"
+  },
   "H6VxhG": {
     "defaultMessage": "Onderhoudsmodus",
     "description": "Form maintenance mode field label",
@@ -1109,6 +1135,11 @@
     "defaultMessage": "Aantal dagen dat een niet voltooide inzendingen (door fouten in de afhandeling) bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken.",
     "description": "Errored Submissions Removal Limit help text",
     "originalDefault": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+  },
+  "HKwvbG": {
+    "defaultMessage": "Welke formulierinstellingen mee geëxporteerd worden.",
+    "description": "Form import/export options 'formConfiguration' field help text",
+    "originalDefault": "Which form configuration should be included in the export file content."
   },
   "HVG1xy": {
     "defaultMessage": "Inhoud (bij mede-ondertekenen)",
@@ -1532,10 +1563,20 @@
     "description": "Form registration options tab title",
     "originalDefault": "Registration"
   },
+  "OH+T6k": {
+    "defaultMessage": "Betaalprovider",
+    "description": "Label for formConfiguration paymentBackend input",
+    "originalDefault": "Payment provider"
+  },
   "OX8wxE": {
     "defaultMessage": "Uw sessie vervalt {delta}. Verleng uw sessie indien u wenst door te gaan.",
     "description": "Session expiry warning (in modal)",
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
+  },
+  "OaS7Pf": {
+    "defaultMessage": "Formulier exportopties",
+    "description": "Form export options modal title",
+    "originalDefault": "Export options"
   },
   "Od+jm6": {
     "defaultMessage": "Waarden:",
@@ -1725,6 +1766,11 @@
     "description": "action type \"variable\" label",
     "originalDefault": "change the value of a variable/component"
   },
+  "S2Wv2u": {
+    "defaultMessage": "Formulierinstellingen",
+    "description": "Form import/export options 'formConfiguration' field label",
+    "originalDefault": "Form configuration"
+  },
   "S6eF5o": {
     "defaultMessage": "Gegevens opschonen",
     "description": "Data removal tab title",
@@ -1880,6 +1926,11 @@
     "description": "Registration summary no registration backend fallback message",
     "isTranslated": true,
     "originalDefault": "-"
+  },
+  "V072C5": {
+    "defaultMessage": "Categorie",
+    "description": "Label for additionalFormConfiguration category input",
+    "originalDefault": "Category"
   },
   "VMMOA0": {
     "defaultMessage": "Inhoud",
@@ -2059,6 +2110,11 @@
     "description": "Email registration options 'emailContentTemplateHtml' helpText",
     "originalDefault": "Content of the registration email message (as html)."
   },
+  "Z4/E9e": {
+    "defaultMessage": "Authenticatie plugins",
+    "description": "Label for formConfiguration authBackends input",
+    "originalDefault": "Authentication backends"
+  },
   "Z8f4hI": {
     "defaultMessage": "Vertrouwelijkheidaanduiding documenten",
     "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' label",
@@ -2098,6 +2154,11 @@
     "defaultMessage": "De waarde voor \"verwerking\" die meegestuurd wordt bij het bevragen van de BRP Personen API. Mogelijke waarden hiervoor zijn afhankelijk van je gateway-leverancier.",
     "description": "Form 'BRP Personen processing header value' field help text",
     "originalDefault": "The processing (\"verwerking\") for queries to the BRP Persoon API."
+  },
+  "ZRv5W+": {
+    "defaultMessage": "WMTS-kaartlagen",
+    "description": "Label for additionalFormConfiguration wmtsTileLayers input",
+    "originalDefault": "WMTS tile layers"
   },
   "ZdZ2Mb": {
     "defaultMessage": "Zet registratieplugin voor de inzending",
@@ -2386,6 +2447,11 @@
     "description": "ZGW APIs registration options 'partnersDescription' label",
     "originalDefault": "Partners description"
   },
+  "eBHgYL": {
+    "defaultMessage": "Aanvullende formulierinstellingen",
+    "description": "Form import/export options 'additionalFormConfiguration' field label",
+    "originalDefault": "Additional form configuration"
+  },
   "eC2etA": {
     "defaultMessage": "Naam van het productaanvraagtype. Deze naam is in het JSON-inhoudsjabloon beschikbaar als de 'productaanvraag_type' variabele.",
     "description": "Legacy objects API registration options: 'productaanvraagType' helpText",
@@ -2405,6 +2471,11 @@
     "defaultMessage": "Zaakstatuscode",
     "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' label",
     "originalDefault": "Zds zaaktype status code"
+  },
+  "eVpjb6": {
+    "defaultMessage": "Anonimiseer formulierinstellingen",
+    "description": "Form export options 'removeSensitiveContent' field label",
+    "originalDefault": "Anonymize form configuration"
   },
   "efsF8+": {
     "defaultMessage": "{label} {isPublished, select, false {<draft>(concept)</draft>} other {}}",
@@ -2642,6 +2713,11 @@
     "isTranslated": true,
     "originalDefault": "Label"
   },
+  "iAFlLD": {
+    "defaultMessage": "Registratie backends",
+    "description": "Label for formConfiguration registrationBackends input",
+    "originalDefault": "Registration backends"
+  },
   "iNmPDd": {
     "defaultMessage": "Informatieobjecttype bijlagen",
     "description": "Objects API registration options \"Attachment informatieobjecttype\" label",
@@ -2842,6 +2918,12 @@
     "description": "Label for 'value' in MappingArrayInput table column",
     "originalDefault": "Value"
   },
+  "lIwiA/": {
+    "defaultMessage": "Prefill",
+    "description": "Label for formConfiguration prefill input",
+    "isTranslated": true,
+    "originalDefault": "Prefill"
+  },
   "lNBZdl": {
     "defaultMessage": "Het pad naar de map waar mappen voor documenten van Open Formulieren aangemaakt worden. Je kan de expressies <code>'{{' year '}}'</code>, <code>'{{' month '}}'</code> en <code>'{{' day '}}'</code> gebruiken. Het pad moet beginnen met <code>/</code>.",
     "description": "MS Graph registration options 'folderPath' help text",
@@ -2921,6 +3003,11 @@
     "defaultMessage": "Naam",
     "description": "Fixed metadata table name title",
     "originalDefault": "Name"
+  },
+  "n55FhL": {
+    "defaultMessage": "Beveiliging",
+    "description": "Form export 'security' options fieldset title",
+    "originalDefault": "Security"
   },
   "nEg4dr": {
     "defaultMessage": "Metagegevens:",
@@ -3379,6 +3466,11 @@
     "description": "History link button",
     "originalDefault": "History"
   },
+  "um9Dtq": {
+    "defaultMessage": "Thema",
+    "description": "Label for additionalFormConfiguration theme input",
+    "originalDefault": "Theme"
+  },
   "vAZDY4": {
     "defaultMessage": "Bronpad",
     "description": "Prefill / Objects API: column header for object type property selection",
@@ -3424,6 +3516,11 @@
     "description": "JSON editor: object entry has empty key name",
     "originalDefault": "Set a key name before you can configure this variable"
   },
+  "w2UNV6": {
+    "defaultMessage": "Yivi attribuut groepen",
+    "description": "Label for additionalFormConfiguration yiviAttributeGroups input",
+    "originalDefault": "Yivi attribute groups"
+  },
   "w4e4jx": {
     "defaultMessage": "Na hoeveel seconden moeten gecachete resultaten vervallen.",
     "description": "Help text cache timeout",
@@ -3453,6 +3550,11 @@
     "defaultMessage": "API-groep",
     "description": "Customer interactions API group field label",
     "originalDefault": "API group"
+  },
+  "wdvWi/": {
+    "defaultMessage": "Welke aanvullende formulierinstellingen mee geëxporteerd worden.",
+    "description": "Form import/export options 'additionalFormConfiguration' field help text",
+    "originalDefault": "Which additional form configuration should be included in the export file content."
   },
   "wnTTZr": {
     "defaultMessage": "ID van de schijf/drive waar bestanden terecht moeten komen. Indien leeg, dan wordt de standaard-drive gebruikt.",
