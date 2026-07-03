@@ -41,6 +41,7 @@ from .api.serializers import (
     FormVariableSerializer,
 )
 from .constants import EXPORT_META_KEY, LogicActionTypes
+from .import_export.service import FormExportOptions
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -140,7 +141,9 @@ def form_to_json(form_id: int) -> dict:
     return resources
 
 
-def export_form(form_id, archive_name=None, response=None):
+def export_form(
+    form_id, archive_name=None, response=None, export_options: FormExportOptions = None
+):
     resources = form_to_json(form_id)
 
     outfile = response or archive_name
