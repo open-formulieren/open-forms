@@ -9,7 +9,16 @@ const FeatureFlagsContext = React.createContext({
 FeatureFlagsContext.displayName = 'FeatureFlagsContext';
 
 const FormContext = React.createContext({
-  form: {url: '', uuid: '', type: 'regular'},
+  form: {
+    url: '',
+    uuid: '',
+    type: 'regular',
+    payment: {
+      backend: '',
+      options: {},
+    },
+    product: null,
+  },
   components: {},
   formSteps: [],
   formDefinitions: [],
