@@ -1,6 +1,8 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
+from tinymce.widgets import TinyMCE
+
 from openforms.forms.models import Form
 from openforms.utils.expressions import FirstNotBlank
 from openforms.utils.form_fields import (
@@ -29,6 +31,13 @@ class GlobalConfigurationAdminForm(forms.ModelForm):
         }
         widgets = {
             "plugin_configuration": PluginConfigurationTextAreaReact,
+            "help_callout_page_content": TinyMCE(
+                mce_attrs={
+                    "plugins": ["autolink", "lists", "link", "anchor", "wordcount"],
+                    "toolbar": "undo redo | bold italic | bullist numlist outdent indent | link unlink",
+                    "width": 600,
+                }
+            ),
         }
 
 
