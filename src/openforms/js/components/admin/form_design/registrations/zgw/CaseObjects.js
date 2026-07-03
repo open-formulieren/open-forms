@@ -38,6 +38,10 @@ const OverigeFields = ({index}) => {
   );
 };
 
+OverigeFields.propTypes = {
+  index: PropTypes.number.isRequired,
+};
+
 // mapping of caseObjectType and related objectIdentification fields
 // now we support only 'overige' type
 export const CASE_OBJECT_TYPES_FIELDS = {
@@ -78,6 +82,13 @@ const CaseObjectType = ({index, options}) => {
   );
 };
 
+CaseObjectType.propTypes = {
+  index: PropTypes.number.isRequired,
+  options: PropTypes.arrayOf(
+    PropTypes.arrayOf(PropTypes.string) // value & label are both string
+  ).isRequired,
+};
+
 const CaseObjectTypeOverige = ({index}) => {
   const name = `caseObjects.${index}.caseObjectTypeOverige`;
   const [fieldProps] = useField(name);
@@ -102,6 +113,10 @@ const CaseObjectTypeOverige = ({index}) => {
       </Field>
     </FormRow>
   );
+};
+
+CaseObjectTypeOverige.propTypes = {
+  index: PropTypes.number.isRequired,
 };
 
 const CaseObjectFieldset = ({index, caseObjectTypeChoices, onDelete}) => {
@@ -138,6 +153,14 @@ const CaseObjectFieldset = ({index, caseObjectTypeChoices, onDelete}) => {
       {ObjectIdentificationFields ? <ObjectIdentificationFields index={index} /> : null}
     </Fieldset>
   );
+};
+
+CaseObjectFieldset.propTypes = {
+  index: PropTypes.number.isRequired,
+  caseObjectTypeChoices: PropTypes.arrayOf(
+    PropTypes.arrayOf(PropTypes.string) // value & label are both string
+  ).isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 const CaseObjectFieldsets = ({caseObjectTypeChoices}) => {
