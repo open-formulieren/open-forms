@@ -1267,6 +1267,8 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
             uuid: state.form.uuid,
             type: state.form.type,
             authBackends: state.form.authBackends,
+            paymentBackend: state.form.paymentBackend,
+            product: state.form.product,
           },
           components: availableComponents,
           formSteps: state.formSteps,
@@ -1496,6 +1498,8 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
             </TabPanel>
           )}
         </Tabs>
+
+        <FormSubmit onSubmit={onSubmit} displayActions={!state.newForm} />
       </FormContext.Provider>
 
       <ConfirmationModal
@@ -1507,7 +1511,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           />
         }
       />
-      <FormSubmit onSubmit={onSubmit} displayActions={!state.newForm} />
     </ValidationErrorsProvider>
   );
 };

@@ -19,6 +19,7 @@ from rest_framework.test import APIRequestFactory
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
 from openforms.forms.constants import FormTypeChoices
+from openforms.import_export.typing import FormExportOptions
 from openforms.registrations.contrib.objects_api.constants import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
 )
@@ -140,7 +141,9 @@ def form_to_json(form_id: int) -> dict:
     return resources
 
 
-def export_form(form_id, archive_name=None, response=None):
+def export_form(
+    form_id, archive_name=None, response=None, export_options: FormExportOptions = None
+):
     resources = form_to_json(form_id)
 
     outfile = response or archive_name
