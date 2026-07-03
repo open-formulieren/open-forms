@@ -667,6 +667,20 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
+    # Help callout page
+    help_callout_page_content = HTMLField(
+        _("help callout page content"),
+        help_text=_("The content shown on the help callout page."),
+        blank=True,
+    )
+    #  TODO-6317: mention which extensions are allowed maybe?
+    help_callout_page_image = models.ImageField(
+        _("help callout page image"),
+        help_text=_("The image shown on the help callout page."),
+        blank=True,
+        upload_to="help-callout-page",
+    )
+
     objects = GlobalConfigurationManager()
 
     class Meta:

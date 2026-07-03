@@ -117,6 +117,10 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
             },
         ),
         (
+            _("Help callout page options"),
+            {"fields": ("help_callout_page_content", "help_callout_page_image")},
+        ),
+        (
             _("Organization configuration"),
             {
                 "fields": (
