@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Permission
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
@@ -1411,6 +1411,58 @@ class FormsAPITests(APITestCase):
 
         self.assertEqual(data["backend"], "digid")
         self.assertEqual(data["options"], {"loa": DigiDAssuranceLevels.middle})
+
+    @patch("csp_post_processor.processor.get_html_id")
+    @tag("gh-5730", "gh-6113")
+    def test_table_markup_in_explanation_template_not_mangled(self, mock_get_html_id):
+        self.maxDiff = None
+        mock_get_html_id.side_effect = ("1", "2", "3", "4")
+        form = FormFactory.create(
+            # HTML input taken from database after adding a table with TinyMCE
+            explanation_template="""
+                <table style="border-collapse: collapse; width: 100%;" border="1">
+                    <colgroup>
+                        <col style="width: 25%;">
+                        <col style="width: 75%;">
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <td>Tab</td>
+                            <td style="border-style: none;">El</td>
+                        </tr>
+                    </tbody>
+                </table>
+            """,
+            generate_minimal_setup=True,
+        )
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url, headers={"X-CSP-Nonce": "dGVzdA=="})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertHTMLEqual(
+            response.json()["explanationTemplate"],
+            """
+            <style nonce="dGVzdA==">
+                #nonce-5fa62ae6176f3746142503a6ebe96cb3-1 { border-collapse: collapse;width: 100%; }
+                #nonce-5fa62ae6176f3746142503a6ebe96cb3-2 { width: 25%; }
+                #nonce-5fa62ae6176f3746142503a6ebe96cb3-3 { width: 75%; }
+                #nonce-5fa62ae6176f3746142503a6ebe96cb3-4 { border-style: none; }
+            </style>
+            <table id="nonce-5fa62ae6176f3746142503a6ebe96cb3-1">
+                <colgroup>
+                    <col id="nonce-5fa62ae6176f3746142503a6ebe96cb3-2">
+                    <col id="nonce-5fa62ae6176f3746142503a6ebe96cb3-3">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>Tab</td>
+                        <td id="nonce-5fa62ae6176f3746142503a6ebe96cb3-4">El</td>
+                    </tr>
+                </tbody>
+            </table>
+            """,
+        )
 
 
 class FormsAPITranslationTests(APITestCase):
