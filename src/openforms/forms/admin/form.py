@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_list import result_headers
 from django.db.models import BooleanField, Case, Count, F, Value, When
@@ -16,6 +18,7 @@ from openforms.registrations.admin import RegistrationBackendFieldMixin
 from openforms.typing import StrOrPromise
 from openforms.utils.expressions import FirstNotBlank
 
+from ..import_export.typing import FormExportOptions
 from ..models import Category, Form, FormDefinition, FormStep
 from ..models.form import FormsExport
 from ..utils import export_form
@@ -299,6 +302,8 @@ class FormAdmin(
                 reverse("admin:forms_form_change", args=(copied_form.pk,))
             )
         if "_export" in request.POST:
+            export_options = json.loads(request.POST.get("export_options", "{}"))
+
             # Clear messages
             storage = messages.get_messages(request)
             for _msg in storage:
@@ -306,7 +311,21 @@ class FormAdmin(
 
             response = HttpResponse(content_type="application/zip")
             response["Content-Disposition"] = f"attachment;filename={obj.slug}.zip"
-            export_form(obj.pk, response=response)
+            export_form(
+                obj.pk,
+                response=response,
+                export_options=FormExportOptions(
+                    **{
+                        field_name: export_options[field_name]
+                        for field_name in (
+                            "remove_sensitive_content",
+                            "form_configuration",
+                            "additional_form_configuration",
+                        )
+                        if field_name in export_options
+                    },
+                ),
+            )
 
             response["Content-Length"] = len(response.content)
 
