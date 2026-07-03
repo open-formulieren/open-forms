@@ -1,5 +1,4 @@
 from collections.abc import Iterable, Iterator
-from copy import deepcopy
 from itertools import chain
 
 from json_logic import jsonLogic
@@ -98,9 +97,9 @@ def get_current_step(submission: Submission) -> SubmissionStep | None:
 def iter_evaluate_rules(
     rules: Iterable[FormLogic],
     data: FormioData,
+    data_for_visible_state: FormioData,
     configuration: FormioConfigurationWrapper,
     submission: Submission,
-    data_for_hidden_state: FormioData,
 ) -> Iterator[ActionOperation]:
     """
     Iterate over the rules and evaluate the trigger, yielding action operations and
@@ -115,25 +114,13 @@ def iter_evaluate_rules(
     :param data: Mapping from variable key to variable value (native Python types), for
       all variables present in the :class:`SubmissionValueVariableState`. This data
       structure is updated after every mutation.
+    :param data_for_visible_state: The data used to restore values when flipping
+      visibility states.
     :param configuration: Formio configuration wrapper of a step.
     :param submission: Submission instance.
-    :param data_for_hidden_state: Data to apply when a component is hidden.
     :returns: An iterator yielding :class:`ActionOperation` instances.
     """
     state = submission.variables_state
-
-    # keep a copy of the start data that is not affected by the mutations applied by
-    # clearOnHide logic. Due to the instant processing of clearOnHide side-effects and
-    # multiple logic rules potentially changing the visibility of the same component,
-    # we need to make sure to restore the data for every hidden -> visible flip, as the
-    # visible -> hidden flip results in clearing the data - see #6001. For this
-    # restoration, we use the start data as source, as that is coming from the frontend
-    # state that is the result of logic evaluations. Note that we do need to update this
-    # data with non-clearOnHide mutations that have been applied, to make sure we don't
-    # override it again with user data.
-    # We need to keep this isolated from data_for_hidden_state, as this contains values
-    # that should be applied when a component goes from visible -> hidden.
-    data_for_visible_state = deepcopy(data)
 
     for rule in rules:
         with (
@@ -159,7 +146,6 @@ def iter_evaluate_rules(
                     rule,
                     data,
                     configuration,
-                    data_for_hidden_state=data_for_hidden_state,
                     data_for_visible_state=data_for_visible_state,
                 )
                 continue
@@ -169,7 +155,6 @@ def iter_evaluate_rules(
                     data,
                     configuration,
                     submission,
-                    data_for_hidden_state=data_for_hidden_state,
                     data_for_visible_state=data_for_visible_state,
                 ):
                     mutations_python = {
@@ -177,6 +162,9 @@ def iter_evaluate_rules(
                         for key, value in mutations.items()
                     }
                     data.update(mutations_python)
+                    # Any mutations also need to be applied to the data for the visible
+                    # component state. Otherwise, the original user input data might
+                    # override it when flipping visibility states.
                     data_for_visible_state.update(mutations_python)
 
                 yield operation
@@ -187,7 +175,6 @@ def _handle_clear_on_hide_for_untriggered_rule(
     data: FormioData,
     configuration: FormioConfigurationWrapper,
     *,
-    data_for_hidden_state: FormioData,
     data_for_visible_state: FormioData,
 ):
     """
@@ -208,16 +195,13 @@ def _handle_clear_on_hide_for_untriggered_rule(
         # Process the visibility of the component. We want to process the component
         # itself, not try to iterate over its children, so we create a 'fake'
         # configuration.
-        # Note that we cannot pass ``parent_hidden=True`` here, and skip conditional
-        # evaluation (like in ``PropertyAction.eval``), because a component can be
-        # affected by a simple conditional which makes it visible.
-        # Additionally (see #6005), when a component flips back to visible after being
-        # hidden and having its value cleared before, we need to restore the original
-        # input data, so we must always call this.
+        # When a component flips back to visible after being hidden and having its value
+        # cleared before, we need to restore the original input data, so we must always
+        # call this (see #6005).
         process_visibility(
             {"components": [component]},
             data,
             configuration,
-            data_for_hidden_state=data_for_hidden_state,
             data_for_visible_state=data_for_visible_state,
+            parent_hidden=configuration.is_hidden(component["key"], data),
         )

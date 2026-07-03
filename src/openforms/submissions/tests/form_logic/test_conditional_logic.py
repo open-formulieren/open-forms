@@ -7,9 +7,9 @@ from ...form_logic import evaluate_form_logic
 
 
 class ConditionalLogicTests(TestCase):
-    def test_existing_data_is_not_cleared(self):
+    def test_clear_existing(self):
         """
-        Ensure that a hidden component with existing submission data is not cleared.
+        Ensure that a hidden component with existing submission data is cleared.
         """
         submission = SubmissionFactory.from_components(
             components_list=[
@@ -33,32 +33,24 @@ class ConditionalLogicTests(TestCase):
                 "textfieldHidden": "I am submitted data",
             },
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         # Note that this unsaved data is technically not possible, because the frontend
         # will not send hidden fields to the backend, but it does prove that the backend
         # code follows the behaviour of the frontend.
-        evaluate_form_logic(
-            submission,
-            step,
-            FormioData(
-                {
-                    "textfieldVisible": "changed data",
-                    "textfieldHidden": "more changed data",
-                }
-            ),
-        )
+        evaluate_form_logic(submission, step)
 
         state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
         self.assertEqual(
             data,
             {
-                "textfieldVisible": "changed data",
-                "textfieldHidden": "I am submitted data",
+                "textfieldVisible": "keep me",
+                "textfieldHidden": None,
             },
         )
         self.assertEqual(step.unsaved_data, {})
+        self.assertTrue(state.variables["textfieldHidden"].is_undefined)
 
     def test_clear_initially_visible(self):
         """
@@ -112,7 +104,7 @@ class ConditionalLogicTests(TestCase):
                 },
             ],
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         # Note that this unsaved data is technically not possible, because the frontend
         # will not send hidden fields to the backend, but it does prove that the backend
@@ -136,12 +128,18 @@ class ConditionalLogicTests(TestCase):
             data,
             {
                 "textfieldVisible": "hide",
-                "textfieldConditionallyHidden": "",
-                "textfieldConditionallyHidden2": "",
-                "file": [],
+                "textfieldConditionallyHidden": None,
+                "textfieldConditionallyHidden2": None,
+                "file": None,
             },
         )
         self.assertEqual(step.unsaved_data, {})
+        for key in (
+            "textfieldConditionallyHidden",
+            "textfieldConditionallyHidden2",
+            "file",
+        ):
+            self.assertTrue(state.variables[key].is_undefined)
 
     def test_parent_component_hidden(self):
         """
@@ -183,7 +181,7 @@ class ConditionalLogicTests(TestCase):
                 },
             ],
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         # Note that this unsaved data is technically not possible, because the frontend
         # will not send hidden fields to the backend, but it does prove that the backend
@@ -206,11 +204,12 @@ class ConditionalLogicTests(TestCase):
             data,
             {
                 "textfieldVisible": "hide fieldset",
-                "nestedTextfield": "",
+                "nestedTextfield": None,
                 "nestedTextfield2": "keep me",
             },
         )
         self.assertEqual(step.unsaved_data, {})
+        self.assertTrue(state.variables["nestedTextfield"].is_undefined)
 
     def test_hidden_component_in_layout(self):
         """
@@ -264,7 +263,7 @@ class ConditionalLogicTests(TestCase):
                 },
             ],
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         # Note that this unsaved data is technically not possible, because the frontend
         # will not send hidden fields to the backend, but it does prove that the backend
@@ -287,11 +286,14 @@ class ConditionalLogicTests(TestCase):
             data,
             {
                 "textfieldVisible": "hide nested",
-                "nestedTextfieldConditionallyHidden": "",
+                "nestedTextfieldConditionallyHidden": None,
                 "nestedTextfield": "keep me",
             },
         )
         self.assertEqual(step.unsaved_data, {})
+        self.assertTrue(
+            state.variables["nestedTextfieldConditionallyHidden"].is_undefined
+        )
 
     def test_editgrid_are_independent(self):
         """
@@ -333,7 +335,7 @@ class ConditionalLogicTests(TestCase):
                 }
             ],
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         # Note that this unsaved data is technically not possible, because the frontend
         # will not send hidden fields to the backend, but it does prove that the backend
@@ -358,11 +360,21 @@ class ConditionalLogicTests(TestCase):
             {
                 "editgrid": [
                     {"trigger": "show", "follower": "keep me"},
-                    {"trigger": "hide", "follower": ""},
+                    {"trigger": "hide"},
                 ]
             },
         )
-        self.assertEqual(step.unsaved_data, {})
+        # Note: this shows up in the diff now because we determine the initial data
+        # before evaluating conditional logic now
+        self.assertEqual(
+            step.unsaved_data,
+            {
+                "editgrid": [
+                    {"trigger": "show", "follower": "keep me"},
+                    {"trigger": "hide"},
+                ]
+            },
+        )
 
     def test_nested_editgrid(self):
         submission = SubmissionFactory.from_components(
@@ -401,7 +413,7 @@ class ConditionalLogicTests(TestCase):
                 }
             ],
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         # Note that this unsaved data is technically not possible, because the frontend
         # will not send hidden fields to the backend, but it does prove that the backend
@@ -446,12 +458,31 @@ class ConditionalLogicTests(TestCase):
                     },
                     {
                         "trigger": "hide",
-                        "editgrid2": [{"follower": ""}, {"follower": ""}],
+                        "editgrid2": [{}, {}],
                     },
                 ]
             },
         )
-        self.assertEqual(step.unsaved_data, {})
+        # Note: this shows up in the diff now because we determine the initial data
+        # before evaluating conditional logic now
+        self.assertEqual(
+            step.unsaved_data,
+            {
+                "editgrid": [
+                    {
+                        "trigger": "show",
+                        "editgrid2": [
+                            {"follower": "keep me"},
+                            {"follower": "keep me as well"},
+                        ],
+                    },
+                    {
+                        "trigger": "hide",
+                        "editgrid2": [{}, {}],
+                    },
+                ]
+            },
+        )
 
     def test_dependent_fields(self):
         """
@@ -512,7 +543,7 @@ class ConditionalLogicTests(TestCase):
                 },
             ],
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         # Note that this unsaved data is technically not possible, because the frontend
         # will not send hidden fields to the backend, but it does prove that the backend
@@ -537,13 +568,15 @@ class ConditionalLogicTests(TestCase):
             data,
             {
                 "textfield1": "hidden",
-                "textfield2": "",
-                "textfield3": "",
-                "textfield4": "default",
-                "textfield5": "",
+                "textfield2": None,
+                "textfield3": None,
+                "textfield4": None,
+                "textfield5": None,
             },
         )
         self.assertEqual(step.unsaved_data, {})
+        for key in ("textfield2", "textfield3", "textfield4", "textfield5"):
+            self.assertTrue(state.variables[key].is_undefined)
 
     def test_component_multiple(self):
         """
@@ -574,7 +607,7 @@ class ConditionalLogicTests(TestCase):
                 },
             ],
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         # Note that this unsaved data is technically not possible, because the frontend
         # will not send hidden fields to the backend, but it does prove that the backend
@@ -596,10 +629,11 @@ class ConditionalLogicTests(TestCase):
             data,
             {
                 "textfieldVisible": ["a", "b", "c"],
-                "textfieldConditionallyHidden": "",
+                "textfieldConditionallyHidden": None,
             },
         )
         self.assertEqual(step.unsaved_data, {})
+        self.assertTrue(state.variables["textfieldConditionallyHidden"].is_undefined)
 
     def test_selectboxes(self):
         """
@@ -644,7 +678,7 @@ class ConditionalLogicTests(TestCase):
                 },
             ],
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         evaluate_form_logic(
             submission,
@@ -665,10 +699,59 @@ class ConditionalLogicTests(TestCase):
             {
                 "selectboxes": {"a": False, "b": True, "c": False},
                 "textfield1": "keep me",
-                "textfield2": "",
+                "textfield2": None,
             },
         )
         self.assertEqual(step.unsaved_data, {})
+        self.assertTrue(state.variables["textfield2"].is_undefined)
+
+    def test_selectboxes_already_hidden(self):
+        """
+        Ensure that evaluating conditional logic does not crash when a hidden
+        selectboxes is used as a trigger.
+        """
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "label": "Selectboxes hidden",
+                    "hidden": True,
+                    "values": [
+                        {"value": "a", "label": "a"},
+                        {"value": "b", "label": "b"},
+                        {"value": "c", "label": "c"},
+                    ],
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield",
+                    "label": "Textfield",
+                    "hidden": False,
+                    "conditional": {
+                        "show": False,
+                        "when": "selectboxes",
+                        "eq": "a",
+                    },
+                    "clearOnHide": True,
+                },
+            ],
+        )
+        step = submission.submissionstep_set.get()
+
+        evaluate_form_logic(submission, step, FormioData({"textfield": "keep me"}))
+
+        state = submission.variables_state
+        data = state.get_data(include_static_variables=False, include_unsaved=True)
+        self.assertEqual(
+            data,
+            {
+                "selectboxes": None,
+                "textfield": "keep me",
+            },
+        )
+        self.assertEqual(step.unsaved_data, {})
+        self.assertTrue(state.variables["selectboxes"].is_undefined)
 
     def test_file(self):
         """
@@ -710,7 +793,7 @@ class ConditionalLogicTests(TestCase):
                 },
             ],
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         evaluate_form_logic(
             submission,
@@ -731,12 +814,12 @@ class ConditionalLogicTests(TestCase):
             {
                 "file": [],
                 "textfield1": "keep me",
-                "textfield2": "",
+                "textfield2": None,
             },
         )
         self.assertEqual(step.unsaved_data, {})
+        self.assertTrue(state.variables["textfield2"].is_undefined)
 
-    @tag("gh-2056")
     def test_file_component_hidden_by_frontend_has_correct_empty_value(self):
         submission = SubmissionFactory.from_components(
             components_list=[
@@ -762,14 +845,15 @@ class ConditionalLogicTests(TestCase):
             ],
         )
 
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         evaluate_form_logic(submission, step)
 
         state = submission.variables_state
         data = state.get_data(include_static_variables=False, include_unsaved=True)
-        self.assertEqual(data["file"], [])
+        self.assertEqual(data["file"], None)
         self.assertEqual(step.unsaved_data, {})
+        self.assertTrue(state.variables["file"].is_undefined)
 
     def test_non_registered_components(self):
         """
@@ -796,7 +880,7 @@ class ConditionalLogicTests(TestCase):
                 },
             ],
         )
-        step = submission.submissionstep_set.first()
+        step = submission.submissionstep_set.get()
 
         # Note that this unsaved data is technically not possible, because the frontend
         # will not send hidden fields to the backend, but it does prove that the backend
@@ -818,10 +902,11 @@ class ConditionalLogicTests(TestCase):
             data,
             {
                 "nonRegisteredComponentTrigger": "hide",
-                "nonRegisteredComponentFollower": "",
+                "nonRegisteredComponentFollower": None,
             },
         )
         self.assertEqual(step.unsaved_data, {})
+        self.assertTrue(state.variables["nonRegisteredComponentFollower"].is_undefined)
 
     @tag("gh-6140")
     def test_fieldset_inside_editgrid(self):
@@ -892,8 +977,18 @@ class ConditionalLogicTests(TestCase):
             {
                 "editgrid": [
                     {"trigger": {"foo": True, "bar": False}, "follower": "keep me"},
-                    {"trigger": {"foo": False, "bar": False}, "follower": ""},
+                    {"trigger": {"foo": False, "bar": False}},
                 ]
             },
         )
-        self.assertEqual(step.unsaved_data, {})
+        # Note: this shows up in the diff now because we determine the initial data
+        # before evaluating conditional logic now
+        self.assertEqual(
+            step.unsaved_data,
+            {
+                "editgrid": [
+                    {"trigger": {"foo": True, "bar": False}, "follower": "keep me"},
+                    {"trigger": {"foo": False, "bar": False}},
+                ]
+            },
+        )

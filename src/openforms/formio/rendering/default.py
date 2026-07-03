@@ -19,7 +19,8 @@ from openforms.submissions.rendering.renderer import Renderer
 from openforms.utils.urls import build_absolute_uri
 
 from ..datastructures import FormioData
-from ..utils import is_visible_in_frontend, iterate_components_with_configuration_path
+from ..utils import iterate_components_with_configuration_path
+from ..visibility import is_hidden
 from .conf import RENDER_CONFIGURATION
 from .nodes import ComponentNode
 from .registry import register
@@ -46,10 +47,10 @@ class ContainerMixin:
             return True
 
         # We only pass the step data, since frontend logic only has access to the current step data.
-        if not is_visible_in_frontend(
+        if is_hidden(
             self.component,
             self.step_data,
-            configuration_wrapper=self.renderer.submission.total_configuration_wrapper,
+            configuration=self.renderer.submission.total_configuration_wrapper,
         ):
             return False
 

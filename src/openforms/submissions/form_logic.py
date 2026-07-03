@@ -23,6 +23,9 @@ if TYPE_CHECKING:
 tracer = trace.get_tracer("openforms.submissions.form_logic")
 
 
+empty = object()
+
+
 @tracer.start_as_current_span(
     name="evaluate-form-logic",
     attributes={
@@ -95,40 +98,51 @@ def evaluate_form_logic(
     # 3. Load the (variables) state
     submission_variables_state = submission.variables_state
 
-    # 4. Apply the (dirty) data to the variable state.
-    # We need to get the initial data for clear on hide first, as we don't want it to
-    # include the unsaved data.
-    data_for_hidden_state = _get_initial_data_for_clear_on_hide(step)
-    if unsaved_data is not None:
+    # 4. Get relevant data structures.
+    if unsaved_data:
         submission_variables_state.set_values(unsaved_data)
-    data_for_evaluation = submission_variables_state.get_data(
-        include_unsaved=True, include_static_variables=True
+
+    # This data is used to restore the value of a component when it goes from hidden ->
+    # visible. It should include all fields to make sure we have a value for them.
+    data_for_visible_state = submission_variables_state.get_data(
+        include_unsaved=True, submission_step=step
     )
+
+    # This includes user-defined variables, static variables, and previously saved
+    # (prefilled) step variables.
+    data_for_evaluation = submission_variables_state.get_data(
+        include_unsaved=False, include_static_variables=True
+    )
+    data_for_evaluation.update(data_for_visible_state)
+
+    # Update data for evaluation.
+    step_variables = submission_variables_state.get_variables_in_submission_step(
+        step, include_unsaved=True
+    )
+    if unsaved_data:
+        # If unsaved data was passed, we rely on it accurately reflecting the visible
+        # state of the components, meaning hidden components with clearOnHide enabled
+        # will not be present. Though note that we do execute conditional logic again as
+        # an additional validation step.
+        for key in step_variables:
+            if key not in unsaved_data:
+                data_for_evaluation.pop(key)
+
+    # Initial data used to create a data difference at the end
+    initial_data = deepcopy(data_for_evaluation)
 
     # 5. Evaluate conditional logic. We need to do this before evaluating backend logic
     # to make sure we are not processing with outdated data. The frontend will not send
     # data for fields that were (conditionally) hidden, so simply applying the unsaved
     # data to the state will not remove existing values of those fields.
-    rules = get_rules_to_evaluate(submission, step)
-    # These components are affected by a hidden property action, which means we cannot
-    # check the "hidden" property of the component during conditional logic evaluation
-    components_with_hidden_action = set()
-    for rule in rules:
-        components_with_hidden_action |= rule.components_in_hidden_actions
-
     evaluate_conditional_logic(
         config_wrapper.configuration,
         data_for_evaluation,
         config_wrapper,
-        components_with_hidden_action,
-        data_for_hidden_state,
     )
 
     # 6. Evaluate the logic rules in order
-    # Now that conditional logic is resolved and matches the state of the frontend, we
-    # can get the initial data before evaluating backend logic. This will be used to
-    # create a data difference at the end
-    initial_data = deepcopy(data_for_evaluation)
+    rules = get_rules_to_evaluate(submission, step)
     mutation_operations = []
 
     # 6.1 If the action type is to set a variable, update the data. This happens inside
@@ -145,10 +159,10 @@ def evaluate_form_logic(
     ):
         for operation in iter_evaluate_rules(
             rules,
-            data_for_evaluation,
-            config_wrapper,
+            data=data_for_evaluation,
+            data_for_visible_state=data_for_visible_state,
+            configuration=config_wrapper,
             submission=submission,
-            data_for_hidden_state=data_for_hidden_state,
         ):
             mutation_operations.append(operation)
 
@@ -180,14 +194,17 @@ def evaluate_form_logic(
     # 8.2 Build a difference in data for the step. It is important that we only keep the
     # changes in the data, so that old values do not overwrite otherwise debounced
     # client-side data changes
-
-    # Get relevant step variables
-    relevant_variables = submission_variables_state.get_variables_in_submission_step(
-        step, include_unsaved=True
-    )
     updated_step_data = FormioData()
-    for key, variable in relevant_variables.items():
-        if not variable.form_variable or initial_data[key] != data_for_evaluation[key]:
+    for key, variable in step_variables.items():
+        if key not in data_for_evaluation:
+            # Value was cleared, so we need to reset the variable in the state
+            variable.set_undefined()
+            continue
+
+        if (
+            not variable.form_variable
+            or initial_data.get(key, empty) != data_for_evaluation[key]
+        ):
             updated_step_data[key] = data_for_evaluation[key]
     step.unsaved_data = updated_step_data
 
@@ -196,53 +213,10 @@ def evaluate_form_logic(
     return config_wrapper.configuration
 
 
-def _get_initial_data_for_clear_on_hide(step: SubmissionStep) -> FormioData:
-    """
-    Get initial data which will be used when clear on hide is activated.
-
-    The new renderer does not only assign the empty value when a component with
-    clearOnHide enabled goes from hidden -> visible. The following value will be
-    assigned, in order of precedence:
-      1. Already submitted value
-      2. Default value
-      3. Empty value
-    We need to do the same in the backend, to ensure no infinite loops will occur, where
-    the backend sends a value to the frontend (new renderer only) that doesn't match
-    with what the frontend expects.
-
-    :param step: Submission step.
-    :returns: Initial data in a ``FormioData`` instance.
-    """
-    state = step.submission.variables_state
-    saved_data = state.get_data(submission_step=step, include_unsaved=False)
-
-    initial_data = FormioData()
-    config_wrapper = step.form_step.form_definition.configuration_wrapper
-    # Iterating over variables here ensures we don't have to deal with (children of)
-    # layout components, as all the fields that hold data will have a variable.
-    for key, variable in state.get_variables_in_submission_step(step).items():
-        component = config_wrapper[key]
-
-        # If we have an already saved value, use that, otherwise use the default value
-        # (which should be the empty value if it isn't a custom one). Note that the
-        # default value could be a template expression, which is not evaluated until
-        # step 7.2 of evaluating logic. Deliberately leaving this "broken" for now (see
-        # commit message).
-        initial_data[key] = (
-            saved_data[key]
-            if key in saved_data
-            else variable.to_python(component.get("defaultValue"))
-        )
-
-    return initial_data
-
-
 def evaluate_conditional_logic(
     configuration: FormioConfiguration,
     data: FormioData,
     wrapper: FormioConfigurationWrapper,
-    components_to_ignore_hidden: set[str],
-    data_for_hidden_state: FormioData,
 ):
     """
     Evaluate conditional logic through iteration.
@@ -254,9 +228,6 @@ def evaluate_conditional_logic(
     :param data: Data used for evaluation. Mutations will be applied to the data
       directly.
     :param wrapper: Formio configuration wrapper. Required for component lookup.
-    :param components_to_ignore_hidden: Set of components for which the "hidden"
-      property is ignored in determining whether the component is hidden.
-    :param data_for_hidden_state: Data to apply when a component is hidden.
     """
     processed_data = None
     _loop_count = 0
@@ -265,18 +236,11 @@ def evaluate_conditional_logic(
             raise RuntimeError("Potential infinite loop stopped!")
         _loop_count += 1
         processed_data = deepcopy(data)
-        process_visibility(
-            configuration,
-            data,
-            wrapper,
-            data_for_hidden_state=data_for_hidden_state,
-            components_to_ignore_hidden=components_to_ignore_hidden,
-        )
+        process_visibility(configuration, data, wrapper)
 
 
 def check_submission_logic(
     submission: Submission,
-    current_step: SubmissionStep | None = None,
     *,
     reset_configuration_wrapper: bool = True,
     evaluate_all_rules: bool = False,
@@ -289,25 +253,23 @@ def check_submission_logic(
     if not submission_state.form_steps:
         return
 
-    rules = get_rules_to_evaluate(
-        submission, current_step, evaluate_all_rules=evaluate_all_rules
-    )
+    rules = get_rules_to_evaluate(submission, evaluate_all_rules=evaluate_all_rules)
 
     # load the data state and all variables
     submission_variables_state = submission.variables_state
     data_for_evaluation = submission_variables_state.get_data(
-        include_unsaved=True, include_static_variables=True
+        include_unsaved=False, include_static_variables=True
     )
 
     mutation_operations: list[ActionOperation] = []
     # Note: values should have already been resolved at this point, so we just pass
-    # `data_for_evaluation` as initial data.
+    # `data_for_evaluation` as data for visible state.
     for operation in iter_evaluate_rules(
         rules,
-        data_for_evaluation,
-        submission.total_configuration_wrapper,
-        submission,
-        data_for_evaluation,
+        data=data_for_evaluation,
+        data_for_visible_state=data_for_evaluation,
+        configuration=submission.total_configuration_wrapper,
+        submission=submission,
     ):
         mutation_operations.append(operation)
 

@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import sys
-from collections import defaultdict
 from pathlib import Path
 
 import django
@@ -89,15 +88,13 @@ def report_rules() -> bool:
     )
     from openforms.formio.typing import Component
     from openforms.formio.visibility import get_conditional
-    from openforms.forms.models import Form, FormLogic
+    from openforms.forms.models import Form
     from openforms.variables.service import resolve_key
 
     forms_to_check = Form.objects.filter(_is_deleted=False).prefetch_related(
         "formlogic_set", "formstep_set"
     )
-    form_with_logic_with_risk: defaultdict[tuple[Form, FormLogic], set[str]] = (
-        defaultdict(set)
-    )
+    data = []
     for form in forms_to_check.iterator(chunk_size=10):
         components_with_affected_visibility: set[str] = set()
 
@@ -118,7 +115,9 @@ def report_rules() -> bool:
 
         # Components with visibility affected by logic rules
         for rule in form.formlogic_set.iterator():
-            components_with_affected_visibility |= rule.components_in_hidden_actions
+            components_with_affected_visibility |= {
+                action.component for action in rule.hidden_actions
+            }
 
         # Add children of all components that have their visibility affected. Create
         # a copy to avoid processing children again, as the set is updated directly
@@ -137,6 +136,10 @@ def report_rules() -> bool:
             components_with_affected_visibility.update(children)
 
         for rule in form.formlogic_set.iterator():
+            ##############################
+            ### CLEAR ON HIDE BEHAVIOR ###
+            ##############################
+            variable_names = set()
             for var_name, comp_value in iter_variables_with_compare_value(
                 rule.json_logic_trigger
             ):
@@ -187,12 +190,53 @@ def report_rules() -> bool:
                 # context. Note that all form variables should be present in the context
                 # at the moment, but there is no such guarantee for nested data.
                 if comp_value in [empty_value, None, component.get("defaultValue")]:
-                    form_with_logic_with_risk[form, rule].add(var_name)
+                    variable_names.add(var_name)
 
-    data = [
-        (form.admin_name, form.pk, rule.order, ", ".join(var_names))
-        for (form, rule), var_names in form_with_logic_with_risk.items()
-    ]
+            if variable_names:
+                data.append(
+                    (
+                        form.admin_name,
+                        form.pk,
+                        rule.order,
+                        ", ".join(variable_names),
+                        "clear on hide behavior",
+                    )
+                )
+
+            ###################################
+            ### VARIABLES FROM FUTURE STEPS ###
+            ###################################
+            # Steps of the input variables
+            input_steps = {
+                step
+                for key in rule.input_variable_keys
+                if (step := form.get_form_step(key))
+            }
+            # Steps on which the rule will be executed
+            executing_steps = rule.steps
+            if not (input_steps and executing_steps):
+                # Input steps and/or executing steps can be empty if we are only dealing
+                # with user-defined variables. We don't have to do anything in that
+                # case.
+                continue
+
+            # If the earliest executing step is before the last step of the input
+            # variables, the input value(s) will not be available yet -> risk of
+            # difference in behavior.
+            if (
+                min(executing_steps, key=lambda step: step.order).order
+                < max(input_steps, key=lambda step: step.order).order
+            ):
+                data.append(
+                    (
+                        form.admin_name,
+                        form.pk,
+                        rule.order,
+                        "-",
+                        "variables from future steps",
+                    )
+                )
+
     if data:
         click.echo(
             click.style(
@@ -210,6 +254,7 @@ def report_rules() -> bool:
                     "Form ID",
                     "Logic rule number",
                     "Variable names in logic trigger",
+                    "Reason",
                 ),
             )
         )
