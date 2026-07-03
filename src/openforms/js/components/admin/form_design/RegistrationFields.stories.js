@@ -59,6 +59,16 @@ export default {
               enum: ['pdf', 'json'],
               enumNames: ['PDF document', 'JSON document'],
             },
+            caseObjects: {
+              items: {
+                properties: {
+                  caseObjectType: {
+                    enum: ['overige'],
+                    enumNames: ['Overige'],
+                  },
+                },
+              },
+            },
           },
         },
       },

@@ -26,6 +26,7 @@ const render = ({
   objectsApiGroupChoices,
   confidentialityLevelChoices,
   summaryDocumentChoices,
+  caseObjectTypeChoices,
   formData,
 }) => (
   <Formik
@@ -47,6 +48,7 @@ const render = ({
       // Ensure that this is explicitly set to null instead of undefined,
       // because the field is required by the serializer
       objectsApiGroup: null,
+      caseObjects: [],
       // saved data, overwrites defaults
       ...formData,
     }}
@@ -60,6 +62,7 @@ const render = ({
         objectsApiGroupChoices={objectsApiGroupChoices}
         confidentialityLevelChoices={confidentialityLevelChoices}
         summaryDocumentChoices={summaryDocumentChoices}
+        caseObjectTypeChoices={caseObjectTypeChoices}
       />
     </Form>
   </Formik>
@@ -89,6 +92,7 @@ export default {
       ['pdf', 'PDF document'],
       ['json', 'JSON document'],
     ],
+    caseObjectTypeChoices: [['overige', 'Overige']],
     formData: {},
     availableComponents: {
       textField1: {
@@ -233,5 +237,54 @@ export const CataloguesLoadingFails = {
         catalogues: [mockCataloguesGetError()],
       },
     },
+  },
+};
+
+export const caseObjects = {
+  args: {
+    formData: {
+      propertyMappings: [],
+      caseObjects: [
+        {
+          caseObjectType: 'overige',
+          caseObjectTypeOverige: 'objects in construction',
+          caseObjectIdentification: {
+            overigeData: 'some address of the object',
+          },
+        },
+      ],
+    },
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('tab', {name: /Case objects/}));
+  },
+};
+
+export const ValidationErrorsCaseObjectsTab = {
+  args: {
+    formData: {
+      caseObjects: [
+        {
+          caseObjectType: '',
+          caseObjectTypeOverige: '',
+          caseObjectIdentification: {
+            overigeData: '',
+          },
+        },
+      ],
+    },
+    validationErrors: [
+      [`${NAME}.caseObjects.0.caseObjectType`, 'Computer says no'],
+      [`${NAME}.caseObjects.0.caseObjectTypeOverige`, 'Computer says no'],
+      [`${NAME}.caseObjects.0.caseObjectIdentification.overigeData`, 'Computer says no'],
+    ],
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('tab', {name: /Case objects/}));
   },
 };
