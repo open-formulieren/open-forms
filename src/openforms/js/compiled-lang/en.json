@@ -179,6 +179,12 @@
       "value": "Remove"
     }
   ],
+  "/GRLBW": [
+    {
+      "type": 0,
+      "value": "Export file content"
+    }
+  ],
   "/RrV7w": [
     {
       "type": 0,
@@ -323,6 +329,12 @@
     {
       "type": 0,
       "value": "Receives confirmation email"
+    }
+  ],
+  "0PB1XV": [
+    {
+      "type": 0,
+      "value": "WMS tile layers"
     }
   ],
   "0PhQl9": [
@@ -477,6 +489,12 @@
     {
       "type": 0,
       "value": "Regular Expression Pattern"
+    }
+  ],
+  "1cMfAA": [
+    {
+      "type": 0,
+      "value": "Product"
     }
   ],
   "1fD+K4": [
@@ -2661,6 +2679,12 @@
       "value": ")"
     }
   ],
+  "E3pztQ": [
+    {
+      "type": 0,
+      "value": "Whether sensative form configuration should be anonymized during exporting."
+    }
+  ],
   "E5FZz/": [
     {
       "type": 0,
@@ -3191,6 +3215,12 @@
       "value": "Derive city"
     }
   ],
+  "H51Ms+": [
+    {
+      "type": 0,
+      "value": "Export form"
+    }
+  ],
   "H6VxhG": [
     {
       "type": 0,
@@ -3231,6 +3261,12 @@
     {
       "type": 0,
       "value": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
+  "HKwvbG": [
+    {
+      "type": 0,
+      "value": "Which form configuration should be included in the export file content."
     }
   ],
   "HNoGb8": [
@@ -4171,6 +4207,12 @@
       "value": "Overlays"
     }
   ],
+  "OH+T6k": [
+    {
+      "type": 0,
+      "value": "Payment provider"
+    }
+  ],
   "OX8wxE": [
     {
       "type": 0,
@@ -4183,6 +4225,12 @@
     {
       "type": 0,
       "value": ". Extend your session if you wish to continue."
+    }
+  ],
+  "OaS7Pf": [
+    {
+      "type": 0,
+      "value": "Export options"
     }
   ],
   "OaeVI8": [
@@ -4799,6 +4847,12 @@
     {
       "type": 0,
       "value": "When this is checked, the filetypes configured in the global settings will be used."
+    }
+  ],
+  "S2Wv2u": [
+    {
+      "type": 0,
+      "value": "Form configuration"
     }
   ],
   "S2Wyuv": [
@@ -5825,6 +5879,12 @@
       "value": "Content of the registration email message (as html)."
     }
   ],
+  "Z4/E9e": [
+    {
+      "type": 0,
+      "value": "Authentication backends"
+    }
+  ],
   "Z8f4hI": [
     {
       "type": 0,
@@ -6329,6 +6389,12 @@
       "value": "No information provided"
     }
   ],
+  "brDwyt": [
+    {
+      "type": 0,
+      "value": "Organisation specific"
+    }
+  ],
   "brvKtm": [
     {
       "type": 0,
@@ -6409,6 +6475,12 @@
     {
       "type": 0,
       "value": "(complex value)"
+    }
+  ],
+  "cIfwUm": [
+    {
+      "type": 0,
+      "value": "Background tile layers"
     }
   ],
   "cJnAgZ": [
@@ -6857,6 +6929,12 @@
       "value": "Loading..."
     }
   ],
+  "eBHgYL": [
+    {
+      "type": 0,
+      "value": "Additional form configuration"
+    }
+  ],
   "eC2etA": [
     {
       "type": 0,
@@ -6891,6 +6969,12 @@
     {
       "type": 0,
       "value": "'Save row' text"
+    }
+  ],
+  "eVpjb6": [
+    {
+      "type": 0,
+      "value": "Anonymize form configuration"
     }
   ],
   "ee4oWr": [
@@ -7427,6 +7511,12 @@
     {
       "type": 0,
       "value": "Label"
+    }
+  ],
+  "iAFlLD": [
+    {
+      "type": 0,
+      "value": "Registration backends"
     }
   ],
   "iNmPDd": [
@@ -7983,6 +8073,12 @@
     {
       "type": 0,
       "value": "Value"
+    }
+  ],
+  "lIwiA/": [
+    {
+      "type": 0,
+      "value": "Prefill"
     }
   ],
   "lKijv2": [
@@ -9561,6 +9657,12 @@
       "value": "Specify the attribute holding the pre-fill data."
     }
   ],
+  "w2UNV6": [
+    {
+      "type": 0,
+      "value": "Yivi attribute groups"
+    }
+  ],
   "w4culW": [
     {
       "type": 0,
@@ -9655,6 +9757,12 @@
     {
       "type": 0,
       "value": "API group"
+    }
+  ],
+  "wdvWi/": [
+    {
+      "type": 0,
+      "value": "Which additional form configuration should be included in the export file content."
     }
   ],
   "wiPGoP": [
