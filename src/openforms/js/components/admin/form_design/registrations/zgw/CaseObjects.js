@@ -18,6 +18,7 @@ const OverigeFields = ({index}) => {
     <FormRow>
       <Field
         name={name}
+        required
         label={
           <FormattedMessage
             description="ZGW APIs registration options 'overigeData' label"
@@ -31,7 +32,7 @@ const OverigeFields = ({index}) => {
           />
         }
       >
-        <TextArea id={`id_${name}`} rows={2} cols={85} {...fieldProps} />
+        <TextArea id={`id_${name}`} rows={2} cols={85} required {...fieldProps} />
       </Field>
     </FormRow>
   );
@@ -65,6 +66,7 @@ const CaseObjectType = ({index, options}) => {
       >
         <ReactSelect
           name={name}
+          required
           options={options.map(([value, label]) => ({
             value,
             label,

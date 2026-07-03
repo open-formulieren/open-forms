@@ -123,6 +123,7 @@ class CaseObjectSerializer(serializers.Serializer):
     case_object_type_overige = serializers.CharField(
         label=_("Object type overige"),
         max_length=100,
+        allow_blank=True,
         help_text=_("Description of the 'overige' case object type."),
     )
     case_object_identification = ObjectOverigeSerializer(

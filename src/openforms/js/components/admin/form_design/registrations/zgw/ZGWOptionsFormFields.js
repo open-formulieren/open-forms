@@ -37,9 +37,8 @@ const ZGWFormFields = ({
     useCatalogueOptions();
 
   const numCasePropertyErrors = filterErrors(`${name}.propertyMappings`, validationErrors).length;
-  const numBaseErrors = relevantErrors.length - numCasePropertyErrors;
-  // fixme
-  const numCaseObjectErrors = 0;
+  const numCaseObjectErrors = filterErrors(`${name}.caseObjects`, validationErrors).length;
+  const numBaseErrors = relevantErrors.length - numCasePropertyErrors - numCaseObjectErrors;
 
   return (
     <ValidationErrorsProvider errors={relevantErrors}>
