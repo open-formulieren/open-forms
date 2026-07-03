@@ -179,6 +179,12 @@
       "value": "Verwijderen"
     }
   ],
+  "/GRLBW": [
+    {
+      "type": 0,
+      "value": "Inhoud van het exportbestand"
+    }
+  ],
   "/RrV7w": [
     {
       "type": 0,
@@ -323,6 +329,12 @@
     {
       "type": 0,
       "value": "Ontvangt bevestigingsmail"
+    }
+  ],
+  "0PB1XV": [
+    {
+      "type": 0,
+      "value": "WMS-kaartlagen"
     }
   ],
   "0PhQl9": [
@@ -477,6 +489,12 @@
     {
       "type": 0,
       "value": "Reguliere expressie"
+    }
+  ],
+  "1cMfAA": [
+    {
+      "type": 0,
+      "value": "Product"
     }
   ],
   "1fD+K4": [
@@ -2626,6 +2644,12 @@
       "value": ")"
     }
   ],
+  "E3pztQ": [
+    {
+      "type": 0,
+      "value": "Anonimiseer gevoelige formulierinstellingen bij het exporteren."
+    }
+  ],
   "E5FZz/": [
     {
       "type": 0,
@@ -3160,6 +3184,12 @@
       "value": "Stad afleiden"
     }
   ],
+  "H51Ms+": [
+    {
+      "type": 0,
+      "value": "Formulier exporteren"
+    }
+  ],
   "H6VxhG": [
     {
       "type": 0,
@@ -3200,6 +3230,12 @@
     {
       "type": 0,
       "value": "Aantal dagen dat een niet voltooide inzendingen (door fouten in de afhandeling) bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "HKwvbG": [
+    {
+      "type": 0,
+      "value": "Welke formulierinstellingen mee geëxporteerd worden."
     }
   ],
   "HNoGb8": [
@@ -4152,6 +4188,12 @@
       "value": "Kaartlagen"
     }
   ],
+  "OH+T6k": [
+    {
+      "type": 0,
+      "value": "Betaalprovider"
+    }
+  ],
   "OX8wxE": [
     {
       "type": 0,
@@ -4164,6 +4206,12 @@
     {
       "type": 0,
       "value": ". Verleng uw sessie indien u wenst door te gaan."
+    }
+  ],
+  "OaS7Pf": [
+    {
+      "type": 0,
+      "value": "Formulierexportopties"
     }
   ],
   "OaeVI8": [
@@ -4742,6 +4790,12 @@
     {
       "type": 0,
       "value": "Indien ingeschakeld, gebruik dan de algemene instellingen voor toegestane bestandstypen."
+    }
+  ],
+  "S2Wv2u": [
+    {
+      "type": 0,
+      "value": "Formulierinstellingen"
     }
   ],
   "S2Wyuv": [
@@ -5738,6 +5792,12 @@
       "value": "Inhoud van de registratiemail (HTML)."
     }
   ],
+  "Z4/E9e": [
+    {
+      "type": 0,
+      "value": "Authenticatieplugins"
+    }
+  ],
   "Z8f4hI": [
     {
       "type": 0,
@@ -6251,6 +6311,12 @@
       "value": "Geen informatie verstrekt."
     }
   ],
+  "brDwyt": [
+    {
+      "type": 0,
+      "value": "Organisatiespecifiek"
+    }
+  ],
   "brvKtm": [
     {
       "type": 0,
@@ -6331,6 +6397,12 @@
     {
       "type": 0,
       "value": "(complexe waarde)"
+    }
+  ],
+  "cIfwUm": [
+    {
+      "type": 0,
+      "value": "Kaartachtergrondlagen"
     }
   ],
   "cJnAgZ": [
@@ -6779,6 +6851,12 @@
       "value": "Laden..."
     }
   ],
+  "eBHgYL": [
+    {
+      "type": 0,
+      "value": "Aanvullende formulierinstellingen"
+    }
+  ],
   "eC2etA": [
     {
       "type": 0,
@@ -6813,6 +6891,12 @@
     {
       "type": 0,
       "value": "'Groep bewaren'-tekst"
+    }
+  ],
+  "eVpjb6": [
+    {
+      "type": 0,
+      "value": "Anonimiseer formulierinstellingen"
     }
   ],
   "ee4oWr": [
@@ -7349,6 +7433,12 @@
     {
       "type": 0,
       "value": "Label"
+    }
+  ],
+  "iAFlLD": [
+    {
+      "type": 0,
+      "value": "Registratieplugins"
     }
   ],
   "iNmPDd": [
@@ -7909,6 +7999,12 @@
     {
       "type": 0,
       "value": "Waarde"
+    }
+  ],
+  "lIwiA/": [
+    {
+      "type": 0,
+      "value": "Prefill"
     }
   ],
   "lKijv2": [
@@ -9487,6 +9583,12 @@
       "value": "Geef het attribuut op wat de prefill-gegevens bevat."
     }
   ],
+  "w2UNV6": [
+    {
+      "type": 0,
+      "value": "Yivi-attribuutgroepen"
+    }
+  ],
   "w4culW": [
     {
       "type": 0,
@@ -9581,6 +9683,12 @@
     {
       "type": 0,
       "value": "API-groep"
+    }
+  ],
+  "wdvWi/": [
+    {
+      "type": 0,
+      "value": "Welke aanvullende formulierinstellingen mee geëxporteerd worden."
     }
   ],
   "wiPGoP": [
