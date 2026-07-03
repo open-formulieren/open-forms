@@ -2,11 +2,11 @@ from unittest.mock import MagicMock, patch
 
 from django.test import override_settings
 
-from django_camunda.models import CamundaConfig
 from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
+from openforms.contrib.camunda.tests.utils import CamundaMixin
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -43,7 +43,7 @@ class SingleStepFormTests(APITestCase):
         }
 
         submission_response = self.client.post(
-            endpoint, submission_body, HTTP_HOST="testserver.com"
+            endpoint, submission_body, headers={"Host": "testserver.com"}
         )
         submission = Submission.objects.get()
         form_step = form.formstep_set.get()
@@ -57,7 +57,7 @@ class SingleStepFormTests(APITestCase):
         )
         submit_data = {"data": {"test-key-0": "foo"}}
         submit_data_response = self.client.put(
-            submit_data_endpoint, submit_data, HTTP_HOST="testserver.com"
+            submit_data_endpoint, submit_data, headers={"Host": "testserver.com"}
         )
 
         self.assertEqual(submit_data_response.status_code, status.HTTP_201_CREATED)
@@ -72,7 +72,9 @@ class SingleStepFormTests(APITestCase):
             "statementOfTruthAccepted": False,
         }
         complete_submission_response = self.client.post(
-            complete_submission_endpoint, complete_data, HTTP_HOST="testserver.com"
+            complete_submission_endpoint,
+            complete_data,
+            headers={"Host": "testserver.com"},
         )
 
         self.assertEqual(complete_submission_response.status_code, status.HTTP_200_OK)
@@ -126,6 +128,8 @@ class SingleStepFormTests(APITestCase):
             ],
         )
 
+        form.apply_logic_analysis()
+
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
 
         # 1. create the submission
@@ -133,16 +137,13 @@ class SingleStepFormTests(APITestCase):
             "form": f"http://testserver.com{form_url}",
             "formUrl": "http://testserver.com/my-form",
             "anonymous": True,
-            "initialDataReference": "of-or-3452fre3",
         }
 
         submission_response = self.client.post(
-            endpoint, submission_body, HTTP_HOST="testserver.com"
+            endpoint, submission_body, headers={"Host": "testserver.com"}
         )
         submission = Submission.objects.get()
         form_step = form.formstep_set.get()
-
-        submission.form.apply_logic_analysis()
 
         self.assertEqual(submission_response.status_code, status.HTTP_201_CREATED)
 
@@ -153,7 +154,7 @@ class SingleStepFormTests(APITestCase):
         )
         submit_data = {"data": {"textField": "foo", "checkbox": True}}
         submit_data_response = self.client.put(
-            submit_data_endpoint, submit_data, HTTP_HOST="testserver.com"
+            submit_data_endpoint, submit_data, headers={"Host": "testserver.com"}
         )
 
         self.assertEqual(submit_data_response.status_code, status.HTTP_201_CREATED)
@@ -168,18 +169,18 @@ class SingleStepFormTests(APITestCase):
             "statementOfTruthAccepted": False,
         }
         complete_submission_response = self.client.post(
-            complete_submission_endpoint, complete_data, HTTP_HOST="testserver.com"
+            complete_submission_endpoint,
+            complete_data,
+            headers={"Host": "testserver.com"},
         )
 
         self.assertEqual(complete_submission_response.status_code, status.HTTP_200_OK)
 
         # 4. make sure the submission value variables are correctly updated
-        variables = submission.submissionvaluevariable_set.all()
+        variables_data = submission.variables_state.get_data()
         expected = {"textField": "foo", "checkbox": True, "test": "foo"}
 
-        for key, expected_value in expected.items():
-            obj = next(o for o in variables if o.key == key)
-            self.assertEqual(obj.value, expected_value)
+        self.assertEqual(variables_data, expected)
 
 
 @override_settings(
@@ -187,24 +188,7 @@ class SingleStepFormTests(APITestCase):
     ALLOWED_HOSTS=["*"],
     CORS_ALLOWED_ORIGINS=["http://testserver.com"],
 )
-class SingleStepFormVCRTests(OFVCRMixin, APITestCase):
-    def setUp(self):
-        super().setUp()
-
-        config = CamundaConfig(
-            enabled=True,
-            root_url="http://localhost:8080/",
-            rest_api_path="engine-rest/",
-            auth_header="Basic ZGVtbzpkZW1v",
-        )
-
-        patcher = patch(
-            "openforms.dmn.contrib.camunda.checks.CamundaConfig.get_solo",
-            return_value=config,
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)
-
+class SingleStepFormVCRTests(CamundaMixin, OFVCRMixin, APITestCase):
     def test_single_step_form_with_logic_and_dmn_action(self):
         endpoint = reverse_lazy("api:submission-list")
         form = FormFactory.create(
@@ -265,6 +249,8 @@ class SingleStepFormVCRTests(OFVCRMixin, APITestCase):
             ],
         )
 
+        form.apply_logic_analysis()
+
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
 
         # 1. create the submission
@@ -272,16 +258,13 @@ class SingleStepFormVCRTests(OFVCRMixin, APITestCase):
             "form": f"http://testserver.com{form_url}",
             "formUrl": "http://testserver.com/my-form",
             "anonymous": True,
-            "initialDataReference": "of-or-3452iou3",
         }
 
         submission_response = self.client.post(
-            endpoint, submission_body, HTTP_HOST="testserver.com"
+            endpoint, submission_body, headers={"Host": "testserver.com"}
         )
         submission = Submission.objects.get()
         form_step = form.formstep_set.get()
-
-        submission.form.apply_logic_analysis()
 
         self.assertEqual(submission_response.status_code, status.HTTP_201_CREATED)
 
@@ -292,7 +275,7 @@ class SingleStepFormVCRTests(OFVCRMixin, APITestCase):
         )
         submit_data = {"data": {"textField": "Misc", "invoiceAmount": 100}}
         submit_data_response = self.client.put(
-            submit_data_endpoint, submit_data, HTTP_HOST="testserver.com"
+            submit_data_endpoint, submit_data, headers={"Host": "testserver.com"}
         )
 
         self.assertEqual(submit_data_response.status_code, status.HTTP_201_CREATED)
@@ -307,19 +290,19 @@ class SingleStepFormVCRTests(OFVCRMixin, APITestCase):
             "statementOfTruthAccepted": False,
         }
         complete_submission_response = self.client.post(
-            complete_submission_endpoint, complete_data, HTTP_HOST="testserver.com"
+            complete_submission_endpoint,
+            complete_data,
+            headers={"Host": "testserver.com"},
         )
 
         self.assertEqual(complete_submission_response.status_code, status.HTTP_200_OK)
 
         # 4. make sure the submission value variables are correctly updated
-        variables = submission.submissionvaluevariable_set.all()
+        variables_data = submission.variables_state.get_data()
         expected = {
             "invoiceAmount": 100,
             "textField": "Misc",
             "test": "day-to-day expense",
         }
 
-        for key, expected_value in expected.items():
-            obj = next(o for o in variables if o.key == key)
-            self.assertEqual(obj.value, expected_value)
+        self.assertEqual(variables_data, expected)
