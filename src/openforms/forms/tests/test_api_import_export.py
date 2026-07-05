@@ -13,10 +13,11 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
 from openforms.appointments.models import AppointmentsConfig
+from openforms.forms.import_export.constants import EXPORT_META_KEY
 from openforms.variables.constants import FormVariableSources
 
 from ...emails.tests.factories import ConfirmationEmailTemplateFactory
-from ..constants import EXPORT_META_KEY, FormTypeChoices
+from ..constants import FormTypeChoices
 from ..models import Form, FormDefinition, FormStep
 from .factories import (
     FormDefinitionFactory,

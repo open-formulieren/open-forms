@@ -9,7 +9,6 @@ from uuid import uuid4
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
-from django.utils import timezone
 from django.utils.translation import override
 
 import structlog
@@ -19,7 +18,6 @@ from rest_framework.test import APIRequestFactory
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
 from openforms.forms.constants import FormTypeChoices
-from openforms.import_export.typing import FormExportOptions
 from openforms.registrations.contrib.objects_api.constants import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
 )
@@ -30,18 +28,16 @@ from openforms.registrations.contrib.zgw_apis.plugin import (
     PLUGIN_IDENTIFIER as ZGW_APIS_PLUGIN_IDENTIFIER,
 )
 from openforms.typing import JSONObject
-from openforms.variables.constants import FormVariableSources
 
 from .api.datastructures import FormVariableWrapper
 from .api.serializers import (
     FormDefinitionSerializer,
-    FormExportSerializer,
     FormLogicSerializer,
     FormSerializer,
     FormStepSerializer,
     FormVariableSerializer,
 )
-from .constants import EXPORT_META_KEY, LogicActionTypes
+from .constants import LogicActionTypes
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -77,80 +73,6 @@ def _get_mock_request():
 
 def to_json(obj: Any):
     return json.dumps(obj, cls=DjangoJSONEncoder)
-
-
-def form_to_json(form_id: int) -> dict:
-    form = Form.objects.get(pk=form_id)
-
-    # Ignore products in the export
-    form.product = None
-
-    # Reset the submission counter
-    form.submission_counter = 0
-
-    form_steps = FormStep.objects.filter(form__pk=form_id).select_related(
-        "form_definition"
-    )
-
-    form_definitions = FormDefinition.objects.filter(
-        pk__in=form_steps.values_list("form_definition", flat=True)
-    )
-
-    form_logic = FormLogic.objects.filter(form=form)
-
-    # Export only user defined variables
-    # The component variables should be regenerated from the form definition configuration
-    # The static variables should be created for each form
-    form_variables = form.formvariable_set.filter(
-        source=FormVariableSources.user_defined
-    )
-
-    request = _get_mock_request()
-
-    forms = [FormExportSerializer(instance=form, context={"request": request}).data]
-    form_definitions = FormDefinitionSerializer(
-        instance=form_definitions,
-        many=True,
-        context={"request": request, "is_export": True},
-    ).data
-    form_steps = FormStepSerializer(
-        instance=form_steps, many=True, context={"request": request}
-    ).data
-    form_logic = FormLogicSerializer(
-        instance=form_logic, many=True, context={"request": request}
-    ).data
-    form_variables = FormVariableSerializer(
-        instance=form_variables, many=True, context={"request": request}
-    ).data
-
-    resources = {
-        "forms": to_json(forms),
-        "formSteps": to_json(form_steps),
-        "formDefinitions": to_json(form_definitions),
-        "formLogic": to_json(form_logic),
-        "formVariables": to_json(form_variables),
-        EXPORT_META_KEY: to_json(
-            {
-                "of_release": settings.RELEASE,
-                "of_git_sha": settings.GIT_SHA,
-                "created": timezone.now().isoformat(),
-            }
-        ),
-    }
-
-    return resources
-
-
-def export_form(
-    form_id, archive_name=None, response=None, export_options: FormExportOptions = None
-):
-    resources = form_to_json(form_id)
-
-    outfile = response or archive_name
-    with zipfile.ZipFile(outfile, "w") as zip_file:
-        for name, data in resources.items():
-            zip_file.writestr(f"{name}.json", data)
-    return outfile
 
 
 @transaction.atomic

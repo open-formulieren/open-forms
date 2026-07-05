@@ -17,11 +17,11 @@ from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.config.models import GlobalConfiguration, RichTextColor
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.forms.import_export.constants import EXPORT_META_KEY
 from openforms.forms.tests.factories import FormLogicFactory
 from openforms.utils.admin import SubmitActions
 
 from ...admin.form import FormAdmin
-from ...constants import EXPORT_META_KEY
 from ...models import Form, FormDefinition, FormStep, FormVariable
 from ...tests.factories import FormDefinitionFactory, FormFactory, FormStepFactory
 from .mixins import FormListAjaxMixin
