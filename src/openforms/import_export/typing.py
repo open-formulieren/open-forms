@@ -1,7 +1,10 @@
-from dataclasses import dataclass
+from collections.abc import Callable
+from dataclasses import dataclass, field
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from openforms.typing import JSONObject
 
 
 class FormConfigurationOptions(models.TextChoices):
@@ -45,3 +48,9 @@ class FormExportOptions:
     additional_form_configuration: list[AdditionalFormConfigurationOptions] = field(
         default_factory=list
     )
+
+
+@dataclass(frozen=True)
+class FormConfigurationCleanup:
+    option: FormConfigurationOptions
+    cleanup: Callable[[JSONObject], None]
