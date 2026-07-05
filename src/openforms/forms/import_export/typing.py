@@ -1,5 +1,7 @@
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
+
+from openforms.typing import JSONObject
 
 from .constants import (
     AdditionalFormConfigurationOptions,
@@ -21,3 +23,9 @@ class FormExportOptions:
     additional_form_configuration: Sequence[AdditionalFormConfigurationOptions] = field(
         default_factory=list
     )
+
+
+@dataclass(frozen=True)
+class FormConfigurationCleanup:
+    option: FormConfigurationOptions
+    cleanup: Callable[[JSONObject], None]

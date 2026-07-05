@@ -1,10 +1,30 @@
 from openforms.formio.utils import iter_components
 from openforms.forms.api.serializers import FormDefinitionSerializer
+from openforms.forms.import_export.typing import (
+    FormConfigurationCleanup,
+    FormConfigurationOptions,
+)
+from openforms.typing import JSONObject
 
 from .base import BaseExportSerializer
 
 
+def remove_prefill_from_component_configuration(representation: JSONObject):
+    for component in iter_components(representation.get("configuration", {})):
+        if "prefill" not in component:
+            return
+        component["prefill"]["plugin"] = ""
+        component["prefill"]["attribute"] = ""
+
+
 class FormDefinitionExportSerializer(FormDefinitionSerializer, BaseExportSerializer):
+    excluded_form_configuration_cleanup = (
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.prefill,
+            cleanup=remove_prefill_from_component_configuration,
+        ),
+    )
+
     def remove_sensitive_content(self, instance, representation):
         representation = super().remove_sensitive_content(instance, representation)
 
