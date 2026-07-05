@@ -19,6 +19,13 @@ from rest_framework.test import APIRequestFactory
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
 from openforms.forms.constants import FormTypeChoices
+from openforms.import_export.serializers import (
+    FormDefinitionExportSerializer,
+    FormExportSerializer,
+    FormLogicExportSerializer,
+    FormStepExportSerializer,
+    FormVariableExportSerializer,
+)
 from openforms.import_export.typing import FormExportOptions
 from openforms.registrations.contrib.objects_api.constants import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
@@ -35,7 +42,6 @@ from openforms.variables.constants import FormVariableSources
 from .api.datastructures import FormVariableWrapper
 from .api.serializers import (
     FormDefinitionSerializer,
-    FormExportSerializer,
     FormLogicSerializer,
     FormSerializer,
     FormStepSerializer,
@@ -79,7 +85,7 @@ def to_json(obj: Any):
     return json.dumps(obj, cls=DjangoJSONEncoder)
 
 
-def form_to_json(form_id: int) -> dict:
+def form_to_json(form_id: int, export_options: FormExportOptions = None) -> dict:
     form = Form.objects.get(pk=form_id)
 
     # Ignore products in the export
@@ -107,20 +113,35 @@ def form_to_json(form_id: int) -> dict:
 
     request = _get_mock_request()
 
-    forms = [FormExportSerializer(instance=form, context={"request": request}).data]
-    form_definitions = FormDefinitionSerializer(
+    forms = [
+        FormExportSerializer(
+            instance=form,
+            context={"request": request, "export_options": export_options},
+        ).data
+    ]
+    form_definitions = FormDefinitionExportSerializer(
         instance=form_definitions,
         many=True,
-        context={"request": request, "is_export": True},
+        context={
+            "request": request,
+            "export_options": export_options,
+            "form": form,
+        },
     ).data
-    form_steps = FormStepSerializer(
-        instance=form_steps, many=True, context={"request": request}
+    form_steps = FormStepExportSerializer(
+        instance=form_steps,
+        many=True,
+        context={"request": request, "export_options": export_options},
     ).data
-    form_logic = FormLogicSerializer(
-        instance=form_logic, many=True, context={"request": request}
+    form_logic = FormLogicExportSerializer(
+        instance=form_logic,
+        many=True,
+        context={"request": request, "export_options": export_options},
     ).data
-    form_variables = FormVariableSerializer(
-        instance=form_variables, many=True, context={"request": request}
+    form_variables = FormVariableExportSerializer(
+        instance=form_variables,
+        many=True,
+        context={"request": request, "export_options": export_options},
     ).data
 
     resources = {
@@ -144,7 +165,7 @@ def form_to_json(form_id: int) -> dict:
 def export_form(
     form_id, archive_name=None, response=None, export_options: FormExportOptions = None
 ):
-    resources = form_to_json(form_id)
+    resources = form_to_json(form_id, export_options)
 
     outfile = response or archive_name
     with zipfile.ZipFile(outfile, "w") as zip_file:

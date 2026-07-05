@@ -1,4 +1,4 @@
-from .form import FormExportSerializer, FormImportSerializer, FormSerializer
+from .form import FormImportSerializer, FormSerializer
 from .form_admin_message import FormAdminMessageSerializer
 from .form_definition import FormDefinitionDetailSerializer, FormDefinitionSerializer
 from .form_step import FormStepLiteralsSerializer, FormStepSerializer
@@ -11,7 +11,6 @@ __all__ = [
     "LogicComponentActionSerializer",
     "FormLogicSerializer",
     "FormSerializer",
-    "FormExportSerializer",
     "FormImportSerializer",
     "FormDefinitionSerializer",
     "FormDefinitionDetailSerializer",

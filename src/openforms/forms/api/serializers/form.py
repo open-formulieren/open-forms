@@ -655,17 +655,6 @@ FormSerializer.__doc__ = FormSerializer.__doc__.format(
 )
 
 
-class FormExportSerializer(FormSerializer):
-    def get_fields(self):
-        fields = super().get_fields()
-        # for export we want to use the list of plugin-id's instead of detailed info objects
-        if "login_options" in fields:
-            del fields["login_options"]
-        if "payment_options" in fields:
-            del fields["payment_options"]
-        return fields
-
-
 class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
