@@ -815,7 +815,7 @@ class FormAdminExportTests(WebTest):
         self.assertEqual(len(exported_forms), 1)
 
         # The product reference on the form is removed, theme and category are kept
-        self.assertIsNone(exported_forms[0]["product"])
+        self.assertEqual(exported_forms[0]["product"], "")
         self.assertIsNotNone(exported_forms[0]["theme"])
         self.assertIsNotNone(exported_forms[0]["category"])
 
