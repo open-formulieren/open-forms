@@ -1,9 +1,34 @@
 from openforms.forms.api.serializers import FormSerializer
+from openforms.forms.import_export.typing import (
+    FormConfigurationCleanup,
+    FormConfigurationOptions,
+)
+from openforms.typing import JSONObject
 
 from .base import BaseExportSerializer
 
 
+def exclude_registration_backends(representation: JSONObject):
+    representation["registration_backends"] = []
+
+
+def exclude_payment_backend(representation: JSONObject):
+    representation["payment_backend"] = ""
+    representation["payment_backend_options"] = {}
+
+
 class FormExportSerializer(FormSerializer, BaseExportSerializer):
+    excluded_form_configuration_cleanup = (
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.registration_backends,
+            cleanup=exclude_registration_backends,
+        ),
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.payment_backend,
+            cleanup=exclude_payment_backend,
+        ),
+    )
+
     def get_fields(self):
         fields = super().get_fields()
         # for export we want to use the list of plugin-id's instead of detailed info objects
