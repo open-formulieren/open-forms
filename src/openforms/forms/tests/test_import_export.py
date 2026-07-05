@@ -57,8 +57,9 @@ from openforms.variables.constants import FormVariableDataTypes, FormVariableSou
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ...authentication.tests.factories import AttributeGroupFactory
-from ..constants import EXPORT_META_KEY
 from ..disable_next_import_conversion import add_form_step_uuid_to_disable_next_actions
+from ..import_export import EXPORT_META_KEY
+from ..import_export.export_form import export_form, form_to_json
 from ..models import (
     Form,
     FormAuthenticationBackend,
@@ -68,7 +69,7 @@ from ..models import (
     FormStep,
     FormVariable,
 )
-from ..utils import export_form, form_to_json, import_form
+from ..utils import import_form
 from .factories import (
     CategoryFactory,
     FormDefinitionFactory,

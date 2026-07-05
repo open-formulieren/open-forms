@@ -18,10 +18,9 @@ from openforms.registrations.admin import RegistrationBackendFieldMixin
 from openforms.typing import StrOrPromise
 from openforms.utils.expressions import FirstNotBlank
 
-from ..import_export.typing import FormExportOptions
+from ..import_export.export_form import export_form
 from ..models import Category, Form, FormDefinition, FormStep
 from ..models.form import FormsExport
-from ..utils import export_form
 from .mixins import FormioConfigMixin
 from .views import (
     DownloadExportedFormsView,

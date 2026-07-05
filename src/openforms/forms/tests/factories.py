@@ -10,8 +10,8 @@ from openforms.registrations.registry import register as registration_registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..constants import FormTypeChoices, SubmissionAllowedChoices
+from ..import_export.export_form import form_to_json
 from ..models import Form, FormDefinition, FormStep, FormVariable
-from ..utils import form_to_json
 
 
 def authentication_plugins():

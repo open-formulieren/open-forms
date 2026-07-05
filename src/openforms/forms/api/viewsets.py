@@ -26,6 +26,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 from openforms.utils.urls import is_admin_request, reverse_plus
 from openforms.variables.constants import FormVariableSources
 
+from ..import_export.export_form import export_form
 from ..json_schema import generate_json_schema
 from ..messages import add_success_message
 from ..models import (
@@ -34,7 +35,7 @@ from ..models import (
     FormStep,
     FormVersion,
 )
-from ..utils import export_form, import_form
+from ..utils import import_form
 from .datastructures import FormVariableWrapper
 from .documentation import get_admin_fields_markdown
 from .filters import FormDefinitionFilter, FormVariableFilter

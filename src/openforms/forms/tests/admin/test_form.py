@@ -21,7 +21,7 @@ from openforms.forms.tests.factories import FormLogicFactory
 from openforms.utils.admin import SubmitActions
 
 from ...admin.form import FormAdmin
-from ...constants import EXPORT_META_KEY
+from ...import_export import EXPORT_META_KEY
 from ...models import Form, FormDefinition, FormStep, FormVariable
 from ...tests.factories import FormDefinitionFactory, FormFactory, FormStepFactory
 from .mixins import FormListAjaxMixin
