@@ -12,15 +12,15 @@ from rest_framework.test import APIRequestFactory
 
 from openforms.variables.constants import FormVariableSources
 
-from ..api.serializers import (
-    FormDefinitionSerializer,
-    FormExportSerializer,
-    FormLogicSerializer,
-    FormStepSerializer,
-    FormVariableSerializer,
-)
 from ..models import Form, FormLogic, FormStep
 from .constants import EXPORT_META_KEY
+from .serializers import (
+    FormDefinitionExportSerializer,
+    FormExportSerializer,
+    FormLogicExportSerializer,
+    FormStepExportSerializer,
+    FormVariableExportSerializer,
+)
 from .typing import FormExportOptions
 
 
@@ -35,13 +35,19 @@ def _get_mock_request():
     return request
 
 
+# @TODO make export_options required
 def export_form(
     form_id: int,
     export_options: FormExportOptions = None,
     archive_name: str | None = None,
     response: HttpResponseBase | None = None,
 ):
-    resources = form_to_json(form_id)
+    resources = form_to_json(
+        form_id,
+        export_options=export_options
+        if export_options is not None
+        else FormExportOptions(),
+    )
 
     outfile = response or archive_name
     assert outfile, "Either response or archive_name must be provided"
@@ -52,7 +58,7 @@ def export_form(
     return outfile
 
 
-def form_to_json(form_id: int) -> Mapping[str, str]:
+def form_to_json(form_id: int, export_options: FormExportOptions) -> Mapping[str, str]:
     form = Form.objects.get(pk=form_id)
 
     # Ignore products in the export
@@ -77,21 +83,25 @@ def form_to_json(form_id: int) -> Mapping[str, str]:
     )
 
     request = _get_mock_request()
+    context = {
+        "request": request,
+        "export_options": export_options,
+        "form": form,
+        "is_exporting": True,
+    }
 
-    forms = [FormExportSerializer(instance=form, context={"request": request}).data]
-    form_definitions = FormDefinitionSerializer(
-        instance=form_definitions,
-        many=True,
-        context={"request": request, "is_export": True},
+    forms = [FormExportSerializer(instance=form, context=context).data]
+    form_definitions = FormDefinitionExportSerializer(
+        instance=form_definitions, many=True, context=context
     ).data
-    form_steps = FormStepSerializer(
-        instance=form_steps, many=True, context={"request": request}
+    form_steps = FormStepExportSerializer(
+        instance=form_steps, many=True, context=context
     ).data
-    form_logic = FormLogicSerializer(
-        instance=form_logic, many=True, context={"request": request}
+    form_logic = FormLogicExportSerializer(
+        instance=form_logic, many=True, context=context
     ).data
-    form_variables = FormVariableSerializer(
-        instance=form_variables, many=True, context={"request": request}
+    form_variables = FormVariableExportSerializer(
+        instance=form_variables, many=True, context=context
     ).data
 
     resources = {
