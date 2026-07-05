@@ -17,12 +17,13 @@ from rest_framework.exceptions import ValidationError
 from openforms.accounts.models import User
 from openforms.celery import app
 from openforms.emails.utils import send_mail_html
+from openforms.forms.import_export.export_form import export_form
 from openforms.logging import audit_logger
 from openforms.utils.urls import build_absolute_uri
 
 from ..models import Form
 from ..models.form import FormsExport
-from ..utils import export_form, import_form
+from ..utils import import_form
 
 logger = structlog.stdlib.get_logger(__name__)
 

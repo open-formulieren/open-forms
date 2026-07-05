@@ -20,6 +20,8 @@ from openforms.config.tests.factories import ThemeFactory
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.forms.import_export.constants import EXPORT_META_KEY
+from openforms.forms.import_export.export_form import export_form, form_to_json
 from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
 )
@@ -57,7 +59,6 @@ from openforms.variables.constants import FormVariableDataTypes, FormVariableSou
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ...authentication.tests.factories import AttributeGroupFactory
-from ..constants import EXPORT_META_KEY
 from ..disable_next_import_conversion import add_form_step_uuid_to_disable_next_actions
 from ..models import (
     Form,
@@ -68,7 +69,7 @@ from ..models import (
     FormStep,
     FormVariable,
 )
-from ..utils import export_form, form_to_json, import_form
+from ..utils import import_form
 from .factories import (
     CategoryFactory,
     FormDefinitionFactory,

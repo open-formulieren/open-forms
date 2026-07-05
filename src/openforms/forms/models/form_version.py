@@ -21,7 +21,7 @@ class FormVersionManager(models.Manager):
         Create a new ``FormVersion`` record for a given form.
         """
         # circular dependencies
-        from ..utils import form_to_json
+        from openforms.forms.import_export.export_form import form_to_json
 
         form_json = form_to_json(form.id)
         if not description:
