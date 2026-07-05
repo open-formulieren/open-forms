@@ -513,6 +513,86 @@ class ImportExportTests(TempdirMixin, TestCase):
             component_definition = form_definitions[0]["configuration"]["components"][0]
             self.assertEqual(component_definition["defaultValue"], "")
 
+    def test_export_with_anonymize_option_anonymizes_nested_component_variable(self):
+        # Setting up a form with sensitive data in:
+        # - component variable initial value
+        # - component variable in logic rule
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            registration_backend="email",
+            registration_backend_options={"to_emails_from_variable": "textfield"},
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "fieldset",
+                        "label": "Fieldset",
+                        "type": "fieldset",
+                        "components": [
+                            {
+                                "key": "textfield",
+                                "type": "textfield",
+                                "label": "Textfield",
+                                "defaultValue": "personal@me.com",
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+        FormVariableFactory.create(form=form, user_defined=True, key="trigger")
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "trigger"}, 1]},
+            actions=[
+                {
+                    "variable": "textfield",
+                    "action": {"type": "variable", "value": "internal@company.com"},
+                }
+            ],
+        )
+
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=True,
+            ),
+        )
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            forms = json.loads(f.read("forms.json"))
+            form_logic = json.loads(f.read("formLogic.json"))
+            form_variables = json.loads(f.read("formVariables.json"))
+            form_definitions = json.loads(f.read("formDefinitions.json"))
+
+            self.assertEqual(len(forms), 1)
+            self.assertEqual(len(form_logic), 1)
+            self.assertEqual(len(form_variables), 1)
+            self.assertEqual(len(form_definitions), 1)
+
+            self.assertEqual(len(forms[0]["registration_backends"]), 1)
+            registration_backend = forms[0]["registration_backends"][0]
+
+            self.assertEqual(
+                registration_backend["options"]["to_emails_from_variable"],
+                "textfield",
+            )
+
+            # The logic rule that assigns the value of the component variable is cleared
+            self.assertEqual(len(form_logic[0]["actions"]), 1)
+            self.assertEqual(form_logic[0]["actions"][0]["variable"], "textfield")
+            self.assertEqual(
+                form_logic[0]["actions"][0]["action"],
+                {"type": "variable", "value": ""},
+            )
+
+            # The default value of the component variable used in the e-mail registration
+            # is cleared
+            self.assertEqual(len(form_definitions[0]["configuration"]["components"]), 1)
+            fieldset = form_definitions[0]["configuration"]["components"][0]
+            self.assertEqual(len(fieldset["components"]), 1)
+            self.assertEqual(fieldset["components"][0]["defaultValue"], "")
+
     def test_export_with_exclude_registration_backends_option(self):
         form = FormFactory.create(
             registration_backend="email",
