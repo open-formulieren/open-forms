@@ -20,6 +20,7 @@ from .serializers import (
     FormVariableExportSerializer,
 )
 from .typing import FormExportOptions
+from .utils import get_additional_form_configuration_data
 
 
 def _get_mock_request():
@@ -53,9 +54,6 @@ def export_form(
 
 def form_to_json(form_id: int, export_options: FormExportOptions) -> dict:
     form = Form.objects.get(pk=form_id)
-
-    # Ignore products in the export
-    form.product = None
 
     # Reset the submission counter
     form.submission_counter = 0
@@ -116,6 +114,12 @@ def form_to_json(form_id: int, export_options: FormExportOptions) -> dict:
         "formDefinitions": to_json(form_definitions),
         "formLogic": to_json(form_logic),
         "formVariables": to_json(form_variables),
+        # Include additional configuration data in the export resources, based on the form.
+        **(
+            get_additional_form_configuration_data(form, export_options)
+            if export_options is not None
+            else {}
+        ),
         EXPORT_META_KEY: to_json(
             {
                 "of_release": settings.RELEASE,

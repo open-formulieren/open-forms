@@ -38,6 +38,12 @@ class FormExportOptions:
 
 
 @dataclass(frozen=True)
+class AdditionalFormConfigurationCleanup:
+    option: AdditionalFormConfigurationOptions
+    cleanup: Callable[[JSONObject], None]
+
+
+@dataclass(frozen=True)
 class FormConfigurationCleanup:
     option: FormConfigurationOptions
     cleanup: Callable[[JSONObject], None]
