@@ -27,6 +27,9 @@ from openforms.import_export.serializers import (
     FormVariableExportSerializer,
 )
 from openforms.import_export.typing import FormExportOptions
+from openforms.import_export.utils import (
+    get_additional_form_configuration_data,
+)
 from openforms.registrations.contrib.objects_api.constants import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
 )
@@ -88,9 +91,6 @@ def to_json(obj: Any):
 def form_to_json(form_id: int, export_options: FormExportOptions = None) -> dict:
     form = Form.objects.get(pk=form_id)
 
-    # Ignore products in the export
-    form.product = None
-
     # Reset the submission counter
     form.submission_counter = 0
 
@@ -150,6 +150,12 @@ def form_to_json(form_id: int, export_options: FormExportOptions = None) -> dict
         "formDefinitions": to_json(form_definitions),
         "formLogic": to_json(form_logic),
         "formVariables": to_json(form_variables),
+        # Include additional configuration data in the export resources, based on the form.
+        **(
+            get_additional_form_configuration_data(form, export_options)
+            if export_options is not None
+            else {}
+        ),
         EXPORT_META_KEY: to_json(
             {
                 "of_release": settings.RELEASE,

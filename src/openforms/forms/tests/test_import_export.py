@@ -729,10 +729,51 @@ class ImportExportTests(TempdirMixin, TestCase):
         product = ProductFactory.create()
         theme = ThemeFactory.create()
         category = CategoryFactory.create()
+
+        yiviAttributeGroup1 = AttributeGroupFactory.create()
+        yiviAttributeGroup2 = AttributeGroupFactory.create()
+
+        wmtsTileLayer = MapTileLayerFactory.create()
+        wmsTileLayer = MapWMSTileLayerFactory.create()
+
         form = FormFactory.create(
+            generate_minimal_setup=True,
             product=product,
             theme=theme,
             category=category,
+            authentication_backend="yivi_oidc",
+            authentication_backend__options={
+                "authentication_options": [AuthAttribute.bsn],
+                "additional_attributes_groups": [
+                    yiviAttributeGroup1.uuid,
+                    yiviAttributeGroup2.uuid,
+                ],
+            },
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "label": "Map",
+                        "key": "map",
+                        "type": "map",
+                        "useConfigDefaultMapSettings": False,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                        "tileLayerIdentifier": wmtsTileLayer.identifier,
+                        "overlays": [
+                            {
+                                "url": "",
+                                "type": "wms",
+                                "uuid": str(wmsTileLayer.uuid),
+                                "label": "Basisregistratie Adressen en Gebouwen (BAG)",
+                                "layers": ["pand", "verblijfsobject"],
+                            },
+                        ],
+                    },
+                ],
+            },
         )
 
         # The export is made without any additional_form_configuration
@@ -759,6 +800,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             )
 
             forms = json.loads(f.read("forms.json"))
+            formDefinitions = json.loads(f.read("formDefinitions.json"))
 
             self.assertEqual(len(forms), 1)
 
@@ -766,6 +808,44 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(forms[0]["product"], None)
             self.assertEqual(forms[0]["theme"], None)
             self.assertEqual(forms[0]["category"], None)
+
+            # Assert Yivi authentication_backend is in exportdata, but without
+            # additional_attributes_groups
+            self.assertEqual(len(forms[0]["auth_backends"]), 1)
+            auth_backend = forms[0]["auth_backends"][0]
+            self.assertEqual(auth_backend["backend"], "yivi_oidc")
+            self.assertEqual(
+                auth_backend["options"]["additional_attributes_groups"], []
+            )
+            # Assert that the authentication_options on the actual form object are kept
+            self.assertIn(
+                str(yiviAttributeGroup1.uuid),
+                form.auth_backends.first().options["additional_attributes_groups"],
+            )
+            self.assertIn(
+                str(yiviAttributeGroup2.uuid),
+                form.auth_backends.first().options["additional_attributes_groups"],
+            )
+
+            # Assert that the WMS and WMTS tile layers are removed from the exportdata
+            self.assertEqual(len(formDefinitions), 1)
+            self.assertEqual(len(formDefinitions[0]["configuration"]["components"]), 1)
+            component_definition = formDefinitions[0]["configuration"]["components"][0]
+
+            self.assertEqual(component_definition["type"], "map")
+            self.assertEqual(component_definition["tileLayerIdentifier"], "")
+            self.assertEqual(len(component_definition["overlays"]), 1)
+            self.assertEqual(component_definition["overlays"][0]["uuid"], "")
+            self.assertEqual(component_definition["overlays"][0]["layers"], [])
+            # Assert that the actual form definition still contains the WMS and WMTS tile layers
+            fd = form.formstep_set.get().form_definition
+            self.assertEqual(
+                fd.configuration["components"][0]["tileLayerIdentifier"],
+                wmtsTileLayer.identifier,
+            )
+            overlay = fd.configuration["components"][0]["overlays"][0]
+            self.assertEqual(overlay["uuid"], str(wmsTileLayer.uuid))
+            self.assertEqual(overlay["layers"], ["pand", "verblijfsobject"])
 
     def test_export_with_all_additional_form_configuration_included(self):
         product = ProductFactory.create()
@@ -890,6 +970,7 @@ class ImportExportTests(TempdirMixin, TestCase):
             )
 
             forms = json.loads(f.read("forms.json"))
+            formDefinitions = json.loads(f.read("formDefinitions.json"))
             product_export = json.loads(f.read("product.json"))
             theme_export = json.loads(f.read("theme.json"))
             category_export = json.loads(f.read("category.json"))
@@ -905,6 +986,40 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertIsNotNone(forms[0]["product"])
             self.assertIsNotNone(forms[0]["theme"])
             self.assertIsNotNone(forms[0]["category"])
+
+            # Assert Yivi authentication_backend is in exportdata with
+            # additional_attributes_groups
+            self.assertEqual(len(forms[0]["auth_backends"]), 1)
+            auth_backend = forms[0]["auth_backends"][0]
+            self.assertEqual(auth_backend["backend"], "yivi_oidc")
+            self.assertIn(
+                str(yiviAttributeGroup1.uuid),
+                auth_backend["options"]["additional_attributes_groups"],
+            )
+            self.assertIn(
+                str(yiviAttributeGroup2.uuid),
+                auth_backend["options"]["additional_attributes_groups"],
+            )
+
+            # Assert WMS and WMTS tile layers are in exportdata
+            self.assertEqual(len(formDefinitions), 1)
+            self.assertEqual(len(formDefinitions[0]["configuration"]["components"]), 2)
+            component1 = formDefinitions[0]["configuration"]["components"][0]
+            component2 = formDefinitions[0]["configuration"]["components"][1]
+
+            self.assertEqual(component1["tileLayerIdentifier"], wmtsMap1.identifier)
+            self.assertEqual(len(component1["overlays"]), 1)
+            self.assertEqual(component1["overlays"][0]["uuid"], str(wmsMap1.uuid))
+            self.assertEqual(
+                component1["overlays"][0]["layers"], ["pand", "verblijfsobject"]
+            )
+
+            self.assertEqual(component2["tileLayerIdentifier"], wmtsMap2.identifier)
+            self.assertEqual(len(component2["overlays"]), 2)
+            self.assertEqual(component2["overlays"][0]["uuid"], str(wmsMap2.uuid))
+            self.assertEqual(component2["overlays"][0]["layers"], ["EL.GridCoverage"])
+            self.assertEqual(component2["overlays"][1]["uuid"], str(wmsMap3.uuid))
+            self.assertEqual(component2["overlays"][1]["layers"], ["lgn-actueel"])
 
             # Validate the export file contents
             self.assertEqual(

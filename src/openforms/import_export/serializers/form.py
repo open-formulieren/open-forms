@@ -1,11 +1,31 @@
 from openforms.forms.api.serializers import FormSerializer
 from openforms.import_export.typing import (
+    AdditionalFormConfigurationCleanup,
+    AdditionalFormConfigurationOptions,
     FormConfigurationCleanup,
     FormConfigurationOptions,
 )
 from openforms.typing import JSONObject
 
 from .base import BaseExportSerializer
+
+
+def clear_product(representation: JSONObject):
+    representation["product"] = None
+
+
+def clear_category(representation: JSONObject):
+    representation["category"] = None
+
+
+def clear_theme(representation: JSONObject):
+    representation["theme"] = None
+
+
+def clear_yivi_attribute_groups(representation: JSONObject):
+    for auth in representation.get("auth_backends", []):
+        if auth["backend"] == "yivi_oidc":
+            auth["options"]["additional_attributes_groups"] = []
 
 
 def exclude_registration_backends(representation: JSONObject):
@@ -18,6 +38,24 @@ def exclude_payment_backend(representation: JSONObject):
 
 
 class FormExportSerializer(FormSerializer, BaseExportSerializer):
+    excluded_additional_form_configuration_cleanup = (
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.product,
+            cleanup=clear_product,
+        ),
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.category,
+            cleanup=clear_category,
+        ),
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.theme,
+            cleanup=clear_theme,
+        ),
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.yivi_attribute_groups,
+            cleanup=clear_yivi_attribute_groups,
+        ),
+    )
     excluded_form_configuration_cleanup = (
         FormConfigurationCleanup(
             option=FormConfigurationOptions.registration_backends,
