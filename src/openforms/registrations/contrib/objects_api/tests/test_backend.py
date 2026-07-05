@@ -200,12 +200,12 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
         attachment_1 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="attachment1.jpg",
-            form_key="file_1",
+            submission_variable__key="file_1",
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="attachment2.png",
-            form_key="file_2",
+            submission_variable__key="file_2",
         )
         options: RegistrationOptionsV1 = {
             "version": 1,
@@ -512,7 +512,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
             file_name="attachment1.jpg",
-            form_key="attachment",
+            submission_variable__key="attachment",
             content_type="application/octet-stream",
         )
         # version is not relevant, works the same for v1
@@ -592,7 +592,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
             file_name="attachment1.jpg",
-            form_key="attachment",
+            submission_variable__key="attachment",
         )
 
         # version is not relevant, works the same for v1
@@ -662,7 +662,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
             file_name="attachment1.jpg",
-            form_key="attachment",
+            submission_variable__key="attachment",
         )
 
         # version is not relevant, works the same for v1

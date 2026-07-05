@@ -774,9 +774,12 @@ class SubmissionAttachmentTest(TestCase):
         self, resize_mock
     ):
         submission = SubmissionFactory.create()
-        upload_in_repeating_group_1, upload_in_repeating_group_2, nested_upload = (
-            TemporaryFileUploadFactory.create_batch(3, submission=submission)
-        )
+        (
+            upload_in_repeating_group_1,
+            upload_in_repeating_group_2,
+            upload_in_repeating_group_3,
+            nested_upload,
+        ) = TemporaryFileUploadFactory.create_batch(4, submission=submission)
         data = {
             "repeatingGroup": [
                 {
@@ -800,9 +803,9 @@ class SubmissionAttachmentTest(TestCase):
                     ],
                     "fileInRepeatingGroup2": [
                         {
-                            "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_1.uuid}",
+                            "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
                             "data": {
-                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_1.uuid}",
+                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
                                 "form": "",
                                 "name": "my-image.jpg",
                                 "size": 46114,
@@ -820,9 +823,9 @@ class SubmissionAttachmentTest(TestCase):
                 {
                     "fileInRepeatingGroup1": [
                         {
-                            "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
+                            "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_3.uuid}",
                             "data": {
-                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
+                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_3.uuid}",
                                 "form": "",
                                 "name": "my-image.jpg",
                                 "size": 46114,

@@ -2125,13 +2125,13 @@ class FileAttachmentTests(BaseRegistrationTestCase):
         attachment_1 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="attachment1.jpg",
-            form_key="field1",
+            submission_variable__key="field1",
             _component_configuration_path="components.0",
         )
         attachment_2 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="attachment2.jpg",
-            form_key="field2",
+            submission_variable__key="field2",
             _component_configuration_path="components.1",
         )
         plugin = ZGWRegistration("zgw")
@@ -2280,7 +2280,7 @@ class FileAttachmentTests(BaseRegistrationTestCase):
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
             content_type="image/png",
-            form_key="file",
+            submission_variable__key="file",
             _component_configuration_path="components.0",
         )
         options: RegistrationOptions = {
@@ -3502,7 +3502,7 @@ class SummaryDocumentTests(BaseRegistrationTestCase):
         )
 
         SubmissionFileAttachmentFactory.create(
-            form_key="file",
+            submission_variable__key="file",
             submission_step=submission.steps[0],
             file_name="test_file.txt",
             original_name="test_file.txt",
@@ -3512,7 +3512,7 @@ class SummaryDocumentTests(BaseRegistrationTestCase):
             _component_data_path="file",
         )
         SubmissionFileAttachmentFactory.create(
-            form_key="fileMultiple",
+            submission_variable__key="fileMultiple",
             submission_step=submission.steps[0],
             file_name="test_file2.txt",
             original_name="test_file2.txt",
@@ -3522,7 +3522,7 @@ class SummaryDocumentTests(BaseRegistrationTestCase):
             _component_data_path="fileMultiple",
         )
         SubmissionFileAttachmentFactory.create(
-            form_key="editgrid",
+            submission_variable__key="editgrid",
             submission_step=submission.steps[0],
             file_name="test_file3.txt",
             original_name="test_file3.txt",

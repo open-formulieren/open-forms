@@ -95,7 +95,7 @@ class SubmissionTests(TestCase):
             form_step=form_step,
         )
         attachment = SubmissionFileAttachmentFactory.create(
-            submission_step=submission_step, form_key="sensitiveFile"
+            submission_step=submission_step, submission_variable__key="sensitiveFile"
         )
         submission_step_2 = SubmissionStepFactory.create(
             submission=submission,

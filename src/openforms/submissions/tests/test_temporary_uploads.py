@@ -180,12 +180,8 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
     def test_delete_temporary_file_attachement_deletes_the_saved_one_as_well(self):
         upload = TemporaryFileUploadFactory.create()
         self._add_submission_to_session(upload.submission)
-        saved_upload = SubmissionFileAttachmentFactory.create(temporary_file=upload)
+        SubmissionFileAttachmentFactory.create(temporary_file=upload)
         url = reverse("api:submissions:temporary-file", kwargs={"uuid": upload.uuid})
-
-        # make sure the two files exist
-        self.assertEqual(TemporaryFileUpload.objects.get(), upload)
-        self.assertEqual(SubmissionFileAttachment.objects.get(), saved_upload)
 
         response = self.client.delete(url)
 

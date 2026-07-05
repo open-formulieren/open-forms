@@ -80,7 +80,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
         )
 
         SubmissionFileAttachmentFactory.create(
-            form_key="file",
+            submission_variable__key="file",
             submission_step=submission.steps[0],
             file_name="test_file.txt",
             original_name="test_file.txt",
@@ -215,7 +215,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
         )
 
         SubmissionFileAttachmentFactory.create(
-            form_key="file",
+            submission_variable__key="file",
             submission_step=submission.steps[0],
             file_name="file1.txt",
             original_name="file1.txt",
@@ -226,7 +226,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
         )
 
         SubmissionFileAttachmentFactory.create(
-            form_key="file",
+            submission_variable__key="file",
             submission_step=submission.steps[0],
             file_name="file2.txt",
             original_name="file2.txt",
@@ -318,7 +318,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
         )
 
         SubmissionFileAttachmentFactory.create(
-            form_key="file",
+            submission_variable__key="file",
             submission_step=submission.steps[0],
             file_name="file1.txt",
             original_name="file1.txt",
@@ -1309,7 +1309,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
         )
 
         SubmissionFileAttachmentFactory.create(
-            form_key="nested.file",
+            submission_variable__key="nested.file",
             submission_step=submission.steps[0],
             file_name="file1.txt",
             original_name="file1.txt",
@@ -1319,7 +1319,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
         )
 
         SubmissionFileAttachmentFactory.create(
-            form_key="editgrid",
+            submission_variable__key="editgrid",
             submission_step=submission.steps[0],
             file_name="file2.txt",
             original_name="file2.txt",
@@ -1584,7 +1584,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
         )
 
         SubmissionFileAttachmentFactory.create(
-            form_key="repeatingGroup",
+            submission_variable__key="repeatingGroup",
             submission_step=submission.steps[0],
             file_name="test_file.txt",
             original_name="test_file.txt",
@@ -1594,7 +1594,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
         )
 
         SubmissionFileAttachmentFactory.create(
-            form_key="repeatingGroup",
+            submission_variable__key="repeatingGroup",
             submission_step=submission.steps[0],
             file_name="test_file_2.txt",
             original_name="test_file_2.txt",
@@ -1604,7 +1604,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
         )
 
         SubmissionFileAttachmentFactory.create(
-            form_key="repeatingGroup",
+            submission_variable__key="repeatingGroup",
             submission_step=submission.steps[0],
             file_name="test_file_3.txt",
             original_name="test_file_3.txt",

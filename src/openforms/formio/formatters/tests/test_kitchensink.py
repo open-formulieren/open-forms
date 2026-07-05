@@ -92,20 +92,20 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         # these must match the components
         self.assertComponentKeyExists(configuration, "file")
         SubmissionFileAttachmentFactory.create(
-            form_key="file",
+            submission_variable__key="file",
             file_name="blank.doc",
             original_name="blank.doc",
             submission_step=submission_step,
         )
         self.assertComponentKeyExists(configuration, "fileUploadMulti")
         SubmissionFileAttachmentFactory.create(
-            form_key="fileUploadMulti",
+            submission_variable__key="fileUploadMulti",
             file_name="blank.doc",
             original_name="blank.doc",
             submission_step=submission_step,
         )
         SubmissionFileAttachmentFactory.create(
-            form_key="fileUploadMulti",
+            submission_variable__key="fileUploadMulti",
             file_name="dummy.doc",
             original_name="dummy.doc",
             submission_step=submission_step,

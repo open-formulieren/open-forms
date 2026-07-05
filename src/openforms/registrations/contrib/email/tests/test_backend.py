@@ -153,7 +153,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
         )
         submission_file_attachment_1 = SubmissionFileAttachmentFactory.create(
-            form_key="file1",
+            submission_variable__key="file1",
             submission_step=step,
             file_name="my-foo.bin",
             content_type="application/foo",
@@ -161,7 +161,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             _component_data_path="file1",
         )
         submission_file_attachment_2 = SubmissionFileAttachmentFactory.create(
-            form_key="file2",
+            submission_variable__key="file2",
             submission_step=step,
             file_name="my-bar.txt",
             content_type="text/bar",
@@ -549,7 +549,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         report = submission.report
         submission_file_attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
-            form_key="someFile",
+            submission_variable__key="someFile",
             file_name="my-foo.bin",
             content_type="application/foo",
             _component_configuration_path="components.1",
@@ -785,13 +785,13 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submission_step=submission_step,
             file_name="my-foo.bin",
             content_type="application/foo",
-            form_key="attachment1",
+            submission_variable__key="attachment1",
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="my-bar.txt",
             content_type="text/bar",
-            form_key="attachment2",
+            submission_variable__key="attachment2",
         )
 
         plugin = EmailRegistration("email")
@@ -1140,13 +1140,13 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
         )
         SubmissionFileAttachmentFactory.create(
-            form_key="file1",
+            submission_variable__key="file1",
             submission_step=step,
             file_name="my-foo.bin",
             content_type="application/foo",
         )
         SubmissionFileAttachmentFactory.create(
-            form_key="file2",
+            submission_variable__key="file2",
             submission_step=step,
             file_name="my-bar.txt",
             content_type="text/bar",

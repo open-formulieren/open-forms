@@ -642,12 +642,9 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                 )
 
     def test_validate_step_with_nested_files_in_columns(self):
-        temporary_file_upload = TemporaryFileUploadFactory.create()
-        file = SubmittedFileFactory.create(temporary_upload=temporary_file_upload)
-        submission = temporary_file_upload.submission
-        form_step = FormStepFactory.create(
-            form=submission.form,
-            form_definition__configuration={
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
                 "components": [
                     {
                         "type": "columns",
@@ -691,8 +688,14 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-
+        form_step = submission.form.formstep_set.get()
+        upload1, upload2 = TemporaryFileUploadFactory.create_batch(
+            2, submission=submission
+        )
+        file1 = SubmittedFileFactory.create(temporary_upload=upload1)
+        file2 = SubmittedFileFactory.create(temporary_upload=upload2)
         self._add_submission_to_session(submission)
+
         response = self.client.put(
             reverse(
                 "api:submission-steps-detail",
@@ -701,7 +704,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                     "step_uuid": form_step.uuid,
                 },
             ),
-            {"data": {"fileUpload1": [file], "fileUpload2": [file]}},
+            {"data": {"fileUpload1": [file1], "fileUpload2": [file2]}},
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

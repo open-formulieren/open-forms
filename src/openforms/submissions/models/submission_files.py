@@ -149,22 +149,19 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         help_text=_("Submission step the file is attached to."),
         related_name="attachments",
     )
-    # TODO OneToOne?
-    temporary_file = models.ForeignKey(
+    temporary_file = models.OneToOneField(
         to="TemporaryFileUpload",
         on_delete=models.SET_NULL,
         null=True,
         verbose_name=_("temporary file"),
         help_text=_("Temporary upload this file is sourced to."),
-        related_name="attachments",
+        related_name="attachment",
     )
     submission_variable = models.ForeignKey(
         verbose_name=_("submission variable"),
         help_text=_("submission value variable for the form component"),
         to="SubmissionValueVariable",
         on_delete=models.CASCADE,
-        blank=True,
-        null=True,
     )
     # The whole path and not just the key is needed for nested fields.
     _component_configuration_path = models.CharField(
@@ -247,8 +244,6 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
 
     @property
     def form_key(self):
-        if self.submission_variable:
-            return self.submission_variable.key
-        raise Exception("tried to access an attachment without .submission_variable")
+        return self.submission_variable.key
 
     form_key.fget.short_description = _("form component key")

@@ -252,7 +252,7 @@ def cleanup_submission_temporary_uploaded_files(submission: Submission):
 
 
 def cleanup_unclaimed_temporary_uploaded_files(age=timedelta(days=2)):
-    for file in TemporaryFileUpload.objects.select_prune(age).filter(attachments=None):
+    for file in TemporaryFileUpload.objects.select_prune(age).filter(attachment=None):
         file.delete()
 
 

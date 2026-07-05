@@ -490,7 +490,7 @@ class FormNodeTests(TestCase):
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=step,
-            form_key="file",
+            submission_variable__key="file",
             file_name="blank-renamed.doc",
             original_name="blank.doc",
             _component_configuration_path="components.0",
@@ -644,7 +644,7 @@ class FormNodeTests(TestCase):
         # The factory creates a submission variable for the repeating group and for the nested file
         attachment1 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
-            form_key="repeatingGroup",
+            submission_variable__key="repeatingGroup",
             file_name="file1.doc",
             original_name="file1.doc",
             _component_configuration_path="components.0.components.0",
@@ -652,7 +652,7 @@ class FormNodeTests(TestCase):
         )
         attachment2 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
-            form_key="repeatingGroup",
+            submission_variable__key="repeatingGroup",
             file_name="file2.doc",
             original_name="file2.doc",
             _component_configuration_path="components.0.components.0",
@@ -660,7 +660,7 @@ class FormNodeTests(TestCase):
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=step,
-            form_key="nested.file",
+            submission_variable__key="nested.file",
             file_name="file3.doc",
             original_name="file3.doc",
             _component_configuration_path="components.1",
@@ -823,7 +823,7 @@ class FormNodeTests(TestCase):
         # The factory creates a submission variable for the repeating group and for the nested file
         attachment1 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
-            form_key="repeatingGroup",
+            submission_variable__key="repeatingGroup",
             file_name="attachmentInside.pdf",
             original_name="attachmentInside.pdf",
             _component_configuration_path="components.0.components.0",
@@ -831,7 +831,7 @@ class FormNodeTests(TestCase):
         )
         attachment2 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
-            form_key="attachment",
+            submission_variable__key="attachment",
             file_name="attachmentOutside.pdf",
             original_name="attachmentOutside.pdf",
             _component_configuration_path="components.1",
@@ -978,7 +978,7 @@ class FormNodeTests(TestCase):
         # The factory creates a submission variable for the repeating group and for the nested file
         attachment_1 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
-            form_key="repeatingGroup",
+            submission_variable__key="repeatingGroup",
             file_name="file1.doc",
             original_name="file1.doc",
             _component_configuration_path="components.0.components.0",
@@ -986,7 +986,7 @@ class FormNodeTests(TestCase):
         )
         attachment_2 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
-            form_key="repeatingGroup",
+            submission_variable__key="repeatingGroup",
             file_name="file2.doc",
             original_name="file2.doc",
             _component_configuration_path="components.0.components.1",
