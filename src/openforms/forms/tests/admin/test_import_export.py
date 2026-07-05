@@ -12,7 +12,7 @@ from maykin_2fa.test import disable_admin_mfa
 from openforms.accounts.tests.factories import UserFactory
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 
-from ...constants import EXPORT_META_KEY
+from ...import_export.service import EXPORT_META_KEY
 from ...models import Form, FormDefinition
 from ...tests.factories import FormDefinitionFactory, FormFactory
 

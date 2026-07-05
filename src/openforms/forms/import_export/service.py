@@ -5,8 +5,13 @@ The exported names here may be used in other django apps and/or Open Forms modul
 Anything else is considered private API.
 """
 
+from .constants import EXPORT_META_KEY
+from .export_form import export_form, form_to_json
 from .typing import FormExportOptions
 
 __all__ = [
+    "EXPORT_META_KEY",
     "FormExportOptions",
+    "export_form",
+    "form_to_json",
 ]

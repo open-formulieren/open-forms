@@ -4,14 +4,13 @@ import uuid
 import factory.fuzzy
 
 from openforms.authentication.registry import register as authentication_registry
-from openforms.forms.constants import LogicActionTypes
 from openforms.products.tests.factories import ProductFactory
 from openforms.registrations.registry import register as registration_registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from ..constants import FormTypeChoices, SubmissionAllowedChoices
+from ..constants import FormTypeChoices, LogicActionTypes, SubmissionAllowedChoices
+from ..import_export.service import form_to_json
 from ..models import Form, FormDefinition, FormStep, FormVariable
-from ..utils import form_to_json
 
 
 def authentication_plugins():

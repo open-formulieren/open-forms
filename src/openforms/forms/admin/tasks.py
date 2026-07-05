@@ -20,9 +20,10 @@ from openforms.emails.utils import send_mail_html
 from openforms.logging import audit_logger
 from openforms.utils.urls import build_absolute_uri
 
+from ..import_export.service import export_form
 from ..models import Form
 from ..models.form import FormsExport
-from ..utils import export_form, import_form
+from ..utils import import_form
 
 logger = structlog.stdlib.get_logger(__name__)
 

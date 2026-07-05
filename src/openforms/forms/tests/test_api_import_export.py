@@ -16,7 +16,8 @@ from openforms.appointments.models import AppointmentsConfig
 from openforms.variables.constants import FormVariableSources
 
 from ...emails.tests.factories import ConfirmationEmailTemplateFactory
-from ..constants import EXPORT_META_KEY, FormTypeChoices
+from ..constants import FormTypeChoices
+from ..import_export.service import EXPORT_META_KEY
 from ..models import Form, FormDefinition, FormStep
 from .factories import (
     FormDefinitionFactory,
