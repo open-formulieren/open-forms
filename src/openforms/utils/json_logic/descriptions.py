@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Protocol
 from django.utils.translation import gettext, gettext_lazy as _
 
 from glom import glom
+from json_logic import UNDEFINED_VALUE
 from json_logic.meta import JSONLogicExpressionTree, Operation
 from json_logic.typing import Primitive
 
@@ -359,3 +360,35 @@ def op_rdelta(*args) -> str:
             raise ValueError(
                 "Unexpected amount of arguments. Expected 1-6 got {len(args)}: {args!r}"
             )
+
+
+@add_boilerplate()
+def op_substr(text, start, length=None):
+    if text is None or text is UNDEFINED_VALUE:
+        return None
+
+    # cases where the text is not already a string ({"substr": [12345, 1, 2]})
+    text = str(text)
+
+    try:
+        start = int(start)
+        length = int(length) if length else None
+    except ValueError:
+        return False
+
+    if start < 0:
+        start = len(text) + start
+        if start < 0:
+            start = 0
+
+    if length is None:
+        return text[start:]
+
+    if length >= 0:
+        return text[start : start + length]
+
+    end = len(text) + length
+    if end < start:
+        return ""
+
+    return text[start:end]
