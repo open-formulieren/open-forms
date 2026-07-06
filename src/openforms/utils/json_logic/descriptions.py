@@ -365,10 +365,11 @@ def op_rdelta(*args) -> str:
 @add_boilerplate()
 def op_substr(text, start, length=None):
     if text is None or text is UNDEFINED_VALUE:
-        return None
+        return gettext("No text")
 
     # cases where the text is not already a string ({"substr": [12345, 1, 2]})
-    text = str(text)
+    if not isinstance(text, str):
+        text = str(text)
 
     try:
         start = int(start)
@@ -382,13 +383,19 @@ def op_substr(text, start, length=None):
             start = 0
 
     if length is None:
-        return text[start:]
+        return gettext("{substr} is the substring of {text}").format(
+            substr=text[start:], text=text
+        )
 
     if length >= 0:
-        return text[start : start + length]
+        return gettext("{substr} is the substring of {text}").format(
+            substr=text[start : start + length], text=text
+        )
 
     end = len(text) + length
     if end < start:
         return ""
 
-    return text[start:end]
+    return gettext("{substr} is the substring of {text}").format(
+        substr=text[start:end], text=text
+    )
