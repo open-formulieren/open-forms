@@ -547,7 +547,6 @@ const FormConfigurationFields = ({
     suspensionAllowed,
     askPrivacyConsent,
     askStatementOfTruth,
-    appointmentOptions,
   } = form;
   const intl = useIntl();
 
@@ -559,7 +558,6 @@ const FormConfigurationFields = ({
   };
 
   const isRegular = type === 'regular';
-  const isSingleStep = type === 'single_step';
   const singleStepWarningText = intl.formatMessage({
     description: 'Single step warning icon text',
     defaultMessage:
