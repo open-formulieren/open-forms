@@ -84,10 +84,16 @@ In dit tabblad worden de algemene formulier gegevens weergegeven.
   bijvoorbeeld alleen informatie of verwijzingen naar andere formulieren. In dat
   geval vinkt u deze optie uit.
 
-* **Is afspraakformulier?**: Vink aan om het formulier als _`afspraakformulier` in te
-  stellen. Afspraken dienen hiervoor :ref:`geconfigureerd <configuration_appointment_index>`
-  te zijn. Wanneer deze optie inschakeld is, dan kunt u geen formulierstappen, registratie,
-  product/betaling, logica of variabelen instellen.
+* **Formuliertype**: Bepaalt hoe het formulier zich gedraagt. De beschikbare
+  keuzes zijn **Standaard**, **Afspraak** en **Enkele stap**.
+
+  * Kies **Standaard** voor formulieren met één of meerdere stappen.
+  * Kies **Afspraak** om het formulier als _`afspraakformulier` in te stellen.
+    Afspraken dienen hiervoor :ref:`geconfigureerd <configuration_appointment_index>`
+    te zijn. Voor afspraakformulieren zijn geen formulierstappen, registratie,
+    product/betaling, logica of variabelen beschikbaar.
+  * Kies **Enkele stap** voor formulieren die als één pagina worden getoond en
+    als één stap worden verwerkt.
 
 .. note::
 
