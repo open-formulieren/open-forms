@@ -124,6 +124,8 @@ const initialFormState = {
       brpPersonenProcessingHeaderValue: '',
     },
     authBackends: [],
+    helpCalloutPageDisplay: 'never',
+    helpCalloutPageContent: '',
   },
   newForm: true,
   formSteps: [],
@@ -186,6 +188,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   variables: 'variables',
   appointmentOptions: 'form',
   brpPersonenRequestOptions: 'advanced-configuration',
+  helpCalloutPageDisplay: 'form',
 };
 
 const TRANSLATION_FIELD_TO_TAB_NAMES = {
@@ -1270,6 +1273,8 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           registrationBackends: state.form.registrationBackends,
           selectedAuthPlugins: state.selectedAuthPlugins,
           updateComponents: updateComponents,
+          helpCalloutPageDisplay: state.form.helpCalloutPageDisplay,
+          helpCalloutPageContent: state.form.helpCalloutPageContent,
         }}
       >
         <FormWarnings form={state.form} />

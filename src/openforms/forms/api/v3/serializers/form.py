@@ -5,12 +5,13 @@ from django.db import transaction
 from django.utils.text import get_text_list
 from django.utils.translation import gettext_lazy as _
 
-from drf_spectacular.utils import extend_schema_serializer
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail, ValidationError
 
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
-from openforms.config.models import Theme
+from openforms.config.models import GlobalConfiguration, Theme
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.formio.service import (
@@ -99,6 +100,13 @@ class FormSerializer(serializers.ModelSerializer):
 
     registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
 
+    help_callout_page_content = serializers.SerializerMethodField(
+        label=_("Help callout page content"),
+        help_text=_(
+            "Content for the help callout page, fetched from the global configuration."
+        ),
+    )
+
     _nested_fields = (
         "confirmation_email_template",
         "formstep_set",
@@ -150,6 +158,8 @@ class FormSerializer(serializers.ModelSerializer):
             "display_main_website_link",
             "include_confirmation_page_content_in_pdf",
             "translations",
+            "help_callout_page_display",
+            "help_callout_page_content",
         )
         extra_kwargs = {
             "uuid": {  # retrieved from the context passed through from the view
@@ -555,6 +565,11 @@ class FormSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     _("Exactly one form step is required in a single step form.")
                 )
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_help_callout_page_content(self, obj: Form) -> str:
+        config = GlobalConfiguration.get_solo()
+        return config.help_callout_page_content
 
     def validate(self, attrs: FormValidatedData) -> FormValidatedData:
         self.validate_amount_of_steps(attrs)

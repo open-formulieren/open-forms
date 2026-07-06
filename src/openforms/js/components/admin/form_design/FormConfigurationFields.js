@@ -15,7 +15,7 @@ import {getTranslatedChoices} from 'utils/i18n';
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 import AuthPluginField from './AuthPluginField';
 import AuthPluginOptions from './AuthPluginOptions';
-import {FORM_TYPES} from './constants';
+import {FORM_TYPES, HELP_CALLOUT_PAGE_DISPLAY_CHOICES} from './constants';
 import TYPES from './types';
 
 const SUMBISSION_ALLOWED_CHOICES = [
@@ -514,6 +514,53 @@ const FeatureFields = ({formType, translationEnabled, suspensionAllowed, onChang
   );
 };
 
+const HelpOptionsFields = ({helpCalloutPageDisplay, helpCalloutPageContent, onChange}) => {
+  const intl = useIntl();
+
+  const contentConfigured = helpCalloutPageContent !== '';
+
+  return (
+    <Fieldset
+      title={
+        <FormattedMessage
+          description="Help/contact options fieldset title"
+          defaultMessage="Help/contact options"
+        />
+      }
+      collapsible
+      initialCollapsed
+    >
+      <FormRow>
+        <Field
+          name="form.helpCalloutPageDisplay"
+          label={
+            <FormattedMessage
+              description="Help callout page display setting"
+              defaultMessage="Help callout page display"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              description="Help callout page display setting help text"
+              defaultMessage={`When to display the help callout page. Note that this field is
+              disabled when the help callout page content in the global configuration is not
+              specified.`}
+            />
+          }
+          disabled={!contentConfigured}
+        >
+          <Select
+            choices={getTranslatedChoices(intl, HELP_CALLOUT_PAGE_DISPLAY_CHOICES)}
+            value={contentConfigured ? helpCalloutPageDisplay : 'never'}
+            onChange={onChange}
+            disabled={!contentConfigured}
+          />
+        </Field>
+      </FormRow>
+    </Fieldset>
+  );
+};
+
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
@@ -547,6 +594,8 @@ const FormConfigurationFields = ({
     suspensionAllowed,
     askPrivacyConsent,
     askStatementOfTruth,
+    helpCalloutPageDisplay,
+    helpCalloutPageContent,
   } = form;
   const intl = useIntl();
 
@@ -763,6 +812,14 @@ const FormConfigurationFields = ({
         askStatementOfTruth={askStatementOfTruth}
         onChange={onChange}
       />
+
+      {isRegular && (
+        <HelpOptionsFields
+          helpCalloutPageDisplay={helpCalloutPageDisplay}
+          helpCalloutPageContent={helpCalloutPageContent}
+          onChange={onChange}
+        />
+      )}
     </>
   );
 };
@@ -796,6 +853,10 @@ FormConfigurationFields.propTypes = {
         options: PropTypes.object,
       })
     ).isRequired,
+    helpCalloutPageDisplay: PropTypes.oneOf(
+      HELP_CALLOUT_PAGE_DISPLAY_CHOICES.map(option => option[0])
+    ).isRequired,
+    helpCalloutPageContent: PropTypes.string.isRequired,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
   availableAuthPlugins: PropTypes.arrayOf(TYPES.AuthPlugin).isRequired,

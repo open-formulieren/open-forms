@@ -8,6 +8,7 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail, ValidationError
 
+from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.api.utils import (
     get_from_serializer_data_or_instance,
@@ -247,6 +248,19 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
     auth_backends = FormAuthenticationBackendSerializer(many=True, required=False)
 
+    help_callout_page_content = serializers.SerializerMethodField(
+        label=_("Help callout page content"),
+        help_text=_(
+            "Content for the help callout page, fetched from the global configuration."
+        ),
+    )
+    help_callout_page_image = serializers.SerializerMethodField(
+        label=_("Help callout page image"),
+        help_text=_(
+            "Image for the help callout page, fetched from the global configuration."
+        ),
+    )
+
     class Meta:
         model = Form
         fields = (
@@ -306,6 +320,12 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "submission_statements_configuration",
             "submission_report_download_link_title",
             "brp_personen_request_options",
+            # TODO-6317: perhaps a separate serializer for this? Might be tricky with
+            #  the `display`, though, because it is fetched from the form instead of
+            #  the global config.
+            "help_callout_page_display",
+            "help_callout_page_content",
+            "help_callout_page_image",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -341,6 +361,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "cosign_has_link_in_email",
             "submission_statements_configuration",
             "submission_report_download_link_title",
+            "help_callout_page_display",
+            "help_callout_page_content",
+            "help_callout_page_image",
         )
         extra_kwargs = {
             "uuid": {
@@ -646,6 +669,20 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
 
     def get_submission_limit_reached(self, obj: Form) -> bool:
         return obj.submissions_limit_reached
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_help_callout_page_content(self, obj: Form) -> str:
+        field = CSPPostProcessedHTMLField()
+        # Set the parent to provide the necessary request context
+        field.bind("help_callout_page_content", self)
+        config = GlobalConfiguration.get_solo()
+        return field.to_representation(config.help_callout_page_content)
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_help_callout_page_image(self, obj: Form) -> str | None:
+        config = GlobalConfiguration.get_solo()
+        field = serializers.ImageField()
+        return field.to_representation(config.help_callout_page_image)
 
 
 FormSerializer.__doc__ = FormSerializer.__doc__.format(

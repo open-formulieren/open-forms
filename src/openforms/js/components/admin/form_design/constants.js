@@ -49,3 +49,27 @@ export const FORM_TYPES = [
     }),
   ],
 ];
+
+export const HELP_CALLOUT_PAGE_DISPLAY_CHOICES = [
+  [
+    'before_start_page',
+    defineMessage({
+      description: 'Before start page option label',
+      defaultMessage: 'Before start page',
+    }),
+  ],
+  [
+    'after_start_page',
+    defineMessage({
+      description: 'After start page option label',
+      defaultMessage: 'After start page',
+    }),
+  ],
+  [
+    'never',
+    defineMessage({
+      description: 'Never option label',
+      defaultMessage: 'Never',
+    }),
+  ],
+];

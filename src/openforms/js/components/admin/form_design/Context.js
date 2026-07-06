@@ -22,6 +22,8 @@ const FormContext = React.createContext({
   languages: [],
   translationEnabled: false,
   updateComponents: () => {},
+  helpCalloutPageDisplay: 'never',
+  helpCalloutPageContent: '',
 });
 FormContext.displayName = 'FormContext';
 

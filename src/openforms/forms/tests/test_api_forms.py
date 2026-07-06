@@ -13,6 +13,7 @@ from digid_eherkenning.choices import DigiDAssuranceLevels
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, APITestCase
 
+from csp_post_processor.constants import NONCE_HTTP_HEADER
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.appointments.models import AppointmentsConfig
 from openforms.config.models import GlobalConfiguration
@@ -1517,6 +1518,37 @@ class FormsAPITests(APITestCase):
             """,
         )
 
+    def test_help_callout_page(self):
+        form = FormFactory.create(help_callout_page_display="before_start_page")
+
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        content = """
+        <p>Some content</p>
+        <a onclick="evil();">text</a>
+        """
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        with patch(
+            "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(help_callout_page_content=content),
+        ):
+            response_data = self.client.get(
+                url, headers={NONCE_HTTP_HEADER: "some nonce"}
+            ).json()
+
+        expected_content = """
+        <p>Some content</p>
+        <a>text</a>
+        """
+
+        self.assertEqual("before_start_page", response_data["helpCalloutPageDisplay"])
+        self.assertHTMLEqual(expected_content, response_data["helpCalloutPageContent"])
+        # TODO-6317: update this test
+        self.assertEqual("", response_data["helpCalloutPageImage"])
+
 
 class FormsAPITranslationTests(APITestCase):
     maxDiff = None
@@ -2125,3 +2157,24 @@ class FormsAPITranslationTests(APITestCase):
             form.confirmation_email_template.content_nl,
             "{% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
+
+    @patch(
+        "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            help_callout_page_content_nl="Nederlands",
+            help_callout_page_content_en="English",
+        ),
+    )
+    def test_help_callout_page_content(self, _config):
+        form = FormFactory.create(translation_enabled=True)
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        for language, expected in (("en", "English"), ("nl", "Nederlands")):
+            with self.subTest(language):
+                response = self.client.get(url, headers={"Accept-Language": language})
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertEqual(response.headers["Content-Language"], language)
+                data = response.json()
+                self.assertEqual(expected, data["helpCalloutPageContent"])

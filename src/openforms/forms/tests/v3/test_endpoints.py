@@ -276,6 +276,7 @@ class FormEndpointTests(APITestCase):
                     "explanationTemplate": "Wees klaar om voor koekjes te vragen",
                 },
             },
+            "helpCalloutPageDisplay": "before_start_page",
         }
         response = self.client.put(url, data=data)
 
@@ -292,6 +293,7 @@ class FormEndpointTests(APITestCase):
 
         self.assertEqual(form.type, FormTypeChoices.regular)
         self.assertEqual(form.slug, "create-form")
+        self.assertEqual(form.help_callout_page_display, "before_start_page")
 
         # product
         self.assertEqual(form.product, product)
