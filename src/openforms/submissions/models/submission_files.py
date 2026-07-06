@@ -16,9 +16,11 @@ from django.utils.translation import gettext_lazy as _
 
 import structlog
 from privates.fields import PrivateMediaFileField
+from typing_extensions import deprecated
 
 from openforms.formio.typing import FileComponent
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
+from openforms.variables.constants import FormVariableDataTypes
 
 from .submission import Submission
 from .submission_step import SubmissionStep
@@ -88,6 +90,7 @@ class SubmissionFileAttachmentQuerySet(
     def for_submission(self, submission: Submission):
         return self.filter(submission_step__submission=submission)
 
+    @deprecated("remove in 4.0")
     def as_form_dict(self) -> Mapping[str, list[SubmissionFileAttachment]]:
         files = defaultdict(list)
         for file in self:
@@ -95,39 +98,104 @@ class SubmissionFileAttachmentQuerySet(
         return dict(files)
 
 
-class SubmissionFileAttachmentManager(models.Manager):
+class SubmissionFileAttachmentManager(models.Manager["SubmissionFileAttachment"]):
     def get_or_create_from_upload(
         self,
+        upload: TemporaryFileUpload,
+        *,
         submission_step: SubmissionStep,
         submission_variable: SubmissionValueVariable,
-        configuration_path: str,
+        file_component_key: str,
         data_path: str,
-        upload: TemporaryFileUpload,
-        file_name: str | None = None,
+        file_name: str,
     ) -> tuple[SubmissionFileAttachment, bool]:
+        """
+        Look up or create the submission file attachment for a given temporary upload.
+
+        A temporary upload always maps one-to-one with a submission file attachment,
+        even if the file is uploaded multiple times (in those cases, every copy will
+        be stored in its own temporary upload).
+
+        :param upload: The temporary upload from which the content will be copied into
+          the persisted submission file attachment.
+
+        :param submission_step: The submission step where the upload happened. Together
+          with the submission variable, the associated formio form definition and
+          :arg:`file_component_key`, the file component leading to the upload can be
+          resolved.
+
+        :param submission_variable: The submission variable that holds the raw formio
+          value as submitted by the end-user. It's a result of saving the submission
+          step data.
+
+          .. note:: When the file component is in an editgrid, there is no variable for
+             the file component itself, and instead the submission variable points to
+             the editgrid closest to the configuration root, even with nested edit
+             grids.
+
+        :param file_component_key: Formio component key of the file component that
+          produced the upload. It does not contain any editgrid ancestor keys, and it
+          may contain ``.`` characters if that's what the form designer entered for the
+          key. Currently relies on the implementation detail that Open Forms enforces
+          unique component keys even for components inside edit grid definitions.
+
+        :param data_path: Dotted path into the submission data object structure,
+          pointing out to which exact field this upload belongs. It's always populated,
+          and outside of editgrids it's identical to the submission variable key. Inside
+          editgrids, it contains indices pointing out the item in the edit grid, e.g.
+          ``editgrid.3.someFile`` points to the fourth item in the edit grid, with
+          ``someFile`` the value of the :arg:`file_component_key`.
+
+        :param file_name: The name of the file after server-side processing. The
+          original file name will be stored as well, after taking it from the temporary
+          upload.
+
+        :returns: A tuple of the retrieved or created model instance and a bool
+          indicating whether the record was created.
+        """
+
+        # if it's not an edit grid variable, the submission variable key should match
+        # the component key value
+        assert (
+            submission_variable.data_type == FormVariableDataTypes.array
+            and submission_variable.data_subtype == FormVariableDataTypes.editgrid
+        ) or (submission_variable.key == file_component_key), (
+            "The wrong variable or file component key is passed!"
+        )
+        # also check against the snapshot of the configuration - this mostly catches
+        # inconsistencies in the test suite since asserts don't run in production
+        assert (
+            submission_variable.configuration
+            and submission_variable.configuration.get("type") in ("file", "editgrid")
+        ), (
+            "The component configuration snapshot does not meet file-component expectations"
+        )
+
+        # the one-to-one field contains a unique constraint with the temporary
+        # upload. The additional fields are included in the query so that bugs surface
+        # early in the form of an integrity error when trying to create the attachment
+        # with the wrong metadata.
         try:
-            return (
-                self.get(
-                    submission_step=submission_step,
-                    temporary_file=upload,
-                    submission_variable=submission_variable,
-                    _component_configuration_path=configuration_path,
-                    _data_path=data_path,
-                ),
-                False,
+            existing_attachment = self.get(
+                temporary_file=upload,
+                submission_step=submission_step,
+                submission_variable=submission_variable,
+                component_key=file_component_key,
+                _data_path=data_path,
             )
+            return (existing_attachment, False)
         except self.model.DoesNotExist:
             with upload.content.open("rb") as content:
                 instance = self.create(
-                    submission_step=submission_step,
                     temporary_file=upload,
+                    submission_step=submission_step,
                     submission_variable=submission_variable,
                     # wrap in File() so it will be physically copied
                     content=File(content, name=upload.file_name),
                     content_type=upload.content_type,
                     original_name=upload.file_name,
                     file_name=file_name,
-                    _component_configuration_path=configuration_path,
+                    component_key=file_component_key,
                     _data_path=data_path,
                 )
             return (instance, True)
@@ -276,9 +344,11 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
           which *also* creates a nested datastructure:
           ``{"editgrid": {"3": {"someFile": []}}}`` (this is cursed).
         """
-        return self._data_path or self.submission_variable.key
+        assert self._data_path, "TODO: replace with check constraint"
+        return self._data_path
 
     @cached_property
+    @deprecated("Use attachment.component_key instead.")
     def component(self) -> FileComponent | None:
         """
         Resolve the formio component definition that produced this attachment.
@@ -293,6 +363,7 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         return component
 
     @property
+    @deprecated("Use attachment.component_key instead.")
     def form_key(self):
         return self.submission_variable.key
 

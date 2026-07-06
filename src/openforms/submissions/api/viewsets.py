@@ -34,7 +34,7 @@ from openforms.prefill.service import prefill_variables
 from openforms.typing import is_authenticated_request
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ..attachments import attach_uploads_to_submission_step
+from ..attachments import process_step_uploads
 from ..constants import PostSubmissionEvents
 from ..exceptions import FormDeactivated, FormMaintenance
 from ..form_logic import check_submission_logic, evaluate_form_logic
@@ -643,7 +643,7 @@ class SubmissionStepViewSet(
             step_id=instance.pk,
             step_name=str(instance.form_step.form_definition.name),
         )
-        attach_uploads_to_submission_step(instance)
+        process_step_uploads(instance)
 
         # See #1480 - if there is navigation between steps and original form field values
         # are changed, they can cause subsequent steps to be not-applicable. If that

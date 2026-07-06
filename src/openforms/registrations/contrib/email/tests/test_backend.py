@@ -23,7 +23,7 @@ from openforms.emails.constants import (
 )
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
-from openforms.submissions.attachments import attach_uploads_to_submission_step
+from openforms.submissions.attachments import process_step_uploads
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.cosigning import CosignData
 from openforms.submissions.exports import create_submission_export
@@ -1358,7 +1358,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 ],
             },
         )
-        attach_uploads_to_submission_step(submission_step)
+        process_step_uploads(submission_step)
 
         subject, body_html, body_text = EmailRegistration.render_registration_email(  # pyright: ignore[reportAttributeAccessIssue]
             submission, is_payment_update=False
