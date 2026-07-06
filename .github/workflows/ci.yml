@@ -211,7 +211,7 @@ jobs:
           compilation-command: ./bin/compilemessages_js.sh
 
       # Only actually does anything in release/* branches or for pushed tags
-      - uses: open-formulieren/actions/check-missing-translations@599d67bf43a0c630d26675244a2d4774835a6897 # v1
+      - uses: open-formulieren/actions/check-missing-translations@c3a381fb81dde99084eaeeb861bb95a433b1a535 # v1.1
         with:
           messages-path: src/openforms/js/lang
           locales: nl
