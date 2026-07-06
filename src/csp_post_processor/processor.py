@@ -48,6 +48,8 @@ wysiwyg_allowed_tags = [
     "table",
     "thead",
     "tbody",
+    "colgroup",
+    "col",
     "tr",
     "th",
     "td",
@@ -70,6 +72,10 @@ _tags_with_style = [
     "h4",
     "h5",
     "h6",
+    "table",
+    "col",
+    "td",
+    "th",
 ]
 _style_attrs = [
     "id",
@@ -95,6 +101,8 @@ wysiwyg_css_properties += [
     "padding-left",
     # TinyMCE uses list-style-type for list styling
     "list-style-type",
+    # Table styling in TinyMCE
+    "border-style",
 ]
 
 wysiwyg_svg_properties = list(css_sanitizer.ALLOWED_SVG_PROPERTIES)
