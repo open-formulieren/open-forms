@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Permission
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, tag
 from django.urls import reverse
 from django.utils import translation
@@ -13,6 +14,7 @@ from digid_eherkenning.choices import DigiDAssuranceLevels
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, APITestCase
 
+from csp_post_processor.constants import NONCE_HTTP_HEADER
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.appointments.models import AppointmentsConfig
 from openforms.config.models import GlobalConfiguration
@@ -1517,6 +1519,79 @@ class FormsAPITests(APITestCase):
             """,
         )
 
+    def test_get_help_callout_page(self):
+        form = FormFactory.create(help_callout_page_display="before_start_page")
+
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        content = """
+        <p>Some content</p>
+        <a onclick="evil();">text</a>
+        """
+        image = SimpleUploadedFile(
+            "some_image.png", b"Some bytes", content_type="image/png"
+        )
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        with patch(
+            "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                help_callout_page_content=content, help_callout_page_image=image
+            ),
+        ):
+            response_data = self.client.get(
+                url, headers={NONCE_HTTP_HEADER: "some nonce"}
+            ).json()
+
+        expected_content = """
+        <p>Some content</p>
+        <a>text</a>
+        """
+
+        self.assertEqual(
+            "before_start_page", response_data["helpCalloutPage"]["display"]
+        )
+        self.assertHTMLEqual(
+            expected_content, response_data["helpCalloutPage"]["content"]
+        )
+        self.assertEqual(
+            f"{settings.BASE_URL}/media/some_image.png",
+            response_data["helpCalloutPage"]["image"],
+        )
+
+    def test_put_help_callout_page(self):
+        form = FormFactory.create(name="Test", slug="test")
+
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        with self.subTest("happy flow"):
+            data = {
+                "name": "Test",
+                "slug": "test",
+                "helpCalloutPage": {"display": "before_start_page"},
+            }
+
+            response = self.client.put(url, data=data)
+            self.assertEqual(status.HTTP_200_OK, response.status_code)
+            form.refresh_from_db()
+            self.assertEqual("before_start_page", form.help_callout_page_display)
+
+        with self.subTest("non-existing choice"):
+            data = {
+                "name": "Test",
+                "slug": "test",
+                "helpCalloutPage": {"display": "non_existing_choice"},
+            }
+
+            response = self.client.put(url, data=data)
+            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
 
 class FormsAPITranslationTests(APITestCase):
     maxDiff = None
@@ -1546,6 +1621,11 @@ class FormsAPITranslationTests(APITestCase):
             )
 
         cls.user = StaffUserFactory.create(user_permissions=["change_form"])
+
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(GlobalConfiguration.clear_cache)
 
     def test_detail_shows_translated_values_based_on_request_header(self):
         with translation.override("en"):
@@ -2125,3 +2205,22 @@ class FormsAPITranslationTests(APITestCase):
             form.confirmation_email_template.content_nl,
             "{% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
+
+    def test_help_callout_page_content(self):
+        form = FormFactory.create(translation_enabled=True)
+
+        config = GlobalConfiguration.get_solo()
+        config.help_callout_page_content_nl = "Nederlands"
+        config.help_callout_page_content_en = "English"
+        config.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        for language, expected in (("nl", "Nederlands"), ("en", "English")):
+            with self.subTest(language=language):
+                response = self.client.get(url, headers={"Accept-Language": language})
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertEqual(response.headers["Content-Language"], language)
+                data = response.json()
+                self.assertEqual(expected, data["helpCalloutPage"]["content"])

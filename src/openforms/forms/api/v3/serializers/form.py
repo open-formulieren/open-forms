@@ -32,6 +32,7 @@ from openforms.variables.service import get_static_variables
 from ....api.serializers.form import (
     FormLiteralsSerializer,
     FormRegistrationBackendSerializer,
+    HelpCalloutPageSerializer,
     SubmissionsRemovalOptionsSerializer,
 )
 from ....constants import FormTypeChoices
@@ -99,6 +100,10 @@ class FormSerializer(serializers.ModelSerializer):
 
     registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
 
+    help_callout_page = HelpCalloutPageSerializer(
+        source="*", required=False, allow_null=True
+    )
+
     _nested_fields = (
         "confirmation_email_template",
         "formstep_set",
@@ -150,6 +155,7 @@ class FormSerializer(serializers.ModelSerializer):
             "display_main_website_link",
             "include_confirmation_page_content_in_pdf",
             "translations",
+            "help_callout_page",
         )
         extra_kwargs = {
             "uuid": {  # retrieved from the context passed through from the view

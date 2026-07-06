@@ -27,6 +27,7 @@ export default {
       askStatementOfTruth: 'global_setting',
       appointmentOptions: null,
       authBackends: [],
+      helpCalloutPage: {display: 'never', content: ''},
     },
     onChange: fn(),
     availableAuthPlugins: [
@@ -101,6 +102,7 @@ export const RegularFormExample = {
           },
         },
       ],
+      helpCalloutPage: {display: 'never', content: ''},
     },
     selectedAuthPlugins: ['digid'],
   },
@@ -152,6 +154,7 @@ export const AuthenticationPluginWithOptionsModal = {
           },
         },
       ],
+      helpCalloutPage: {display: 'never', content: ''},
     },
     selectedAuthPlugins: ['digid'],
   },

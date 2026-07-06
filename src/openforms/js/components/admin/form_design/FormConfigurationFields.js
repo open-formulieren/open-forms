@@ -15,7 +15,7 @@ import {getTranslatedChoices} from 'utils/i18n';
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 import AuthPluginField from './AuthPluginField';
 import AuthPluginOptions from './AuthPluginOptions';
-import {FORM_TYPES} from './constants';
+import {FORM_TYPES, HELP_CALLOUT_PAGE_DISPLAY_CHOICES} from './constants';
 import TYPES from './types';
 
 const SUMBISSION_ALLOWED_CHOICES = [
@@ -514,6 +514,55 @@ const FeatureFields = ({formType, translationEnabled, suspensionAllowed, onChang
   );
 };
 
+const HelpOptionsFields = ({
+  helpCalloutPageDisplay,
+  helpCalloutPageContentConfigured,
+  onChange,
+}) => {
+  const intl = useIntl();
+
+  return (
+    <Fieldset
+      title={
+        <FormattedMessage
+          description="Help/contact options fieldset title"
+          defaultMessage="Help/contact options"
+        />
+      }
+      collapsible
+      initialCollapsed
+    >
+      <FormRow>
+        <Field
+          name="form.helpCalloutPage.display"
+          label={
+            <FormattedMessage
+              description="Help callout page display setting"
+              defaultMessage="Help callout page display"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              description="Help callout page display setting help text"
+              defaultMessage={`When to display the help callout page. Note that this field is
+              disabled when the help callout page content in the global configuration is not
+              specified.`}
+            />
+          }
+          disabled={!helpCalloutPageContentConfigured}
+        >
+          <Select
+            choices={getTranslatedChoices(intl, HELP_CALLOUT_PAGE_DISPLAY_CHOICES)}
+            value={helpCalloutPageContentConfigured ? helpCalloutPageDisplay : 'never'}
+            onChange={onChange}
+            disabled={!helpCalloutPageContentConfigured}
+          />
+        </Field>
+      </FormRow>
+    </Fieldset>
+  );
+};
+
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
@@ -547,6 +596,7 @@ const FormConfigurationFields = ({
     suspensionAllowed,
     askPrivacyConsent,
     askStatementOfTruth,
+    helpCalloutPage,
   } = form;
   const intl = useIntl();
 
@@ -763,6 +813,14 @@ const FormConfigurationFields = ({
         askStatementOfTruth={askStatementOfTruth}
         onChange={onChange}
       />
+
+      {isRegular && (
+        <HelpOptionsFields
+          helpCalloutPageDisplay={helpCalloutPage.display}
+          helpCalloutPageContentConfigured={!!helpCalloutPage.content}
+          onChange={onChange}
+        />
+      )}
     </>
   );
 };
@@ -796,6 +854,11 @@ FormConfigurationFields.propTypes = {
         options: PropTypes.object,
       })
     ).isRequired,
+    helpCalloutPage: PropTypes.shape({
+      display: PropTypes.oneOf(HELP_CALLOUT_PAGE_DISPLAY_CHOICES.map(option => option[0]))
+        .isRequired,
+      content: PropTypes.string,
+    }),
   }).isRequired,
   onChange: PropTypes.func.isRequired,
   availableAuthPlugins: PropTypes.arrayOf(TYPES.AuthPlugin).isRequired,
