@@ -36,6 +36,7 @@ def mark_children_as_disabled(component_configuration, action):
             }
         )
     else:
+        children = []
         component_type = component_configuration["type"]
 
         if component_type == "fieldset":
@@ -45,7 +46,7 @@ def mark_children_as_disabled(component_configuration, action):
             children = [
                 child
                 for column in component_configuration["columns"]
-                for child in column.get("components")
+                for child in column.get("components", [])
             ]
 
         for child in children:
