@@ -156,12 +156,17 @@ class FormVariableManager(models.Manager["FormVariable"]):
         )
         stale_variables.delete()
 
+        # Dynamically resolve the Form model so that this manager can actually be used
+        # in migrations/migration tests.
+        FormModel = self.model._meta.get_field("form").related_model
+        assert isinstance(FormModel, type(models.Model))
+
         # Check which forms are affected and patch them up.
         # It is irrelevant whether
         # the form definition is re-usable or not, though semantically at most one form step
         # should be found for single-use form definitions.
         affected_forms = (
-            Form.objects.filter(formstep__form_definition=form_definition)
+            FormModel.objects.filter(formstep__form_definition=form_definition)
             .order_by("id")
             .distinct("id")
             .values_list("pk", flat=True)
@@ -207,8 +212,11 @@ class FormVariableManager(models.Manager["FormVariable"]):
                     continue
 
                 # otherwise, check if we need to update or can skip this variable to
-                # make the upsert query smaller
-                if not existing_variable.matches(desired_variable):
+                # make the upsert query smaller.
+                #
+                # the method is not called directly so that this code still works in
+                # migrations and migration tests which work with historical models 😬
+                if not FormVariable.matches(existing_variable, desired_variable):
                     # it needs to be updated
                     _add_variable(desired_variable)
 

@@ -112,7 +112,7 @@ class SubmissionFileAttachmentManager(models.Manager):
                     temporary_file=upload,
                     submission_variable=submission_variable,
                     _component_configuration_path=configuration_path,
-                    _component_data_path=data_path,
+                    _data_path=data_path,
                 ),
                 False,
             )
@@ -128,7 +128,7 @@ class SubmissionFileAttachmentManager(models.Manager):
                     original_name=upload.file_name,
                     file_name=file_name,
                     _component_configuration_path=configuration_path,
-                    _component_data_path=data_path,
+                    _data_path=data_path,
                 )
             return (instance, True)
 
@@ -163,7 +163,9 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         to="SubmissionValueVariable",
         on_delete=models.CASCADE,
     )
-    # The whole path and not just the key is needed for nested fields.
+    # DeprecationWarning: replaced by the component_key field and data is migrated in
+    # 4.0. We're keeping this field around "just in case" and will drop it in 4.1 at the
+    # earliest.
     _component_configuration_path = models.CharField(
         verbose_name=_("component configuration path"),
         help_text=_(
@@ -172,12 +174,34 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         max_length=255,
         blank=True,
     )
-    # Needed to distinguish in which iteration of a repeating group a file was attached
-    _component_data_path = models.CharField(
+    # _data_path and _component_key allow us to match the upload with the submission
+    # data, which is necessary for registration plugins and submission post-processing.
+    # Note that the _component_key semantics rely on our frontend enforcing unique keys
+    # in a form, even when the file component is inside an editgrid (something that is
+    # not necessary) - this is however currently required and relied on for registration
+    # options for files, so if this behaviour changes, don't forget about that code!
+    # XXX: would be nice we can drop this global-uniqueness requirement, but then we
+    # have to store abstract data paths (editgrid item paths without the actual
+    # iteration identifiers -> editgrid.$i.file becomes editgrid.file, like
+    # formio conditionals).
+
+    # TODO: should probably be TextField to be future proof
+    # TODO: add constraint to ensure this is not empty - in practice it isn't, and a
+    # datamigration can enforce it
+    _data_path = models.CharField(
         verbose_name=_("component data path"),
         help_text=_("Path to the attachment in the submission data."),
         max_length=255,
         blank=True,
+    )
+    component_key = models.TextField(
+        _("component key"),
+        help_text=_(
+            "Key of the file component for which the upload was made. Most of the time "
+            "this will be identical to the submission_variable.key, except when the "
+            "file component is inside an edit grid - the variable then points to the "
+            "edit grid."
+        ),
     )
 
     content = PrivateMediaFileField(
@@ -203,7 +227,6 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
     class Meta:
         verbose_name = _("submission file attachment")
         verbose_name_plural = _("submission file attachments")
-        # see https://docs.djangoproject.com/en/2.2/topics/db/managers/#using-managers-for-related-object-access
         base_manager_name = "objects"
 
     def __str__(self):
@@ -227,6 +250,33 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
             while chunk := file_content.read(chunk_size):
                 sha256.update(chunk)
         return sha256.hexdigest()
+
+    @property
+    def data_path(self) -> str:
+        """
+        Fully qualified data path to the Formio component value.
+
+        The data path points from the root of the submission data object to the leaf
+        node (FileComponent) value. It is necessary to know which attachments belong to
+        which item in an editgrid (repeating group). For file components *not* in an
+        edit grid, the data path is effectivley identical to the key of the submission
+        variable the attachment belongs to, which is linked to the file component
+        itself.
+
+        Example values:
+
+        * ``"myFile"`` - points to a file component in the root or inside a layout
+          component like fieldset or columns. Note that the keys of layout components
+          are not part of the data path.
+        * ``"parent.myFile"`` - inside a nested data structure, because a period is used
+          in the file component key
+        * ``editgrid.3.someFile`` - points to a file component used in the fourth item
+          in an edit grid. Note that editgrids could be nested, and that in theory it's
+          also possible this is not an editgrid, but a hardcoded key with this number,
+          which *also* creates a nested datastructure:
+          ``{"editgrid": {"3": {"someFile": []}}}`` (this is cursed).
+        """
+        return self._data_path or self.submission_variable.key
 
     @cached_property
     def component(self) -> FileComponent | None:
