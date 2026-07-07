@@ -9,6 +9,8 @@ deelformulier dat we een **formulier definitie** noemen. Een **formulier**
 bestaat daarom uit 1 of meerdere **formulier definities**, die de stappen van
 het formulier vormen.
 
+.. note:: Single step forms consist of one step and therefore of one form definition.
+
 Een **formulier definitie** kan hergebruikt worden in andere formulieren.
 
 Formulierenoverzicht
@@ -28,6 +30,7 @@ U kunt vanaf deze pagina:
   * Kopiëren
   * Onderhoudsmodus aan zetten
   * Onderhoudsmodus uit zetten
+  * Export forms
 
 Nieuw formulier aanmaken
 ========================
@@ -40,7 +43,8 @@ worden. Onder de tabbladen zit de knop **Opslaan**. Pas als u op deze knop heeft
 gedrukt wordt het formulier daadwerkelijk opgeslagen.
 
 .. note:: Sommige formulieropties kunnen ervoor zorgen dat een tabblad wel of niet
-   beschikbaar is. Uw scherm kan er dus wat anders uit zien dan in de screenshots.
+   beschikbaar is. Uw scherm kan er dus wat anders uit zien dan in de screenshots. An
+   example is the different type of forms (*regular*, *appointment* and *single step*).
 
 Hieronder gaan we in op elk tabblad.
 
@@ -54,40 +58,25 @@ Formulier
     Standaard staat **Actief** aangevinkt. Dit betekent dat zodra u een
     formulier opslaat, deze bereikbaar is voor iedereen.
 
-In dit tabblad worden de algemene formulier gegevens weergegeven.
+In dit tabblad worden de algemene formulier gegevens weergegeven. Below you can see some
+of the available sections regarding the form configuration (always based on the type of
+the form).
 
-* **Uniek ID**: Een ID dat het formulier technisch identificeert maar is verder
-  niet zichtbaar voor eindgebruikers.
-* **Naam**: Wordt getoond aan de eindgebruiker en staat altijd bovenaan het
-  formulier en het stappen overzicht.
-* **URL-deel**: Dit is een deel van de URL die zichtbaar is in de navigatiebalk
-  van de browser. Een *URL-deel* ``demo-formulier`` kan in de browser te zien
-  zijn als ``https://klant.open-formulieren.nl/demo-formulier``.
+* **Form details**: The general form details like the name and the explanation of the form.
+* **Introduction page**: If configured, an introduction page can be shown before the real
+  form is started.
+* **Form configuration**: Some basic information/configuration concerning the identity
+  of the form, like the type, the unique id, category etc.
+* **Features**: Optional/additional features like enabling form translation.
 * **Inlogopties**: Als voor een formulier ingelogd moet worden kan een van de
   beschikbare inlog opties worden aangevinkt.
 
   Zie ook: :ref:`configuration_authentication_index`
 
-* **Toon voortgang**: Vink aan om de stappen bij een formulier te tonen. Typisch
-  kan deze worden uitgevinkt indien er een slechts beperkt aantal stappen is.
-
-* **Actief**: Vink aan om het formulier beschikbaar te maken voor de
-  buitenwereld.
-
-* **Onderhoudsmodus**: Vink aan om het formulier in onderhoudsmodus te zetten.
-  Als het formulier in onderhoudsmodus staat, kan het formulier niet gestart
-  worden en verschijnt er een melding voor de eindgebruiker. Beheerders kunnen
-  het formulier blijven gebruiken.
-
-* **Inzenden mogelijk**: Vink aan om eindgebruikers het formulier te laten
-  versturen. Sommige formulieren dienen niet verstuurd te worden maar geven
-  bijvoorbeeld alleen informatie of verwijzingen naar andere formulieren. In dat
-  geval vinkt u deze optie uit.
-
-* **Is afspraakformulier?**: Vink aan om het formulier als _`afspraakformulier` in te
-  stellen. Afspraken dienen hiervoor :ref:`geconfigureerd <configuration_appointment_index>`
-  te zijn. Wanneer deze optie inschakeld is, dan kunt u geen formulierstappen, registratie,
-  product/betaling, logica of variabelen instellen.
+* **Presentation/appearance**: Settings regarding the appearance of a form, like a specific
+  theme that should be used.
+* **Availability**: The form details that specify when/if a form is active.
+* **Submissions settings**: Form configuration regarding the submission.
 
 .. note::
 
@@ -108,9 +97,12 @@ In dit tabblad worden de algemene formulier gegevens weergegeven.
 Stappen en velden
 -----------------
 
+.. note:: Available only in the *regular* and the *single step* types of form.
+
 .. image:: _assets/form_steps.png
 
 In dit tabblad kunnen de formulier stappen worden geconfigureerd.
+
 
 * U kunt een **stap toevoegen** door aan de linkerkant op het **+** icoon te
   klikken. U krijgt vervolgens de keuze om een bestaande formulier definitie
@@ -123,12 +115,14 @@ In dit tabblad kunnen de formulier stappen worden geconfigureerd.
   icoontjes voor de stap naam.
 * U kunt de **details** van een stap bekijken door op de stap naam te klikken.
 
+.. note:: The *single step* form slightly differs from the above since we only have one
+          step.
 
 Het tabblad bestaat uit 2 secties: **(Herbruikbare) stapgegevens** en
 **Velden**. Beide secties horen bij de huidige (rechts geselecteerde) formulier
 stap.
 
-**(Herbruikbare) stapgegevens**
+**(Herbruikbare/major) stapgegevens**
 
 * **Naam**: Wordt als stap in stappen overzicht en bovenaan het formulier.
 * **URL-deel**: Dit is een deel van de URL die zichtbaar is in de navigatiebalk
@@ -147,6 +141,8 @@ stap slepen en configureren. Kijk voor alle mogelijkheden naar het overzicht van
 
 Bevestiging
 -----------
+
+.. note:: Available in all types of form.
 
 In dit tabblad kan de bevestiging, die te zien is na het afronden van het
 formulier, worden aangepast alsmede de e-mailbevestiging die gestuurd word naar
@@ -176,15 +172,26 @@ e-mailbevestiging te versturen.
 Registratie
 -----------
 
+.. note:: Available only in the *regular* and the *single step* types of form.
+
 In dit tabblad kunt u aangeven op welke manier uw inzendingen moeten worden
 geregistreerd. Alle inzendingen komen altijd binnen bij Open Formulieren zelf
 maar kunnen daarnaast doorgezet worden naar een extern systeem.
 
 Zie ook: :ref:`configuration_registration_index`
 
+Submissions
+-----------
+
+.. note:: Available in all types of form.
+
+Optional submission limit per form. If set, this can be the limit for the maximum allowed
+submissions for a specific form.
 
 Knopteksten
 -----------
+
+.. note:: Available only in *regular* and *appointment* types of form.
 
 U kunt de knoppen die standaard in het formulier getoond worden een ander label
 geven. De waarden die hier staan overschrijven de labels die globaal zijn
@@ -193,6 +200,8 @@ geconfigureerd.
 
 Product en betaling
 -------------------
+
+.. note:: Available only in *regular* type of form.
 
 Hier kunt u een **Product** kiezen dat gekoppeld is aan het formulier. Het
 product bevat een prijs die gebruikt kan worden als betaald moet worden voor
@@ -255,12 +264,17 @@ Zie ook: :ref:`configuration_general_payment_flow`
 Gegevens opschonen
 ------------------
 
+.. note:: Available in all types of forms.
+
 In dit tabblad kunt u de standaardwaarden voor het opschonen van inzendingen
 overschrijven.
 
 
 Logica
 ------
+
+.. note:: Available only in *regular* and *single step* types of form. Each type of form has
+          its own available actions though.
 
 In dit tabblad kunnen regels worden gedefinieerd die, afhankelijk van de
 gegevens die de gebruiker invult, zowel de inhoud als het gedrag van het
@@ -270,26 +284,18 @@ Logica geeft u krachtige mogelijkheden om het formulier dynamischer te maken.
 Voorbeelden en uitleg over hierover vind u onder :ref:`manual_logic`.
 
 
-Afspraken
----------
-
-.. warning:: Deze manier van afspraken configureren wordt uitgefaseerd en zal in versie
-   3.0 van Open Formulieren verwijderd worden. U kunt beter de
-   :ref:`nieuwe afsprakenconfiguratie <afspraakformulier>` gebruiken.
-
-Als u een formulier wilt koppelen aan een afsprakensysteem, dan kunt u hier
-aangeven welke velden opgenomen moeten worden in de afspraak. Bij de meeste
-afspraaksystemen zijn alle velden verplicht.
-
-Zie ook: :ref:`configuration_appointment_index`
-
-.. note::
-
-   U kunt hier niet kiezen voor een gekoppeld afspraaksysteem. Deze is alleen
-   globaal te configureren.
-
-
 Variabelen
 ----------
 
+.. note:: Available only in *regular* and *single step* types of form.
+
 Variabelen hebben hun eigen :ref:`documentatiepagina <manual_forms_variables>`.
+
+
+Advanced configuration
+----------------------
+
+.. note:: Available only in *regular* type of form.
+
+When specific prefill plugins are enabled (*BRP*, *Family Members* etc.), this is available
+for further configuration.

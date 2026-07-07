@@ -12,6 +12,7 @@ Voorbeelden
    logic_rules
    advanced_logic
    appointment_form
+   single_step_form
    prefill
    objects_prefill
    family_members_prefill
