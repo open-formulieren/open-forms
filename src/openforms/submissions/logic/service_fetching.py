@@ -81,7 +81,7 @@ def perform_service_fetch(
             # XXX raise warning if len(result) > 1 ?
             value = jq.compile(expression).input(raw_value).first()
         case DataMappingTypes.json_logic, expression:
-            value = jsonLogic(expression, raw_value)
+            value = jsonLogic(expression, raw_value, use_var_undefined=True)
         case _:
             value = raw_value
 

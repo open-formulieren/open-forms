@@ -12,7 +12,7 @@ from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 
 from glom import assign
-from json_logic import jsonLogic
+from json_logic import UNDEFINED_VALUE, jsonLogic
 
 from openforms.dmn.service import evaluate_dmn
 from openforms.formio.service import (
@@ -430,7 +430,17 @@ class VariableAction(ActionOperation):
         data_for_visible_state: FormioData,
     ) -> DataMapping:
         with log_errors(self.value, self.rule):
-            return {self.variable: jsonLogic(self.value, context.data)}  # pyright: ignore[reportArgumentType]
+            result = jsonLogic(
+                self.value,  # pyright: ignore[reportArgumentType]
+                context.data,  # pyright: ignore[reportArgumentType]
+                use_var_undefined=True,
+            )
+            # variables with None/null values are returned as UNDEFINED_VALUE when
+            # use_var_undefined is set to True and they should not be returned
+            if result is UNDEFINED_VALUE:
+                return {}
+
+            return {self.variable: result}
 
 
 class DataMappingsConfig(TypedDict):
