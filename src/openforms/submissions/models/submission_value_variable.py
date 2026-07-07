@@ -486,6 +486,8 @@ class SubmissionValueVariable(models.Model):
         null=True,
         blank=True,
     )
+    # this is the component definition *as defined in the form definition configuration*
+    # without any logic side effects applied to it
     configuration = models.JSONField(
         _("Form.io component configuration"),
         help_text=_("The component configuration as Form.io JSON schema"),
