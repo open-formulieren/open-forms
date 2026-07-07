@@ -14,6 +14,8 @@ from json_logic.meta.expressions import destructure
 from json_logic.typing import JSON
 from tabulate import tabulate
 
+from openforms.forms.constants import LogicActionTypes
+
 SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
 
@@ -214,28 +216,53 @@ def report_rules() -> bool:
             }
             # Steps on which the rule will be executed
             executing_steps = rule.steps
-            if not (input_steps and executing_steps):
+            if input_steps and executing_steps:
                 # Input steps and/or executing steps can be empty if we are only dealing
                 # with user-defined variables. We don't have to do anything in that
                 # case.
-                continue
 
-            # If the earliest executing step is before the last step of the input
-            # variables, the input value(s) will not be available yet -> risk of
-            # difference in behavior.
-            if (
-                min(executing_steps, key=lambda step: step.order).order
-                < max(input_steps, key=lambda step: step.order).order
-            ):
-                data.append(
-                    (
-                        form.admin_name,
-                        form.pk,
-                        rule.order,
-                        "-",
-                        "variables from future steps",
+                # If the earliest executing step is before the last step of the input
+                # variables, the input value(s) will not be available yet -> risk of
+                # difference in behavior.
+                if (
+                    min(executing_steps, key=lambda step: step.order).order
+                    < max(input_steps, key=lambda step: step.order).order
+                ):
+                    data.append(
+                        (
+                            form.admin_name,
+                            form.pk,
+                            rule.order,
+                            "-",
+                            "variables from future steps",
+                        )
                     )
-                )
+
+            ###################################
+            ### VARIABLES USED AS DMN INPUT ###
+            ###################################
+            for action in rule.actions:
+                if action["action"]["type"] != LogicActionTypes.evaluate_dmn:
+                    continue
+                # raw config lookup so that we can also run this on older versions of
+                # open forms
+                input_variable_keys = {
+                    mapping["form_variable"]
+                    for mapping in action["action"]["config"]["input_mapping"]
+                }
+                if (
+                    variable_names := components_with_affected_visibility
+                    & input_variable_keys
+                ):
+                    data.append(
+                        (
+                            form.admin_name,
+                            form.pk,
+                            rule.order,
+                            ", ".join(variable_names),
+                            "used in DMN input but may be missing",
+                        )
+                    )
 
     if data:
         click.echo(

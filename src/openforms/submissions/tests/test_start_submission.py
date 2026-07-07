@@ -21,11 +21,14 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
+    FormLogicFactory,
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.variables.constants import FormVariableDataTypes
 
 from ..constants import SUBMISSIONS_SESSION_KEY, SubmissionValueVariableSources
 from ..models import Submission, SubmissionValueVariable
@@ -272,3 +275,88 @@ class SubmissionStartTests(APITestCase):
 
         response = self.client.post(self.endpoint, body)
         self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    @tag("gh-6275")
+    def test_start_submission_with_dmn_action_using_future_inputs(self):
+        """
+        Assert that DMN logic does not crash starting a submission.
+
+        Test taken from PR#6407 where the regression was observed.
+
+        At the time of response serialization, logic is being evaluated for the form,
+        which caused crashes in the DMN evaluation because it tries to read variable
+        values for variables of the first step, which of course don't exist yet at
+        this stage.
+        """
+        # no VCR here because we don't expect any calls to be made :-)
+        endpoint = reverse_lazy("api:submission-list")
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            is_single_step_form=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "invoiceAmount",
+                        "label": "Invoice Amount",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textField",
+                        "label": "Textfield",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="test",
+            user_defined=True,
+            data_type=FormVariableDataTypes.string,
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "component": "",
+                    "action": {
+                        "type": LogicActionTypes.evaluate_dmn,
+                        "config": {
+                            "plugin_id": "camunda7",
+                            "decision_definition_id": "invoiceClassification",
+                            "decision_definition_version": "2",
+                            "input_mapping": [
+                                {
+                                    "form_variable": "invoiceAmount",
+                                    "dmn_variable": "amount",
+                                },
+                                {
+                                    "form_variable": "textField",
+                                    "dmn_variable": "invoiceCategory",
+                                },
+                            ],
+                            "output_mapping": [
+                                {
+                                    "form_variable": "test",
+                                    "dmn_variable": "invoiceClassification",
+                                }
+                            ],
+                        },
+                    },
+                }
+            ],
+        )
+        form.apply_logic_analysis()
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        submission_body = {
+            "form": f"http://testserver.com{form_url}",
+            "formUrl": "http://testserver.com/my-form",
+            "anonymous": True,
+        }
+
+        response = self.client.post(
+            endpoint, submission_body, headers={"Host": "testserver.com"}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
