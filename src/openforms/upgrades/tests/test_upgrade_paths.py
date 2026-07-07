@@ -2,6 +2,7 @@ from django.test import SimpleTestCase, TestCase
 
 from unittest_parametrize import ParametrizedTestCase, parametrize
 
+from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -188,3 +189,66 @@ class ReportLogicWithDeprecatedClearOnHideBehaviorTests(ParametrizedTestCase, Te
         )
 
         self.assertTrue(self.script.execute())
+
+    def test_with_dmn_action_referring_to_clear_on_hide_variables(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "invoiceAmount",
+                        "label": "Invoice Amount",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textField",
+                        "label": "Textfield",
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                    "component": "textField",
+                }
+            ],
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "component": "",
+                    "action": {
+                        "type": LogicActionTypes.evaluate_dmn,
+                        "config": {
+                            "plugin_id": "camunda7",
+                            "decision_definition_id": "invoiceClassification",
+                            "decision_definition_version": "2",
+                            "input_mapping": [
+                                {
+                                    "form_variable": "invoiceAmount",
+                                    "dmn_variable": "amount",
+                                },
+                                {
+                                    "form_variable": "textField",
+                                    "dmn_variable": "invoiceCategory",
+                                },
+                            ],
+                            "output_mapping": [],
+                        },
+                    },
+                }
+            ],
+        )
+
+        self.assertFalse(self.script.execute())
