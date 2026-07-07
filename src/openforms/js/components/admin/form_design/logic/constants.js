@@ -122,6 +122,20 @@ const REGULAR_FORM_ACTION_TYPES = [
 ];
 const SINGLE_STEP_FORM_ACTION_TYPES = [
   [
+    'variable',
+    defineMessage({
+      description: 'action type "variable" label',
+      defaultMessage: 'change the value of a variable/component',
+    }),
+  ],
+  [
+    'evaluate-dmn',
+    defineMessage({
+      description: 'action type "evaluate-dmn" label',
+      defaultMessage: 'Evaluate DMN',
+    }),
+  ],
+  [
     'set-registration-backend',
     defineMessage({
       description: 'action type "set-registration-backend" label',

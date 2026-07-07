@@ -1,0 +1,138 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.33.0
+    method: GET
+    uri: http://localhost:8080/engine-rest/decision-definition?key=invoiceClassification&version=2
+  response:
+    body:
+      string: '[{"id":"invoiceClassification:2:cad9e468-8958-11f0-83f9-5236f7f49fcc","key":"invoiceClassification","category":"http://camunda.org/schema/1.0/dmn","name":"Invoice
+        Classification","version":2,"resource":"invoiceBusinessDecisions.dmn","deploymentId":"cad32da2-8958-11f0-83f9-5236f7f49fcc","tenantId":null,"decisionRequirementsDefinitionId":"invoiceBusinessDecisions:2:cad9bd57-8958-11f0-83f9-5236f7f49fcc","decisionRequirementsDefinitionKey":"invoiceBusinessDecisions","historyTimeToLive":null,"versionTag":null}]'
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 06 Jul 2026 12:05:58 GMT
+      Keep-Alive:
+      - timeout=20
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: ''
+- request:
+    body: '{"variables": {"amount": {"type": "Null", "value": null}, "invoiceCategory":
+      {"type": "String", "value": ""}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '110'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.33.0
+    method: POST
+    uri: http://localhost:8080/engine-rest/decision-definition/invoiceClassification:2:cad9e468-8958-11f0-83f9-5236f7f49fcc/evaluate
+  response:
+    body:
+      string: '[]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 06 Jul 2026 12:05:58 GMT
+      Keep-Alive:
+      - timeout=20
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.33.0
+    method: GET
+    uri: http://localhost:8080/engine-rest/decision-definition?key=invoiceClassification&version=2
+  response:
+    body:
+      string: '[{"id":"invoiceClassification:2:cad9e468-8958-11f0-83f9-5236f7f49fcc","key":"invoiceClassification","category":"http://camunda.org/schema/1.0/dmn","name":"Invoice
+        Classification","version":2,"resource":"invoiceBusinessDecisions.dmn","deploymentId":"cad32da2-8958-11f0-83f9-5236f7f49fcc","tenantId":null,"decisionRequirementsDefinitionId":"invoiceBusinessDecisions:2:cad9bd57-8958-11f0-83f9-5236f7f49fcc","decisionRequirementsDefinitionKey":"invoiceBusinessDecisions","historyTimeToLive":null,"versionTag":null}]'
+    headers:
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 06 Jul 2026 12:05:58 GMT
+      Keep-Alive:
+      - timeout=20
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: ''
+- request:
+    body: '{"variables": {"amount": {"type": "Integer", "value": 100}, "invoiceCategory":
+      {"type": "String", "value": "Misc"}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '116'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.33.0
+    method: POST
+    uri: http://localhost:8080/engine-rest/decision-definition/invoiceClassification:2:cad9e468-8958-11f0-83f9-5236f7f49fcc/evaluate
+  response:
+    body:
+      string: '[{"invoiceClassification":{"type":"String","value":"day-to-day expense","valueInfo":{}}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 06 Jul 2026 12:05:58 GMT
+      Keep-Alive:
+      - timeout=20
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: ''
+version: 1

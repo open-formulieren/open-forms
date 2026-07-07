@@ -46,6 +46,7 @@ const VariableMappingRow = ({
   translatePropertyChoices,
   propertySelectLabel,
   onRemove,
+  filter,
   includeStaticVariables = false,
   alreadyMapped = [],
   rowCheck = undefined,
@@ -81,6 +82,7 @@ const VariableMappingRow = ({
               description: 'Accessible label for (form) variable dropdown',
               defaultMessage: 'Form variable',
             })}
+            filter={filter}
           />
         </Field>
       </td>
@@ -197,6 +199,11 @@ VariableMappingRow.propTypes = {
    * Validation errors from context
    */
   errors: PropTypes.objectOf(PropTypes.string),
+  /**
+   * Optional callback function to filter available variables.
+   *
+   */
+  filter: PropTypes.func,
 };
 
 /**
@@ -219,6 +226,7 @@ const VariableMapping = ({
   propertySelectLabel,
   includeStaticVariables = false,
   rowCheck,
+  filter,
 }) => {
   const {values, getFieldProps} = useFormikContext();
   const {value: mappings = []} = getFieldProps(name);
@@ -267,6 +275,7 @@ const VariableMapping = ({
                   alreadyMapped={alreadyMapped}
                   rowCheck={rowCheck}
                   errors={relatedErrors?.[index]}
+                  filter={filter}
                 />
               ))}
             </tbody>
@@ -359,6 +368,11 @@ VariableMapping.propTypes = {
    * of error messages, where `intl` is the context from react-intl's `useIntl()` hook.
    */
   rowCheck: PropTypes.func,
+  /**
+   * Optional callback function to filter available variables.
+   *
+   */
+  filter: PropTypes.func,
 };
 
 export default VariableMapping;
