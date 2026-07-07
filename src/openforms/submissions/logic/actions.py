@@ -707,6 +707,15 @@ class EvaluateDMNAction(ActionOperation):
         *,
         data_for_visible_state: FormioData,
     ) -> DataMapping | None:
+        # evaluation may be triggered/requested when not all input variables are
+        # available yet, in particular when a submission is being started. Normal
+        # (step-level) evaluation should not run into these situations, unless something
+        # is broken with the logic dependency graph building.
+        # If not all inputs are available yet, we abort early without doing anything,
+        # rather than guessing some kind of magic fallback value.
+        if any(item["form_variable"] not in context for item in self.input_mapping):
+            return None
+
         # Mapping from form variables to DMN inputs
         dmn_inputs = {
             item["dmn_variable"]: context[item["form_variable"]]
