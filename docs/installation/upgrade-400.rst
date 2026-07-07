@@ -313,6 +313,15 @@ differently. This script is still available in 4.0, and can be executed with usi
     # in the container via ``docker exec`` or ``kubectl exec``:
     python /app/bin/report_logic_with_deprecated_clear_on_hide_behavior.py
 
+DMN evaluation logic actions
+----------------------------
+
+Logic rules with actions that evaluate DMN tables behave differently if the trigger does
+not test for the presence of the input parameters. The respective evaluation will be
+skipped entirely until all the input parameters are available.
+
+Before 4.0, these would be evaluated with their implicit empty value.
+
 Removal of legacy ZGW URLs support in registration plugins
 ==========================================================
 
