@@ -326,7 +326,9 @@ def iterate_data_with_components(
     """
     if configuration.get("type") == "columns":
         for index, column in enumerate(configuration["columns"]):
-            child_configuration_path = f"{configuration_path}.columns.{index}"
+            child_configuration_path = (
+                f"{configuration_path}.columns.{index}.components"
+            )
             yield from iterate_data_with_components(  # type: ignore
                 column, data, data_path, child_configuration_path, filter_types
             )

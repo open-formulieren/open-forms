@@ -118,12 +118,17 @@ class SubmissionAttachmentTest(TestCase):
                 "type": "columns",
                 "columns": [
                     {
-                        "key": "fileInColumn",
-                        "label": "fileInColumn",
-                        "type": "file",
-                        "file": {"type": []},
-                        "filePattern": "",
-                    }
+                        "size": 6,
+                        "components": [
+                            {
+                                "key": "fileInColumn",
+                                "label": "fileInColumn",
+                                "type": "file",
+                                "file": {"type": []},
+                                "filePattern": "",
+                            }
+                        ],
+                    },
                 ],
             },
             {
@@ -147,9 +152,9 @@ class SubmissionAttachmentTest(TestCase):
             {
                 "my_file": (components[1], [upload], "components.1"),
                 "fileInColumn": (
-                    components[2]["columns"][0],
+                    components[2]["columns"][0]["components"][0],
                     [upload_in_column],
-                    "components.2.columns.0",
+                    "components.2.columns.0.components.0",
                 ),
                 "fileInFieldset": (
                     components[3]["components"][0],
