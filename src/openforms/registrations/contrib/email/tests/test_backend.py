@@ -157,16 +157,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submission_step=step,
             file_name="my-foo.bin",
             content_type="application/foo",
-            _component_configuration_path="components.2",
-            _component_data_path="file1",
         )
         submission_file_attachment_2 = SubmissionFileAttachmentFactory.create(
             submission_variable__key="file2",
             submission_step=step,
             file_name="my-bar.txt",
             content_type="text/bar",
-            _component_configuration_path="components.3",
-            _component_data_path="file2",
         )
         email_form_options: Options = {
             "to_emails": ["foo@bar.nl", "bar@foo.nl"],
@@ -552,8 +548,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submission_variable__key="someFile",
             file_name="my-foo.bin",
             content_type="application/foo",
-            _component_configuration_path="components.1",
-            _component_data_path="someFile",
         )
         assert submission.payment_required
 

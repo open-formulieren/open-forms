@@ -196,26 +196,29 @@ class FileNode(ComponentNode):
         if self.mode != RenderModes.registration:
             return super().display_value
 
-        files = []
-        attachments = self.renderer.submission.get_merged_attachments()
-        value = attachments.get(self.configuration_path)
+        # determine the data path to this file component, from the root of the
+        # submission data
+        data_path = f"{self.path}.{self.key}" if self.path else self.key
 
-        if value:
-            for submission_file_attachment in value:
-                component_path = f"{self.path}.{self.key}" if self.path else self.key
-                if submission_file_attachment._component_data_path != component_path:
-                    continue
+        # filter the uploads done for this particular file component
+        attachments = [
+            attachment
+            for attachment in self.renderer.submission.attachments
+            if attachment.data_path == data_path
+        ]
+        files: list[tuple[furl, str]] = []
 
-                display_name = submission_file_attachment.get_display_name()
-                download_link = build_absolute_uri(
-                    reverse(
-                        "submissions:attachment-download",
-                        kwargs={"uuid": submission_file_attachment.uuid},
-                    )
+        for attachment in attachments:
+            display_name = attachment.get_display_name()
+            download_link = build_absolute_uri(
+                reverse(
+                    "submissions:attachment-download",
+                    kwargs={"uuid": attachment.uuid},
                 )
-                url = furl(download_link)
-                url.args["hash"] = submission_file_attachment.content_hash
-                files.append((url, display_name))
+            )
+            url = furl(download_link)
+            url.args["hash"] = attachment.content_hash
+            files.append((url, display_name))
 
         if self.as_html:
             return format_html_join(

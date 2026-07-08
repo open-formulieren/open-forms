@@ -17,6 +17,7 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
     TemporaryFileUploadFactory,
 )
+from openforms.variables.constants import FormVariableDataTypes
 
 from ...typing import EditGridComponent
 from ..nodes import ComponentNode
@@ -493,8 +494,6 @@ class FormNodeTests(TestCase):
             submission_variable__key="file",
             file_name="blank-renamed.doc",
             original_name="blank.doc",
-            _component_configuration_path="components.0",
-            _component_data_path="file",
         )
 
         # Get submission data from the state
@@ -645,26 +644,26 @@ class FormNodeTests(TestCase):
         attachment1 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
             submission_variable__key="repeatingGroup",
+            submission_variable__form_variable__data_subtype=FormVariableDataTypes.editgrid,
             file_name="file1.doc",
             original_name="file1.doc",
-            _component_configuration_path="components.0.components.0",
-            _component_data_path="repeatingGroup.0.fileInRepeatingGroup",
+            component_key="fileInRepeatingGroup",
+            _data_path="repeatingGroup.0.fileInRepeatingGroup",
         )
         attachment2 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
             submission_variable__key="repeatingGroup",
+            submission_variable__form_variable__data_subtype=FormVariableDataTypes.editgrid,
             file_name="file2.doc",
             original_name="file2.doc",
-            _component_configuration_path="components.0.components.0",
-            _component_data_path="repeatingGroup.1.fileInRepeatingGroup",
+            component_key="fileInRepeatingGroup",
+            _data_path="repeatingGroup.1.fileInRepeatingGroup",
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=step,
             submission_variable__key="nested.file",
             file_name="file3.doc",
             original_name="file3.doc",
-            _component_configuration_path="components.1",
-            _component_data_path="nested.file",
         )
 
         self.assertEqual(2, submission.submissionvaluevariable_set.count())
@@ -824,18 +823,17 @@ class FormNodeTests(TestCase):
         attachment1 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
             submission_variable__key="repeatingGroup",
+            submission_variable__form_variable__data_subtype=FormVariableDataTypes.editgrid,
             file_name="attachmentInside.pdf",
             original_name="attachmentInside.pdf",
-            _component_configuration_path="components.0.components.0",
-            _component_data_path="repeatingGroup.0.attachment",
+            component_key="attachment",
+            _data_path="repeatingGroup.0.attachment",
         )
         attachment2 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
             submission_variable__key="attachment",
             file_name="attachmentOutside.pdf",
             original_name="attachmentOutside.pdf",
-            _component_configuration_path="components.1",
-            _component_data_path="attachment",
         )
 
         # Get submission data from the state
@@ -979,18 +977,20 @@ class FormNodeTests(TestCase):
         attachment_1 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
             submission_variable__key="repeatingGroup",
+            submission_variable__form_variable__data_subtype=FormVariableDataTypes.editgrid,
             file_name="file1.doc",
             original_name="file1.doc",
-            _component_configuration_path="components.0.components.0",
-            _component_data_path="repeatingGroup.0.fileInRepeatingGroup1",
+            component_key="fileInRepeatingGroup1",
+            _data_path="repeatingGroup.0.fileInRepeatingGroup1",
         )
         attachment_2 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
             submission_variable__key="repeatingGroup",
+            submission_variable__form_variable__data_subtype=FormVariableDataTypes.editgrid,
             file_name="file2.doc",
             original_name="file2.doc",
-            _component_configuration_path="components.0.components.1",
-            _component_data_path="repeatingGroup.0.fileInRepeatingGroup2",
+            component_key="fileInRepeatingGroup2",
+            _data_path="repeatingGroup.0.fileInRepeatingGroup2",
         )
 
         # Get submission data from the state
