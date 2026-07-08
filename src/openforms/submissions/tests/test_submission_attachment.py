@@ -98,7 +98,7 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(SubmissionFileAttachment.objects.count(), 1)
 
         attachment = submission_step.attachments.get()
-        self.assertEqual(attachment.form_key, "my_file")
+        self.assertEqual(attachment.component_key, "my_file")
         self.assertEqual(attachment.file_name, "my-filename.jpg")
         self.assertEqual(attachment.original_name, "my-image.jpg")
         self.assertEqual(attachment.content.read(), b"content")
@@ -924,11 +924,11 @@ class SubmissionAttachmentTest(TestCase):
 
         # verify resize
         attachment_1, attachment_2 = submission_step.attachments.all()
-        self.assertEqual(attachment_1.form_key, "my_file")
+        self.assertEqual(attachment_1.component_key, "my_file")
         self.assertEqual(attachment_1.original_name, "my-image-1.png")
         self.assertImageSize(attachment_1.content, 100, 100, "png")
 
-        self.assertEqual(attachment_2.form_key, "my_file")
+        self.assertEqual(attachment_2.component_key, "my_file")
         self.assertEqual(attachment_2.original_name, "my-image-2.png")
         self.assertImageSize(attachment_2.content, 100, 100, "png")
 

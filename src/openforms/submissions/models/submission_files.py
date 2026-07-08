@@ -6,17 +6,15 @@ import uuid
 from datetime import date, timedelta
 from typing import TYPE_CHECKING, ClassVar
 
+from django.contrib import admin
 from django.core.files.base import File
 from django.db import models
 from django.utils import timezone
-from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 import structlog
 from privates.fields import PrivateMediaFileField
-from typing_extensions import deprecated
 
-from openforms.formio.typing import FileComponent
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.variables.constants import FormVariableDataTypes
 
@@ -290,10 +288,9 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
     def __str__(self):
         return self.get_display_name()
 
+    @admin.display(description=_("File name"))
     def get_display_name(self):
         return self.file_name or self.original_name
-
-    get_display_name.short_description = _("File name")
 
     @property
     def content_hash(self) -> str:
@@ -336,25 +333,3 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         """
         assert self._data_path, "TODO: replace with check constraint"
         return self._data_path
-
-    @cached_property
-    @deprecated("Use attachment.component_key instead.")
-    def component(self) -> FileComponent | None:
-        """
-        Resolve the formio component definition that produced this attachment.
-
-        .. todo:: Clean up upload processing so that ``None`` can never happen. See
-            https://github.com/open-formulieren/open-forms/issues/2713
-
-        :return: Component dict or ``None`` if it could not be resolved.
-        """
-        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
-        component = wrapper.flattened_by_path.get(self._component_configuration_path)
-        return component
-
-    @property
-    @deprecated("Use attachment.component_key instead.")
-    def form_key(self):
-        return self.submission_variable.key
-
-    form_key.fget.short_description = _("form component key")
