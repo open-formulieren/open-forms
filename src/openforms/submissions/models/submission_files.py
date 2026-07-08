@@ -3,8 +3,6 @@ from __future__ import annotations
 import hashlib
 import os.path
 import uuid
-from collections import defaultdict
-from collections.abc import Mapping
 from datetime import date, timedelta
 from typing import TYPE_CHECKING, ClassVar
 
@@ -89,13 +87,6 @@ class SubmissionFileAttachmentQuerySet(
 ):
     def for_submission(self, submission: Submission):
         return self.filter(submission_step__submission=submission)
-
-    @deprecated("remove in 4.0")
-    def as_form_dict(self) -> Mapping[str, list[SubmissionFileAttachment]]:
-        files = defaultdict(list)
-        for file in self:
-            files[file._component_configuration_path].append(file)
-        return dict(files)
 
 
 class SubmissionFileAttachmentManager(models.Manager["SubmissionFileAttachment"]):
@@ -205,7 +196,6 @@ class SubmissionFileAttachmentManager(models.Manager["SubmissionFileAttachment"]
         def for_submission(
             self, submission: Submission
         ) -> SubmissionFileAttachmentQuerySet: ...
-        def as_form_dict(self) -> Mapping[str, list[SubmissionFileAttachment]]: ...
 
 
 class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):

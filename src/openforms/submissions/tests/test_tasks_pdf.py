@@ -359,22 +359,20 @@ class SubmissionReportGenerationTests(TestCase):
         )
         html = submission.report.generate_submission_report_pdf()
 
-        expected = format_html(
-            """
+        expected = """
             <div class="submission-step-row">
-                <span id="components.0.textfield-single" class="submission-step-row__label">Textfield single</span>
-                <div aria-labelledby="components.0.textfield-single" class="submission-step-row__value">
+                <span id="textfield-single" class="submission-step-row__label">Textfield single</span>
+                <div aria-labelledby="textfield-single" class="submission-step-row__value">
                     foo
                 </div>
             </div>
             <div class="submission-step-row">
-                <span id="components.1.textfield-multiple" class="submission-step-row__label">Textfield multiple</span>
-                <div aria-labelledby="components.1.textfield-multiple" class="submission-step-row__value">
+                <span id="textfield-multiple" class="submission-step-row__label">Textfield multiple</span>
+                <div aria-labelledby="textfield-multiple" class="submission-step-row__value">
                     <ul><li>foo</li><li>bar</li></ul>
                 </div>
             </div>
-            """,
-        )
+            """
         self.assertInHTML(expected, html, count=1)
 
     def test_select_component_with_multiple_is_rendered_as_html(self):
@@ -430,22 +428,20 @@ class SubmissionReportGenerationTests(TestCase):
         )
         html = submission.report.generate_submission_report_pdf()
 
-        expected = format_html(
-            """
+        expected = """
             <div class="submission-step-row">
-                <span id="components.0.select-single" class="submission-step-row__label">Select single</span>
-                <div aria-labelledby="components.0.select-single" class="submission-step-row__value">
+                <span id="select-single" class="submission-step-row__label">Select single</span>
+                <div aria-labelledby="select-single" class="submission-step-row__value">
                     Single select Option 1
                 </div>
             </div>
             <div class="submission-step-row">
-                <span id="components.1.select-multiple" class="submission-step-row__label">Select multiple</span>
-                <div aria-labelledby="components.1.select-multiple" class="submission-step-row__value">
+                <span id="select-multiple" class="submission-step-row__label">Select multiple</span>
+                <div aria-labelledby="select-multiple" class="submission-step-row__value">
                     <ul><li>Multiple select Option 1</li><li>Multiple select Option 3</li></ul>
                 </div>
             </div>
-            """,
-        )
+            """
         self.assertInHTML(expected, html, count=1)
 
     def test_selectboxes_component_is_rendered_as_html(self):
@@ -481,18 +477,16 @@ class SubmissionReportGenerationTests(TestCase):
         )
         html = submission.report.generate_submission_report_pdf()
 
-        expected = format_html(
-            """
+        expected = """
             <div class="submission-step-row">
-                <span id="components.0.selectboxes" class="submission-step-row__label">
+                <span id="selectboxes" class="submission-step-row__label">
                     Selectboxes
                 </span>
-                <div aria-labelledby="components.0.selectboxes" class="submission-step-row__value">
+                <div aria-labelledby="selectboxes" class="submission-step-row__value">
                     <ul><li>Selectbox Option 1</li><li>Selectbox Option 3</li></ul>
                 </div>
             </div>
-            """,
-        )
+            """
         self.assertInHTML(expected, html, count=1)
 
     def test_radio_component_is_rendered_as_plain_text(self):
@@ -521,16 +515,14 @@ class SubmissionReportGenerationTests(TestCase):
         )
         html = submission.report.generate_submission_report_pdf()
 
-        expected = format_html(
-            """
+        expected = """
             <div class="submission-step-row">
-                <span id="components.0.radio" class="submission-step-row__label">Radio</span>
-                <div aria-labelledby="components.0.radio" class="submission-step-row__value">
+                <span id="radio" class="submission-step-row__label">Radio</span>
+                <div aria-labelledby="radio" class="submission-step-row__value">
                     Second radio option
                 </div>
             </div>
-            """,
-        )
+            """
         self.assertInHTML(expected, html, count=1)
 
     @override_settings(LANGUAGE_CODE="en")
@@ -613,25 +605,24 @@ class SubmissionReportGenerationTests(TestCase):
         )
         html = submission.report.generate_submission_report_pdf()
 
-        expected = format_html(
-            """
+        expected = """
             <div class="submission-step-row">
-                <span id="components.0.textfield" class="submission-step-row__label">Textfield</span>
-                <div aria-labelledby="components.0.textfield" class="submission-step-row__value submission-step-row__value--empty">
+                <span id="textfield" class="submission-step-row__label">Textfield</span>
+                <div aria-labelledby="textfield" class="submission-step-row__value submission-step-row__value--empty">
                      No information provided
                 </div>
             </div>
 
             <div class="submission-step-row">
-                <span id="components.1.selectboxes" class="submission-step-row__label">Selectboxes</span>
-                <div aria-labelledby="components.1.selectboxes" class="submission-step-row__value submission-step-row__value--empty">
+                <span id="selectboxes" class="submission-step-row__label">Selectboxes</span>
+                <div aria-labelledby="selectboxes" class="submission-step-row__value submission-step-row__value--empty">
                      No information provided
                 </div>
             </div>
 
             <div class="submission-step-row">
-                <span id="components.2.radio" class="submission-step-row__label">Radio</span>
-                <div aria-labelledby="components.2.radio" class="submission-step-row__value submission-step-row__value--empty">
+                <span id="radio" class="submission-step-row__label">Radio</span>
+                <div aria-labelledby="radio" class="submission-step-row__value submission-step-row__value--empty">
                      No information provided
                 </div>
             </div>
@@ -640,38 +631,37 @@ class SubmissionReportGenerationTests(TestCase):
                 <span class="submission-step-row__fieldset-label">Fieldset</span>
             </div>
             <div class="submission-step-row">
-                <span id="components.3.components.0.textfield1" class="submission-step-row__label">
+                <span id="textfield1" class="submission-step-row__label">
                     Textfield 1
                 </span>
-                <div aria-labelledby="components.3.components.0.textfield1" class="submission-step-row__value submission-step-row__value--empty">
+                <div aria-labelledby="textfield1" class="submission-step-row__value submission-step-row__value--empty">
                     No information provided
                 </div>
             </div>
 
             <div class="submission-step-row submission-step-row--editgrid">
-                <span id="components.4.repeatingGroup" class="submission-step-row__label">
+                <span id="repeatingGroup" class="submission-step-row__label">
                     Repeating Group
                 </span>
-                <div aria-labelledby="components.4.repeatingGroup" class="submission-step-row__value submission-step-row__value--empty">
+                <div aria-labelledby="repeatingGroup" class="submission-step-row__value submission-step-row__value--empty">
                 </div>
             </div>
             <div class="submission-step-row submission-step-row--editgrid-group">
-                <span id="components.4.components.repeatingGroup" class="submission-step-row__label">
+                <span id="repeatingGroup.0" class="submission-step-row__label">
                     Item 1
                 </span>
-                <div aria-labelledby="components.4.components.repeatingGroup" class="submission-step-row__value submission-step-row__value--empty">
+                <div aria-labelledby="repeatingGroup.0" class="submission-step-row__value submission-step-row__value--empty">
                 </div>
             </div>
             <div class="submission-step-row">
-                <span id="components.4.components.0.textfield2" class="submission-step-row__label">
+                <span id="repeatingGroup.0.textfield2" class="submission-step-row__label">
                     Textfield 2
                 </span>
-                <div aria-labelledby="components.4.components.0.textfield2" class="submission-step-row__value submission-step-row__value--empty">
+                <div aria-labelledby="repeatingGroup.0.textfield2" class="submission-step-row__value submission-step-row__value--empty">
                     No information provided
                 </div>
             </div>
-            """,
-        )
+            """
         self.assertInHTML(expected, html, count=1)
 
     def test_pdf_generation_failure_is_logged(self):

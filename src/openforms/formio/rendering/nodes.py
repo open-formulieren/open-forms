@@ -240,6 +240,16 @@ class ComponentNode(Node):
             yield from child
 
     @property
+    def html_id(self) -> str:
+        """
+        Calculate the unique HTML ID for this node/component.
+
+        Typically used in the submission PDF to set up accessibility links between
+        sections and titles/labels.
+        """
+        return f"{self.path}.{self.key}" if self.path else self.key
+
+    @property
     def spans_full_width(self) -> bool:
         """
         Whether the display value spans the full width rather than 2 columns.

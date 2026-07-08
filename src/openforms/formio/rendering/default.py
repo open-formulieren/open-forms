@@ -347,6 +347,16 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
     def render(self) -> str:
         return f"{self.indent}{self.label}"
 
+    @property
+    def html_id(self) -> str:
+        """
+        Calculate the unique HTML ID for this node/component.
+
+        Typically used in the submission PDF to set up accessibility links between
+        sections and titles/labels.
+        """
+        return f"{self.path}.{self.group_index}"
+
 
 @register("softRequiredErrors")
 class SoftRequiredErrors(ComponentNode):
