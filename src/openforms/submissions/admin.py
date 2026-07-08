@@ -423,13 +423,14 @@ class SubmissionAdmin(admin.ModelAdmin):
         submission = self.get_object(request, object_id)
         if submission is None:
             raise Http404(f"No {self.model._meta.object_name} matches the given query.")
+        assert isinstance(submission, Submission)
         audit_logger.info(
             "submission_details_view_admin",
             submission_uuid=str(submission.uuid),
             user=request.user.username,
         )
         extra_context = {
-            "attachments": submission.get_merged_attachments(),
+            "attachments": (submission.get_attachments().order_by("_data_path", "pk")),
             "image_components": IMAGE_COMPONENTS,
         }
         return super().change_view(

@@ -2,25 +2,21 @@
 {% load i18n solo_tags %}
 
 {% block after_field_sets %}
-    <fieldset class="module aligned">
-        <div class="form-row field-attachments">
-            <div>
-                <label>{% trans "Attachments:" %}</label>
-                <div class="readonly">
-                    <ul>
-                        {% for key, files in attachments.items %}
-                            <li>{{ key }}:
-                                {% for file in files %}
-                                    <a href="{% url "admin:submissions_submissionfileattachment_content" pk=file.id %}">
-                                    {{ file.get_display_name }} - {{ file.content.size }} bytes
-                                    </a>
-                                    {% if not forloop.last %} - {% endif %}
-                                {% endfor %}
-                            </li>
+    <fieldset class="module aligned" aria-labelledby="fieldset-attachments">
+        <h2 id="fieldset-attachments" class="fieldset-heading">{% trans "Attachments" %}</h2>
+        {% regroup attachments by data_path as attachments_list %}
+        {% for attachment_group in attachments_list %}
+            <div class="form-row field-attachments"><div>
+                <div class="flex-container">
+                    <label>{{ attachment_group.grouper }}:</label>
+                    <div class="readonly">
+                        {% for file in attachment_group.list %}
+                            <a href="{% url "admin:submissions_submissionfileattachment_content" pk=file.id %}">
+                            {{ file.get_display_name }}</a> - {{ file.content.size|filesizeformat }}{% if not forloop.last %}; {% endif %}
                         {% endfor %}
-                    </ul>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </div></div>
+        {% endfor %}
     </fieldset>
 {% endblock %}
