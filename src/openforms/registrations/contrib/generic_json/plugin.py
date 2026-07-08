@@ -5,8 +5,6 @@ from functools import partial
 from typing import cast  # noqa: TID251
 
 from django.core.exceptions import SuspiciousOperation
-from django.db.models import F, TextField, Value
-from django.db.models.functions import Coalesce, NullIf
 from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
@@ -214,21 +212,9 @@ def build_post_process_component_hook(
         transform_to_list = []
 
     # Create attachment mapping from key or component data path to attachment list
-    attachments = submission.attachments.annotate(
-        data_path=Coalesce(
-            NullIf(
-                F("_component_data_path"),
-                Value(""),
-            ),
-            # fall back to variable/component key if no explicit data path is set
-            F("submission_variable__key"),
-            output_field=TextField(),
-        )
-    )
     attachments_dict = defaultdict(list)
-    for attachment in attachments:
-        key = attachment.data_path
-        attachments_dict[key].append(attachment)
+    for attachment in submission.attachments:
+        attachments_dict[attachment.data_path].append(attachment)
 
     post_process_component = partial(
         process_component,

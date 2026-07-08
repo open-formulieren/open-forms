@@ -86,8 +86,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             original_name="test_file.txt",
             content_type="application/text",
             content__data=b"This is example content.",
-            _component_configuration_path="components.2",
-            _component_data_path="file",
         )
 
         options: GenericJSONOptions = {
@@ -221,8 +219,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             original_name="file1.txt",
             content_type="application/text",
             content__data=b"This is example content.",
-            _component_configuration_path="components.2",
-            _component_data_path="file",
         )
 
         SubmissionFileAttachmentFactory.create(
@@ -232,8 +228,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             original_name="file2.txt",
             content_type="application/text",
             content__data=b"Content example is this.",
-            _component_configuration_path="components.2",
-            _component_data_path="file",
         )
 
         options: GenericJSONOptions = {
@@ -324,8 +318,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             original_name="file1.txt",
             content_type="application/text",
             content__data=b"This is example content.",
-            _component_configuration_path="components.2",
-            _component_data_path="file",
         )
 
         options: GenericJSONOptions = {
@@ -1315,17 +1307,18 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             original_name="file1.txt",
             content_type="application/text",
             content__data=b"This is example content.",
-            _component_data_path="nested.file",
         )
 
         SubmissionFileAttachmentFactory.create(
             submission_variable__key="editgrid",
+            submission_variable__form_variable__data_subtype=FormVariableDataTypes.editgrid,
             submission_step=submission.steps[0],
             file_name="file2.txt",
             original_name="file2.txt",
             content_type="application/text",
             content__data=b"This is example content.",
-            _component_data_path="editgrid.0.nested.file2",
+            component_key="nested.file2",
+            _data_path="editgrid.0.nested.file2",
         )
 
         json_plugin = GenericJSONRegistration("json_registration_plugin")
@@ -1585,32 +1578,38 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
 
         SubmissionFileAttachmentFactory.create(
             submission_variable__key="repeatingGroup",
+            submission_variable__form_variable__data_subtype=FormVariableDataTypes.editgrid,
             submission_step=submission.steps[0],
             file_name="test_file.txt",
             original_name="test_file.txt",
             content_type="application/text",
             content__data=b"This is example content.",
-            _component_data_path="repeatingGroup.0.fileUploadInRepeating",
+            component_key="fileUploadInRepeating",
+            _data_path="repeatingGroup.0.fileUploadInRepeating",
         )
 
         SubmissionFileAttachmentFactory.create(
             submission_variable__key="repeatingGroup",
+            submission_variable__form_variable__data_subtype=FormVariableDataTypes.editgrid,
             submission_step=submission.steps[0],
             file_name="test_file_2.txt",
             original_name="test_file_2.txt",
             content_type="application/text",
             content__data=b"This is example content 2.",
-            _component_data_path="repeatingGroup.0.fileUploadInRepeating",
+            component_key="fileUploadInRepeating",
+            _data_path="repeatingGroup.0.fileUploadInRepeating",
         )
 
         SubmissionFileAttachmentFactory.create(
             submission_variable__key="repeatingGroup",
+            submission_variable__form_variable__data_subtype=FormVariableDataTypes.editgrid,
             submission_step=submission.steps[0],
             file_name="test_file_3.txt",
             original_name="test_file_3.txt",
             content_type="application/text",
             content__data=b"This is example content 3.",
-            _component_data_path="repeatingGroup.1.fileUploadInRepeating",
+            component_key="fileUploadInRepeating",
+            _data_path="repeatingGroup.1.fileUploadInRepeating",
         )
 
         options: GenericJSONOptions = {
