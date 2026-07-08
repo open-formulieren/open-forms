@@ -23,7 +23,7 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 from openforms.payments.constants import PaymentStatus
-from openforms.variables.constants import FormVariableSources
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..constants import (
     PostSubmissionEvents,
@@ -382,7 +382,15 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
         submission=factory.LazyAttribute(
             lambda o: o.factory_parent.submission_step.submission
         ),
+        form_variable__data_type=FormVariableDataTypes.array,
+        form_variable__data_subtype=FormVariableDataTypes.object,
     )
+
+    # these are not 100% correct by default, especially when using edit grids, but
+    # they're required (non-blank) fields
+    _data_path = factory.LazyAttribute(lambda o: o.submission_variable.key)
+    component_key = factory.LazyAttribute(lambda o: o.submission_variable.key)
+
     content = factory.django.FileField(filename="attachment.pdf", data=b"content")
     file_name = factory.Faker("file_name")
     original_name = factory.Faker("file_name")
