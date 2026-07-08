@@ -372,6 +372,23 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         self.assertEqual(value, "https://httpbin.org/get")
 
     @requests_mock.Mocker()
+    def test_it_applies_jsonlogic_with_use_var_undefined(self, m):
+        m.get("https://httpbin.org/get", json={"url": "https://httpbin.org/get"})
+
+        var = FormVariableFactory.build(
+            service_fetch_configuration=ServiceFetchConfigurationFactory.build(
+                service=self.service,
+                path="get",
+                data_mapping_type=DataMappingTypes.json_logic,
+                mapping_expression={"var": "wrong"},
+            )
+        )
+
+        result = perform_service_fetch(var, FormioData())
+
+        self.assertIsNone(result)
+
+    @requests_mock.Mocker()
     def test_it_applies_jq_on_response(self, m):
         m.get("https://httpbin.org/get", json={"url": "https://httpbin.org/get"})
 

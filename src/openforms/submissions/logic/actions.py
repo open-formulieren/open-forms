@@ -436,7 +436,9 @@ class VariableAction(ActionOperation):
                 use_var_undefined=True,
             )
             # variables with None/null values are returned as UNDEFINED_VALUE when
-            # use_var_undefined is set to True and they should not be returned
+            # use_var_undefined is set to True and they are missing from the context
+            # entirely. If they are present in the context and None, then the output
+            # will be None.
             if result is UNDEFINED_VALUE:
                 return {}
 
@@ -646,6 +648,9 @@ class ServiceFetchAction(ActionOperation):
         var = self.rule.form.formvariable_set.get(key=self.variable)
         with log_errors({}, self.rule):  # TODO proper error handling
             result = perform_service_fetch(var, context, str(submission.uuid))
+            if result is None:
+                return {}
+
             return {var.key: result.value}
 
 

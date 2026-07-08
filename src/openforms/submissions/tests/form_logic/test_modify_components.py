@@ -1580,7 +1580,8 @@ class ComponentModificationTests(TestCase):
             submission=submission, form_step=step1
         )
 
-        data = FormioData({"checkbox": True, "textField1": ""})
+        # initial state of the data before the checkbox is checked (all fields visible)
+        data = FormioData({"textField": "", "checkbox": True, "textField1": ""})
 
         configuration = evaluate_form_logic(submission, submission_step, data)
 
@@ -1608,6 +1609,9 @@ class ComponentModificationTests(TestCase):
         data = state.get_data(include_unsaved=True)
 
         self.assertEqual(configuration, expected)
+        # test and textField1 have their initial values
+        # the textField (with clearOnHide) is set to undefined and therefore is None
+        # the checkbox has been checked by the user so it's set to True
         self.assertEqual(
             data, {"test": "", "textField": None, "checkbox": True, "textField1": ""}
         )
