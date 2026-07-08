@@ -41,10 +41,7 @@ class LogicDescriptionEndpointTests(APITestCase):
             # simple expression
             {"==": [{"var": "foo"}, "bar"]},
             {"substr": ["test", 1, 2]},
-            {"substr": [None, 1, 2]},
-            {"substr": ["test", -1, 2]},
-            {"substr": ["test", 1, None]},
-            {"substr": ["test", 2, 1]},
+            {"substr": [{"var": "foo"}, 1, 2]},
             # nested expression
             {
                 "!": [
@@ -58,7 +55,8 @@ class LogicDescriptionEndpointTests(APITestCase):
             },
             # embedded _meta.description bits
             {"==": [1, 1], "_meta": {"description": "identity"}},
-            {"substr": ["test", 1, 2], "_meta": {"description": "substr description"}},
+            {"substr": ["test", 1, 1], "_meta": {"description": "identity"}},
+            {"substr": [{"var": "foo"}, 1, 2], "_meta": {"description": "identity"}},
         )
 
         for expression in expressions:

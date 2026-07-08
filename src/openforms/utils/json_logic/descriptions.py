@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Protocol
 from django.utils.translation import gettext, gettext_lazy as _
 
 from glom import glom
-from json_logic import UNDEFINED_VALUE
 from json_logic.meta import JSONLogicExpressionTree, Operation
 from json_logic.typing import Primitive
 
@@ -364,38 +363,4 @@ def op_rdelta(*args) -> str:
 
 @add_boilerplate()
 def op_substr(text, start, length=None):
-    if text is None or text is UNDEFINED_VALUE:
-        return gettext("No text")
-
-    # cases where the text is not already a string ({"substr": [12345, 1, 2]})
-    if not isinstance(text, str):
-        text = str(text)
-
-    try:
-        start = int(start)
-        length = int(length) if length else None
-    except ValueError:
-        return False
-
-    if start < 0:
-        start = len(text) + start
-        if start < 0:
-            start = 0
-
-    if length is None:
-        return gettext("{substr} is the substring of {text}").format(
-            substr=text[start:], text=text
-        )
-
-    if length >= 0:
-        return gettext("{substr} is the substring of {text}").format(
-            substr=text[start : start + length], text=text
-        )
-
-    end = len(text) + length
-    if end < start:
-        return ""
-
-    return gettext("{substr} is the substring of {text}").format(
-        substr=text[start:end], text=text
-    )
+    return gettext("a substring of {text}").format(text=text)

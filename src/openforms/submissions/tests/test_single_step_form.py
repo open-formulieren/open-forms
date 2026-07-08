@@ -235,11 +235,10 @@ class SingleStepFormTests(APITestCase):
             "form": f"http://testserver.com{form_url}",
             "formUrl": "http://testserver.com/my-form",
             "anonymous": True,
-            "initialDataReference": "of-or-3452fre3",
         }
 
         submission_response = self.client.post(
-            endpoint, submission_body, HTTP_HOST="testserver.com"
+            endpoint, submission_body, headers={"Host": "testserver.com"}
         )
         submission = Submission.objects.get()
         form_step = form.formstep_set.get()
@@ -255,7 +254,7 @@ class SingleStepFormTests(APITestCase):
         )
         submit_data = {"data": {"textField": "foo"}}
         submit_data_response = self.client.put(
-            submit_data_endpoint, submit_data, HTTP_HOST="testserver.com"
+            submit_data_endpoint, submit_data, headers={"Host": "testserver.com"}
         )
 
         self.assertEqual(submit_data_response.status_code, status.HTTP_201_CREATED)
@@ -270,7 +269,9 @@ class SingleStepFormTests(APITestCase):
             "statementOfTruthAccepted": False,
         }
         complete_submission_response = self.client.post(
-            complete_submission_endpoint, complete_data, HTTP_HOST="testserver.com"
+            complete_submission_endpoint,
+            complete_data,
+            headers={"Host": "testserver.com"},
         )
 
         self.assertEqual(complete_submission_response.status_code, status.HTTP_200_OK)
