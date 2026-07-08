@@ -73,7 +73,7 @@ def iter_components(
             )
 
 
-def iterate_components_with_configuration_path(
+def _iterate_components_with_configuration_path(
     configuration: ComponentLike, prefix: str = "components", recursive=True
 ) -> Iterator[tuple[str, Component]]:
     for index, component in enumerate(iter_components(configuration, recursive=False)):
@@ -87,11 +87,11 @@ def iterate_components_with_configuration_path(
         if has_columns and recursive:
             for col_index, column in enumerate(component["columns"]):
                 nested_prefix = f"{full_path}.columns.{col_index}.components"
-                yield from iterate_components_with_configuration_path(
+                yield from _iterate_components_with_configuration_path(
                     column, prefix=nested_prefix
                 )
         elif has_components and recursive:
-            yield from iterate_components_with_configuration_path(
+            yield from _iterate_components_with_configuration_path(
                 component, prefix=f"{full_path}.components"
             )
 
@@ -112,7 +112,7 @@ def flatten_by_path(configuration: FormioConfiguration) -> dict[str, Component]:
     JSON path as key and the component as value in the returned mapping.
     """
 
-    result = dict(iterate_components_with_configuration_path(configuration))
+    result = dict(_iterate_components_with_configuration_path(configuration))
     return result
 
 

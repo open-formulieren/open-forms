@@ -505,7 +505,6 @@ class FormNodeTests(TestCase):
             component_node = ComponentNode.build_node(
                 step_data=step_data,
                 component=component,
-                configuration_path="components.0",
                 renderer=renderer,
             )
 
@@ -524,7 +523,6 @@ class FormNodeTests(TestCase):
             component_node = ComponentNode.build_node(
                 step_data=step_data,
                 component=component,
-                configuration_path="components.0",
                 renderer=renderer,
             )
             link = component_node.render()
@@ -684,7 +682,6 @@ class FormNodeTests(TestCase):
                 step_data=step_data,
                 component=components[0],
                 renderer=renderer,
-                configuration_path="components.0",
             )
 
             nodelist = list(repeating_group_node)
@@ -723,7 +720,6 @@ class FormNodeTests(TestCase):
                 step_data=step_data,
                 component=components[1],
                 renderer=renderer,
-                configuration_path="components.1",
             )
 
             link = nested_file_node.render()
@@ -845,7 +841,6 @@ class FormNodeTests(TestCase):
             repeating_group_node = ComponentNode.build_node(
                 step_data=step_data,
                 component=components[0],
-                configuration_path="components.0",
                 renderer=renderer,
             )
 
@@ -870,7 +865,6 @@ class FormNodeTests(TestCase):
             outside_file_node = ComponentNode.build_node(
                 step_data=step_data,
                 component=components[1],
-                configuration_path="components.1",
                 renderer=renderer,
             )
 
@@ -1006,7 +1000,6 @@ class FormNodeTests(TestCase):
         repeating_group_node = ComponentNode.build_node(
             step_data=step_data,
             component=components[0],
-            configuration_path="components.0",
             renderer=renderer,
         )
 
