@@ -49,6 +49,9 @@ class FormioConfigMixin:
                     "ZGW_APIS_INCLUDE_DRAFTS": flag_enabled(
                         "ZGW_APIS_INCLUDE_DRAFTS", request=request
                     ),
+                    "USE_OF_FORM_DESIGNER": flag_enabled(
+                        "USE_OF_FORM_DESIGNER", request=request
+                    ),
                 },
                 "confidentiality_levels": [
                     {"label": label, "value": value}

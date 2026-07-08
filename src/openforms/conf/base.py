@@ -1295,6 +1295,12 @@ FLAGS = {
             "value": config("DIGID_EHERKENNING_OIDC_STRICT", default=False),
         }
     ],
+    "USE_OF_FORM_DESIGNER": [
+        {
+            "condition": "boolean",
+            "value": config("USE_OF_FORM_DESIGNER", default=False),
+        }
+    ],
     # ZGW API's
     "ZGW_APIS_INCLUDE_DRAFTS": [
         {
