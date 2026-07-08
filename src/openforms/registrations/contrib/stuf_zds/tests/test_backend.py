@@ -3337,9 +3337,9 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
+            submission_variable__key="field1",
             file_name="my-attachment.doc",
             content_type="application/msword",
-            _component_configuration_path="components.0",
         )
         m.post(
             self.service.soap_service.url,
