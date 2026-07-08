@@ -582,7 +582,6 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             submission_step=submission_step,
             file_name="some-attachment.jpg",
             submission_variable__key="fileUpload",
-            _component_configuration_path="components.0",
         )
         options: RegistrationOptionsV1 = {
             "version": 1,

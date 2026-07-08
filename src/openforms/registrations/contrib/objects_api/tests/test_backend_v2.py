@@ -33,6 +33,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
 )
 from openforms.utils.tests.vcr import OFVCRMixin
+from openforms.variables.constants import FormVariableDataTypes
 
 from ....constants import RegistrationAttribute
 from ..config import ObjectsAPIOptionsSerializer
@@ -472,7 +473,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                         "nestedRepeatingGroup": [
                             {
                                 "email": "info@example.com",
-                                "file": formio_upload,
+                                "file": [formio_upload],
                             }
                         ],
                     },
@@ -486,10 +487,11 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             submission_variable__key="repeatingGroup",
+            submission_variable__form_variable__data_subtype=FormVariableDataTypes.editgrid,
             file_name=formio_upload["originalName"],
             original_name=formio_upload["originalName"],
-            _component_configuration_path="components.0.components.0.components.1",
-            _component_data_path="repeatingGroup.0.nestedRepeatingGroup.0.file",
+            component_key="file",
+            _data_path="repeatingGroup.0.nestedRepeatingGroup.0.file",
         )
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
@@ -607,7 +609,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             submission_step=submission.steps[0],
             content_type="image/png",
             submission_variable__key="file",
-            _component_configuration_path="components.0",
         )
         options: RegistrationOptionsV2 = {
             "version": 2,

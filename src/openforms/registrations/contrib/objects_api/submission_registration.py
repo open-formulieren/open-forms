@@ -9,10 +9,6 @@ from typing import (
     override,
 )
 
-from django.db import models
-from django.db.models import F, Value
-from django.db.models.functions import Coalesce, NullIf
-
 import structlog
 
 from openforms.contrib.objects_api.clients import (
@@ -194,9 +190,7 @@ def register_submission_attachment(
 
     # look up registration overrides for the component that this file was
     # uploaded for
-    if (file_component := attachment.component) is not None and (
-        overrides := file_options.get(file_component["key"])
-    ) is not None:
+    if (overrides := file_options.get(attachment.component_key)) is not None:
         if _document_type_description := overrides.get("document_type_description"):
             _options = options.copy()
             _options["iot_attachment"] = _document_type_description
@@ -423,23 +417,11 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
     @staticmethod
     def get_attachment_urls_by_key(submission: Submission) -> dict[str, list[str]]:
         urls_map = defaultdict[str, list[str]](list)
-        attachments = ObjectsAPISubmissionAttachment.objects.filter(
-            submission_file_attachment__submission_variable__submission=submission
-        ).annotate(
-            data_path=Coalesce(
-                NullIf(
-                    F("submission_file_attachment___component_data_path"),
-                    Value(""),
-                ),
-                # fall back to variable/component key if no explicit data path is set
-                F("submission_file_attachment__submission_variable__key"),
-                output_field=models.TextField(),
-            ),
-        )
+        attachments = ObjectsAPISubmissionAttachment.objects.select_related(
+            "submission_file_attachment"
+        ).filter(submission_file_attachment__submission_variable__submission=submission)
         for attachment_meta in attachments:
-            key: str = (
-                attachment_meta.data_path  # pyright: ignore[reportAttributeAccessIssue]
-            )
+            key: str = attachment_meta.submission_file_attachment.data_path
             urls_map[key].append(attachment_meta.document_url)
         return urls_map
 
