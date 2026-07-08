@@ -227,7 +227,7 @@ def build_post_process_component_hook(
     )
     attachments_dict = defaultdict(list)
     for attachment in attachments:
-        key = attachment.data_path  # pyright: ignore[reportAttributeAccessIssue]
+        key = attachment.data_path
         attachments_dict[key].append(attachment)
 
     post_process_component = partial(

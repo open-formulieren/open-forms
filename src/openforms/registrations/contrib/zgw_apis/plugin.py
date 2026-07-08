@@ -707,10 +707,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     f"intermediate.documents.{attachment.id}.document",  # type: ignore
                 )
 
-                key: str = (
-                    attachment._component_data_path
-                    or attachment.submission_variable.key
-                )
+                key: str = attachment.data_path
                 submission_uploads[key].append(attachment_document["url"])
 
                 execute_unless_result_exists(

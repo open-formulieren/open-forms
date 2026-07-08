@@ -1,7 +1,7 @@
 import os.path
 import pathlib
 import re
-from collections.abc import Iterable, Iterator, Sequence
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from datetime import timedelta
 from functools import partial
@@ -43,7 +43,11 @@ from openforms.variables.service import resolve_key
 
 from .metrics import upload_file_size
 
-__all__ = ["process_step_uploads", "iter_and_persist_step_uploads"]
+__all__ = [
+    "clean_mime_type",
+    "iter_and_persist_step_uploads",
+    "process_step_uploads",
+]
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -247,21 +251,6 @@ def cleanup_submission_temporary_uploaded_files(submission: Submission):
 def cleanup_unclaimed_temporary_uploaded_files(age=timedelta(days=2)):
     for file in TemporaryFileUpload.objects.select_prune(age).filter(attachment=None):
         file.delete()
-
-
-def iter_component_data(components: Iterable[dict], data: dict, filter_types=None):
-    if not data or not components:
-        return
-    for component in components:
-        key = component.get("key")
-        type = component.get("type")
-        if not key or not type:
-            continue
-        if key not in data:
-            continue
-        if filter_types and type not in filter_types:
-            continue
-        yield component, data[key]
 
 
 def _resolve_uploads_in_component(
