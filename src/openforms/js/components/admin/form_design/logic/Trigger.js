@@ -377,6 +377,7 @@ const Trigger = ({name, logic, onChange, error}) => {
             <DSLEditorNode errors={null}>{valueInput}</DSLEditorNode>
           ) : null}
           {triggerVariable?.source === VARIABLE_SOURCES.component &&
+          !['float', 'int', 'array'].includes(triggerVariable?.dataType) &&
           operator &&
           operandType === 'literal' ? (
             <DSLEditorNode errors={null}>
