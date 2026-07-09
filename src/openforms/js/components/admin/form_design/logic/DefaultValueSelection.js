@@ -18,6 +18,16 @@ const DefaultValueSelection = ({name, dataType, componentType, value, onChange})
   const [showInputField, setShowInputField] = useState(value !== undefined);
   const intl = useIntl();
 
+  const onAddDefaultValue = () => {
+    onChange({
+      target: {
+        name: name,
+        value: '',
+      },
+    });
+    setShowInputField(true);
+  };
+
   const onRemoveDefaultValue = () => {
     onChange({
       target: {
@@ -54,7 +64,7 @@ const DefaultValueSelection = ({name, dataType, componentType, value, onChange})
       name={name}
       type="button"
       className="button default-value-button"
-      onClick={() => setShowInputField(true)}
+      onClick={onAddDefaultValue}
     >
       <FAIcon icon="plus" />
       <FormattedMessage
