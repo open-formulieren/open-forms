@@ -6273,6 +6273,12 @@
       "value": "Show form"
     }
   ],
+  "k7rSAg": [
+    {
+      "type": 0,
+      "value": "Remove default value"
+    }
+  ],
   "k9CT3p": [
     {
       "type": 0,
@@ -6289,6 +6295,12 @@
     {
       "type": 0,
       "value": "Plugin configuration: Worldline"
+    }
+  ],
+  "kH2P8O": [
+    {
+      "type": 0,
+      "value": "Default value:"
     }
   ],
   "kHn5Yw": [
@@ -7021,6 +7033,12 @@
     {
       "type": 0,
       "value": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
+    }
+  ],
+  "qFgPMJ": [
+    {
+      "type": 0,
+      "value": "Default value"
     }
   ],
   "qUYLVg": [

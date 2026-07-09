@@ -11,7 +11,7 @@ import Select from 'components/admin/forms/Select';
 
 import {BOOL_OPTIONS} from './constants';
 
-const CheckboxChoices = ({name, value, onChange}) => {
+export const CheckboxChoices = ({name, value, onChange}) => {
   return (
     <Select
       name={name}
@@ -88,7 +88,7 @@ WrapperArrayInput.propTypes = {
   onChange: PropTypes.func,
 };
 
-const WrappedJsonWidget = ({name, value, onChange}) => {
+export const WrappedJsonWidget = ({name, value, onChange}) => {
   return <JsonWidget name={name} logic={value} onChange={onChange} cols={25} />;
 };
 
@@ -135,7 +135,7 @@ WrappedDatetimeInput.propTypes = {
   onChange: PropTypes.func,
 };
 
-const TYPE_TO_INPUT_TYPE = {
+export const TYPE_TO_INPUT_TYPE = {
   float: NumberInput,
   string: TextInput,
   datetime: WrappedDatetimeInput,
@@ -146,15 +146,25 @@ const TYPE_TO_INPUT_TYPE = {
   int: NumberInput,
 };
 
-const LiteralValueInput = ({name, type, value, onChange, ...extraProps}) => {
-  const InputComponent = TYPE_TO_INPUT_TYPE[type] || TextInput;
+const LiteralValueInput = ({
+  name,
+  type: dataType,
+  value,
+  onChange,
+  componentType,
+  inputTypeOverrides,
+  ...extraProps
+}) => {
+  let InputComponent = TYPE_TO_INPUT_TYPE[dataType] || TextInput;
+
+  if (componentType) InputComponent = inputTypeOverrides[componentType] || InputComponent;
 
   const onInputChange = event => {
     const inputValue = event.target.value;
     let value;
 
     // do any input type conversions if needed, e.g. date to native datetime/ISO-8601 format
-    switch (type) {
+    switch (dataType) {
       case 'float': {
         value = Number.parseFloat(inputValue);
         break;

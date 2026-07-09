@@ -36,6 +36,20 @@ const AVAILABLE_FORM_VARIABLES = [
     prefillPlugin: '',
     source: 'user_defined',
   },
+  {
+    dataFormat: '',
+    dataType: 'string',
+    form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+    formDefinition:
+      'http://localhost:8000/api/v2/form-definitions/b4de3050-3d55-4d7e-bdec-c4ec2ff330f8',
+    initialValue: '',
+    isSensitiveData: false,
+    key: 'textfield',
+    name: 'textfield',
+    prefillAttribute: '',
+    prefillPlugin: '',
+    source: 'component',
+  },
 ];
 
 const AVAILABLE_FORM_STEPS = [
@@ -64,6 +78,14 @@ const AVAILABLE_FORM_STEPS = [
     validationErrors: [],
   },
 ];
+
+const AVAILABLE_COMPONENTS = {
+  textfield: {
+    type: 'textfield',
+    key: 'textfield',
+    label: 'Textfield',
+  },
+};
 
 export default {
   title: 'Form design/FormLogic',
@@ -449,5 +471,51 @@ export const ConvertToAdvanced = {
     expect(args.onChange).toHaveBeenCalledWith(0, {
       target: {name: '_logicType', value: 'advanced'},
     });
+  },
+};
+
+export const WithDefaultValue = {
+  name: 'With default value for component',
+  args: {
+    logicRules: [
+      {
+        uuid: 'foo',
+        _generatedId: 'foo',
+        _logicType: 'simple',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        description: 'Sample rule',
+        _mayGenerateDescription: false,
+        order: 0,
+        jsonLogicTrigger: {'==': [{var: 'textfield'}, '']},
+        isAdvanced: false,
+        formSteps: [
+          'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5/steps/8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+        ],
+        actions: [
+          {
+            action: {type: 'variable', value: 'Cool text'},
+            uuid: '',
+            _generatedId: '1',
+            formStepUuid: null,
+            variable: 'bar',
+          },
+        ],
+      },
+    ],
+    availableFormVariables: AVAILABLE_FORM_VARIABLES,
+    availableFormSteps: AVAILABLE_FORM_STEPS,
+    availableComponents: AVAILABLE_COMPONENTS,
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    // Ensure label is not visible
+    expect(await canvas.queryByText('Standaardwaarde:')).toBeNull();
+    // Click the button
+    await userEvent.click(await canvas.findByRole('button', {name: 'Standaardwaarde'}));
+    // Ensure label is visible
+    expect(await canvas.findByText('Standaardwaarde:')).toBeVisible();
+    // Remove the input
+    await userEvent.click(await canvas.findByTitle('Verwijder standaardwaarde'));
   },
 };

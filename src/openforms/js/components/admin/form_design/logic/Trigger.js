@@ -14,6 +14,7 @@ import {getTranslatedChoices} from 'utils/i18n';
 
 import DSLEditorNode from './DSLEditorNode';
 import DataPreview from './DataPreview';
+import DefaultValueSelection from './DefaultValueSelection';
 import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import Today from './Today';
@@ -55,9 +56,10 @@ const initialState = {
   operator: '',
   operandType: '',
   operand: '',
+  defaultValue: undefined,
 };
 
-const TRIGGER_FIELD_ORDER = ['variable', 'operator', 'operandType', 'operand'];
+const TRIGGER_FIELD_ORDER = ['variable', 'operator', 'operandType', 'operand', 'defaultValue'];
 
 const parseJsonLogic = (logic, allVariablesKeys) => {
   // Algorithm mostly taken from https://github.com/jwadhams/json-logic-js/blob/master/logic.js, combined
@@ -74,9 +76,10 @@ const parseJsonLogic = (logic, allVariablesKeys) => {
 
   // first value should be the reference to the variable
   let variableKey = values[0].date ? values[0].date.var : values[0].var;
+  let defaultValue = undefined;
   if (Array.isArray(variableKey)) {
-    // Case where a default is defined
-    variableKey = variableKey[0];
+    // A default value is optional.
+    [variableKey, defaultValue] = variableKey;
   }
 
   // check if we're using a literal value, or a variable reference
@@ -132,6 +135,7 @@ const parseJsonLogic = (logic, allVariablesKeys) => {
     operator,
     operandType,
     operand,
+    defaultValue,
   };
 };
 
@@ -182,7 +186,7 @@ const Trigger = ({name, logic, onChange, error, children}) => {
   };
 
   // rendering logic
-  const {variable: triggerVariableKey, operator, operandType, operand} = state;
+  const {variable: triggerVariableKey, operator, operandType, operand, defaultValue} = state;
   const triggerVariable = allVariablesObj[triggerVariableKey];
 
   let compareValue = null;
@@ -278,23 +282,35 @@ const Trigger = ({name, logic, onChange, error, children}) => {
     // Handling components special cases
     switch (triggerComponent.type) {
       case 'date': {
-        firstOperand = {date: {var: triggerVariableKey}};
+        firstOperand =
+          defaultValue === undefined
+            ? {date: {var: triggerVariableKey}}
+            : {date: {var: [triggerVariableKey, defaultValue]}};
         break;
       }
       case 'selectboxes': {
-        firstOperand = {var: `${triggerVariableKey}.${compareValue}`};
+        firstOperand =
+          defaultValue === undefined
+            ? {var: `${triggerVariableKey}.${compareValue}`}
+            : {var: [`${triggerVariableKey}.${compareValue}`, defaultValue === 'true']};
         compareValue = true;
         break;
       }
       case 'checkbox': {
-        firstOperand = {var: triggerVariableKey};
+        firstOperand =
+          defaultValue === undefined
+            ? {var: triggerVariableKey}
+            : {var: [triggerVariableKey, defaultValue === 'true']};
         // cast from string to actual boolean
         if (compareValue === 'true') compareValue = true;
         if (compareValue === 'false') compareValue = false;
         break;
       }
       default:
-        firstOperand = {var: triggerVariableKey};
+        firstOperand =
+          defaultValue === undefined
+            ? {var: triggerVariableKey}
+            : {var: [triggerVariableKey, defaultValue]};
     }
   } else if (
     triggerVariable?.source === VARIABLE_SOURCES.userDefined &&
@@ -359,6 +375,20 @@ const Trigger = ({name, logic, onChange, error, children}) => {
           ) : null}
           {triggerVariableKey && operator && operandType ? (
             <DSLEditorNode errors={null}>{valueInput}</DSLEditorNode>
+          ) : null}
+          {triggerVariable?.source === VARIABLE_SOURCES.component &&
+          !['float', 'int', 'array'].includes(triggerVariable?.dataType) &&
+          operator &&
+          operandType === 'literal' ? (
+            <DSLEditorNode errors={null}>
+              <DefaultValueSelection
+                name="defaultValue"
+                dataType={triggerVariable?.dataType}
+                componentType={formContext.components[triggerVariableKey].type}
+                value={defaultValue}
+                onChange={onTriggerChange}
+              />
+            </DSLEditorNode>
           ) : null}
         </div>
       );
