@@ -258,7 +258,7 @@ export const caseObjects = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('tab', {name: /Case objects/}));
+    await userEvent.click(canvas.getByRole('tab', {name: /Zaakobjecten/}));
   },
 };
 
@@ -285,6 +285,6 @@ export const ValidationErrorsCaseObjectsTab = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('tab', {name: /Case objects/}));
+    await userEvent.click(canvas.getByRole('tab', {name: /Zaakobjecten/}));
   },
 };
