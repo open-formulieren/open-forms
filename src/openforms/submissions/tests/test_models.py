@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.test import SimpleTestCase, TestCase, override_settings, tag
 
 from freezegun import freeze_time
@@ -562,3 +563,22 @@ class SubmissionFileAttachmentTests(SimpleTestCase):
         result = str(instance)
 
         self.assertIsInstance(result, str)
+
+
+@temp_private_root()
+class SubmissionFileAttachmentDBTests(TestCase):
+    def test_cannot_leave_data_path_blank(self):
+        with self.assertRaises(IntegrityError):
+            SubmissionFileAttachmentFactory.create(
+                submission_variable__key="foo",
+                _data_path="",
+                component_key="foo",
+            )
+
+    def test_cannot_leave_component_key_blank(self):
+        with self.assertRaises(IntegrityError):
+            SubmissionFileAttachmentFactory.create(
+                submission_variable__key="foo",
+                _data_path="foo",
+                component_key="",
+            )

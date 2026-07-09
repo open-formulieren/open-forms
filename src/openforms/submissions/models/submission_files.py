@@ -242,8 +242,6 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
     # formio conditionals).
 
     # TODO: should probably be TextField to be future proof
-    # TODO: add constraint to ensure this is not empty - in practice it isn't, and a
-    # datamigration can enforce it
     _data_path = models.CharField(
         verbose_name=_("component data path"),
         help_text=_("Path to the attachment in the submission data."),
@@ -284,6 +282,12 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         verbose_name = _("submission file attachment")
         verbose_name_plural = _("submission file attachments")
         base_manager_name = "objects"
+        constraints = [
+            models.CheckConstraint(
+                name="required_non_empty_component_metadata",
+                condition=~(models.Q(_data_path="") | models.Q(component_key="")),
+            ),
+        ]
 
     def __str__(self):
         return self.get_display_name()
@@ -331,5 +335,4 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
           which *also* creates a nested datastructure:
           ``{"editgrid": {"3": {"someFile": []}}}`` (this is cursed).
         """
-        assert self._data_path, "TODO: replace with check constraint"
         return self._data_path
