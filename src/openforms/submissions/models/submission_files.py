@@ -240,13 +240,9 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
     # have to store abstract data paths (editgrid item paths without the actual
     # iteration identifiers -> editgrid.$i.file becomes editgrid.file, like
     # formio conditionals).
-
-    # TODO: should probably be TextField to be future proof
-    _data_path = models.CharField(
+    _data_path = models.TextField(
         verbose_name=_("component data path"),
         help_text=_("Path to the attachment in the submission data."),
-        max_length=255,
-        blank=True,
     )
     component_key = models.TextField(
         _("component key"),
