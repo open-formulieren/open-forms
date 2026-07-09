@@ -1211,7 +1211,19 @@ class ImportExportTests(TempdirMixin, TestCase):
             form_logic.pk,
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[
+                    FormConfigurationOptions.registration_backends,
+                    FormConfigurationOptions.prefill,
+                    FormConfigurationOptions.auth_backends,
+                    FormConfigurationOptions.payment_backend,
+                ],
+            ),
+        )
 
         # attempt to break ForeignKey constraint
         far_fetched.delete()
@@ -2771,7 +2783,14 @@ class ImportExportTests(TempdirMixin, TestCase):
             },
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[FormConfigurationOptions.registration_backends],
+            ),
+        )
         import_form(import_file=self.filepath)
 
         updated_form = Form.objects.last()
@@ -2928,7 +2947,14 @@ class ImportExportTests(TempdirMixin, TestCase):
             is_advanced=True,
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[FormConfigurationOptions.prefill],
+            ),
+        )
 
         # Import form
         import_form(import_file=self.filepath)
@@ -3029,7 +3055,14 @@ class ExportObjectsAPITests(TempdirMixin, TestCase):
             },
         )
 
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[FormConfigurationOptions.registration_backends],
+            ),
+        )
 
         with zipfile.ZipFile(self.filepath, "r") as f:
             self.assertEqual(
@@ -3535,7 +3568,14 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 "files": [],
             },
         )
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[FormConfigurationOptions.registration_backends],
+            ),
+        )
         form.delete()
 
         import_form(import_file=self.filepath)
@@ -3781,7 +3821,14 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
                 "files": [],
             },
         )
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[FormConfigurationOptions.registration_backends],
+            ),
+        )
         form.delete()
 
         import_form(import_file=self.filepath)
@@ -3908,7 +3955,14 @@ class ImportStUFZDSTests(TempdirMixin, TestCase):
                 "files": [],
             },
         )
-        export_form(form.pk, archive_name=self.filepath)
+        export_form(
+            form.pk,
+            archive_name=self.filepath,
+            export_options=FormExportOptions(
+                remove_sensitive_content=False,
+                form_configuration=[FormConfigurationOptions.registration_backends],
+            ),
+        )
         form.delete()
 
         import_form(import_file=self.filepath)

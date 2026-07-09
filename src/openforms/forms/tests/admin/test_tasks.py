@@ -31,6 +31,7 @@ class ExportFormsTaskTests(TestCase):
         process_forms_export(
             forms_uuids=[form1.uuid, form2.uuid],
             user_id=user.id,
+            export_options={},
         )
 
         # Test that the forms export model was created with the right data
@@ -81,6 +82,7 @@ class ImportFormsTaskTests(TestCase):
         process_forms_export(
             forms_uuids=[form1.uuid, form2.uuid],
             user_id=user.id,
+            export_options={},
         )
 
         cls.form_export = FormsExport.objects.get()
