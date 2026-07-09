@@ -1,6 +1,11 @@
 from unittest import TestCase
 
-from openforms.formio.typing import Component, EditGridComponent
+from openforms.formio.typing import (
+    ColumnsComponent,
+    Component,
+    EditGridComponent,
+    FieldsetComponent,
+)
 
 from ..datastructures import (
     DuplicateKeyError,
@@ -319,3 +324,220 @@ class FormioConfigurationWrapperTests(TestCase):
 
         with self.assertRaises(DuplicateKeyError):
             config_wrapper["duplicated.key"]
+
+    def test_parent_child_relation_tracking(self):
+        root_textfield: Component = {
+            "type": "textfield",
+            "key": "textfield",
+            "label": "textfield",
+        }
+        fieldset: FieldsetComponent = {
+            "type": "fieldset",
+            "key": "fieldset",
+            "label": "fieldset",
+            "components": [
+                {
+                    "type": "email",
+                    "key": "email",
+                    "label": "email",
+                }
+            ],
+        }
+        columns: ColumnsComponent = {
+            "type": "columns",
+            "key": "columns",
+            "label": "columns",
+            "columns": [
+                {
+                    "size": 12,
+                    "sizeMobile": 4,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldInColumn",
+                            "label": "textfield in column",
+                        }
+                    ],
+                }
+            ],
+        }
+        editgrid: EditGridComponent = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "editgrid",
+            "groupLabel": "Item",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "textfieldInEditgrid",
+                    "label": "textfield in editgrid",
+                }
+            ],
+        }
+        config_wrapper = FormioConfigurationWrapper(
+            {"components": [root_textfield, fieldset, columns, editgrid]}
+        )
+
+        with self.subTest("raises for keys that don't exist"):
+            with self.assertRaises(ValueError):
+                config_wrapper.get_parent("bad-key-reference")
+
+        with self.subTest("root textfield has no parent"):
+            textfield_parent = config_wrapper.get_parent("textfield")
+
+            self.assertIsNone(textfield_parent)
+
+        with self.subTest("email parent is fieldset"):
+            email_parent = config_wrapper.get_parent("email")
+
+            assert email_parent is not None
+            self.assertEqual(email_parent["key"], "fieldset")
+
+        with self.subTest("textfieldInColumn parent is columns"):
+            textfield_columns = config_wrapper.get_parent("textfieldInColumn")
+
+            assert textfield_columns is not None
+            self.assertEqual(textfield_columns["key"], "columns")
+
+        with self.subTest("textfieldInEditgrid parent is editgrid"):
+            textfield_editgrid = config_wrapper.get_parent("textfieldInEditgrid")
+
+            assert textfield_editgrid is not None
+            self.assertEqual(textfield_editgrid["key"], "editgrid")
+
+        with self.subTest("merged configuration wrapper instances"):
+            other_fieldset: FieldsetComponent = {
+                "type": "fieldset",
+                "key": "otherFieldset",
+                "label": "fieldset",
+                "components": [
+                    {
+                        "type": "email",
+                        "key": "otherEmail",
+                        "label": "email",
+                    }
+                ],
+            }
+            other_config_wrapper = FormioConfigurationWrapper(
+                {"components": [other_fieldset]}
+            )
+            assert other_config_wrapper["otherEmail"]
+            other_config_wrapper += config_wrapper
+
+            other_email_parent = other_config_wrapper.get_parent("otherEmail")
+            assert other_email_parent is not None
+            self.assertEqual(other_email_parent["key"], "otherFieldset")
+
+            original_email_parent = other_config_wrapper.get_parent("email")
+            assert original_email_parent is not None
+            self.assertEqual(original_email_parent["key"], "fieldset")
+
+    def test_duplicate_detection(self):
+        textfield1: Component = {
+            "type": "textfield",
+            "key": "duplicate",
+            "label": "Duplicate",
+        }
+        textfield2: Component = {
+            "type": "textfield",
+            "key": "anotherDuplicate",
+            "label": "Another Duplicate",
+        }
+        textfield3: Component = {
+            "type": "textfield",
+            "key": "anotherDuplicate",
+            "label": "Accidental Duplicate",
+        }
+        editgrid: EditGridComponent = {
+            "type": "editgrid",
+            "key": "repeatingGroup",
+            "label": "Repeating Group",
+            "groupLabel": "Item",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "duplicate",
+                    "label": "Duplicate",
+                },
+                {
+                    "type": "textfield",
+                    "key": "notDuplicate",
+                    "label": "Not Duplicate",
+                },
+            ],
+        }
+        fieldset_in_columns: FieldsetComponent = {
+            "type": "fieldset",
+            "key": "duplicatedFieldsetKey",
+            "label": "Duplicated fieldset",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "textfieldInDuplicatedFieldset1",
+                    "label": "Text field in duplicated fieldset 1",
+                }
+            ],
+        }
+        columns: ColumnsComponent = {
+            "type": "columns",
+            "key": "columns",
+            "label": "Columns",
+            "columns": [
+                {
+                    "size": 6,
+                    "sizeMobile": 4,
+                    "components": [fieldset_in_columns],
+                },
+                {
+                    "size": 6,
+                    "sizeMobile": 4,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfieldSecondColumn",
+                            "label": "Textfield second column",
+                        }
+                    ],
+                },
+            ],
+        }
+        duplicated_fieldset: FieldsetComponent = {
+            "type": "fieldset",
+            "key": "duplicatedFieldsetKey",
+            "label": "Duplicated fieldset 2",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "textfieldInDuplicatedFieldset2",
+                    "label": "Text field in duplicated fieldset 2",
+                }
+            ],
+        }
+        configuration: FormioConfiguration = {
+            "components": [
+                textfield1,
+                editgrid,
+                textfield2,
+                textfield3,
+                columns,
+                duplicated_fieldset,
+            ],
+        }
+
+        duplicates = FormioConfigurationWrapper.get_duplicates(configuration)
+
+        expected = {
+            "duplicate": [
+                [textfield1],
+                [editgrid, editgrid["components"][0]],
+            ],
+            "anotherDuplicate": [
+                [textfield2],
+                [textfield3],
+            ],
+            "duplicatedFieldsetKey": [
+                [columns, fieldset_in_columns],
+                [duplicated_fieldset],
+            ],
+        }
+        self.assertEqual(duplicates, expected)

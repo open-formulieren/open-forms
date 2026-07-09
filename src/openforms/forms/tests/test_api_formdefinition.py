@@ -48,7 +48,13 @@ class FormDefinitionsAPITests(APITestCase):
             slug="test-form-definition",
             configuration={
                 "display": "form",
-                "components": [{"label": "Existing field"}],
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Existing field",
+                    }
+                ],
             },
         )
 
@@ -107,7 +113,13 @@ class FormDefinitionsAPITests(APITestCase):
             slug="test-form-definition",
             configuration={
                 "display": "form",
-                "components": [{"label": "Existing field"}],
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Existing field",
+                    }
+                ],
             },
         )
         url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
@@ -571,7 +583,13 @@ class FormDefinitionsAPITests(APITestCase):
             slug="test-form-definition",
             configuration={
                 "display": "form",
-                "components": [{"label": "Existing field"}],
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Existing field",
+                    }
+                ],
             },
         )
 

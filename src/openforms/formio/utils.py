@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+import itertools
+from collections.abc import Iterator, MutableMapping, Sequence
 from typing import Any
 
 import structlog
-from glom import Coalesce, Path, glom
 from opentelemetry import trace
 from typing_extensions import TypeIs
 
@@ -38,25 +38,34 @@ def iter_components(
     configuration: ComponentLike,
     *,
     recursive=True,
-    _is_root=True,
     _mark_root=False,
     recurse_into_editgrid: bool = True,
+    parent_map: MutableMapping[str, str] | None = None,  # mapping from child to parent
+    parent_key: str = "",
 ) -> Iterator[Component]:
+    _is_root = parent_key == ""
     components = configuration.get("components", [])
+    assert isinstance(components, Sequence)
     if _is_column_component(configuration) and recursive:
         assert not components, "Both nested components and columns found"
+        assert isinstance(configuration, dict)
         for column in configuration["columns"]:
             yield from iter_components(
                 configuration=column,
                 recursive=recursive,
-                _is_root=False,
                 recurse_into_editgrid=recurse_into_editgrid,
+                parent_map=parent_map,
+                parent_key=configuration["key"],
             )
 
     for component in components:
+        assert isinstance(component, dict)
         if _mark_root:
             component["_is_root"] = _is_root
         yield component
+        if parent_key and parent_map is not None:
+            parent_map[component["key"]] = parent_key
+
         if recursive:
             # TODO: find a cleaner solution - currently just not yielding these is not
             # an option because we have some special treatment for editgrid data which
@@ -68,8 +77,9 @@ def iter_components(
             yield from iter_components(
                 configuration=component,
                 recursive=recursive,
-                _is_root=False,
                 recurse_into_editgrid=recurse_into_editgrid,
+                parent_map=parent_map,
+                parent_key=component["key"],
             )
 
 
@@ -116,58 +126,18 @@ def flatten_by_path(configuration: FormioConfiguration) -> dict[str, Component]:
     return result
 
 
-def get_readable_path_from_configuration_path(
-    configuration: FormioConfiguration, path: str, prefix: str | None = ""
-) -> str:
+def get_branch_representation(branch: Sequence[Component], *, prefix: str = "") -> str:
     """
-    Get a readable version of the configuration path.
+    Get a readable version of a component tree branch.
 
-    For example, for a path ``components.0.components.1`` and a configuration:
-
-        .. code:: json
-
-            {
-              "components": [
-                {
-                  "key": "repeatingGroup",
-                  "label": "Repeating Group",
-                  "components": [
-                    {
-                      "key": "item1",
-                      "label": "Item 1",
-                    },
-                    {
-                      "key": "item2"
-                      "label": "Item 2",
-                    }
-                  ]
-                }
-              ]
-            }
-
-    it returns ``Repeating Group > Item 1``.
+    For example, for a branch ``[EditGridComponent, TextField]``, it returns
+    ``Repeating group label > Textfield label``.
     """
-    keys_path = []
-    if prefix:
-        keys_path.append(prefix)
-
-    previous_path_bit = Path()
-    for path_bit in Path.from_text(path).values():
-        label_or_key = glom(
-            configuration,
-            Coalesce(
-                Path(previous_path_bit, path_bit, "label"),
-                Path(previous_path_bit, path_bit, "key"),
-            ),
-            default=None,
-        )
-
-        if label_or_key:
-            keys_path.append(label_or_key)
-
-        previous_path_bit = Path(previous_path_bit, path_bit)
-
-    return " > ".join(keys_path)
+    bits = itertools.chain(
+        [prefix] if prefix else [],
+        (node.get("label") or node["key"] for node in branch),
+    )
+    return " > ".join(bits)
 
 
 def get_component_default_value(component: Component) -> Any | None:
