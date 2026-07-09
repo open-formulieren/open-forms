@@ -1,0 +1,24 @@
+@use '../../lib/bem';
+
+.default-value-button {
+  background: transparent;
+  border: thin solid var(--body-fg);
+  color: var(--body-fg);
+  font-size: 14px !important;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px !important;
+
+  &:hover {
+    background: darkgray;
+  }
+}
+
+.default-value-input-container {
+  display: flex;
+  gap: 5px;
+  flex-direction: row;
+  align-items: center;
+}

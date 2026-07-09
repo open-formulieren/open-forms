@@ -37,6 +37,7 @@
 @use './servicefetchconfiguration-picker';
 @use './logic-dmn';
 @use './logic-synchronize-variables';
+@use './logic-default-value';
 
 // form list
 @use './form-category';
