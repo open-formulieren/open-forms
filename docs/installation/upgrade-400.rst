@@ -477,3 +477,32 @@ You should run this script and resolve the problems in the admin interface, once
 upgraded to 4.0. We cannot run this script as an upgrade blocking check because it's
 simply not possible to fix this pre-4.0 (one of the reasons for the breaking changes in
 4.0 is making it possible to prevent/fix this).
+
+Internal file upload processing rework
+======================================
+
+.. note:: Relevant for: devops
+
+We've done internal code cleanup with regard to how file uploads in forms are processed.
+The changes are backwards compatible, but it requires some data migrations that can take
+a considerable time depending on how much data your instance contains.
+
+Our profiling reports the duration of the particular data migration for different sizes
+of data sets available to us:
+
+================= ==================
+Number of uploads Duration (seconds)
+================= ==================
+291               0.27
+2127              1.7
+3848              2.8
+4219              4.9
+================= ==================
+
+You can obtain the amount of records in your instance with a simple SQL query:
+
+.. code-block:: sql
+
+    select count(*) from submissions_submissionfileattachment;
+
+From these samples, we recommend planning for 0.9-1.2 seconds per 1000 files.
