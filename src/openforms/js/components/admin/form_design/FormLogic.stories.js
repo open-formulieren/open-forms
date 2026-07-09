@@ -499,12 +499,12 @@ export const WithDefaultValue = {
     const canvas = within(canvasElement);
 
     // Ensure label is not visible
-    expect(await canvas.queryByText('Default value:')).toBeNull();
+    expect(await canvas.queryByText('Standaardwaarde:')).toBeNull();
     // Click the button
-    await userEvent.click(await canvas.findByRole('button', {name: 'Default value'}));
+    await userEvent.click(await canvas.findByRole('button', {name: 'Standaardwaarde'}));
     // Ensure label is visible
-    expect(await canvas.findByText('Default value:')).toBeVisible();
+    expect(await canvas.findByText('Standaardwaarde:')).toBeVisible();
     // Remove the input
-    await userEvent.click(await canvas.findByTitle('Remove default value'));
+    await userEvent.click(await canvas.findByTitle('Verwijder standaardwaarde'));
   },
 };
