@@ -25,6 +25,7 @@ class DeleteFormExportFilesTest(TestCase):
             process_forms_export(
                 forms_uuids=[form1.uuid, form2.uuid],
                 user_id=user.id,
+                export_options={},
             )
 
         forms_export = FormsExport.objects.get()

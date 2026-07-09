@@ -225,6 +225,7 @@ class TestImportView(WebTest):
         process_forms_export(
             forms_uuids=[form1.uuid, form2.uuid],
             user_id=user.id,
+            export_options={},
         )
 
         form_export = FormsExport.objects.get()
