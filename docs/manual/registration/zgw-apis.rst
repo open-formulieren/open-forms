@@ -83,3 +83,16 @@ Daarnaast is er een verschil tussen burgers, bedrijven en vestigingen:
 * voor vestigingen geldt dezelfde beperking.
 * voor niet-natuurijke personen (bedrijven, zonder vestiging) wordt het bezoekadres
   gevuld en geldt deze beperking niet.
+
+
+Zaakobjecten
+============
+
+Op het tabblad “Zaakobjecten” kun je de kenmerken configureren van de zaakobjecten die tijdens
+het registratieproces zijn aangemaakt.
+
+.. note:: De functioneel beheerder dient een aantal
+   Open Formulieren ondersteunt alleen het objecttype “overige”.
+
+Het kenmerk “overige gegevens” is een sjabloon en je kunt formuliervariabelen gebruiken om dit
+in te vullen. Voor meer informatie over welke variabelen en expressies beschikbaar zijn, ga je naar :ref:`zgw_api_registratie`.
