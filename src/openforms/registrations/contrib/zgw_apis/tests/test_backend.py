@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from django.test import TestCase, override_settings, tag
 
+from glom import glom
 from privates.test import temp_private_root
 from unittest_parametrize import ParametrizedTestCase, parametrize
 from zgw_consumers.constants import AuthTypes
@@ -3288,7 +3289,7 @@ class ObjectsAPITests(BaseRegistrationTestCase):
         # we need to patch the ZGW client `create_zaakobject` method so that we can
         # fix up the object URL since Open Zaak validates the format and needs to resolve
         # this inside the container network
-        original_create_zaakobject = ZakenClient.create_zaakobject
+        original_create_zaakobject = ZakenClient.create_zaakobject_with_object
 
         def wrapped_create_zaakobject(
             self,
@@ -3307,7 +3308,7 @@ class ObjectsAPITests(BaseRegistrationTestCase):
 
         with patch.object(
             ZakenClient,
-            "create_zaakobject",
+            "create_zaakobject_with_object",
             side_effect=wrapped_create_zaakobject,
             autospec=True,
         ):
@@ -3739,3 +3740,103 @@ class SummaryDocumentTests(BaseRegistrationTestCase):
         pdf_details = document_results["report"]["document"]
         self.assertEqual(pdf_details["titel"], "Public form name (PDF)")
         self.assertTrue("json" not in document_results)
+
+
+class CaseObjectsTests(BaseRegistrationTestCase):
+    def test_submission_with_case_objects_creation(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "textField1",
+                    "type": "textfield",
+                },
+                {
+                    "key": "textField2",
+                    "type": "textfield",
+                },
+            ],
+            submitted_data={
+                "textField1": "Maple Avenue 3B",
+                "textField2": "de Pijp 4199",
+            },
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case type version (2024-10-31)
+            completed_on=datetime(2024, 11, 9, 15, 30, 0, tzinfo=UTC),
+            with_report=True,
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "product_url": "",
+            "property_mappings": [],
+            "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
+            "children_roltype": "",
+            "children_description": "",
+            "summary_documents": [],
+            "case_objects": [
+                {
+                    "case_object_type": "overige",
+                    "case_object_type_overige": "building in construction",
+                    "case_object_identification": {
+                        "overige_data": "Building: {{variables.textField1}}"
+                    },
+                },
+                {
+                    "case_object_type": "overige",
+                    "case_object_type_overige": "parking in construction",
+                    "case_object_identification": {
+                        "overige_data": "Parking: {{variables.textField2}}"
+                    },
+                },
+            ],
+        }
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # perform the actual registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(len(result["zaakobjecten"]), 2)
+        # verify the created case objects
+        zaakobjecten = client.get("zaakobjecten").json()
+        partial_zaakobjecten = glom(
+            zaakobjecten["results"],
+            [
+                {
+                    "object_type": "objectType",
+                    "object_type_overige": "objectTypeOverige",
+                    "object_identification": "objectIdentificatie",
+                }
+            ],
+        )
+        self.assertEqual(
+            partial_zaakobjecten,
+            [
+                {
+                    "object_type": "overige",
+                    "object_type_overige": "parking in construction",
+                    "object_identification": {"overigeData": "Parking: de Pijp 4199"},
+                },
+                {
+                    "object_type": "overige",
+                    "object_type_overige": "building in construction",
+                    "object_identification": {
+                        "overigeData": "Building: Maple Avenue 3B"
+                    },
+                },
+            ],
+        )
