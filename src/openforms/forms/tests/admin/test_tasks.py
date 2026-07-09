@@ -12,6 +12,7 @@ from privates.test import temp_private_root
 from rest_framework.exceptions import ValidationError
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.import_export.typing import FormExportOptions
 from openforms.logging.models import TimelineLogProxy
 from openforms.utils.urls import build_absolute_uri
 
@@ -31,6 +32,7 @@ class ExportFormsTaskTests(TestCase):
         process_forms_export(
             forms_uuids=[form1.uuid, form2.uuid],
             user_id=user.id,
+            export_options=FormExportOptions(),
         )
 
         # Test that the forms export model was created with the right data
@@ -81,6 +83,7 @@ class ImportFormsTaskTests(TestCase):
         process_forms_export(
             forms_uuids=[form1.uuid, form2.uuid],
             user_id=user.id,
+            export_options=FormExportOptions(),
         )
 
         cls.form_export = FormsExport.objects.get()

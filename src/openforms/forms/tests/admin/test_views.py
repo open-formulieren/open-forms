@@ -19,6 +19,7 @@ from openforms.accounts.tests.factories import (
 from openforms.forms.admin.tasks import process_forms_export
 from openforms.forms.models.form import FormsExport
 from openforms.forms.tests.factories import FormFactory
+from openforms.import_export.typing import FormExportOptions
 from openforms.utils.urls import build_absolute_uri
 
 
@@ -225,6 +226,7 @@ class TestImportView(WebTest):
         process_forms_export(
             forms_uuids=[form1.uuid, form2.uuid],
             user_id=user.id,
+            export_options=FormExportOptions(),
         )
 
         form_export = FormsExport.objects.get()
