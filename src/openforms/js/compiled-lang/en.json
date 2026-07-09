@@ -653,6 +653,12 @@
       "value": "Comma-separate list values"
     }
   ],
+  "4iYhbx": [
+    {
+      "type": 0,
+      "value": "Object type overige"
+    }
+  ],
   "4sFGgA": [
     {
       "type": 0,
@@ -1937,6 +1943,12 @@
       "value": "This field is required."
     }
   ],
+  "Dvovhl": [
+    {
+      "type": 0,
+      "value": "Add case object"
+    }
+  ],
   "DxGKNm": [
     {
       "type": 0,
@@ -2919,6 +2931,12 @@
     {
       "type": 0,
       "value": "Affixes"
+    }
+  ],
+  "M4Kbw3": [
+    {
+      "type": 0,
+      "value": "Data for the 'overige' case object in a free format. You can use form variables here."
     }
   ],
   "M8nTet": [
@@ -4391,6 +4409,16 @@
       "value": "Previous text"
     }
   ],
+  "ZJQmio": [
+    {
+      "type": 0,
+      "value": "Case object "
+    },
+    {
+      "type": 1,
+      "value": "count"
+    }
+  ],
   "ZMIEED": [
     {
       "type": 0,
@@ -4487,6 +4515,12 @@
     {
       "type": 0,
       "value": " attribute"
+    }
+  ],
+  "aE4IrY": [
+    {
+      "type": 0,
+      "value": "Overige data"
     }
   ],
   "aWwaAq": [
@@ -6015,6 +6049,12 @@
       "value": "Show character counter"
     }
   ],
+  "l/D4PL": [
+    {
+      "type": 0,
+      "value": "Object type"
+    }
+  ],
   "l1fi1t": [
     {
       "type": 0,
@@ -6303,6 +6343,20 @@
     {
       "type": 0,
       "value": "Bronorganisatie"
+    }
+  ],
+  "nXKEYN": [
+    {
+      "type": 0,
+      "value": "Case objects ("
+    },
+    {
+      "type": 1,
+      "value": "count"
+    },
+    {
+      "type": 0,
+      "value": ")"
     }
   ],
   "nYePys": [
@@ -6673,6 +6727,12 @@
     {
       "type": 0,
       "value": "Include partners"
+    }
+  ],
+  "qntXTt": [
+    {
+      "type": 0,
+      "value": "Description of the 'overige' object type."
     }
   ],
   "qo1UbS": [
@@ -7281,6 +7341,12 @@
     {
       "type": 0,
       "value": "Custom error messages"
+    }
+  ],
+  "vhmWn1": [
+    {
+      "type": 0,
+      "value": "Type of the case object. Now only 'overige' value is supported."
     }
   ],
   "viEfGU": [

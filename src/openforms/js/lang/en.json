@@ -274,6 +274,11 @@
     "description": "StUF-ZDS extraElement serializeListToCsv label",
     "originalDefault": "Comma-separate list values"
   },
+  "4iYhbx": {
+    "defaultMessage": "Object type overige",
+    "description": "ZGW APIs registration options 'caseObjectTypeOverige' label",
+    "originalDefault": "Object type overige"
+  },
   "4sFGgA": {
     "defaultMessage": "The expressions here are extracted from the selected decision definition. It's possible certain inputs are displayed here that are already provided by a dependency of the selected decision, due to the complexity of the input expression.",
     "description": "DMN input expressions warning about extraction accuracy",
@@ -854,6 +859,11 @@
     "description": "Required error message",
     "originalDefault": "This field is required."
   },
+  "Dvovhl": {
+    "defaultMessage": "Add case object",
+    "description": "Add case object (mapping) button",
+    "originalDefault": "Add case object"
+  },
   "DxGKNm": {
     "defaultMessage": "Logic",
     "description": "Logic fieldset title",
@@ -1403,6 +1413,11 @@
     "defaultMessage": "Change text",
     "description": "literals.changeText form label",
     "originalDefault": "Change text"
+  },
+  "M4Kbw3": {
+    "defaultMessage": "Data for the 'overige' case object in a free format. You can use form variables here.",
+    "description": "ZGW APIs registration options 'overigeData' help text",
+    "originalDefault": "Data for the 'overige' case object in a free format. You can use form variables here."
   },
   "M8nTet": {
     "defaultMessage": "Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not. Submission is always allowed for the single step forms.",
@@ -2064,6 +2079,11 @@
     "description": "Form step previous text label",
     "originalDefault": "Previous text"
   },
+  "ZJQmio": {
+    "defaultMessage": "Case object {count}",
+    "description": "ZGW APIs registration: case objects fieldset title",
+    "originalDefault": "Case object {count}"
+  },
   "ZP5B/v": {
     "defaultMessage": "The processing (\"verwerking\") for queries to the BRP Persoon API.",
     "description": "Form 'BRP Personen processing header value' field help text",
@@ -2118,6 +2138,11 @@
     "defaultMessage": "Mapped to the {geometryPath} attribute",
     "description": "'Mapped to geometry' registration summary message",
     "originalDefault": "Mapped to the {geometryPath} attribute"
+  },
+  "aE4IrY": {
+    "defaultMessage": "Overige data",
+    "description": "ZGW APIs registration options 'overigeData' label",
+    "originalDefault": "Overige data"
   },
   "aXJpiI": {
     "defaultMessage": "This field is required.",
@@ -2774,6 +2799,11 @@
     "description": "Email registration options 'toEmails' label",
     "originalDefault": "The email addresses to which the submission details will be sent"
   },
+  "l/D4PL": {
+    "defaultMessage": "Object type",
+    "description": "ZGW APIs registration options 'caseObjectType' label",
+    "originalDefault": "Object type"
+  },
   "l1fi1t": {
     "defaultMessage": "(missing information)",
     "description": "JSON editor: unknown FormIO component key",
@@ -2888,6 +2918,11 @@
     "defaultMessage": "Email content template HTML",
     "description": "Email registration options 'emailContentTemplateHtml' label",
     "originalDefault": "Email content template HTML"
+  },
+  "nXKEYN": {
+    "defaultMessage": "Case objects ({count})",
+    "description": "ZGW APIs registration backend options, 'case objects' tab label",
+    "originalDefault": "Case objects ({count})"
   },
   "nYePys": {
     "defaultMessage": "Something went wrong while retrieving the available object type versions.",
@@ -3058,6 +3093,11 @@
     "defaultMessage": "If enabled, then no access control on the referenced object is performed. Ensure that it does not contain private data before checking this!",
     "description": "Objects API registration: skipOwnershipCheck helpText",
     "originalDefault": "If enabled, then no access control on the referenced object is performed. Ensure that it does not contain private data before checking this!"
+  },
+  "qntXTt": {
+    "defaultMessage": "Description of the 'overige' object type.",
+    "description": "ZGW APIs registration options 'caseObjectTypeOverige' help text",
+    "originalDefault": "Description of the 'overige' object type."
   },
   "qo1UbS": {
     "defaultMessage": "Export",
@@ -3333,6 +3373,11 @@
     "defaultMessage": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used.",
     "description": "Document upload: document type option help text",
     "originalDefault": "Save the document in the Documents API with the selected document type. The document type will be resolved against the {catalogueLabel, select, empty {specified} other {''{catalogueLabel}''} } catalogue in the plugin options. If left blank, the default attachment document type configured in the plugin options will be used."
+  },
+  "vhmWn1": {
+    "defaultMessage": "Type of the case object. Now only 'overige' value is supported.",
+    "description": "ZGW APIs registration options 'caseObjectType' help text",
+    "originalDefault": "Type of the case object. Now only 'overige' value is supported."
   },
   "viEfGU": {
     "defaultMessage": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",

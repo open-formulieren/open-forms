@@ -653,6 +653,12 @@
       "value": "Door komma's gescheiden waarden"
     }
   ],
+  "4iYhbx": [
+    {
+      "type": 0,
+      "value": "Objecttype overige"
+    }
+  ],
   "4sFGgA": [
     {
       "type": 0,
@@ -1924,6 +1930,12 @@
       "value": "Dit veld is verplicht."
     }
   ],
+  "Dvovhl": [
+    {
+      "type": 0,
+      "value": "Zaakobject toevoegen"
+    }
+  ],
   "DxGKNm": [
     {
       "type": 0,
@@ -2906,6 +2918,12 @@
     {
       "type": 0,
       "value": "Voorvoegsels"
+    }
+  ],
+  "M4Kbw3": [
+    {
+      "type": 0,
+      "value": "Gegevens voor het zaakobject ‘overige’ in een vrije indeling. Je kunt hier formuliervariabelen gebruiken."
     }
   ],
   "M8nTet": [
@@ -4375,6 +4393,16 @@
       "value": "'Vorige' tekst"
     }
   ],
+  "ZJQmio": [
+    {
+      "type": 0,
+      "value": "Zaakobject "
+    },
+    {
+      "type": 1,
+      "value": "count"
+    }
+  ],
   "ZMIEED": [
     {
       "type": 0,
@@ -4471,6 +4499,12 @@
     {
       "type": 0,
       "value": "-attribuut"
+    }
+  ],
+  "aE4IrY": [
+    {
+      "type": 0,
+      "value": "Overige data"
     }
   ],
   "aWwaAq": [
@@ -6003,6 +6037,12 @@
       "value": "Toon aantal karakters"
     }
   ],
+  "l/D4PL": [
+    {
+      "type": 0,
+      "value": "Objecttype"
+    }
+  ],
   "l1fi1t": [
     {
       "type": 0,
@@ -6291,6 +6331,20 @@
     {
       "type": 0,
       "value": "Bronorganisatie"
+    }
+  ],
+  "nXKEYN": [
+    {
+      "type": 0,
+      "value": "Zaakobjecten ("
+    },
+    {
+      "type": 1,
+      "value": "count"
+    },
+    {
+      "type": 0,
+      "value": ")"
     }
   ],
   "nYePys": [
@@ -6661,6 +6715,12 @@
     {
       "type": 0,
       "value": "Inclusief partner(s)"
+    }
+  ],
+  "qntXTt": [
+    {
+      "type": 0,
+      "value": "Beschrijving van het objecttype ‘overige’."
     }
   ],
   "qo1UbS": [
@@ -7265,6 +7325,12 @@
     {
       "type": 0,
       "value": "Foutmeldingen"
+    }
+  ],
+  "vhmWn1": [
+    {
+      "type": 0,
+      "value": "Type van het zaakobject. Momenteel wordt alleen de waarde ‘overige’ ondersteund."
     }
   ],
   "viEfGU": [
