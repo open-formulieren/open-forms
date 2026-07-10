@@ -11,13 +11,14 @@ from .constants import (
     FormConfigurationOptions,
 )
 from .export_form import export_form, form_to_json
-from .typing import FormExportOptions
+from .typing import FormExportOptions, FormExportOptionsData
 
 __all__ = [
     "EXPORT_META_KEY",
     "AdditionalFormConfigurationOptions",
     "FormConfigurationOptions",
     "FormExportOptions",
+    "FormExportOptionsData",
     "export_form",
     "form_to_json",
 ]
