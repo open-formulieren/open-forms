@@ -35,6 +35,17 @@ class AdditionalFormConfigurationOptions(models.TextChoices):
     category = "category", _("Category")
 
 
+class ReusableFormDefinitionsOptions(models.TextChoices):
+    reuse_existing = "reuseExisting", _("Reuse existing form definitions")
+    create_new = "createNew", _("Create all new form definitions")
+
+
+class LinksToUnknownDomainsOptions(models.TextChoices):
+    ignore = "ignore", _("Keep links to unknown domains as-is")
+    remove = "remove", _("Remove the links to unknown domains")
+    accept = "accept", _("Accept all unknown domains")
+
+
 @dataclass(slots=True)
 class FormExportOptions:
     remove_sensitive_content: bool = True
@@ -44,6 +55,26 @@ class FormExportOptions:
             FormConfigurationOptions.prefill,
             FormConfigurationOptions.payment_backend,
         ]
+    )
+    additional_form_configuration: list[AdditionalFormConfigurationOptions] = field(
+        default_factory=list
+    )
+
+
+@dataclass(slots=True)
+class FormImportOptions:
+    form_configuration: list[FormConfigurationOptions] = field(
+        default_factory=lambda: [
+            FormConfigurationOptions.registration_backends,
+            FormConfigurationOptions.prefill,
+            FormConfigurationOptions.payment_backend,
+        ]
+    )
+    reusable_form_definitions: ReusableFormDefinitionsOptions = field(
+        default=ReusableFormDefinitionsOptions.create_new,
+    )
+    links_to_unknown_domains: LinksToUnknownDomainsOptions = field(
+        default=LinksToUnknownDomainsOptions.ignore,
     )
     additional_form_configuration: list[AdditionalFormConfigurationOptions] = field(
         default_factory=list

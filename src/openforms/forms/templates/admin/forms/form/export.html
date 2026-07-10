@@ -56,7 +56,16 @@
                             {{ field.errors }}
                             <div class="flex-container {% if field.field.widget.input_type == 'checkbox' and field|length == 1 %}checkbox-row{% endif %} {% if field.errors %}errors{% endif %}">
                                 {{ field.label_tag }}
-                                {{ field }}
+
+                                {% if field|length == 1 %}
+                                    {{ field }}
+                                {% else %}
+                                    <ul {% if field.id_for_label %} id="{{ field.id_for_label }}"{% endif %}>
+                                        {% for subfield in field %}
+                                            <li>{{ subfield }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
                             </div>
 
                             {% if field.help_text %}
