@@ -17,6 +17,7 @@ from rest_framework.exceptions import ValidationError
 from openforms.accounts.models import User
 from openforms.celery import app
 from openforms.emails.utils import send_mail_html
+from openforms.import_export.typing import FormExportOptions
 from openforms.logging import audit_logger
 from openforms.utils.urls import build_absolute_uri
 
@@ -28,7 +29,9 @@ logger = structlog.stdlib.get_logger(__name__)
 
 
 @app.task(ignore_result=True)
-def process_forms_export(forms_uuids: list, user_id: int) -> None:
+def process_forms_export(
+    forms_uuids: list, user_id: int, export_options: FormExportOptions
+) -> None:
     forms = Form.objects.filter(uuid__in=forms_uuids)
 
     user = User.objects.get(id=user_id)
@@ -41,6 +44,7 @@ def process_forms_export(forms_uuids: list, user_id: int) -> None:
                 export_form(
                     form_id=form.pk,
                     archive_name=Path(temp_dir, f"form_{form.slug}.zip"),
+                    export_options=export_options,
                 )
             )
 
