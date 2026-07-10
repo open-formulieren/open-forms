@@ -157,7 +157,7 @@ diff-match-patch==20241021
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-import-export
-django==5.2.15
+django==5.2.16
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -863,7 +863,7 @@ pydantic-core==2.41.5
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   pydantic
-pydantic-settings==2.13.1
+pydantic-settings==2.14.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -939,7 +939,6 @@ pytz==2025.2
     #   -r requirements/base.txt
     #   django-yubin
     #   flower
-    #   zeep
 pyyaml==6.0.3
     # via
     #   -c requirements/base.txt
@@ -1211,7 +1210,7 @@ uwsgi==2.0.31
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-vcrpy==8.1.1
+vcrpy==8.3.0
     # via maykin-common
 vine==5.1.0
     # via
@@ -1227,7 +1226,7 @@ wcwidth==0.6.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   prompt-toolkit
-weasyprint==68.1
+weasyprint==69.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1267,7 +1266,7 @@ xmltodict==1.0.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zeep==4.3.2
+zeep==4.3.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

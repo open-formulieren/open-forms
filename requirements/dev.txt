@@ -178,7 +178,7 @@ diff-match-patch==20241021
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-import-export
-django==5.2.15
+django==5.2.16
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -930,7 +930,7 @@ pydantic-core==2.41.5
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   pydantic
-pydantic-settings==2.13.1
+pydantic-settings==2.14.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1012,7 +1012,6 @@ pytz==2025.2
     #   -r requirements/ci.txt
     #   django-yubin
     #   flower
-    #   zeep
 pyyaml==6.0.3
     # via
     #   -c requirements/ci.txt
@@ -1346,7 +1345,7 @@ uwsgi==2.0.31
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-vcrpy==8.1.1
+vcrpy==8.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1369,7 +1368,7 @@ wcwidth==0.6.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   prompt-toolkit
-weasyprint==68.1
+weasyprint==69.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1416,7 +1415,7 @@ xmltodict==1.0.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-zeep==4.3.2
+zeep==4.3.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
