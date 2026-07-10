@@ -83,49 +83,6 @@ def iter_components(
             )
 
 
-def _iterate_components_with_configuration_path(
-    configuration: ComponentLike, prefix: str = "components", recursive=True
-) -> Iterator[tuple[str, Component]]:
-    for index, component in enumerate(iter_components(configuration, recursive=False)):
-        full_path = f"{prefix}.{index}"
-        yield full_path, component
-
-        # could be a component, could be something else
-        has_components = "components" in component
-        has_columns = "columns" in component
-
-        if has_columns and recursive:
-            for col_index, column in enumerate(component["columns"]):
-                nested_prefix = f"{full_path}.columns.{col_index}.components"
-                yield from _iterate_components_with_configuration_path(
-                    column, prefix=nested_prefix
-                )
-        elif has_components and recursive:
-            yield from _iterate_components_with_configuration_path(
-                component, prefix=f"{full_path}.components"
-            )
-
-
-@tracer.start_as_current_span(
-    name="flatten-by-path",
-    attributes={
-        "span.type": "app",
-        "span.subtype": "formio",
-        "span.action": "configuration",
-    },
-)
-def flatten_by_path(configuration: FormioConfiguration) -> dict[str, Component]:
-    """
-    Flatten the formio configuration.
-
-    Takes a (nested) Formio configuration object and flattens it, using the full
-    JSON path as key and the component as value in the returned mapping.
-    """
-
-    result = dict(_iterate_components_with_configuration_path(configuration))
-    return result
-
-
 def get_branch_representation(branch: Sequence[Component], *, prefix: str = "") -> str:
     """
     Get a readable version of a component tree branch.

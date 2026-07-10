@@ -2321,20 +2321,6 @@
       "value": "Use linked product price"
     }
   ],
-  "GjQdpb": [
-    {
-      "type": 0,
-      "value": ", at location \""
-    },
-    {
-      "type": 1,
-      "value": "location"
-    },
-    {
-      "type": 0,
-      "value": "\""
-    }
-  ],
   "GjcAY2": [
     {
       "type": 0,
@@ -4263,48 +4249,6 @@
     {
       "type": 0,
       "value": "(collapse)"
-    }
-  ],
-  "YbnFnL": [
-    {
-      "type": 0,
-      "value": "The component \""
-    },
-    {
-      "type": 1,
-      "value": "label"
-    },
-    {
-      "type": 0,
-      "value": "\" (with key \""
-    },
-    {
-      "type": 1,
-      "value": "key"
-    },
-    {
-      "type": 0,
-      "value": "\""
-    },
-    {
-      "type": 1,
-      "value": "location"
-    },
-    {
-      "type": 0,
-      "value": ") has a problem in the field \""
-    },
-    {
-      "type": 1,
-      "value": "field"
-    },
-    {
-      "type": 0,
-      "value": "\": "
-    },
-    {
-      "type": 1,
-      "value": "error"
     }
   ],
   "YdHbH9": [

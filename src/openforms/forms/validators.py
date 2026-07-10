@@ -13,8 +13,7 @@ from openforms.formio.service import (
     get_branch_representation,
 )
 from openforms.formio.typing import Component, FormioConfiguration
-from openforms.formio.variables import validate_configuration
-from openforms.typing import JSONObject
+from openforms.formio.variables import get_configuration_template_syntax_errors
 
 if TYPE_CHECKING:
     from openforms.forms.models import FormDefinition
@@ -49,31 +48,41 @@ def validate_form_definition_is_reusable(
         )
 
 
-def validate_template_expressions(configuration: JSONObject) -> None:
+def validate_template_expressions(configuration: FormioConfiguration) -> None:
     """
     Validate that any template expressions in supported properties are correct.
 
     This runs syntax validation on template fragments inside Formio configuration
     objects.
     """
-    errored_components = validate_configuration(configuration)
-    if not errored_components:
+    errors = get_configuration_template_syntax_errors(configuration)
+    if not errors:
         return
 
-    all_errors = []
-
-    for key, path in errored_components.items():
-        component_path, field = path.rsplit(".", 1)
-        err = ValidationError(
-            _(
-                "The component '{key}' (at JSON path '{path}') has template syntax "
-                "errors in the field '{field}'."
-            ).format(key=key, path=component_path, field=field),
-            code="invalid-template-syntax",
+    location_error_template = _(', at location "{location}"')
+    error_template = _(
+        'The component "{label}" (with key "{key}"{location}) has a problem in '
+        'the field "{property}": there are template syntax errors in the expression.'
+    )
+    error_details: list[ValidationError] = []
+    for error in errors:
+        location = error.parents_representation
+        error_message = error_template.format(
+            label=error.label,
+            key=error.key,
+            location=location_error_template.format(location=location)
+            if location
+            else "",
+            property=error.property_name,
         )
-        all_errors.append(err)
+        error_details.append(
+            ValidationError(
+                error_message,
+                code="invalid-template-syntax",
+            )
+        )
 
-    raise ValidationError(all_errors)
+    raise ValidationError(error_details)
 
 
 def validate_no_duplicate_keys(configuration: FormioConfiguration) -> None:
