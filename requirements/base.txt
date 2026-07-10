@@ -535,7 +535,7 @@ python-ipware==3.0.0
     # via django-ipware
 python-magic==0.4.27
     # via -r requirements/base.in
-pytz==2025.2
+pytz==2026.2
     # via
     #   django-yubin
     #   flower
