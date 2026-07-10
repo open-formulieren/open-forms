@@ -21,21 +21,6 @@ import openforms.utils.validators
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("submissions", "0001_initial_to_openforms_v230"),
-        ("submissions", "0002_v230_to_v300"),
-        ("submissions", "0003_alter_submissionvaluevariable_unique_together_and_more"),
-        ("submissions", "0004_set_co_sign_data_version"),
-        ("submissions", "0005_update_registration_intermediate_rol_results_name"),
-        ("submissions", "0006_submissionvaluevariable_configuration"),
-        ("submissions", "0007_alter_emailverification_id_and_more"),
-        ("submissions", "0008_submissionvaluevariable_data_type_and_subtype"),
-        (
-            "submissions",
-            "0009_submissionvaluevariable_submission_variable_data_type_is_not_subtype_exclusive",
-        ),
-    ]
-
     dependencies = [
         ("config", "0001_initial_to_v250"),
         ("forms", "0001_initial_to_v320"),

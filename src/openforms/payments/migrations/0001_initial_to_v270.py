@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("submissions", "0001_initial_to_openforms_v230"),
+        ("submissions", "0001_initial_to_v330"),
     ]
 
     operations = [
