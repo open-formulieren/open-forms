@@ -26,6 +26,10 @@ from openforms.logging import audit_logger
 
 from ..forms import ExportStatisticsForm
 from ..forms.form import FormImportForm
+from ..import_export.constants import (
+    AdditionalFormConfigurationOptions,
+    FormConfigurationOptions,
+)
 from ..models import Form, FormsExport, FormSubmissionStatistics
 from ..utils import import_form
 from .tasks import process_forms_export, process_forms_import
@@ -33,6 +37,39 @@ from .tasks import process_forms_export, process_forms_import
 
 class ExportFormsForm(forms.Form):
     forms_uuids = SimpleArrayField(forms.UUIDField(), widget=forms.HiddenInput)
+    remove_sensitive_content = forms.BooleanField(
+        label=_("Anonymize form configuration"),
+        required=False,
+        initial=True,
+        help_text=_(
+            "Whether sensative/internal form configuration should be anonymized during exporting."
+        ),
+    )
+    form_configuration = forms.MultipleChoiceField(
+        label=_("Form configuration"),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            FormConfigurationOptions.registration_backends,
+            FormConfigurationOptions.prefill,
+            FormConfigurationOptions.payment_backend,
+            FormConfigurationOptions.auth_backends,
+        ],
+        choices=FormConfigurationOptions.choices,
+        help_text=_(
+            "Which form configuration should be included in the export file content."
+        ),
+    )
+    additional_form_configuration = forms.MultipleChoiceField(
+        label=_("Additional form configuration"),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[],
+        choices=AdditionalFormConfigurationOptions.choices,
+        help_text=_(
+            "Which additional form configuration should be included in the export file content."
+        ),
+    )
 
     def clean_forms_uuids(self):
         if not Form.objects.filter(uuid__in=self.cleaned_data["forms_uuids"]).exists():
@@ -55,6 +92,15 @@ class ExportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
         process_forms_export.delay(
             forms_uuids=form.cleaned_data["forms_uuids"],
             user_id=self.request.user.id,
+            export_options={
+                "remove_sensitive_content": form.cleaned_data[
+                    "remove_sensitive_content"
+                ],
+                "form_configuration": form.cleaned_data["form_configuration"],
+                "additional_form_configuration": form.cleaned_data[
+                    "additional_form_configuration"
+                ],
+            },
         )
         return super().form_valid(form)
 

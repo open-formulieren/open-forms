@@ -1,5 +1,6 @@
 import tempfile
 import zipfile
+from collections.abc import Sequence
 from pathlib import Path
 from uuid import uuid4
 from zipfile import ZipFile
@@ -20,6 +21,10 @@ from openforms.emails.utils import send_mail_html
 from openforms.logging import audit_logger
 from openforms.utils.urls import build_absolute_uri
 
+from ..import_export import (
+    FormExportOptions,
+    FormExportOptionsData,
+)
 from ..import_export.export_form import export_form
 from ..models import Form
 from ..models.form import FormsExport
@@ -28,8 +33,12 @@ from ..utils import import_form
 logger = structlog.stdlib.get_logger(__name__)
 
 
+# TODO this should be changed to use the actual FormExportOptions dataclass as input
+# Something like https://stackoverflow.com/a/22520957 might work
 @app.task(ignore_result=True)
-def process_forms_export(forms_uuids: list, user_id: int) -> None:
+def process_forms_export(
+    forms_uuids: Sequence[str], user_id: int, export_options: FormExportOptionsData
+) -> None:
     forms = Form.objects.filter(uuid__in=forms_uuids)
 
     user = User.objects.get(id=user_id)
@@ -42,6 +51,7 @@ def process_forms_export(forms_uuids: list, user_id: int) -> None:
                 export_form(
                     form_id=form.pk,
                     archive_name=Path(temp_dir, f"form_{form.slug}.zip"),
+                    export_options=FormExportOptions(**export_options),
                 )
             )
 

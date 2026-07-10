@@ -3,11 +3,12 @@ from .constants import (
     AdditionalFormConfigurationOptions,
     FormConfigurationOptions,
 )
-from .typing import FormExportOptions
+from .typing import FormExportOptions, FormExportOptionsData
 
 __all__ = [
     "EXPORT_META_KEY",
     "AdditionalFormConfigurationOptions",
     "FormConfigurationOptions",
     "FormExportOptions",
+    "FormExportOptionsData",
 ]
