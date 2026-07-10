@@ -4,24 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("payments_worldline", "0001_initial"),
-        ("payments_worldline", "0002_alter_worldlinemerchant_endpoint_preset"),
-        (
-            "payments_worldline",
-            "0003_rename_endpoint_preset_worldlinemerchant_endpoint_and_more",
-        ),
-        ("payments_worldline", "0004_alter_worldlinemerchant_pspid"),
-        ("payments_worldline", "0005_worldlinewebhookentry"),
-        ("payments_worldline", "0006_worldlinewebhookconfiguration_and_more"),
-        ("payments_worldline", "0007_migrate_ogone_to_worldline"),
-        (
-            "payments_worldline",
-            "0008_alter_worldlinewebhookconfiguration_options_and_more",
-        ),
-        ("payments_worldline", "0009_migrate_ogone_to_worldline"),
-    ]
-
     dependencies = [
         ("payments_ogone", "0004_alter_ogonewebhookconfiguration_options_and_more"),
     ]
