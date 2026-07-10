@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import TypedDict
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -19,6 +20,12 @@ class AdditionalFormConfigurationOptions(models.TextChoices):
     wms_tile_layers = "wmsTileLayers", _("WMS-tile layers")
     wmts_tile_layers = "wmtsTileLayers", _("Background tile layers")
     yivi_attribute_groups = "yiviAttributeGroups", _("Yivi attribute groups")
+
+
+class FormExportOptionsData(TypedDict, total=False):
+    remove_sensitive_content: bool
+    form_configuration: list[FormConfigurationOptions]
+    additional_form_configuration: list[AdditionalFormConfigurationOptions]
 
 
 @dataclass(slots=True)

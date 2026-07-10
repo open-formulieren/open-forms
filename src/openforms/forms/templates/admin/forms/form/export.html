@@ -2,6 +2,7 @@
 {% load static i18n django_admin_index %}
 
 {% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
 <link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">
 {% endblock %}
 
@@ -20,25 +21,55 @@
 {% block content %}
     <h1>{% trans 'Export forms' %}</h1>
     <div id="content-main">
-        <div>
-            {% blocktranslate %}
-            Once your request has been processed, you will be sent an email (at the address configured in your admin
-            profile) containing a link where you can download a zip file with all the exported forms.
-            {% endblocktranslate %}
-            <br/><br/>
-        </div>
         <form action="{% url 'admin:forms_export' %}" method="post">
+            {% csrf_token %}
+
+            {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+
             <div>
                 <fieldset class="module aligned">
-                    {% csrf_token %}
+                    <div class="description">
+                        {% blocktrans trimmed %}
+                            <p>
+                                Here you can control how the previously selected forms will be
+                                exported. Using these options, sensitive information can be
+                                anonymized, certain form configuration can be left out, and
+                                additional information can be included.
+                            </p>
+                            <p>
+                                These export options will be used for each form that will be exported.
+                            </p>
+                            <p>
+                                After you've clicked the "Export" button, the forms will be
+                                exported in the background. <br/>
+                                Once your request has been processed, you will be sent an email
+                                (at the address configured in your admin profile) containing a link
+                                where you can download a zip file with all the exported forms.
+                            </p>
+                        {% endblocktrans %}
+                    </div>
 
-                    {% for hidden in form.hidden_fields %}
-                        {{ hidden }}
+                    {% for field in form.visible_fields %}
+                        <div class="form-row {% if field.errors %} errors{% endif %}">
+                            {{ field.errors }}
+                            <div class="flex-container {% if field.field.widget.input_type == 'checkbox' and field|length == 1 %}checkbox-row{% endif %} {% if field.errors %}errors{% endif %}">
+                                {{ field.label_tag }}
+                                {{ field }}
+                            </div>
+
+                            {% if field.help_text %}
+                                <div class="help" {% if field.id_for_label %} id="{{ field.id_for_label }}_helptext"{% endif %}>
+                                    <div>{{ field.help_text|safe }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
                     {% endfor %}
                 </fieldset>
 
                 <div class="submit-row">
-                    <input type="submit" value="{% trans 'Export' %}">
+                    <input type="submit" class="default" value="{% trans 'Export' %}">
                 </div>
             </div>
         </form>
