@@ -9,7 +9,7 @@ from openforms.import_export.typing import (
 from openforms.prefill.constants import IdentifierRoles
 from openforms.typing import JSONObject
 
-from .base import BaseExportSerializer
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
 def clear_wms_tile_layers(representation: JSONObject):
@@ -76,3 +76,22 @@ class FormDefinitionExportSerializer(FormDefinitionSerializer, BaseExportSeriali
                 component["defaultValue"] = ""
 
         return representation
+
+
+class FormDefinitionImportSerializer(FormDefinitionSerializer, BaseImportSerializer):
+    excluded_additional_form_configuration_removal = (
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.wms_tile_layers,
+            cleanup=clear_wms_tile_layers,
+        ),
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.wmts_tile_layers,
+            cleanup=clear_wmts_tile_layers,
+        ),
+    )
+    excluded_form_configuration_removal = (
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.prefill,
+            cleanup=remove_prefill_from_component_configuration,
+        ),
+    )

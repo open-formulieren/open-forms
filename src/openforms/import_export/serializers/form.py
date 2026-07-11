@@ -7,7 +7,7 @@ from openforms.import_export.typing import (
 )
 from openforms.typing import JSONObject
 
-from .base import BaseExportSerializer
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
 def clear_product(representation: JSONObject):
@@ -35,6 +35,10 @@ def exclude_registration_backends(representation: JSONObject):
 def exclude_payment_backend(representation: JSONObject):
     representation["payment_backend"] = ""
     representation["payment_backend_options"] = {}
+
+
+def exclude_auth_backends(representation: dict[str, Any]):
+    representation["auth_backends"] = []
 
 
 class FormExportSerializer(FormSerializer, BaseExportSerializer):
@@ -86,3 +90,38 @@ class FormExportSerializer(FormSerializer, BaseExportSerializer):
                 registration["options"]["payment_emails"] = []
 
         return representation
+
+
+class FormImportSerializer(FormSerializer, BaseImportSerializer):
+    excluded_additional_form_configuration_removal = (
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.product,
+            cleanup=clear_product,
+        ),
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.category,
+            cleanup=clear_category,
+        ),
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.theme,
+            cleanup=clear_theme,
+        ),
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.yivi_attribute_groups,
+            cleanup=clear_yivi_attribute_groups,
+        ),
+    )
+    excluded_form_configuration_removal = (
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.registration_backends,
+            cleanup=exclude_registration_backends,
+        ),
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.payment_backend,
+            cleanup=exclude_payment_backend,
+        ),
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.auth_backends,
+            cleanup=exclude_auth_backends,
+        ),
+    )
