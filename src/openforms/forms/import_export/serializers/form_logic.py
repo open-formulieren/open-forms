@@ -1,6 +1,6 @@
 from openforms.forms.api.serializers import FormLogicSerializer
 
-from .base import BaseExportSerializer
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
 class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer):
@@ -35,3 +35,7 @@ class FormLogicExportSerializer(FormLogicSerializer, BaseExportSerializer):
                 action["action"]["value"] = ""
 
         return representation
+
+
+class FormLogicImportSerializer(FormLogicSerializer, BaseImportSerializer):
+    pass

@@ -44,6 +44,14 @@ class FormExportOptions:
     )
 
 
+class FormImportOptionsData(TypedDict, total=False):
+    form_configuration: list[FormConfigurationOptions]
+    additional_form_configuration: list[AdditionalFormConfigurationOptions]
+    reuse_form_definitions: bool
+    theme: str | None
+    category: str | None
+
+
 @dataclass(slots=True)
 class FormImportOptions:
     form_configuration: list[FormConfigurationOptions] = field(

@@ -18,6 +18,14 @@ from rest_framework.test import APIRequestFactory
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
 from openforms.formio.utils import iter_components
 from openforms.forms.constants import FormTypeChoices
+from openforms.forms.import_export.serializers import (
+    FormDefinitionImportSerializer,
+    FormImportSerializer,
+    FormLogicImportSerializer,
+    FormStepImportSerializer,
+    FormVariableImportSerializer,
+)
+from openforms.forms.import_export.typing import FormImportOptions
 from openforms.registrations.contrib.objects_api.constants import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
 )
@@ -30,13 +38,6 @@ from openforms.registrations.contrib.zgw_apis.plugin import (
 from openforms.typing import JSONObject
 
 from .api.datastructures import FormVariableWrapper
-from .api.serializers import (
-    FormDefinitionSerializer,
-    FormLogicSerializer,
-    FormSerializer,
-    FormStepSerializer,
-    FormVariableSerializer,
-)
 from .constants import LogicActionTypes
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
@@ -52,11 +53,11 @@ IMPORT_ORDER = {
 }
 
 SERIALIZERS = {
-    "formDefinitions": FormDefinitionSerializer,
-    "forms": FormSerializer,
-    "formSteps": FormStepSerializer,
-    "formLogic": FormLogicSerializer,
-    "formVariables": FormVariableSerializer,
+    "formDefinitions": FormDefinitionImportSerializer,
+    "forms": FormImportSerializer,
+    "formSteps": FormStepImportSerializer,
+    "formLogic": FormLogicImportSerializer,
+    "formVariables": FormVariableImportSerializer,
 }
 
 
@@ -76,14 +77,16 @@ def to_json(obj: Any):
 
 
 @transaction.atomic
-def import_form(import_file, existing_form_instance=None) -> Form | None:
+def import_form(
+    import_file, existing_form_instance=None, import_options: FormImportOptions = None
+) -> Form | None:
     import_data = {}
     with zipfile.ZipFile(import_file, "r") as zip_file:
         for resource in IMPORT_ORDER.keys():
             if f"{resource}.json" in zip_file.namelist():
                 import_data[resource] = zip_file.read(f"{resource}.json").decode()
 
-    return import_form_data(import_data, existing_form_instance)
+    return import_form_data(import_data, existing_form_instance, import_options)
 
 
 def check_form_definition(uuid: str, attrs: dict[str, Any], for_existing_form: bool):
@@ -118,6 +121,7 @@ def check_form_definition(uuid: str, attrs: dict[str, Any], for_existing_form: b
 def import_form_data(
     import_data: dict,
     existing_form_instance: Form | None = None,
+    import_options: FormImportOptions = None,
 ) -> Form | None:
     uuid_mapping = {}
 
@@ -192,6 +196,7 @@ def import_form_data(
                     "request": request,
                     "form": created_form,
                     "is_import": True,
+                    "import_options": import_options,
                 },
             }
 
@@ -305,6 +310,7 @@ def import_form_data(
                             "request": request,
                             "form": created_form,
                             "is_import": True,
+                            "import_options": import_options,
                         },
                         instance=existing_form_instance,
                     )

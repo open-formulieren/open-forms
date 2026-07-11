@@ -1,6 +1,6 @@
 from openforms.forms.api.serializers import FormStepSerializer
 
-from .base import BaseExportSerializer
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
 class FormStepExportSerializer(FormStepSerializer, BaseExportSerializer):
@@ -22,3 +22,7 @@ class FormStepExportSerializer(FormStepSerializer, BaseExportSerializer):
         "next_text",
         "translations",
     )
+
+
+class FormStepImportSerializer(FormStepSerializer, BaseImportSerializer):
+    pass

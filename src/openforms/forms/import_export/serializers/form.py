@@ -1,3 +1,6 @@
+from django.urls import reverse
+
+from openforms.config.models import Theme
 from openforms.forms.api.serializers import FormSerializer
 from openforms.forms.api.serializers.form import FormRegistrationBackendSerializer
 from openforms.forms.import_export.typing import (
@@ -6,9 +9,10 @@ from openforms.forms.import_export.typing import (
     FormConfigurationCleanup,
     FormConfigurationOptions,
 )
+from openforms.forms.models import Category, Form
 from openforms.typing import JSONObject
 
-from .base import BaseExportSerializer
+from .base import BaseExportSerializer, BaseImportSerializer
 
 
 def clear_product(representation: JSONObject):
@@ -152,3 +156,60 @@ class FormExportSerializer(FormSerializer, BaseExportSerializer):
         if "payment_options" in fields:
             del fields["payment_options"]
         return fields
+
+
+class FormImportSerializer(FormSerializer, BaseImportSerializer):
+    excluded_additional_form_configuration_removal = (
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.product,
+            cleanup=clear_product,
+        ),
+        AdditionalFormConfigurationCleanup(
+            option=AdditionalFormConfigurationOptions.yivi_attribute_groups,
+            cleanup=clear_yivi_attribute_groups,
+        ),
+    )
+    excluded_form_configuration_removal = (
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.registration_backends,
+            cleanup=exclude_registration_backends,
+        ),
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.payment_backend,
+            cleanup=exclude_payment_backend,
+        ),
+        FormConfigurationCleanup(
+            option=FormConfigurationOptions.auth_backends,
+            cleanup=exclude_auth_backends,
+        ),
+    )
+
+    def to_internal_value(self, instance):
+        value = instance.copy()
+
+        value = self.set_theme(value)
+        value = self.set_category(value)
+
+        return super().to_internal_value(value)
+
+    def set_theme(self, value: JSONObject) -> JSONObject:
+        if (import_options := self.get_import_options()) is not None and (
+            theme := Theme.objects.filter(uuid=import_options.theme).first()
+        ):
+            theme_url = reverse("api:themes-detail", args=[theme.uuid])
+            value["theme"] = theme_url
+        else:
+            value["theme"] = None
+
+        return value
+
+    def set_category(self, value: JSONObject) -> JSONObject:
+        if (import_options := self.get_import_options()) is not None and (
+            category := Category.objects.filter(uuid=import_options.category).first()
+        ):
+            category_url = reverse("api:categories-detail", args=[category.uuid])
+            value["category"] = category_url
+        else:
+            value["category"] = None
+
+        return value
